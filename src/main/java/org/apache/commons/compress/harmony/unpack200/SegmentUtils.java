@@ -21,11 +21,11 @@ package org.apache.commons.compress.harmony.unpack200;
  */
 public final class SegmentUtils {
 
-    public static int countArgs(String descriptor) {
+    public static int countArgs(final String descriptor) {
         return countArgs(descriptor, 1);
     }
 
-    public static int countInvokeInterfaceArgs(String descriptor) {
+    public static int countInvokeInterfaceArgs(final String descriptor) {
         return countArgs(descriptor, 2);
     }
 
@@ -41,17 +41,18 @@ public final class SegmentUtils {
      *            for invokeinterface.
      * @return integer count
      */
-    protected static int countArgs(String descriptor, int widthOfLongsAndDoubles) {
-        int bra = descriptor.indexOf('(');
-        int ket = descriptor.indexOf(')');
-        if (bra == -1 || ket == -1 || ket < bra)
+    protected static int countArgs(final String descriptor, final int widthOfLongsAndDoubles) {
+        final int bra = descriptor.indexOf('(');
+        final int ket = descriptor.indexOf(')');
+        if (bra == -1 || ket == -1 || ket < bra) {
             throw new IllegalArgumentException("No arguments");
+        }
 
         boolean inType = false;
         boolean consumingNextType = false;
         int count = 0;
         for (int i = bra + 1; i < ket; i++) {
-            char charAt = descriptor.charAt(i);
+            final char charAt = descriptor.charAt(i);
             if (inType && charAt == ';') {
                 inType = false;
                 consumingNextType = false;
@@ -62,61 +63,61 @@ public final class SegmentUtils {
                 consumingNextType = true;
             } else if (inType) {
                 // NOP
+            } else if (consumingNextType) {
+                count++;
+                consumingNextType = false;
+            } else if (charAt == 'D' || charAt == 'J') {
+                count += widthOfLongsAndDoubles;
             } else {
-                if (consumingNextType) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public static int countMatches(final long[] flags, final IMatcher matcher) {
+        int count = 0;
+        for (int i = 0; i < flags.length; i++) {
+            if (matcher.matches(flags[i])) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public static int countBit16(final int[] flags) {
+        int count = 0;
+        for (int i = 0; i < flags.length; i++) {
+            if ((flags[i] & (1 << 16)) != 0) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public static int countBit16(final long[] flags) {
+        int count = 0;
+        for (int i = 0; i < flags.length; i++) {
+            if ((flags[i] & (1 << 16)) != 0) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public static int countBit16(final long[][] flags) {
+        int count = 0;
+        for (int i = 0; i < flags.length; i++) {
+            for (int j = 0; j < flags[i].length; j++) {
+                if ((flags[i][j] & (1 << 16)) != 0) {
                     count++;
-                    consumingNextType = false;
-                } else {
-                    if (charAt == 'D' || charAt == 'J') {
-                        count += widthOfLongsAndDoubles;
-                    } else {
-                        count++;
-                    }
                 }
             }
         }
         return count;
     }
 
-    public static int countMatches(long[] flags, IMatcher matcher) {
-        int count = 0;
-        for (int i = 0; i < flags.length; i++) {
-            if (matcher.matches(flags[i]))
-                count++;
-        }
-        return count;
-    }
-
-    public static int countBit16(int[] flags) {
-        int count = 0;
-        for (int i = 0; i < flags.length; i++) {
-            if ((flags[i] & (1 << 16)) != 0)
-                count++;
-        }
-        return count;
-    }
-
-    public static int countBit16(long[] flags) {
-        int count = 0;
-        for (int i = 0; i < flags.length; i++) {
-            if ((flags[i] & (1 << 16)) != 0)
-                count++;
-        }
-        return count;
-    }
-
-    public static int countBit16(long[][] flags) {
-        int count = 0;
-        for (int i = 0; i < flags.length; i++) {
-            for (int j = 0; j < flags[i].length; j++) {
-                if ((flags[i][j] & (1 << 16)) != 0)
-                    count++;
-            }
-        }
-        return count;
-    }
-
-    public static int countMatches(long[][] flags, IMatcher matcher) {
+    public static int countMatches(final long[][] flags, final IMatcher matcher) {
         int count = 0;
         for (int i = 0; i < flags.length; i++) {
             count += countMatches(flags[i], matcher);

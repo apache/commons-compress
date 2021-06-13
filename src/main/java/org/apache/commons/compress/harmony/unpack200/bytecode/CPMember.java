@@ -43,7 +43,7 @@ public class CPMember extends ClassFileEntry {
      * @throws NullPointerException
      *             if name or descriptor is null
      */
-    public CPMember(CPUTF8 name, CPUTF8 descriptor, long flags, List attributes) {
+    public CPMember(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List attributes) {
         this.name = name;
         this.descriptor = descriptor;
         this.flags = (short) flags;
@@ -54,9 +54,10 @@ public class CPMember extends ClassFileEntry {
         }
     }
 
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        int attributeCount = attributes.size();
-        ClassFileEntry[] entries = new ClassFileEntry[attributeCount + 2];
+        final int attributeCount = attributes.size();
+        final ClassFileEntry[] entries = new ClassFileEntry[attributeCount + 2];
         entries[0] = name;
         entries[1] = descriptor;
         for (int i = 0; i < attributeCount; i++) {
@@ -65,16 +66,18 @@ public class CPMember extends ClassFileEntry {
         return entries;
     }
 
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         nameIndex = pool.indexOf(name);
         descriptorIndex = pool.indexOf(descriptor);
         for(int it = 0; it < attributes.size(); it++) {
-            Attribute attribute = (Attribute) attributes.get(it);
+            final Attribute attribute = (Attribute) attributes.get(it);
             attribute.resolve(pool);
         }
     }
 
+    @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
@@ -85,37 +88,47 @@ public class CPMember extends ClassFileEntry {
         return result;
     }
 
+    @Override
     public String toString() {
         return "CPMember: " + name + "(" + descriptor + ")";
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj)
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         final CPMember other = (CPMember) obj;
-        if (!attributes.equals(other.attributes))
+        if (!attributes.equals(other.attributes)) {
             return false;
-        if (!descriptor.equals(other.descriptor))
+        }
+        if (!descriptor.equals(other.descriptor)) {
             return false;
-        if (flags != other.flags)
+        }
+        if (flags != other.flags) {
             return false;
-        if (!name.equals(other.name))
+        }
+        if (!name.equals(other.name)) {
             return false;
+        }
         return true;
     }
 
-    protected void doWrite(DataOutputStream dos) throws IOException {
+    @Override
+    protected void doWrite(final DataOutputStream dos) throws IOException {
         dos.writeShort(flags);
         dos.writeShort(nameIndex);
         dos.writeShort(descriptorIndex);
-        int attributeCount = attributes.size();
+        final int attributeCount = attributes.size();
         dos.writeShort(attributeCount);
         for (int i = 0; i < attributeCount; i++) {
-            Attribute attribute = (Attribute) attributes.get(i);
+            final Attribute attribute = (Attribute) attributes.get(i);
             attribute.doWrite(dos);
         }
     }

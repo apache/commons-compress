@@ -30,17 +30,18 @@ public class ClassRefForm extends ReferenceForm {
 
     protected boolean widened;
 
-    public ClassRefForm(int opcode, String name, int[] rewrite) {
+    public ClassRefForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
-    public ClassRefForm(int opcode, String name, int[] rewrite, boolean widened) {
+    public ClassRefForm(final int opcode, final String name, final int[] rewrite, final boolean widened) {
         this(opcode, name, rewrite);
         this.widened = widened;
     }
 
-    protected void setNestedEntries(ByteCode byteCode,
-            OperandManager operandManager, int offset) throws Pack200Exception {
+    @Override
+    protected void setNestedEntries(final ByteCode byteCode,
+            final OperandManager operandManager, final int offset) throws Pack200Exception {
         // If the offset is not zero, proceed normally.
         if (offset != 0) {
             super.setNestedEntries(byteCode, operandManager, offset - 1);
@@ -61,10 +62,12 @@ public class ClassRefForm extends ReferenceForm {
         byteCode.setNestedPositions(new int[][] { { 0, 2 } });
     }
 
-    protected int getOffset(OperandManager operandManager) {
+    @Override
+    protected int getOffset(final OperandManager operandManager) {
         return operandManager.nextClassRef();
     }
 
+    @Override
     protected int getPoolID() {
         return SegmentConstantPool.CP_CLASS;
     }

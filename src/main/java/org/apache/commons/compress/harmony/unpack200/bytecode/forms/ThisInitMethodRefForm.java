@@ -24,11 +24,12 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public class ThisInitMethodRefForm extends InitMethodReferenceForm {
 
-    public ThisInitMethodRefForm(int opcode, String name, int[] rewrite) {
+    public ThisInitMethodRefForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
-    protected String context(OperandManager operandManager) {
+    @Override
+    protected String context(final OperandManager operandManager) {
         return operandManager.getCurrentClass();
     }
 }

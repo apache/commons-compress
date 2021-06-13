@@ -26,7 +26,7 @@ public class DeprecatedAttribute extends Attribute {
 
     private static CPUTF8 attributeName;
 
-    public static void setAttributeName(CPUTF8 cpUTF8Value) {
+    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
 
@@ -39,6 +39,7 @@ public class DeprecatedAttribute extends Attribute {
      *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#getLength()
      */
+    @Override
     protected int getLength() {
         return 0;
     }
@@ -48,7 +49,8 @@ public class DeprecatedAttribute extends Attribute {
      *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#writeBody(java.io.DataOutputStream)
      */
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         // No body
     }
 
@@ -57,6 +59,7 @@ public class DeprecatedAttribute extends Attribute {
      *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#toString()
      */
+    @Override
     public String toString() {
         return "Deprecated Attribute";
     }

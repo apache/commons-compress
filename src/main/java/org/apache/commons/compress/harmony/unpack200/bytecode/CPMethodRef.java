@@ -21,10 +21,11 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
  */
 public class CPMethodRef extends CPRef {
 
-    public CPMethodRef(CPClass className, CPNameAndType descriptor, int globalIndex) {
+    public CPMethodRef(final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
         super(ConstantPoolEntry.CP_Methodref, className, descriptor, globalIndex);
     }
 
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         return new ClassFileEntry[] { className, nameAndType };
     }
@@ -42,9 +43,11 @@ public class CPMethodRef extends CPRef {
         cachedHashCode = result;
     }
 
+    @Override
     public int hashCode() {
-        if (!hashcodeComputed)
+        if (!hashcodeComputed) {
             generateHashCode();
+        }
         return cachedHashCode;
     }
 

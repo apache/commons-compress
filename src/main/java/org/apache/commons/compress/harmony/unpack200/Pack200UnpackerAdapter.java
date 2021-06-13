@@ -40,14 +40,16 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
 	 * @see org.apache.commons.compress.java.util.jar.Pack200.Unpacker#unpack(java.io.InputStream,
 	 *      java.util.jar.JarOutputStream)
 	 */
-	public void unpack(InputStream in, JarOutputStream out) throws IOException {
-		if (in == null || out == null)
-			throw new IllegalArgumentException(
+	@Override
+    public void unpack(final InputStream in, final JarOutputStream out) throws IOException {
+		if (in == null || out == null) {
+            throw new IllegalArgumentException(
 					"Must specify both input and output streams");
+        }
 		completed(0);
 		try {
             new Archive(in, out).unpack();
-        } catch (Pack200Exception e) {
+        } catch (final Pack200Exception e) {
             throw new IOException("Failed to unpack Jar:" + String.valueOf(e));
         }
 		completed(1);
@@ -60,14 +62,16 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
 	 * @see org.apache.commons.compress.java.util.jar.Pack200.Unpacker#unpack(java.io.File,
 	 *      java.util.jar.JarOutputStream)
 	 */
-	public void unpack(File file, JarOutputStream out) throws IOException {
-		if (file == null || out == null)
-			throw new IllegalArgumentException(
+	@Override
+    public void unpack(final File file, final JarOutputStream out) throws IOException {
+		if (file == null || out == null) {
+            throw new IllegalArgumentException(
 					"Must specify both input and output streams");
-		int size = (int) file.length();
-		int bufferSize = (size > 0 && size < DEFAULT_BUFFER_SIZE ? size
+        }
+		final int size = (int) file.length();
+		final int bufferSize = (size > 0 && size < DEFAULT_BUFFER_SIZE ? size
 				: DEFAULT_BUFFER_SIZE);
-		InputStream in = new BufferedInputStream(new FileInputStream(file),
+		final InputStream in = new BufferedInputStream(new FileInputStream(file),
 				bufferSize);
 		unpack(in, out);
 	}

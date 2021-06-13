@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
+
 import org.apache.commons.compress.java.util.jar.Pack200.Packer;
 
 
@@ -33,56 +34,61 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
 
     private final PackingOptions options = new PackingOptions();
 
-    public void pack(JarFile file, OutputStream out) throws IOException {
-        if (file == null || out == null)
+    @Override
+    public void pack(final JarFile file, final OutputStream out) throws IOException {
+        if (file == null || out == null) {
             throw new IllegalArgumentException(
                     "Must specify both input and output streams");
+        }
         completed(0);
         try {
             new org.apache.commons.compress.harmony.pack200.Archive(file, out, options).pack();
-        } catch (Pack200Exception e) {
+        } catch (final Pack200Exception e) {
             throw new IOException("Failed to pack Jar:" + String.valueOf(e));
         }
         completed(1);
     }
 
-    public void pack(JarInputStream in, OutputStream out) throws IOException {
-        if (in == null || out == null)
+    @Override
+    public void pack(final JarInputStream in, final OutputStream out) throws IOException {
+        if (in == null || out == null) {
             throw new IllegalArgumentException(
                     "Must specify both input and output streams");
+        }
         completed(0);
-        PackingOptions options = new PackingOptions();
+        final PackingOptions options = new PackingOptions();
 
         try {
             new org.apache.commons.compress.harmony.pack200.Archive(in, out, options).pack();
-        } catch (Pack200Exception e) {
+        } catch (final Pack200Exception e) {
             throw new IOException("Failed to pack Jar:" + String.valueOf(e));
         }
         completed(1);
         in.close();
     }
 
-    protected void firePropertyChange(String propertyName, Object oldValue,
-            Object newValue) {
+    @Override
+    protected void firePropertyChange(final String propertyName, final Object oldValue,
+            final Object newValue) {
         super.firePropertyChange(propertyName, oldValue, newValue);
         if(newValue != null && !newValue.equals(oldValue)) {
             if (propertyName.startsWith(CLASS_ATTRIBUTE_PFX)) {
-                String attributeName = propertyName.substring(CLASS_ATTRIBUTE_PFX.length());
+                final String attributeName = propertyName.substring(CLASS_ATTRIBUTE_PFX.length());
                 options.addClassAttributeAction(attributeName, (String)newValue);
             } else if (propertyName.startsWith(CODE_ATTRIBUTE_PFX)) {
-                String attributeName = propertyName.substring(CODE_ATTRIBUTE_PFX.length());
+                final String attributeName = propertyName.substring(CODE_ATTRIBUTE_PFX.length());
                 options.addCodeAttributeAction(attributeName, (String)newValue);
             } else if (propertyName.equals(DEFLATE_HINT)) {
                 options.setDeflateHint((String) newValue);
             } else if (propertyName.equals(EFFORT)) {
                 options.setEffort(Integer.parseInt((String)newValue));
             } else if (propertyName.startsWith(FIELD_ATTRIBUTE_PFX)) {
-                String attributeName = propertyName.substring(FIELD_ATTRIBUTE_PFX.length());
+                final String attributeName = propertyName.substring(FIELD_ATTRIBUTE_PFX.length());
                 options.addFieldAttributeAction(attributeName, (String)newValue);
             } else if (propertyName.equals(KEEP_FILE_ORDER)) {
                 options.setKeepFileOrder(Boolean.parseBoolean((String)newValue));
             } else if (propertyName.startsWith(METHOD_ATTRIBUTE_PFX)) {
-                String attributeName = propertyName.substring(METHOD_ATTRIBUTE_PFX.length());
+                final String attributeName = propertyName.substring(METHOD_ATTRIBUTE_PFX.length());
                 options.addMethodAttributeAction(attributeName, (String)newValue);
             } else if (propertyName.equals(MODIFICATION_TIME)) {
                 options.setModificationTime((String)newValue);

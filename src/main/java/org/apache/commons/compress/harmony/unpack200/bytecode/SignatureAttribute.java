@@ -29,11 +29,11 @@ public class SignatureAttribute extends Attribute {
 
     private static CPUTF8 attributeName;
 
-    public static void setAttributeName(CPUTF8 cpUTF8Value) {
+    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
 
-    public SignatureAttribute(CPUTF8 value) {
+    public SignatureAttribute(final CPUTF8 value) {
         super(attributeName);
         this.signature = value;
     }
@@ -43,15 +43,18 @@ public class SignatureAttribute extends Attribute {
      *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#getLength()
      */
+    @Override
     protected int getLength() {
         return 2;
     }
 
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         return new ClassFileEntry[] { getAttributeName(), signature };
     }
 
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         signature.resolve(pool);
         signature_index = pool.indexOf(signature);
@@ -62,7 +65,8 @@ public class SignatureAttribute extends Attribute {
      *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#writeBody(java.io.DataOutputStream)
      */
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(signature_index);
     }
 
@@ -71,6 +75,7 @@ public class SignatureAttribute extends Attribute {
      *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#toString()
      */
+    @Override
     public String toString() {
         // TODO Auto-generated method stub
         return "Signature: " + signature;

@@ -50,7 +50,7 @@ public class AttrDefinitionBands extends BandSet {
 
     private final String[] cpUTF8;
 
-    public AttrDefinitionBands(Segment segment) {
+    public AttrDefinitionBands(final Segment segment) {
         super(segment);
         this.cpUTF8 = segment.getCpBands().getCpUTF8();
     }
@@ -60,8 +60,9 @@ public class AttrDefinitionBands extends BandSet {
      *
      * @see org.apache.commons.compress.harmony.unpack200.BandSet#unpack(java.io.InputStream)
      */
-    public void read(InputStream in) throws IOException, Pack200Exception {
-        int attributeDefinitionCount = header.getAttributeDefinitionCount();
+    @Override
+    public void read(final InputStream in) throws IOException, Pack200Exception {
+        final int attributeDefinitionCount = header.getAttributeDefinitionCount();
         attributeDefinitionHeader = decodeBandInt("attr_definition_headers",
                 in, Codec.BYTE1, attributeDefinitionCount);
         attributeDefinitionName = parseReferences("attr_definition_name", in,
@@ -76,21 +77,22 @@ public class AttrDefinitionBands extends BandSet {
             overflowIndex = 63;
         }
         for (int i = 0; i < attributeDefinitionCount; i++) {
-            int context = attributeDefinitionHeader[i] & 0x03;
+            final int context = attributeDefinitionHeader[i] & 0x03;
             int index = (attributeDefinitionHeader[i] >> 2) - 1;
             if (index == -1) {
                 index = overflowIndex++;
             }
-            AttributeLayout layout = new AttributeLayout(
+            final AttributeLayout layout = new AttributeLayout(
                     attributeDefinitionName[i], context,
                     attributeDefinitionLayout[i], index, false);
-            NewAttributeBands newBands = new NewAttributeBands(segment, layout);
+            final NewAttributeBands newBands = new NewAttributeBands(segment, layout);
             attributeDefinitionMap.add(layout, newBands);
         }
         attributeDefinitionMap.checkMap();
         setupDefaultAttributeNames();
     }
 
+    @Override
     public void unpack() throws Pack200Exception, IOException {
 
     }

@@ -29,27 +29,31 @@ public class CPFieldRef extends ConstantPoolEntry {
     private final CPNameAndType nameAndType;
     transient int nameAndTypeIndex;
 
-    public CPFieldRef(CPClass className, CPNameAndType descriptor, int globalIndex) {
+    public CPFieldRef(final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
         super(ConstantPoolEntry.CP_Fieldref, globalIndex);
         this.className = className;
         this.nameAndType = descriptor;
     }
 
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         return new ClassFileEntry[] { className, nameAndType };
     }
 
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         nameAndTypeIndex = pool.indexOf(nameAndType);
         classNameIndex = pool.indexOf(className);
     }
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(classNameIndex);
         dos.writeShort(nameAndTypeIndex);
     }
 
+    @Override
     public String toString() {
         return "FieldRef: " + className + "#" + nameAndType;
     }
@@ -68,30 +72,40 @@ public class CPFieldRef extends ConstantPoolEntry {
         cachedHashCode = result;
     }
 
+    @Override
     public int hashCode() {
-        if (!hashcodeComputed)
+        if (!hashcodeComputed) {
             generateHashCode();
+        }
         return cachedHashCode;
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj)
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         final CPFieldRef other = (CPFieldRef) obj;
         if (className == null) {
-            if (other.className != null)
+            if (other.className != null) {
                 return false;
-        } else if (!className.equals(other.className))
+            }
+        } else if (!className.equals(other.className)) {
             return false;
+        }
         if (nameAndType == null) {
-            if (other.nameAndType != null)
+            if (other.nameAndType != null) {
                 return false;
-        } else if (!nameAndType.equals(other.nameAndType))
+            }
+        } else if (!nameAndType.equals(other.nameAndType)) {
             return false;
+        }
         return true;
     }
 

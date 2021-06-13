@@ -75,7 +75,7 @@ public class BcBands extends BandSet {
     /**
      * @param segment TODO
      */
-    public BcBands(Segment segment) {
+    public BcBands(final Segment segment) {
         super(segment);
     }
 
@@ -84,12 +84,13 @@ public class BcBands extends BandSet {
      *
      * @see org.apache.commons.compress.harmony.unpack200.BandSet#unpack(java.io.InputStream)
      */
-    public void read(InputStream in) throws IOException, Pack200Exception {
+    @Override
+    public void read(final InputStream in) throws IOException, Pack200Exception {
 
-        AttributeLayoutMap attributeDefinitionMap = segment
+        final AttributeLayoutMap attributeDefinitionMap = segment
                 .getAttrDefinitionBands().getAttributeDefinitionMap();
-        int classCount = header.getClassCount();
-        long[][] methodFlags = segment.getClassBands().getMethodFlags();
+        final int classCount = header.getClassCount();
+        final long[][] methodFlags = segment.getClassBands().getMethodFlags();
 
         int bcCaseCountCount = 0;
         int bcByteCount = 0;
@@ -113,37 +114,38 @@ public class BcBands extends BandSet {
         int bcEscCount = 0;
         int bcEscRefCount = 0;
 
-        AttributeLayout abstractModifier = attributeDefinitionMap
+        final AttributeLayout abstractModifier = attributeDefinitionMap
                 .getAttributeLayout(AttributeLayout.ACC_ABSTRACT,
                         AttributeLayout.CONTEXT_METHOD);
-        AttributeLayout nativeModifier = attributeDefinitionMap
+        final AttributeLayout nativeModifier = attributeDefinitionMap
                 .getAttributeLayout(AttributeLayout.ACC_NATIVE,
                         AttributeLayout.CONTEXT_METHOD);
 
         methodByteCodePacked = new byte[classCount][][];
         int bcParsed = 0;
 
-        List switchIsTableSwitch = new ArrayList();
+        final List switchIsTableSwitch = new ArrayList();
         wideByteCodes = new ArrayList();
         for (int c = 0; c < classCount; c++) {
-            int numberOfMethods = methodFlags[c].length;
+            final int numberOfMethods = methodFlags[c].length;
             methodByteCodePacked[c] = new byte[numberOfMethods][];
             for (int m = 0; m < numberOfMethods; m++) {
-                long methodFlag = methodFlags[c][m];
+                final long methodFlag = methodFlags[c][m];
                 if (!abstractModifier.matches(methodFlag)
                         && !nativeModifier.matches(methodFlag)) {
-                    ByteArrayOutputStream codeBytes = new ByteArrayOutputStream();
+                    final ByteArrayOutputStream codeBytes = new ByteArrayOutputStream();
                     byte code;
-                    while ((code = (byte) (0xff & in.read())) != -1)
+                    while ((code = (byte) (0xff & in.read())) != -1) {
                         codeBytes.write(code);
+                    }
                     methodByteCodePacked[c][m] = codeBytes.toByteArray();
                     bcParsed += methodByteCodePacked[c][m].length;
-                    int[] codes = new int[methodByteCodePacked[c][m].length];
+                    final int[] codes = new int[methodByteCodePacked[c][m].length];
                     for (int i = 0; i < codes.length; i++) {
                         codes[i] = methodByteCodePacked[c][m][i] & 0xff;
                     }
                     for (int i = 0; i < methodByteCodePacked[c][m].length; i++) {
-                        int codePacked = 0xff & methodByteCodePacked[c][m][i];
+                        final int codePacked = 0xff & methodByteCodePacked[c][m][i];
                         switch (codePacked) {
                         case 16: // bipush
                         case 188: // newarray
@@ -191,12 +193,12 @@ public class BcBands extends BandSet {
                             bcLabelCount++;
                             break;
                         case 170: // tableswitch
-                            switchIsTableSwitch.add(new Boolean(true));
+                            switchIsTableSwitch.add(Boolean.valueOf(true));
                             bcCaseCountCount++;
                             bcLabelCount++;
                             break;
                         case 171: // lookupswitch
-                            switchIsTableSwitch.add(new Boolean(false));
+                            switchIsTableSwitch.add(Boolean.valueOf(false));
                             bcCaseCountCount++;
                             bcLabelCount++;
                             break;
@@ -255,8 +257,8 @@ public class BcBands extends BandSet {
                             bcByteCount++;
                             break;
                         case 196: // wide
-                            int nextInstruction = 0xff & methodByteCodePacked[c][m][i + 1];
-                            wideByteCodes.add(new Integer(nextInstruction));
+                            final int nextInstruction = 0xff & methodByteCodePacked[c][m][i + 1];
+                            wideByteCodes.add(Integer.valueOf(nextInstruction));
                             if (nextInstruction == 132) { // iinc
                                 bcLocalCount++;
                                 bcShortCount++;
@@ -302,7 +304,7 @@ public class BcBands extends BandSet {
                 bcCaseCountCount);
         int bcCaseValueCount = 0;
         for (int i = 0; i < bcCaseCount.length; i++) {
-            boolean isTableSwitch = ((Boolean) switchIsTableSwitch.get(i))
+            final boolean isTableSwitch = ((Boolean) switchIsTableSwitch.get(i))
                     .booleanValue();
             if (isTableSwitch) {
                 bcCaseValueCount += 1;
@@ -357,34 +359,35 @@ public class BcBands extends BandSet {
         bcEscByte = decodeBandInt("bc_escbyte", in, Codec.BYTE1, bcEscSize);
     }
 
+    @Override
     public void unpack() throws Pack200Exception {
-        int classCount = header.getClassCount();
-        long[][] methodFlags = segment.getClassBands().getMethodFlags();
-        int[] codeMaxNALocals = segment.getClassBands().getCodeMaxNALocals();
-        int[] codeMaxStack = segment.getClassBands().getCodeMaxStack();
-        ArrayList[][] methodAttributes = segment.getClassBands()
+        final int classCount = header.getClassCount();
+        final long[][] methodFlags = segment.getClassBands().getMethodFlags();
+        final int[] codeMaxNALocals = segment.getClassBands().getCodeMaxNALocals();
+        final int[] codeMaxStack = segment.getClassBands().getCodeMaxStack();
+        final ArrayList[][] methodAttributes = segment.getClassBands()
                 .getMethodAttributes();
-        String[][] methodDescr = segment.getClassBands().getMethodDescr();
+        final String[][] methodDescr = segment.getClassBands().getMethodDescr();
 
-        AttributeLayoutMap attributeDefinitionMap = segment
+        final AttributeLayoutMap attributeDefinitionMap = segment
                 .getAttrDefinitionBands().getAttributeDefinitionMap();
 
-        AttributeLayout abstractModifier = attributeDefinitionMap
+        final AttributeLayout abstractModifier = attributeDefinitionMap
                 .getAttributeLayout(AttributeLayout.ACC_ABSTRACT,
                         AttributeLayout.CONTEXT_METHOD);
-        AttributeLayout nativeModifier = attributeDefinitionMap
+        final AttributeLayout nativeModifier = attributeDefinitionMap
                 .getAttributeLayout(AttributeLayout.ACC_NATIVE,
                         AttributeLayout.CONTEXT_METHOD);
-        AttributeLayout staticModifier = attributeDefinitionMap
+        final AttributeLayout staticModifier = attributeDefinitionMap
                 .getAttributeLayout(AttributeLayout.ACC_STATIC,
                         AttributeLayout.CONTEXT_METHOD);
 
-        int[] wideByteCodeArray = new int[wideByteCodes.size()];
+        final int[] wideByteCodeArray = new int[wideByteCodes.size()];
         for (int index = 0; index < wideByteCodeArray.length; index++) {
             wideByteCodeArray[index] = ((Integer) wideByteCodes.get(index))
                     .intValue();
         }
-        OperandManager operandManager = new OperandManager(bcCaseCount,
+        final OperandManager operandManager = new OperandManager(bcCaseCount,
                 bcCaseValue, bcByte, bcShort, bcLocal, bcLabel, bcIntRef,
                 bcFloatRef, bcLongRef, bcDoubleRef, bcStringRef, bcClassRef,
                 bcFieldRef, bcMethodRef, bcIMethodRef, bcThisField,
@@ -393,45 +396,47 @@ public class BcBands extends BandSet {
         operandManager.setSegment(segment);
 
         int i = 0;
-        ArrayList orderedCodeAttributes = segment.getClassBands()
+        final ArrayList orderedCodeAttributes = segment.getClassBands()
                 .getOrderedCodeAttributes();
         int codeAttributeIndex = 0;
 
         // Exception table fields
-        int[] handlerCount = segment.getClassBands().getCodeHandlerCount();
-        int[][] handlerStartPCs = segment.getClassBands()
+        final int[] handlerCount = segment.getClassBands().getCodeHandlerCount();
+        final int[][] handlerStartPCs = segment.getClassBands()
                 .getCodeHandlerStartP();
-        int[][] handlerEndPCs = segment.getClassBands().getCodeHandlerEndPO();
-        int[][] handlerCatchPCs = segment.getClassBands()
+        final int[][] handlerEndPCs = segment.getClassBands().getCodeHandlerEndPO();
+        final int[][] handlerCatchPCs = segment.getClassBands()
                 .getCodeHandlerCatchPO();
-        int[][] handlerClassTypes = segment.getClassBands()
+        final int[][] handlerClassTypes = segment.getClassBands()
                 .getCodeHandlerClassRCN();
 
-        boolean allCodeHasFlags = segment.getSegmentHeader().getOptions().hasAllCodeFlags();
-        boolean[] codeHasFlags = segment.getClassBands().getCodeHasAttributes();
+        final boolean allCodeHasFlags = segment.getSegmentHeader().getOptions().hasAllCodeFlags();
+        final boolean[] codeHasFlags = segment.getClassBands().getCodeHasAttributes();
 
         for (int c = 0; c < classCount; c++) {
-            int numberOfMethods = methodFlags[c].length;
+            final int numberOfMethods = methodFlags[c].length;
             for (int m = 0; m < numberOfMethods; m++) {
-                long methodFlag = methodFlags[c][m];
+                final long methodFlag = methodFlags[c][m];
                 if (!abstractModifier.matches(methodFlag)
                         && !nativeModifier.matches(methodFlag)) {
-                    int maxStack = codeMaxStack[i];
+                    final int maxStack = codeMaxStack[i];
                     int maxLocal = codeMaxNALocals[i];
                     if (!staticModifier.matches(methodFlag))
+                     {
                         maxLocal++; // one for 'this' parameter
+                    }
                     // I believe this has to take wide arguments into account
                     maxLocal += SegmentUtils
                             .countInvokeInterfaceArgs(methodDescr[c][m]);
-                    String[] cpClass = segment.getCpBands().getCpClass();
+                    final String[] cpClass = segment.getCpBands().getCpClass();
                     operandManager.setCurrentClass(cpClass[segment
                             .getClassBands().getClassThisInts()[c]]);
                     operandManager.setSuperClass(cpClass[segment
                             .getClassBands().getClassSuperInts()[c]]);
-                    List exceptionTable = new ArrayList();
+                    final List exceptionTable = new ArrayList();
                     if (handlerCount != null) {
                         for (int j = 0; j < handlerCount[i]; j++) {
-                            int handlerClass = handlerClassTypes[i][j] - 1;
+                            final int handlerClass = handlerClassTypes[i][j] - 1;
                             CPClass cpHandlerClass = null;
                             if (handlerClass != -1) {
                                 // The handlerClass will be null if the
@@ -440,42 +445,39 @@ public class BcBands extends BandSet {
                                 cpHandlerClass = segment.getCpBands()
                                         .cpClassValue(handlerClass);
                             }
-                            ExceptionTableEntry entry = new ExceptionTableEntry(
+                            final ExceptionTableEntry entry = new ExceptionTableEntry(
                                     handlerStartPCs[i][j], handlerEndPCs[i][j],
                                     handlerCatchPCs[i][j], cpHandlerClass);
                             exceptionTable.add(entry);
                         }
                     }
-                    CodeAttribute codeAttr = new CodeAttribute(maxStack,
+                    final CodeAttribute codeAttr = new CodeAttribute(maxStack,
                             maxLocal, methodByteCodePacked[c][m], segment,
                             operandManager, exceptionTable);
-                    ArrayList methodAttributesList = methodAttributes[c][m];
+                    final ArrayList methodAttributesList = methodAttributes[c][m];
                     // Make sure we add the code attribute in the right place
                     int indexForCodeAttr = 0;
                     for (int index = 0; index < methodAttributesList.size(); index++) {
-                        Attribute attribute = (Attribute) methodAttributesList.get(index);
-                        if((attribute instanceof NewAttribute && ((NewAttribute)attribute).getLayoutIndex() < 15)) {
-                            indexForCodeAttr ++;
-                        } else {
+                        final Attribute attribute = (Attribute) methodAttributesList.get(index);
+                        if(!(attribute instanceof NewAttribute) || (((NewAttribute)attribute).getLayoutIndex() >= 15)) {
                             break;
                         }
+                        indexForCodeAttr ++;
                     }
                     methodAttributesList.add(indexForCodeAttr, codeAttr);
                     codeAttr.renumber(codeAttr.byteCodeOffsets);
                     List currentAttributes;
                     if (allCodeHasFlags) {
                         currentAttributes = (List) orderedCodeAttributes.get(i);
+                    } else if (codeHasFlags[i]) {
+                        currentAttributes = (List) orderedCodeAttributes
+                                .get(codeAttributeIndex);
+                        codeAttributeIndex++;
                     } else {
-                        if (codeHasFlags[i]) {
-                            currentAttributes = (List) orderedCodeAttributes
-                                    .get(codeAttributeIndex);
-                            codeAttributeIndex++;
-                        } else {
-                            currentAttributes = Collections.EMPTY_LIST;
-                        }
+                        currentAttributes = Collections.EMPTY_LIST;
                     }
                     for (int index = 0; index < currentAttributes.size(); index++) {
-                        Attribute currentAttribute = (Attribute) currentAttributes
+                        final Attribute currentAttribute = (Attribute) currentAttributes
                                 .get(index);
                         codeAttr.addAttribute(currentAttribute);
                         // Fix up the line numbers if needed
@@ -490,16 +492,16 @@ public class BcBands extends BandSet {
         }
     }
 
-    private boolean startsWithIf(int codePacked) {
+    private boolean startsWithIf(final int codePacked) {
         return (codePacked >= 153 && codePacked <= 166) || (codePacked == 198)
                 || (codePacked == 199);
     }
 
-    private boolean endsWithLoad(int codePacked) {
+    private boolean endsWithLoad(final int codePacked) {
         return (codePacked >= 21 && codePacked <= 25);
     }
 
-    private boolean endsWithStore(int codePacked) {
+    private boolean endsWithStore(final int codePacked) {
         return (codePacked >= 54 && codePacked <= 58);
     }
 

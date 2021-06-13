@@ -23,11 +23,12 @@ public class CPFloat extends CPConstant {
 
     private final float theFloat;
 
-    public CPFloat(float theFloat) {
+    public CPFloat(final float theFloat) {
         this.theFloat = theFloat;
     }
 
-    public int compareTo(Object obj) {
+    @Override
+    public int compareTo(final Object obj) {
         return Float.compare(theFloat, ((CPFloat)obj).theFloat);
     }
 

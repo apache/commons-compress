@@ -126,7 +126,7 @@ public final class BHSDCodec extends Codec {
      * @param h
      *            the radix of the encoding [1..256]
      */
-    public BHSDCodec(int b, int h) {
+    public BHSDCodec(final int b, final int h) {
         this(b, h, 0, 0);
     }
 
@@ -142,7 +142,7 @@ public final class BHSDCodec extends Codec {
      *            whether the encoding represents signed numbers (s=0 is
      *            unsigned; s=1 is signed with 1s complement; s=2 is signed with ?)
      */
-    public BHSDCodec(int b, int h, int s) {
+    public BHSDCodec(final int b, final int h, final int s) {
         this(b, h, s, 0);
     }
 
@@ -161,7 +161,7 @@ public final class BHSDCodec extends Codec {
      *            whether this is a delta encoding (d=0 is non-delta; d=1 is
      *            delta)
      */
-    public BHSDCodec(int b, int h, int s, int d) {
+    public BHSDCodec(final int b, final int h, final int s, final int d) {
         if (b < 1 || b > 5) {
             throw new IllegalArgumentException("1<=b<=5");
         }
@@ -210,7 +210,8 @@ public final class BHSDCodec extends Codec {
         return cardinality;
     }
 
-    public int decode(InputStream in) throws IOException, Pack200Exception {
+    @Override
+    public int decode(final InputStream in) throws IOException, Pack200Exception {
         if (d != 0) {
             throw new Pack200Exception(
                     "Delta encoding used without passing in last value; this is a coding error");
@@ -218,7 +219,8 @@ public final class BHSDCodec extends Codec {
         return decode(in, 0);
     }
 
-    public int decode(InputStream in, long last) throws IOException,
+    @Override
+    public int decode(final InputStream in, final long last) throws IOException,
             Pack200Exception {
         int n = 0;
         long z = 0;
@@ -234,9 +236,9 @@ public final class BHSDCodec extends Codec {
         if (x == -1) {
             throw new EOFException("End of stream reached whilst decoding");
         }
-        
+
         if (isSigned()) {
-            int u = ((1 << s) - 1);
+            final int u = ((1 << s) - 1);
             if ((z & u) == u) {
                 z = z >>> s ^ -1L;
             } else {
@@ -265,9 +267,10 @@ public final class BHSDCodec extends Codec {
         return (int)z;
     }
 
-    public int[] decodeInts(int n, InputStream in) throws IOException,
+    @Override
+    public int[] decodeInts(final int n, final InputStream in) throws IOException,
             Pack200Exception {
-        int[] band = super.decodeInts(n, in);
+        final int[] band = super.decodeInts(n, in);
         if (isDelta()) {
             for (int i = 0; i < band.length; i++) {
                 while (band[i] > largest) {
@@ -281,9 +284,10 @@ public final class BHSDCodec extends Codec {
         return band;
     }
 
-    public int[] decodeInts(int n, InputStream in, int firstValue)
+    @Override
+    public int[] decodeInts(final int n, final InputStream in, final int firstValue)
             throws IOException, Pack200Exception {
-        int[] band =  super.decodeInts(n, in, firstValue);
+        final int[] band =  super.decodeInts(n, in, firstValue);
         if (isDelta()) {
             for (int i = 0; i < band.length; i++) {
                 while (band[i] > largest) {
@@ -310,11 +314,12 @@ public final class BHSDCodec extends Codec {
      *            the value to check
      * @return <code>true</code> if the encoding can encode this value
      */
-    public boolean encodes(long value) {
+    public boolean encodes(final long value) {
         return value >= smallest && value <= largest;
     }
 
-    public byte[] encode(int value, int last) throws Pack200Exception {
+    @Override
+    public byte[] encode(final int value, final int last) throws Pack200Exception {
         if(!encodes(value)) {
             throw new Pack200Exception("The codec " + toString()
                   + " does not encode the value " + value);
@@ -332,28 +337,24 @@ public final class BHSDCodec extends Codec {
             }
             if (z < 0) {
                 z = (-z << s) - 1;
+            } else if (s == 1) {
+                z = z << s;
             } else {
-                if (s == 1) {
-                    z = z << s;
-                } else {
-                    z += (z - z % 3) / 3;
-                }
+                z += (z - z % 3) / 3;
             }
-        } else {
-            if (z < 0) {
-                // Need to use integer overflow here to represent negatives.
-                if (cardinality < 4294967296L) {
-                    z += cardinality;
-                } else {
-                    z += 4294967296L; // this value is equal to (1 << 32).
-                }
+        } else if (z < 0) {
+            // Need to use integer overflow here to represent negatives.
+            if (cardinality < 4294967296L) {
+                z += cardinality;
+            } else {
+                z += 4294967296L; // this value is equal to (1 << 32).
             }
         }
         if (z < 0) {
             throw new Pack200Exception("unable to encode");
         }
 
-        List byteList = new ArrayList();
+        final List byteList = new ArrayList();
         for (int n = 0; n < b; n++) {
             long byteN;
             if (z < l) {
@@ -364,21 +365,22 @@ public final class BHSDCodec extends Codec {
                     byteN += h;
                 }
             }
-            byteList.add(new Byte((byte) byteN));
+            byteList.add(Byte.valueOf((byte) byteN));
             if (byteN < l) {
                 break;
             }
             z -= byteN;
             z /= h;
         }
-        byte[] bytes = new byte[byteList.size()];
+        final byte[] bytes = new byte[byteList.size()];
         for (int i = 0; i < bytes.length; i++) {
             bytes[i] = ((Byte) byteList.get(i)).byteValue();
         }
         return bytes;
     }
 
-    public byte[] encode(int value) throws Pack200Exception {
+    @Override
+    public byte[] encode(final int value) throws Pack200Exception {
         return encode(value, 0);
     }
 
@@ -414,9 +416,10 @@ public final class BHSDCodec extends Codec {
         // TODO This can probably be optimized into a better mathematical
         // statement
         if (d == 1) {
-            BHSDCodec bh0 = new BHSDCodec(b, h);
+            final BHSDCodec bh0 = new BHSDCodec(b, h);
             return bh0.largest();
-        } else if (s == 0) {
+        }
+        if (s == 0) {
             result = cardinality() - 1;
         } else if (s == 1) {
             result = cardinality() / 2 - 1;
@@ -456,8 +459,9 @@ public final class BHSDCodec extends Codec {
      * Returns the codec in the form (1,256) or (1,64,1,1). Note that trailing
      * zero fields are not shown.
      */
+    @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer(11);
+        final StringBuffer buffer = new StringBuffer(11);
         buffer.append('(');
         buffer.append(b);
         buffer.append(',');
@@ -502,14 +506,16 @@ public final class BHSDCodec extends Codec {
         return l;
     }
 
-    public boolean equals(Object o) {
+    @Override
+    public boolean equals(final Object o) {
         if (o instanceof BHSDCodec) {
-            BHSDCodec codec = (BHSDCodec) o;
+            final BHSDCodec codec = (BHSDCodec) o;
             return codec.b == b && codec.h == h && codec.s == s && codec.d == d;
         }
         return false;
     }
 
+    @Override
     public int hashCode() {
         return ((b* 37 + h) * 37 + s) * 37 + d;
     }

@@ -24,24 +24,25 @@ public class CPNameAndType extends ConstantPoolEntry implements Comparable {
     private final CPUTF8 name;
     private final CPSignature signature;
 
-    public CPNameAndType(CPUTF8 name, CPSignature signature) {
+    public CPNameAndType(final CPUTF8 name, final CPSignature signature) {
         this.name = name;
         this.signature = signature;
     }
 
+    @Override
     public String toString() {
         return name + ":" + signature;
     }
 
-    public int compareTo(Object obj) {
+    @Override
+    public int compareTo(final Object obj) {
         if (obj instanceof CPNameAndType) {
-            CPNameAndType nat = (CPNameAndType) obj;
-            int compareSignature = signature.compareTo(nat.signature);;
+            final CPNameAndType nat = (CPNameAndType) obj;
+            final int compareSignature = signature.compareTo(nat.signature);
             if(compareSignature == 0) {
                 return name.compareTo(nat.name);
-            } else {
-                return compareSignature;
             }
+            return compareSignature;
         }
         return 0;
     }

@@ -32,13 +32,14 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends
     private final int num_parameters;
     private final ParameterAnnotation[] parameter_annotations;
 
-    public RuntimeVisibleorInvisibleParameterAnnotationsAttribute(CPUTF8 name,
-            ParameterAnnotation[] parameter_annotations) {
+    public RuntimeVisibleorInvisibleParameterAnnotationsAttribute(final CPUTF8 name,
+            final ParameterAnnotation[] parameter_annotations) {
         super(name);
         this.num_parameters = parameter_annotations.length;
         this.parameter_annotations = parameter_annotations;
     }
 
+    @Override
     protected int getLength() {
         int length = 1;
         for (int i = 0; i < num_parameters; i++) {
@@ -47,20 +48,23 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends
         return length;
     }
 
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         for (int i = 0; i < parameter_annotations.length; i++) {
             parameter_annotations[i].resolve(pool);
         }
     }
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeByte(num_parameters);
         for (int i = 0; i < num_parameters; i++) {
             parameter_annotations[i].writeBody(dos);
         }
     }
 
+    @Override
     public String toString() {
         return attributeName.underlyingString() + ": " + num_parameters
                 + " parameter annotations";
@@ -74,19 +78,19 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends
         private final Annotation[] annotations;
         private final int num_annotations;
 
-        public ParameterAnnotation(Annotation[] annotations) {
+        public ParameterAnnotation(final Annotation[] annotations) {
             this.num_annotations = annotations.length;
             this.annotations = annotations;
         }
 
-        public void writeBody(DataOutputStream dos) throws IOException {
+        public void writeBody(final DataOutputStream dos) throws IOException {
             dos.writeShort(num_annotations);
             for (int i = 0; i < annotations.length; i++) {
                 annotations[i].writeBody(dos);
             }
         }
 
-        public void resolve(ClassConstantPool pool) {
+        public void resolve(final ClassConstantPool pool) {
             for (int i = 0; i < annotations.length; i++) {
                 annotations[i].resolve(pool);
             }
@@ -101,7 +105,7 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends
         }
 
         public List getClassFileEntries() {
-            List nested = new ArrayList();
+            final List nested = new ArrayList();
             for (int i = 0; i < annotations.length; i++) {
                 nested.addAll(annotations[i].getClassFileEntries());
             }
@@ -110,13 +114,14 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends
 
     }
 
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        List nested = new ArrayList();
+        final List nested = new ArrayList();
         nested.add(attributeName);
         for (int i = 0; i < parameter_annotations.length; i++) {
             nested.addAll(parameter_annotations[i].getClassFileEntries());
         }
-        ClassFileEntry[] nestedEntries = new ClassFileEntry[nested.size()];
+        final ClassFileEntry[] nestedEntries = new ClassFileEntry[nested.size()];
         for (int i = 0; i < nestedEntries.length; i++) {
             nestedEntries[i] = (ClassFileEntry) nested.get(i);
         }

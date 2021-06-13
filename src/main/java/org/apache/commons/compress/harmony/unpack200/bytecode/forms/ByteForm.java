@@ -24,7 +24,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public class ByteForm extends ByteCodeForm {
 
-    public ByteForm(int opcode, String name, int[] rewrite) {
+    public ByteForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
@@ -35,8 +35,9 @@ public class ByteForm extends ByteCodeForm {
      *      org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
      *      org.apache.commons.compress.harmony.unpack200.SegmentConstantPool)
      */
-    public void setByteCodeOperands(ByteCode byteCode,
-            OperandManager operandManager, int codeLength) {
+    @Override
+    public void setByteCodeOperands(final ByteCode byteCode,
+            final OperandManager operandManager, final int codeLength) {
         byteCode.setOperandByte(operandManager.nextByte() & 0xFF, 0);
     }
 }

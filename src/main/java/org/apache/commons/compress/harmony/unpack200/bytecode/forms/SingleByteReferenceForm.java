@@ -28,16 +28,19 @@ public abstract class SingleByteReferenceForm extends ReferenceForm {
 
     protected boolean widened;
 
-    public SingleByteReferenceForm(int opcode, String name, int[] rewrite) {
+    public SingleByteReferenceForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
+    @Override
     protected abstract int getOffset(OperandManager operandManager);
 
+    @Override
     protected abstract int getPoolID();
 
-    protected void setNestedEntries(ByteCode byteCode,
-            OperandManager operandManager, int offset) throws Pack200Exception {
+    @Override
+    protected void setNestedEntries(final ByteCode byteCode,
+            final OperandManager operandManager, final int offset) throws Pack200Exception {
         super.setNestedEntries(byteCode, operandManager, offset);
         if (widened) {
             byteCode.setNestedPositions(new int[][] { { 0, 2 } });
@@ -46,6 +49,7 @@ public abstract class SingleByteReferenceForm extends ReferenceForm {
         }
     }
 
+    @Override
     public boolean nestedMustStartClassPool() {
         return !widened;
     }

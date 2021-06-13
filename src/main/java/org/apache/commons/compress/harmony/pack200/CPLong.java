@@ -23,24 +23,26 @@ public class CPLong extends CPConstant {
 
     private final long theLong;
 
-    public CPLong(long theLong) {
+    public CPLong(final long theLong) {
         this.theLong = theLong;
     }
 
-    public int compareTo(Object obj) {
+    @Override
+    public int compareTo(final Object obj) {
         if(theLong > ((CPLong)obj).theLong) {
             return 1;
-        } else if (theLong == ((CPLong)obj).theLong) {
-            return 0;
-        } else {
-            return -1;
         }
+        if (theLong == ((CPLong)obj).theLong) {
+            return 0;
+        }
+        return -1;
     }
 
     public long getLong() {
         return theLong;
     }
 
+    @Override
     public String toString() {
         return "" + theLong;
     }

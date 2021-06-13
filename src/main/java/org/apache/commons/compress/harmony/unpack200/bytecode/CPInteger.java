@@ -24,14 +24,16 @@ import java.io.IOException;
  */
 public class CPInteger extends CPConstantNumber {
 
-    public CPInteger(Integer value, int globalIndex) {
+    public CPInteger(final Integer value, final int globalIndex) {
         super(ConstantPoolEntry.CP_Integer, value, globalIndex);
     }
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeInt(getNumber().intValue());
     }
 
+    @Override
     public String toString() {
         return "Integer: " + getValue();
     }

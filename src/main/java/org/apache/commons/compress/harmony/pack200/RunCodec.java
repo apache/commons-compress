@@ -33,7 +33,7 @@ public class RunCodec extends Codec {
     private final Codec bCodec;
     private int last;
 
-    public RunCodec(int k, Codec aCodec, Codec bCodec) throws Pack200Exception {
+    public RunCodec(final int k, final Codec aCodec, final Codec bCodec) throws Pack200Exception {
         if (k <= 0) {
             throw new Pack200Exception(
                     "Cannot have a RunCodec for a negative number of numbers");
@@ -46,27 +46,28 @@ public class RunCodec extends Codec {
         this.bCodec = bCodec;
     }
 
-    public int decode(InputStream in) throws IOException, Pack200Exception {
+    @Override
+    public int decode(final InputStream in) throws IOException, Pack200Exception {
         return decode(in, this.last);
     }
 
-    public int decode(InputStream in, long last) throws IOException,
+    @Override
+    public int decode(final InputStream in, final long last) throws IOException,
             Pack200Exception {
         if (--k >= 0) {
-            int value = aCodec.decode(in, this.last);
+            final int value = aCodec.decode(in, this.last);
             this.last = (k == 0 ? 0 : value);
             return normalise(value, aCodec);
-        } else {
-            this.last = bCodec.decode(in, this.last);
-            return normalise(this.last, bCodec);
         }
+        this.last = bCodec.decode(in, this.last);
+        return normalise(this.last, bCodec);
     }
 
-    private int normalise(int value, Codec codecUsed) {
+    private int normalise(int value, final Codec codecUsed) {
         if (codecUsed instanceof BHSDCodec) {
-            BHSDCodec bhsd = (BHSDCodec) codecUsed;
+            final BHSDCodec bhsd = (BHSDCodec) codecUsed;
             if (bhsd.isDelta()) {
-                long cardinality = bhsd.cardinality();
+                final long cardinality = bhsd.cardinality();
                 while (value > bhsd.largest()) {
                     value -= cardinality;
                 }
@@ -78,12 +79,13 @@ public class RunCodec extends Codec {
         return value;
     }
 
-    public int[] decodeInts(int n, InputStream in) throws IOException,
+    @Override
+    public int[] decodeInts(final int n, final InputStream in) throws IOException,
             Pack200Exception {
-        int[] band = new int[n];
-        int[] aValues = aCodec.decodeInts(k, in);
+        final int[] band = new int[n];
+        final int[] aValues = aCodec.decodeInts(k, in);
         normalise(aValues, aCodec);
-        int[] bValues = bCodec.decodeInts(n - k, in);
+        final int[] bValues = bCodec.decodeInts(n - k, in);
         normalise(bValues, bCodec);
         System.arraycopy(aValues, 0, band, 0, k);
         System.arraycopy(bValues, 0, band, k, n - k);
@@ -91,11 +93,11 @@ public class RunCodec extends Codec {
         return band;
     }
 
-    private void normalise(int[] band, Codec codecUsed) {
+    private void normalise(final int[] band, final Codec codecUsed) {
         if (codecUsed instanceof BHSDCodec) {
-            BHSDCodec bhsd = (BHSDCodec) codecUsed;
+            final BHSDCodec bhsd = (BHSDCodec) codecUsed;
             if (bhsd.isDelta()) {
-                long cardinality = bhsd.cardinality();
+                final long cardinality = bhsd.cardinality();
                 for (int i = 0; i < band.length; i++) {
                     while (band[i] > bhsd.largest()) {
                         band[i] -= cardinality;
@@ -106,17 +108,17 @@ public class RunCodec extends Codec {
                 }
             }
         } else if (codecUsed instanceof PopulationCodec) {
-            PopulationCodec popCodec = (PopulationCodec) codecUsed;
-            int[] favoured = (int[]) popCodec.getFavoured().clone();
+            final PopulationCodec popCodec = (PopulationCodec) codecUsed;
+            final int[] favoured = (int[]) popCodec.getFavoured().clone();
             Arrays.sort(favoured);
             for (int i = 0; i < band.length; i++) {
-                boolean favouredValue = Arrays.binarySearch(favoured, band[i]) > -1;
-                Codec theCodec = favouredValue ? popCodec.getFavouredCodec()
+                final boolean favouredValue = Arrays.binarySearch(favoured, band[i]) > -1;
+                final Codec theCodec = favouredValue ? popCodec.getFavouredCodec()
                         : popCodec.getUnfavouredCodec();
                 if (theCodec instanceof BHSDCodec) {
-                    BHSDCodec bhsd = (BHSDCodec) theCodec;
+                    final BHSDCodec bhsd = (BHSDCodec) theCodec;
                     if (bhsd.isDelta()) {
-                        long cardinality = bhsd.cardinality();
+                        final long cardinality = bhsd.cardinality();
                         while (band[i] > bhsd.largest()) {
                             band[i] -= cardinality;
                         }
@@ -128,17 +130,20 @@ public class RunCodec extends Codec {
             }
         }
     }
-    
+
+    @Override
     public String toString() {
         return "RunCodec[k=" + k + ";aCodec=" + aCodec + "bCodec=" + bCodec
                 + "]";
     }
 
-    public byte[] encode(int value, int last) throws Pack200Exception {
+    @Override
+    public byte[] encode(final int value, final int last) throws Pack200Exception {
         throw new Pack200Exception("Must encode entire band at once with a RunCodec");
     }
 
-    public byte[] encode(int value) throws Pack200Exception {
+    @Override
+    public byte[] encode(final int value) throws Pack200Exception {
         throw new Pack200Exception("Must encode entire band at once with a RunCodec");
     }
 

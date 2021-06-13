@@ -24,17 +24,19 @@ import java.io.IOException;
  */
 public abstract class ClassFileEntry {
 
-    protected static final ClassFileEntry[] NONE = new ClassFileEntry[0];
+    protected static final ClassFileEntry[] NONE = {};
     private boolean resolved;
 
     protected abstract void doWrite(DataOutputStream dos) throws IOException;
 
+    @Override
     public abstract boolean equals(Object arg0);
 
     protected ClassFileEntry[] getNestedClassFileEntries() {
         return NONE;
     }
 
+    @Override
     public abstract int hashCode();
 
     /**
@@ -42,7 +44,7 @@ public abstract class ClassFileEntry {
      *
      * @param pool TODO
      */
-    protected void resolve(ClassConstantPool pool) {
+    protected void resolve(final ClassConstantPool pool) {
         resolved = true;
     }
 
@@ -50,11 +52,13 @@ public abstract class ClassFileEntry {
         return super.hashCode();
     }
 
+    @Override
     public abstract String toString();
 
-    public final void write(DataOutputStream dos) throws IOException {
-        if (!resolved)
+    public final void write(final DataOutputStream dos) throws IOException {
+        if (!resolved) {
             throw new IllegalStateException("Entry has not been resolved");
+        }
         doWrite(dos);
     }
 

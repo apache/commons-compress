@@ -30,11 +30,11 @@ public class ConstantValueAttribute extends Attribute {
 
     private static CPUTF8 attributeName;
 
-    public static void setAttributeName(CPUTF8 cpUTF8Value) {
+    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
 
-    public ConstantValueAttribute(ClassFileEntry entry) {
+    public ConstantValueAttribute(final ClassFileEntry entry) {
         super(attributeName);
         if (entry == null) {
             throw new NullPointerException();
@@ -42,30 +42,39 @@ public class ConstantValueAttribute extends Attribute {
         this.entry = entry;
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj)
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (!super.equals(obj))
+        }
+        if (!super.equals(obj)) {
             return false;
-        if (this.getClass() != obj.getClass())
+        }
+        if (this.getClass() != obj.getClass()) {
             return false;
+        }
         final ConstantValueAttribute other = (ConstantValueAttribute) obj;
         if (entry == null) {
-            if (other.entry != null)
+            if (other.entry != null) {
                 return false;
-        } else if (!entry.equals(other.entry))
+            }
+        } else if (!entry.equals(other.entry)) {
             return false;
+        }
         return true;
     }
 
+    @Override
     protected int getLength() {
         return 2;
     }
 
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         return new ClassFileEntry[] { getAttributeName(), entry };
     }
 
+    @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = super.hashCode();
@@ -73,17 +82,20 @@ public class ConstantValueAttribute extends Attribute {
         return result;
     }
 
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         entry.resolve(pool);
         this.constantIndex = pool.indexOf(entry);
     }
 
+    @Override
     public String toString() {
         return "Constant:" + entry;
     }
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(constantIndex);
     }
 

@@ -66,11 +66,11 @@ public class Segment implements ClassVisitor {
      * @throws IOException If an I/O error occurs.
      * @throws Pack200Exception TODO
      */
-    public void pack(SegmentUnit segmentUnit, OutputStream out, PackingOptions options)
+    public void pack(final SegmentUnit segmentUnit, final OutputStream out, final PackingOptions options)
             throws IOException, Pack200Exception {
         this.options = options;
         this.stripDebug = options.isStripDebug();
-        int effort = options.getEffort();
+        final int effort = options.getEffort();
         nonStandardAttributePrototypes = options.getUnknownAttributePrototypes();
 
         PackingUtils.log("Start to pack a new segment with "
@@ -117,10 +117,10 @@ public class Segment implements ClassVisitor {
         // before segmentHeader because the band_headers band is only created
         // when the other bands are packed, but comes before them in the packed
         // file.
-        ByteArrayOutputStream bandsOutputStream = new ByteArrayOutputStream();
+        final ByteArrayOutputStream bandsOutputStream = new ByteArrayOutputStream();
 
         PackingUtils.log("Packing...");
-        int finalNumberOfClasses = classBands.numClassesProcessed();
+        final int finalNumberOfClasses = classBands.numClassesProcessed();
         segmentHeader.setClass_count(finalNumberOfClasses);
         cpBands.pack(bandsOutputStream);
         if(finalNumberOfClasses > 0) {
@@ -131,7 +131,7 @@ public class Segment implements ClassVisitor {
         }
         fileBands.pack(bandsOutputStream);
 
-        ByteArrayOutputStream headerOutputStream = new ByteArrayOutputStream();
+        final ByteArrayOutputStream headerOutputStream = new ByteArrayOutputStream();
         segmentHeader.pack(headerOutputStream);
 
         headerOutputStream.writeTo(out);
@@ -147,10 +147,10 @@ public class Segment implements ClassVisitor {
                 + segmentUnit.getPackedByteAmount() + " bytes");
     }
 
-    private void processClasses(SegmentUnit segmentUnit, Attribute[] attributes) throws Pack200Exception {
+    private void processClasses(final SegmentUnit segmentUnit, final Attribute[] attributes) throws Pack200Exception {
         segmentHeader.setClass_count(segmentUnit.classListSize());
-        for (Iterator iterator = segmentUnit.getClassList().iterator(); iterator.hasNext();) {
-            Pack200ClassReader classReader = (Pack200ClassReader) iterator
+        for (final Iterator iterator = segmentUnit.getClassList().iterator(); iterator.hasNext();) {
+            final Pack200ClassReader classReader = (Pack200ClassReader) iterator
                     .next();
             currentClassReader = classReader;
             int flags = 0;
@@ -159,17 +159,17 @@ public class Segment implements ClassVisitor {
             }
             try {
                 classReader.accept(this, attributes, flags);
-            } catch (PassException pe) {
+            } catch (final PassException pe) {
                 // Pass this class through as-is rather than packing it
                 // TODO: probably need to deal with any inner classes
                 classBands.removeCurrentClass();
-                String name = classReader.getFileName();
+                final String name = classReader.getFileName();
                 options.addPassFile(name);
                 cpBands.addCPUtf8(name);
                 boolean found = false;
-                for (Iterator iterator2 = segmentUnit.getFileList().iterator(); iterator2
+                for (final Iterator iterator2 = segmentUnit.getFileList().iterator(); iterator2
                         .hasNext();) {
-                    PackingFile file = (PackingFile) iterator2.next();
+                    final PackingFile file = (PackingFile) iterator2.next();
                     if(file.getName().equals(name)) {
                         found = true;
                         file.setContents(classReader.b);
@@ -183,73 +183,80 @@ public class Segment implements ClassVisitor {
         }
     }
 
-    public void visit(int version, int access, String name, String signature,
-            String superName, String[] interfaces) {
+    @Override
+    public void visit(final int version, final int access, final String name, final String signature,
+            final String superName, final String[] interfaces) {
         bcBands.setCurrentClass(name, superName);
         segmentHeader.addMajorVersion(version);
         classBands.addClass(version, access, name, signature, superName,
                 interfaces);
     }
 
-    public void visitSource(String source, String debug) {
+    @Override
+    public void visitSource(final String source, final String debug) {
         if(!stripDebug) {
             classBands.addSourceFile(source);
         }
     }
 
-    public void visitOuterClass(String owner, String name, String desc) {
+    @Override
+    public void visitOuterClass(final String owner, final String name, final String desc) {
         classBands.addEnclosingMethod(owner, name, desc);
 
     }
 
-    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+    @Override
+    public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
         return new SegmentAnnotationVisitor(MetadataBandGroup.CONTEXT_CLASS,
                 desc, visible);
     }
 
-    public void visitAttribute(Attribute attribute) {
+    @Override
+    public void visitAttribute(final Attribute attribute) {
         if(attribute.isUnknown()) {
-            String action = options.getUnknownAttributeAction();
+            final String action = options.getUnknownAttributeAction();
             if(action.equals(PackingOptions.PASS)) {
                 passCurrentClass();
             } else if (action.equals(PackingOptions.ERROR)) {
                 throw new Error("Unknown attribute encountered");
             } // else skip
-        } else {
-            if(attribute instanceof NewAttribute) {
-                NewAttribute newAttribute = (NewAttribute) attribute;
-                if(newAttribute.isUnknown(AttributeDefinitionBands.CONTEXT_CLASS)) {
-                    String action = options.getUnknownClassAttributeAction(newAttribute.type);
-                    if(action.equals(PackingOptions.PASS)) {
-                        passCurrentClass();
-                    } else if (action.equals(PackingOptions.ERROR)) {
-                        throw new Error("Unknown attribute encountered");
-                    } // else skip
-                }
-                classBands.addClassAttribute(newAttribute);
-            } else {
-                throw new RuntimeException("Unexpected attribute encountered: " + attribute.type);
+        } else if(attribute instanceof NewAttribute) {
+            final NewAttribute newAttribute = (NewAttribute) attribute;
+            if(newAttribute.isUnknown(AttributeDefinitionBands.CONTEXT_CLASS)) {
+                final String action = options.getUnknownClassAttributeAction(newAttribute.type);
+                if(action.equals(PackingOptions.PASS)) {
+                    passCurrentClass();
+                } else if (action.equals(PackingOptions.ERROR)) {
+                    throw new Error("Unknown attribute encountered");
+                } // else skip
             }
+            classBands.addClassAttribute(newAttribute);
+        } else {
+            throw new RuntimeException("Unexpected attribute encountered: " + attribute.type);
         }
     }
 
-    public void visitInnerClass(String name, String outerName,
-            String innerName, int flags) {
+    @Override
+    public void visitInnerClass(final String name, final String outerName,
+            final String innerName, final int flags) {
         icBands.addInnerClass(name, outerName, innerName, flags);
     }
 
-    public FieldVisitor visitField(int flags, String name, String desc,
-            String signature, Object value) {
+    @Override
+    public FieldVisitor visitField(final int flags, final String name, final String desc,
+            final String signature, final Object value) {
         classBands.addField(flags, name, desc, signature, value);
         return fieldVisitor;
     }
 
-    public MethodVisitor visitMethod(int flags, String name, String desc,
-            String signature, String[] exceptions) {
+    @Override
+    public MethodVisitor visitMethod(final int flags, final String name, final String desc,
+            final String signature, final String[] exceptions) {
         classBands.addMethod(flags, name, desc, signature, exceptions);
         return methodVisitor;
     }
 
+    @Override
     public void visitEnd() {
         classBands.endOfClass();
     }
@@ -263,151 +270,173 @@ public class Segment implements ClassVisitor {
      */
     public class SegmentMethodVisitor implements MethodVisitor {
 
-        public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+        @Override
+        public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
             return new SegmentAnnotationVisitor(
                     MetadataBandGroup.CONTEXT_METHOD, desc, visible);
         }
 
+        @Override
         public AnnotationVisitor visitAnnotationDefault() {
             return new SegmentAnnotationVisitor(MetadataBandGroup.CONTEXT_METHOD);
         }
 
-        public void visitAttribute(Attribute attribute) {
+        @Override
+        public void visitAttribute(final Attribute attribute) {
             if(attribute.isUnknown()) {
-                String action = options.getUnknownAttributeAction();
+                final String action = options.getUnknownAttributeAction();
                 if(action.equals(PackingOptions.PASS)) {
                     passCurrentClass();
                 } else if (action.equals(PackingOptions.ERROR)) {
                     throw new Error("Unknown attribute encountered");
                 } // else skip
-            } else {
-                if(attribute instanceof NewAttribute) {
-                    NewAttribute newAttribute = (NewAttribute) attribute;
-                    if (attribute.isCodeAttribute()) {
-                        if (newAttribute.isUnknown(AttributeDefinitionBands.CONTEXT_CODE)) {
-                            String action = options
-                                    .getUnknownCodeAttributeAction(newAttribute.type);
-                            if (action.equals(PackingOptions.PASS)) {
-                                passCurrentClass();
-                            } else if (action.equals(PackingOptions.ERROR)) {
-                                throw new Error("Unknown attribute encountered");
-                            } // else skip
-                        }
-                        classBands.addCodeAttribute(newAttribute);
-                    } else {
-                        if (newAttribute.isUnknown(AttributeDefinitionBands.CONTEXT_METHOD)) {
-                            String action = options
-                                    .getUnknownMethodAttributeAction(newAttribute.type);
-                            if (action.equals(PackingOptions.PASS)) {
-                                passCurrentClass();
-                            } else if (action.equals(PackingOptions.ERROR)) {
-                                throw new Error("Unknown attribute encountered");
-                            } // else skip
-                        }
-                        classBands.addMethodAttribute(newAttribute);
+            } else if(attribute instanceof NewAttribute) {
+                final NewAttribute newAttribute = (NewAttribute) attribute;
+                if (attribute.isCodeAttribute()) {
+                    if (newAttribute.isUnknown(AttributeDefinitionBands.CONTEXT_CODE)) {
+                        final String action = options
+                                .getUnknownCodeAttributeAction(newAttribute.type);
+                        if (action.equals(PackingOptions.PASS)) {
+                            passCurrentClass();
+                        } else if (action.equals(PackingOptions.ERROR)) {
+                            throw new Error("Unknown attribute encountered");
+                        } // else skip
                     }
+                    classBands.addCodeAttribute(newAttribute);
                 } else {
-                    throw new RuntimeException("Unexpected attribute encountered: " + attribute.type);
+                    if (newAttribute.isUnknown(AttributeDefinitionBands.CONTEXT_METHOD)) {
+                        final String action = options
+                                .getUnknownMethodAttributeAction(newAttribute.type);
+                        if (action.equals(PackingOptions.PASS)) {
+                            passCurrentClass();
+                        } else if (action.equals(PackingOptions.ERROR)) {
+                            throw new Error("Unknown attribute encountered");
+                        } // else skip
+                    }
+                    classBands.addMethodAttribute(newAttribute);
                 }
+            } else {
+                throw new RuntimeException("Unexpected attribute encountered: " + attribute.type);
             }
         }
 
+        @Override
         public void visitCode() {
             classBands.addCode();
         }
 
-        public void visitFrame(int arg0, int arg1, Object[] arg2, int arg3,
-                Object[] arg4) {
+        @Override
+        public void visitFrame(final int arg0, final int arg1, final Object[] arg2, final int arg3,
+                final Object[] arg4) {
             // TODO: Java 6 - implement support for this
 
         }
 
-        public void visitLabel(Label label) {
+        @Override
+        public void visitLabel(final Label label) {
             bcBands.visitLabel(label);
         }
 
-        public void visitLineNumber(int line, Label start) {
+        @Override
+        public void visitLineNumber(final int line, final Label start) {
             if(!stripDebug) {
                 classBands.addLineNumber(line, start);
             }
         }
 
-        public void visitLocalVariable(String name, String desc,
-                String signature, Label start, Label end, int index) {
+        @Override
+        public void visitLocalVariable(final String name, final String desc,
+                final String signature, final Label start, final Label end, final int index) {
             if(!stripDebug) {
                 classBands.addLocalVariable(name, desc, signature, start, end,
                         index);
             }
         }
 
-        public void visitMaxs(int maxStack, int maxLocals) {
+        @Override
+        public void visitMaxs(final int maxStack, final int maxLocals) {
             classBands.addMaxStack(maxStack, maxLocals);
         }
 
-        public AnnotationVisitor visitParameterAnnotation(int parameter,
-                String desc, boolean visible) {
+        @Override
+        public AnnotationVisitor visitParameterAnnotation(final int parameter,
+                final String desc, final boolean visible) {
             return new SegmentAnnotationVisitor(
                     MetadataBandGroup.CONTEXT_METHOD, parameter, desc, visible);
         }
 
-        public void visitTryCatchBlock(Label start, Label end, Label handler,
-                String type) {
+        @Override
+        public void visitTryCatchBlock(final Label start, final Label end, final Label handler,
+                final String type) {
             classBands.addHandler(start, end, handler, type);
         }
 
+        @Override
         public void visitEnd() {
             classBands.endOfMethod();
             bcBands.visitEnd();
         }
 
-        public void visitFieldInsn(int opcode, String owner, String name,
-                String desc) {
+        @Override
+        public void visitFieldInsn(final int opcode, final String owner, final String name,
+                final String desc) {
             bcBands.visitFieldInsn(opcode, owner, name, desc);
         }
 
-        public void visitIincInsn(int var, int increment) {
+        @Override
+        public void visitIincInsn(final int var, final int increment) {
             bcBands.visitIincInsn(var, increment);
         }
 
-        public void visitInsn(int opcode) {
+        @Override
+        public void visitInsn(final int opcode) {
             bcBands.visitInsn(opcode);
         }
 
-        public void visitIntInsn(int opcode, int operand) {
+        @Override
+        public void visitIntInsn(final int opcode, final int operand) {
             bcBands.visitIntInsn(opcode, operand);
         }
 
-        public void visitJumpInsn(int opcode, Label label) {
+        @Override
+        public void visitJumpInsn(final int opcode, final Label label) {
             bcBands.visitJumpInsn(opcode, label);
         }
 
-        public void visitLdcInsn(Object cst) {
+        @Override
+        public void visitLdcInsn(final Object cst) {
             bcBands.visitLdcInsn(cst);
         }
 
-        public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
+        @Override
+        public void visitLookupSwitchInsn(final Label dflt, final int[] keys, final Label[] labels) {
             bcBands.visitLookupSwitchInsn(dflt, keys, labels);
         }
 
-        public void visitMethodInsn(int opcode, String owner, String name,
-                String desc) {
+        @Override
+        public void visitMethodInsn(final int opcode, final String owner, final String name,
+                final String desc) {
             bcBands.visitMethodInsn(opcode, owner, name, desc);
         }
 
-        public void visitMultiANewArrayInsn(String desc, int dimensions) {
+        @Override
+        public void visitMultiANewArrayInsn(final String desc, final int dimensions) {
             bcBands.visitMultiANewArrayInsn(desc, dimensions);
         }
 
-        public void visitTableSwitchInsn(int min, int max, Label dflt,
-                Label[] labels) {
+        @Override
+        public void visitTableSwitchInsn(final int min, final int max, final Label dflt,
+                final Label[] labels) {
             bcBands.visitTableSwitchInsn(min, max, dflt, labels);
         }
 
-        public void visitTypeInsn(int opcode, String type) {
+        @Override
+        public void visitTypeInsn(final int opcode, final String type) {
             bcBands.visitTypeInsn(opcode, type);
         }
 
-        public void visitVarInsn(int opcode, int var) {
+        @Override
+        public void visitVarInsn(final int opcode, final int var) {
             bcBands.visitVarInsn(opcode, var);
         }
 
@@ -436,65 +465,72 @@ public class Segment implements ClassVisitor {
         private final List nestNameRU = new ArrayList();
         private final List nestPairN = new ArrayList();
 
-        public SegmentAnnotationVisitor(int context, String desc,
-                boolean visible) {
+        public SegmentAnnotationVisitor(final int context, final String desc,
+                final boolean visible) {
             this.context = context;
             this.desc = desc;
             this.visible = visible;
         }
 
-        public SegmentAnnotationVisitor(int context) {
+        public SegmentAnnotationVisitor(final int context) {
             this.context = context;
         }
 
-        public SegmentAnnotationVisitor(int context, int parameter,
-                String desc, boolean visible) {
+        public SegmentAnnotationVisitor(final int context, final int parameter,
+                final String desc, final boolean visible) {
             this.context = context;
             this.parameter = parameter;
             this.desc = desc;
             this.visible = visible;
         }
 
-        public void visit(String name, Object value) {
+        @Override
+        public void visit(String name, final Object value) {
             if (name == null) {
                 name = "";
             }
             nameRU.add(name);
             addValueAndTag(value, T, values);
         }
-        public AnnotationVisitor visitAnnotation(String name, String desc) {
+        @Override
+        public AnnotationVisitor visitAnnotation(String name, final String desc) {
             T.add("@");
             if (name == null) {
                 name = "";
             }
             nameRU.add(name);
             nestTypeRS.add(desc);
-            nestPairN.add(new Integer(0));
+            nestPairN.add(Integer.valueOf(0));
             return new AnnotationVisitor() {
-                public void visit(String name, Object value) {
-                    Integer numPairs = (Integer) nestPairN.remove(nestPairN.size() - 1);
-                    nestPairN.add(new Integer(numPairs.intValue() + 1));
+                @Override
+                public void visit(final String name, final Object value) {
+                    final Integer numPairs = (Integer) nestPairN.remove(nestPairN.size() - 1);
+                    nestPairN.add(Integer.valueOf(numPairs.intValue() + 1));
                     nestNameRU.add(name);
                     addValueAndTag(value, T, values);
                 }
 
-                public AnnotationVisitor visitAnnotation(String arg0,
-                        String arg1) {
+                @Override
+                public AnnotationVisitor visitAnnotation(final String arg0,
+                        final String arg1) {
                     throw new RuntimeException("Not yet supported");
 //                    return null;
                 }
 
-                public AnnotationVisitor visitArray(String arg0) {
+                @Override
+                public AnnotationVisitor visitArray(final String arg0) {
                     throw new RuntimeException("Not yet supported");
 //                    return null;
                 }
 
+                @Override
                 public void visitEnd() {
                 }
 
-                public void visitEnum(String name, String desc, String value) {
-                    Integer numPairs = (Integer) nestPairN.remove(nestPairN.size() - 1);
-                    nestPairN.add(new Integer(numPairs.intValue() + 1));
+                @Override
+                public void visitEnum(final String name, final String desc, final String value) {
+                    final Integer numPairs = (Integer) nestPairN.remove(nestPairN.size() - 1);
+                    nestPairN.add(Integer.valueOf(numPairs.intValue() + 1));
                     T.add("e");
                     nestNameRU.add(name);
                     values.add(desc);
@@ -503,16 +539,18 @@ public class Segment implements ClassVisitor {
             };
         }
 
+        @Override
         public AnnotationVisitor visitArray(String name) {
             T.add("[");
             if (name == null) {
                 name = "";
             }
             nameRU.add(name);
-            caseArrayN.add(new Integer(0));
+            caseArrayN.add(Integer.valueOf(0));
             return new ArrayVisitor(caseArrayN, T, nameRU, values);
         }
 
+        @Override
         public void visitEnd() {
             if (desc == null) {
                 Segment.this.classBands.addAnnotationDefault(nameRU, T, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
@@ -523,7 +561,8 @@ public class Segment implements ClassVisitor {
             }
         }
 
-        public void visitEnum(String name, String desc, String value) {
+        @Override
+        public void visitEnum(String name, final String desc, final String value) {
             T.add("e");
             if (name == null) {
                 name = "";
@@ -533,53 +572,58 @@ public class Segment implements ClassVisitor {
             values.add(value);
         }
     }
-    
-    public class ArrayVisitor implements AnnotationVisitor  {
-        
-        private int indexInCaseArrayN;
-        private List caseArrayN;
-        private List values;
-        private List nameRU;
-        private List T;
 
-        public ArrayVisitor(List caseArrayN, List T, List nameRU, List values) {
+    public class ArrayVisitor implements AnnotationVisitor  {
+
+        private final int indexInCaseArrayN;
+        private final List caseArrayN;
+        private final List values;
+        private final List nameRU;
+        private final List T;
+
+        public ArrayVisitor(final List caseArrayN, final List T, final List nameRU, final List values) {
             this.caseArrayN = caseArrayN;
             this.T = T;
             this.nameRU = nameRU;
             this.values = values;
             this.indexInCaseArrayN = caseArrayN.size() - 1;
         }
-        
-        public void visit(String name, Object value) {
-            Integer numCases = (Integer) caseArrayN.remove(indexInCaseArrayN);
-            caseArrayN.add(indexInCaseArrayN, new Integer(numCases.intValue() + 1));
+
+        @Override
+        public void visit(String name, final Object value) {
+            final Integer numCases = (Integer) caseArrayN.remove(indexInCaseArrayN);
+            caseArrayN.add(indexInCaseArrayN, Integer.valueOf(numCases.intValue() + 1));
             if (name == null) {
                 name = "";
             }
             addValueAndTag(value, T, values);
         }
 
-        public AnnotationVisitor visitAnnotation(String arg0,
-                String arg1) {
+        @Override
+        public AnnotationVisitor visitAnnotation(final String arg0,
+                final String arg1) {
             throw new RuntimeException("Not yet supported");
         }
 
+        @Override
         public AnnotationVisitor visitArray(String name) {
             T.add("[");
             if (name == null) {
                 name = "";
             }
             nameRU.add(name);
-            caseArrayN.add(new Integer(0));
+            caseArrayN.add(Integer.valueOf(0));
             return new ArrayVisitor(caseArrayN, T, nameRU, values);
         }
 
+        @Override
         public void visitEnd() {
         }
 
-        public void visitEnum(String name, String desc, String value) {
-            Integer numCases = (Integer) caseArrayN.remove(caseArrayN.size() - 1);
-            caseArrayN.add(new Integer(numCases.intValue() + 1));
+        @Override
+        public void visitEnum(final String name, final String desc, final String value) {
+            final Integer numCases = (Integer) caseArrayN.remove(caseArrayN.size() - 1);
+            caseArrayN.add(Integer.valueOf(numCases.intValue() + 1));
             T.add("e");
             values.add(desc);
             values.add(value);
@@ -592,43 +636,44 @@ public class Segment implements ClassVisitor {
      */
     public class SegmentFieldVisitor implements FieldVisitor {
 
-        public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+        @Override
+        public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
             return new SegmentAnnotationVisitor(MetadataBandGroup.CONTEXT_FIELD,
                     desc, visible);
         }
 
-        public void visitAttribute(Attribute attribute) {
+        @Override
+        public void visitAttribute(final Attribute attribute) {
             if(attribute.isUnknown()) {
-                String action = options.getUnknownAttributeAction();
+                final String action = options.getUnknownAttributeAction();
                 if(action.equals(PackingOptions.PASS)) {
                     passCurrentClass();
                 } else if (action.equals(PackingOptions.ERROR)) {
                     throw new Error("Unknown attribute encountered");
                 } // else skip
-            } else {
-                if(attribute instanceof NewAttribute) {
-                    NewAttribute newAttribute = (NewAttribute) attribute;
-                    if(newAttribute.isUnknown(AttributeDefinitionBands.CONTEXT_FIELD)) {
-                        String action = options.getUnknownFieldAttributeAction(newAttribute.type);
-                        if(action.equals(PackingOptions.PASS)) {
-                            passCurrentClass();
-                        } else if (action.equals(PackingOptions.ERROR)) {
-                            throw new Error("Unknown attribute encountered");
-                        } // else skip
-                    }
-                    classBands.addFieldAttribute(newAttribute);
-                } else {
-                    throw new RuntimeException("Unexpected attribute encountered: " + attribute.type);
+            } else if(attribute instanceof NewAttribute) {
+                final NewAttribute newAttribute = (NewAttribute) attribute;
+                if(newAttribute.isUnknown(AttributeDefinitionBands.CONTEXT_FIELD)) {
+                    final String action = options.getUnknownFieldAttributeAction(newAttribute.type);
+                    if(action.equals(PackingOptions.PASS)) {
+                        passCurrentClass();
+                    } else if (action.equals(PackingOptions.ERROR)) {
+                        throw new Error("Unknown attribute encountered");
+                    } // else skip
                 }
+                classBands.addFieldAttribute(newAttribute);
+            } else {
+                throw new RuntimeException("Unexpected attribute encountered: " + attribute.type);
             }
         }
 
+        @Override
         public void visitEnd() {
         }
     }
 
     // helper method for annotation visitors
-    private void addValueAndTag(Object value, List T, List values) {
+    private void addValueAndTag(final Object value, final List T, final List values) {
         if(value instanceof Integer) {
             T.add("I");
             values.add(value);
@@ -643,16 +688,16 @@ public class Segment implements ClassVisitor {
             values.add(value);
         } else if (value instanceof Byte) {
             T.add("B");
-            values.add(new Integer(((Byte)value).intValue()));
+            values.add(Integer.valueOf(((Byte)value).intValue()));
         } else if (value instanceof Character) {
             T.add("C");
-            values.add(new Integer(((Character)value).charValue()));
+            values.add(Integer.valueOf(((Character)value).charValue()));
         } else if (value instanceof Short) {
             T.add("S");
-            values.add(new Integer(((Short)value).intValue()));
+            values.add(Integer.valueOf(((Short)value).intValue()));
         } else if (value instanceof Boolean) {
             T.add("Z");
-            values.add(new Integer(((Boolean)value).booleanValue() ? 1 : 0));
+            values.add(Integer.valueOf(((Boolean)value).booleanValue() ? 1 : 0));
         } else if (value instanceof String) {
             T.add("s");
             values.add(value);

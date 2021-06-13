@@ -27,19 +27,22 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public class ThisFieldRefForm extends ClassSpecificReferenceForm {
 
-    public ThisFieldRefForm(int opcode, String name, int[] rewrite) {
+    public ThisFieldRefForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
-    protected int getOffset(OperandManager operandManager) {
+    @Override
+    protected int getOffset(final OperandManager operandManager) {
         return operandManager.nextThisFieldRef();
     }
 
+    @Override
     protected int getPoolID() {
         return SegmentConstantPool.CP_FIELD;
     }
 
-    protected String context(OperandManager operandManager) {
+    @Override
+    protected String context(final OperandManager operandManager) {
         return operandManager.getCurrentClass();
     }
 }

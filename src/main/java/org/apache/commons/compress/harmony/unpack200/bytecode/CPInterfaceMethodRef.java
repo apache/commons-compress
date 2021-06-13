@@ -18,7 +18,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
  */
 public class CPInterfaceMethodRef extends CPRef {
 
-    public CPInterfaceMethodRef(CPClass className, CPNameAndType descriptor, int globalIndex) {
+    public CPInterfaceMethodRef(final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
         super(ConstantPoolEntry.CP_InterfaceMethodref, className, descriptor, globalIndex);
     }
 
@@ -45,9 +45,11 @@ public class CPInterfaceMethodRef extends CPRef {
         cachedHashCode = result;
     }
 
+    @Override
     public int hashCode() {
-        if (!hashcodeComputed)
+        if (!hashcodeComputed) {
             generateHashCode();
+        }
         return cachedHashCode;
     }
 

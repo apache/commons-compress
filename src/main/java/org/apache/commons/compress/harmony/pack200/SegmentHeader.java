@@ -79,7 +79,8 @@ public class SegmentHeader extends BandSet {
     /**
      * Encode and write the SegmentHeader bands to the OutputStream
      */
-    public void pack(OutputStream out) throws IOException, Pack200Exception {
+    @Override
+    public void pack(final OutputStream out) throws IOException, Pack200Exception {
         out.write(encodeScalar(magic, Codec.BYTE1));
         out.write(encodeScalar(archive_minver, Codec.UNSIGNED5));
         out.write(encodeScalar(archive_majver, Codec.UNSIGNED5));
@@ -90,7 +91,7 @@ public class SegmentHeader extends BandSet {
         writeCpCounts(out);
         writeClassCounts(out);
         if (band_headers.size()> 0) {
-            out.write(encodeScalar(band_headers.toArray(), BHSDCodec.BYTE1));
+            out.write(encodeScalar(band_headers.toArray(), Codec.BYTE1));
         }
     }
 
@@ -134,59 +135,59 @@ public class SegmentHeader extends BandSet {
         }
     }
 
-    public void setCp_Utf8_count(int count) {
+    public void setCp_Utf8_count(final int count) {
         cp_Utf8_count = count;
     }
 
-    public void setCp_Int_count(int count) {
+    public void setCp_Int_count(final int count) {
         cp_Int_count = count;
     }
 
-    public void setCp_Float_count(int count) {
+    public void setCp_Float_count(final int count) {
         cp_Float_count = count;
     }
 
-    public void setCp_Long_count(int count) {
+    public void setCp_Long_count(final int count) {
         cp_Long_count = count;
     }
 
-    public void setCp_Double_count(int count) {
+    public void setCp_Double_count(final int count) {
         cp_Double_count = count;
     }
 
-    public void setCp_String_count(int count) {
+    public void setCp_String_count(final int count) {
         cp_String_count = count;
     }
 
-    public void setCp_Class_count(int count) {
+    public void setCp_Class_count(final int count) {
         cp_Class_count = count;
     }
 
-    public void setCp_Signature_count(int count) {
+    public void setCp_Signature_count(final int count) {
         cp_Signature_count = count;
     }
 
-    public void setCp_Descr_count(int count) {
+    public void setCp_Descr_count(final int count) {
         cp_Descr_count = count;
     }
 
-    public void setCp_Field_count(int count) {
+    public void setCp_Field_count(final int count) {
         cp_Field_count = count;
     }
 
-    public void setCp_Method_count(int count) {
+    public void setCp_Method_count(final int count) {
         cp_Method_count = count;
     }
 
-    public void setCp_Imethod_count(int count) {
+    public void setCp_Imethod_count(final int count) {
         cp_Imethod_count = count;
     }
 
-    public void setAttribute_definition_count(int attribute_definition_count) {
+    public void setAttribute_definition_count(final int attribute_definition_count) {
         this.attribute_definition_count = attribute_definition_count;
     }
 
-    public void setHave_all_code_flags(boolean have_all_code_flags) {
+    public void setHave_all_code_flags(final boolean have_all_code_flags) {
         this.have_all_code_flags = have_all_code_flags;
     }
 
@@ -194,27 +195,27 @@ public class SegmentHeader extends BandSet {
         return archive_modtime;
     }
 
-    public void setFile_count(int file_count) {
+    public void setFile_count(final int file_count) {
         this.file_count = file_count;
     }
 
-    public void setDeflate_hint(boolean deflate_hint) {
+    public void setDeflate_hint(final boolean deflate_hint) {
         this.deflate_hint = deflate_hint;
     }
 
-    public void setHave_class_flags_hi(boolean have_class_flags_hi) {
+    public void setHave_class_flags_hi(final boolean have_class_flags_hi) {
         this.have_class_flags_hi = have_class_flags_hi;
     }
 
-    public void setHave_field_flags_hi(boolean have_field_flags_hi) {
+    public void setHave_field_flags_hi(final boolean have_field_flags_hi) {
         this.have_field_flags_hi = have_field_flags_hi;
     }
 
-    public void setHave_method_flags_hi(boolean have_method_flags_hi) {
+    public void setHave_method_flags_hi(final boolean have_method_flags_hi) {
         this.have_method_flags_hi = have_method_flags_hi;
     }
 
-    public void setHave_code_flags_hi(boolean have_code_flags_hi) {
+    public void setHave_code_flags_hi(final boolean have_code_flags_hi) {
         this.have_code_flags_hi = have_code_flags_hi;
     }
 
@@ -234,15 +235,15 @@ public class SegmentHeader extends BandSet {
         return have_code_flags_hi;
     }
 
-    public void setIc_count(int ic_count) {
+    public void setIc_count(final int ic_count) {
         this.ic_count = ic_count;
     }
 
-    public void setClass_count(int class_count) {
+    public void setClass_count(final int class_count) {
         this.class_count = class_count;
     }
 
-    private void writeCpCounts(OutputStream out) throws IOException,
+    private void writeCpCounts(final OutputStream out) throws IOException,
             Pack200Exception {
         out.write(encodeScalar(cp_Utf8_count, Codec.UNSIGNED5));
         if ((archive_options & (1 << 1)) != 0) { // have_cp_numbers
@@ -260,17 +261,17 @@ public class SegmentHeader extends BandSet {
         out.write(encodeScalar(cp_Imethod_count, Codec.UNSIGNED5));
     }
 
-    private void writeClassCounts(OutputStream out) throws IOException,
+    private void writeClassCounts(final OutputStream out) throws IOException,
             Pack200Exception {
-        int default_class_minver = 0;
-        int default_class_majver = majverCounter.getMostCommon();
+        final int default_class_minver = 0;
+        final int default_class_majver = majverCounter.getMostCommon();
         out.write(encodeScalar(ic_count, Codec.UNSIGNED5));
         out.write(encodeScalar(default_class_minver, Codec.UNSIGNED5));
         out.write(encodeScalar(default_class_majver, Codec.UNSIGNED5));
         out.write(encodeScalar(class_count, Codec.UNSIGNED5));
     }
 
-    private void writeArchiveSpecialCounts(OutputStream out)
+    private void writeArchiveSpecialCounts(final OutputStream out)
             throws IOException, Pack200Exception {
         if ((archive_options & 1) > 0) { // have_special_formats
             out.write(encodeScalar(band_headers.size(), Codec.UNSIGNED5));
@@ -279,7 +280,7 @@ public class SegmentHeader extends BandSet {
         }
     }
 
-    private void writeArchiveFileCounts(OutputStream out) throws IOException,
+    private void writeArchiveFileCounts(final OutputStream out) throws IOException,
             Pack200Exception {
         if ((archive_options & (1 << 4)) > 0) { // have_file_headers
             out.write(encodeScalar(archive_size_hi, Codec.UNSIGNED5));
@@ -290,7 +291,7 @@ public class SegmentHeader extends BandSet {
         }
     }
 
-    public void addMajorVersion(int major) {
+    public void addMajorVersion(final int major) {
         majverCounter.add(major);
     }
 
@@ -303,7 +304,7 @@ public class SegmentHeader extends BandSet {
         private final int[] counts = new int[8];
         private int length;
 
-        public void add(int obj) {
+        public void add(final int obj) {
             boolean found = false;
             for (int i = 0; i < length; i++) {
                 if (objs[i] == obj) {
@@ -316,7 +317,7 @@ public class SegmentHeader extends BandSet {
                 counts[length] = 1;
                 length++;
                 if (length > objs.length - 1) {
-                    Object[] newArray = new Object[objs.length + 8];
+                    final Object[] newArray = new Object[objs.length + 8];
                     System.arraycopy(objs, 0, newArray, 0, length);
                 }
             }
@@ -353,7 +354,7 @@ public class SegmentHeader extends BandSet {
         return have_all_code_flags;
     }
 
-    public void appendBandCodingSpecifier(int specifier) {
+    public void appendBandCodingSpecifier(final int specifier) {
         band_headers.add(specifier);
     }
 

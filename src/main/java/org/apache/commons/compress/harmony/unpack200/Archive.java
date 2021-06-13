@@ -68,7 +68,7 @@ public class Archive {
      * @throws FileNotFoundException TODO
      * @throws IOException TODO
      */
-    public Archive(String inputFile, String outputFile)
+    public Archive(final String inputFile, final String outputFile)
             throws FileNotFoundException, IOException {
         this.inputFileName = inputFile;
         this.outputFileName = outputFile;
@@ -85,7 +85,7 @@ public class Archive {
      * @param outputStream TODO
      * @throws IOException TODO
      */
-    public Archive(InputStream inputStream, JarOutputStream outputStream)
+    public Archive(final InputStream inputStream, final JarOutputStream outputStream)
             throws IOException {
         this.inputStream = inputStream;
         this.outputStream = outputStream;
@@ -102,8 +102,9 @@ public class Archive {
         try {
             if (!inputStream.markSupported()) {
                 inputStream = new BufferedInputStream(inputStream);
-                if (!inputStream.markSupported())
+                if (!inputStream.markSupported()) {
                     throw new IllegalStateException();
+                }
             }
             inputStream.mark(2);
             if (((inputStream.read() & 0xFF) | (inputStream.read() & 0xFF) << 8) == GZIPInputStream.GZIP_MAGIC) {
@@ -114,9 +115,9 @@ public class Archive {
                 inputStream.reset();
             }
             inputStream.mark(4);
-            int[] magic = { 0xCA, 0xFE, 0xD0, 0x0D }; // Magic word for
+            final int[] magic = { 0xCA, 0xFE, 0xD0, 0x0D }; // Magic word for
             // pack200
-            int word[] = new int[4];
+            final int word[] = new int[4];
             for (int i = 0; i < word.length; i++) {
                 word[i] = inputStream.read();
             }
@@ -129,11 +130,11 @@ public class Archive {
             inputStream.reset();
             if (compressedWithE0) { // The original Jar was not packed, so just
                 // copy it across
-                JarInputStream jarInputStream = new JarInputStream(inputStream);
+                final JarInputStream jarInputStream = new JarInputStream(inputStream);
                 JarEntry jarEntry;
                 while ((jarEntry = jarInputStream.getNextJarEntry()) != null) {
                     outputStream.putNextEntry(jarEntry);
-                    byte[] bytes = new byte[16384];
+                    final byte[] bytes = new byte[16384];
                     int bytesRead = jarInputStream.read(bytes);
                     while (bytesRead != -1) {
                         outputStream.write(bytes, 0, bytesRead);
@@ -145,7 +146,7 @@ public class Archive {
                 int i = 0;
                 while (available(inputStream)) {
                     i++;
-                    Segment segment = new Segment();
+                    final Segment segment = new Segment();
                     segment.setLogLevel(logLevel);
                     segment
                             .setLogStream(logFile != null ? (OutputStream) logFile
@@ -174,23 +175,23 @@ public class Archive {
         } finally {
             try {
                 inputStream.close();
-            } catch (Exception e) {
+            } catch (final Exception e) {
             }
             try {
                 outputStream.close();
-            } catch (Exception e) {
+            } catch (final Exception e) {
             }
             if (logFile != null) {
                 try {
                     logFile.close();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                 }
             }
         }
         if (removePackFile) {
             boolean deleted = false;
             if(inputFileName != null) {
-                File file = new File(inputFileName);
+                final File file = new File(inputFileName);
                 deleted = file.delete();
             }
             if (!deleted) {
@@ -199,9 +200,9 @@ public class Archive {
         }
     }
 
-    private boolean available(InputStream inputStream) throws IOException {
+    private boolean available(final InputStream inputStream) throws IOException {
         inputStream.mark(1);
-        int check = inputStream.read();
+        final int check = inputStream.read();
         inputStream.reset();
         return check != -1;
     }
@@ -213,11 +214,11 @@ public class Archive {
      * @param removePackFile If true, the input file is deleted after
      * unpacking.
      */
-    public void setRemovePackFile(boolean removePackFile) {
+    public void setRemovePackFile(final boolean removePackFile) {
         this.removePackFile = removePackFile;
     }
 
-    public void setVerbose(boolean verbose) {
+    public void setVerbose(final boolean verbose) {
         if (verbose) {
             logLevel = Segment.LOG_LEVEL_VERBOSE;
         } else if (logLevel == Segment.LOG_LEVEL_VERBOSE) {
@@ -225,7 +226,7 @@ public class Archive {
         }
     }
 
-    public void setQuiet(boolean quiet) {
+    public void setQuiet(final boolean quiet) {
         if (quiet) {
             logLevel = Segment.LOG_LEVEL_QUIET;
         } else if (logLevel == Segment.LOG_LEVEL_QUIET) {
@@ -233,16 +234,16 @@ public class Archive {
         }
     }
 
-    public void setLogFile(String logFileName) throws FileNotFoundException {
+    public void setLogFile(final String logFileName) throws FileNotFoundException {
         this.logFile = new FileOutputStream(logFileName);
     }
 
-    public void setLogFile(String logFileName, boolean append)
+    public void setLogFile(final String logFileName, final boolean append)
             throws FileNotFoundException {
         logFile = new FileOutputStream(logFileName, append);
     }
 
-    public void setDeflateHint(boolean deflateHint) {
+    public void setDeflateHint(final boolean deflateHint) {
         overrideDeflateHint = true;
         this.deflateHint = deflateHint;
     }

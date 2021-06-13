@@ -29,22 +29,26 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 public abstract class InitMethodReferenceForm extends
         ClassSpecificReferenceForm {
 
-    public InitMethodReferenceForm(int opcode, String name, int[] rewrite) {
+    public InitMethodReferenceForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
+    @Override
     protected abstract String context(OperandManager operandManager);
 
+    @Override
     protected int getPoolID() {
         return SegmentConstantPool.CP_METHOD;
     }
 
-    protected int getOffset(OperandManager operandManager) {
+    @Override
+    protected int getOffset(final OperandManager operandManager) {
         return operandManager.nextInitRef();
     }
 
-    protected void setNestedEntries(ByteCode byteCode,
-            OperandManager operandManager, int offset) throws Pack200Exception {
+    @Override
+    protected void setNestedEntries(final ByteCode byteCode,
+            final OperandManager operandManager, final int offset) throws Pack200Exception {
         final SegmentConstantPool globalPool = operandManager
                 .globalConstantPool();
         ClassFileEntry[] nested = null;

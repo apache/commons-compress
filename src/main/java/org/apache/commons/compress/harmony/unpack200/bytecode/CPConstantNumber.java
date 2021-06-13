@@ -21,7 +21,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
  */
 public abstract class CPConstantNumber extends CPConstant {
 
-    public CPConstantNumber(byte tag, Object value, int globalIndex) {
+    public CPConstantNumber(final byte tag, final Object value, final int globalIndex) {
         super(tag, value, globalIndex);
     }
 

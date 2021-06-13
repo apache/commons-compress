@@ -22,12 +22,13 @@ package org.apache.commons.compress.harmony.unpack200.bytecode.forms;
  */
 public class SuperInitMethodRefForm extends InitMethodReferenceForm {
 
-    public SuperInitMethodRefForm(int opcode, String name, int[] rewrite) {
+    public SuperInitMethodRefForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
+    @Override
     protected String context(
-            org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager operandManager) {
+            final org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager operandManager) {
         return operandManager.getSuperClass();
     }
 }

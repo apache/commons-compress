@@ -23,11 +23,12 @@ public class CPDouble extends CPConstant {
 
     private final double theDouble;
 
-    public CPDouble(double theDouble) {
+    public CPDouble(final double theDouble) {
         this.theDouble = theDouble;
     }
 
-    public int compareTo(Object obj) {
+    @Override
+    public int compareTo(final Object obj) {
         return Double.compare(theDouble, ((CPDouble)obj).theDouble);
     }
 

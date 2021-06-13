@@ -53,7 +53,7 @@ public class SegmentConstantPoolArrayCache {
      * @param key String value for which to search
      * @return List collection of index positions in the array
      */
-    public List indexesForArrayKey(String[] array, String key) {
+    public List indexesForArrayKey(final String[] array, final String key) {
         if(!arrayIsCached(array)) {
             cacheArray(array);
         }
@@ -86,11 +86,11 @@ public class SegmentConstantPoolArrayCache {
      * @return boolean true if up-to-date cache,
      *   otherwise false.
      */
-    protected boolean arrayIsCached(String[] array) {
+    protected boolean arrayIsCached(final String[] array) {
         if(!knownArrays.containsKey(array)) {
             return false;
         }
-        CachedArray cachedArray = (CachedArray)knownArrays.get(array);
+        final CachedArray cachedArray = (CachedArray)knownArrays.get(array);
         if(cachedArray.lastKnownSize() != array.length) {
             return false;
         }
@@ -101,7 +101,7 @@ public class SegmentConstantPoolArrayCache {
      * Cache the array passed in as the argument
      * @param array String[] to cache
      */
-    protected void cacheArray(String[] array) {
+    protected void cacheArray(final String[] array) {
         if(arrayIsCached(array)) {
             throw new IllegalArgumentException("Trying to cache an array that already exists");
         }
@@ -121,7 +121,7 @@ public class SegmentConstantPoolArrayCache {
         int lastKnownSize;
         HashMap primaryTable;
 
-        public CachedArray(String[] array) {
+        public CachedArray(final String[] array) {
             super();
             this.primaryArray = array;
             this.lastKnownSize = array.length;
@@ -150,7 +150,7 @@ public class SegmentConstantPoolArrayCache {
          * @return List of indexes containing that key
          *   in the array.
          */
-        public List indexesForKey(String key) {
+        public List indexesForKey(final String key) {
             if(!primaryTable.containsKey(key)) {
                 return Collections.EMPTY_LIST;
             }
@@ -171,11 +171,11 @@ public class SegmentConstantPoolArrayCache {
          */
         protected void cacheIndexes() {
             for(int index=0; index < primaryArray.length; index++) {
-                String key = primaryArray[index];
+                final String key = primaryArray[index];
                 if(!primaryTable.containsKey(key)) {
                     primaryTable.put(key, new ArrayList());
                 }
-                ((ArrayList)primaryTable.get(key)).add(new Integer(index));
+                ((ArrayList)primaryTable.get(key)).add(Integer.valueOf(index));
             }
         }
     }

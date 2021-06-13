@@ -21,6 +21,6 @@ package org.apache.commons.compress.harmony.unpack200;
  */
 public interface IMatcher {
 
-    public abstract boolean matches(long value);
+    boolean matches(long value);
 
 }

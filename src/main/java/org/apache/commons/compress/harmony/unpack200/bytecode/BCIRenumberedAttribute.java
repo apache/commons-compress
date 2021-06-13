@@ -35,18 +35,22 @@ public abstract class BCIRenumberedAttribute extends Attribute {
      *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#hasBCIRenumbering()
      */
+    @Override
     public boolean hasBCIRenumbering() {
         return true;
     }
 
-    public BCIRenumberedAttribute(CPUTF8 attributeName) {
+    public BCIRenumberedAttribute(final CPUTF8 attributeName) {
         super(attributeName);
     }
 
+    @Override
     protected abstract int getLength();
 
+    @Override
     protected abstract void writeBody(DataOutputStream dos) throws IOException;
 
+    @Override
     public abstract String toString();
 
     protected abstract int[] getStartPCs();
@@ -62,13 +66,13 @@ public abstract class BCIRenumberedAttribute extends Attribute {
      *            List of Integer offsets of the bytecode array
      * @throws Pack200Exception TODO
      */
-    public void renumber(List byteCodeOffsets) throws Pack200Exception {
+    public void renumber(final List byteCodeOffsets) throws Pack200Exception {
         if (renumbered) {
             throw new Error(
                     "Trying to renumber a line number table that has already been renumbered");
         }
         renumbered = true;
-        int[] startPCs = getStartPCs();
+        final int[] startPCs = getStartPCs();
         for (int index = 0; index < startPCs.length; index++) {
             startPCs[index] = ((Integer) byteCodeOffsets.get(startPCs[index]))
                     .intValue();

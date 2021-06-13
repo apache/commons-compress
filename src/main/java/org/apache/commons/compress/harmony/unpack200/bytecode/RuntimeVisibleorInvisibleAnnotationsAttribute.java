@@ -31,13 +31,14 @@ public class RuntimeVisibleorInvisibleAnnotationsAttribute extends
     private final int num_annotations;
     private final Annotation[] annotations;
 
-    public RuntimeVisibleorInvisibleAnnotationsAttribute(CPUTF8 name,
-            Annotation[] annotations) {
+    public RuntimeVisibleorInvisibleAnnotationsAttribute(final CPUTF8 name,
+            final Annotation[] annotations) {
         super(name);
         this.num_annotations = annotations.length;
         this.annotations = annotations;
     }
 
+    @Override
     protected int getLength() {
         int length = 2;
         for (int i = 0; i < num_annotations; i++) {
@@ -46,15 +47,17 @@ public class RuntimeVisibleorInvisibleAnnotationsAttribute extends
         return length;
     }
 
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         for (int i = 0; i < annotations.length; i++) {
             annotations[i].resolve(pool);
         }
     }
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
-        int size = dos.size();
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        final int size = dos.size();
         dos.writeShort(num_annotations);
         for (int i = 0; i < num_annotations; i++) {
             annotations[i].writeBody(dos);
@@ -64,18 +67,20 @@ public class RuntimeVisibleorInvisibleAnnotationsAttribute extends
         }
     }
 
+    @Override
     public String toString() {
         return attributeName.underlyingString() + ": " + num_annotations
                 + " annotations";
     }
 
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        List nested = new ArrayList();
+        final List nested = new ArrayList();
         nested.add(attributeName);
         for (int i = 0; i < annotations.length; i++) {
             nested.addAll(annotations[i].getClassFileEntries());
         }
-        ClassFileEntry[] nestedEntries = new ClassFileEntry[nested.size()];
+        final ClassFileEntry[] nestedEntries = new ClassFileEntry[nested.size()];
         for (int i = 0; i < nestedEntries.length; i++) {
             nestedEntries[i] = (ClassFileEntry) nested.get(i);
         }

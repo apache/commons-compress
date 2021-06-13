@@ -31,7 +31,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public class NewClassRefForm extends ClassRefForm {
 
-    public NewClassRefForm(int opcode, String name, int[] rewrite) {
+    public NewClassRefForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
@@ -41,8 +41,9 @@ public class NewClassRefForm extends ClassRefForm {
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.forms.ReferenceForm#setByteCodeOperands(org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode,
      *      org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager)
      */
-    public void setByteCodeOperands(ByteCode byteCode,
-            OperandManager operandManager, int codeLength) {
+    @Override
+    public void setByteCodeOperands(final ByteCode byteCode,
+            final OperandManager operandManager, final int codeLength) {
         ClassFileEntry[] nested = null;
         final int offset = getOffset(operandManager);
         if (offset == 0) {

@@ -28,29 +28,36 @@ public abstract class Attribute extends ClassFileEntry {
 
     private int attributeNameIndex;
 
-    public Attribute(CPUTF8 attributeName) {
+    public Attribute(final CPUTF8 attributeName) {
         this.attributeName = attributeName;
     }
 
-    protected void doWrite(DataOutputStream dos) throws IOException {
+    @Override
+    protected void doWrite(final DataOutputStream dos) throws IOException {
         dos.writeShort(attributeNameIndex);
         dos.writeInt(getLength());
         writeBody(dos);
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj)
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (this.getClass() != obj.getClass())
+        }
+        if (this.getClass() != obj.getClass()) {
             return false;
+        }
         final Attribute other = (Attribute) obj;
         if (attributeName == null) {
-            if (other.attributeName != null)
+            if (other.attributeName != null) {
                 return false;
-        } else if (!attributeName.equals(other.attributeName))
+            }
+        } else if (!attributeName.equals(other.attributeName)) {
             return false;
+        }
         return true;
     }
 
@@ -73,6 +80,7 @@ public abstract class Attribute extends ClassFileEntry {
         return getLength() + 2 + 4;
     }
 
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         return new ClassFileEntry[] { getAttributeName() };
     }
@@ -97,6 +105,7 @@ public abstract class Attribute extends ClassFileEntry {
         return false;
     }
 
+    @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
@@ -105,7 +114,8 @@ public abstract class Attribute extends ClassFileEntry {
         return result;
     }
 
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         attributeNameIndex = pool.indexOf(attributeName);
     }

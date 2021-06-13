@@ -29,7 +29,7 @@ public class Pack200Exception extends Exception {
      * @param message
      *            the text message to display
      */
-    public Pack200Exception(String message) {
+    public Pack200Exception(final String message) {
         super(message);
     }
 

@@ -36,7 +36,7 @@ public class ClassFile {
     public ClassFileEntry[] methods;
     public Attribute[] attributes;
 
-    public void write(DataOutputStream dos) throws IOException {
+    public void write(final DataOutputStream dos) throws IOException {
         dos.writeInt(magic);
         dos.writeShort(minor);
         dos.writeShort(major);
@@ -47,8 +47,9 @@ public class ClassFile {
             // Doubles and longs take up two spaces in the pool, but only one
             // gets written
             if (entry.getTag() == ConstantPoolEntry.CP_Double
-                    || entry.getTag() == ConstantPoolEntry.CP_Long)
+                    || entry.getTag() == ConstantPoolEntry.CP_Long) {
                 i++;
+            }
         }
         dos.writeShort(accessFlags);
         dos.writeShort(thisClass);

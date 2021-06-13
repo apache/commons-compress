@@ -26,7 +26,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public class WideForm extends VariableInstructionForm {
 
-    public WideForm(int opcode, String name) {
+    public WideForm(final int opcode, final String name) {
         super(opcode, name);
     }
 
@@ -37,8 +37,9 @@ public class WideForm extends VariableInstructionForm {
      *      org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
      *      org.apache.commons.compress.harmony.unpack200.SegmentConstantPool)
      */
-    public void setByteCodeOperands(ByteCode byteCode,
-            OperandManager operandManager, int codeLength) {
+    @Override
+    public void setByteCodeOperands(final ByteCode byteCode,
+            final OperandManager operandManager, final int codeLength) {
         final int instruction = operandManager.nextWideByteCode();
         if (instruction == 132) {
             setByteCodeOperandsFormat2(instruction, byteCode, operandManager,
@@ -63,8 +64,8 @@ public class WideForm extends VariableInstructionForm {
      * @param codeLength
      *            ignored
      */
-    protected void setByteCodeOperandsFormat1(int instruction,
-            ByteCode byteCode, OperandManager operandManager, int codeLength) {
+    protected void setByteCodeOperandsFormat1(final int instruction,
+            final ByteCode byteCode, final OperandManager operandManager, final int codeLength) {
 
         // Even though this code is really similar to the
         // code for setByteCodeOperandsFormat2, I've left it
@@ -112,8 +113,8 @@ public class WideForm extends VariableInstructionForm {
      * @param codeLength
      *            ignored
      */
-    protected void setByteCodeOperandsFormat2(int instruction,
-            ByteCode byteCode, OperandManager operandManager, int codeLength) {
+    protected void setByteCodeOperandsFormat2(final int instruction,
+            final ByteCode byteCode, final OperandManager operandManager, final int codeLength) {
 
         final int local = operandManager.nextLocal();
         final int constWord = operandManager.nextShort();

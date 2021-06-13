@@ -379,7 +379,7 @@ public abstract class ByteCodeForm {
      * @param name
      *            String printable name of the opcode
      */
-    public ByteCodeForm(int opcode, String name) {
+    public ByteCodeForm(final int opcode, final String name) {
         this(opcode, name, new int[] { opcode });
     }
 
@@ -395,7 +395,7 @@ public abstract class ByteCodeForm {
      *            int[] Array of ints. Operand positions (which will later be
      *            rewritten in ByteCodes) are indicated by -1.
      */
-    public ByteCodeForm(int opcode, String name, int[] rewrite) {
+    public ByteCodeForm(final int opcode, final String name, final int[] rewrite) {
         this.opcode = opcode;
         this.name = name;
         this.rewrite = rewrite;
@@ -444,10 +444,11 @@ public abstract class ByteCodeForm {
         operandLength = difference + 1;
     }
 
-    public static ByteCodeForm get(int opcode) {
+    public static ByteCodeForm get(final int opcode) {
         return (ByteCodeForm) byteCodeArray[opcode];
     }
 
+    @Override
     public String toString() {
         return this.getClass().getName() + "(" + getName() + ")";
     }
@@ -490,15 +491,13 @@ public abstract class ByteCodeForm {
      * @return boolean true if multibytecode, false otherwise
      */
     public boolean hasMultipleByteCodes() {
-        if (rewrite.length > 1) {
-            // Currently, all multi-bytecode instructions
-            // begin with aload_0, so this is how we test.
-            if (rewrite[0] == 42) {
-                // If there's an instruction (not a negative
-                // number, which is an operand) after the
-                // aload_0, it's a multibytecode instruction.
-                return (rewrite[1] > 0);
-            }
+        // Currently, all multi-bytecode instructions
+        // begin with aload_0, so this is how we test.
+        if ((rewrite.length > 1) && (rewrite[0] == 42)) {
+            // If there's an instruction (not a negative
+            // number, which is an operand) after the
+            // aload_0, it's a multibytecode instruction.
+            return (rewrite[1] > 0);
         }
         return false;
     }
@@ -529,8 +528,8 @@ public abstract class ByteCodeForm {
      *            a CodeAttribute used to determine how the ByteCode should be
      *            fixed up.
      */
-    public void fixUpByteCodeTargets(ByteCode byteCode,
-            CodeAttribute codeAttribute) {
+    public void fixUpByteCodeTargets(final ByteCode byteCode,
+            final CodeAttribute codeAttribute) {
         // Most ByteCodeForms don't have any fixing up to do.
         return;
     }

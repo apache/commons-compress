@@ -30,22 +30,22 @@ public class EnclosingMethodAttribute extends Attribute {
     private final CPNameAndType method;
     private static CPUTF8 attributeName;
 
-    public static void setAttributeName(CPUTF8 cpUTF8Value) {
+    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
 
-    public EnclosingMethodAttribute(CPClass cpClass, CPNameAndType method) {
+    public EnclosingMethodAttribute(final CPClass cpClass, final CPNameAndType method) {
         super(attributeName);
         this.cpClass = cpClass;
         this.method = method;
     }
 
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         if(method != null) {
             return new ClassFileEntry[] {attributeName, cpClass, method};
-        } else {
-            return new ClassFileEntry[] {attributeName, cpClass};
         }
+        return new ClassFileEntry[] {attributeName, cpClass};
     }
 
     /*
@@ -53,11 +53,13 @@ public class EnclosingMethodAttribute extends Attribute {
      *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#getLength()
      */
+    @Override
     protected int getLength() {
         return 4;
     }
 
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         cpClass.resolve(pool);
         class_index = pool.indexOf(cpClass);
@@ -74,7 +76,8 @@ public class EnclosingMethodAttribute extends Attribute {
      *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#writeBody(java.io.DataOutputStream)
      */
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(class_index);
         dos.writeShort(method_index);
     }
@@ -84,6 +87,7 @@ public class EnclosingMethodAttribute extends Attribute {
      *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#toString()
      */
+    @Override
     public String toString() {
         return "EnclosingMethod";
     }

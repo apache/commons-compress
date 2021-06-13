@@ -45,35 +45,35 @@ public class FileBands extends BandSet {
     private final PackingOptions options;
     private final CpBands cpBands;
 
-    public FileBands(CpBands cpBands, SegmentHeader segmentHeader,
-            PackingOptions options, SegmentUnit segmentUnit, int effort) {
+    public FileBands(final CpBands cpBands, final SegmentHeader segmentHeader,
+            final PackingOptions options, final SegmentUnit segmentUnit, final int effort) {
         super(effort, segmentHeader);
         fileList = segmentUnit.getFileList();
         this.options = options;
         this.cpBands = cpBands;
-        int size = fileList.size();
+        final int size = fileList.size();
         fileName = new CPUTF8[size];
         file_modtime = new int[size];
         file_size = new long[size];
         file_options = new int[size];
         int totalSize = 0;
         file_bits = new byte[size][];
-        int archiveModtime = segmentHeader.getArchive_modtime();
+        final int archiveModtime = segmentHeader.getArchive_modtime();
 
-        Set classNames = new HashSet();
-        for (Iterator iterator = segmentUnit.getClassList().iterator(); iterator
+        final Set classNames = new HashSet();
+        for (final Iterator iterator = segmentUnit.getClassList().iterator(); iterator
                 .hasNext();) {
-            ClassReader reader = (ClassReader) iterator.next();
+            final ClassReader reader = (ClassReader) iterator.next();
             classNames.add(reader.getClassName());
         }
-        CPUTF8 emptyString = cpBands.getCPUtf8("");
+        final CPUTF8 emptyString = cpBands.getCPUtf8("");
         long modtime;
         int latestModtime = Integer.MIN_VALUE;
-        boolean isLatest = !PackingOptions.KEEP.equals(options
+        final boolean isLatest = !PackingOptions.KEEP.equals(options
                 .getModificationTime());
         for (int i = 0; i < size; i++) {
-            PackingFile packingFile = (PackingFile) fileList.get(i);
-            String name = packingFile.getName();
+            final PackingFile packingFile = (PackingFile) fileList.get(i);
+            final String name = packingFile.getName();
             if (name.endsWith(".class") && !options.isPassFile(name)) {
                 file_options[i] |= (1 << 1);
                 if (classNames.contains(name.substring(0, name.length() - 6))) {
@@ -88,7 +88,7 @@ public class FileBands extends BandSet {
             if (options.isKeepDeflateHint() && packingFile.isDefalteHint()) {
                 file_options[i] |= 0x1;
             }
-            byte[] bytes = packingFile.getContents();
+            final byte[] bytes = packingFile.getContents();
             file_size[i] = bytes.length;
             totalSize += file_size[i];
 
@@ -118,8 +118,8 @@ public class FileBands extends BandSet {
         file_name = new int[fileName.length];
         for (int i = 0; i < file_name.length; i++) {
             if (fileName[i].equals(cpBands.getCPUtf8(""))) {
-                PackingFile packingFile = (PackingFile) fileList.get(i);
-                String name = packingFile.getName();
+                final PackingFile packingFile = (PackingFile) fileList.get(i);
+                final String name = packingFile.getName();
                 if (options.isPassFile(name)) {
                     fileName[i] = cpBands.getCPUtf8(name);
                     file_options[i] &= (1 << 1) ^ 0xFFFFFFFF;
@@ -129,7 +129,8 @@ public class FileBands extends BandSet {
         }
     }
 
-    public void pack(OutputStream out) throws IOException, Pack200Exception {
+    @Override
+    public void pack(final OutputStream out) throws IOException, Pack200Exception {
         PackingUtils.log("Writing file bands...");
         byte[] encodedBand = encodeBandInt("file_name", file_name,
                 Codec.UNSIGNED5);
@@ -165,12 +166,12 @@ public class FileBands extends BandSet {
                 + " bytes from file_bits[" + file_bits.length + "]");
     }
 
-    private int[] flatten(byte[][] bytes) {
+    private int[] flatten(final byte[][] bytes) {
         int total = 0;
         for (int i = 0; i < bytes.length; i++) {
             total += bytes[i].length;
         }
-        int[] band = new int[total];
+        final int[] band = new int[total];
         int index = 0;
         for (int i = 0; i < bytes.length; i++) {
             for (int j = 0; j < bytes[i].length; j++) {

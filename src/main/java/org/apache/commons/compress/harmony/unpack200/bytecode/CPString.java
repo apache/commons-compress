@@ -27,15 +27,17 @@ public class CPString extends CPConstant {
     private transient int nameIndex;
     private final CPUTF8 name;
 
-    public CPString(CPUTF8 value, int globalIndex) {
+    public CPString(final CPUTF8 value, final int globalIndex) {
         super(ConstantPoolEntry.CP_String, value, globalIndex);
         this.name = value;
     }
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(nameIndex);
     }
 
+    @Override
     public String toString() {
         return "String: " + getValue();
     }
@@ -45,11 +47,13 @@ public class CPString extends CPConstant {
      *
      * @param pool TODO
      */
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         nameIndex = pool.indexOf(name);
     }
 
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         return new ClassFileEntry[] { name };
     }
@@ -65,9 +69,11 @@ public class CPString extends CPConstant {
         cachedHashCode = result;
     }
 
+    @Override
     public int hashCode() {
-        if (!hashcodeComputed)
+        if (!hashcodeComputed) {
             generateHashCode();
+        }
         return cachedHashCode;
     }
 }

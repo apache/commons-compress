@@ -39,13 +39,13 @@ public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
     private int codeLength;
     private static CPUTF8 attributeName;
 
-    public static void setAttributeName(CPUTF8 cpUTF8Value) {
+    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
 
     public LocalVariableTypeTableAttribute(
-            int local_variable_type_table_length, int[] start_pcs,
-            int[] lengths, CPUTF8[] names, CPUTF8[] signatures, int[] indexes) {
+            final int local_variable_type_table_length, final int[] start_pcs,
+            final int[] lengths, final CPUTF8[] names, final CPUTF8[] signatures, final int[] indexes) {
         super(attributeName);
         this.local_variable_type_table_length = local_variable_type_table_length;
         this.start_pcs = start_pcs;
@@ -55,15 +55,17 @@ public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
         this.indexes = indexes;
     }
 
-    public void setCodeLength(int length) {
+    public void setCodeLength(final int length) {
         codeLength = length;
     }
 
+    @Override
     protected int getLength() {
         return 2 + (10 * local_variable_type_table_length);
     }
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(local_variable_type_table_length);
         for (int i = 0; i < local_variable_type_table_length; i++) {
             dos.writeShort(start_pcs[i]);
@@ -74,7 +76,8 @@ public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
         }
     }
 
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         name_indexes = new int[local_variable_type_table_length];
         signature_indexes = new int[local_variable_type_table_length];
@@ -86,19 +89,21 @@ public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
         }
     }
 
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        ArrayList nestedEntries = new ArrayList();
+        final ArrayList nestedEntries = new ArrayList();
         nestedEntries.add(getAttributeName());
         for (int i = 0; i < local_variable_type_table_length; i++) {
             nestedEntries.add(names[i]);
             nestedEntries.add(signatures[i]);
         }
-        ClassFileEntry[] nestedEntryArray = new ClassFileEntry[nestedEntries
+        final ClassFileEntry[] nestedEntryArray = new ClassFileEntry[nestedEntries
                 .size()];
         nestedEntries.toArray(nestedEntryArray);
         return nestedEntryArray;
     }
 
+    @Override
     protected int[] getStartPCs() {
         return start_pcs;
     }
@@ -108,10 +113,11 @@ public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
      *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.BCIRenumberedAttribute#renumber(java.util.List)
      */
-    public void renumber(List byteCodeOffsets) throws Pack200Exception {
+    @Override
+    public void renumber(final List byteCodeOffsets) throws Pack200Exception {
         // Remember the unrenumbered start_pcs, since that's used later
         // to calculate end position.
-        int[] unrenumbered_start_pcs = new int[start_pcs.length];
+        final int[] unrenumbered_start_pcs = new int[start_pcs.length];
         System.arraycopy(start_pcs, 0, unrenumbered_start_pcs, 0,
                 start_pcs.length);
 
@@ -126,20 +132,20 @@ public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
         // real length = end_pc - start_pc
         // special case if end_pc is beyond end of bytecode array
 
-        int maxSize = codeLength;
+        final int maxSize = codeLength;
 
         // Iterate through the lengths and update each in turn.
         // This is done in place in the lengths array.
         for (int index = 0; index < lengths.length; index++) {
-            int start_pc = start_pcs[index];
+            final int start_pc = start_pcs[index];
             int revisedLength = -1;
-            int encodedLength = lengths[index];
+            final int encodedLength = lengths[index];
 
             // First get the index of the start_pc in the byteCodeOffsets
-            int indexOfStartPC = unrenumbered_start_pcs[index];
+            final int indexOfStartPC = unrenumbered_start_pcs[index];
             // Given the index of the start_pc, we can now add
             // the encodedLength to it to get the stop index.
-            int stopIndex = indexOfStartPC + encodedLength;
+            final int stopIndex = indexOfStartPC + encodedLength;
             if (stopIndex < 0) {
                 throw new Pack200Exception("Error renumbering bytecode indexes");
             }
@@ -151,7 +157,7 @@ public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
                 revisedLength = maxSize - start_pc;
             } else {
                 // We're indexed into the byte code array
-                int stopValue = ((Integer) byteCodeOffsets.get(stopIndex))
+                final int stopValue = ((Integer) byteCodeOffsets.get(stopIndex))
                         .intValue();
                 revisedLength = stopValue - start_pc;
             }
@@ -160,6 +166,7 @@ public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
     }
 
 
+    @Override
     public String toString() {
         return "LocalVariableTypeTable: " + +local_variable_type_table_length
                 + " varaibles";

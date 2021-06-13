@@ -30,40 +30,46 @@ public class AnnotationDefaultAttribute extends AnnotationsAttribute {
 
     private static CPUTF8 attributeName;
 
-    public static void setAttributeName(CPUTF8 cpUTF8Value) {
+    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
-    public AnnotationDefaultAttribute(ElementValue element_value) {
+    public AnnotationDefaultAttribute(final ElementValue element_value) {
         super(attributeName);
         this.element_value = element_value;
     }
 
+    @Override
     protected int getLength() {
         return element_value.getLength();
     }
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         element_value.writeBody(dos);
     }
 
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         element_value.resolve(pool);
     }
 
+    @Override
     public String toString() {
         return "AnnotationDefault: " + element_value;
     }
 
-    public boolean equals(Object obj) {
+    @Override
+    public boolean equals(final Object obj) {
         return this == obj;
     }
 
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        List nested = new ArrayList();
+        final List nested = new ArrayList();
         nested.add(attributeName);
         nested.addAll(element_value.getClassFileEntries());
-        ClassFileEntry[] nestedEntries = new ClassFileEntry[nested.size()];
+        final ClassFileEntry[] nestedEntries = new ClassFileEntry[nested.size()];
         for (int i = 0; i < nestedEntries.length; i++) {
             nestedEntries[i] = (ClassFileEntry) nested.get(i);
         }

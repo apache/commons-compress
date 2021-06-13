@@ -178,10 +178,10 @@ public abstract class Codec {
      *             if there is a problem decoding the value or that the value is
      *             invalid
      */
-    public int[] decodeInts(int n, InputStream in) throws IOException,
+    public int[] decodeInts(final int n, final InputStream in) throws IOException,
             Pack200Exception {
         lastBandLength = 0;
-        int result[] = new int[n];
+        final int result[] = new int[n];
         int last = 0;
         for (int i = 0; i < n; i++) {
             result[i] = last = decode(in, last);
@@ -207,9 +207,9 @@ public abstract class Codec {
      *             if there is a problem decoding the value or that the value is
      *             invalid
      */
-    public int[] decodeInts(int n, InputStream in, int firstValue)
+    public int[] decodeInts(final int n, final InputStream in, final int firstValue)
             throws IOException, Pack200Exception {
-        int result[] = new int[n + 1];
+        final int result[] = new int[n + 1];
         result[0] = firstValue;
         int last = firstValue;
         for (int i = 1; i < n + 1; i++) {
@@ -227,14 +227,14 @@ public abstract class Codec {
      * @throws Pack200Exception
      *             if there is a problem encoding any of the values
      */
-    public byte[] encode(int[] ints) throws Pack200Exception {
+    public byte[] encode(final int[] ints) throws Pack200Exception {
         int total = 0;
-        byte[][] bytes = new byte[ints.length][];
+        final byte[][] bytes = new byte[ints.length][];
         for (int i = 0; i < ints.length; i++) {
             bytes[i] = encode(ints[i], i > 0 ? ints[i-1] : 0);
             total += bytes[i].length;
         }
-        byte[] encoded = new byte[total];
+        final byte[] encoded = new byte[total];
         int index = 0;
         for (int i = 0; i < bytes.length; i++) {
             System.arraycopy(bytes[i], 0, encoded, index, bytes[i].length);

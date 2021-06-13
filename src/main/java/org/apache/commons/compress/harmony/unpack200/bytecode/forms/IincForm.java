@@ -25,7 +25,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public class IincForm extends ByteCodeForm {
 
-    public IincForm(int opcode, String name, int[] rewrite) {
+    public IincForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
@@ -36,8 +36,9 @@ public class IincForm extends ByteCodeForm {
      *      org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
      *      org.apache.commons.compress.harmony.unpack200.SegmentConstantPool)
      */
-    public void setByteCodeOperands(ByteCode byteCode,
-            OperandManager operandManager, int codeLength) {
+    @Override
+    public void setByteCodeOperands(final ByteCode byteCode,
+            final OperandManager operandManager, final int codeLength) {
         final int local = operandManager.nextLocal();
         final int constant = operandManager.nextByte();
         byteCode.setOperandBytes(new int[] { local, constant });

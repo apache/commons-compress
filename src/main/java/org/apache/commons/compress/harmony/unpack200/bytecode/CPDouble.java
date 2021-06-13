@@ -24,14 +24,16 @@ import java.io.IOException;
  */
 public class CPDouble extends CPConstantNumber {
 
-    public CPDouble(Double value, int globalIndex) {
+    public CPDouble(final Double value, final int globalIndex) {
         super(ConstantPoolEntry.CP_Double, value, globalIndex);
     }
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeDouble(getNumber().doubleValue());
     }
 
+    @Override
     public String toString() {
         return "Double: " + getValue();
     }

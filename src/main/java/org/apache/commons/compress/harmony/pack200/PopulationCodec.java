@@ -34,14 +34,14 @@ public class PopulationCodec extends Codec {
     private int l;
     private int[] favoured;
 
-    public PopulationCodec(Codec favouredCodec, Codec tokenCodec,
-            Codec unvafouredCodec) {
+    public PopulationCodec(final Codec favouredCodec, final Codec tokenCodec,
+            final Codec unvafouredCodec) {
         this.favouredCodec = favouredCodec;
         this.tokenCodec = tokenCodec;
         this.unfavouredCodec = unvafouredCodec;
     }
 
-    public PopulationCodec(Codec favouredCodec, int l, Codec unfavouredCodec) {
+    public PopulationCodec(final Codec favouredCodec, final int l, final Codec unfavouredCodec) {
         if (l >= 256 || l <= 0) {
             throw new IllegalArgumentException("L must be between 1..255");
         }
@@ -50,18 +50,21 @@ public class PopulationCodec extends Codec {
         this.unfavouredCodec = unfavouredCodec;
     }
 
-    public int decode(InputStream in) throws IOException, Pack200Exception {
+    @Override
+    public int decode(final InputStream in) throws IOException, Pack200Exception {
         throw new Pack200Exception(
                 "Population encoding does not work unless the number of elements are known");
     }
 
-    public int decode(InputStream in, long last) throws IOException,
+    @Override
+    public int decode(final InputStream in, final long last) throws IOException,
             Pack200Exception {
         throw new Pack200Exception(
                 "Population encoding does not work unless the number of elements are known");
     }
 
-    public int[] decodeInts(int n, InputStream in) throws IOException,
+    @Override
+    public int[] decodeInts(final int n, final InputStream in) throws IOException,
             Pack200Exception {
         lastBandLength = 0;
         favoured = new int[n]; // there must be <= n values, but probably a lot
@@ -117,7 +120,7 @@ public class PopulationCodec extends Codec {
         // read unfavorites
         last = 0;
         for (int i = 0; i < n; i++) {
-            int index = result[i];
+            final int index = result[i];
             if (index == 0) {
                 lastBandLength++;
                 result[i] = last = unfavouredCodec.decode(in, last);
@@ -140,24 +143,26 @@ public class PopulationCodec extends Codec {
         return unfavouredCodec;
     }
 
-    public byte[] encode(int value, int last) throws Pack200Exception {
+    @Override
+    public byte[] encode(final int value, final int last) throws Pack200Exception {
         throw new Pack200Exception(
         "Population encoding does not work unless the number of elements are known");
     }
 
-    public byte[] encode(int value) throws Pack200Exception {
+    @Override
+    public byte[] encode(final int value) throws Pack200Exception {
         throw new Pack200Exception(
         "Population encoding does not work unless the number of elements are known");
     }
 
-    public byte[] encode(int[] favoured, int[] tokens, int[] unfavoured) throws Pack200Exception {
-        int[] favoured2 = new int[favoured.length + 1];
+    public byte[] encode(final int[] favoured, final int[] tokens, final int[] unfavoured) throws Pack200Exception {
+        final int[] favoured2 = new int[favoured.length + 1];
         System.arraycopy(favoured, 0, favoured2, 0, favoured.length);
         favoured2[favoured2.length - 1] = favoured[favoured.length - 1]; // repeat last value;
-        byte[] favouredEncoded = favouredCodec.encode(favoured2);
-        byte[] tokensEncoded = tokenCodec.encode(tokens);
-        byte[] unfavouredEncoded = unfavouredCodec.encode(unfavoured);
-        byte[] band = new byte[favouredEncoded.length + tokensEncoded.length + unfavouredEncoded.length];
+        final byte[] favouredEncoded = favouredCodec.encode(favoured2);
+        final byte[] tokensEncoded = tokenCodec.encode(tokens);
+        final byte[] unfavouredEncoded = unfavouredCodec.encode(unfavoured);
+        final byte[] band = new byte[favouredEncoded.length + tokensEncoded.length + unfavouredEncoded.length];
         System.arraycopy(favouredEncoded, 0, band, 0, favouredEncoded.length);
         System.arraycopy(tokensEncoded, 0, band, favouredEncoded.length, tokensEncoded.length);
         System.arraycopy(unfavouredEncoded, 0, band, favouredEncoded.length + tokensEncoded.length, unfavouredEncoded.length);

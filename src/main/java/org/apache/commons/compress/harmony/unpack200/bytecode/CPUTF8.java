@@ -34,7 +34,7 @@ public class CPUTF8 extends ConstantPoolEntry {
      * @throws NullPointerException
      *             if utf8 is null
      */
-    public CPUTF8(String utf8, int globalIndex) {
+    public CPUTF8(final String utf8, final int globalIndex) {
         super(ConstantPoolEntry.CP_UTF8, globalIndex);
         this.utf8 = utf8;
         if (utf8 == null) {
@@ -42,17 +42,21 @@ public class CPUTF8 extends ConstantPoolEntry {
         }
     }
 
-    public CPUTF8(String string) {
+    public CPUTF8(final String string) {
         this(string, -1);
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj)
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (this.getClass() != obj.getClass())
+        }
+        if (this.getClass() != obj.getClass()) {
             return false;
+        }
         final CPUTF8 other = (CPUTF8) obj;
         return utf8.equals(other.utf8);
     }
@@ -66,17 +70,21 @@ public class CPUTF8 extends ConstantPoolEntry {
         cachedHashCode = PRIME + utf8.hashCode();
     }
 
+    @Override
     public int hashCode() {
-        if (!hashcodeComputed)
+        if (!hashcodeComputed) {
             generateHashCode();
+        }
         return cachedHashCode;
     }
 
+    @Override
     public String toString() {
         return "UTF8: " + utf8;
     }
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeUTF(utf8);
     }
 
@@ -84,7 +92,7 @@ public class CPUTF8 extends ConstantPoolEntry {
         return utf8;
     }
 
-    public void setGlobalIndex(int index) {
+    public void setGlobalIndex(final int index) {
         globalIndex = index;
     }
 }

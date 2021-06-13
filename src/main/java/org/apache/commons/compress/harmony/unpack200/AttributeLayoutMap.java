@@ -202,33 +202,33 @@ public class AttributeLayoutMap {
     // The order of the maps in this array should not be changed as their
     // indices correspond to
     // the value of their context constants (AttributeLayout.CONTEXT_CLASS etc.)
-    private final Map[] layouts = new Map[] { classLayouts, fieldLayouts,
+    private final Map[] layouts = { classLayouts, fieldLayouts,
             methodLayouts, codeLayouts };
 
     private final Map layoutsToBands = new HashMap();
 
     public AttributeLayoutMap() throws Pack200Exception {
-        AttributeLayout[] defaultAttributeLayouts = getDefaultAttributeLayouts();
+        final AttributeLayout[] defaultAttributeLayouts = getDefaultAttributeLayouts();
         for (int i = 0; i < defaultAttributeLayouts.length; i++) {
             add(defaultAttributeLayouts[i]);
         }
     }
 
-    public void add(AttributeLayout layout) {
+    public void add(final AttributeLayout layout) {
         layouts[layout.getContext()]
-                .put(new Integer(layout.getIndex()), layout);
+                .put(Integer.valueOf(layout.getIndex()), layout);
     }
 
-    public void add(AttributeLayout layout, NewAttributeBands newBands) {
+    public void add(final AttributeLayout layout, final NewAttributeBands newBands) {
         add(layout);
         layoutsToBands.put(layout, newBands);
     }
 
-    public AttributeLayout getAttributeLayout(String name, int context)
+    public AttributeLayout getAttributeLayout(final String name, final int context)
             throws Pack200Exception {
-        Map map = layouts[context];
-        for (Iterator iter = map.values().iterator(); iter.hasNext();) {
-            AttributeLayout layout = (AttributeLayout) iter.next();
+        final Map map = layouts[context];
+        for (final Iterator iter = map.values().iterator(); iter.hasNext();) {
+            final AttributeLayout layout = (AttributeLayout) iter.next();
             if (layout.getName().equals(name)) {
                 return layout;
             }
@@ -236,10 +236,10 @@ public class AttributeLayoutMap {
         return null;
     }
 
-    public AttributeLayout getAttributeLayout(int index, int context)
+    public AttributeLayout getAttributeLayout(final int index, final int context)
             throws Pack200Exception {
-        Map map = layouts[context];
-        return (AttributeLayout) map.get(new Integer(index));
+        final Map map = layouts[context];
+        return (AttributeLayout) map.get(Integer.valueOf(index));
     }
 
     /**
@@ -250,16 +250,16 @@ public class AttributeLayoutMap {
      */
     public void checkMap() throws Pack200Exception {
         for (int i = 0; i < layouts.length; i++) {
-            Map map = layouts[i];
+            final Map map = layouts[i];
             Collection c = map.values();
             if (!(c instanceof List)) {
                 c = new ArrayList(c);
             }
-            List l = (List) c;
+            final List l = (List) c;
             for (int j = 0; j < l.size(); j++) {
-                AttributeLayout layout1 = (AttributeLayout) l.get(j);
+                final AttributeLayout layout1 = (AttributeLayout) l.get(j);
                 for (int j2 = j + 1; j2 < l.size(); j2++) {
-                    AttributeLayout layout2 = (AttributeLayout) l.get(j2);
+                    final AttributeLayout layout2 = (AttributeLayout) l.get(j2);
                     if (layout1.getName().equals(layout2.getName())
                             && layout1.getLayout().equals(layout2.getLayout())) {
                         throw new Pack200Exception(
@@ -276,7 +276,7 @@ public class AttributeLayoutMap {
         }
     }
 
-    public NewAttributeBands getAttributeBands(AttributeLayout layout) {
+    public NewAttributeBands getAttributeBands(final AttributeLayout layout) {
         return (NewAttributeBands) layoutsToBands.get(layout);
     }
 

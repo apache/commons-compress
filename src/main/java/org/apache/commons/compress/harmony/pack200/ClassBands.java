@@ -139,7 +139,7 @@ public class ClassBands extends BandSet {
     private List classInnerClassesOuterRCN;
     private List classInnerClassesNameRUN;
 
-    public ClassBands(Segment segment, int numClasses, int effort, boolean stripDebug) throws IOException {
+    public ClassBands(final Segment segment, final int numClasses, final int effort, final boolean stripDebug) throws IOException {
         super(effort, segment.getSegmentHeader());
         this.stripDebug = stripDebug;
         this.segment = segment;
@@ -177,30 +177,30 @@ public class ClassBands extends BandSet {
     }
 
     private void createNewAttributeBands() throws IOException {
-        List classAttributeLayouts = attrBands.getClassAttributeLayouts();
-        for (Iterator iterator = classAttributeLayouts.iterator(); iterator.hasNext();) {
-            AttributeDefinition def = (AttributeDefinition) iterator.next();
+        final List classAttributeLayouts = attrBands.getClassAttributeLayouts();
+        for (final Iterator iterator = classAttributeLayouts.iterator(); iterator.hasNext();) {
+            final AttributeDefinition def = (AttributeDefinition) iterator.next();
             classAttributeBands.add(new NewAttributeBands(effort, cpBands, segment.getSegmentHeader(), def));
         }
-        List methodAttributeLayouts = attrBands.getMethodAttributeLayouts();
-        for (Iterator iterator = methodAttributeLayouts.iterator(); iterator.hasNext();) {
-            AttributeDefinition def = (AttributeDefinition) iterator.next();
+        final List methodAttributeLayouts = attrBands.getMethodAttributeLayouts();
+        for (final Iterator iterator = methodAttributeLayouts.iterator(); iterator.hasNext();) {
+            final AttributeDefinition def = (AttributeDefinition) iterator.next();
             methodAttributeBands.add(new NewAttributeBands(effort, cpBands, segment.getSegmentHeader(), def));
         }
-        List fieldAttributeLayouts = attrBands.getFieldAttributeLayouts();
-        for (Iterator iterator = fieldAttributeLayouts.iterator(); iterator.hasNext();) {
-            AttributeDefinition def = (AttributeDefinition) iterator.next();
+        final List fieldAttributeLayouts = attrBands.getFieldAttributeLayouts();
+        for (final Iterator iterator = fieldAttributeLayouts.iterator(); iterator.hasNext();) {
+            final AttributeDefinition def = (AttributeDefinition) iterator.next();
             fieldAttributeBands.add(new NewAttributeBands(effort, cpBands, segment.getSegmentHeader(), def));
         }
-        List codeAttributeLayouts = attrBands.getCodeAttributeLayouts();
-        for (Iterator iterator = codeAttributeLayouts.iterator(); iterator.hasNext();) {
-            AttributeDefinition def = (AttributeDefinition) iterator.next();
+        final List codeAttributeLayouts = attrBands.getCodeAttributeLayouts();
+        for (final Iterator iterator = codeAttributeLayouts.iterator(); iterator.hasNext();) {
+            final AttributeDefinition def = (AttributeDefinition) iterator.next();
             codeAttributeBands.add(new NewAttributeBands(effort, cpBands, segment.getSegmentHeader(), def));
         }
     }
 
-    public void addClass(int major, int flags, String className,
-            String signature, String superName, String[] interfaces) {
+    public void addClass(final int major, int flags, final String className,
+            final String signature, final String superName, final String[] interfaces) {
         class_this[index] = cpBands.getCPClass(className);
         class_super[index] = cpBands.getCPClass(superName);
         class_interface_count[index] = interfaces.length;
@@ -224,9 +224,9 @@ public class ClassBands extends BandSet {
         }
     }
 
-    public void currentClassReferencesInnerClass(CPClass inner) {
+    public void currentClassReferencesInnerClass(final CPClass inner) {
         if(!(index >= class_this.length)) {
-            CPClass currentClass = class_this[index];
+            final CPClass currentClass = class_this[index];
             if(currentClass != null && !currentClass.equals(inner) && !isInnerClassOf(currentClass.toString(), inner)) {
                 Set referencedInnerClasses = (Set)classReferencesInnerClass.get(currentClass);
                 if(referencedInnerClasses == null) {
@@ -238,24 +238,23 @@ public class ClassBands extends BandSet {
         }
     }
 
-    private boolean isInnerClassOf(String possibleInner, CPClass possibleOuter) {
+    private boolean isInnerClassOf(final String possibleInner, final CPClass possibleOuter) {
         if(isInnerClass(possibleInner)) {
-            String superClassName = possibleInner.substring(0, possibleInner.lastIndexOf('$'));
+            final String superClassName = possibleInner.substring(0, possibleInner.lastIndexOf('$'));
             if(superClassName.equals(possibleOuter.toString())) {
                 return true;
-            } else { // do this recursively
-                return isInnerClassOf(superClassName, possibleOuter);
             }
+            return isInnerClassOf(superClassName, possibleOuter);
         }
         return false;
     }
 
-    private boolean isInnerClass(String possibleInner) {
+    private boolean isInnerClass(final String possibleInner) {
         return possibleInner.indexOf('$') != -1;
     }
 
-    public void addField(int flags, String name, String desc, String signature,
-            Object value) {
+    public void addField(int flags, final String name, final String desc, final String signature,
+            final Object value) {
         flags = flags & 0xFFFF;
         tempFieldDesc.add(cpBands.getCPNameAndType(name, desc));
         if (signature != null) {
@@ -274,7 +273,7 @@ public class ClassBands extends BandSet {
             cpBands.addCPUtf8("Synthetic");
             anySyntheticFields = true;
         }
-        tempFieldFlags.add(new Long(flags));
+        tempFieldFlags.add(Long.valueOf(flags));
     }
 
     /**
@@ -283,9 +282,9 @@ public class ClassBands extends BandSet {
      * do while classes were being read.
      */
     public void finaliseBands() {
-        int defaultMajorVersion = segmentHeader.getDefaultMajorVersion();
+        final int defaultMajorVersion = segmentHeader.getDefaultMajorVersion();
         for (int i = 0; i < class_flags.length; i++) {
-            int major = major_versions[i];
+            final int major = major_versions[i];
             if (major != defaultMajorVersion) {
                 class_flags[i] |= 1 << 24;
                 classFileVersionMajor.add(major);
@@ -296,21 +295,21 @@ public class ClassBands extends BandSet {
         codeHeaders = new int[codeHandlerCount.size()];
         int removed = 0;
         for (int i = 0; i < codeHeaders.length; i++) {
-            int numHandlers = codeHandlerCount.get(i - removed);
-            int maxLocals = codeMaxLocals.get(i - removed);
-            int maxStack = codeMaxStack.get(i - removed);
+            final int numHandlers = codeHandlerCount.get(i - removed);
+            final int maxLocals = codeMaxLocals.get(i - removed);
+            final int maxStack = codeMaxStack.get(i - removed);
             if (numHandlers == 0) {
-                int header = maxLocals * 12 + maxStack + 1;
+                final int header = maxLocals * 12 + maxStack + 1;
                 if (header < 145 && maxStack < 12) {
                     codeHeaders[i] = header;
                 }
             } else if (numHandlers == 1) {
-                int header = maxLocals * 8 + maxStack + 145;
+                final int header = maxLocals * 8 + maxStack + 145;
                 if (header < 209 && maxStack < 8) {
                     codeHeaders[i] = header;
                 }
             } else if (numHandlers == 2) {
-                int header = maxLocals * 7 + maxStack + 209;
+                final int header = maxLocals * 7 + maxStack + 209;
                 if (header < 256 && maxStack < 7) {
                     codeHeaders[i] = header;
                 }
@@ -323,29 +322,29 @@ public class ClassBands extends BandSet {
                 codeMaxStack.remove(i - removed);
                 removed++;
             } else if (!segment.getSegmentHeader().have_all_code_flags()) {
-                codeFlags.add(new Long(0));
+                codeFlags.add(Long.valueOf(0));
             }
         }
 
         // Compute any required IcLocals
-        IntList innerClassesN = new IntList();
-        List icLocal = new ArrayList();
+        final IntList innerClassesN = new IntList();
+        final List icLocal = new ArrayList();
         for (int i = 0; i < class_this.length; i++) {
-            CPClass cpClass = class_this[i];
-            Set referencedInnerClasses = (Set) classReferencesInnerClass.get(cpClass);
+            final CPClass cpClass = class_this[i];
+            final Set referencedInnerClasses = (Set) classReferencesInnerClass.get(cpClass);
             if(referencedInnerClasses != null) {
                 int innerN = 0;
-                List innerClasses = segment.getIcBands().getInnerClassesForOuter(cpClass.toString());
+                final List innerClasses = segment.getIcBands().getInnerClassesForOuter(cpClass.toString());
                 if(innerClasses != null) {
-                    for (Iterator iterator2 = innerClasses.iterator(); iterator2
+                    for (final Iterator iterator2 = innerClasses.iterator(); iterator2
                             .hasNext();) {
                         referencedInnerClasses.remove(((IcTuple)iterator2.next()).C);
                     }
                 }
-                for (Iterator iterator2 = referencedInnerClasses.iterator(); iterator2
+                for (final Iterator iterator2 = referencedInnerClasses.iterator(); iterator2
                         .hasNext();) {
-                    CPClass inner = (CPClass) iterator2.next();
-                    IcTuple icTuple = segment.getIcBands().getIcTuple(inner);
+                    final CPClass inner = (CPClass) iterator2.next();
+                    final IcTuple icTuple = segment.getIcBands().getIcTuple(inner);
                     if(icTuple != null && ! icTuple.isAnonymous()) {
                         // should transmit an icLocal entry
                         icLocal.add(icTuple);
@@ -364,7 +363,7 @@ public class ClassBands extends BandSet {
         classInnerClassesOuterRCN = new ArrayList();
         classInnerClassesNameRUN = new ArrayList();
         for (int i = 0; i < class_InnerClasses_RC.length; i++) {
-            IcTuple icTuple = (IcTuple) icLocal.get(i);
+            final IcTuple icTuple = (IcTuple) icLocal.get(i);
             class_InnerClasses_RC[i] = (icTuple.C);
             if(icTuple.C2 == null && icTuple.N == null) {
                 class_InnerClasses_F[i] = 0;
@@ -379,10 +378,10 @@ public class ClassBands extends BandSet {
             }
         }
         // Calculate any backwards calls from metadata bands
-        IntList classAttrCalls = new IntList();
-        IntList fieldAttrCalls = new IntList();
-        IntList methodAttrCalls = new IntList();
-        IntList codeAttrCalls = new IntList();
+        final IntList classAttrCalls = new IntList();
+        final IntList fieldAttrCalls = new IntList();
+        final IntList methodAttrCalls = new IntList();
+        final IntList codeAttrCalls = new IntList();
 
         if(class_RVA_bands.hasContent()) {
             classAttrCalls.add(class_RVA_bands.numBackwardsCalls());
@@ -413,49 +412,47 @@ public class ClassBands extends BandSet {
         }
 
         // Sort non-predefined attribute bands
-        Comparator comparator = new Comparator() {
-            public int compare(Object arg0, Object arg1) {
-                NewAttributeBands bands0 = (NewAttributeBands)arg0;
-                NewAttributeBands bands1 = (NewAttributeBands)arg1;
-                return bands0.getFlagIndex() - bands1.getFlagIndex();
-            }
+        final Comparator comparator = (arg0, arg1) -> {
+            final NewAttributeBands bands0 = (NewAttributeBands)arg0;
+            final NewAttributeBands bands1 = (NewAttributeBands)arg1;
+            return bands0.getFlagIndex() - bands1.getFlagIndex();
         };
         Collections.sort(classAttributeBands, comparator);
         Collections.sort(methodAttributeBands, comparator);
         Collections.sort(fieldAttributeBands, comparator);
         Collections.sort(codeAttributeBands, comparator);
 
-        for (Iterator iterator = classAttributeBands.iterator(); iterator.hasNext();) {
-            NewAttributeBands bands = (NewAttributeBands) iterator.next();
+        for (final Iterator iterator = classAttributeBands.iterator(); iterator.hasNext();) {
+            final NewAttributeBands bands = (NewAttributeBands) iterator.next();
             if(bands.isUsedAtLeastOnce()) {
-                int[] backwardsCallCounts = bands.numBackwardsCalls();
+                final int[] backwardsCallCounts = bands.numBackwardsCalls();
                 for (int i = 0; i < backwardsCallCounts.length; i++) {
                     classAttrCalls.add(backwardsCallCounts[i]);
                 }
             }
         }
-        for (Iterator iterator = methodAttributeBands.iterator(); iterator.hasNext();) {
-            NewAttributeBands bands = (NewAttributeBands) iterator.next();
+        for (final Iterator iterator = methodAttributeBands.iterator(); iterator.hasNext();) {
+            final NewAttributeBands bands = (NewAttributeBands) iterator.next();
             if(bands.isUsedAtLeastOnce()) {
-                int[] backwardsCallCounts = bands.numBackwardsCalls();
+                final int[] backwardsCallCounts = bands.numBackwardsCalls();
                 for (int i = 0; i < backwardsCallCounts.length; i++) {
                     methodAttrCalls.add(backwardsCallCounts[i]);
                 }
             }
         }
-        for (Iterator iterator = fieldAttributeBands.iterator(); iterator.hasNext();) {
-            NewAttributeBands bands = (NewAttributeBands) iterator.next();
+        for (final Iterator iterator = fieldAttributeBands.iterator(); iterator.hasNext();) {
+            final NewAttributeBands bands = (NewAttributeBands) iterator.next();
             if(bands.isUsedAtLeastOnce()) {
-                int[] backwardsCallCounts = bands.numBackwardsCalls();
+                final int[] backwardsCallCounts = bands.numBackwardsCalls();
                 for (int i = 0; i < backwardsCallCounts.length; i++) {
                     fieldAttrCalls.add(backwardsCallCounts[i]);
                 }
             }
         }
-        for (Iterator iterator = codeAttributeBands.iterator(); iterator.hasNext();) {
-            NewAttributeBands bands = (NewAttributeBands) iterator.next();
+        for (final Iterator iterator = codeAttributeBands.iterator(); iterator.hasNext();) {
+            final NewAttributeBands bands = (NewAttributeBands) iterator.next();
             if(bands.isUsedAtLeastOnce()) {
-                int[] backwardsCallCounts = bands.numBackwardsCalls();
+                final int[] backwardsCallCounts = bands.numBackwardsCalls();
                 for (int i = 0; i < backwardsCallCounts.length; i++) {
                     codeAttrCalls.add(backwardsCallCounts[i]);
                 }
@@ -468,7 +465,8 @@ public class ClassBands extends BandSet {
         code_attr_calls = codeAttrCalls.toArray();
     }
 
-    public void pack(OutputStream out) throws IOException, Pack200Exception {
+    @Override
+    public void pack(final OutputStream out) throws IOException, Pack200Exception {
         PackingUtils.log("Writing class bands...");
 
         byte[] encodedBand = encodeBandInt("class_this", getInts(class_this),
@@ -490,13 +488,13 @@ public class ClassBands extends BandSet {
                 + " bytes from class_interface_count["
                 + class_interface_count.length + "]");
 
-        int totalInterfaces = sum(class_interface_count);
-        int[] classInterface = new int[totalInterfaces];
+        final int totalInterfaces = sum(class_interface_count);
+        final int[] classInterface = new int[totalInterfaces];
         int k = 0;
         for (int i = 0; i < class_interface.length; i++) {
             if (class_interface[i] != null) {
                 for (int j = 0; j < class_interface[i].length; j++) {
-                    CPClass cpClass = class_interface[i][j];
+                    final CPClass cpClass = class_interface[i][j];
                     classInterface[k] = cpClass.getIndex();
                     k++;
                 }
@@ -523,12 +521,12 @@ public class ClassBands extends BandSet {
                 + " bytes from class_method_count[" + class_method_count.length
                 + "]");
 
-        int totalFields = sum(class_field_count);
-        int[] fieldDescr = new int[totalFields];
+        final int totalFields = sum(class_field_count);
+        final int[] fieldDescr = new int[totalFields];
         k = 0;
         for (int i = 0; i < index; i++) {
             for (int j = 0; j < field_descr[i].length; j++) {
-                CPNameAndType descr = field_descr[i][j];
+                final CPNameAndType descr = field_descr[i][j];
                 fieldDescr[k] = descr.getIndex();
                 k++;
             }
@@ -541,12 +539,12 @@ public class ClassBands extends BandSet {
 
         writeFieldAttributeBands(out);
 
-        int totalMethods = sum(class_method_count);
-        int[] methodDescr = new int[totalMethods];
+        final int totalMethods = sum(class_method_count);
+        final int[] methodDescr = new int[totalMethods];
         k = 0;
         for (int i = 0; i < index; i++) {
             for (int j = 0; j < method_descr[i].length; j++) {
-                CPNameAndType descr = method_descr[i][j];
+                final CPNameAndType descr = method_descr[i][j];
                 methodDescr[k] = descr.getIndex();
                 k++;
             }
@@ -562,7 +560,7 @@ public class ClassBands extends BandSet {
         writeCodeBands(out);
     }
 
-    private int sum(int[] ints) {
+    private int sum(final int[] ints) {
         int sum = 0;
         for (int i = 0; i < ints.length; i++) {
             sum += ints[i];
@@ -570,7 +568,7 @@ public class ClassBands extends BandSet {
         return sum;
     }
 
-    private void writeFieldAttributeBands(OutputStream out) throws IOException,
+    private void writeFieldAttributeBands(final OutputStream out) throws IOException,
             Pack200Exception {
         byte[] encodedBand = encodeFlags("field_flags", field_flags,
                 Codec.UNSIGNED5, Codec.UNSIGNED5, segmentHeader
@@ -603,14 +601,14 @@ public class ClassBands extends BandSet {
 
         field_RVA_bands.pack(out);
         field_RIA_bands.pack(out);
-        for (Iterator iterator = fieldAttributeBands.iterator(); iterator
+        for (final Iterator iterator = fieldAttributeBands.iterator(); iterator
                 .hasNext();) {
-            NewAttributeBands bands = (NewAttributeBands) iterator.next();
+            final NewAttributeBands bands = (NewAttributeBands) iterator.next();
             bands.pack(out);
         }
     }
 
-    private void writeMethodAttributeBands(OutputStream out)
+    private void writeMethodAttributeBands(final OutputStream out)
             throws IOException, Pack200Exception {
         byte[] encodedBand = encodeFlags("method_flags", method_flags,
                 Codec.UNSIGNED5, Codec.UNSIGNED5, segmentHeader
@@ -655,14 +653,14 @@ public class ClassBands extends BandSet {
         method_RVPA_bands.pack(out);
         method_RIPA_bands.pack(out);
         method_AD_bands.pack(out);
-        for (Iterator iterator = methodAttributeBands.iterator(); iterator
+        for (final Iterator iterator = methodAttributeBands.iterator(); iterator
                 .hasNext();) {
-            NewAttributeBands bands = (NewAttributeBands) iterator.next();
+            final NewAttributeBands bands = (NewAttributeBands) iterator.next();
             bands.pack(out);
         }
     }
 
-    private void writeClassAttributeBands(OutputStream out) throws IOException,
+    private void writeClassAttributeBands(final OutputStream out) throws IOException,
             Pack200Exception {
         byte[] encodedBand = encodeFlags("class_flags", class_flags,
                 Codec.UNSIGNED5, Codec.UNSIGNED5, segmentHeader
@@ -770,15 +768,15 @@ public class ClassBands extends BandSet {
                 + " bytes from classFileVersionMajor["
                 + classFileVersionMajor.size() + "]");
 
-        for (Iterator iterator = classAttributeBands.iterator(); iterator
+        for (final Iterator iterator = classAttributeBands.iterator(); iterator
                 .hasNext();) {
-            NewAttributeBands bands = (NewAttributeBands) iterator.next();
+            final NewAttributeBands bands = (NewAttributeBands) iterator.next();
             bands.pack(out);
         }
     }
 
-    private int[] getInts(CPClass[] cpClasses) {
-        int[] ints = new int[cpClasses.length];
+    private int[] getInts(final CPClass[] cpClasses) {
+        final int[] ints = new int[cpClasses.length];
         for (int i = 0; i < ints.length; i++) {
             if(cpClasses[i] != null) {
                 ints[i] = cpClasses[i].getIndex();
@@ -787,7 +785,7 @@ public class ClassBands extends BandSet {
         return ints;
     }
 
-    private void writeCodeBands(OutputStream out) throws IOException,
+    private void writeCodeBands(final OutputStream out) throws IOException,
             Pack200Exception {
         byte[] encodedBand = encodeBandInt("codeHeaders", codeHeaders,
                 Codec.BYTE1);
@@ -845,7 +843,7 @@ public class ClassBands extends BandSet {
         writeCodeAttributeBands(out);
     }
 
-    private void writeCodeAttributeBands(OutputStream out) throws IOException,
+    private void writeCodeAttributeBands(final OutputStream out) throws IOException,
             Pack200Exception {
         byte[] encodedBand = encodeFlags("codeFlags",
                 longListToArray(codeFlags), Codec.UNSIGNED5, Codec.UNSIGNED5,
@@ -973,15 +971,15 @@ public class ClassBands extends BandSet {
                 + " bytes from code_LocalVariableTypeTable_slot["
                 + codeLocalVariableTypeTableSlot.size() + "]");
 
-        for (Iterator iterator = codeAttributeBands.iterator(); iterator.hasNext();) {
-            NewAttributeBands bands = (NewAttributeBands) iterator.next();
+        for (final Iterator iterator = codeAttributeBands.iterator(); iterator.hasNext();) {
+            final NewAttributeBands bands = (NewAttributeBands) iterator.next();
             bands.pack(out);
         }
     }
 
-    public void addMethod(int flags, String name, String desc,
-            String signature, String[] exceptions) {
-        CPNameAndType nt = cpBands.getCPNameAndType(name, desc);
+    public void addMethod(int flags, final String name, final String desc,
+            final String signature, final String[] exceptions) {
+        final CPNameAndType nt = cpBands.getCPNameAndType(name, desc);
         tempMethodDesc.add(nt);
         if (signature != null) {
             methodSignature.add(cpBands.getCPSignature(signature));
@@ -998,7 +996,7 @@ public class ClassBands extends BandSet {
             flags = flags & ~Opcodes.ACC_DEPRECATED;
             flags = flags | (1<<20);
         }
-        tempMethodFlags.add(new Long(flags));
+        tempMethodFlags.add(Long.valueOf(flags));
         numMethodArgs = countArgs(desc);
         if(!anySyntheticMethods && ((flags & (1 << 12)) != 0) && segment.getCurrentClassReader().hasSyntheticAttributes()) {
             cpBands.addCPUtf8("Synthetic");
@@ -1026,27 +1024,28 @@ public class ClassBands extends BandSet {
             tempMethodRIPA = null;
         }
         if(codeFlags.size() > 0) {
-            long latestCodeFlag = ((Long)codeFlags.get(codeFlags.size() - 1)).longValue();
-            int latestLocalVariableTableN = codeLocalVariableTableN.get(codeLocalVariableTableN.size() - 1);
+            final long latestCodeFlag = ((Long)codeFlags.get(codeFlags.size() - 1)).longValue();
+            final int latestLocalVariableTableN = codeLocalVariableTableN.get(codeLocalVariableTableN.size() - 1);
             if(latestCodeFlag == (1 << 2) && latestLocalVariableTableN == 0) {
                 codeLocalVariableTableN.remove(codeLocalVariableTableN.size() - 1);
                 codeFlags.remove(codeFlags.size() - 1);
-                codeFlags.add(new Integer(0));
+                codeFlags.add(Integer.valueOf(0));
             }
         }
     }
 
-    protected static int countArgs(String descriptor) {
-        int bra = descriptor.indexOf('(');
-        int ket = descriptor.indexOf(')');
-        if (bra == -1 || ket == -1 || ket < bra)
+    protected static int countArgs(final String descriptor) {
+        final int bra = descriptor.indexOf('(');
+        final int ket = descriptor.indexOf(')');
+        if (bra == -1 || ket == -1 || ket < bra) {
             throw new IllegalArgumentException("No arguments");
+        }
 
         boolean inType = false;
         boolean consumingNextType = false;
         int count = 0;
         for (int i = bra + 1; i < ket; i++) {
-            char charAt = descriptor.charAt(i);
+            final char charAt = descriptor.charAt(i);
             if (inType && charAt == ';') {
                 inType = false;
                 consumingNextType = false;
@@ -1057,17 +1056,13 @@ public class ClassBands extends BandSet {
                 consumingNextType = true;
             } else if (inType) {
                 // NOP
+            } else if (consumingNextType) {
+                count++;
+                consumingNextType = false;
+            } else if (charAt == 'D' || charAt == 'J') {
+                count += 2;
             } else {
-                if (consumingNextType) {
-                    count++;
-                    consumingNextType = false;
-                } else {
-                    if (charAt == 'D' || charAt == 'J') {
-                        count += 2;
-                    } else {
-                        count++;
-                    }
-                }
+                count++;
             }
         }
         return count;
@@ -1075,7 +1070,7 @@ public class ClassBands extends BandSet {
 
     public void endOfClass() { // All the data for the current class has been
                                 // read
-        int numFields = tempFieldDesc.size();
+        final int numFields = tempFieldDesc.size();
         class_field_count[index] = numFields;
         field_descr[index] = new CPNameAndType[numFields];
         field_flags[index] = new long[numFields];
@@ -1083,7 +1078,7 @@ public class ClassBands extends BandSet {
             field_descr[index][i] = (CPNameAndType) tempFieldDesc.get(i);
             field_flags[index][i] = ((Long) tempFieldFlags.get(i)).longValue();
         }
-        int numMethods = tempMethodDesc.size();
+        final int numMethods = tempMethodDesc.size();
         class_method_count[index] = numMethods;
         method_descr[index] = new CPNameAndType[numMethods];
         method_flags[index] = new long[numMethods];
@@ -1099,7 +1094,7 @@ public class ClassBands extends BandSet {
         index++;
     }
 
-    public void addSourceFile(String source) {
+    public void addSourceFile(final String source) {
         String implicitSourceFileName = class_this[index].toString();
         if(implicitSourceFileName.indexOf('$') != -1) {
             implicitSourceFileName = implicitSourceFileName.substring(0, implicitSourceFileName.indexOf('$'));
@@ -1115,21 +1110,21 @@ public class ClassBands extends BandSet {
         class_flags[index] |= (1 << 17);
     }
 
-    public void addEnclosingMethod(String owner, String name, String desc) {
+    public void addEnclosingMethod(final String owner, final String name, final String desc) {
         class_flags[index] |= (1 << 18);
         classEnclosingMethodClass.add(cpBands.getCPClass(owner));
         classEnclosingMethodDesc.add(name == null ? null : cpBands
                 .getCPNameAndType(name, desc));
     }
 
-    public void addClassAttribute(NewAttribute attribute) {
+    public void addClassAttribute(final NewAttribute attribute) {
         // TODO: backwards calls
-        String attributeName = attribute.type;
-        for (Iterator iterator = classAttributeBands.iterator(); iterator.hasNext();) {
-            NewAttributeBands bands = (NewAttributeBands) iterator.next();
+        final String attributeName = attribute.type;
+        for (final Iterator iterator = classAttributeBands.iterator(); iterator.hasNext();) {
+            final NewAttributeBands bands = (NewAttributeBands) iterator.next();
             if(bands.getAttributeName().equals(attributeName)) {
                 bands.addAttribute(attribute);
-                int flagIndex = bands.getFlagIndex();
+                final int flagIndex = bands.getFlagIndex();
                 class_flags[index] |= (1 << flagIndex);
                 return;
             }
@@ -1137,55 +1132,55 @@ public class ClassBands extends BandSet {
         throw new RuntimeException("No suitable definition for " + attributeName);
     }
 
-    public void addFieldAttribute(NewAttribute attribute) {
-        String attributeName = attribute.type;
-        for (Iterator iterator = fieldAttributeBands.iterator(); iterator.hasNext();) {
-            NewAttributeBands bands = (NewAttributeBands) iterator.next();
+    public void addFieldAttribute(final NewAttribute attribute) {
+        final String attributeName = attribute.type;
+        for (final Iterator iterator = fieldAttributeBands.iterator(); iterator.hasNext();) {
+            final NewAttributeBands bands = (NewAttributeBands) iterator.next();
             if(bands.getAttributeName().equals(attributeName)) {
                 bands.addAttribute(attribute);
-                int flagIndex = bands.getFlagIndex();
-                Long flags = (Long)tempFieldFlags.remove(tempFieldFlags.size() - 1);
-                tempFieldFlags.add(new Long(flags.longValue() | (1 << flagIndex)));
+                final int flagIndex = bands.getFlagIndex();
+                final Long flags = (Long)tempFieldFlags.remove(tempFieldFlags.size() - 1);
+                tempFieldFlags.add(Long.valueOf(flags.longValue() | (1 << flagIndex)));
                 return;
             }
         }
         throw new RuntimeException("No suitable definition for " + attributeName);
     }
 
-    public void addMethodAttribute(NewAttribute attribute) {
-        String attributeName = attribute.type;
-        for (Iterator iterator = methodAttributeBands.iterator(); iterator.hasNext();) {
-            NewAttributeBands bands = (NewAttributeBands) iterator.next();
+    public void addMethodAttribute(final NewAttribute attribute) {
+        final String attributeName = attribute.type;
+        for (final Iterator iterator = methodAttributeBands.iterator(); iterator.hasNext();) {
+            final NewAttributeBands bands = (NewAttributeBands) iterator.next();
             if(bands.getAttributeName().equals(attributeName)) {
                 bands.addAttribute(attribute);
-                int flagIndex = bands.getFlagIndex();
-                Long flags = (Long)tempMethodFlags.remove(tempMethodFlags.size() - 1);
-                tempMethodFlags.add(new Long(flags.longValue() | (1 << flagIndex)));
+                final int flagIndex = bands.getFlagIndex();
+                final Long flags = (Long)tempMethodFlags.remove(tempMethodFlags.size() - 1);
+                tempMethodFlags.add(Long.valueOf(flags.longValue() | (1 << flagIndex)));
                 return;
             }
         }
         throw new RuntimeException("No suitable definition for " + attributeName);
     }
 
-    public void addCodeAttribute(NewAttribute attribute) {
-        String attributeName = attribute.type;
-        for (Iterator iterator = codeAttributeBands.iterator(); iterator.hasNext();) {
-            NewAttributeBands bands = (NewAttributeBands) iterator.next();
+    public void addCodeAttribute(final NewAttribute attribute) {
+        final String attributeName = attribute.type;
+        for (final Iterator iterator = codeAttributeBands.iterator(); iterator.hasNext();) {
+            final NewAttributeBands bands = (NewAttributeBands) iterator.next();
             if(bands.getAttributeName().equals(attributeName)) {
                 bands.addAttribute(attribute);
-                int flagIndex = bands.getFlagIndex();
-                Long flags = (Long)codeFlags.remove(codeFlags.size() - 1);
-                codeFlags.add(new Long(flags.longValue() | (1 << flagIndex)));
+                final int flagIndex = bands.getFlagIndex();
+                final Long flags = (Long)codeFlags.remove(codeFlags.size() - 1);
+                codeFlags.add(Long.valueOf(flags.longValue() | (1 << flagIndex)));
                 return;
             }
         }
         throw new RuntimeException("No suitable definition for " + attributeName);
     }
 
-    public void addMaxStack(int maxStack, int maxLocals) {
-        Long latestFlag = (Long) tempMethodFlags
+    public void addMaxStack(final int maxStack, int maxLocals) {
+        final Long latestFlag = (Long) tempMethodFlags
                 .remove(tempMethodFlags.size() - 1);
-        Long newFlag = new Long(latestFlag.intValue() | (1 << 17));
+        final Long newFlag = Long.valueOf(latestFlag.intValue() | (1 << 17));
         tempMethodFlags.add(newFlag);
         codeMaxStack.add(maxStack);
         if ((newFlag.longValue() & (1 << 3)) == 0) { // not static
@@ -1198,13 +1193,13 @@ public class ClassBands extends BandSet {
     public void addCode() {
         codeHandlerCount.add(0);
         if(!stripDebug) {
-            codeFlags.add(new Long((1 << 2)));
+            codeFlags.add(Long.valueOf(1 << 2));
             codeLocalVariableTableN.add(0);
         }
     }
 
-    public void addHandler(Label start, Label end, Label handler, String type) {
-        int handlers = codeHandlerCount.remove(codeHandlerCount
+    public void addHandler(final Label start, final Label end, final Label handler, final String type) {
+        final int handlers = codeHandlerCount.remove(codeHandlerCount
                 .size() - 1);
         codeHandlerCount.add(handlers + 1);
         codeHandlerStartP.add(start);
@@ -1213,11 +1208,11 @@ public class ClassBands extends BandSet {
         codeHandlerClass.add(type == null ? null : cpBands.getCPClass(type));
     }
 
-    public void addLineNumber(int line, Label start) {
-        Long latestCodeFlag = (Long) codeFlags.get(codeFlags.size() - 1);
+    public void addLineNumber(final int line, final Label start) {
+        final Long latestCodeFlag = (Long) codeFlags.get(codeFlags.size() - 1);
         if ((latestCodeFlag.intValue() & (1 << 1)) == 0) {
             codeFlags.remove(codeFlags.size() - 1);
-            codeFlags.add(new Long(latestCodeFlag.intValue() | (1 << 1)));
+            codeFlags.add(Long.valueOf(latestCodeFlag.intValue() | (1 << 1)));
             codeLineNumberTableN.add(1);
         } else {
             codeLineNumberTableN
@@ -1227,13 +1222,13 @@ public class ClassBands extends BandSet {
         codeLineNumberTableBciP.add(start);
     }
 
-    public void addLocalVariable(String name, String desc, String signature,
-            Label start, Label end, int indx) {
+    public void addLocalVariable(final String name, final String desc, final String signature,
+            final Label start, final Label end, final int indx) {
         if (signature != null) { // LocalVariableTypeTable attribute
-            Long latestCodeFlag = (Long) codeFlags.get(codeFlags.size() - 1);
+            final Long latestCodeFlag = (Long) codeFlags.get(codeFlags.size() - 1);
             if ((latestCodeFlag.intValue() & (1 << 3)) == 0) {
                 codeFlags.remove(codeFlags.size() - 1);
-                codeFlags.add(new Long(latestCodeFlag.intValue() | (1 << 3)));
+                codeFlags.add(Long.valueOf(latestCodeFlag.intValue() | (1 << 3)));
                 codeLocalVariableTypeTableN.add(1);
             } else {
                 codeLocalVariableTypeTableN
@@ -1256,7 +1251,7 @@ public class ClassBands extends BandSet {
         codeLocalVariableTableSlot.add(indx);
     }
 
-    public void doBciRenumbering(IntList bciRenumbering, Map labelsToOffsets) {
+    public void doBciRenumbering(final IntList bciRenumbering, final Map labelsToOffsets) {
         renumberBci(codeLineNumberTableBciP, bciRenumbering, labelsToOffsets);
         renumberBci(codeLocalVariableTableBciP, bciRenumbering, labelsToOffsets);
         renumberOffsetBci(codeLocalVariableTableBciP,
@@ -1272,47 +1267,49 @@ public class ClassBands extends BandSet {
         renumberDoubleOffsetBci(codeHandlerStartP, codeHandlerEndPO, codeHandlerCatchPO,
                 bciRenumbering, labelsToOffsets);
 
-        for (Iterator iterator = classAttributeBands.iterator(); iterator.hasNext();) {
-            NewAttributeBands newAttributeBandSet = (NewAttributeBands) iterator.next();
+        for (final Iterator iterator = classAttributeBands.iterator(); iterator.hasNext();) {
+            final NewAttributeBands newAttributeBandSet = (NewAttributeBands) iterator.next();
             newAttributeBandSet.renumberBci(bciRenumbering, labelsToOffsets);
         }
-        for (Iterator iterator = methodAttributeBands.iterator(); iterator.hasNext();) {
-            NewAttributeBands newAttributeBandSet = (NewAttributeBands) iterator.next();
+        for (final Iterator iterator = methodAttributeBands.iterator(); iterator.hasNext();) {
+            final NewAttributeBands newAttributeBandSet = (NewAttributeBands) iterator.next();
             newAttributeBandSet.renumberBci(bciRenumbering, labelsToOffsets);
         }
-        for (Iterator iterator = fieldAttributeBands.iterator(); iterator.hasNext();) {
-            NewAttributeBands newAttributeBandSet = (NewAttributeBands) iterator.next();
+        for (final Iterator iterator = fieldAttributeBands.iterator(); iterator.hasNext();) {
+            final NewAttributeBands newAttributeBandSet = (NewAttributeBands) iterator.next();
             newAttributeBandSet.renumberBci(bciRenumbering, labelsToOffsets);
         }
-        for (Iterator iterator = codeAttributeBands.iterator(); iterator.hasNext();) {
-            NewAttributeBands newAttributeBandSet = (NewAttributeBands) iterator.next();
+        for (final Iterator iterator = codeAttributeBands.iterator(); iterator.hasNext();) {
+            final NewAttributeBands newAttributeBandSet = (NewAttributeBands) iterator.next();
             newAttributeBandSet.renumberBci(bciRenumbering, labelsToOffsets);
         }
     }
 
-    private void renumberBci(List list, IntList bciRenumbering, Map labelsToOffsets) {
+    private void renumberBci(final List list, final IntList bciRenumbering, final Map labelsToOffsets) {
         for (int i = list.size() - 1; i >= 0; i--) {
-            Object label = list.get(i);
+            final Object label = list.get(i);
             if (label instanceof Integer) {
                 break;
-            } else if (label instanceof Label) {
+            }
+            if (label instanceof Label) {
                 list.remove(i);
-                Integer bytecodeIndex = (Integer) labelsToOffsets.get(label);
-                list.add(i, new Integer(bciRenumbering.get(bytecodeIndex.intValue())));
+                final Integer bytecodeIndex = (Integer) labelsToOffsets.get(label);
+                list.add(i, Integer.valueOf(bciRenumbering.get(bytecodeIndex.intValue())));
             }
         }
     }
 
-    private void renumberOffsetBci(List relative, List list,
-            IntList bciRenumbering, Map labelsToOffsets) {
+    private void renumberOffsetBci(final List relative, final List list,
+            final IntList bciRenumbering, final Map labelsToOffsets) {
         for (int i = list.size() - 1; i >= 0; i--) {
-            Object label = list.get(i);
+            final Object label = list.get(i);
             if (label instanceof Integer) {
                 break;
-            } else if (label instanceof Label) {
+            }
+            if (label instanceof Label) {
                 list.remove(i);
-                Integer bytecodeIndex = (Integer) labelsToOffsets.get(label);
-                Integer renumberedOffset = new Integer(bciRenumbering
+                final Integer bytecodeIndex = (Integer) labelsToOffsets.get(label);
+                final Integer renumberedOffset = Integer.valueOf(bciRenumbering
                         .get(bytecodeIndex.intValue())
                         - ((Integer) relative.get(i)).intValue());
                 list.add(i, renumberedOffset);
@@ -1320,17 +1317,18 @@ public class ClassBands extends BandSet {
         }
     }
 
-    private void renumberDoubleOffsetBci(List relative, List firstOffset, List list,
-            IntList bciRenumbering, Map labelsToOffsets) {
+    private void renumberDoubleOffsetBci(final List relative, final List firstOffset, final List list,
+            final IntList bciRenumbering, final Map labelsToOffsets) {
         // TODO: There's probably a nicer way of doing this...
         for (int i = list.size() - 1; i >= 0; i--) {
-            Object label = list.get(i);
+            final Object label = list.get(i);
             if (label instanceof Integer) {
                 break;
-            } else if (label instanceof Label) {
+            }
+            if (label instanceof Label) {
                 list.remove(i);
-                Integer bytecodeIndex = (Integer) labelsToOffsets.get(label);
-                Integer renumberedOffset = new Integer(bciRenumbering
+                final Integer bytecodeIndex = (Integer) labelsToOffsets.get(label);
+                final Integer renumberedOffset = Integer.valueOf(bciRenumbering
                         .get(bytecodeIndex.intValue())
                         - ((Integer) relative.get(i)).intValue() - ((Integer) firstOffset.get(i)).intValue());
                 list.add(i, renumberedOffset);
@@ -1350,22 +1348,22 @@ public class ClassBands extends BandSet {
         return anySyntheticMethods;
     }
 
-    public void addParameterAnnotation(int parameter, String desc,
-            boolean visible, List nameRU, List t, List values, List caseArrayN, List nestTypeRS, List nestNameRU, List nestPairN) {
+    public void addParameterAnnotation(final int parameter, final String desc,
+            final boolean visible, final List nameRU, final List t, final List values, final List caseArrayN, final List nestTypeRS, final List nestNameRU, final List nestPairN) {
         if(visible) {
             if(tempMethodRVPA == null) {
                 tempMethodRVPA = new TempParamAnnotation(numMethodArgs);
                 tempMethodRVPA.addParameterAnnotation(parameter, desc, nameRU, t, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
             }
-            Long flag = (Long) tempMethodFlags.remove(tempMethodFlags.size() - 1);
-            tempMethodFlags.add(new Long(flag.longValue() | (1<<23)));
+            final Long flag = (Long) tempMethodFlags.remove(tempMethodFlags.size() - 1);
+            tempMethodFlags.add(Long.valueOf(flag.longValue() | (1<<23)));
         } else {
             if(tempMethodRIPA == null) {
                 tempMethodRIPA = new TempParamAnnotation(numMethodArgs);
                 tempMethodRIPA.addParameterAnnotation(parameter, desc, nameRU, t, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
             }
-            Long flag = (Long) tempMethodFlags.remove(tempMethodFlags.size() - 1);
-            tempMethodFlags.add(new Long(flag.longValue() | (1<<24)));
+            final Long flag = (Long) tempMethodFlags.remove(tempMethodFlags.size() - 1);
+            tempMethodFlags.add(Long.valueOf(flag.longValue() | (1<<24)));
         }
     }
 
@@ -1383,14 +1381,14 @@ public class ClassBands extends BandSet {
         List nestNameRU = new ArrayList();
         List nestPairN = new ArrayList();
 
-        public TempParamAnnotation (int numParams) {
+        public TempParamAnnotation (final int numParams) {
             this.numParams = numParams;
             annoN = new int[numParams];
         }
 
-        public void addParameterAnnotation(int parameter, String desc,
-                List nameRU, List t, List values, List caseArrayN,
-                List nestTypeRS, List nestNameRU, List nestPairN) {
+        public void addParameterAnnotation(final int parameter, final String desc,
+                final List nameRU, final List t, final List values, final List caseArrayN,
+                final List nestTypeRS, final List nestNameRU, final List nestPairN) {
             annoN[parameter]++;
             typeRS.add(desc);
             pairN.add(nameRU.size());
@@ -1404,7 +1402,7 @@ public class ClassBands extends BandSet {
         }
     }
 
-    public void addAnnotation(int context, String desc, boolean visible, List nameRU, List t, List values, List caseArrayN, List nestTypeRS, List nestNameRU, List nestPairN) {
+    public void addAnnotation(final int context, final String desc, final boolean visible, final List nameRU, final List t, final List values, final List caseArrayN, final List nestTypeRS, final List nestNameRU, final List nestPairN) {
         switch (context) {
         case MetadataBandGroup.CONTEXT_CLASS:
             if(visible) {
@@ -1428,52 +1426,52 @@ public class ClassBands extends BandSet {
         case MetadataBandGroup.CONTEXT_FIELD:
             if(visible) {
                 field_RVA_bands.addAnnotation(desc, nameRU, t, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
-                Long flag = (Long) tempFieldFlags.remove(tempFieldFlags.size() - 1);
+                final Long flag = (Long) tempFieldFlags.remove(tempFieldFlags.size() - 1);
                 if((flag.intValue() & (1<<21)) != 0) {
                     field_RVA_bands.incrementAnnoN();
                 } else {
                     field_RVA_bands.newEntryInAnnoN();
                 }
-                tempFieldFlags.add(new Long(flag.intValue() | (1<<21)));
+                tempFieldFlags.add(Long.valueOf(flag.intValue() | (1<<21)));
             } else {
                 field_RIA_bands.addAnnotation(desc, nameRU, t, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
-                Long flag = (Long) tempFieldFlags.remove(tempFieldFlags.size() - 1);
+                final Long flag = (Long) tempFieldFlags.remove(tempFieldFlags.size() - 1);
                 if((flag.intValue() & (1<<22)) != 0) {
                     field_RIA_bands.incrementAnnoN();
                 } else {
                     field_RIA_bands.newEntryInAnnoN();
                 }
-                tempFieldFlags.add(new Long(flag.intValue() | (1<<22)));
+                tempFieldFlags.add(Long.valueOf(flag.intValue() | (1<<22)));
             }
             break;
         case MetadataBandGroup.CONTEXT_METHOD:
             if(visible) {
                 method_RVA_bands.addAnnotation(desc, nameRU, t, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
-                Long flag = (Long) tempMethodFlags.remove(tempMethodFlags.size() - 1);
+                final Long flag = (Long) tempMethodFlags.remove(tempMethodFlags.size() - 1);
                 if((flag.intValue() & (1<<21)) != 0) {
                     method_RVA_bands.incrementAnnoN();
                 } else {
                     method_RVA_bands.newEntryInAnnoN();
                 }
-                tempMethodFlags.add(new Long(flag.intValue() | (1<<21)));
+                tempMethodFlags.add(Long.valueOf(flag.intValue() | (1<<21)));
             } else {
                 method_RIA_bands.addAnnotation(desc, nameRU, t, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
-                Long flag = (Long) tempMethodFlags.remove(tempMethodFlags.size() - 1);
+                final Long flag = (Long) tempMethodFlags.remove(tempMethodFlags.size() - 1);
                 if((flag.intValue() & (1<<22)) != 0) {
                     method_RIA_bands.incrementAnnoN();
                 } else {
                     method_RIA_bands.newEntryInAnnoN();
                 }
-                tempMethodFlags.add(new Long(flag.intValue() | (1<<22)));
+                tempMethodFlags.add(Long.valueOf(flag.intValue() | (1<<22)));
             }
             break;
         }
     }
 
-    public void addAnnotationDefault(List nameRU, List t, List values, List caseArrayN, List nestTypeRS, List nestNameRU, List nestPairN) {
+    public void addAnnotationDefault(final List nameRU, final List t, final List values, final List caseArrayN, final List nestTypeRS, final List nestNameRU, final List nestPairN) {
         method_AD_bands.addAnnotation(null, nameRU, t, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
-        Long flag = (Long) tempMethodFlags.remove(tempMethodFlags.size() - 1);
-        tempMethodFlags.add(new Long(flag.longValue() | (1<<25)));
+        final Long flag = (Long) tempMethodFlags.remove(tempMethodFlags.size() - 1);
+        tempMethodFlags.add(Long.valueOf(flag.longValue() | (1<<25)));
     }
 
     /**
@@ -1500,9 +1498,9 @@ public class ClassBands extends BandSet {
         if ((class_flags[index] & (1 << 22)) != 0) {
             class_RIA_bands.removeLatest();
         }
-        for (Iterator iterator = tempFieldFlags.iterator(); iterator.hasNext();) {
-            Long flagsL = (Long) iterator.next();
-            long flags = flagsL.longValue();
+        for (final Iterator iterator = tempFieldFlags.iterator(); iterator.hasNext();) {
+            final Long flagsL = (Long) iterator.next();
+            final long flags = flagsL.longValue();
             if ((flags & (1 << 19)) != 0) {
                 fieldSignature.remove(fieldSignature.size() - 1);
             }
@@ -1516,14 +1514,14 @@ public class ClassBands extends BandSet {
                 field_RIA_bands.removeLatest();
             }
         }
-        for (Iterator iterator = tempMethodFlags.iterator(); iterator.hasNext();) {
-            Long flagsL = (Long) iterator.next();
-            long flags = flagsL.longValue();
+        for (final Iterator iterator = tempMethodFlags.iterator(); iterator.hasNext();) {
+            final Long flagsL = (Long) iterator.next();
+            final long flags = flagsL.longValue();
             if ((flags & (1 << 19)) != 0) {
                 methodSignature.remove(methodSignature.size() - 1);
             }
             if ((flags & (1 << 18)) != 0) {
-                int exceptions = methodExceptionNumber
+                final int exceptions = methodExceptionNumber
                         .remove(methodExceptionNumber.size() - 1);
                 for (int i = 0; i < exceptions; i++) {
                     methodExceptionClasses
@@ -1533,22 +1531,22 @@ public class ClassBands extends BandSet {
             if ((flags & (1 << 17)) != 0) { // has code attribute
                 codeMaxLocals.remove(codeMaxLocals.size() - 1);
                 codeMaxStack.remove(codeMaxStack.size() - 1);
-                int handlers = codeHandlerCount
+                final int handlers = codeHandlerCount
                         .remove(codeHandlerCount.size() - 1);
                 for (int i = 0; i < handlers; i++) {
-                    int index = codeHandlerStartP.size() - 1;
+                    final int index = codeHandlerStartP.size() - 1;
                     codeHandlerStartP.remove(index);
                     codeHandlerEndPO.remove(index);
                     codeHandlerCatchPO.remove(index);
                     codeHandlerClass.remove(index);
                 }
                 if (!stripDebug) {
-                    long cdeFlags = ((Long) codeFlags
+                    final long cdeFlags = ((Long) codeFlags
                             .remove(codeFlags.size() - 1)).longValue();
-                    int numLocalVariables = codeLocalVariableTableN
+                    final int numLocalVariables = codeLocalVariableTableN
                             .remove(codeLocalVariableTableN.size() - 1);
                     for (int i = 0; i < numLocalVariables; i++) {
-                        int location = codeLocalVariableTableBciP.size() - 1;
+                        final int location = codeLocalVariableTableBciP.size() - 1;
                         codeLocalVariableTableBciP.remove(location);
                         codeLocalVariableTableSpanO.remove(location);
                         codeLocalVariableTableNameRU.remove(location);
@@ -1556,10 +1554,10 @@ public class ClassBands extends BandSet {
                         codeLocalVariableTableSlot.remove(location);
                     }
                     if ((cdeFlags & (1 << 3)) != 0) {
-                        int numLocalVariablesInTypeTable = codeLocalVariableTypeTableN
+                        final int numLocalVariablesInTypeTable = codeLocalVariableTypeTableN
                                 .remove(codeLocalVariableTypeTableN.size() - 1);
                         for (int i = 0; i < numLocalVariablesInTypeTable; i++) {
-                            int location = codeLocalVariableTypeTableBciP
+                            final int location = codeLocalVariableTypeTableBciP
                                     .size() - 1;
                             codeLocalVariableTypeTableBciP.remove(location);
                             codeLocalVariableTypeTableSpanO.remove(location);
@@ -1569,10 +1567,10 @@ public class ClassBands extends BandSet {
                         }
                     }
                     if ((cdeFlags & (1 << 1)) != 0) {
-                        int numLineNumbers = codeLineNumberTableN
+                        final int numLineNumbers = codeLineNumberTableN
                                 .remove(codeLineNumberTableN.size() - 1);
                         for (int i = 0; i < numLineNumbers; i++) {
-                            int location = codeLineNumberTableBciP.size() - 1;
+                            final int location = codeLineNumberTableBciP.size() - 1;
                             codeLineNumberTableBciP.remove(location);
                             codeLineNumberTableLine.remove(location);
                         }

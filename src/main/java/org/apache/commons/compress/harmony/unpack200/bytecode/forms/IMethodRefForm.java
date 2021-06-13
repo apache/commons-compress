@@ -27,14 +27,16 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public class IMethodRefForm extends ReferenceForm {
 
-    public IMethodRefForm(int opcode, String name, int[] rewrite) {
+    public IMethodRefForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
-    protected int getOffset(OperandManager operandManager) {
+    @Override
+    protected int getOffset(final OperandManager operandManager) {
         return operandManager.nextIMethodRef();
     }
 
+    @Override
     protected int getPoolID() {
         return SegmentConstantPool.CP_IMETHOD;
     }
@@ -46,8 +48,9 @@ public class IMethodRefForm extends ReferenceForm {
      *      org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
      *      org.apache.commons.compress.harmony.unpack200.Segment)
      */
-    public void setByteCodeOperands(ByteCode byteCode,
-            OperandManager operandManager, int codeLength) {
+    @Override
+    public void setByteCodeOperands(final ByteCode byteCode,
+            final OperandManager operandManager, final int codeLength) {
         super.setByteCodeOperands(byteCode, operandManager, codeLength);
         final int count = ((CPInterfaceMethodRef) byteCode
                 .getNestedClassFileEntries()[0]).invokeInterfaceCount();

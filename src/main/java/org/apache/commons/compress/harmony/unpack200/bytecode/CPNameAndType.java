@@ -43,7 +43,7 @@ public class CPNameAndType extends ConstantPoolEntry {
      * @throws NullPointerException
      *             if name or descriptor is null
      */
-    public CPNameAndType(CPUTF8 name, CPUTF8 descriptor, int globalIndex) {
+    public CPNameAndType(final CPUTF8 name, final CPUTF8 descriptor, final int globalIndex) {
         super(ConstantPoolEntry.CP_NameAndType, globalIndex);
         this.name = name;
         this.descriptor = descriptor;
@@ -52,11 +52,13 @@ public class CPNameAndType extends ConstantPoolEntry {
         }
     }
 
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         return new ClassFileEntry[] { name, descriptor };
     }
 
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         descriptorIndex = pool.indexOf(descriptor);
         nameIndex = pool.indexOf(name);
@@ -67,11 +69,13 @@ public class CPNameAndType extends ConstantPoolEntry {
      * attributes_count; attribute_info attributes[attributes_count]; }
      */
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(nameIndex);
         dos.writeShort(descriptorIndex);
     }
 
+    @Override
     public String toString() {
         return "NameAndType: " + name + "(" + descriptor + ")";
     }
@@ -88,24 +92,32 @@ public class CPNameAndType extends ConstantPoolEntry {
         cachedHashCode = result;
     }
 
+    @Override
     public int hashCode() {
-        if (!hashcodeComputed)
+        if (!hashcodeComputed) {
             generateHashCode();
+        }
         return cachedHashCode;
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj)
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         final CPNameAndType other = (CPNameAndType) obj;
-        if (!descriptor.equals(other.descriptor))
+        if (!descriptor.equals(other.descriptor)) {
             return false;
-        if (!name.equals(other.name))
+        }
+        if (!name.equals(other.name)) {
             return false;
+        }
         return true;
     }
 

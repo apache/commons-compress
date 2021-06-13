@@ -77,13 +77,13 @@ public class OperandManager {
     String superClass;
     String newClass;
 
-    public OperandManager(int[] bcCaseCount, int[] bcCaseValue, int[] bcByte,
-            int[] bcShort, int[] bcLocal, int[] bcLabel, int[] bcIntRef,
-            int[] bcFloatRef, int[] bcLongRef, int[] bcDoubleRef,
-            int[] bcStringRef, int[] bcClassRef, int[] bcFieldRef,
-            int[] bcMethodRef, int[] bcIMethodRef, int[] bcThisField,
-            int[] bcSuperField, int[] bcThisMethod, int[] bcSuperMethod,
-            int[] bcInitRef, int[] wideByteCodes) {
+    public OperandManager(final int[] bcCaseCount, final int[] bcCaseValue, final int[] bcByte,
+            final int[] bcShort, final int[] bcLocal, final int[] bcLabel, final int[] bcIntRef,
+            final int[] bcFloatRef, final int[] bcLongRef, final int[] bcDoubleRef,
+            final int[] bcStringRef, final int[] bcClassRef, final int[] bcFieldRef,
+            final int[] bcMethodRef, final int[] bcIMethodRef, final int[] bcThisField,
+            final int[] bcSuperField, final int[] bcThisMethod, final int[] bcSuperMethod,
+            final int[] bcInitRef, final int[] wideByteCodes) {
         this.bcCaseCount = bcCaseCount;
         this.bcCaseValue = bcCaseValue;
         this.bcByte = bcByte;
@@ -192,7 +192,7 @@ public class OperandManager {
         return wideByteCodes[wideByteCodeIndex++];
     }
 
-    public void setSegment(Segment segment) {
+    public void setSegment(final Segment segment) {
         this.segment = segment;
     }
 
@@ -200,39 +200,36 @@ public class OperandManager {
         return segment.getConstantPool();
     }
 
-    public void setCurrentClass(String string) {
+    public void setCurrentClass(final String string) {
         currentClass = string;
     }
 
-    public void setSuperClass(String string) {
+    public void setSuperClass(final String string) {
         superClass = string;
     }
 
-    public void setNewClass(String string) {
+    public void setNewClass(final String string) {
         newClass = string;
     }
 
     public String getCurrentClass() {
         if (null == currentClass) {
             throw new Error("Current class not set yet");
-        } else {
-            return currentClass;
         }
+        return currentClass;
     }
 
     public String getSuperClass() {
         if (null == superClass) {
             throw new Error("SuperClass not set yet");
-        } else {
-            return superClass;
         }
+        return superClass;
     }
 
     public String getNewClass() {
         if (null == newClass) {
             throw new Error("New class not set yet");
-        } else {
-            return newClass;
         }
+        return newClass;
     }
 }

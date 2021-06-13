@@ -57,13 +57,13 @@ public class Messages {
      *            String the key to look up.
      * @return String the message for that key in the system message bundle.
      */
-    static public String getString(String msg) {
+    static public String getString(final String msg) {
         if (bundle == null) {
             return msg;
         }
         try {
             return bundle.getString(msg);
-        } catch (MissingResourceException e) {
+        } catch (final MissingResourceException e) {
             return "Missing message: " + msg; //$NON-NLS-1$
         }
     }
@@ -77,7 +77,7 @@ public class Messages {
      *            Object the object to insert in the formatted output.
      * @return String the message for that key in the system message bundle.
      */
-    static public String getString(String msg, Object arg) {
+    static public String getString(final String msg, final Object arg) {
         return getString(msg, new Object[] { arg });
     }
 
@@ -90,7 +90,7 @@ public class Messages {
      *            int the integer to insert in the formatted output.
      * @return String the message for that key in the system message bundle.
      */
-    static public String getString(String msg, int arg) {
+    static public String getString(final String msg, final int arg) {
         return getString(msg, new Object[] { Integer.toString(arg) });
     }
 
@@ -103,7 +103,7 @@ public class Messages {
      *            char the character to insert in the formatted output.
      * @return String the message for that key in the system message bundle.
      */
-    static public String getString(String msg, char arg) {
+    static public String getString(final String msg, final char arg) {
         return getString(msg, new Object[] { String.valueOf(arg) });
     }
 
@@ -118,7 +118,7 @@ public class Messages {
      *            Object another object to insert in the formatted output.
      * @return String the message for that key in the system message bundle.
      */
-    static public String getString(String msg, Object arg1, Object arg2) {
+    static public String getString(final String msg, final Object arg1, final Object arg2) {
         return getString(msg, new Object[] { arg1, arg2 });
     }
 
@@ -131,13 +131,13 @@ public class Messages {
      *            Object[] the objects to insert in the formatted output.
      * @return String the message for that key in the system message bundle.
      */
-    static public String getString(String msg, Object[] args) {
+    static public String getString(final String msg, final Object[] args) {
         String format = msg;
 
         if (bundle != null) {
             try {
                 format = bundle.getString(msg);
-            } catch (MissingResourceException e) {
+            } catch (final MissingResourceException e) {
                 // ignore
             }
         }
@@ -161,10 +161,10 @@ public class Messages {
      *            Object[] the arguments to use.
      * @return String the formatted message.
      */
-    public static String format(String format, Object[] args) {
-        StringBuilder answer = new StringBuilder(format.length()
+    public static String format(final String format, final Object[] args) {
+        final StringBuilder answer = new StringBuilder(format.length()
                 + (args.length * 20));
-        String[] argStrings = new String[args.length];
+        final String[] argStrings = new String[args.length];
         for (int i = 0; i < args.length; ++i) {
             if (args[i] == null) {
                 argStrings[i] = "<null>"; //$NON-NLS-1$
@@ -182,34 +182,32 @@ public class Messages {
                 }
                 answer.append('{');
                 lastI = i + 1;
+            } else // It's a format character.
+            if (i > format.length() - 3) {
+                // Bad format, just print and loop.
+                answer.append(format.substring(lastI));
+                lastI = format.length();
             } else {
-                // It's a format character.
-                if (i > format.length() - 3) {
+                final int argnum = (byte) Character.digit(format.charAt(i + 1),
+                        10);
+                if (argnum < 0 || format.charAt(i + 2) != '}') {
                     // Bad format, just print and loop.
-                    answer.append(format.substring(lastI, format.length()));
-                    lastI = format.length();
+                    answer.append(format.substring(lastI, i + 1));
+                    lastI = i + 1;
                 } else {
-                    int argnum = (byte) Character.digit(format.charAt(i + 1),
-                            10);
-                    if (argnum < 0 || format.charAt(i + 2) != '}') {
-                        // Bad format, just print and loop.
-                        answer.append(format.substring(lastI, i + 1));
-                        lastI = i + 1;
+                    // Got a good one!
+                    answer.append(format.substring(lastI, i));
+                    if (argnum >= argStrings.length) {
+                        answer.append("<missing argument>"); //$NON-NLS-1$
                     } else {
-                        // Got a good one!
-                        answer.append(format.substring(lastI, i));
-                        if (argnum >= argStrings.length) {
-                            answer.append("<missing argument>"); //$NON-NLS-1$
-                        } else {
-                            answer.append(argStrings[argnum]);
-                        }
-                        lastI = i + 3;
+                        answer.append(argStrings[argnum]);
                     }
+                    lastI = i + 3;
                 }
             }
         }
         if (lastI < format.length()) {
-            answer.append(format.substring(lastI, format.length()));
+            answer.append(format.substring(lastI));
         }
         return answer.toString();
     }
@@ -228,14 +226,10 @@ public class Messages {
             // VM.bootCallerClassLoader() returns null
             final ClassLoader loader = null;//VM.bootCallerClassLoader();
             return (ResourceBundle) AccessController
-                    .doPrivileged(new PrivilegedAction<Object>() {
-                        public Object run() {
-                            return ResourceBundle.getBundle(resource, locale,
-                                    loader != null ? loader : ClassLoader
-                                            .getSystemClassLoader());
-                        }
-                    });
-        } catch (MissingResourceException e) {
+                    .doPrivileged((PrivilegedAction<Object>) () -> ResourceBundle.getBundle(resource, locale,
+                            loader != null ? loader : ClassLoader
+                                    .getSystemClassLoader()));
+        } catch (final MissingResourceException e) {
             // ignore
         }
         return null;
@@ -246,7 +240,7 @@ public class Messages {
         try {
             bundle = setLocale(Locale.getDefault(),
                     "org.apache.commons.compress.harmony.archive.internal.nls.messages"); //$NON-NLS-1$
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             e.printStackTrace();
         }
     }

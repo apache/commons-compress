@@ -28,7 +28,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public abstract class ReferenceForm extends ByteCodeForm {
 
-    public ReferenceForm(int opcode, String name, int[] rewrite) {
+    public ReferenceForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
@@ -36,8 +36,8 @@ public abstract class ReferenceForm extends ByteCodeForm {
 
     protected abstract int getOffset(OperandManager operandManager);
 
-    protected void setNestedEntries(ByteCode byteCode,
-            OperandManager operandManager, int offset) throws Pack200Exception {
+    protected void setNestedEntries(final ByteCode byteCode,
+            final OperandManager operandManager, final int offset) throws Pack200Exception {
         final SegmentConstantPool globalPool = operandManager
                 .globalConstantPool();
         ClassFileEntry[] nested = null;
@@ -57,8 +57,9 @@ public abstract class ReferenceForm extends ByteCodeForm {
      *      org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
      *      org.apache.commons.compress.harmony.unpack200.Segment)
      */
-    public void setByteCodeOperands(ByteCode byteCode,
-            OperandManager operandManager, int codeLength) {
+    @Override
+    public void setByteCodeOperands(final ByteCode byteCode,
+            final OperandManager operandManager, final int codeLength) {
         final int offset = getOffset(operandManager);
         try {
             setNestedEntries(byteCode, operandManager, offset);

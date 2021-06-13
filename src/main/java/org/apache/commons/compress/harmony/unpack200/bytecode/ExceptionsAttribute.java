@@ -27,10 +27,11 @@ public class ExceptionsAttribute extends Attribute {
 
     private static CPUTF8 attributeName;
 
-    private static int hashCode(Object[] array) {
+    private static int hashCode(final Object[] array) {
         final int prime = 31;
-        if (array == null)
+        if (array == null) {
             return 0;
+        }
         int result = 1;
         for (int index = 0; index < array.length; index++) {
             result = prime * result
@@ -43,30 +44,37 @@ public class ExceptionsAttribute extends Attribute {
 
     private final CPClass[] exceptions;
 
-    public ExceptionsAttribute(CPClass[] exceptions) {
+    public ExceptionsAttribute(final CPClass[] exceptions) {
         super(attributeName);
         this.exceptions = exceptions;
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj)
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (!super.equals(obj))
+        }
+        if (!super.equals(obj)) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         final ExceptionsAttribute other = (ExceptionsAttribute) obj;
-        if (!Arrays.equals(exceptions, other.exceptions))
+        if (!Arrays.equals(exceptions, other.exceptions)) {
             return false;
+        }
         return true;
     }
 
+    @Override
     protected int getLength() {
         return 2 + 2 * exceptions.length;
     }
 
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        ClassFileEntry[] result = new ClassFileEntry[exceptions.length + 1];
+        final ClassFileEntry[] result = new ClassFileEntry[exceptions.length + 1];
         for (int i = 0; i < exceptions.length; i++) {
             result[i] = exceptions[i];
         }
@@ -74,6 +82,7 @@ public class ExceptionsAttribute extends Attribute {
         return result;
     }
 
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
@@ -81,7 +90,8 @@ public class ExceptionsAttribute extends Attribute {
         return result;
     }
 
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         exceptionIndexes = new int[exceptions.length];
         for (int i = 0; i < exceptions.length; i++) {
@@ -90,8 +100,9 @@ public class ExceptionsAttribute extends Attribute {
         }
     }
 
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        final StringBuffer sb = new StringBuffer();
         sb.append("Exceptions: ");
         for (int i = 0; i < exceptions.length; i++) {
             sb.append(exceptions[i]);
@@ -100,14 +111,15 @@ public class ExceptionsAttribute extends Attribute {
         return sb.toString();
     }
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(exceptionIndexes.length);
         for (int i = 0; i < exceptionIndexes.length; i++) {
             dos.writeShort(exceptionIndexes[i]);
         }
     }
 
-    public static void setAttributeName(CPUTF8 cpUTF8Value) {
+    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
 

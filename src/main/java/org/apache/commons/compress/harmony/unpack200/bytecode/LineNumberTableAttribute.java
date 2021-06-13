@@ -29,23 +29,25 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
     private final int[] line_numbers;
     private static CPUTF8 attributeName;
 
-    public static void setAttributeName(CPUTF8 cpUTF8Value) {
+    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
 
-    public LineNumberTableAttribute(int line_number_table_length,
-            int[] start_pcs, int[] line_numbers) {
+    public LineNumberTableAttribute(final int line_number_table_length,
+            final int[] start_pcs, final int[] line_numbers) {
         super(attributeName);
         this.line_number_table_length = line_number_table_length;
         this.start_pcs = start_pcs;
         this.line_numbers = line_numbers;
     }
 
+    @Override
     protected int getLength() {
         return 2 + (4 * line_number_table_length);
     }
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(line_number_table_length);
         for (int i = 0; i < line_number_table_length; i++) {
             dos.writeShort(start_pcs[i]);
@@ -58,6 +60,7 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
      *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#toString()
      */
+    @Override
     public String toString() {
         return "LineNumberTable: " + line_number_table_length + " lines";
     }
@@ -67,12 +70,14 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
      *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#getNestedClassFileEntries()
      */
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         return new ClassFileEntry[] { getAttributeName() };
     }
 
 
-    public boolean equals(Object obj) {
+    @Override
+    public boolean equals(final Object obj) {
         return this == obj;
     }
 
@@ -81,10 +86,12 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
      *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#resolve(org.apache.commons.compress.harmony.unpack200.bytecode.ClassConstantPool)
      */
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
     }
 
+    @Override
     protected int[] getStartPCs() {
         return start_pcs;
     }

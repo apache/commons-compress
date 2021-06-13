@@ -34,7 +34,7 @@ public class SegmentConstantPool {
     /**
      * @param bands TODO
      */
-    public SegmentConstantPool(CpBands bands) {
+    public SegmentConstantPool(final CpBands bands) {
         this.bands = bands;
     }
 
@@ -58,33 +58,42 @@ public class SegmentConstantPool {
     protected static final String INITSTRING = "<init>";
     protected static final String REGEX_MATCH_INIT = "^" + INITSTRING + ".*";
 
-    public ClassFileEntry getValue(int cp, long value) throws Pack200Exception {
-        int index = (int) value;
+    public ClassFileEntry getValue(final int cp, final long value) throws Pack200Exception {
+        final int index = (int) value;
         if (index == -1) {
             return null;
-        } else if (index < 0) {
-            throw new Pack200Exception("Cannot have a negative range");
-        } else if (cp == UTF_8) {
-            return bands.cpUTF8Value(index);
-        } else if (cp == CP_INT) {
-            return bands.cpIntegerValue(index);
-        } else if (cp == CP_FLOAT) {
-            return bands.cpFloatValue(index);
-        } else if (cp == CP_LONG) {
-            return bands.cpLongValue(index);
-        } else if (cp == CP_DOUBLE) {
-            return bands.cpDoubleValue(index);
-        } else if (cp == CP_STRING) {
-            return bands.cpStringValue(index);
-        } else if (cp == CP_CLASS) {
-            return bands.cpClassValue(index);
-        } else if (cp == SIGNATURE) {
-            return bands.cpSignatureValue(index);
-        } else if (cp == CP_DESCR) {
-            return bands.cpNameAndTypeValue(index);
-        } else {
-            throw new Error("Tried to get a value I don't know about: " + cp);
         }
+        if (index < 0) {
+            throw new Pack200Exception("Cannot have a negative range");
+        }
+        if (cp == UTF_8) {
+            return bands.cpUTF8Value(index);
+        }
+        if (cp == CP_INT) {
+            return bands.cpIntegerValue(index);
+        }
+        if (cp == CP_FLOAT) {
+            return bands.cpFloatValue(index);
+        }
+        if (cp == CP_LONG) {
+            return bands.cpLongValue(index);
+        }
+        if (cp == CP_DOUBLE) {
+            return bands.cpDoubleValue(index);
+        }
+        if (cp == CP_STRING) {
+            return bands.cpStringValue(index);
+        }
+        if (cp == CP_CLASS) {
+            return bands.cpClassValue(index);
+        }
+        if (cp == SIGNATURE) {
+            return bands.cpSignatureValue(index);
+        }
+        if (cp == CP_DESCR) {
+            return bands.cpNameAndTypeValue(index);
+        }
+        throw new Error("Tried to get a value I don't know about: " + cp);
     }
 
     /**
@@ -101,9 +110,9 @@ public class SegmentConstantPool {
      * @return ConstantPoolEntry
      * @throws Pack200Exception TODO
      */
-    public ConstantPoolEntry getClassSpecificPoolEntry(int cp,
-            long desiredIndex, String desiredClassName) throws Pack200Exception {
-        int index = (int) desiredIndex;
+    public ConstantPoolEntry getClassSpecificPoolEntry(final int cp,
+            final long desiredIndex, final String desiredClassName) throws Pack200Exception {
+        final int index = (int) desiredIndex;
         int realIndex = -1;
         String array[] = null;
         if (cp == CP_FIELD) {
@@ -127,15 +136,15 @@ public class SegmentConstantPool {
      *            Class name to look for (form: java/lang/Object)
      * @return CPClass for that class name, or null if not found.
      */
-    public ConstantPoolEntry getClassPoolEntry(String name) {
-        String classes[] = bands.getCpClass();
-        int index = matchSpecificPoolEntryIndex(classes, name, 0);
+    public ConstantPoolEntry getClassPoolEntry(final String name) {
+        final String classes[] = bands.getCpClass();
+        final int index = matchSpecificPoolEntryIndex(classes, name, 0);
         if (index == -1) {
             return null;
         }
         try {
             return getConstantPoolEntry(CP_CLASS, index);
-        } catch (Pack200Exception ex) {
+        } catch (final Pack200Exception ex) {
             throw new Error("Error getting class pool entry");
         }
     }
@@ -152,18 +161,17 @@ public class SegmentConstantPool {
      * @return CPMethod init method
      * @throws Pack200Exception TODO
      */
-    public ConstantPoolEntry getInitMethodPoolEntry(int cp, long value,
-            String desiredClassName) throws Pack200Exception {
+    public ConstantPoolEntry getInitMethodPoolEntry(final int cp, final long value,
+            final String desiredClassName) throws Pack200Exception {
         int realIndex = -1;
-        String desiredRegex = REGEX_MATCH_INIT;
-        if (cp == CP_METHOD) {
-            realIndex = matchSpecificPoolEntryIndex(bands.getCpMethodClass(),
-                    bands.getCpMethodDescriptor(), desiredClassName,
-                    desiredRegex, (int) value);
-        } else {
+        final String desiredRegex = REGEX_MATCH_INIT;
+        if (cp != CP_METHOD) {
             // TODO really an error?
             throw new Error("Nothing but CP_METHOD can be an <init>");
         }
+        realIndex = matchSpecificPoolEntryIndex(bands.getCpMethodClass(),
+                bands.getCpMethodDescriptor(), desiredClassName,
+                desiredRegex, (int) value);
         return getConstantPoolEntry(cp, realIndex);
     }
 
@@ -194,8 +202,8 @@ public class SegmentConstantPool {
      *            nth element with that match (counting from 0)
      * @return int index into nameArray, or -1 if not found.
      */
-    protected int matchSpecificPoolEntryIndex(String[] nameArray,
-            String compareString, int desiredIndex) {
+    protected int matchSpecificPoolEntryIndex(final String[] nameArray,
+            final String compareString, final int desiredIndex) {
         return matchSpecificPoolEntryIndex(nameArray, nameArray, compareString,
                 REGEX_MATCH_ALL, desiredIndex);
     }
@@ -222,18 +230,18 @@ public class SegmentConstantPool {
      * @return int index that represents the position of the nth hit in
      *         primaryArray and secondaryArray
      */
-    protected int matchSpecificPoolEntryIndex(String[] primaryArray,
-	    String[] secondaryArray, String primaryCompareString,
-	    String secondaryCompareRegex, int desiredIndex) {
+    protected int matchSpecificPoolEntryIndex(final String[] primaryArray,
+	    final String[] secondaryArray, final String primaryCompareString,
+	    final String secondaryCompareRegex, final int desiredIndex) {
 	int instanceCount = -1;
-	List indexList = arrayCache.indexesForArrayKey(primaryArray, primaryCompareString);
+	final List indexList = arrayCache.indexesForArrayKey(primaryArray, primaryCompareString);
 	if(indexList.isEmpty()) {
 	    // Primary key not found, no chance of finding secondary
 	    return -1;
 	}
 
 	for(int index=0; index < indexList.size(); index++) {
-	    int arrayIndex = ((Integer)indexList.get(index)).intValue();
+	    final int arrayIndex = ((Integer)indexList.get(index)).intValue();
 	    if(regexMatches(secondaryCompareRegex, secondaryArray[arrayIndex])) {
 		instanceCount++;
 		if(instanceCount == desiredIndex) {
@@ -261,8 +269,8 @@ public class SegmentConstantPool {
      * @return boolean true if the compareString matches the regexString;
      *         otherwise false.
      */
-    protected static boolean regexMatches(String regexString,
-            String compareString) {
+    protected static boolean regexMatches(final String regexString,
+            final String compareString) {
         if (REGEX_MATCH_ALL.equals(regexString)) {
             return true;
         }
@@ -277,43 +285,55 @@ public class SegmentConstantPool {
                 + regexString);
     }
 
-    public ConstantPoolEntry getConstantPoolEntry(int cp, long value)
+    public ConstantPoolEntry getConstantPoolEntry(final int cp, final long value)
             throws Pack200Exception {
-        int index = (int) value;
+        final int index = (int) value;
         if (index == -1) {
             return null;
-        } else if (index < 0) {
+        }
+        if (index < 0) {
             throw new Pack200Exception("Cannot have a negative range");
-        } else if (cp == UTF_8) {
+        }
+        if (cp == UTF_8) {
             return bands.cpUTF8Value(index);
-        } else if (cp == CP_INT) {
+        }
+        if (cp == CP_INT) {
             return bands.cpIntegerValue(index);
-        } else if (cp == CP_FLOAT) {
+        }
+        if (cp == CP_FLOAT) {
             return bands.cpFloatValue(index);
-        } else if (cp == CP_LONG) {
+        }
+        if (cp == CP_LONG) {
             return bands.cpLongValue(index);
-        } else if (cp == CP_DOUBLE) {
+        }
+        if (cp == CP_DOUBLE) {
             return bands.cpDoubleValue(index);
-        } else if (cp == CP_STRING) {
+        }
+        if (cp == CP_STRING) {
             return bands.cpStringValue(index);
-        } else if (cp == CP_CLASS) {
+        }
+        if (cp == CP_CLASS) {
             return bands.cpClassValue(index);
-        } else if (cp == SIGNATURE) {
+        }
+        if (cp == SIGNATURE) {
             throw new Error("I don't know what to do with signatures yet");
             // return null /* new CPSignature(bands.getCpSignature()[index]) */;
-        } else if (cp == CP_DESCR) {
+        }
+        if (cp == CP_DESCR) {
             throw new Error("I don't know what to do with descriptors yet");
             // return null /* new CPDescriptor(bands.getCpDescriptor()[index])
             // */;
-        } else if (cp == CP_FIELD) {
-            return bands.cpFieldValue(index);
-        } else if (cp == CP_METHOD) {
-            return bands.cpMethodValue(index);
-        } else if (cp == CP_IMETHOD) {
-            return bands.cpIMethodValue(index);
-        } else {
-            // etc
-            throw new Error("Get value incomplete");
         }
+        if (cp == CP_FIELD) {
+            return bands.cpFieldValue(index);
+        }
+        if (cp == CP_METHOD) {
+            return bands.cpMethodValue(index);
+        }
+        if (cp == CP_IMETHOD) {
+            return bands.cpIMethodValue(index);
+        }
+        // etc
+        throw new Error("Get value incomplete");
     }
 }

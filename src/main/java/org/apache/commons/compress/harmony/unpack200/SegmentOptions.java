@@ -60,7 +60,7 @@ public class SegmentOptions {
      */
     private static final int UNUSED = -1 << 13 | 1 << 3;
 
-    private int options;
+    private final int options;
 
     /**
      * Creates a new segment options with the given integer value.
@@ -70,9 +70,10 @@ public class SegmentOptions {
      * @throws Pack200Exception
      *             if an unused bit (bit 3 or bit 13+) is non-zero
      */
-    public SegmentOptions(int options) throws Pack200Exception {
-        if ((options & UNUSED) != 0)
+    public SegmentOptions(final int options) throws Pack200Exception {
+        if ((options & UNUSED) != 0) {
             throw new Pack200Exception("Some unused flags are non-zero");
+        }
         this.options = options;
     }
 

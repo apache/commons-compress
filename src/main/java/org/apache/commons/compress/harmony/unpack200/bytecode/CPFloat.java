@@ -24,14 +24,16 @@ import java.io.IOException;
  */
 public class CPFloat extends CPConstantNumber {
 
-    public CPFloat(Float value, int globalIndex) {
+    public CPFloat(final Float value, final int globalIndex) {
         super(ConstantPoolEntry.CP_Float, value, globalIndex);
     }
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeFloat(getNumber().floatValue());
     }
 
+    @Override
     public String toString() {
         return "Float: " + getValue();
     }

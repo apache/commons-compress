@@ -39,14 +39,14 @@ public class NewAttribute extends Attribute {
     private ClassReader classReader;
     private char[] buf;
 
-    public NewAttribute(String type, String layout, int context) {
+    public NewAttribute(final String type, final String layout, final int context) {
         super(type);
         this.layout = layout;
         addContext(context);
     }
 
-    public NewAttribute(ClassReader classReader, String type, String layout, byte[] contents, char[] buf,
-            int codeOff, Label[] labels) {
+    public NewAttribute(final ClassReader classReader, final String type, final String layout, final byte[] contents, final char[] buf,
+            final int codeOff, final Label[] labels) {
         super(type);
         this.classReader = classReader;
         this.contents = contents;
@@ -56,7 +56,7 @@ public class NewAttribute extends Attribute {
         this.buf = buf;
     }
 
-    public void addContext(int context) {
+    public void addContext(final int context) {
         switch(context) {
         case AttributeDefinitionBands.CONTEXT_CLASS:
             contextClass = true;
@@ -93,23 +93,26 @@ public class NewAttribute extends Attribute {
         return layout;
     }
 
+    @Override
     public boolean isUnknown() {
         return false;
     }
 
+    @Override
     public boolean isCodeAttribute() {
         return codeOff != -1;
     }
 
-    protected Attribute read(ClassReader cr, int off, int len, char[] buf,
-            int codeOff, Label[] labels) {
-        byte[] attributeContents = new byte[len];
+    @Override
+    protected Attribute read(final ClassReader cr, final int off, final int len, final char[] buf,
+            final int codeOff, final Label[] labels) {
+        final byte[] attributeContents = new byte[len];
         System.arraycopy(cr.b, off, attributeContents, 0, len);
         return new NewAttribute(cr, type, layout, attributeContents, buf, codeOff,
                 labels);
     }
 
-    public boolean isUnknown(int context) {
+    public boolean isUnknown(final int context) {
         switch(context) {
         case AttributeDefinitionBands.CONTEXT_CLASS:
             return !contextClass;
@@ -123,15 +126,15 @@ public class NewAttribute extends Attribute {
         return false;
     }
 
-    public String readUTF8(int index) {
+    public String readUTF8(final int index) {
         return classReader.readUTF8(index, buf);
     }
 
-    public String readClass(int index) {
+    public String readClass(final int index) {
         return classReader.readClass(index, buf);
     }
 
-    public Object readConst(int index) {
+    public Object readConst(final int index) {
         return classReader.readConst(index, buf);
     }
 
@@ -139,7 +142,7 @@ public class NewAttribute extends Attribute {
         return contents;
     }
 
-    public Label getLabel(int index) {
+    public Label getLabel(final int index) {
         return labels[index];
     }
 
@@ -151,12 +154,13 @@ public class NewAttribute extends Attribute {
      */
     public static class ErrorAttribute extends NewAttribute {
 
-        public ErrorAttribute(String type, int context) {
+        public ErrorAttribute(final String type, final int context) {
             super(type, "", context);
         }
 
-        protected Attribute read(ClassReader cr, int off, int len, char[] buf,
-                int codeOff, Label[] labels) {
+        @Override
+        protected Attribute read(final ClassReader cr, final int off, final int len, final char[] buf,
+                final int codeOff, final Label[] labels) {
             throw new Error("Attribute " + type + " was found");
         }
 
@@ -170,12 +174,13 @@ public class NewAttribute extends Attribute {
      */
     public static class StripAttribute extends NewAttribute {
 
-        public StripAttribute(String type, int context) {
+        public StripAttribute(final String type, final int context) {
             super(type, "", context);
         }
 
-        protected Attribute read(ClassReader cr, int off, int len, char[] buf,
-                int codeOff, Label[] labels) {
+        @Override
+        protected Attribute read(final ClassReader cr, final int off, final int len, final char[] buf,
+                final int codeOff, final Label[] labels) {
             // TODO Not sure if this works, can we really strip an attribute if we don't know the layout?
             return null;
         }
@@ -189,12 +194,13 @@ public class NewAttribute extends Attribute {
      */
     public static class PassAttribute extends NewAttribute {
 
-        public PassAttribute(String type, int context) {
+        public PassAttribute(final String type, final int context) {
             super(type, "", context);
         }
 
-        protected Attribute read(ClassReader cr, int off, int len, char[] buf,
-                int codeOff, Label[] labels) {
+        @Override
+        protected Attribute read(final ClassReader cr, final int off, final int len, final char[] buf,
+                final int codeOff, final Label[] labels) {
             throw new Segment.PassException();
         }
 

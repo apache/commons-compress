@@ -23,14 +23,16 @@ public class CPUTF8 extends ConstantPoolEntry implements Comparable {
 
     private final String string;
 
-    public CPUTF8(String string) {
+    public CPUTF8(final String string) {
         this.string = string;
     }
 
-    public int compareTo(Object arg0) {
+    @Override
+    public int compareTo(final Object arg0) {
         return string.compareTo(((CPUTF8)arg0).string);
     }
 
+    @Override
     public String toString() {
         return string;
     }

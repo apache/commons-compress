@@ -42,7 +42,7 @@ public abstract class CPRef extends ConstantPoolEntry {
      * @throws NullPointerException
      *             if descriptor or className is null
      */
-    public CPRef(byte type, CPClass className, CPNameAndType descriptor, int globalIndex) {
+    public CPRef(final byte type, final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
         super(type, globalIndex);
         this.className = className;
         this.nameAndType = descriptor;
@@ -51,32 +51,40 @@ public abstract class CPRef extends ConstantPoolEntry {
         }
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj)
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         if (this.hashCode() != obj.hashCode()) {
             return false;
         }
         final CPRef other = (CPRef) obj;
-        if (!className.equals(other.className))
+        if (!className.equals(other.className)) {
             return false;
-        if (!nameAndType.equals(other.nameAndType))
+        }
+        if (!nameAndType.equals(other.nameAndType)) {
             return false;
+        }
         return true;
     }
 
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        ClassFileEntry[] entries = new ClassFileEntry[2];
+        final ClassFileEntry[] entries = new ClassFileEntry[2];
         entries[0] = className;
         entries[1] = nameAndType;
         return entries;
     }
 
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         nameAndTypeIndex = pool.indexOf(nameAndType);
         classNameIndex = pool.indexOf(className);
@@ -84,6 +92,7 @@ public abstract class CPRef extends ConstantPoolEntry {
 
     protected String cachedToString;
 
+    @Override
     public String toString() {
         if (cachedToString == null) {
             String type;
@@ -101,7 +110,8 @@ public abstract class CPRef extends ConstantPoolEntry {
         return cachedToString;
     }
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(classNameIndex);
         dos.writeShort(nameAndTypeIndex);
     }

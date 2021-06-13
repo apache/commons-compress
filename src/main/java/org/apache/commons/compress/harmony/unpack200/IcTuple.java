@@ -44,7 +44,7 @@ public class IcTuple {
      * @param nIndex the index of N in cpUTF8, or -1 if N is null
      * @param tIndex TODO
      */
-    public IcTuple(String C, int F, String C2, String N, int cIndex, int c2Index, int nIndex, int tIndex) {
+    public IcTuple(final String C, final int F, final String C2, final String N, final int cIndex, final int c2Index, final int nIndex, final int tIndex) {
         this.C = C;
         this.F = F;
         this.C2 = C2;
@@ -82,7 +82,7 @@ public class IcTuple {
     /**
      * Answer true if the receiver is predicted; answer false if the receiver is
      * specified explicitly in the outer and name fields.
-     * 
+     *
      * @return true if the receiver is predicted; answer false if the receiver is
      * specified explicitly in the outer and name fields.
      */
@@ -105,8 +105,8 @@ public class IcTuple {
      * @param className TODO
      * @return TODO
      */
-    public String[] innerBreakAtDollar(String className) {
-        ArrayList resultList = new ArrayList();
+    public String[] innerBreakAtDollar(final String className) {
+        final ArrayList resultList = new ArrayList();
         int start = 0;
         int index = 0;
         while (index < className.length()) {
@@ -117,10 +117,10 @@ public class IcTuple {
             index++;
             if (index >= className.length()) {
                 // Add the last element
-                resultList.add(className.substring(start, className.length()));
+                resultList.add(className.substring(start));
             }
         }
-        String[] result = new String[resultList.size()];
+        final String[] result = new String[resultList.size()];
         for (int i = 0; i < resultList.size(); i++) {
             result[i] = (String) resultList.get(i);
         }
@@ -155,11 +155,10 @@ public class IcTuple {
     public String thisClassString() {
         if (predicted()) {
             return C;
-        } else {
-            // TODO: this may not be right. What if I
-            // get a class like Foo#Bar$Baz$Bug?
-            return C2 + "$" + N;
         }
+        // TODO: this may not be right. What if I
+        // get a class like Foo#Bar$Baz$Bug?
+        return C2 + "$" + N;
     }
 
     public boolean isMember() {
@@ -176,7 +175,7 @@ public class IcTuple {
     }
 
     private boolean computeOuterIsAnonymous() {
-        String[] result = innerBreakAtDollar(cachedOuterClassString);
+        final String[] result = innerBreakAtDollar(cachedOuterClassString);
         if (result.length == 0) {
             throw new Error(
                     "Should have an outer before checking if it's anonymous");
@@ -204,7 +203,7 @@ public class IcTuple {
         }
         // Class names must be calculated from
         // this class name.
-        String nameComponents[] = innerBreakAtDollar(C);
+        final String nameComponents[] = innerBreakAtDollar(C);
         if (nameComponents.length == 0) {
             // Unable to predict outer class
             // throw new Error("Unable to predict outer class name: " + C);
@@ -221,7 +220,7 @@ public class IcTuple {
         }
 
         // If we get to this point, nameComponents.length must be >=2
-        int lastPosition = nameComponents.length - 1;
+        final int lastPosition = nameComponents.length - 1;
         cachedSimpleClassName = nameComponents[lastPosition];
         cachedOuterClassString = "";
         for (int index = 0; index < lastPosition; index++) {
@@ -258,7 +257,7 @@ public class IcTuple {
         outerIsAnonymous = computeOuterIsAnonymous();
     }
 
-    private boolean isAllDigits(String nameString) {
+    private boolean isAllDigits(final String nameString) {
         // Answer true if the receiver is all digits; otherwise answer false.
         if (null == nameString) {
             return false;
@@ -271,8 +270,9 @@ public class IcTuple {
         return true;
     }
 
+    @Override
     public String toString() {
-        StringBuffer result = new StringBuffer();
+        final StringBuffer result = new StringBuffer();
         result.append("IcTuple ");
         result.append('(');
         result.append(simpleClassName());
@@ -282,18 +282,19 @@ public class IcTuple {
         return result.toString();
     }
 
-    public boolean nullSafeEquals(String stringOne, String stringTwo) {
+    public boolean nullSafeEquals(final String stringOne, final String stringTwo) {
         if (null == stringOne) {
             return null == stringTwo;
         }
         return stringOne.equals(stringTwo);
     }
 
-    public boolean equals(Object object) {
+    @Override
+    public boolean equals(final Object object) {
         if ((object == null) || (object.getClass() != this.getClass())) {
             return false;
         }
-        IcTuple compareTuple = (IcTuple) object;
+        final IcTuple compareTuple = (IcTuple) object;
 
         if (!nullSafeEquals(this.C, compareTuple.C)) {
             return false;
@@ -320,9 +321,11 @@ public class IcTuple {
         if(N != null) { cachedHashCode =+ N.hashCode(); }
     }
 
+    @Override
     public int hashCode() {
-        if (!hashcodeComputed)
+        if (!hashcodeComputed) {
             generateHashCode();
+        }
         return cachedHashCode;
     }
 
@@ -349,9 +352,8 @@ public class IcTuple {
     public int thisClassIndex() {
         if(predicted()) {
             return cIndex;
-        } else {
-            return -1;
         }
+        return -1;
     }
 
     public int outerClassIndex() {

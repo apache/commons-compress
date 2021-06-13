@@ -24,14 +24,16 @@ import java.io.IOException;
  */
 public class CPLong extends CPConstantNumber {
 
-    public CPLong(Long value, int globalIndex) {
+    public CPLong(final Long value, final int globalIndex) {
         super(ConstantPoolEntry.CP_Long, value, globalIndex);
     }
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeLong(getNumber().longValue());
     }
 
+    @Override
     public String toString() {
         return "Long: " + getValue();
     }

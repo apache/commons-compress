@@ -23,10 +23,11 @@ import java.util.List;
  */
 public class CPField extends CPMember {
 
-    public CPField(CPUTF8 name, CPUTF8 descriptor, long flags, List attributes) {
+    public CPField(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List attributes) {
         super(name, descriptor, flags, attributes);
     }
 
+    @Override
     public String toString() {
         return "Field: " + name + "(" + descriptor + ")";
     }

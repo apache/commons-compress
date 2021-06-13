@@ -65,19 +65,21 @@ public class AttributeLayout implements IMatcher {
     public static final String[] contextNames = { "Class", "Field", "Method", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             "Code", }; //$NON-NLS-1$
 
-    private static ClassFileEntry getValue(String layout, long value,
-            SegmentConstantPool pool) throws Pack200Exception {
+    private static ClassFileEntry getValue(final String layout, long value,
+            final SegmentConstantPool pool) throws Pack200Exception {
         if (layout.startsWith("R")) { //$NON-NLS-1$
             // references
-            if (layout.indexOf('N') != -1)
+            if (layout.indexOf('N') != -1) {
                 value--;
+            }
             if (layout.startsWith("RU")) { //$NON-NLS-1$
                 return pool.getValue(SegmentConstantPool.UTF_8, value);
-            } else if (layout.startsWith("RS")) { //$NON-NLS-1$
+            }
+            if (layout.startsWith("RS")) { //$NON-NLS-1$
                 return pool.getValue(SegmentConstantPool.SIGNATURE, value);
             }
         } else if (layout.startsWith("K")) { //$NON-NLS-1$
-            char type = layout.charAt(1);
+            final char type = layout.charAt(1);
             switch (type) {
             case 'S': // String
                 return pool.getValue(SegmentConstantPool.CP_STRING, value);
@@ -114,18 +116,18 @@ public class AttributeLayout implements IMatcher {
      * @param name TODO
      * @param context TODO
      * @param layout TODO
-     * @param index TODO 
+     * @param index TODO
      * @throws Pack200Exception Attribute context out of range.
      * @throws Pack200Exception Cannot have a null layout.
      * @throws Pack200Exception Cannot have an unnamed layout.
      */
-    public AttributeLayout(String name, int context, String layout, int index)
+    public AttributeLayout(final String name, final int context, final String layout, final int index)
             throws Pack200Exception {
         this(name, context, layout, index, true);
     }
 
-    public AttributeLayout(String name, int context, String layout, int index,
-            boolean isDefault) throws Pack200Exception {
+    public AttributeLayout(final String name, final int context, final String layout, final int index,
+            final boolean isDefault) throws Pack200Exception {
         super();
         this.index = index;
         this.context = context;
@@ -135,13 +137,16 @@ public class AttributeLayout implements IMatcher {
             this.mask = 0;
         }
         if (context != CONTEXT_CLASS && context != CONTEXT_CODE
-                && context != CONTEXT_FIELD && context != CONTEXT_METHOD)
+                && context != CONTEXT_FIELD && context != CONTEXT_METHOD) {
             throw new Pack200Exception("Attribute context out of range: "
                     + context);
-        if (layout == null) // || layout.length() == 0)
+        }
+        if (layout == null) {
             throw new Pack200Exception("Cannot have a null layout");
-        if (name == null || name.length() == 0)
+        }
+        if (name == null || name.length() == 0) {
             throw new Pack200Exception("Cannot have an unnamed layout");
+        }
         this.name = name;
         this.layout = layout;
         this.isDefault = isDefault;
@@ -150,47 +155,48 @@ public class AttributeLayout implements IMatcher {
     public Codec getCodec() {
         if (layout.indexOf('O') >= 0) {
             return Codec.BRANCH5;
-        } else if (layout.indexOf('P') >= 0) {
+        }
+        if (layout.indexOf('P') >= 0) {
             return Codec.BCI5;
-        } else if (layout.indexOf('S') >= 0 && layout.indexOf("KS") < 0 //$NON-NLS-1$
+        }
+        if (layout.indexOf('S') >= 0 && layout.indexOf("KS") < 0 //$NON-NLS-1$
                 && layout.indexOf("RS") < 0) { //$NON-NLS-1$
             return Codec.SIGNED5;
-        } else if (layout.indexOf('B') >= 0) {
-            return Codec.BYTE1;
-        } else {
-            return Codec.UNSIGNED5;
         }
+        if (layout.indexOf('B') >= 0) {
+            return Codec.BYTE1;
+        }
+        return Codec.UNSIGNED5;
     }
 
     public String getLayout() {
         return layout;
     }
 
-    public ClassFileEntry getValue(long value, SegmentConstantPool pool)
+    public ClassFileEntry getValue(final long value, final SegmentConstantPool pool)
             throws Pack200Exception {
         return getValue(layout, value, pool);
     }
 
-    public ClassFileEntry getValue(long value, String type, SegmentConstantPool pool)
+    public ClassFileEntry getValue(final long value, final String type, final SegmentConstantPool pool)
             throws Pack200Exception {
         // TODO This really needs to be better tested, esp. the different types
         // TODO This should have the ability to deal with RUN stuff too, and
         // unions
-        if (layout.startsWith("KQ")) { //$NON-NLS-1$
-            if (type.equals("Ljava/lang/String;")) { //$NON-NLS-1$
-                ClassFileEntry value2 = getValue("KS", value, pool); //$NON-NLS-1$
-                return value2;
-            } else {
-                return getValue("K" + type + layout.substring(2), value, //$NON-NLS-1$
-                        pool);
-            }
-        } else {
+        if (!layout.startsWith("KQ")) {
             return getValue(layout, value, pool);
         }
+        if (type.equals("Ljava/lang/String;")) { //$NON-NLS-1$
+            final ClassFileEntry value2 = getValue("KS", value, pool); //$NON-NLS-1$
+            return value2;
+        }
+        return getValue("K" + type + layout.substring(2), value, //$NON-NLS-1$
+                pool);
     }
 
+    @Override
     public int hashCode() {
-        int PRIME = 31;
+        final int PRIME = 31;
         int r = 1;
         if (name != null) {
             r = r * PRIME + name.hashCode();
@@ -208,10 +214,12 @@ public class AttributeLayout implements IMatcher {
      *
      * @see org.apache.commons.compress.harmony.unpack200.IMatches#matches(long)
      */
-    public boolean matches(long value) {
+    @Override
+    public boolean matches(final long value) {
         return (value & mask) != 0;
     }
 
+    @Override
     public String toString() {
         return contextNames[context] + ": " + name;
     }
@@ -231,16 +239,15 @@ public class AttributeLayout implements IMatcher {
     public int numBackwardsCallables() {
         if (layout == "*") {
             return 1;
-        } else {
-            return backwardsCallCount;
         }
+        return backwardsCallCount;
     }
 
     public boolean isDefaultLayout() {
         return isDefault;
     }
 
-    public void setBackwardsCallCount(int backwardsCallCount) {
+    public void setBackwardsCallCount(final int backwardsCallCount) {
         this.backwardsCallCount = backwardsCallCount;
     }
 

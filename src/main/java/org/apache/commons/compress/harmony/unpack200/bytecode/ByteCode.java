@@ -27,8 +27,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm
  */
 public class ByteCode extends ClassFileEntry {
 
-    public static ByteCode getByteCode(int opcode) {
-        int byteOpcode = 0xFF & opcode;
+    public static ByteCode getByteCode(final int opcode) {
+        final int byteOpcode = 0xFF & opcode;
         if(ByteCodeForm.get(byteOpcode).hasNoOperand()) {
             if(null == noArgByteCodes[byteOpcode]) {
                 noArgByteCodes[byteOpcode] = new ByteCode(byteOpcode);
@@ -49,33 +49,35 @@ public class ByteCode extends ClassFileEntry {
     private int byteCodeOffset = -1;
     private int[] byteCodeTargets;
 
-    protected ByteCode(int opcode) {
+    protected ByteCode(final int opcode) {
         this(opcode, ClassFileEntry.NONE);
     }
 
-    protected ByteCode(int opcode, ClassFileEntry[] nested) {
+    protected ByteCode(final int opcode, final ClassFileEntry[] nested) {
         this.byteCodeForm = ByteCodeForm.get(opcode);
         this.rewrite = byteCodeForm.getRewriteCopy();
         this.nested = nested;
     }
 
-    protected void doWrite(DataOutputStream dos) throws IOException {
+    @Override
+    protected void doWrite(final DataOutputStream dos) throws IOException {
         for (int i = 0; i < rewrite.length; i++) {
             dos.writeByte(rewrite[i]);
         }
     }
 
-    public boolean equals(Object obj) {
+    @Override
+    public boolean equals(final Object obj) {
     	return this == obj;
     }
 
-    public void extractOperands(OperandManager operandManager, Segment segment,
-            int codeLength) {
+    public void extractOperands(final OperandManager operandManager, final Segment segment,
+            final int codeLength) {
         // Given an OperandTable, figure out which operands
         // the receiver needs and stuff them in operands.
         // Later on the operands can be rewritten (But that's
         // later, not now).
-        ByteCodeForm currentByteCodeForm = getByteCodeForm();
+        final ByteCodeForm currentByteCodeForm = getByteCodeForm();
         currentByteCodeForm.setByteCodeOperands(this, operandManager,
                 codeLength);
     }
@@ -92,6 +94,7 @@ public class ByteCode extends ClassFileEntry {
         return getByteCodeForm().getName();
     }
 
+    @Override
     public ClassFileEntry[] getNestedClassFileEntries() {
         return nested;
     }
@@ -100,6 +103,7 @@ public class ByteCode extends ClassFileEntry {
         return getByteCodeForm().getOpcode();
     }
 
+    @Override
     public int hashCode() {
         return objectHashCode();
     }
@@ -109,13 +113,14 @@ public class ByteCode extends ClassFileEntry {
      *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#resolve(org.apache.commons.compress.harmony.unpack200.bytecode.ClassConstantPool)
      */
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         if (nested.length > 0) {
             // Update the bytecode rewrite array so that it points
             // to the elements of the nested array.
             for (int index = 0; index < nested.length; index++) {
-                int argLength = getNestedPosition(index)[1];
+                final int argLength = getNestedPosition(index)[1];
                 switch (argLength) {
 
                 case 1:
@@ -144,9 +149,9 @@ public class ByteCode extends ClassFileEntry {
      * @param operands
      *            int[] rewrite operand bytes
      */
-    public void setOperandBytes(int[] operands) {
-        int firstOperandIndex = getByteCodeForm().firstOperandIndex();
-        int byteCodeFormLength = getByteCodeForm().operandLength();
+    public void setOperandBytes(final int[] operands) {
+        final int firstOperandIndex = getByteCodeForm().firstOperandIndex();
+        final int byteCodeFormLength = getByteCodeForm().operandLength();
         if (firstOperandIndex < 1) {
             // No operand rewriting permitted for this bytecode
             throw new Error("Trying to rewrite " + this
@@ -176,9 +181,9 @@ public class ByteCode extends ClassFileEntry {
      *            rewrite array of {100, -1, -1, -1} position 0 is the first -1,
      *            position 1 is the second -1, etc.
      */
-    public void setOperand2Bytes(int operand, int position) {
-        int firstOperandIndex = getByteCodeForm().firstOperandIndex();
-        int byteCodeFormLength = getByteCodeForm().getRewrite().length;
+    public void setOperand2Bytes(final int operand, final int position) {
+        final int firstOperandIndex = getByteCodeForm().firstOperandIndex();
+        final int byteCodeFormLength = getByteCodeForm().getRewrite().length;
         if (firstOperandIndex < 1) {
             // No operand rewriting permitted for this bytecode
             throw new Error("Trying to rewrite " + this
@@ -204,11 +209,11 @@ public class ByteCode extends ClassFileEntry {
      * @param position
      *            int position of the operands in the rewrite bytes
      */
-    public void setOperandSigned2Bytes(int operand, int position) {
+    public void setOperandSigned2Bytes(final int operand, final int position) {
         if (operand >= 0) {
             setOperand2Bytes(operand, position);
         } else {
-            int twosComplementOperand = 0x10000 + operand;
+            final int twosComplementOperand = 0x10000 + operand;
             setOperand2Bytes(twosComplementOperand, position);
         }
     }
@@ -224,9 +229,9 @@ public class ByteCode extends ClassFileEntry {
      *            rewrite array of {100, -1, -1, -1} position 0 is the first -1,
      *            position 1 is the second -1, etc.
      */
-    public void setOperandByte(int operand, int position) {
-        int firstOperandIndex = getByteCodeForm().firstOperandIndex();
-        int byteCodeFormLength = getByteCodeForm().operandLength();
+    public void setOperandByte(final int operand, final int position) {
+        final int firstOperandIndex = getByteCodeForm().firstOperandIndex();
+        final int byteCodeFormLength = getByteCodeForm().operandLength();
         if (firstOperandIndex < 1) {
             // No operand rewriting permitted for this bytecode
             throw new Error("Trying to rewrite " + this
@@ -242,11 +247,12 @@ public class ByteCode extends ClassFileEntry {
         rewrite[firstOperandIndex + position] = operand & 0xFF;
     }
 
+    @Override
     public String toString() {
         return getByteCodeForm().getName();
     }
 
-    public void setNested(ClassFileEntry[] nested) {
+    public void setNested(final ClassFileEntry[] nested) {
         this.nested = nested;
     }
 
@@ -266,7 +272,7 @@ public class ByteCode extends ClassFileEntry {
      * position of a nested element (from the nested[] array) and the length of
      * that element.
      */
-    public void setNestedPositions(int[][] nestedPositions) {
+    public void setNestedPositions(final int[][] nestedPositions) {
         this.nestedPositions = nestedPositions;
     }
 
@@ -274,7 +280,7 @@ public class ByteCode extends ClassFileEntry {
         return nestedPositions;
     }
 
-    public int[] getNestedPosition(int index) {
+    public int[] getNestedPosition(final int index) {
         return getNestedPositions()[index];
     }
 
@@ -301,7 +307,7 @@ public class ByteCode extends ClassFileEntry {
      * @param byteCodeOffset
      *            int position in code array.
      */
-    public void setByteCodeIndex(int byteCodeOffset) {
+    public void setByteCodeIndex(final int byteCodeOffset) {
         this.byteCodeOffset = byteCodeOffset;
     }
 
@@ -319,7 +325,7 @@ public class ByteCode extends ClassFileEntry {
      * @param byteCodeTargets
      *            int index in array
      */
-    public void setByteCodeTargets(int[] byteCodeTargets) {
+    public void setByteCodeTargets(final int[] byteCodeTargets) {
         this.byteCodeTargets = byteCodeTargets;
     }
 
@@ -336,7 +342,7 @@ public class ByteCode extends ClassFileEntry {
      * @param codeAttribute
      *            the code attribute
      */
-    public void applyByteCodeTargetFixup(CodeAttribute codeAttribute) {
+    public void applyByteCodeTargetFixup(final CodeAttribute codeAttribute) {
         getByteCodeForm().fixUpByteCodeTargets(this, codeAttribute);
     }
 
@@ -350,7 +356,7 @@ public class ByteCode extends ClassFileEntry {
      *
      * @param rewrite Some bytecodes.
      */
-    public void setRewrite(int[] rewrite) {
+    public void setRewrite(final int[] rewrite) {
         this.rewrite = rewrite;
     }
 

@@ -26,7 +26,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public class NoArgumentForm extends ByteCodeForm {
 
-    public NoArgumentForm(int opcode, String name) {
+    public NoArgumentForm(final int opcode, final String name) {
         super(opcode, name);
     }
 
@@ -37,8 +37,9 @@ public class NoArgumentForm extends ByteCodeForm {
      *      org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
      *      org.apache.commons.compress.harmony.unpack200.SegmentConstantPool)
      */
-    public void setByteCodeOperands(ByteCode byteCode,
-            OperandManager operandManager, int codeLength) {
+    @Override
+    public void setByteCodeOperands(final ByteCode byteCode,
+            final OperandManager operandManager, final int codeLength) {
         // Nothing to do for no-argument form
     }
 }

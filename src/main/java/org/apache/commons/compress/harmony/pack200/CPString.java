@@ -24,15 +24,17 @@ public class CPString extends CPConstant {
     private final String string;
     private final CPUTF8 utf8;
 
-    public CPString(CPUTF8 utf8) {
+    public CPString(final CPUTF8 utf8) {
         this.utf8 = utf8;
         this.string = utf8.getUnderlyingString();
     }
 
-    public int compareTo(Object arg0) {
+    @Override
+    public int compareTo(final Object arg0) {
         return string.compareTo(((CPString)arg0).string);
     }
 
+    @Override
     public String toString() {
         return string;
     }

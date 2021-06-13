@@ -54,27 +54,27 @@ public class ExceptionTableEntry {
      *            CPClass (if it's a normal catch) or null (if it's a finally
      *            clause).
      */
-    public ExceptionTableEntry(int startPC, int endPC, int handlerPC,
-            CPClass catchType) {
+    public ExceptionTableEntry(final int startPC, final int endPC, final int handlerPC,
+            final CPClass catchType) {
         this.startPC = startPC;
         this.endPC = endPC;
         this.handlerPC = handlerPC;
         this.catchType = catchType;
     }
 
-    public void write(DataOutputStream dos) throws IOException {
+    public void write(final DataOutputStream dos) throws IOException {
         dos.writeShort(startPcRenumbered);
         dos.writeShort(endPcRenumbered);
         dos.writeShort(handlerPcRenumbered);
         dos.writeShort(catchTypeIndex);
     }
 
-    public void renumber(List byteCodeOffsets) {
+    public void renumber(final List byteCodeOffsets) {
         startPcRenumbered = ((Integer) byteCodeOffsets.get(startPC)).intValue();
-        int endPcIndex = startPC + endPC;
+        final int endPcIndex = startPC + endPC;
         endPcRenumbered = ((Integer) byteCodeOffsets.get(endPcIndex))
                 .intValue();
-        int handlerPcIndex = endPcIndex + handlerPC;
+        final int handlerPcIndex = endPcIndex + handlerPC;
         handlerPcRenumbered = ((Integer) byteCodeOffsets.get(handlerPcIndex))
                 .intValue();
     }
@@ -83,7 +83,7 @@ public class ExceptionTableEntry {
         return catchType;
     }
 
-    public void resolve(ClassConstantPool pool) {
+    public void resolve(final ClassConstantPool pool) {
         if (catchType == null) {
             // If the catch type is a finally clause
             // the index is always 0.

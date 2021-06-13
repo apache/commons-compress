@@ -34,7 +34,7 @@ public abstract class CPConstant extends ConstantPoolEntry {
      * @throws NullPointerException
      *             if value is null
      */
-    public CPConstant(byte tag, Object value, int globalIndex) {
+    public CPConstant(final byte tag, final Object value, final int globalIndex) {
         super(tag, globalIndex);
         this.value = value;
         if (value == null) {
@@ -42,22 +42,29 @@ public abstract class CPConstant extends ConstantPoolEntry {
         }
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj)
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (this.getClass() != obj.getClass())
+        }
+        if (this.getClass() != obj.getClass()) {
             return false;
+        }
         final CPConstant other = (CPConstant) obj;
         if (value == null) {
-            if (other.value != null)
+            if (other.value != null) {
                 return false;
-        } else if (!value.equals(other.value))
+            }
+        } else if (!value.equals(other.value)) {
             return false;
+        }
         return true;
     }
 
+    @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;

@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -54,25 +53,26 @@ public class PackingUtils {
 
         private boolean verbose = false;
 
-        protected PackingLogger(String name, String resourceBundleName) {
+        protected PackingLogger(final String name, final String resourceBundleName) {
             super(name, resourceBundleName);
         }
 
-        public void log(LogRecord logRecord) {
+        @Override
+        public void log(final LogRecord logRecord) {
             if (verbose) {
                 super.log(logRecord);
             }
         }
 
-        public void setVerbose(boolean isVerbose) {
+        public void setVerbose(final boolean isVerbose) {
             verbose = isVerbose;
         }
     }
 
-    public static void config(PackingOptions options) throws IOException {
-        String logFileName = options.getLogFile();
+    public static void config(final PackingOptions options) throws IOException {
+        final String logFileName = options.getLogFile();
         if (logFileName != null) {
-            FileHandler fileHandler = new FileHandler(logFileName, false);
+            final FileHandler fileHandler = new FileHandler(logFileName, false);
             fileHandler.setFormatter(new SimpleFormatter());
             packingLogger.addHandler(fileHandler);
             packingLogger.setUseParentHandlers(false);
@@ -81,29 +81,29 @@ public class PackingUtils {
         packingLogger.setVerbose(options.isVerbose());
     }
 
-    public static void log(String message) {
+    public static void log(final String message) {
         packingLogger.log(Level.INFO, message);
     }
 
     /**
      * When effort is 0, the packer copies through the original jar input stream
      * without compression
-     * 
+     *
      * @param jarInputStream
      *            the jar input stream
      * @param outputStream
      *            the jar output stream
      * @throws IOException If an I/O error occurs.
      */
-    public static void copyThroughJar(JarInputStream jarInputStream,
-            OutputStream outputStream) throws IOException {
-        Manifest manifest = jarInputStream.getManifest();
-        JarOutputStream jarOutputStream = new JarOutputStream(outputStream,
+    public static void copyThroughJar(final JarInputStream jarInputStream,
+            final OutputStream outputStream) throws IOException {
+        final Manifest manifest = jarInputStream.getManifest();
+        final JarOutputStream jarOutputStream = new JarOutputStream(outputStream,
                 manifest);
         jarOutputStream.setComment("PACK200");
         log("Packed " + JarFile.MANIFEST_NAME);
 
-        byte[] bytes = new byte[16384];
+        final byte[] bytes = new byte[16384];
         JarEntry jarEntry;
         int bytesRead;
         while ((jarEntry = jarInputStream.getNextJarEntry()) != null) {
@@ -120,19 +120,19 @@ public class PackingUtils {
     /**
      * When effort is 0, the packer copys through the original jar file without
      * compression
-     * 
+     *
      * @param jarFile
      *            the input jar file
      * @param outputStream
      *            the jar output stream
      * @throws IOException If an I/O error occurs.
      */
-    public static void copyThroughJar(JarFile jarFile, OutputStream outputStream)
+    public static void copyThroughJar(final JarFile jarFile, final OutputStream outputStream)
             throws IOException {
-        JarOutputStream jarOutputStream = new JarOutputStream(outputStream);
+        final JarOutputStream jarOutputStream = new JarOutputStream(outputStream);
         jarOutputStream.setComment("PACK200");
-        byte[] bytes = new byte[16384];
-        Enumeration entries = jarFile.entries();
+        final byte[] bytes = new byte[16384];
+        final Enumeration entries = jarFile.entries();
         InputStream inputStream;
         JarEntry jarEntry;
         int bytesRead;
@@ -150,14 +150,14 @@ public class PackingUtils {
         jarOutputStream.close();
     }
 
-    public static List getPackingFileListFromJar(JarInputStream jarInputStream,
-            boolean keepFileOrder) throws IOException {
-        List packingFileList = new ArrayList();
+    public static List getPackingFileListFromJar(final JarInputStream jarInputStream,
+            final boolean keepFileOrder) throws IOException {
+        final List packingFileList = new ArrayList();
 
         // add manifest file
-        Manifest manifest = jarInputStream.getManifest();
+        final Manifest manifest = jarInputStream.getManifest();
         if (manifest != null) {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             manifest.write(baos);
             packingFileList.add(new PackingFile(JarFile.MANIFEST_NAME, baos
                     .toByteArray(), 0));
@@ -179,10 +179,10 @@ public class PackingUtils {
         return packingFileList;
     }
 
-    public static List getPackingFileListFromJar(JarFile jarFile,
-            boolean keepFileOrder) throws IOException {
-        List packingFileList = new ArrayList();
-        Enumeration jarEntries = jarFile.entries();
+    public static List getPackingFileListFromJar(final JarFile jarFile,
+            final boolean keepFileOrder) throws IOException {
+        final List packingFileList = new ArrayList();
+        final Enumeration jarEntries = jarFile.entries();
         JarEntry jarEntry;
         byte[] bytes;
         while (jarEntries.hasMoreElements()) {
@@ -199,24 +199,25 @@ public class PackingUtils {
         return packingFileList;
     }
 
-    private static byte[] readJarEntry(JarEntry jarEntry,
-            InputStream inputStream) throws IOException {
+    private static byte[] readJarEntry(final JarEntry jarEntry,
+            final InputStream inputStream) throws IOException {
         long size = jarEntry.getSize();
         if (size > Integer.MAX_VALUE) {
             // TODO: Should probably allow this
             throw new RuntimeException("Large Class!");
-        } else if (size < 0) {
+        }
+        if (size < 0) {
             size = 0;
         }
-        byte[] bytes = new byte[(int) size];
+        final byte[] bytes = new byte[(int) size];
         if (inputStream.read(bytes) != size) {
             throw new RuntimeException("Error reading from stream");
         }
         return bytes;
     }
 
-    private static void reorderPackingFiles(List packingFileList) {
-        Iterator iterator = packingFileList.iterator();
+    private static void reorderPackingFiles(final List packingFileList) {
+        final Iterator iterator = packingFileList.iterator();
         PackingFile packingFile;
         while (iterator.hasNext()) {
             packingFile = (PackingFile) iterator.next();
@@ -228,22 +229,22 @@ public class PackingUtils {
 
         // Sort files by name, "META-INF/MANIFEST.MF" should be put in the 1st
         // position
-        Collections.sort(packingFileList, new Comparator() {
-            public int compare(Object arg0, Object arg1) {
-                if (arg0 instanceof PackingFile && arg1 instanceof PackingFile) {
-                    String fileName0 = ((PackingFile) arg0).getName();
-                    String fileName1 = ((PackingFile) arg1).getName();
-                    if (fileName0.equals(fileName1)) {
-                        return 0;
-                    } else if (JarFile.MANIFEST_NAME.equals(fileName0)) {
-                        return -1;
-                    } else if (JarFile.MANIFEST_NAME.equals(fileName1)) {
-                        return 1;
-                    }
-                    return fileName0.compareTo(fileName1);
+        Collections.sort(packingFileList, (arg0, arg1) -> {
+            if (arg0 instanceof PackingFile && arg1 instanceof PackingFile) {
+                final String fileName0 = ((PackingFile) arg0).getName();
+                final String fileName1 = ((PackingFile) arg1).getName();
+                if (fileName0.equals(fileName1)) {
+                    return 0;
                 }
-                throw new IllegalArgumentException();
+                if (JarFile.MANIFEST_NAME.equals(fileName0)) {
+                    return -1;
+                }
+                if (JarFile.MANIFEST_NAME.equals(fileName1)) {
+                    return 1;
+                }
+                return fileName0.compareTo(fileName1);
             }
+            throw new IllegalArgumentException();
         });
     }
 

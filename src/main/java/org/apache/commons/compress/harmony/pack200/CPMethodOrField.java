@@ -26,24 +26,25 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
     private int indexInClass = -1;
     private int indexInClassForConstructor = -1;
 
-    public CPMethodOrField(CPClass className, CPNameAndType nameAndType) {
+    public CPMethodOrField(final CPClass className, final CPNameAndType nameAndType) {
         this.className = className;
         this.nameAndType = nameAndType;
     }
 
+    @Override
     public String toString() {
         return className + ": " + nameAndType;
     }
 
-    public int compareTo(Object obj) {
+    @Override
+    public int compareTo(final Object obj) {
         if (obj instanceof CPMethodOrField) {
-            CPMethodOrField mof = (CPMethodOrField) obj;
-            int compareName = className.compareTo(mof.className);
+            final CPMethodOrField mof = (CPMethodOrField) obj;
+            final int compareName = className.compareTo(mof.className);
             if (compareName == 0) {
                 return nameAndType.compareTo(mof.nameAndType);
-            } else {
-                return compareName;
             }
+            return compareName;
         }
         return 0;
     }
@@ -68,7 +69,7 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
         return indexInClass;
     }
 
-    public void setIndexInClass(int index) {
+    public void setIndexInClass(final int index) {
         indexInClass = index;
     }
 
@@ -76,7 +77,7 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
         return indexInClassForConstructor;
     }
 
-    public void setIndexInClassForConstructor(int index) {
+    public void setIndexInClassForConstructor(final int index) {
         indexInClassForConstructor = index;
     }
 

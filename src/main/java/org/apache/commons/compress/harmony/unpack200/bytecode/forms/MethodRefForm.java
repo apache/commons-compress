@@ -27,14 +27,16 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public class MethodRefForm extends ReferenceForm {
 
-    public MethodRefForm(int opcode, String name, int[] rewrite) {
+    public MethodRefForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
-    protected int getOffset(OperandManager operandManager) {
+    @Override
+    protected int getOffset(final OperandManager operandManager) {
         return operandManager.nextMethodRef();
     }
 
+    @Override
     protected int getPoolID() {
         return SegmentConstantPool.CP_METHOD;
     }

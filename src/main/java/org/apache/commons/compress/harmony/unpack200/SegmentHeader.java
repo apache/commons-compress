@@ -90,7 +90,7 @@ public class SegmentHeader {
      */
     private static final int[] magic = { 0xCA, 0xFE, 0xD0, 0x0D };
 
-    public SegmentHeader(Segment segment) {
+    public SegmentHeader(final Segment segment) {
         this.segment = segment;
     }
 
@@ -100,14 +100,16 @@ public class SegmentHeader {
 
     private int archiveSizeOffset;
 
-    public void read(InputStream in) throws IOException, Pack200Exception,
+    public void read(final InputStream in) throws IOException, Pack200Exception,
             Error, Pack200Exception {
 
-        int word[] = decodeScalar("archive_magic_word", in, Codec.BYTE1,
+        final int word[] = decodeScalar("archive_magic_word", in, Codec.BYTE1,
                 magic.length);
-        for (int m = 0; m < magic.length; m++)
-            if (word[m] != magic[m])
+        for (int m = 0; m < magic.length; m++) {
+            if (word[m] != magic[m]) {
                 throw new Error("Bad header");
+            }
+        }
         setArchiveMinorVersion(decodeScalar("archive_minver", in,
                 Codec.UNSIGNED5));
         setArchiveMajorVersion(decodeScalar("archive_majver", in,
@@ -120,7 +122,7 @@ public class SegmentHeader {
         parseClassCounts(in);
 
         if (getBandHeadersSize() > 0) {
-            byte[] bandHeaders = new byte[getBandHeadersSize()];
+            final byte[] bandHeaders = new byte[getBandHeadersSize()];
             readFully(in, bandHeaders);
             setBandHeadersData(bandHeaders);
         }
@@ -140,9 +142,10 @@ public class SegmentHeader {
      * @throws Pack200Exception
      *             if the minor version is not 7
      */
-    private void setArchiveMinorVersion(int version) throws Pack200Exception {
-        if (version != 7)
+    private void setArchiveMinorVersion(final int version) throws Pack200Exception {
+        if (version != 7) {
             throw new Pack200Exception("Invalid segment minor version");
+        }
         archiveMinor = version;
     }
 
@@ -154,10 +157,11 @@ public class SegmentHeader {
      * @throws Pack200Exception
      *             if the major version is not 150
      */
-    private void setArchiveMajorVersion(int version) throws Pack200Exception {
-        if (version != 150)
+    private void setArchiveMajorVersion(final int version) throws Pack200Exception {
+        if (version != 150) {
             throw new Pack200Exception("Invalid segment major version: "
                     + version);
+        }
         archiveMajor = version;
     }
 
@@ -268,7 +272,7 @@ public class SegmentHeader {
         return options;
     }
 
-    private void parseArchiveFileCounts(InputStream in) throws IOException,
+    private void parseArchiveFileCounts(final InputStream in) throws IOException,
             Pack200Exception {
         if (options.hasArchiveFileCounts()) {
             setArchiveSize((long)decodeScalar("archive_size_hi", in, Codec.UNSIGNED5) << 32
@@ -283,7 +287,7 @@ public class SegmentHeader {
         }
     }
 
-    private void parseArchiveSpecialCounts(InputStream in) throws IOException,
+    private void parseArchiveSpecialCounts(final InputStream in) throws IOException,
             Pack200Exception {
         if (getOptions().hasSpecialFormats()) {
             bandHeadersSize = decodeScalar("band_headers_size", in,
@@ -293,7 +297,7 @@ public class SegmentHeader {
         }
     }
 
-    private void parseClassCounts(InputStream in) throws IOException,
+    private void parseClassCounts(final InputStream in) throws IOException,
             Pack200Exception {
         innerClassCount = decodeScalar("ic_count", in, Codec.UNSIGNED5);
         defaultClassMinorVersion = decodeScalar("default_class_minver",
@@ -303,7 +307,7 @@ public class SegmentHeader {
         classCount = decodeScalar("class_count", in, Codec.UNSIGNED5);
     }
 
-    private void parseCpCounts(InputStream in) throws IOException,
+    private void parseCpCounts(final InputStream in) throws IOException,
             Pack200Exception {
         cpUTF8Count = decodeScalar("cp_Utf8_count", in, Codec.UNSIGNED5);
         if (getOptions().hasCPNumberCounts()) {
@@ -348,8 +352,8 @@ public class SegmentHeader {
      *             if there is a problem decoding the value or that the value is
      *             invalid
      */
-    private int[] decodeScalar(String name, InputStream in, BHSDCodec codec,
-            int n) throws IOException, Pack200Exception {
+    private int[] decodeScalar(final String name, final InputStream in, final BHSDCodec codec,
+            final int n) throws IOException, Pack200Exception {
         segment.log(Segment.LOG_LEVEL_VERBOSE, "Parsed #" + name + " (" + n
                 + ")");
         return codec.decodeInts(n, in);
@@ -374,32 +378,32 @@ public class SegmentHeader {
      *             if there is a problem decoding the value or that the value is
      *             invalid
      */
-    private int decodeScalar(String name, InputStream in, BHSDCodec codec)
+    private int decodeScalar(final String name, final InputStream in, final BHSDCodec codec)
             throws IOException, Pack200Exception {
-        int ret = codec.decode(in);
+        final int ret = codec.decode(in);
         segment
                 .log(Segment.LOG_LEVEL_VERBOSE, "Parsed #" + name + " as "
                         + ret);
         return ret;
     }
 
-    public void setArchiveModtime(long archiveModtime) {
+    public void setArchiveModtime(final long archiveModtime) {
         this.archiveModtime = archiveModtime;
     }
 
-    public void setArchiveSize(long archiveSize) {
+    public void setArchiveSize(final long archiveSize) {
         this.archiveSize = archiveSize;
     }
 
-    private void setAttributeDefinitionCount(long valuie) {
+    private void setAttributeDefinitionCount(final long valuie) {
         this.attributeDefinitionCount = (int) valuie;
     }
 
-    private void setBandHeadersData(byte[] bandHeaders) {
+    private void setBandHeadersData(final byte[] bandHeaders) {
         this.bandHeadersInputStream = new ByteArrayInputStream(bandHeaders);
     }
 
-    public void setSegmentsRemaining(long value) {
+    public void setSegmentsRemaining(final long value) {
         segmentsRemaining = (int) value;
     }
 
@@ -418,16 +422,18 @@ public class SegmentHeader {
      *             if a problem occurs with an unexpected value or unsupported
      *             codec
      */
-    private void readFully(InputStream in, byte[] data) throws IOException,
+    private void readFully(final InputStream in, final byte[] data) throws IOException,
             Pack200Exception {
         int total = in.read(data);
-        if (total == -1)
+        if (total == -1) {
             throw new EOFException("Failed to read any data from input stream");
+        }
         while (total < data.length) {
-            int delta = in.read(data, total, data.length - total);
-            if (delta == -1)
+            final int delta = in.read(data, total, data.length - total);
+            if (delta == -1) {
                 throw new EOFException(
                         "Failed to read some data from input stream");
+            }
             total += delta;
         }
     }

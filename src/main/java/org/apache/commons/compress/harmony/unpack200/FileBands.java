@@ -48,7 +48,7 @@ public class FileBands extends BandSet {
     /**
      * @param segment TODO
      */
-    public FileBands(Segment segment) {
+    public FileBands(final Segment segment) {
         super(segment);
         this.cpUTF8 = segment.getCpBands().getCpUTF8();
     }
@@ -58,9 +58,10 @@ public class FileBands extends BandSet {
      *
      * @see org.apache.commons.compress.harmony.unpack200.BandSet#unpack(java.io.InputStream)
      */
-    public void read(InputStream in) throws IOException, Pack200Exception {
-        int numberOfFiles = header.getNumberOfFiles();
-        SegmentOptions options = header.getOptions();
+    @Override
+    public void read(final InputStream in) throws IOException, Pack200Exception {
+        final int numberOfFiles = header.getNumberOfFiles();
+        final SegmentOptions options = header.getOptions();
 
         fileName = parseReferences("file_name", in, Codec.UNSIGNED5,
                 numberOfFiles, cpUTF8);
@@ -85,14 +86,14 @@ public class FileBands extends BandSet {
     // TODO: stream the file bits directly somehow
     public void processFileBits() throws IOException, Pack200Exception {
         // now read in the bytes
-        int numberOfFiles = header.getNumberOfFiles();
+        final int numberOfFiles = header.getNumberOfFiles();
         fileBits = new byte[numberOfFiles][];
         for (int i = 0; i < numberOfFiles; i++) {
-            int size = (int) fileSize[i];
+            final int size = (int) fileSize[i];
             // TODO This breaks if file_size > 2^32. Probably an array is
             // not the right choice, and we should just serialize it here?
             fileBits[i] = new byte[size];
-            int read = in.read(fileBits[i]);
+            final int read = in.read(fileBits[i]);
             if (size != 0 && read < size) {
                 throw new Pack200Exception("Expected to read " + size
                         + " bytes but read " + read);
@@ -100,6 +101,7 @@ public class FileBands extends BandSet {
         }
     }
 
+    @Override
     public void unpack() {
 
     }

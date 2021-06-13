@@ -47,7 +47,7 @@ public abstract class BandSet {
 
     public abstract void unpack() throws IOException, Pack200Exception;
 
-    public void unpack(InputStream in) throws IOException, Pack200Exception {
+    public void unpack(final InputStream in) throws IOException, Pack200Exception {
         read(in);
         unpack();
     }
@@ -56,7 +56,7 @@ public abstract class BandSet {
 
     protected SegmentHeader header;
 
-    public BandSet(Segment segment) {
+    public BandSet(final Segment segment) {
         this.segment = segment;
         this.header = segment.getSegmentHeader();
     }
@@ -81,8 +81,8 @@ public abstract class BandSet {
      *             if there is a problem decoding the value or that the value is
      *             invalid
      */
-    public int[] decodeBandInt(String name, InputStream in, BHSDCodec codec,
-            int count) throws IOException, Pack200Exception {
+    public int[] decodeBandInt(final String name, final InputStream in, final BHSDCodec codec,
+            final int count) throws IOException, Pack200Exception {
         int[] band;
         // Useful for debugging
 //        if(count > 0) {
@@ -92,11 +92,11 @@ public abstract class BandSet {
         if (codec.getB() == 1 || count == 0) {
             return codec.decodeInts(count, in);
         }
-        int[] getFirst = codec.decodeInts(1, in);
+        final int[] getFirst = codec.decodeInts(1, in);
         if (getFirst.length == 0) {
             return getFirst;
         }
-        int first = getFirst[0];
+        final int first = getFirst[0];
         if (codec.isSigned() && first >= -256 && first <= -1) {
             // Non-default codec should be used
             codecUsed = CodecEncoding.getCodec((-1 - first), header
@@ -118,17 +118,17 @@ public abstract class BandSet {
         //    System.out.println(count + " " + name + " encoded with " + codecUsed + " "  + bytes);
         //}
         if (codecUsed instanceof PopulationCodec) {
-            PopulationCodec popCodec = (PopulationCodec) codecUsed;
-            int[] favoured = (int[]) popCodec.getFavoured().clone();
+            final PopulationCodec popCodec = (PopulationCodec) codecUsed;
+            final int[] favoured = (int[]) popCodec.getFavoured().clone();
             Arrays.sort(favoured);
             for (int i = 0; i < band.length; i++) {
-                boolean favouredValue = Arrays.binarySearch(favoured, band[i]) > -1;
-                Codec theCodec = favouredValue ? popCodec.getFavouredCodec()
+                final boolean favouredValue = Arrays.binarySearch(favoured, band[i]) > -1;
+                final Codec theCodec = favouredValue ? popCodec.getFavouredCodec()
                         : popCodec.getUnfavouredCodec();
                 if (theCodec instanceof BHSDCodec
                         && ((BHSDCodec) theCodec).isDelta()) {
-                    BHSDCodec bhsd = (BHSDCodec) theCodec;
-                    long cardinality = bhsd.cardinality();
+                    final BHSDCodec bhsd = (BHSDCodec) theCodec;
+                    final long cardinality = bhsd.cardinality();
                     while (band[i] > bhsd.largest()) {
                         band[i] -= cardinality;
                     }
@@ -162,15 +162,15 @@ public abstract class BandSet {
      *             if there is a problem decoding the value or that the value is
      *             invalid
      */
-    public int[][] decodeBandInt(String name, InputStream in,
-            BHSDCodec defaultCodec, int[] counts) throws IOException,
+    public int[][] decodeBandInt(final String name, final InputStream in,
+            final BHSDCodec defaultCodec, final int[] counts) throws IOException,
             Pack200Exception {
-        int[][] result = new int[counts.length][];
+        final int[][] result = new int[counts.length][];
         int totalCount = 0;
         for (int i = 0; i < counts.length; i++) {
             totalCount += counts[i];
         }
-        int[] twoDResult = decodeBandInt(name, in, defaultCodec, totalCount);
+        final int[] twoDResult = decodeBandInt(name, in, defaultCodec, totalCount);
         int index = 0;
         for (int i = 0; i < result.length; i++) {
             result[i] = new int[counts[i]];
@@ -182,34 +182,34 @@ public abstract class BandSet {
         return result;
     }
 
-    public long[] parseFlags(String name, InputStream in, int count,
-            BHSDCodec codec, boolean hasHi) throws IOException,
+    public long[] parseFlags(final String name, final InputStream in, final int count,
+            final BHSDCodec codec, final boolean hasHi) throws IOException,
             Pack200Exception {
         return parseFlags(name, in, new int[] { count },
                 (hasHi ? codec : null), codec)[0];
     }
 
-    public long[][] parseFlags(String name, InputStream in, int counts[],
-            BHSDCodec codec, boolean hasHi) throws IOException,
+    public long[][] parseFlags(final String name, final InputStream in, final int counts[],
+            final BHSDCodec codec, final boolean hasHi) throws IOException,
             Pack200Exception {
         return parseFlags(name, in, counts, (hasHi ? codec : null), codec);
     }
 
-    public long[] parseFlags(String name, InputStream in, int count,
-            BHSDCodec hiCodec, BHSDCodec loCodec) throws IOException,
+    public long[] parseFlags(final String name, final InputStream in, final int count,
+            final BHSDCodec hiCodec, final BHSDCodec loCodec) throws IOException,
             Pack200Exception {
         return parseFlags(name, in, new int[] { count }, hiCodec, loCodec)[0];
     }
 
-    public long[][] parseFlags(String name, InputStream in, int counts[],
-            BHSDCodec hiCodec, BHSDCodec loCodec) throws IOException,
+    public long[][] parseFlags(final String name, final InputStream in, final int counts[],
+            final BHSDCodec hiCodec, final BHSDCodec loCodec) throws IOException,
             Pack200Exception {
-        int count = counts.length;
+        final int count = counts.length;
         if (count == 0) {
             return new long[][] { {} };
         }
         int sum = 0;
-        long[][] result = new long[count][];
+        final long[][] result = new long[count][];
         for (int i = 0; i < count; i++) {
             result[i] = new long[counts[i]];
             sum += counts[i];
@@ -263,8 +263,8 @@ public abstract class BandSet {
      *             if a problem occurs with an unexpected value or unsupported
      *             Codec
      */
-    public String[] parseReferences(String name, InputStream in,
-            BHSDCodec codec, int count, String[] reference) throws IOException,
+    public String[] parseReferences(final String name, final InputStream in,
+            final BHSDCodec codec, final int count, final String[] reference) throws IOException,
             Pack200Exception {
         return parseReferences(name, in, codec, new int[] { count }, reference)[0];
     }
@@ -287,7 +287,7 @@ public abstract class BandSet {
      *            the numbers of references to decode for each array entry
      * @param reference
      *            the array of values to use for the references
-     * @return Parsed references. 
+     * @return Parsed references.
      *
      * @throws IOException
      *             if a problem occurs during reading from the underlying stream
@@ -295,35 +295,36 @@ public abstract class BandSet {
      *             if a problem occurs with an unexpected value or unsupported
      *             Codec
      */
-    public String[][] parseReferences(String name, InputStream in,
-            BHSDCodec codec, int counts[], String[] reference)
+    public String[][] parseReferences(final String name, final InputStream in,
+            final BHSDCodec codec, final int counts[], final String[] reference)
             throws IOException, Pack200Exception {
-        int count = counts.length;
+        final int count = counts.length;
         if (count == 0) {
             return new String[][] { {} };
         }
-        String[][] result = new String[count][];
+        final String[][] result = new String[count][];
         int sum = 0;
         for (int i = 0; i < count; i++) {
             result[i] = new String[counts[i]];
             sum += counts[i];
         }
         // TODO Merge the decode and parsing of a multiple structure into one
-        String[] result1 = new String[sum];
-        int[] indices = decodeBandInt(name, in, codec, sum);
+        final String[] result1 = new String[sum];
+        final int[] indices = decodeBandInt(name, in, codec, sum);
         for (int i1 = 0; i1 < sum; i1++) {
-            int index = indices[i1];
-            if (index < 0 || index >= reference.length)
+            final int index = indices[i1];
+            if (index < 0 || index >= reference.length) {
                 throw new Pack200Exception(
                         "Something has gone wrong during parsing references, index = "
                                 + index + ", array size = " + reference.length);
+            }
             result1[i1] = reference[index];
         }
-        String[] refs = result1;
+        final String[] refs = result1;
         // TODO Merge the decode and parsing of a multiple structure into one
         int pos = 0;
         for (int i = 0; i < count; i++) {
-            int num = counts[i];
+            final int num = counts[i];
             result[i] = new String[num];
             System.arraycopy(refs, pos, result[i], 0, num);
             pos += num;
@@ -331,89 +332,91 @@ public abstract class BandSet {
         return result;
     }
 
-    public CPInteger[] parseCPIntReferences(String name, InputStream in,
-            BHSDCodec codec, int count) throws IOException, Pack200Exception {
-        int[] reference = segment.getCpBands().getCpInt();
-        int[] indices = decodeBandInt(name, in, codec, count);
-        CPInteger[] result = new CPInteger[indices.length];
+    public CPInteger[] parseCPIntReferences(final String name, final InputStream in,
+            final BHSDCodec codec, final int count) throws IOException, Pack200Exception {
+        final int[] reference = segment.getCpBands().getCpInt();
+        final int[] indices = decodeBandInt(name, in, codec, count);
+        final CPInteger[] result = new CPInteger[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            int index = indices[i1];
-            if (index < 0 || index >= reference.length)
+            final int index = indices[i1];
+            if (index < 0 || index >= reference.length) {
                 throw new Pack200Exception(
                         "Something has gone wrong during parsing references, index = "
                                 + index + ", array size = " + reference.length);
+            }
             result[i1] = segment.getCpBands().cpIntegerValue(index);
         }
         return result;
     }
 
-    public CPDouble[] parseCPDoubleReferences(String name, InputStream in,
-            BHSDCodec codec, int count) throws IOException, Pack200Exception {
-        int[] indices = decodeBandInt(name, in, codec, count);
-        CPDouble[] result = new CPDouble[indices.length];
+    public CPDouble[] parseCPDoubleReferences(final String name, final InputStream in,
+            final BHSDCodec codec, final int count) throws IOException, Pack200Exception {
+        final int[] indices = decodeBandInt(name, in, codec, count);
+        final CPDouble[] result = new CPDouble[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            int index = indices[i1];
+            final int index = indices[i1];
             result[i1] = segment.getCpBands().cpDoubleValue(index);
         }
         return result;
     }
 
-    public CPFloat[] parseCPFloatReferences(String name, InputStream in,
-            BHSDCodec codec, int count) throws IOException, Pack200Exception {
-        int[] indices = decodeBandInt(name, in, codec, count);
-        CPFloat[] result = new CPFloat[indices.length];
+    public CPFloat[] parseCPFloatReferences(final String name, final InputStream in,
+            final BHSDCodec codec, final int count) throws IOException, Pack200Exception {
+        final int[] indices = decodeBandInt(name, in, codec, count);
+        final CPFloat[] result = new CPFloat[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            int index = indices[i1];
+            final int index = indices[i1];
             result[i1] = segment.getCpBands().cpFloatValue(index);
         }
         return result;
     }
 
-    public CPLong[] parseCPLongReferences(String name, InputStream in,
-            BHSDCodec codec, int count) throws IOException, Pack200Exception {
-        long[] reference = segment.getCpBands().getCpLong();
-        int[] indices = decodeBandInt(name, in, codec, count);
-        CPLong[] result = new CPLong[indices.length];
+    public CPLong[] parseCPLongReferences(final String name, final InputStream in,
+            final BHSDCodec codec, final int count) throws IOException, Pack200Exception {
+        final long[] reference = segment.getCpBands().getCpLong();
+        final int[] indices = decodeBandInt(name, in, codec, count);
+        final CPLong[] result = new CPLong[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            int index = indices[i1];
-            if (index < 0 || index >= reference.length)
+            final int index = indices[i1];
+            if (index < 0 || index >= reference.length) {
                 throw new Pack200Exception(
                         "Something has gone wrong during parsing references, index = "
                                 + index + ", array size = " + reference.length);
+            }
             result[i1] = segment.getCpBands().cpLongValue(index);
         }
         return result;
     }
 
-    public CPUTF8[] parseCPUTF8References(String name, InputStream in,
-            BHSDCodec codec, int count) throws IOException, Pack200Exception {
-        int[] indices = decodeBandInt(name, in, codec, count);
-        CPUTF8[] result = new CPUTF8[indices.length];
+    public CPUTF8[] parseCPUTF8References(final String name, final InputStream in,
+            final BHSDCodec codec, final int count) throws IOException, Pack200Exception {
+        final int[] indices = decodeBandInt(name, in, codec, count);
+        final CPUTF8[] result = new CPUTF8[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            int index = indices[i1];
+            final int index = indices[i1];
             result[i1] = segment.getCpBands().cpUTF8Value(index);
         }
         return result;
     }
 
-    public CPUTF8[][] parseCPUTF8References(String name, InputStream in,
-            BHSDCodec codec, int[] counts) throws IOException, Pack200Exception {
-        CPUTF8[][] result = new CPUTF8[counts.length][];
+    public CPUTF8[][] parseCPUTF8References(final String name, final InputStream in,
+            final BHSDCodec codec, final int[] counts) throws IOException, Pack200Exception {
+        final CPUTF8[][] result = new CPUTF8[counts.length][];
         int sum = 0;
         for (int i = 0; i < counts.length; i++) {
             result[i] = new CPUTF8[counts[i]];
             sum += counts[i];
         }
-        CPUTF8[] result1 = new CPUTF8[sum];
-        int[] indices = decodeBandInt(name, in, codec, sum);
+        final CPUTF8[] result1 = new CPUTF8[sum];
+        final int[] indices = decodeBandInt(name, in, codec, sum);
         for (int i1 = 0; i1 < sum; i1++) {
-            int index = indices[i1];
+            final int index = indices[i1];
             result1[i1] = segment.getCpBands().cpUTF8Value(index);
         }
-        CPUTF8[] refs = result1;
+        final CPUTF8[] refs = result1;
         int pos = 0;
         for (int i = 0; i < counts.length; i++) {
-            int num = counts[i];
+            final int num = counts[i];
             result[i] = new CPUTF8[num];
             System.arraycopy(refs, pos, result[i], 0, num);
             pos += num;
@@ -421,97 +424,97 @@ public abstract class BandSet {
         return result;
     }
 
-    public CPString[] parseCPStringReferences(String name, InputStream in,
-            BHSDCodec codec, int count) throws IOException, Pack200Exception {
-        int[] indices = decodeBandInt(name, in, codec, count);
-        CPString[] result = new CPString[indices.length];
+    public CPString[] parseCPStringReferences(final String name, final InputStream in,
+            final BHSDCodec codec, final int count) throws IOException, Pack200Exception {
+        final int[] indices = decodeBandInt(name, in, codec, count);
+        final CPString[] result = new CPString[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            int index = indices[i1];
+            final int index = indices[i1];
             result[i1] = segment.getCpBands().cpStringValue(index);
         }
         return result;
     }
 
     public CPInterfaceMethodRef[] parseCPInterfaceMethodRefReferences(
-            String name, InputStream in, BHSDCodec codec, int count)
+            final String name, final InputStream in, final BHSDCodec codec, final int count)
             throws IOException, Pack200Exception {
-        CpBands cpBands = segment.getCpBands();
-        int[] indices = decodeBandInt(name, in, codec, count);
-        CPInterfaceMethodRef[] result = new CPInterfaceMethodRef[indices.length];
+        final CpBands cpBands = segment.getCpBands();
+        final int[] indices = decodeBandInt(name, in, codec, count);
+        final CPInterfaceMethodRef[] result = new CPInterfaceMethodRef[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            int index = indices[i1];
+            final int index = indices[i1];
             result[i1] = cpBands.cpIMethodValue(index);
         }
         return result;
     }
 
-    public CPMethodRef[] parseCPMethodRefReferences(String name,
-            InputStream in, BHSDCodec codec, int count) throws IOException,
+    public CPMethodRef[] parseCPMethodRefReferences(final String name,
+            final InputStream in, final BHSDCodec codec, final int count) throws IOException,
             Pack200Exception {
-        CpBands cpBands = segment.getCpBands();
-        int[] indices = decodeBandInt(name, in, codec, count);
-        CPMethodRef[] result = new CPMethodRef[indices.length];
+        final CpBands cpBands = segment.getCpBands();
+        final int[] indices = decodeBandInt(name, in, codec, count);
+        final CPMethodRef[] result = new CPMethodRef[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            int index = indices[i1];
+            final int index = indices[i1];
             result[i1] = cpBands.cpMethodValue(index);
         }
         return result;
     }
 
-    public CPFieldRef[] parseCPFieldRefReferences(String name, InputStream in,
-            BHSDCodec codec, int count) throws IOException, Pack200Exception {
-        CpBands cpBands = segment.getCpBands();
-        int[] indices = decodeBandInt(name, in, codec, count);
-        CPFieldRef[] result = new CPFieldRef[indices.length];
+    public CPFieldRef[] parseCPFieldRefReferences(final String name, final InputStream in,
+            final BHSDCodec codec, final int count) throws IOException, Pack200Exception {
+        final CpBands cpBands = segment.getCpBands();
+        final int[] indices = decodeBandInt(name, in, codec, count);
+        final CPFieldRef[] result = new CPFieldRef[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            int index = indices[i1];
+            final int index = indices[i1];
             result[i1] = cpBands.cpFieldValue(index);
         }
         return result;
     }
 
-    public CPNameAndType[] parseCPDescriptorReferences(String name,
-            InputStream in, BHSDCodec codec, int count) throws IOException,
+    public CPNameAndType[] parseCPDescriptorReferences(final String name,
+            final InputStream in, final BHSDCodec codec, final int count) throws IOException,
             Pack200Exception {
-        CpBands cpBands = segment.getCpBands();
-        int[] indices = decodeBandInt(name, in, codec, count);
-        CPNameAndType[] result = new CPNameAndType[indices.length];
+        final CpBands cpBands = segment.getCpBands();
+        final int[] indices = decodeBandInt(name, in, codec, count);
+        final CPNameAndType[] result = new CPNameAndType[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            int index = indices[i1];
+            final int index = indices[i1];
             result[i1] = cpBands.cpNameAndTypeValue(index);
         }
         return result;
     }
 
-    public CPUTF8[] parseCPSignatureReferences(String name, InputStream in,
-            BHSDCodec codec, int count) throws IOException, Pack200Exception {
-        int[] indices = decodeBandInt(name, in, codec, count);
-        CPUTF8[] result = new CPUTF8[indices.length];
+    public CPUTF8[] parseCPSignatureReferences(final String name, final InputStream in,
+            final BHSDCodec codec, final int count) throws IOException, Pack200Exception {
+        final int[] indices = decodeBandInt(name, in, codec, count);
+        final CPUTF8[] result = new CPUTF8[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            int index = indices[i1];
+            final int index = indices[i1];
             result[i1] = segment.getCpBands().cpSignatureValue(index);
         }
         return result;
     }
 
-    protected CPUTF8[][] parseCPSignatureReferences(String name, InputStream in,
-            BHSDCodec codec, int[] counts) throws IOException, Pack200Exception {
-        CPUTF8[][] result = new CPUTF8[counts.length][];
+    protected CPUTF8[][] parseCPSignatureReferences(final String name, final InputStream in,
+            final BHSDCodec codec, final int[] counts) throws IOException, Pack200Exception {
+        final CPUTF8[][] result = new CPUTF8[counts.length][];
         int sum = 0;
         for (int i = 0; i < counts.length; i++) {
             result[i] = new CPUTF8[counts[i]];
             sum += counts[i];
         }
-        CPUTF8[] result1 = new CPUTF8[sum];
-        int[] indices = decodeBandInt(name, in, codec, sum);
+        final CPUTF8[] result1 = new CPUTF8[sum];
+        final int[] indices = decodeBandInt(name, in, codec, sum);
         for (int i1 = 0; i1 < sum; i1++) {
-            int index = indices[i1];
+            final int index = indices[i1];
             result1[i1] = segment.getCpBands().cpSignatureValue(index);
         }
-        CPUTF8[] refs = result1;
+        final CPUTF8[] refs = result1;
         int pos = 0;
         for (int i = 0; i < counts.length; i++) {
-            int num = counts[i];
+            final int num = counts[i];
             result[i] = new CPUTF8[num];
             System.arraycopy(refs, pos, result[i], 0, num);
             pos += num;
@@ -519,27 +522,27 @@ public abstract class BandSet {
         return result;
     }
 
-    public CPClass[] parseCPClassReferences(String name, InputStream in,
-            BHSDCodec codec, int count) throws IOException, Pack200Exception {
-        int[] indices = decodeBandInt(name, in, codec, count);
-        CPClass[] result = new CPClass[indices.length];
+    public CPClass[] parseCPClassReferences(final String name, final InputStream in,
+            final BHSDCodec codec, final int count) throws IOException, Pack200Exception {
+        final int[] indices = decodeBandInt(name, in, codec, count);
+        final CPClass[] result = new CPClass[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            int index = indices[i1];
+            final int index = indices[i1];
             result[i1] = segment.getCpBands().cpClassValue(index);
         }
         return result;
     }
 
-    protected String[] getReferences(int[] ints, String[] reference) {
-        String[] result = new String[ints.length];
+    protected String[] getReferences(final int[] ints, final String[] reference) {
+        final String[] result = new String[ints.length];
         for (int i = 0; i < result.length; i++) {
             result[i] = reference[ints[i]];
         }
         return result;
     }
 
-    protected String[][] getReferences(int[][] ints, String[] reference) {
-        String[][] result = new String[ints.length][];
+    protected String[][] getReferences(final int[][] ints, final String[] reference) {
+        final String[][] result = new String[ints.length][];
         for (int i = 0; i < result.length; i++) {
             result[i] = new String[ints[i].length];
             for (int j = 0; j < result[i].length; j++) {

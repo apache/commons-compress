@@ -26,6 +26,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
 
 /**
  * Archive is the main entry point to pack200 and represents a packed archive.
@@ -49,7 +50,7 @@ public class Archive {
      * @param options - packing options (if null then defaults are used)
      * @throws IOException If an I/O error occurs.
      */
-    public Archive(JarInputStream inputStream, OutputStream outputStream,
+    public Archive(final JarInputStream inputStream, OutputStream outputStream,
             PackingOptions options) throws IOException {
         jarInputStream = inputStream;
         if(options == null) {
@@ -72,7 +73,7 @@ public class Archive {
      * @param options - packing options (if null then defaults are used)
      * @throws IOException If an I/O error occurs.
      */
-    public Archive(JarFile jarFile, OutputStream outputStream,
+    public Archive(final JarFile jarFile, OutputStream outputStream,
             PackingOptions options) throws IOException {
         if(options == null) { // use all defaults
             options = new PackingOptions();
@@ -120,11 +121,11 @@ public class Archive {
                     options.isKeepFileOrder());
         }
 
-        List segmentUnitList = splitIntoSegments(packingFileList);
+        final List segmentUnitList = splitIntoSegments(packingFileList);
         int previousByteAmount = 0;
         int packedByteAmount = 0;
 
-        int segmentSize = segmentUnitList.size();
+        final int segmentSize = segmentUnitList.size();
         SegmentUnit segmentUnit;
         for (int index = 0; index < segmentSize; index++) {
             segmentUnit = (SegmentUnit) segmentUnitList.get(index);
@@ -140,14 +141,14 @@ public class Archive {
         outputStream.close();
     }
 
-    private List splitIntoSegments(List packingFileList) throws IOException,
+    private List splitIntoSegments(final List packingFileList) throws IOException,
             Pack200Exception {
-        List segmentUnitList = new ArrayList();
+        final List segmentUnitList = new ArrayList();
         List classes = new ArrayList();
         List files = new ArrayList();
-        long segmentLimit = options.getSegmentLimit();
+        final long segmentLimit = options.getSegmentLimit();
 
-        int size = packingFileList.size();
+        final int size = packingFileList.size();
         PackingFile packingFile;
         for (int index = 0; index < size; index++) {
             packingFile = (PackingFile) packingFileList.get(index);
@@ -176,27 +177,26 @@ public class Archive {
         return segmentUnitList;
     }
 
-    private boolean addJarEntry(PackingFile packingFile, List javaClasses,
-            List files) throws IOException, Pack200Exception {
-        long segmentLimit = options.getSegmentLimit();
+    private boolean addJarEntry(final PackingFile packingFile, final List javaClasses,
+            final List files) throws IOException, Pack200Exception {
+        final long segmentLimit = options.getSegmentLimit();
         if (segmentLimit != -1 && segmentLimit != 0) {
             // -1 is a special case where only one segment is created and
             // 0 is a special case where one segment is created for each file
             // except for files in "META-INF"
-            long packedSize = estimateSize(packingFile);
+            final long packedSize = estimateSize(packingFile);
             if (packedSize + currentSegmentSize > segmentLimit
                     && currentSegmentSize > 0) {
                 // don't add this JarEntry to the current segment
                 return false;
-            } else {
-                // do add this JarEntry
-                currentSegmentSize += packedSize;
             }
+            // do add this JarEntry
+            currentSegmentSize += packedSize;
         }
 
-        String name = packingFile.getName();
+        final String name = packingFile.getName();
         if (name.endsWith(".class") && !options.isPassFile(name)) {
-            Pack200ClassReader classParser = new Pack200ClassReader(
+            final Pack200ClassReader classParser = new Pack200ClassReader(
                     packingFile.contents);
             classParser.setFileName(name);
             javaClasses.add(classParser);
@@ -206,19 +206,18 @@ public class Archive {
         return true;
     }
 
-    private long estimateSize(PackingFile packingFile) {
+    private long estimateSize(final PackingFile packingFile) {
         // The heuristic used here is for compatibility with the RI and should
         // not be changed
-        String name = packingFile.getName();
+        final String name = packingFile.getName();
         if (name.startsWith("META-INF") || name.startsWith("/META-INF")) {
             return 0;
-        } else {
-            long fileSize = packingFile.contents.length;
-            if (fileSize < 0) {
-                fileSize = 0;
-            }
-            return name.length() + fileSize + 5;
         }
+        long fileSize = packingFile.contents.length;
+        if (fileSize < 0) {
+            fileSize = 0;
+        }
+        return name.length() + fileSize + 5;
     }
 
     static class SegmentUnit {
@@ -231,19 +230,19 @@ public class Archive {
 
         private int packedByteAmount = 0;
 
-        public SegmentUnit(List classes, List files) {
+        public SegmentUnit(final List classes, final List files) {
             classList = classes;
             fileList = files;
 
             // Calculate the amount of bytes in classes and files before packing
             Pack200ClassReader classReader;
-            for (Iterator iterator = classList.iterator(); iterator.hasNext();) {
+            for (final Iterator iterator = classList.iterator(); iterator.hasNext();) {
                 classReader = (Pack200ClassReader) iterator.next();
                 byteAmount += classReader.b.length;
             }
 
             PackingFile file;
-            for (Iterator iterator = fileList.iterator(); iterator.hasNext();) {
+            for (final Iterator iterator = fileList.iterator(); iterator.hasNext();) {
                 file = (PackingFile) iterator.next();
                 byteAmount += file.contents.length;
             }
@@ -273,7 +272,7 @@ public class Archive {
             return packedByteAmount;
         }
 
-        public void addPackedByteAmount(int amount) {
+        public void addPackedByteAmount(final int amount) {
             packedByteAmount += amount;
         }
     }
@@ -286,7 +285,7 @@ public class Archive {
         private final boolean deflateHint;
         private final boolean isDirectory;
 
-        public PackingFile(String name, byte[] contents, long modtime) {
+        public PackingFile(final String name, final byte[] contents, final long modtime) {
             this.name = name;
             this.contents = contents;
             this.modtime = modtime;
@@ -294,11 +293,11 @@ public class Archive {
             isDirectory = false;
         }
 
-        public PackingFile(byte[] bytes, JarEntry jarEntry) {
+        public PackingFile(final byte[] bytes, final JarEntry jarEntry) {
             name = jarEntry.getName();
             contents = bytes;
             modtime = jarEntry.getTime();
-            deflateHint = jarEntry.getMethod() == JarEntry.DEFLATED;
+            deflateHint = jarEntry.getMethod() == ZipEntry.DEFLATED;
             isDirectory = jarEntry.isDirectory();
         }
 
@@ -314,7 +313,7 @@ public class Archive {
             return modtime;
         }
 
-        public void setContents(byte[] contents) {
+        public void setContents(final byte[] contents) {
             this.contents = contents;
         }
 
@@ -326,6 +325,7 @@ public class Archive {
             return isDirectory;
         }
 
+        @Override
         public String toString() {
             return name;
         }

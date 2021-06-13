@@ -39,7 +39,7 @@ public class CPClass extends ConstantPoolEntry {
      * @throws NullPointerException
      *             if name is null
      */
-    public CPClass(CPUTF8 name, int globalIndex) {
+    public CPClass(final CPUTF8 name, final int globalIndex) {
         super(ConstantPoolEntry.CP_Class, globalIndex);
         if (name == null) {
             throw new NullPointerException("Null arguments are not allowed");
@@ -48,17 +48,22 @@ public class CPClass extends ConstantPoolEntry {
         this.utf8 = name;
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj)
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (this.getClass() != obj.getClass())
+        }
+        if (this.getClass() != obj.getClass()) {
             return false;
+        }
         final CPClass other = (CPClass) obj;
         return utf8.equals(other.utf8);
     }
 
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         return new ClassFileEntry[] { utf8, };
     }
@@ -71,17 +76,21 @@ public class CPClass extends ConstantPoolEntry {
         cachedHashCode = utf8.hashCode();
     }
 
+    @Override
     public int hashCode() {
-        if (!hashcodeComputed)
+        if (!hashcodeComputed) {
             generateHashCode();
+        }
         return cachedHashCode;
     }
 
-    protected void resolve(ClassConstantPool pool) {
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         index = pool.indexOf(utf8);
     }
 
+    @Override
     public String toString() {
         return "Class: " + getName();
     }
@@ -90,7 +99,8 @@ public class CPClass extends ConstantPoolEntry {
         return name;
     }
 
-    protected void writeBody(DataOutputStream dos) throws IOException {
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(index);
     }
 }

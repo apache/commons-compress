@@ -26,23 +26,25 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public class NarrowClassRefForm extends ClassRefForm {
 
-    public NarrowClassRefForm(int opcode, String name, int[] rewrite) {
+    public NarrowClassRefForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
-    public NarrowClassRefForm(int opcode, String name, int[] rewrite,
-            boolean widened) {
+    public NarrowClassRefForm(final int opcode, final String name, final int[] rewrite,
+            final boolean widened) {
         super(opcode, name, rewrite, widened);
     }
 
-    protected void setNestedEntries(ByteCode byteCode,
-            OperandManager operandManager, int offset) throws Pack200Exception {
+    @Override
+    protected void setNestedEntries(final ByteCode byteCode,
+            final OperandManager operandManager, final int offset) throws Pack200Exception {
         super.setNestedEntries(byteCode, operandManager, offset);
         if (!widened) {
             byteCode.setNestedPositions(new int[][] { { 0, 1 } });
         }
     }
 
+    @Override
     public boolean nestedMustStartClassPool() {
         return !widened;
     }

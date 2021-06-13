@@ -47,18 +47,18 @@ public class AttributeDefinitionBands extends BandSet {
     private final CpBands cpBands;
     private final Segment segment;
 
-    public AttributeDefinitionBands(Segment segment, int effort,
-            Attribute[] attributePrototypes) {
+    public AttributeDefinitionBands(final Segment segment, final int effort,
+            final Attribute[] attributePrototypes) {
         super(effort, segment.getSegmentHeader());
         this.cpBands = segment.getCpBands();
         this.segment = segment;
-        Map classLayouts = new HashMap();
-        Map methodLayouts = new HashMap();
-        Map fieldLayouts = new HashMap();
-        Map codeLayouts = new HashMap();
+        final Map classLayouts = new HashMap();
+        final Map methodLayouts = new HashMap();
+        final Map fieldLayouts = new HashMap();
+        final Map codeLayouts = new HashMap();
 
         for (int i = 0; i < attributePrototypes.length; i++) {
-            NewAttribute newAttribute = (NewAttribute) attributePrototypes[i];
+            final NewAttribute newAttribute = (NewAttribute) attributePrototypes[i];
             if(!(newAttribute instanceof NewAttribute.ErrorAttribute) && !(newAttribute instanceof NewAttribute.PassAttribute) && !(newAttribute instanceof NewAttribute.StripAttribute)) {
                 if (newAttribute.isContextClass()) {
                     classLayouts.put(newAttribute.type, newAttribute.getLayout());
@@ -74,38 +74,38 @@ public class AttributeDefinitionBands extends BandSet {
                 }
             }
         }
-        if (classLayouts.keySet().size() > 7) {
+        if (classLayouts.size() > 7) {
             segmentHeader.setHave_class_flags_hi(true);
         }
-        if (methodLayouts.keySet().size() > 6) {
+        if (methodLayouts.size() > 6) {
             segmentHeader.setHave_method_flags_hi(true);
         }
-        if (fieldLayouts.keySet().size() > 10) {
+        if (fieldLayouts.size() > 10) {
             segmentHeader.setHave_field_flags_hi(true);
         }
-        if (codeLayouts.keySet().size() > 15) {
+        if (codeLayouts.size() > 15) {
             segmentHeader.setHave_code_flags_hi(true);
         }
-        int[] availableClassIndices = new int[] { 25, 26, 27, 28, 29, 30, 31 };
+        int[] availableClassIndices = { 25, 26, 27, 28, 29, 30, 31 };
         if (classLayouts.size() > 7) {
             availableClassIndices = addHighIndices(availableClassIndices);
         }
         addAttributeDefinitions(classLayouts, availableClassIndices,
                 CONTEXT_CLASS);
-        int[] availableMethodIndices = new int[] { 26, 27, 28, 29, 30, 31 };
+        int[] availableMethodIndices = { 26, 27, 28, 29, 30, 31 };
         if (methodAttributeLayouts.size() > 6) {
             availableMethodIndices = addHighIndices(availableMethodIndices);
         }
         addAttributeDefinitions(methodLayouts, availableMethodIndices,
                 CONTEXT_METHOD);
-        int[] availableFieldIndices = new int[] { 18, 23, 24, 25, 26, 27, 28,
+        int[] availableFieldIndices = { 18, 23, 24, 25, 26, 27, 28,
                 29, 30, 31 };
         if (fieldAttributeLayouts.size() > 10) {
             availableFieldIndices = addHighIndices(availableFieldIndices);
         }
         addAttributeDefinitions(fieldLayouts, availableFieldIndices,
                 CONTEXT_FIELD);
-        int[] availableCodeIndices = new int[] { 17, 18, 19, 20, 21, 22, 23,
+        int[] availableCodeIndices = { 17, 18, 19, 20, 21, 22, 23,
                 24, 25, 26, 27, 28, 29, 30, 31 };
         if (codeAttributeLayouts.size() > 15) {
             availableCodeIndices = addHighIndices(availableCodeIndices);
@@ -123,13 +123,14 @@ public class AttributeDefinitionBands extends BandSet {
         segmentHeader.setAttribute_definition_count(attributeDefinitions.size());
     }
 
-    public void pack(OutputStream out) throws IOException, Pack200Exception {
+    @Override
+    public void pack(final OutputStream out) throws IOException, Pack200Exception {
         PackingUtils.log("Writing attribute definition bands...");
-        int[] attributeDefinitionHeader = new int[attributeDefinitions.size()];
-        int[] attributeDefinitionName = new int[attributeDefinitions.size()];
-        int[] attributeDefinitionLayout = new int[attributeDefinitions.size()];
+        final int[] attributeDefinitionHeader = new int[attributeDefinitions.size()];
+        final int[] attributeDefinitionName = new int[attributeDefinitions.size()];
+        final int[] attributeDefinitionLayout = new int[attributeDefinitions.size()];
         for (int i = 0; i < attributeDefinitionLayout.length; i++) {
-            AttributeDefinition def = (AttributeDefinition) attributeDefinitions
+            final AttributeDefinition def = (AttributeDefinition) attributeDefinitions
                     .get(i);
             attributeDefinitionHeader[i] = def.contextType
                     | (def.index + 1 << 2);
@@ -160,15 +161,15 @@ public class AttributeDefinitionBands extends BandSet {
     }
 
     private void addSyntheticDefinitions() {
-        boolean anySytheticClasses = segment.getClassBands()
+        final boolean anySytheticClasses = segment.getClassBands()
                 .isAnySyntheticClasses();
-        boolean anySyntheticMethods = segment.getClassBands()
+        final boolean anySyntheticMethods = segment.getClassBands()
                 .isAnySyntheticMethods();
-        boolean anySyntheticFields = segment.getClassBands()
+        final boolean anySyntheticFields = segment.getClassBands()
                 .isAnySyntheticFields();
         if (anySytheticClasses || anySyntheticMethods || anySyntheticFields) {
-            CPUTF8 syntheticUTF = cpBands.getCPUtf8("Synthetic");
-            CPUTF8 emptyUTF = cpBands.getCPUtf8("");
+            final CPUTF8 syntheticUTF = cpBands.getCPUtf8("Synthetic");
+            final CPUTF8 emptyUTF = cpBands.getCPUtf8("");
             if (anySytheticClasses) {
                 attributeDefinitions.add(new AttributeDefinition(12,
                         CONTEXT_CLASS, syntheticUTF, emptyUTF));
@@ -184,8 +185,8 @@ public class AttributeDefinitionBands extends BandSet {
         }
     }
 
-    private int[] addHighIndices(int[] availableIndices) {
-        int[] temp = new int[availableIndices.length + 32];
+    private int[] addHighIndices(final int[] availableIndices) {
+        final int[] temp = new int[availableIndices.length + 32];
         for (int i = 0; i < availableIndices.length; i++) {
             temp[i] = availableIndices[i];
         }
@@ -197,15 +198,15 @@ public class AttributeDefinitionBands extends BandSet {
         return temp;
     }
 
-    private void addAttributeDefinitions(Map layouts, int[] availableIndices,
-            int contextType) {
-        int i = 0;
-        for (Iterator iterator = layouts.keySet().iterator(); iterator
+    private void addAttributeDefinitions(final Map layouts, final int[] availableIndices,
+            final int contextType) {
+        final int i = 0;
+        for (final Iterator iterator = layouts.keySet().iterator(); iterator
                 .hasNext();) {
-            String name = (String) iterator.next();
-            String layout = (String) layouts.get(name);
-            int index = availableIndices[i];
-            AttributeDefinition definition = new AttributeDefinition(index,
+            final String name = (String) iterator.next();
+            final String layout = (String) layouts.get(name);
+            final int index = availableIndices[i];
+            final AttributeDefinition definition = new AttributeDefinition(index,
                     contextType, cpBands.getCPUtf8(name), cpBands
                             .getCPUtf8(layout));
             attributeDefinitions.add(definition);
@@ -248,8 +249,8 @@ public class AttributeDefinitionBands extends BandSet {
         public CPUTF8 name;
         public CPUTF8 layout;
 
-        public AttributeDefinition(int index, int contextType, CPUTF8 name,
-                CPUTF8 layout) {
+        public AttributeDefinition(final int index, final int contextType, final CPUTF8 name,
+                final CPUTF8 layout) {
             this.index = index;
             this.contextType = contextType;
             this.name = name;

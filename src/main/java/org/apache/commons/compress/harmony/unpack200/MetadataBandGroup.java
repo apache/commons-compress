@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.compress.harmony.unpack200.bytecode.AnnotationDefaultAttribute;
+import org.apache.commons.compress.harmony.unpack200.bytecode.AnnotationsAttribute.Annotation;
+import org.apache.commons.compress.harmony.unpack200.bytecode.AnnotationsAttribute.ElementValue;
 import org.apache.commons.compress.harmony.unpack200.bytecode.Attribute;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPDouble;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPFloat;
@@ -30,8 +32,6 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPLong;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.harmony.unpack200.bytecode.RuntimeVisibleorInvisibleAnnotationsAttribute;
 import org.apache.commons.compress.harmony.unpack200.bytecode.RuntimeVisibleorInvisibleParameterAnnotationsAttribute;
-import org.apache.commons.compress.harmony.unpack200.bytecode.AnnotationsAttribute.Annotation;
-import org.apache.commons.compress.harmony.unpack200.bytecode.AnnotationsAttribute.ElementValue;
 import org.apache.commons.compress.harmony.unpack200.bytecode.RuntimeVisibleorInvisibleParameterAnnotationsAttribute.ParameterAnnotation;
 
 /**
@@ -47,23 +47,23 @@ public class MetadataBandGroup {
     private static CPUTF8 rvpaUTF8;
     private static CPUTF8 ripaUTF8;
 
-    public static void setRvaAttributeName(CPUTF8 cpUTF8Value) {
+    public static void setRvaAttributeName(final CPUTF8 cpUTF8Value) {
         rvaUTF8 = cpUTF8Value;
     }
 
-    public static void setRiaAttributeName(CPUTF8 cpUTF8Value) {
+    public static void setRiaAttributeName(final CPUTF8 cpUTF8Value) {
         riaUTF8 = cpUTF8Value;
     }
 
-    public static void setRvpaAttributeName(CPUTF8 cpUTF8Value) {
+    public static void setRvpaAttributeName(final CPUTF8 cpUTF8Value) {
         rvpaUTF8 = cpUTF8Value;
     }
 
-    public static void setRipaAttributeName(CPUTF8 cpUTF8Value) {
+    public static void setRipaAttributeName(final CPUTF8 cpUTF8Value) {
         ripaUTF8 = cpUTF8Value;
     }
 
-    public MetadataBandGroup(String type, CpBands cpBands) {
+    public MetadataBandGroup(final String type, final CpBands cpBands) {
         this.type = type;
         this.cpBands = cpBands;
     }
@@ -124,7 +124,7 @@ public class MetadataBandGroup {
         if (attributes == null) {
             attributes = new ArrayList();
             if (name_RU != null) {
-                Iterator name_RU_Iterator = Arrays.asList(name_RU).iterator();
+                final Iterator name_RU_Iterator = Arrays.asList(name_RU).iterator();
                 if (!type.equals("AD")) {
                     T_index = 0;
                 }
@@ -163,9 +163,9 @@ public class MetadataBandGroup {
         return attributes;
     }
 
-    private Attribute getAttribute(int numAnnotations, CPUTF8[] types,
-            int[] pairCounts, Iterator namesIterator) {
-        Annotation[] annotations = new Annotation[numAnnotations];
+    private Attribute getAttribute(final int numAnnotations, final CPUTF8[] types,
+            final int[] pairCounts, final Iterator namesIterator) {
+        final Annotation[] annotations = new Annotation[numAnnotations];
         for (int i = 0; i < numAnnotations; i++) {
             annotations[i] = getAnnotation(types[i], pairCounts[i],
                     namesIterator);
@@ -174,13 +174,13 @@ public class MetadataBandGroup {
                 .equals("RVA") ? rvaUTF8 : riaUTF8, annotations);
     }
 
-    private Attribute getParameterAttribute(int numParameters,
-            Iterator namesIterator) {
-        ParameterAnnotation[] parameter_annotations = new ParameterAnnotation[numParameters];
+    private Attribute getParameterAttribute(final int numParameters,
+            final Iterator namesIterator) {
+        final ParameterAnnotation[] parameter_annotations = new ParameterAnnotation[numParameters];
         for (int i = 0; i < numParameters; i++) {
-            int numAnnotations = anno_N[anno_N_Index++];
-            int[] pairCounts = pair_N[pair_N_Index++];
-            Annotation[] annotations = new Annotation[numAnnotations];
+            final int numAnnotations = anno_N[anno_N_Index++];
+            final int[] pairCounts = pair_N[pair_N_Index++];
+            final Annotation[] annotations = new Annotation[numAnnotations];
             for (int j = 0; j < annotations.length; j++) {
                 annotations[j] = getAnnotation(type_RS[anno_N_Index - 1][j],
                         pairCounts[j], namesIterator);
@@ -192,19 +192,19 @@ public class MetadataBandGroup {
                 parameter_annotations);
     }
 
-    private Annotation getAnnotation(CPUTF8 type, int pairCount,
-            Iterator namesIterator) {
-        CPUTF8[] elementNames = new CPUTF8[pairCount];
-        ElementValue[] elementValues = new ElementValue[pairCount];
+    private Annotation getAnnotation(final CPUTF8 type, final int pairCount,
+            final Iterator namesIterator) {
+        final CPUTF8[] elementNames = new CPUTF8[pairCount];
+        final ElementValue[] elementValues = new ElementValue[pairCount];
         for (int j = 0; j < elementNames.length; j++) {
             elementNames[j] = (CPUTF8) namesIterator.next();
-            int t = T[T_index++];
+            final int t = T[T_index++];
             elementValues[j] = new ElementValue(t, getNextValue(t));
         }
         return new Annotation(pairCount, type, elementNames, elementValues);
     }
 
-    private Object getNextValue(int t) {
+    private Object getNextValue(final int t) {
         switch (t) {
         case 'B':
         case 'C':
@@ -223,22 +223,22 @@ public class MetadataBandGroup {
         case 'e':
             // TODO: check this - it may not work if the first string already
             // has a colon in it
-            String enumString = caseet_RS[caseet_RS_Index++] + ":"
+            final String enumString = caseet_RS[caseet_RS_Index++] + ":"
                     + caseec_RU[caseec_RU_Index++];
             return cpBands.cpNameAndTypeValue(enumString);
         case 's':
             return cases_RU[cases_RU_Index++];
         case '[':
-            int arraySize = casearray_N[casearray_N_Index++];
-            ElementValue[] nestedArray = new ElementValue[arraySize];
+            final int arraySize = casearray_N[casearray_N_Index++];
+            final ElementValue[] nestedArray = new ElementValue[arraySize];
             for (int i = 0; i < arraySize; i++) {
-                int nextT = T[T_index++];
+                final int nextT = T[T_index++];
                 nestedArray[i] = new ElementValue(nextT, getNextValue(nextT));
             }
             return nestedArray;
         case '@':
-            CPUTF8 type = nesttype_RS[nesttype_RS_Index++];
-            int numPairs = nestpair_N[nestpair_N_Index++];
+            final CPUTF8 type = nesttype_RS[nesttype_RS_Index++];
+            final int numPairs = nestpair_N[nestpair_N_Index++];
 
             return getAnnotation(type, numPairs, nestname_RU_Iterator);
         }

@@ -27,7 +27,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public class MultiANewArrayForm extends ClassRefForm {
 
-    public MultiANewArrayForm(int opcode, String name, int[] rewrite) {
+    public MultiANewArrayForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
@@ -38,8 +38,9 @@ public class MultiANewArrayForm extends ClassRefForm {
      *      org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
      *      org.apache.commons.compress.harmony.unpack200.SegmentConstantPool)
      */
-    public void setByteCodeOperands(ByteCode byteCode,
-            OperandManager operandManager, int codeLength) {
+    @Override
+    public void setByteCodeOperands(final ByteCode byteCode,
+            final OperandManager operandManager, final int codeLength) {
         // multianewarray has a class ref and a dimension.
         // The superclass handles the class ref.
         super.setByteCodeOperands(byteCode, operandManager, codeLength);

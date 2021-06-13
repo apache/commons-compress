@@ -34,7 +34,7 @@ public class BcBands extends BandSet {
     private final CpBands cpBands;
     private final Segment segment;
 
-    public BcBands(CpBands cpBands, Segment segment, int effort) {
+    public BcBands(final CpBands cpBands, final Segment segment, final int effort) {
         super(effort, segment.getSegmentHeader());
         this.cpBands = cpBands;
         this.segment = segment;
@@ -81,7 +81,7 @@ public class BcBands extends BandSet {
     private int renumberedOffset;
     private final IntList bcLabelRelativeOffsets = new IntList();
 
-    public void setCurrentClass(String name, String superName) {
+    public void setCurrentClass(final String name, final String superName) {
         currentClass = name;
         superClass = superName;
     }
@@ -98,7 +98,8 @@ public class BcBands extends BandSet {
         bcInitRef = getIndexInClassForConstructor(bcInitRef);
     }
 
-    public void pack(OutputStream out) throws IOException, Pack200Exception {
+    @Override
+    public void pack(final OutputStream out) throws IOException, Pack200Exception {
         PackingUtils.log("Writing byte code bands...");
         byte[] encodedBand = encodeBandInt("bcCodes", bcCodes.toArray(),
                 Codec.BYTE1);
@@ -233,20 +234,20 @@ public class BcBands extends BandSet {
         // out.write(encodeBandInt(integerListToArray(bcEscByte), Codec.BYTE1));
     }
 
-    private List getIndexInClass(List cPMethodOrFieldList) {
-        List indices = new ArrayList(cPMethodOrFieldList.size());
+    private List getIndexInClass(final List cPMethodOrFieldList) {
+        final List indices = new ArrayList(cPMethodOrFieldList.size());
         for (int i = 0; i < cPMethodOrFieldList.size(); i++) {
-            CPMethodOrField cpMF = (CPMethodOrField) cPMethodOrFieldList.get(i);
-            indices.add(new Integer(cpMF.getIndexInClass()));
+            final CPMethodOrField cpMF = (CPMethodOrField) cPMethodOrFieldList.get(i);
+            indices.add(Integer.valueOf(cpMF.getIndexInClass()));
         }
         return indices;
     }
 
-    private List getIndexInClassForConstructor(List cPMethodList) {
-        List indices = new ArrayList(cPMethodList.size());
+    private List getIndexInClassForConstructor(final List cPMethodList) {
+        final List indices = new ArrayList(cPMethodList.size());
         for (int i = 0; i < cPMethodList.size(); i++) {
-            CPMethodOrField cpMF = (CPMethodOrField) cPMethodList.get(i);
-            indices.add(new Integer(cpMF.getIndexInClassForConstructor()));
+            final CPMethodOrField cpMF = (CPMethodOrField) cPMethodList.get(i);
+            indices.add(Integer.valueOf(cpMF.getIndexInClassForConstructor()));
         }
         return indices;
     }
@@ -263,14 +264,15 @@ public class BcBands extends BandSet {
                 throw new RuntimeException("Mistake made with renumbering");
             }
             for (int i = bcLabel.size() - 1; i >= 0; i--) {
-                Object label = bcLabel.get(i);
+                final Object label = bcLabel.get(i);
                 if (label instanceof Integer) {
                     break;
-                } else if (label instanceof Label) {
+                }
+                if (label instanceof Label) {
                     bcLabel.remove(i);
-                    Integer offset = (Integer) labelsToOffsets.get(label);
-                    int relativeOffset = bcLabelRelativeOffsets.get(i);
-                    bcLabel.add(i, new Integer(bciRenumbering.get(offset.intValue()) - bciRenumbering.get(relativeOffset)));
+                    final Integer offset = (Integer) labelsToOffsets.get(label);
+                    final int relativeOffset = bcLabelRelativeOffsets.get(i);
+                    bcLabel.add(i, Integer.valueOf(bciRenumbering.get(offset.intValue()) - bciRenumbering.get(relativeOffset)));
                 }
             }
             bcCodes.add(endMarker);
@@ -283,12 +285,12 @@ public class BcBands extends BandSet {
         }
     }
 
-    public void visitLabel(Label label) {
-        labelsToOffsets.put(label, new Integer(byteCodeOffset));
+    public void visitLabel(final Label label) {
+        labelsToOffsets.put(label, Integer.valueOf(byteCodeOffset));
     }
 
-    public void visitFieldInsn(int opcode, String owner, String name,
-            String desc) {
+    public void visitFieldInsn(int opcode, final String owner, final String name,
+            final String desc) {
         byteCodeOffset += 3;
         updateRenumbering();
         boolean aload_0 = false;
@@ -297,7 +299,7 @@ public class BcBands extends BandSet {
             bcCodes.remove(bcCodes.size() - 1);
             aload_0 = true;
         }
-        CPMethodOrField cpField = cpBands.getCPField(owner, name, desc);
+        final CPMethodOrField cpField = cpBands.getCPField(owner, name, desc);
         if (aload_0) {
             opcode += 7;
         }
@@ -331,7 +333,7 @@ public class BcBands extends BandSet {
         bciRenumbering.add(renumberedOffset);
     }
 
-    public void visitIincInsn(int var, int increment) {
+    public void visitIincInsn(final int var, final int increment) {
         if (var > 255 || increment > 255) {
             byteCodeOffset += 6;
             bcCodes.add(WIDE);
@@ -347,18 +349,17 @@ public class BcBands extends BandSet {
         updateRenumbering();
     }
 
-    public void visitInsn(int opcode) {
+    public void visitInsn(final int opcode) {
         if (opcode >= 202) {
             throw new RuntimeException(
                     "Non-standard bytecode instructions not supported");
-        } else {
-            bcCodes.add(opcode);
-            byteCodeOffset++;
-            updateRenumbering();
         }
+        bcCodes.add(opcode);
+        byteCodeOffset++;
+        updateRenumbering();
     }
 
-    public void visitIntInsn(int opcode, int operand) {
+    public void visitIntInsn(final int opcode, final int operand) {
         switch (opcode) {
         case 17: // sipush
             bcCodes.add(opcode);
@@ -374,7 +375,7 @@ public class BcBands extends BandSet {
         updateRenumbering();
     }
 
-    public void visitJumpInsn(int opcode, Label label) {
+    public void visitJumpInsn(final int opcode, final Label label) {
         bcCodes.add(opcode);
         bcLabel.add(label);
         bcLabelRelativeOffsets.add(byteCodeOffset);
@@ -382,8 +383,8 @@ public class BcBands extends BandSet {
         updateRenumbering();
     }
 
-    public void visitLdcInsn(Object cst) {
-        CPConstant constant = cpBands.getConstant(cst);
+    public void visitLdcInsn(final Object cst) {
+        final CPConstant constant = cpBands.getConstant(cst);
         if (segment.lastConstantHadWideIndex() || constant instanceof CPLong
                 || constant instanceof CPDouble) {
             byteCodeOffset += 3;
@@ -427,7 +428,7 @@ public class BcBands extends BandSet {
         updateRenumbering();
     }
 
-    public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
+    public void visitLookupSwitchInsn(final Label dflt, final int[] keys, final Label[] labels) {
         bcCodes.add(LOOKUPSWITCH);
         bcLabel.add(dflt);
         bcLabelRelativeOffsets.add(byteCodeOffset);
@@ -437,13 +438,13 @@ public class BcBands extends BandSet {
             bcLabel.add(labels[i]);
             bcLabelRelativeOffsets.add(byteCodeOffset);
         }
-        int padding = (byteCodeOffset + 1) % 4 == 0 ? 0 : 4 - ((byteCodeOffset + 1) % 4);
+        final int padding = (byteCodeOffset + 1) % 4 == 0 ? 0 : 4 - ((byteCodeOffset + 1) % 4);
         byteCodeOffset += 1 + padding + 8 + 8 * keys.length;
         updateRenumbering();
     }
 
-    public void visitMethodInsn(int opcode, String owner, String name,
-            String desc) {
+    public void visitMethodInsn(int opcode, final String owner, final String name,
+            final String desc) {
         byteCodeOffset += 3;
         switch (opcode) {
         case 182: // invokevirtual
@@ -495,7 +496,7 @@ public class BcBands extends BandSet {
             break;
         case 185: // invokeinterface
             byteCodeOffset += 2;
-            CPMethodOrField cpIMethod = cpBands.getCPIMethod(owner, name, desc);
+            final CPMethodOrField cpIMethod = cpBands.getCPIMethod(owner, name, desc);
             bcIMethodRef.add(cpIMethod);
             bcCodes.add(INVOKEINTERFACE);
             break;
@@ -503,7 +504,7 @@ public class BcBands extends BandSet {
         updateRenumbering();
     }
 
-    public void visitMultiANewArrayInsn(String desc, int dimensions) {
+    public void visitMultiANewArrayInsn(final String desc, final int dimensions) {
         byteCodeOffset += 4;
         updateRenumbering();
         bcCodes.add(MULTIANEWARRAY);
@@ -511,24 +512,24 @@ public class BcBands extends BandSet {
         bcByte.add(dimensions & 0xFF);
     }
 
-    public void visitTableSwitchInsn(int min, int max, Label dflt,
-            Label[] labels) {
+    public void visitTableSwitchInsn(final int min, final int max, final Label dflt,
+            final Label[] labels) {
         bcCodes.add(TABLESWITCH);
         bcLabel.add(dflt);
         bcLabelRelativeOffsets.add(byteCodeOffset);
         bcCaseValue.add(min);
-        int count = labels.length;
+        final int count = labels.length;
         bcCaseCount.add(count);
         for (int i = 0; i < count; i++) {
             bcLabel.add(labels[i]);
             bcLabelRelativeOffsets.add(byteCodeOffset);
         }
-        int padding = byteCodeOffset % 4 == 0 ? 0 : 4 - (byteCodeOffset % 4);
+        final int padding = byteCodeOffset % 4 == 0 ? 0 : 4 - (byteCodeOffset % 4);
         byteCodeOffset+= (padding + 12 + 4 * labels.length);
         updateRenumbering();
     }
 
-    public void visitTypeInsn(int opcode, String type) {
+    public void visitTypeInsn(final int opcode, final String type) {
         // NEW, ANEWARRAY, CHECKCAST or INSTANCEOF
         byteCodeOffset += 3;
         updateRenumbering();
@@ -539,42 +540,40 @@ public class BcBands extends BandSet {
         }
     }
 
-    public void visitVarInsn(int opcode, int var) {
+    public void visitVarInsn(final int opcode, final int var) {
         // ILOAD, LLOAD, FLOAD, DLOAD, ALOAD, ISTORE, LSTORE, FSTORE, DSTORE, ASTORE or RET
         if (var > 255) {
             byteCodeOffset += 4;
             bcCodes.add(WIDE);
             bcCodes.add(opcode);
             bcLocal.add(var);
+        } else if(var > 3 || opcode == 169 /* RET */) {
+            byteCodeOffset += 2;
+            bcCodes.add(opcode);
+            bcLocal.add(var);
         } else {
-            if(var > 3 || opcode == 169 /* RET */) {
-                byteCodeOffset += 2;
-                bcCodes.add(opcode);
-                bcLocal.add(var);
-            } else {
-                byteCodeOffset +=1;
-                switch(opcode) {
-                case 21: // ILOAD
-                case 54: // ISTORE
-                    bcCodes.add(opcode + 5 + var);
-                    break;
-                case 22: // LLOAD
-                case 55: // LSTORE
-                    bcCodes.add(opcode + 8 + var);
-                    break;
-                case 23: // FLOAD
-                case 56: // FSTORE
-                    bcCodes.add(opcode + 11 + var);
-                    break;
-                case 24: // DLOAD
-                case 57: // DSTORE
-                    bcCodes.add(opcode + 14 + var);
-                    break;
-                case 25: // A_LOAD
-                case 58: // A_STORE
-                    bcCodes.add(opcode + 17 + var);
-                    break;
-                }
+            byteCodeOffset +=1;
+            switch(opcode) {
+            case 21: // ILOAD
+            case 54: // ISTORE
+                bcCodes.add(opcode + 5 + var);
+                break;
+            case 22: // LLOAD
+            case 55: // LSTORE
+                bcCodes.add(opcode + 8 + var);
+                break;
+            case 23: // FLOAD
+            case 56: // FSTORE
+                bcCodes.add(opcode + 11 + var);
+                break;
+            case 24: // DLOAD
+            case 57: // DSTORE
+                bcCodes.add(opcode + 14 + var);
+                break;
+            case 25: // A_LOAD
+            case 58: // A_STORE
+                bcCodes.add(opcode + 17 + var);
+                break;
             }
         }
         updateRenumbering();

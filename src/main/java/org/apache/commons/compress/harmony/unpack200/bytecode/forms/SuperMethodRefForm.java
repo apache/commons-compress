@@ -27,19 +27,22 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public class SuperMethodRefForm extends ClassSpecificReferenceForm {
 
-    public SuperMethodRefForm(int opcode, String name, int[] rewrite) {
+    public SuperMethodRefForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
-    protected int getOffset(OperandManager operandManager) {
+    @Override
+    protected int getOffset(final OperandManager operandManager) {
         return operandManager.nextSuperMethodRef();
     }
 
+    @Override
     protected int getPoolID() {
         return SegmentConstantPool.CP_METHOD;
     }
 
-    protected String context(OperandManager operandManager) {
+    @Override
+    protected String context(final OperandManager operandManager) {
         return operandManager.getSuperClass();
     }
 }

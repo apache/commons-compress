@@ -28,11 +28,11 @@ public class LabelForm extends ByteCodeForm {
 
     protected boolean widened;
 
-    public LabelForm(int opcode, String name, int[] rewrite) {
+    public LabelForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
-    public LabelForm(int opcode, String name, int[] rewrite, boolean widened) {
+    public LabelForm(final int opcode, final String name, final int[] rewrite, final boolean widened) {
         this(opcode, name, rewrite);
         this.widened = widened;
     }
@@ -43,8 +43,9 @@ public class LabelForm extends ByteCodeForm {
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#fixUpByteCodeTarget(org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode,
      *      org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute)
      */
-    public void fixUpByteCodeTargets(ByteCode byteCode,
-            CodeAttribute codeAttribute) {
+    @Override
+    public void fixUpByteCodeTargets(final ByteCode byteCode,
+            final CodeAttribute codeAttribute) {
         // LabelForms need to fix up the target of label operations
         final int originalTarget = byteCode.getByteCodeTargets()[0];
         final int sourceIndex = byteCode.getByteCodeIndex();
@@ -70,8 +71,9 @@ public class LabelForm extends ByteCodeForm {
      *      org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
      *      org.apache.commons.compress.harmony.unpack200.SegmentConstantPool)
      */
-    public void setByteCodeOperands(ByteCode byteCode,
-            OperandManager operandManager, int codeLength) {
+    @Override
+    public void setByteCodeOperands(final ByteCode byteCode,
+            final OperandManager operandManager, final int codeLength) {
         byteCode.setByteCodeTargets(new int[] { operandManager.nextLabel() });
         // The byte code operands actually get set later -
         // once we have all the bytecodes - in fixUpByteCodeTarget().

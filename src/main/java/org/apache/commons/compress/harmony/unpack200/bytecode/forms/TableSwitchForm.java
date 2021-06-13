@@ -21,7 +21,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 public class TableSwitchForm extends SwitchForm {
 
-    public TableSwitchForm(int opcode, String name) {
+    public TableSwitchForm(final int opcode, final String name) {
         super(opcode, name);
     }
 
@@ -31,8 +31,9 @@ public class TableSwitchForm extends SwitchForm {
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.forms.SwitchForm#setByteCodeOperands(org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode,
      *      org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager, int)
      */
-    public void setByteCodeOperands(ByteCode byteCode,
-            OperandManager operandManager, int codeLength) {
+    @Override
+    public void setByteCodeOperands(final ByteCode byteCode,
+            final OperandManager operandManager, final int codeLength) {
         final int case_count = operandManager.nextCaseCount();
         final int default_pc = operandManager.nextLabel();
         int case_value = -1;

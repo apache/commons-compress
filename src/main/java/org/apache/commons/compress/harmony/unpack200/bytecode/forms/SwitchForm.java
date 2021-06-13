@@ -21,7 +21,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute;
 
 public abstract class SwitchForm extends VariableInstructionForm {
 
-    public SwitchForm(int opcode, String name) {
+    public SwitchForm(final int opcode, final String name) {
         super(opcode, name);
     }
 
@@ -31,8 +31,9 @@ public abstract class SwitchForm extends VariableInstructionForm {
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#fixUpByteCodeTargets(org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode,
      *      org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute)
      */
-    public void fixUpByteCodeTargets(ByteCode byteCode,
-            CodeAttribute codeAttribute) {
+    @Override
+    public void fixUpByteCodeTargets(final ByteCode byteCode,
+            final CodeAttribute codeAttribute) {
         // SwitchForms need to fix up the target of label operations
         final int[] originalTargets = byteCode.getByteCodeTargets();
         final int numberOfLabels = originalTargets.length;
