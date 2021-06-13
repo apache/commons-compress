@@ -28,25 +28,24 @@ public abstract class SwitchForm extends VariableInstructionForm {
     /*
      * (non-Javadoc)
      *
-     * @see org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#fixUpByteCodeTargets(org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode,
-     *      org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute)
+     * @see
+     * org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#fixUpByteCodeTargets(org.apache.commons
+     * .compress.harmony.unpack200.bytecode.ByteCode,
+     * org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute)
      */
     @Override
-    public void fixUpByteCodeTargets(final ByteCode byteCode,
-            final CodeAttribute codeAttribute) {
+    public void fixUpByteCodeTargets(final ByteCode byteCode, final CodeAttribute codeAttribute) {
         // SwitchForms need to fix up the target of label operations
         final int[] originalTargets = byteCode.getByteCodeTargets();
         final int numberOfLabels = originalTargets.length;
         final int[] replacementTargets = new int[numberOfLabels];
 
         final int sourceIndex = byteCode.getByteCodeIndex();
-        final int sourceValue = ((Integer) codeAttribute.byteCodeOffsets
-                .get(sourceIndex)).intValue();
+        final int sourceValue = ((Integer) codeAttribute.byteCodeOffsets.get(sourceIndex)).intValue();
         for (int index = 0; index < numberOfLabels; index++) {
-            final int absoluteInstructionTargetIndex = sourceIndex
-                    + originalTargets[index];
-            final int targetValue = ((Integer) codeAttribute.byteCodeOffsets
-                    .get(absoluteInstructionTargetIndex)).intValue();
+            final int absoluteInstructionTargetIndex = sourceIndex + originalTargets[index];
+            final int targetValue = ((Integer) codeAttribute.byteCodeOffsets.get(absoluteInstructionTargetIndex))
+                .intValue();
             replacementTargets[index] = targetValue - sourceValue;
         }
         final int[] rewriteArray = byteCode.getRewrite();

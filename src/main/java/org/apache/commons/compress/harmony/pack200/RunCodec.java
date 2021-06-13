@@ -20,11 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-
 /**
- * A run codec is a grouping of two nested codecs; K values are decoded from the
- * first codec, and the remaining codes are decoded from the remaining codec.
- * Note that since this codec maintains state, the instances are not reusable.
+ * A run codec is a grouping of two nested codecs; K values are decoded from the first codec, and the remaining codes
+ * are decoded from the remaining codec. Note that since this codec maintains state, the instances are not reusable.
  */
 public class RunCodec extends Codec {
 
@@ -35,8 +33,7 @@ public class RunCodec extends Codec {
 
     public RunCodec(final int k, final Codec aCodec, final Codec bCodec) throws Pack200Exception {
         if (k <= 0) {
-            throw new Pack200Exception(
-                    "Cannot have a RunCodec for a negative number of numbers");
+            throw new Pack200Exception("Cannot have a RunCodec for a negative number of numbers");
         }
         if (aCodec == null || bCodec == null) {
             throw new Pack200Exception("Must supply both codecs for a RunCodec");
@@ -52,8 +49,7 @@ public class RunCodec extends Codec {
     }
 
     @Override
-    public int decode(final InputStream in, final long last) throws IOException,
-            Pack200Exception {
+    public int decode(final InputStream in, final long last) throws IOException, Pack200Exception {
         if (--k >= 0) {
             final int value = aCodec.decode(in, this.last);
             this.last = (k == 0 ? 0 : value);
@@ -80,8 +76,7 @@ public class RunCodec extends Codec {
     }
 
     @Override
-    public int[] decodeInts(final int n, final InputStream in) throws IOException,
-            Pack200Exception {
+    public int[] decodeInts(final int n, final InputStream in) throws IOException, Pack200Exception {
         final int[] band = new int[n];
         final int[] aValues = aCodec.decodeInts(k, in);
         normalise(aValues, aCodec);
@@ -113,8 +108,7 @@ public class RunCodec extends Codec {
             Arrays.sort(favoured);
             for (int i = 0; i < band.length; i++) {
                 final boolean favouredValue = Arrays.binarySearch(favoured, band[i]) > -1;
-                final Codec theCodec = favouredValue ? popCodec.getFavouredCodec()
-                        : popCodec.getUnfavouredCodec();
+                final Codec theCodec = favouredValue ? popCodec.getFavouredCodec() : popCodec.getUnfavouredCodec();
                 if (theCodec instanceof BHSDCodec) {
                     final BHSDCodec bhsd = (BHSDCodec) theCodec;
                     if (bhsd.isDelta()) {
@@ -133,8 +127,7 @@ public class RunCodec extends Codec {
 
     @Override
     public String toString() {
-        return "RunCodec[k=" + k + ";aCodec=" + aCodec + "bCodec=" + bCodec
-                + "]";
+        return "RunCodec[k=" + k + ";aCodec=" + aCodec + "bCodec=" + bCodec + "]";
     }
 
     @Override

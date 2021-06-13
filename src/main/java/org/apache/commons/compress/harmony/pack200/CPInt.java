@@ -29,10 +29,10 @@ public class CPInt extends CPConstant {
 
     @Override
     public int compareTo(final Object obj) {
-        if(theInt > ((CPInt)obj).theInt) {
+        if (theInt > ((CPInt) obj).theInt) {
             return 1;
         }
-        if (theInt == ((CPInt)obj).theInt) {
+        if (theInt == ((CPInt) obj).theInt) {
             return 0;
         }
         return -1;

@@ -23,8 +23,7 @@ import java.util.List;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 
 /**
- * Abstract superclass for attributes that have some part encoded with a BCI
- * renumbering
+ * Abstract superclass for attributes that have some part encoded with a BCI renumbering
  */
 public abstract class BCIRenumberedAttribute extends Attribute {
 
@@ -56,26 +55,21 @@ public abstract class BCIRenumberedAttribute extends Attribute {
     protected abstract int[] getStartPCs();
 
     /**
-     * In Pack200, line number tables are BCI renumbered. This method takes the
-     * byteCodeOffsets (which is a List of Integers specifying the offset in the
-     * byte code array of each instruction) and updates the start_pcs so that it
-     * points to the instruction index itself, not the BCI renumbering of the
-     * instruction.
+     * In Pack200, line number tables are BCI renumbered. This method takes the byteCodeOffsets (which is a List of
+     * Integers specifying the offset in the byte code array of each instruction) and updates the start_pcs so that it
+     * points to the instruction index itself, not the BCI renumbering of the instruction.
      *
-     * @param byteCodeOffsets
-     *            List of Integer offsets of the bytecode array
+     * @param byteCodeOffsets List of Integer offsets of the bytecode array
      * @throws Pack200Exception TODO
      */
     public void renumber(final List byteCodeOffsets) throws Pack200Exception {
         if (renumbered) {
-            throw new Error(
-                    "Trying to renumber a line number table that has already been renumbered");
+            throw new Error("Trying to renumber a line number table that has already been renumbered");
         }
         renumbered = true;
         final int[] startPCs = getStartPCs();
         for (int index = 0; index < startPCs.length; index++) {
-            startPCs[index] = ((Integer) byteCodeOffsets.get(startPCs[index]))
-                    .intValue();
+            startPCs[index] = ((Integer) byteCodeOffsets.get(startPCs[index])).intValue();
         }
     }
 

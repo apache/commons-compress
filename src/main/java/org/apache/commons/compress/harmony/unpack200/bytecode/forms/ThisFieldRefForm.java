@@ -20,10 +20,9 @@ import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * This class implements references to fields defined in the current class,
- * which is set by this class in the OperandManager. Pack200 allows the current
- * class to be inferred from context; this class tracks previous field reference
- * classes to allow this.
+ * This class implements references to fields defined in the current class, which is set by this class in the
+ * OperandManager. Pack200 allows the current class to be inferred from context; this class tracks previous field
+ * reference classes to allow this.
  */
 public class ThisFieldRefForm extends ClassSpecificReferenceForm {
 

@@ -52,8 +52,7 @@ public class NewAttributeBands extends BandSet {
 
     protected List attributeLayoutElements;
 
-    public NewAttributeBands(final Segment segment, final AttributeLayout attributeLayout)
-            throws IOException {
+    public NewAttributeBands(final Segment segment, final AttributeLayout attributeLayout) throws IOException {
         super(segment);
         this.attributeLayout = attributeLayout;
         parseLayout();
@@ -71,8 +70,8 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Parse the bands relating to this AttributeLayout and return the correct
-     * class file attributes as a List of {@link Attribute}.
+     * Parse the bands relating to this AttributeLayout and return the correct class file attributes as a List of
+     * {@link Attribute}.
      *
      * @param in parse source.
      * @param occurrenceCount TODO
@@ -80,11 +79,9 @@ public class NewAttributeBands extends BandSet {
      * @throws IOException If an I/O error occurs.
      * @throws Pack200Exception TODO
      */
-    public List parseAttributes(final InputStream in, final int occurrenceCount)
-            throws IOException, Pack200Exception {
+    public List parseAttributes(final InputStream in, final int occurrenceCount) throws IOException, Pack200Exception {
         for (int i = 0; i < attributeLayoutElements.size(); i++) {
-            final AttributeLayoutElement element = (AttributeLayoutElement) attributeLayoutElements
-                    .get(i);
+            final AttributeLayoutElement element = (AttributeLayoutElement) attributeLayoutElements.get(i);
             element.readBands(in, occurrenceCount);
         }
 
@@ -96,20 +93,17 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Get one attribute at the given index from the various bands. The correct
-     * bands must have already been read in.
+     * Get one attribute at the given index from the various bands. The correct bands must have already been read in.
      *
      * @param index TODO
      * @param elements TODO
      * @return attribute at the given index.
      */
     private Attribute getOneAttribute(final int index, final List elements) {
-        final NewAttribute attribute = new NewAttribute(segment.getCpBands()
-                .cpUTF8Value(attributeLayout.getName()),
-                attributeLayout.getIndex());
+        final NewAttribute attribute = new NewAttribute(segment.getCpBands().cpUTF8Value(attributeLayout.getName()),
+            attributeLayout.getIndex());
         for (int i = 0; i < elements.size(); i++) {
-            final AttributeLayoutElement element = (AttributeLayoutElement) elements
-                    .get(i);
+            final AttributeLayoutElement element = (AttributeLayoutElement) elements.get(i);
             element.addToAttribute(index, attribute);
         }
         return attribute;
@@ -133,14 +127,12 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Resolve calls in the attribute layout and returns the number of backwards
-     * calls
+     * Resolve calls in the attribute layout and returns the number of backwards calls
      */
     private void resolveCalls() {
         int backwardsCalls = 0;
         for (int i = 0; i < attributeLayoutElements.size(); i++) {
-            final AttributeLayoutElement element = (AttributeLayoutElement) attributeLayoutElements
-                    .get(i);
+            final AttributeLayoutElement element = (AttributeLayoutElement) attributeLayoutElements.get(i);
             if (element instanceof Callable) {
                 final Callable callable = (Callable) element;
                 if (i == 0) {
@@ -148,19 +140,16 @@ public class NewAttributeBands extends BandSet {
                 }
                 final List body = callable.body; // Look for calls in the body
                 for (int iIndex = 0; iIndex < body.size(); iIndex++) {
-                    final LayoutElement layoutElement = (LayoutElement) body
-                            .get(iIndex);
+                    final LayoutElement layoutElement = (LayoutElement) body.get(iIndex);
                     // Set the callable for each call
-                    backwardsCalls += resolveCallsForElement(i, callable,
-                            layoutElement);
+                    backwardsCalls += resolveCallsForElement(i, callable, layoutElement);
                 }
             }
         }
         backwardsCallCount = backwardsCalls;
     }
 
-    private int resolveCallsForElement(final int i, final Callable currentCallable,
-            final LayoutElement layoutElement) {
+    private int resolveCallsForElement(final int i, final Callable currentCallable, final LayoutElement layoutElement) {
         int backwardsCalls = 0;
         if (layoutElement instanceof Call) {
             final Call call = (Call) layoutElement;
@@ -170,8 +159,7 @@ public class NewAttributeBands extends BandSet {
                 call.setCallable(currentCallable);
             } else if (index > 0) { // Forwards call
                 for (int k = i + 1; k < attributeLayoutElements.size(); k++) {
-                    final AttributeLayoutElement el = (AttributeLayoutElement) attributeLayoutElements
-                            .get(k);
+                    final AttributeLayoutElement el = (AttributeLayoutElement) attributeLayoutElements.get(k);
                     if (el instanceof Callable) {
                         index--;
                         if (index == 0) {
@@ -183,8 +171,7 @@ public class NewAttributeBands extends BandSet {
             } else { // Backwards call
                 backwardsCalls++;
                 for (int k = i - 1; k >= 0; k--) {
-                    final AttributeLayoutElement el = (AttributeLayoutElement) attributeLayoutElements
-                            .get(k);
+                    final AttributeLayoutElement el = (AttributeLayoutElement) attributeLayoutElements.get(k);
                     if (el instanceof Callable) {
                         index++;
                         if (index == 0) {
@@ -198,15 +185,13 @@ public class NewAttributeBands extends BandSet {
             final List children = ((Replication) layoutElement).layoutElements;
             for (final Iterator iterator = children.iterator(); iterator.hasNext();) {
                 final LayoutElement object = (LayoutElement) iterator.next();
-                backwardsCalls += resolveCallsForElement(i, currentCallable,
-                        object);
+                backwardsCalls += resolveCallsForElement(i, currentCallable, object);
             }
         }
         return backwardsCalls;
     }
 
-    private AttributeLayoutElement readNextAttributeElement(final StringReader stream)
-            throws IOException {
+    private AttributeLayoutElement readNextAttributeElement(final StringReader stream) throws IOException {
         stream.mark(1);
         final int nextChar = stream.read();
         if (nextChar == -1) {
@@ -220,8 +205,7 @@ public class NewAttributeBands extends BandSet {
         return readNextLayoutElement(stream);
     }
 
-    private LayoutElement readNextLayoutElement(final StringReader stream)
-            throws IOException {
+    private LayoutElement readNextLayoutElement(final StringReader stream) throws IOException {
         final int nextChar = stream.read();
         if (nextChar == -1) {
             return null;
@@ -232,11 +216,10 @@ public class NewAttributeBands extends BandSet {
         case 'H':
         case 'I':
         case 'V':
-            return new Integral(new String(new char[] { (char) nextChar }));
+            return new Integral(new String(new char[] {(char) nextChar}));
         case 'S':
         case 'F':
-            return new Integral(new String(new char[] { (char) nextChar,
-                    (char) stream.read() }));
+            return new Integral(new String(new char[] {(char) nextChar, (char) stream.read()}));
         case 'P':
             stream.mark(1);
             if (stream.read() != 'O') {
@@ -261,7 +244,7 @@ public class NewAttributeBands extends BandSet {
             final String str = readUpToMatchingBracket(stream);
             return new Replication("" + uint_type, str);
 
-            // Union
+        // Union
         case 'T':
             String int_type = "" + (char) stream.read();
             if (int_type.equals("S")) {
@@ -284,12 +267,12 @@ public class NewAttributeBands extends BandSet {
             }
             return new Union(int_type, unionCases, body);
 
-            // Call
+        // Call
         case '(':
             final int number = readNumber(stream).intValue();
             stream.read(); // ')'
             return new Call(number);
-            // Reference
+        // Reference
         case 'K':
         case 'R':
             final StringBuilder string = new StringBuilder("").append((char) nextChar).append((char) stream.read());
@@ -336,14 +319,12 @@ public class NewAttributeBands extends BandSet {
             return new UnionCase(tags);
         }
         stream.reset();
-        return new UnionCase(tags,
-                readBody(getStreamUpToMatchingBracket(stream)));
+        return new UnionCase(tags, readBody(getStreamUpToMatchingBracket(stream)));
     }
 
     /**
-     * An AttributeLayoutElement is a part of an attribute layout and has one or
-     * more bands associated with it, which transmit the AttributeElement data
-     * for successive Attributes of this type.
+     * An AttributeLayoutElement is a part of an attribute layout and has one or more bands associated with it, which
+     * transmit the AttributeElement data for successive Attributes of this type.
      */
     private interface AttributeLayoutElement {
 
@@ -355,12 +336,10 @@ public class NewAttributeBands extends BandSet {
          * @throws Pack200Exception Bad archive.
          * @throws IOException If an I/O error occurs.
          */
-        void readBands(InputStream in, int count) throws IOException,
-                Pack200Exception;
+        void readBands(InputStream in, int count) throws IOException, Pack200Exception;
 
         /**
-         * Adds the band data for this element at the given index to the
-         * attribute.
+         * Adds the band data for this element at the given index to the attribute.
          *
          * @param index Index position to add the attribute.
          * @param attribute The attribute to add.
@@ -402,10 +381,8 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public void readBands(final InputStream in, final int count) throws IOException,
-                Pack200Exception {
-            band = decodeBandInt(attributeLayout.getName() + "_" + tag, in,
-                    getCodec(tag), count);
+        public void readBands(final InputStream in, final int count) throws IOException, Pack200Exception {
+            band = decodeBandInt(attributeLayout.getName() + "_" + tag, in, getCodec(tag), count);
         }
 
         @Override
@@ -481,8 +458,7 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public void readBands(final InputStream in, final int count) throws IOException,
-                Pack200Exception {
+        public void readBands(final InputStream in, final int count) throws IOException, Pack200Exception {
             countElement.readBands(in, count);
             int arrayCount = 0;
             for (int i = 0; i < count; i++) {
@@ -507,8 +483,7 @@ public class NewAttributeBands extends BandSet {
             final long numElements = countElement.getValue(index);
             for (int i = offset; i < offset + numElements; i++) {
                 for (int it = 0; it < layoutElements.size(); it++) {
-                    final LayoutElement element = (LayoutElement) layoutElements
-                            .get(it);
+                    final LayoutElement element = (LayoutElement) layoutElements.get(it);
                     element.addToAttribute(i, attribute);
                 }
             }
@@ -524,8 +499,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * A Union is a type of layout element where the tag value acts as a
-     * selector for one of the union cases
+     * A Union is a type of layout element where the tag value acts as a selector for one of the union cases
      */
     public class Union extends LayoutElement {
 
@@ -542,8 +516,7 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public void readBands(final InputStream in, final int count) throws IOException,
-                Pack200Exception {
+        public void readBands(final InputStream in, final int count) throws IOException, Pack200Exception {
             unionTag.readBands(in, count);
             final int[] values = unionTag.band;
             // Count the band size for each union case then read the bands
@@ -572,8 +545,7 @@ public class NewAttributeBands extends BandSet {
             }
             if (defaultCaseBody != null) {
                 for (int i = 0; i < defaultCaseBody.size(); i++) {
-                    final LayoutElement element = (LayoutElement) defaultCaseBody
-                            .get(i);
+                    final LayoutElement element = (LayoutElement) defaultCaseBody.get(i);
                     element.readBands(in, defaultCount);
                 }
             }
@@ -615,8 +587,7 @@ public class NewAttributeBands extends BandSet {
                 }
                 if (defaultCaseBody != null) {
                     for (int i = 0; i < defaultCaseBody.size(); i++) {
-                        final LayoutElement element = (LayoutElement) defaultCaseBody
-                                .get(i);
+                        final LayoutElement element = (LayoutElement) defaultCaseBody.get(i);
                         element.addToAttribute(defaultOffset, attribute);
                     }
                 }
@@ -656,10 +627,9 @@ public class NewAttributeBands extends BandSet {
         @Override
         public void readBands(final InputStream in, final int count) {
             /*
-             * We don't read anything here, but we need to pass the extra count
-             * to the callable if it's a forwards call. For backwards callables
-             * the count is transmitted directly in the attribute bands and so
-             * it is added later.
+             * We don't read anything here, but we need to pass the extra count to the callable if it's a forwards call.
+             * For backwards callables the count is transmitted directly in the attribute bands and so it is added
+             * later.
              */
             if (callableIndex > 0) {
                 callable.addCount(count);
@@ -697,44 +667,31 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public void readBands(final InputStream in, final int count) throws IOException,
-                Pack200Exception {
+        public void readBands(final InputStream in, final int count) throws IOException, Pack200Exception {
             if (tag.startsWith("KI")) { // Integer
-                band = parseCPIntReferences(attributeLayout.getName(), in,
-                        Codec.UNSIGNED5, count);
+                band = parseCPIntReferences(attributeLayout.getName(), in, Codec.UNSIGNED5, count);
             } else if (tag.startsWith("KJ")) { // Long
-                band = parseCPLongReferences(attributeLayout.getName(), in,
-                        Codec.UNSIGNED5, count);
+                band = parseCPLongReferences(attributeLayout.getName(), in, Codec.UNSIGNED5, count);
             } else if (tag.startsWith("KF")) { // Float
-                band = parseCPFloatReferences(attributeLayout.getName(), in,
-                        Codec.UNSIGNED5, count);
+                band = parseCPFloatReferences(attributeLayout.getName(), in, Codec.UNSIGNED5, count);
             } else if (tag.startsWith("KD")) { // Double
-                band = parseCPDoubleReferences(attributeLayout.getName(), in,
-                        Codec.UNSIGNED5, count);
+                band = parseCPDoubleReferences(attributeLayout.getName(), in, Codec.UNSIGNED5, count);
             } else if (tag.startsWith("KS")) { // String
-                band = parseCPStringReferences(attributeLayout.getName(), in,
-                        Codec.UNSIGNED5, count);
+                band = parseCPStringReferences(attributeLayout.getName(), in, Codec.UNSIGNED5, count);
             } else if (tag.startsWith("RC")) { // Class
-                band = parseCPClassReferences(attributeLayout.getName(), in,
-                        Codec.UNSIGNED5, count);
+                band = parseCPClassReferences(attributeLayout.getName(), in, Codec.UNSIGNED5, count);
             } else if (tag.startsWith("RS")) { // Signature
-                band = parseCPSignatureReferences(attributeLayout.getName(),
-                        in, Codec.UNSIGNED5, count);
+                band = parseCPSignatureReferences(attributeLayout.getName(), in, Codec.UNSIGNED5, count);
             } else if (tag.startsWith("RD")) { // Descriptor
-                band = parseCPDescriptorReferences(attributeLayout.getName(),
-                        in, Codec.UNSIGNED5, count);
+                band = parseCPDescriptorReferences(attributeLayout.getName(), in, Codec.UNSIGNED5, count);
             } else if (tag.startsWith("RF")) { // Field Reference
-                band = parseCPFieldRefReferences(attributeLayout.getName(), in,
-                        Codec.UNSIGNED5, count);
+                band = parseCPFieldRefReferences(attributeLayout.getName(), in, Codec.UNSIGNED5, count);
             } else if (tag.startsWith("RM")) { // Method Reference
-                band = parseCPMethodRefReferences(attributeLayout.getName(),
-                        in, Codec.UNSIGNED5, count);
+                band = parseCPMethodRefReferences(attributeLayout.getName(), in, Codec.UNSIGNED5, count);
             } else if (tag.startsWith("RI")) { // Interface Method Reference
-                band = parseCPInterfaceMethodRefReferences(
-                        attributeLayout.getName(), in, Codec.UNSIGNED5, count);
+                band = parseCPInterfaceMethodRefReferences(attributeLayout.getName(), in, Codec.UNSIGNED5, count);
             } else if (tag.startsWith("RU")) { // UTF8 String
-                band = parseCPUTF8References(attributeLayout.getName(), in,
-                        Codec.UNSIGNED5, count);
+                band = parseCPUTF8References(attributeLayout.getName(), in, Codec.UNSIGNED5, count);
             }
         }
 
@@ -761,8 +718,7 @@ public class NewAttributeBands extends BandSet {
             } else if (tag.startsWith("RM")) { // Method Reference
                 attribute.addToBody(length, ((CPMethodRef[]) band)[n]);
             } else if (tag.startsWith("RI")) { // Interface Method Reference
-                attribute.addToBody(length,
-                        ((CPInterfaceMethodRef[]) band)[n]);
+                attribute.addToBody(length, ((CPInterfaceMethodRef[]) band)[n]);
             } else if (tag.startsWith("RU")) { // UTF8 String
                 attribute.addToBody(length, ((CPUTF8[]) band)[n]);
             }
@@ -790,8 +746,8 @@ public class NewAttributeBands extends BandSet {
         private int index;
 
         /**
-         * Used by calls when adding band contents to attributes so they don't
-         * have to keep track of the internal index of the callable.
+         * Used by calls when adding band contents to attributes so they don't have to keep track of the internal index
+         * of the callable.
          *
          * @param attribute TODO
          */
@@ -813,8 +769,7 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public void readBands(final InputStream in, int count) throws IOException,
-                Pack200Exception {
+        public void readBands(final InputStream in, int count) throws IOException, Pack200Exception {
             if (isFirstCallable) {
                 count += this.count;
             } else {
@@ -881,8 +836,7 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public void readBands(final InputStream in, final int count) throws IOException,
-                Pack200Exception {
+        public void readBands(final InputStream in, final int count) throws IOException, Pack200Exception {
             if (body != null) {
                 for (int i = 0; i < body.size(); i++) {
                     final LayoutElement element = (LayoutElement) body.get(i);
@@ -907,15 +861,14 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Utility method to get the contents of the given stream, up to the next
-     * ']', (ignoring pairs of brackets '[' and ']')
+     * Utility method to get the contents of the given stream, up to the next ']', (ignoring pairs of brackets '[' and
+     * ']')
      *
      * @param stream
      * @return
      * @throws IOException If an I/O error occurs.
      */
-    private StringReader getStreamUpToMatchingBracket(final StringReader stream)
-            throws IOException {
+    private StringReader getStreamUpToMatchingBracket(final StringReader stream) throws IOException {
         final StringBuffer sb = new StringBuffer();
         int foundBracket = -1;
         while (foundBracket != 0) {
@@ -934,12 +887,10 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Returns the {@link BHSDCodec} that should be used for the given layout
-     * element.
+     * Returns the {@link BHSDCodec} that should be used for the given layout element.
      *
      * @param layoutElement TODO
-     * @return the {@link BHSDCodec} that should be used for the given layout
-     * element.
+     * @return the {@link BHSDCodec} that should be used for the given layout element.
      */
     public BHSDCodec getCodec(final String layoutElement) {
         if (layoutElement.indexOf('O') >= 0) {
@@ -948,9 +899,8 @@ public class NewAttributeBands extends BandSet {
         if (layoutElement.indexOf('P') >= 0) {
             return Codec.BCI5;
         }
-        if (layoutElement.indexOf('S') >= 0
-                && layoutElement.indexOf("KS") < 0 //$NON-NLS-1$
-                && layoutElement.indexOf("RS") < 0) { //$NON-NLS-1$
+        if (layoutElement.indexOf('S') >= 0 && layoutElement.indexOf("KS") < 0 //$NON-NLS-1$
+            && layoutElement.indexOf("RS") < 0) { //$NON-NLS-1$
             return Codec.SIGNED5;
         }
         if (layoutElement.indexOf('B') >= 0) {
@@ -960,15 +910,13 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Gets the contents of the given stream, up to the next
-     * ']', (ignoring pairs of brackets '[' and ']')
+     * Gets the contents of the given stream, up to the next ']', (ignoring pairs of brackets '[' and ']')
      *
      * @param stream input stream.
      * @return the contents of the given stream.
      * @throws IOException If an I/O error occurs.
      */
-    private String readUpToMatchingBracket(final StringReader stream)
-            throws IOException {
+    private String readUpToMatchingBracket(final StringReader stream) throws IOException {
         final StringBuffer sb = new StringBuffer();
         int foundBracket = -1;
         while (foundBracket != 0) {
@@ -1015,8 +963,7 @@ public class NewAttributeBands extends BandSet {
         if (read != digits.length) {
             throw new IOException("Error reading from the input stream");
         }
-        return Integer.valueOf(Integer.parseInt((negative ? "-" : "")
-                + new String(digits)));
+        return Integer.valueOf(Integer.parseInt((negative ? "-" : "") + new String(digits)));
     }
 
     /**
@@ -1040,23 +987,19 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Once the attribute bands have been read the callables can be informed
-     * about the number of times each is subject to a backwards call. This
-     * method is used to set this information.
+     * Once the attribute bands have been read the callables can be informed about the number of times each is subject
+     * to a backwards call. This method is used to set this information.
      *
-     * @param backwardsCalls
-     *            one int for each backwards callable, which contains the number
-     *            of times that callable is subject to a backwards call.
+     * @param backwardsCalls one int for each backwards callable, which contains the number of times that callable is
+     *        subject to a backwards call.
      * @throws IOException If an I/O error occurs.
      */
     public void setBackwardsCalls(final int[] backwardsCalls) throws IOException {
         int index = 0;
         parseLayout();
         for (int i = 0; i < attributeLayoutElements.size(); i++) {
-            final AttributeLayoutElement element = (AttributeLayoutElement) attributeLayoutElements
-                    .get(i);
-            if (element instanceof Callable
-                    && ((Callable) element).isBackwardsCallable()) {
+            final AttributeLayoutElement element = (AttributeLayoutElement) attributeLayoutElements.get(i);
+            if (element instanceof Callable && ((Callable) element).isBackwardsCallable()) {
                 ((Callable) element).addCount(backwardsCalls[index]);
                 index++;
             }

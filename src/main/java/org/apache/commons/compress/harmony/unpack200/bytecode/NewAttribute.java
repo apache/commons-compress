@@ -49,8 +49,8 @@ public class NewAttribute extends BCIRenumberedAttribute {
     @Override
     protected int getLength() {
         int length = 0;
-        for(int iter = 0; iter < lengths.size(); iter++) {
-            length += ((Integer)lengths.get(iter)).intValue();
+        for (int iter = 0; iter < lengths.size(); iter++) {
+            length += ((Integer) lengths.get(iter)).intValue();
         }
         return length;
     }
@@ -124,7 +124,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
     @Override
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
-        for(int iter = 0; iter < body.size(); iter++) {
+        for (int iter = 0; iter < body.size(); iter++) {
             final Object element = body.get(iter);
             if (element instanceof ClassFileEntry) {
                 ((ClassFileEntry) element).resolve(pool);
@@ -135,24 +135,24 @@ public class NewAttribute extends BCIRenumberedAttribute {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-    	int total = 1;
-    	for(int iter = 0; iter < body.size(); iter++) {
+        int total = 1;
+        for (int iter = 0; iter < body.size(); iter++) {
             final Object element = body.get(iter);
             if (element instanceof ClassFileEntry) {
                 total++;
             }
         }
-    	final ClassFileEntry[] nested = new ClassFileEntry[total];
-    	nested[0] = getAttributeName();
-    	int i = 1;
-    	for(int iter = 0; iter < body.size(); iter++) {
+        final ClassFileEntry[] nested = new ClassFileEntry[total];
+        nested[0] = getAttributeName();
+        int i = 1;
+        for (int iter = 0; iter < body.size(); iter++) {
             final Object element = body.get(iter);
             if (element instanceof ClassFileEntry) {
-            	nested[i] = (ClassFileEntry) element;
+                nested[i] = (ClassFileEntry) element;
                 i++;
             }
         }
-    	return nested;
+        return nested;
     }
 
     private static class BCOffset extends BCValue {
@@ -213,35 +213,27 @@ public class NewAttribute extends BCIRenumberedAttribute {
                 final Object obj = iter.next();
                 if (obj instanceof BCIndex) {
                     final BCIndex bcIndex = (BCIndex) obj;
-                    bcIndex.setActualValue(((Integer) byteCodeOffsets
-                            .get(bcIndex.index)).intValue());
+                    bcIndex.setActualValue(((Integer) byteCodeOffsets.get(bcIndex.index)).intValue());
                 } else if (obj instanceof BCOffset) {
                     final BCOffset bcOffset = (BCOffset) obj;
                     if (previous instanceof BCIndex) {
-                        final int index = ((BCIndex) previous).index
-                                + bcOffset.offset;
+                        final int index = ((BCIndex) previous).index + bcOffset.offset;
                         bcOffset.setIndex(index);
-                        bcOffset.setActualValue(((Integer) byteCodeOffsets
-                                .get(index)).intValue());
+                        bcOffset.setActualValue(((Integer) byteCodeOffsets.get(index)).intValue());
                     } else if (previous instanceof BCOffset) {
-                        final int index = ((BCOffset) previous).index
-                                + bcOffset.offset;
+                        final int index = ((BCOffset) previous).index + bcOffset.offset;
                         bcOffset.setIndex(index);
-                        bcOffset.setActualValue(((Integer) byteCodeOffsets
-                                .get(index)).intValue());
+                        bcOffset.setActualValue(((Integer) byteCodeOffsets.get(index)).intValue());
                     } else {
                         // Not sure if this should be able to happen
-                        bcOffset.setActualValue(((Integer) byteCodeOffsets
-                                .get(bcOffset.offset)).intValue());
+                        bcOffset.setActualValue(((Integer) byteCodeOffsets.get(bcOffset.offset)).intValue());
                     }
                 } else if (obj instanceof BCLength) {
                     // previous must be a BCIndex
                     final BCLength bcLength = (BCLength) obj;
                     final BCIndex prevIndex = (BCIndex) previous;
                     final int index = prevIndex.index + bcLength.length;
-                    final int actualLength = ((Integer) byteCodeOffsets.get(index))
-                            .intValue()
-                            - prevIndex.actualValue;
+                    final int actualLength = ((Integer) byteCodeOffsets.get(index)).intValue() - prevIndex.actualValue;
                     bcLength.setActualValue(actualLength);
                 }
                 previous = obj;

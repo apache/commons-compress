@@ -23,8 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * A group of metadata (annotation) bands, such as class_RVA_bands,
- * method_AD_bands etc.
+ * A group of metadata (annotation) bands, such as class_RVA_bands, method_AD_bands etc.
  */
 public class MetadataBandGroup extends BandSet {
 
@@ -60,34 +59,31 @@ public class MetadataBandGroup extends BandSet {
     /**
      * Constructs a new MetadataBandGroup
      *
-     * @param type
-     *            must be either AD, RVA, RIA, RVPA or RIPA.
-     * @param context
-     *            <code>CONTEXT_CLASS</code>, <code>CONTEXT_METHOD</code> or
-     *            <code>CONTEXT_FIELD</code>
-     * @param cpBands
-     *            constant pool bands
-     * @param segmentHeader
-     *            segment header
-     * @param effort
-     *            packing effort
+     * @param type must be either AD, RVA, RIA, RVPA or RIPA.
+     * @param context <code>CONTEXT_CLASS</code>, <code>CONTEXT_METHOD</code> or <code>CONTEXT_FIELD</code>
+     * @param cpBands constant pool bands
+     * @param segmentHeader segment header
+     * @param effort packing effort
      */
-    public MetadataBandGroup(final String type, final int context, final CpBands cpBands, final SegmentHeader segmentHeader, final int effort) {
+    public MetadataBandGroup(final String type, final int context, final CpBands cpBands,
+        final SegmentHeader segmentHeader, final int effort) {
         super(effort, segmentHeader);
         this.type = type;
         this.cpBands = cpBands;
         this.context = context;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.apache.commons.compress.harmony.pack200.BandSet#pack(java.io.OutputStream)
      */
     @Override
     public void pack(final OutputStream out) throws IOException, Pack200Exception {
         PackingUtils.log("Writing metadata band group...");
-        if(hasContent()) {
+        if (hasContent()) {
             String contextStr;
-            if(context == CONTEXT_CLASS) {
+            if (context == CONTEXT_CLASS) {
                 contextStr = "Class";
             } else if (context == CONTEXT_FIELD) {
                 contextStr = "Field";
@@ -95,155 +91,126 @@ public class MetadataBandGroup extends BandSet {
                 contextStr = "Method";
             }
             byte[] encodedBand = null;
-            if(!type.equals("AD")) {
-                if(type.indexOf('P') != -1) {
+            if (!type.equals("AD")) {
+                if (type.indexOf('P') != -1) {
                     // Parameter annotation so we need to transmit param_NB
-                    encodedBand = encodeBandInt(
-                            contextStr + "_" + type + " param_NB", param_NB.toArray(),
-                            Codec.BYTE1);
+                    encodedBand = encodeBandInt(contextStr + "_" + type + " param_NB", param_NB.toArray(), Codec.BYTE1);
                     out.write(encodedBand);
-                    PackingUtils.log("Wrote " + encodedBand.length
-                            + " bytes from " + contextStr + "_" + type + " anno_N["
-                            + param_NB.size() + "]");
+                    PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type
+                        + " anno_N[" + param_NB.size() + "]");
                 }
-                encodedBand = encodeBandInt(
-                        contextStr + "_" + type + " anno_N", anno_N.toArray(),
-                        Codec.UNSIGNED5);
+                encodedBand = encodeBandInt(contextStr + "_" + type + " anno_N", anno_N.toArray(), Codec.UNSIGNED5);
                 out.write(encodedBand);
-                PackingUtils.log("Wrote " + encodedBand.length
-                        + " bytes from " + contextStr + "_" + type + " anno_N["
-                        + anno_N.size() + "]");
+                PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " anno_N["
+                    + anno_N.size() + "]");
 
-                encodedBand = encodeBandInt(contextStr + "_" + type
-                        + " type_RS", cpEntryListToArray(type_RS),
-                        Codec.UNSIGNED5);
+                encodedBand = encodeBandInt(contextStr + "_" + type + " type_RS", cpEntryListToArray(type_RS),
+                    Codec.UNSIGNED5);
                 out.write(encodedBand);
-                PackingUtils.log("Wrote " + encodedBand.length
-                        + " bytes from " + contextStr + "_" + type
-                        + " type_RS[" + type_RS.size() + "]");
+                PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " type_RS["
+                    + type_RS.size() + "]");
 
-                encodedBand = encodeBandInt(
-                        contextStr + "_" + type + " pair_N", pair_N.toArray(),
-                        Codec.UNSIGNED5);
+                encodedBand = encodeBandInt(contextStr + "_" + type + " pair_N", pair_N.toArray(), Codec.UNSIGNED5);
                 out.write(encodedBand);
-                PackingUtils.log("Wrote " + encodedBand.length
-                        + " bytes from " + contextStr + "_" + type + " pair_N["
-                        + pair_N.size() + "]");
+                PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " pair_N["
+                    + pair_N.size() + "]");
 
-                encodedBand = encodeBandInt(contextStr + "_" + type
-                        + " name_RU", cpEntryListToArray(name_RU),
-                        Codec.UNSIGNED5);
+                encodedBand = encodeBandInt(contextStr + "_" + type + " name_RU", cpEntryListToArray(name_RU),
+                    Codec.UNSIGNED5);
                 out.write(encodedBand);
-                PackingUtils.log("Wrote " + encodedBand.length
-                        + " bytes from " + contextStr + "_" + type
-                        + " name_RU[" + name_RU.size() + "]");
+                PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " name_RU["
+                    + name_RU.size() + "]");
             }
-            encodedBand = encodeBandInt(contextStr + "_" + type + " T",
-                    tagListToArray(T), Codec.BYTE1);
+            encodedBand = encodeBandInt(contextStr + "_" + type + " T", tagListToArray(T), Codec.BYTE1);
             out.write(encodedBand);
-            PackingUtils.log("Wrote " + encodedBand.length + " bytes from "
-                    + contextStr + "_" + type + " T[" + T.size() + "]");
+            PackingUtils
+                .log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " T[" + T.size() + "]");
 
-            encodedBand = encodeBandInt(contextStr + "_" + type + " caseI_KI",
-                    cpEntryListToArray(caseI_KI), Codec.UNSIGNED5);
+            encodedBand = encodeBandInt(contextStr + "_" + type + " caseI_KI", cpEntryListToArray(caseI_KI),
+                Codec.UNSIGNED5);
             out.write(encodedBand);
-            PackingUtils.log("Wrote " + encodedBand.length + " bytes from "
-                    + contextStr + "_" + type + " caseI_KI[" + caseI_KI.size()
-                    + "]");
+            PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " caseI_KI["
+                + caseI_KI.size() + "]");
 
-            encodedBand = encodeBandInt(contextStr + "_" + type + " caseD_KD",
-                    cpEntryListToArray(caseD_KD), Codec.UNSIGNED5);
+            encodedBand = encodeBandInt(contextStr + "_" + type + " caseD_KD", cpEntryListToArray(caseD_KD),
+                Codec.UNSIGNED5);
             out.write(encodedBand);
-            PackingUtils.log("Wrote " + encodedBand.length + " bytes from "
-                    + contextStr + "_" + type + " caseD_KD[" + caseD_KD.size()
-                    + "]");
+            PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " caseD_KD["
+                + caseD_KD.size() + "]");
 
-            encodedBand = encodeBandInt(contextStr + "_" + type + " caseF_KF",
-                    cpEntryListToArray(caseF_KF), Codec.UNSIGNED5);
+            encodedBand = encodeBandInt(contextStr + "_" + type + " caseF_KF", cpEntryListToArray(caseF_KF),
+                Codec.UNSIGNED5);
             out.write(encodedBand);
-            PackingUtils.log("Wrote " + encodedBand.length + " bytes from "
-                    + contextStr + "_" + type + " caseF_KF[" + caseF_KF.size()
-                    + "]");
+            PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " caseF_KF["
+                + caseF_KF.size() + "]");
 
-            encodedBand = encodeBandInt(contextStr + "_" + type + " caseJ_KJ",
-                    cpEntryListToArray(caseJ_KJ), Codec.UNSIGNED5);
+            encodedBand = encodeBandInt(contextStr + "_" + type + " caseJ_KJ", cpEntryListToArray(caseJ_KJ),
+                Codec.UNSIGNED5);
             out.write(encodedBand);
-            PackingUtils.log("Wrote " + encodedBand.length + " bytes from "
-                    + contextStr + "_" + type + " caseJ_KJ[" + caseJ_KJ.size()
-                    + "]");
+            PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " caseJ_KJ["
+                + caseJ_KJ.size() + "]");
 
-            encodedBand = encodeBandInt(contextStr + "_" + type + " casec_RS",
-                    cpEntryListToArray(casec_RS), Codec.UNSIGNED5);
+            encodedBand = encodeBandInt(contextStr + "_" + type + " casec_RS", cpEntryListToArray(casec_RS),
+                Codec.UNSIGNED5);
             out.write(encodedBand);
-            PackingUtils.log("Wrote " + encodedBand.length + " bytes from "
-                    + contextStr + "_" + type + " casec_RS[" + casec_RS.size()
-                    + "]");
+            PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " casec_RS["
+                + casec_RS.size() + "]");
 
-            encodedBand = encodeBandInt(contextStr + "_" + type + " caseet_RS",
-                    cpEntryListToArray(caseet_RS), Codec.UNSIGNED5);
+            encodedBand = encodeBandInt(contextStr + "_" + type + " caseet_RS", cpEntryListToArray(caseet_RS),
+                Codec.UNSIGNED5);
             out.write(encodedBand);
-            PackingUtils.log("Wrote " + encodedBand.length + " bytes from "
-                    + contextStr + "_" + type + " caseet_RS["
-                    + caseet_RS.size() + "]");
+            PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " caseet_RS["
+                + caseet_RS.size() + "]");
 
-            encodedBand = encodeBandInt(contextStr + "_" + type + " caseec_RU",
-                    cpEntryListToArray(caseec_RU), Codec.UNSIGNED5);
+            encodedBand = encodeBandInt(contextStr + "_" + type + " caseec_RU", cpEntryListToArray(caseec_RU),
+                Codec.UNSIGNED5);
             out.write(encodedBand);
-            PackingUtils.log("Wrote " + encodedBand.length + " bytes from "
-                    + contextStr + "_" + type + " caseec_RU["
-                    + caseec_RU.size() + "]");
+            PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " caseec_RU["
+                + caseec_RU.size() + "]");
 
-            encodedBand = encodeBandInt(contextStr + "_" + type + " cases_RU",
-                    cpEntryListToArray(cases_RU), Codec.UNSIGNED5);
+            encodedBand = encodeBandInt(contextStr + "_" + type + " cases_RU", cpEntryListToArray(cases_RU),
+                Codec.UNSIGNED5);
             out.write(encodedBand);
-            PackingUtils.log("Wrote " + encodedBand.length + " bytes from "
-                    + contextStr + "_" + type + " cases_RU[" + cases_RU.size()
-                    + "]");
+            PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " cases_RU["
+                + cases_RU.size() + "]");
 
-            encodedBand = encodeBandInt(contextStr + "_" + type
-                    + " casearray_N", casearray_N.toArray(), Codec.UNSIGNED5);
+            encodedBand = encodeBandInt(contextStr + "_" + type + " casearray_N", casearray_N.toArray(),
+                Codec.UNSIGNED5);
             out.write(encodedBand);
-            PackingUtils.log("Wrote " + encodedBand.length + " bytes from "
-                    + contextStr + "_" + type + " casearray_N["
-                    + casearray_N.size() + "]");
+            PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " casearray_N["
+                + casearray_N.size() + "]");
 
-            encodedBand = encodeBandInt(contextStr + "_" + type
-                    + " nesttype_RS", cpEntryListToArray(nesttype_RS),
-                    Codec.UNSIGNED5);
+            encodedBand = encodeBandInt(contextStr + "_" + type + " nesttype_RS", cpEntryListToArray(nesttype_RS),
+                Codec.UNSIGNED5);
             out.write(encodedBand);
-            PackingUtils.log("Wrote " + encodedBand.length + " bytes from "
-                    + contextStr + "_" + type + " nesttype_RS["
-                    + nesttype_RS.size() + "]");
+            PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " nesttype_RS["
+                + nesttype_RS.size() + "]");
 
-            encodedBand = encodeBandInt(
-                    contextStr + "_" + type + " nestpair_N", nestpair_N
-                            .toArray(), Codec.UNSIGNED5);
+            encodedBand = encodeBandInt(contextStr + "_" + type + " nestpair_N", nestpair_N.toArray(), Codec.UNSIGNED5);
             out.write(encodedBand);
-            PackingUtils.log("Wrote " + encodedBand.length + " bytes from "
-                    + contextStr + "_" + type + " nestpair_N["
-                    + nestpair_N.size() + "]");
+            PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " nestpair_N["
+                + nestpair_N.size() + "]");
 
-            encodedBand = encodeBandInt(contextStr + "_" + type
-                    + " nestname_RU", cpEntryListToArray(nestname_RU),
-                    Codec.UNSIGNED5);
+            encodedBand = encodeBandInt(contextStr + "_" + type + " nestname_RU", cpEntryListToArray(nestname_RU),
+                Codec.UNSIGNED5);
             out.write(encodedBand);
-            PackingUtils.log("Wrote " + encodedBand.length + " bytes from "
-                    + contextStr + "_" + type + " nestname_RU["
-                    + nestname_RU.size() + "]");
+            PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " nestname_RU["
+                + nestname_RU.size() + "]");
         }
     }
 
     private int[] tagListToArray(final List t2) {
         final int[] ints = new int[t2.size()];
         for (int i = 0; i < ints.length; i++) {
-            ints[i] = ((String)t2.get(i)).charAt(0);
+            ints[i] = ((String) t2.get(i)).charAt(0);
         }
         return ints;
     }
 
     /**
      * Add an annotation to this set of bands.
-     * @param numParams  TODO
+     * 
+     * @param numParams TODO
      * @param annoN TODO
      * @param pairN TODO
      * @param typeRS TODO
@@ -255,7 +222,9 @@ public class MetadataBandGroup extends BandSet {
      * @param nestNameRU TODO
      * @param nestPairN TODO
      */
-    public void addParameterAnnotation(final int numParams, final int[] annoN, final IntList pairN, final List typeRS, final List nameRU, final List t, final List values, final List caseArrayN, final List nestTypeRS, final List nestNameRU, final List nestPairN) {
+    public void addParameterAnnotation(final int numParams, final int[] annoN, final IntList pairN, final List typeRS,
+        final List nameRU, final List t, final List values, final List caseArrayN, final List nestTypeRS,
+        final List nestNameRU, final List nestPairN) {
         param_NB.add(numParams);
         for (int i = 0; i < annoN.length; i++) {
             anno_N.add(annoN[i]);
@@ -273,35 +242,34 @@ public class MetadataBandGroup extends BandSet {
         for (final Iterator iterator = t.iterator(); iterator.hasNext();) {
             final String tag = (String) iterator.next();
             T.add(tag);
-            if (tag.equals("B") || tag.equals("C") || tag.equals("I")
-                    || tag.equals("S") || tag.equals("Z")) {
-                final Integer value = (Integer)valuesIterator.next();
+            if (tag.equals("B") || tag.equals("C") || tag.equals("I") || tag.equals("S") || tag.equals("Z")) {
+                final Integer value = (Integer) valuesIterator.next();
                 caseI_KI.add(cpBands.getConstant(value));
             } else if (tag.equals("D")) {
-                final Double value = (Double)valuesIterator.next();
+                final Double value = (Double) valuesIterator.next();
                 caseD_KD.add(cpBands.getConstant(value));
             } else if (tag.equals("F")) {
-                final Float value = (Float)valuesIterator.next();
+                final Float value = (Float) valuesIterator.next();
                 caseF_KF.add(cpBands.getConstant(value));
             } else if (tag.equals("J")) {
-                final Long value = (Long)valuesIterator.next();
+                final Long value = (Long) valuesIterator.next();
                 caseJ_KJ.add(cpBands.getConstant(value));
             } else if (tag.equals("c")) {
-                final String value = (String)valuesIterator.next();
+                final String value = (String) valuesIterator.next();
                 casec_RS.add(cpBands.getCPSignature(value));
             } else if (tag.equals("e")) {
-                final String value = (String)valuesIterator.next();
-                final String value2 = (String)valuesIterator.next();
+                final String value = (String) valuesIterator.next();
+                final String value2 = (String) valuesIterator.next();
                 caseet_RS.add(cpBands.getCPSignature(value));
                 caseec_RU.add(cpBands.getCPUtf8(value2));
             } else if (tag.equals("s")) {
-                final String value = (String)valuesIterator.next();
+                final String value = (String) valuesIterator.next();
                 cases_RU.add(cpBands.getCPUtf8(value));
             }
             // do nothing here for [ or @ (handled below)
         }
         for (final Iterator iterator = caseArrayN.iterator(); iterator.hasNext();) {
-            final int arraySize = ((Integer)iterator.next()).intValue();
+            final int arraySize = ((Integer) iterator.next()).intValue();
             casearray_N.add(arraySize);
             numBackwardsCalls += arraySize;
         }
@@ -332,7 +300,8 @@ public class MetadataBandGroup extends BandSet {
      * @param nestNameRU TODO
      * @param nestPairN TODO
      */
-    public void addAnnotation(final String desc, final List nameRU, final List t, final List values, final List caseArrayN, final List nestTypeRS, final List nestNameRU, final List nestPairN) {
+    public void addAnnotation(final String desc, final List nameRU, final List t, final List values,
+        final List caseArrayN, final List nestTypeRS, final List nestNameRU, final List nestPairN) {
         type_RS.add(cpBands.getCPSignature(desc));
         pair_N.add(nameRU.size());
 
@@ -345,35 +314,34 @@ public class MetadataBandGroup extends BandSet {
         for (final Iterator iterator = t.iterator(); iterator.hasNext();) {
             final String tag = (String) iterator.next();
             T.add(tag);
-            if (tag.equals("B") || tag.equals("C") || tag.equals("I")
-                    || tag.equals("S") || tag.equals("Z")) {
-                final Integer value = (Integer)valuesIterator.next();
+            if (tag.equals("B") || tag.equals("C") || tag.equals("I") || tag.equals("S") || tag.equals("Z")) {
+                final Integer value = (Integer) valuesIterator.next();
                 caseI_KI.add(cpBands.getConstant(value));
             } else if (tag.equals("D")) {
-                final Double value = (Double)valuesIterator.next();
+                final Double value = (Double) valuesIterator.next();
                 caseD_KD.add(cpBands.getConstant(value));
             } else if (tag.equals("F")) {
-                final Float value = (Float)valuesIterator.next();
+                final Float value = (Float) valuesIterator.next();
                 caseF_KF.add(cpBands.getConstant(value));
             } else if (tag.equals("J")) {
-                final Long value = (Long)valuesIterator.next();
+                final Long value = (Long) valuesIterator.next();
                 caseJ_KJ.add(cpBands.getConstant(value));
             } else if (tag.equals("c")) {
-                final String value = (String)valuesIterator.next();
+                final String value = (String) valuesIterator.next();
                 casec_RS.add(cpBands.getCPSignature(value));
             } else if (tag.equals("e")) {
-                final String value = (String)valuesIterator.next();
-                final String value2 = (String)valuesIterator.next();
+                final String value = (String) valuesIterator.next();
+                final String value2 = (String) valuesIterator.next();
                 caseet_RS.add(cpBands.getCPSignature(value));
                 caseec_RU.add(cpBands.getCPUtf8(value2));
             } else if (tag.equals("s")) {
-                final String value = (String)valuesIterator.next();
+                final String value = (String) valuesIterator.next();
                 cases_RU.add(cpBands.getCPUtf8(value));
             }
             // do nothing here for [ or @ (handled below)
         }
         for (final Iterator iterator = caseArrayN.iterator(); iterator.hasNext();) {
-            final int arraySize = ((Integer)iterator.next()).intValue();
+            final int arraySize = ((Integer) iterator.next()).intValue();
             casearray_N.add(arraySize);
             numBackwardsCalls += arraySize;
         }
@@ -417,7 +385,7 @@ public class MetadataBandGroup extends BandSet {
      * Remove the latest annotation that was added to this group
      */
     public void removeLatest() {
-        final int latest = anno_N.remove(anno_N.size() -1);
+        final int latest = anno_N.remove(anno_N.size() - 1);
         for (int i = 0; i < latest; i++) {
             type_RS.remove(type_RS.size() - 1);
             final int pairs = pair_N.remove(pair_N.size() - 1);
@@ -432,8 +400,7 @@ public class MetadataBandGroup extends BandSet {
      */
     private void removeOnePair() {
         final String tag = (String) T.remove(T.size() - 1);
-        if (tag.equals("B") || tag.equals("C") || tag.equals("I")
-                || tag.equals("S") || tag.equals("Z")) {
+        if (tag.equals("B") || tag.equals("C") || tag.equals("I") || tag.equals("S") || tag.equals("Z")) {
             caseI_KI.remove(caseI_KI.size() - 1);
         } else if (tag.equals("D")) {
             caseD_KD.remove(caseD_KD.size() - 1);

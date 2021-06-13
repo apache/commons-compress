@@ -37,27 +37,24 @@ public class CPSignature extends ConstantPoolEntry implements Comparable {
 
     @Override
     public int compareTo(final Object arg0) {
-        if(signature.equals(((CPSignature) arg0).signature)) {
+        if (signature.equals(((CPSignature) arg0).signature)) {
             return 0;
         }
-        if (formStartsWithBracket
-                && !((CPSignature) arg0).formStartsWithBracket) {
+        if (formStartsWithBracket && !((CPSignature) arg0).formStartsWithBracket) {
             return 1;
         }
-        if (((CPSignature) arg0).formStartsWithBracket
-                && !formStartsWithBracket) {
+        if (((CPSignature) arg0).formStartsWithBracket && !formStartsWithBracket) {
             return -1;
         }
         if (classes.size() - ((CPSignature) arg0).classes.size() != 0) {
             return classes.size() - ((CPSignature) arg0).classes.size();
         }
         if (classes.size() > 0) {
-            for (int i = classes.size() - 1; i >=0; i--) {
+            for (int i = classes.size() - 1; i >= 0; i--) {
                 final CPClass cpClass = (CPClass) classes.get(i);
-                final CPClass compareClass = (CPClass) ((CPSignature) arg0).classes
-                        .get(i);
+                final CPClass compareClass = (CPClass) ((CPSignature) arg0).classes.get(i);
                 final int classComp = cpClass.compareTo(compareClass);
-                if(classComp != 0) {
+                if (classComp != 0) {
                     return classComp;
                 }
             }

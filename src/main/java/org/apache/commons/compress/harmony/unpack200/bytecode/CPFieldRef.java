@@ -37,7 +37,7 @@ public class CPFieldRef extends ConstantPoolEntry {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] { className, nameAndType };
+        return new ClassFileEntry[] {className, nameAndType};
     }
 
     @Override
@@ -65,10 +65,8 @@ public class CPFieldRef extends ConstantPoolEntry {
         hashcodeComputed = true;
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result
-                + ((className == null) ? 0 : className.hashCode());
-        result = PRIME * result
-                + ((nameAndType == null) ? 0 : nameAndType.hashCode());
+        result = PRIME * result + ((className == null) ? 0 : className.hashCode());
+        result = PRIME * result + ((nameAndType == null) ? 0 : nameAndType.hashCode());
         cachedHashCode = result;
     }
 

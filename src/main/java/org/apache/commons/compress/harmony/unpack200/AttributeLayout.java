@@ -21,8 +21,7 @@ import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry;
 
 /**
- * AttributeLayout defines a layout that describes how an attribute will be
- * transmitted.
+ * AttributeLayout defines a layout that describes how an attribute will be transmitted.
  */
 public class AttributeLayout implements IMatcher {
 
@@ -62,11 +61,11 @@ public class AttributeLayout implements IMatcher {
     public static final int CONTEXT_CODE = 3;
     public static final int CONTEXT_FIELD = 1;
     public static final int CONTEXT_METHOD = 2;
-    public static final String[] contextNames = { "Class", "Field", "Method", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            "Code", }; //$NON-NLS-1$
+    public static final String[] contextNames = {"Class", "Field", "Method", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        "Code",}; //$NON-NLS-1$
 
-    private static ClassFileEntry getValue(final String layout, long value,
-            final SegmentConstantPool pool) throws Pack200Exception {
+    private static ClassFileEntry getValue(final String layout, long value, final SegmentConstantPool pool)
+        throws Pack200Exception {
         if (layout.startsWith("R")) { //$NON-NLS-1$
             // references
             if (layout.indexOf('N') != -1) {
@@ -122,12 +121,12 @@ public class AttributeLayout implements IMatcher {
      * @throws Pack200Exception Cannot have an unnamed layout.
      */
     public AttributeLayout(final String name, final int context, final String layout, final int index)
-            throws Pack200Exception {
+        throws Pack200Exception {
         this(name, context, layout, index, true);
     }
 
     public AttributeLayout(final String name, final int context, final String layout, final int index,
-            final boolean isDefault) throws Pack200Exception {
+        final boolean isDefault) throws Pack200Exception {
         super();
         this.index = index;
         this.context = context;
@@ -136,10 +135,9 @@ public class AttributeLayout implements IMatcher {
         } else {
             this.mask = 0;
         }
-        if (context != CONTEXT_CLASS && context != CONTEXT_CODE
-                && context != CONTEXT_FIELD && context != CONTEXT_METHOD) {
-            throw new Pack200Exception("Attribute context out of range: "
-                    + context);
+        if (context != CONTEXT_CLASS && context != CONTEXT_CODE && context != CONTEXT_FIELD
+            && context != CONTEXT_METHOD) {
+            throw new Pack200Exception("Attribute context out of range: " + context);
         }
         if (layout == null) {
             throw new Pack200Exception("Cannot have a null layout");
@@ -160,7 +158,7 @@ public class AttributeLayout implements IMatcher {
             return Codec.BCI5;
         }
         if (layout.indexOf('S') >= 0 && layout.indexOf("KS") < 0 //$NON-NLS-1$
-                && layout.indexOf("RS") < 0) { //$NON-NLS-1$
+            && layout.indexOf("RS") < 0) { //$NON-NLS-1$
             return Codec.SIGNED5;
         }
         if (layout.indexOf('B') >= 0) {
@@ -173,13 +171,12 @@ public class AttributeLayout implements IMatcher {
         return layout;
     }
 
-    public ClassFileEntry getValue(final long value, final SegmentConstantPool pool)
-            throws Pack200Exception {
+    public ClassFileEntry getValue(final long value, final SegmentConstantPool pool) throws Pack200Exception {
         return getValue(layout, value, pool);
     }
 
     public ClassFileEntry getValue(final long value, final String type, final SegmentConstantPool pool)
-            throws Pack200Exception {
+        throws Pack200Exception {
         // TODO This really needs to be better tested, esp. the different types
         // TODO This should have the ability to deal with RUN stuff too, and
         // unions
@@ -191,7 +188,7 @@ public class AttributeLayout implements IMatcher {
             return value2;
         }
         return getValue("K" + type + layout.substring(2), value, //$NON-NLS-1$
-                pool);
+            pool);
     }
 
     @Override

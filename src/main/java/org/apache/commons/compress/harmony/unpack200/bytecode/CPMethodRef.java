@@ -27,9 +27,8 @@ public class CPMethodRef extends CPRef {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] { className, nameAndType };
+        return new ClassFileEntry[] {className, nameAndType};
     }
-
 
     private boolean hashcodeComputed;
     private int cachedHashCode;

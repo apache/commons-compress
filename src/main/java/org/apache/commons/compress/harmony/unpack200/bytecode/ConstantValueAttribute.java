@@ -71,7 +71,7 @@ public class ConstantValueAttribute extends Attribute {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] { getAttributeName(), entry };
+        return new ClassFileEntry[] {getAttributeName(), entry};
     }
 
     @Override

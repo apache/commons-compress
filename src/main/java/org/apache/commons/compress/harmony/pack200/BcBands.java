@@ -26,8 +26,7 @@ import java.util.Map;
 import org.objectweb.asm.Label;
 
 /**
- * Bytecode bands (corresponds to the <code>bc_bands</code> set of bands in the
- * pack200 specification)
+ * Bytecode bands (corresponds to the <code>bc_bands</code> set of bands in the pack200 specification)
  */
 public class BcBands extends BandSet {
 
@@ -87,9 +86,8 @@ public class BcBands extends BandSet {
     }
 
     /**
-     * All input classes for the segment have now been read in, so this method
-     * is called so that this class can calculate/complete anything it could not
-     * do while classes were being read.
+     * All input classes for the segment have now been read in, so this method is called so that this class can
+     * calculate/complete anything it could not do while classes were being read.
      */
     public void finaliseBands() {
         bcThisField = getIndexInClass(bcThisField);
@@ -101,129 +99,89 @@ public class BcBands extends BandSet {
     @Override
     public void pack(final OutputStream out) throws IOException, Pack200Exception {
         PackingUtils.log("Writing byte code bands...");
-        byte[] encodedBand = encodeBandInt("bcCodes", bcCodes.toArray(),
-                Codec.BYTE1);
+        byte[] encodedBand = encodeBandInt("bcCodes", bcCodes.toArray(), Codec.BYTE1);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcCodes["
-                + bcCodes.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcCodes[" + bcCodes.size() + "]");
 
-        encodedBand = encodeBandInt("bcCaseCount", bcCaseCount.toArray(),
-                Codec.UNSIGNED5);
+        encodedBand = encodeBandInt("bcCaseCount", bcCaseCount.toArray(), Codec.UNSIGNED5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from bcCaseCount[" + bcCaseCount.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcCaseCount[" + bcCaseCount.size() + "]");
 
-        encodedBand = encodeBandInt("bcCaseValue", bcCaseValue.toArray(),
-                Codec.DELTA5);
+        encodedBand = encodeBandInt("bcCaseValue", bcCaseValue.toArray(), Codec.DELTA5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from bcCaseValue[" + bcCaseValue.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcCaseValue[" + bcCaseValue.size() + "]");
 
         encodedBand = encodeBandInt("bcByte", bcByte.toArray(), Codec.BYTE1);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcByte["
-                + bcByte.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcByte[" + bcByte.size() + "]");
 
         encodedBand = encodeBandInt("bcShort", bcShort.toArray(), Codec.DELTA5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcShort["
-                + bcShort.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcShort[" + bcShort.size() + "]");
 
-        encodedBand = encodeBandInt("bcLocal", bcLocal.toArray(),
-                Codec.UNSIGNED5);
+        encodedBand = encodeBandInt("bcLocal", bcLocal.toArray(), Codec.UNSIGNED5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcLocal["
-                + bcLocal.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcLocal[" + bcLocal.size() + "]");
 
-        encodedBand = encodeBandInt("bcLabel", integerListToArray(bcLabel),
-                Codec.BRANCH5);
+        encodedBand = encodeBandInt("bcLabel", integerListToArray(bcLabel), Codec.BRANCH5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcLabel["
-                + bcLabel.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcLabel[" + bcLabel.size() + "]");
 
-        encodedBand = encodeBandInt("bcIntref", cpEntryListToArray(bcIntref),
-                Codec.DELTA5);
+        encodedBand = encodeBandInt("bcIntref", cpEntryListToArray(bcIntref), Codec.DELTA5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from bcIntref[" + bcIntref.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcIntref[" + bcIntref.size() + "]");
 
-        encodedBand = encodeBandInt("bcFloatRef",
-                cpEntryListToArray(bcFloatRef), Codec.DELTA5);
+        encodedBand = encodeBandInt("bcFloatRef", cpEntryListToArray(bcFloatRef), Codec.DELTA5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from bcFloatRef[" + bcFloatRef.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcFloatRef[" + bcFloatRef.size() + "]");
 
-        encodedBand = encodeBandInt("bcLongRef", cpEntryListToArray(bcLongRef),
-                Codec.DELTA5);
+        encodedBand = encodeBandInt("bcLongRef", cpEntryListToArray(bcLongRef), Codec.DELTA5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from bcLongRef[" + bcLongRef.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcLongRef[" + bcLongRef.size() + "]");
 
-        encodedBand = encodeBandInt("bcDoubleRef",
-                cpEntryListToArray(bcDoubleRef), Codec.DELTA5);
+        encodedBand = encodeBandInt("bcDoubleRef", cpEntryListToArray(bcDoubleRef), Codec.DELTA5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from bcDoubleRef[" + bcDoubleRef.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcDoubleRef[" + bcDoubleRef.size() + "]");
 
-        encodedBand = encodeBandInt("bcStringRef",
-                cpEntryListToArray(bcStringRef), Codec.DELTA5);
+        encodedBand = encodeBandInt("bcStringRef", cpEntryListToArray(bcStringRef), Codec.DELTA5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from bcStringRef[" + bcStringRef.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcStringRef[" + bcStringRef.size() + "]");
 
-        encodedBand = encodeBandInt("bcClassRef",
-                cpEntryOrNullListToArray(bcClassRef), Codec.UNSIGNED5);
+        encodedBand = encodeBandInt("bcClassRef", cpEntryOrNullListToArray(bcClassRef), Codec.UNSIGNED5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from bcClassRef[" + bcClassRef.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcClassRef[" + bcClassRef.size() + "]");
 
-        encodedBand = encodeBandInt("bcFieldRef",
-                cpEntryListToArray(bcFieldRef), Codec.DELTA5);
+        encodedBand = encodeBandInt("bcFieldRef", cpEntryListToArray(bcFieldRef), Codec.DELTA5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from bcFieldRef[" + bcFieldRef.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcFieldRef[" + bcFieldRef.size() + "]");
 
-        encodedBand = encodeBandInt("bcMethodRef",
-                cpEntryListToArray(bcMethodRef), Codec.UNSIGNED5);
+        encodedBand = encodeBandInt("bcMethodRef", cpEntryListToArray(bcMethodRef), Codec.UNSIGNED5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from bcMethodRef[" + bcMethodRef.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcMethodRef[" + bcMethodRef.size() + "]");
 
-        encodedBand = encodeBandInt("bcIMethodRef",
-                cpEntryListToArray(bcIMethodRef), Codec.DELTA5);
+        encodedBand = encodeBandInt("bcIMethodRef", cpEntryListToArray(bcIMethodRef), Codec.DELTA5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from bcIMethodRef[" + bcIMethodRef.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcIMethodRef[" + bcIMethodRef.size() + "]");
 
-        encodedBand = encodeBandInt("bcThisField",
-                integerListToArray(bcThisField), Codec.UNSIGNED5);
+        encodedBand = encodeBandInt("bcThisField", integerListToArray(bcThisField), Codec.UNSIGNED5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from bcThisField[" + bcThisField.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcThisField[" + bcThisField.size() + "]");
 
-        encodedBand = encodeBandInt("bcSuperField",
-                integerListToArray(bcSuperField), Codec.UNSIGNED5);
+        encodedBand = encodeBandInt("bcSuperField", integerListToArray(bcSuperField), Codec.UNSIGNED5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from bcSuperField[" + bcSuperField.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcSuperField[" + bcSuperField.size() + "]");
 
-        encodedBand = encodeBandInt("bcThisMethod",
-                integerListToArray(bcThisMethod), Codec.UNSIGNED5);
+        encodedBand = encodeBandInt("bcThisMethod", integerListToArray(bcThisMethod), Codec.UNSIGNED5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from bcThisMethod[" + bcThisMethod.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcThisMethod[" + bcThisMethod.size() + "]");
 
-        encodedBand = encodeBandInt("bcSuperMethod",
-                integerListToArray(bcSuperMethod), Codec.UNSIGNED5);
+        encodedBand = encodeBandInt("bcSuperMethod", integerListToArray(bcSuperMethod), Codec.UNSIGNED5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from bcSuperMethod[" + bcSuperMethod.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcSuperMethod[" + bcSuperMethod.size() + "]");
 
-        encodedBand = encodeBandInt("bcInitRef", integerListToArray(bcInitRef),
-                Codec.UNSIGNED5);
+        encodedBand = encodeBandInt("bcInitRef", integerListToArray(bcInitRef), Codec.UNSIGNED5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from bcInitRef[" + bcInitRef.size() + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from bcInitRef[" + bcInitRef.size() + "]");
 
         // out.write(encodeBandInt(cpEntryintegerListToArray(bcEscRef),
         // Codec.UNSIGNED5));
@@ -260,7 +218,7 @@ public class BcBands extends BandSet {
             }
         }
         if (renumberedOffset != 0) {
-            if(renumberedOffset + 1 != bciRenumbering.size()) {
+            if (renumberedOffset + 1 != bciRenumbering.size()) {
                 throw new RuntimeException("Mistake made with renumbering");
             }
             for (int i = bcLabel.size() - 1; i >= 0; i--) {
@@ -272,12 +230,12 @@ public class BcBands extends BandSet {
                     bcLabel.remove(i);
                     final Integer offset = (Integer) labelsToOffsets.get(label);
                     final int relativeOffset = bcLabelRelativeOffsets.get(i);
-                    bcLabel.add(i, Integer.valueOf(bciRenumbering.get(offset.intValue()) - bciRenumbering.get(relativeOffset)));
+                    bcLabel.add(i,
+                        Integer.valueOf(bciRenumbering.get(offset.intValue()) - bciRenumbering.get(relativeOffset)));
                 }
             }
             bcCodes.add(endMarker);
-            segment.getClassBands().doBciRenumbering(bciRenumbering,
-                    labelsToOffsets);
+            segment.getClassBands().doBciRenumbering(bciRenumbering, labelsToOffsets);
             bciRenumbering.clear();
             labelsToOffsets.clear();
             byteCodeOffset = 0;
@@ -289,13 +247,11 @@ public class BcBands extends BandSet {
         labelsToOffsets.put(label, Integer.valueOf(byteCodeOffset));
     }
 
-    public void visitFieldInsn(int opcode, final String owner, final String name,
-            final String desc) {
+    public void visitFieldInsn(int opcode, final String owner, final String name, final String desc) {
         byteCodeOffset += 3;
         updateRenumbering();
         boolean aload_0 = false;
-        if (bcCodes.size() > 0
-                && (bcCodes.get(bcCodes.size() - 1)) == ALOAD_0) {
+        if (bcCodes.size() > 0 && (bcCodes.get(bcCodes.size() - 1)) == ALOAD_0) {
             bcCodes.remove(bcCodes.size() - 1);
             aload_0 = true;
         }
@@ -323,10 +279,10 @@ public class BcBands extends BandSet {
     }
 
     private void updateRenumbering() {
-        if(bciRenumbering.isEmpty()) {
+        if (bciRenumbering.isEmpty()) {
             bciRenumbering.add(0);
         }
-        renumberedOffset ++;
+        renumberedOffset++;
         for (int i = bciRenumbering.size(); i < byteCodeOffset; i++) {
             bciRenumbering.add(-1);
         }
@@ -351,8 +307,7 @@ public class BcBands extends BandSet {
 
     public void visitInsn(final int opcode) {
         if (opcode >= 202) {
-            throw new RuntimeException(
-                    "Non-standard bytecode instructions not supported");
+            throw new RuntimeException("Non-standard bytecode instructions not supported");
         }
         bcCodes.add(opcode);
         byteCodeOffset++;
@@ -385,8 +340,7 @@ public class BcBands extends BandSet {
 
     public void visitLdcInsn(final Object cst) {
         final CPConstant constant = cpBands.getConstant(cst);
-        if (segment.lastConstantHadWideIndex() || constant instanceof CPLong
-                || constant instanceof CPDouble) {
+        if (segment.lastConstantHadWideIndex() || constant instanceof CPLong || constant instanceof CPDouble) {
             byteCodeOffset += 3;
             if (constant instanceof CPInt) {
                 bcCodes.add(237); // ildc_w
@@ -443,17 +397,14 @@ public class BcBands extends BandSet {
         updateRenumbering();
     }
 
-    public void visitMethodInsn(int opcode, final String owner, final String name,
-            final String desc) {
+    public void visitMethodInsn(int opcode, final String owner, final String name, final String desc) {
         byteCodeOffset += 3;
         switch (opcode) {
         case 182: // invokevirtual
         case 183: // invokespecial
         case 184: // invokestatic
             boolean aload_0 = false;
-            if (bcCodes.size() > 0
-                    && (bcCodes.get(bcCodes.size() - 1))
-                             == (ALOAD_0)) {
+            if (bcCodes.size() > 0 && (bcCodes.get(bcCodes.size() - 1)) == (ALOAD_0)) {
                 bcCodes.remove(bcCodes.size() - 1);
                 aload_0 = true;
                 opcode += 7;
@@ -462,7 +413,7 @@ public class BcBands extends BandSet {
                 opcode += 24; // change to invokevirtual_this,
                 // invokespecial_this etc.
 
-                if(name.equals("<init>") && opcode == 207) {
+                if (name.equals("<init>") && opcode == 207) {
                     opcode = 230; // invokespecial_this_init
                     bcInitRef.add(cpBands.getCPMethod(owner, name, desc));
                 } else {
@@ -471,7 +422,7 @@ public class BcBands extends BandSet {
             } else if (owner.equals(superClass)) { // TODO
                 opcode += 38; // change to invokevirtual_super,
                 // invokespecial_super etc.
-                if(name.equals("<init>") && opcode == 221) {
+                if (name.equals("<init>") && opcode == 221) {
                     opcode = 231; // invokespecial_super_init
                     bcInitRef.add(cpBands.getCPMethod(owner, name, desc));
                 } else {
@@ -485,7 +436,7 @@ public class BcBands extends BandSet {
                     // special rewrite in this
                     // case.
                 }
-                if(name.equals("<init>") && opcode == 183 && owner.equals(currentNewClass)) {
+                if (name.equals("<init>") && opcode == 183 && owner.equals(currentNewClass)) {
                     opcode = 232; // invokespecial_new_init
                     bcInitRef.add(cpBands.getCPMethod(owner, name, desc));
                 } else {
@@ -512,8 +463,7 @@ public class BcBands extends BandSet {
         bcByte.add(dimensions & 0xFF);
     }
 
-    public void visitTableSwitchInsn(final int min, final int max, final Label dflt,
-            final Label[] labels) {
+    public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label[] labels) {
         bcCodes.add(TABLESWITCH);
         bcLabel.add(dflt);
         bcLabelRelativeOffsets.add(byteCodeOffset);
@@ -525,7 +475,7 @@ public class BcBands extends BandSet {
             bcLabelRelativeOffsets.add(byteCodeOffset);
         }
         final int padding = byteCodeOffset % 4 == 0 ? 0 : 4 - (byteCodeOffset % 4);
-        byteCodeOffset+= (padding + 12 + 4 * labels.length);
+        byteCodeOffset += (padding + 12 + 4 * labels.length);
         updateRenumbering();
     }
 
@@ -535,7 +485,7 @@ public class BcBands extends BandSet {
         updateRenumbering();
         bcCodes.add(opcode);
         bcClassRef.add(cpBands.getCPClass(type));
-        if(opcode == 187) { // NEW
+        if (opcode == 187) { // NEW
             currentNewClass = type;
         }
     }
@@ -547,13 +497,13 @@ public class BcBands extends BandSet {
             bcCodes.add(WIDE);
             bcCodes.add(opcode);
             bcLocal.add(var);
-        } else if(var > 3 || opcode == 169 /* RET */) {
+        } else if (var > 3 || opcode == 169 /* RET */) {
             byteCodeOffset += 2;
             bcCodes.add(opcode);
             bcLocal.add(var);
         } else {
-            byteCodeOffset +=1;
-            switch(opcode) {
+            byteCodeOffset += 1;
+            switch (opcode) {
             case 21: // ILOAD
             case 54: // ISTORE
                 bcCodes.add(opcode + 5 + var);

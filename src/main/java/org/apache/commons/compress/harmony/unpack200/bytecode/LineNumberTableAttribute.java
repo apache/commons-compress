@@ -33,8 +33,8 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
         attributeName = cpUTF8Value;
     }
 
-    public LineNumberTableAttribute(final int line_number_table_length,
-            final int[] start_pcs, final int[] line_numbers) {
+    public LineNumberTableAttribute(final int line_number_table_length, final int[] start_pcs,
+        final int[] line_numbers) {
         super(attributeName);
         this.line_number_table_length = line_number_table_length;
         this.start_pcs = start_pcs;
@@ -72,9 +72,8 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
      */
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] { getAttributeName() };
+        return new ClassFileEntry[] {getAttributeName()};
     }
-
 
     @Override
     public boolean equals(final Object obj) {
@@ -84,7 +83,9 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
     /*
      * (non-Javadoc)
      *
-     * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#resolve(org.apache.commons.compress.harmony.unpack200.bytecode.ClassConstantPool)
+     * @see
+     * org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#resolve(org.apache.commons.compress.harmony.
+     * unpack200.bytecode.ClassConstantPool)
      */
     @Override
     protected void resolve(final ClassConstantPool pool) {

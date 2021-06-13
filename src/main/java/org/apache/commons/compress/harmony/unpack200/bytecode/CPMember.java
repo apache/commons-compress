@@ -40,15 +40,13 @@ public class CPMember extends ClassFileEntry {
      * @param descriptor TODO
      * @param flags TODO
      * @param attributes TODO
-     * @throws NullPointerException
-     *             if name or descriptor is null
+     * @throws NullPointerException if name or descriptor is null
      */
     public CPMember(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List attributes) {
         this.name = name;
         this.descriptor = descriptor;
         this.flags = (short) flags;
-        this.attributes = (attributes == null ? Collections.EMPTY_LIST
-                : attributes);
+        this.attributes = (attributes == null ? Collections.EMPTY_LIST : attributes);
         if (name == null || descriptor == null) {
             throw new NullPointerException("Null arguments are not allowed");
         }
@@ -71,7 +69,7 @@ public class CPMember extends ClassFileEntry {
         super.resolve(pool);
         nameIndex = pool.indexOf(name);
         descriptorIndex = pool.indexOf(descriptor);
-        for(int it = 0; it < attributes.size(); it++) {
+        for (int it = 0; it < attributes.size(); it++) {
             final Attribute attribute = (Attribute) attributes.get(it);
             attribute.resolve(pool);
         }

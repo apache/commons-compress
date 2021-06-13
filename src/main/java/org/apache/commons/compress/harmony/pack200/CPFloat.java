@@ -29,7 +29,7 @@ public class CPFloat extends CPConstant {
 
     @Override
     public int compareTo(final Object obj) {
-        return Float.compare(theFloat, ((CPFloat)obj).theFloat);
+        return Float.compare(theFloat, ((CPFloat) obj).theFloat);
     }
 
     public float getFloat() {

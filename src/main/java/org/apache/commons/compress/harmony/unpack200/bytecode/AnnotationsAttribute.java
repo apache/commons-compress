@@ -41,7 +41,7 @@ public abstract class AnnotationsAttribute extends Attribute {
         private int[] name_indexes;
 
         public Annotation(final int num_pairs, final CPUTF8 type, final CPUTF8[] element_names,
-                final ElementValue[] element_values) {
+            final ElementValue[] element_values) {
             this.num_pairs = num_pairs;
             this.type = type;
             this.element_names = element_names;
@@ -103,11 +103,11 @@ public abstract class AnnotationsAttribute extends Attribute {
 
         public List getClassFileEntries() {
             final List entries = new ArrayList(1);
-            if(value instanceof CPNameAndType) {
+            if (value instanceof CPNameAndType) {
                 // used to represent enum, so don't include the actual CPNameAndType
-                entries.add(((CPNameAndType)value).name);
-                entries.add(((CPNameAndType)value).descriptor);
-            } else if(value instanceof ClassFileEntry) {
+                entries.add(((CPNameAndType) value).name);
+                entries.add(((CPNameAndType) value).descriptor);
+            } else if (value instanceof ClassFileEntry) {
                 entries.add(value);
             } else if (value instanceof ElementValue[]) {
                 final ElementValue[] values = (ElementValue[]) value;
@@ -115,7 +115,7 @@ public abstract class AnnotationsAttribute extends Attribute {
                     entries.addAll(values[i].getClassFileEntries());
                 }
             } else if (value instanceof Annotation) {
-                entries.addAll(((Annotation)value).getClassFileEntries());
+                entries.addAll(((Annotation) value).getClassFileEntries());
             }
             return entries;
         }

@@ -22,18 +22,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Parameter annotations class file attribute, either a
- * RuntimeVisibleParameterAnnotations attribute or a
+ * Parameter annotations class file attribute, either a RuntimeVisibleParameterAnnotations attribute or a
  * RuntimeInvisibleParameterAnnotations attribute.
  */
-public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends
-        AnnotationsAttribute {
+public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends AnnotationsAttribute {
 
     private final int num_parameters;
     private final ParameterAnnotation[] parameter_annotations;
 
     public RuntimeVisibleorInvisibleParameterAnnotationsAttribute(final CPUTF8 name,
-            final ParameterAnnotation[] parameter_annotations) {
+        final ParameterAnnotation[] parameter_annotations) {
         super(name);
         this.num_parameters = parameter_annotations.length;
         this.parameter_annotations = parameter_annotations;
@@ -66,8 +64,7 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends
 
     @Override
     public String toString() {
-        return attributeName.underlyingString() + ": " + num_parameters
-                + " parameter annotations";
+        return attributeName.underlyingString() + ": " + num_parameters + " parameter annotations";
     }
 
     /**

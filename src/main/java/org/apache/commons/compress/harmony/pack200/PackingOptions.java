@@ -66,10 +66,9 @@ public class PackingOptions {
     }
 
     /**
-     * Set strip debug attributes. If true, all debug attributes (i.e.
-     * LineNumberTable, SourceFile, LocalVariableTable and
-     * LocalVariableTypeTable attributes) are stripped when reading the input
-     * class files and not included in the output archive.
+     * Set strip debug attributes. If true, all debug attributes (i.e. LineNumberTable, SourceFile, LocalVariableTable
+     * and LocalVariableTypeTable attributes) are stripped when reading the input class files and not included in the
+     * output archive.
      *
      * @param stripDebug If true, all debug attributes.
      */
@@ -91,6 +90,7 @@ public class PackingOptions {
 
     /**
      * Set the segment limit (equivalent to -S command line option)
+     * 
      * @param segmentLimit - the limit in bytes
      */
     public void setSegmentLimit(final long segmentLimit) {
@@ -103,6 +103,7 @@ public class PackingOptions {
 
     /**
      * Sets the compression effort level (0-9, equivalent to -E command line option)
+     * 
      * @param effort the compression effort level, 0-9.
      */
     public void setEffort(final int effort) {
@@ -118,13 +119,9 @@ public class PackingOptions {
     }
 
     public void setDeflateHint(final String deflateHint) {
-        if (!KEEP.equals(deflateHint)
-                && !"true".equals(deflateHint)
-                && !"false".equals(deflateHint)) {
+        if (!KEEP.equals(deflateHint) && !"true".equals(deflateHint) && !"false".equals(deflateHint)) {
             throw new IllegalArgumentException(
-                    "Bad argument: -H "
-                            + deflateHint
-                            + " ? deflate hint should be either true, false or keep (default)");
+                "Bad argument: -H " + deflateHint + " ? deflate hint should be either true, false or keep (default)");
         }
         this.deflateHint = deflateHint;
     }
@@ -134,12 +131,9 @@ public class PackingOptions {
     }
 
     public void setModificationTime(final String modificationTime) {
-        if (!KEEP.equals(modificationTime)
-                && !"latest".equals(modificationTime)) {
-            throw new IllegalArgumentException(
-                    "Bad argument: -m "
-                            + modificationTime
-                            + " ? transmit modtimes should be either latest or keep (default)");
+        if (!KEEP.equals(modificationTime) && !"latest".equals(modificationTime)) {
+            throw new IllegalArgumentException("Bad argument: -m " + modificationTime
+                + " ? transmit modtimes should be either latest or keep (default)");
         }
         this.modificationTime = modificationTime;
     }
@@ -167,18 +161,17 @@ public class PackingOptions {
     }
 
     /**
-     * Tell the compressor to pass the file with the given name, or if the name
-     * is a directory name all files under that directory will be passed.
+     * Tell the compressor to pass the file with the given name, or if the name is a directory name all files under that
+     * directory will be passed.
      *
-     * @param passFileName
-     *            the file name
+     * @param passFileName the file name
      */
     public void addPassFile(String passFileName) {
-        if(passFiles == null) {
+        if (passFiles == null) {
             passFiles = new ArrayList();
         }
         String fileSeparator = System.getProperty("file.separator");
-        if(fileSeparator.equals("\\")) {
+        if (fileSeparator.equals("\\")) {
             // Need to escape backslashes for replaceAll(), which uses regex
             fileSeparator += "\\";
         }
@@ -196,41 +189,40 @@ public class PackingOptions {
 
     /**
      * Tell the compressor what to do if an unknown attribute is encountered
+     * 
      * @param unknownAttributeAction - the action to perform
      */
     public void setUnknownAttributeAction(final String unknownAttributeAction) {
         this.unknownAttributeAction = unknownAttributeAction;
-        if (!PASS.equals(unknownAttributeAction)
-                && !ERROR.equals(unknownAttributeAction)
-                && !STRIP.equals(unknownAttributeAction)) {
-            throw new RuntimeException("Incorrect option for -U, "
-                    + unknownAttributeAction);
+        if (!PASS.equals(unknownAttributeAction) && !ERROR.equals(unknownAttributeAction)
+            && !STRIP.equals(unknownAttributeAction)) {
+            throw new RuntimeException("Incorrect option for -U, " + unknownAttributeAction);
         }
     }
 
     public void addClassAttributeAction(final String attributeName, final String action) {
-        if(classAttributeActions == null) {
+        if (classAttributeActions == null) {
             classAttributeActions = new HashMap();
         }
         classAttributeActions.put(attributeName, action);
     }
 
     public void addFieldAttributeAction(final String attributeName, final String action) {
-        if(fieldAttributeActions == null) {
+        if (fieldAttributeActions == null) {
             fieldAttributeActions = new HashMap();
         }
         fieldAttributeActions.put(attributeName, action);
     }
 
     public void addMethodAttributeAction(final String attributeName, final String action) {
-        if(methodAttributeActions == null) {
+        if (methodAttributeActions == null) {
             methodAttributeActions = new HashMap();
         }
         methodAttributeActions.put(attributeName, action);
     }
 
     public void addCodeAttributeAction(final String attributeName, final String action) {
-        if(codeAttributeActions == null) {
+        if (codeAttributeActions == null) {
             codeAttributeActions = new HashMap();
         }
         codeAttributeActions.put(attributeName, action);
@@ -256,19 +248,16 @@ public class PackingOptions {
         this.logFile = logFile;
     }
 
-    private void addOrUpdateAttributeActions(final List prototypes, final Map attributeActions,
-            final int tag) {
+    private void addOrUpdateAttributeActions(final List prototypes, final Map attributeActions, final int tag) {
         if ((attributeActions != null) && (attributeActions.size() > 0)) {
             String name, action;
             boolean prototypeExists;
             NewAttribute newAttribute;
-            for (final Iterator iteratorI = attributeActions.keySet().iterator(); iteratorI
-                    .hasNext();) {
+            for (final Iterator iteratorI = attributeActions.keySet().iterator(); iteratorI.hasNext();) {
                 name = (String) iteratorI.next();
                 action = (String) attributeActions.get(name);
                 prototypeExists = false;
-                for (final Iterator iteratorJ = prototypes.iterator(); iteratorJ
-                        .hasNext();) {
+                for (final Iterator iteratorJ = prototypes.iterator(); iteratorJ.hasNext();) {
                     newAttribute = (NewAttribute) iteratorJ.next();
                     if (newAttribute.type.equals(name)) {
                         // if the attribute exists, update its context
@@ -297,20 +286,15 @@ public class PackingOptions {
     public Attribute[] getUnknownAttributePrototypes() {
         if (unknownAttributeTypes == null) {
             final List prototypes = new ArrayList();
-            addOrUpdateAttributeActions(prototypes, classAttributeActions,
-                    AttributeDefinitionBands.CONTEXT_CLASS);
+            addOrUpdateAttributeActions(prototypes, classAttributeActions, AttributeDefinitionBands.CONTEXT_CLASS);
 
-            addOrUpdateAttributeActions(prototypes, methodAttributeActions,
-                    AttributeDefinitionBands.CONTEXT_METHOD);
+            addOrUpdateAttributeActions(prototypes, methodAttributeActions, AttributeDefinitionBands.CONTEXT_METHOD);
 
-            addOrUpdateAttributeActions(prototypes, fieldAttributeActions,
-                    AttributeDefinitionBands.CONTEXT_FIELD);
+            addOrUpdateAttributeActions(prototypes, fieldAttributeActions, AttributeDefinitionBands.CONTEXT_FIELD);
 
-            addOrUpdateAttributeActions(prototypes, codeAttributeActions,
-                    AttributeDefinitionBands.CONTEXT_CODE);
+            addOrUpdateAttributeActions(prototypes, codeAttributeActions, AttributeDefinitionBands.CONTEXT_CODE);
 
-            unknownAttributeTypes = (Attribute[]) prototypes
-                    .toArray(new Attribute[0]);
+            unknownAttributeTypes = (Attribute[]) prototypes.toArray(new Attribute[0]);
         }
         return unknownAttributeTypes;
     }
@@ -320,7 +304,7 @@ public class PackingOptions {
             return unknownAttributeAction;
         }
         String action = (String) classAttributeActions.get(type);
-        if(action == null) {
+        if (action == null) {
             action = unknownAttributeAction;
         }
         return action;
@@ -331,7 +315,7 @@ public class PackingOptions {
             return unknownAttributeAction;
         }
         String action = (String) methodAttributeActions.get(type);
-        if(action == null) {
+        if (action == null) {
             action = unknownAttributeAction;
         }
         return action;
@@ -342,7 +326,7 @@ public class PackingOptions {
             return unknownAttributeAction;
         }
         String action = (String) fieldAttributeActions.get(type);
-        if(action == null) {
+        if (action == null) {
             action = unknownAttributeAction;
         }
         return action;
@@ -353,7 +337,7 @@ public class PackingOptions {
             return unknownAttributeAction;
         }
         String action = (String) codeAttributeActions.get(type);
-        if(action == null) {
+        if (action == null) {
             action = unknownAttributeAction;
         }
         return action;

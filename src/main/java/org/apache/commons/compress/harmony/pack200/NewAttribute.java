@@ -21,9 +21,8 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Label;
 
 /**
- * NewAttribute extends <code>Attribute</code> and manages unknown attributes
- * encountered by ASM that have had a layout definition given to pack200 (e.g.
- * via one of the -C, -M, -F or -D command line options)
+ * NewAttribute extends <code>Attribute</code> and manages unknown attributes encountered by ASM that have had a layout
+ * definition given to pack200 (e.g. via one of the -C, -M, -F or -D command line options)
  */
 public class NewAttribute extends Attribute {
 
@@ -45,8 +44,8 @@ public class NewAttribute extends Attribute {
         addContext(context);
     }
 
-    public NewAttribute(final ClassReader classReader, final String type, final String layout, final byte[] contents, final char[] buf,
-            final int codeOff, final Label[] labels) {
+    public NewAttribute(final ClassReader classReader, final String type, final String layout, final byte[] contents,
+        final char[] buf, final int codeOff, final Label[] labels) {
         super(type);
         this.classReader = classReader;
         this.contents = contents;
@@ -57,7 +56,7 @@ public class NewAttribute extends Attribute {
     }
 
     public void addContext(final int context) {
-        switch(context) {
+        switch (context) {
         case AttributeDefinitionBands.CONTEXT_CLASS:
             contextClass = true;
             break;
@@ -104,16 +103,15 @@ public class NewAttribute extends Attribute {
     }
 
     @Override
-    protected Attribute read(final ClassReader cr, final int off, final int len, final char[] buf,
-            final int codeOff, final Label[] labels) {
+    protected Attribute read(final ClassReader cr, final int off, final int len, final char[] buf, final int codeOff,
+        final Label[] labels) {
         final byte[] attributeContents = new byte[len];
         System.arraycopy(cr.b, off, attributeContents, 0, len);
-        return new NewAttribute(cr, type, layout, attributeContents, buf, codeOff,
-                labels);
+        return new NewAttribute(cr, type, layout, attributeContents, buf, codeOff, labels);
     }
 
     public boolean isUnknown(final int context) {
-        switch(context) {
+        switch (context) {
         case AttributeDefinitionBands.CONTEXT_CLASS:
             return !contextClass;
         case AttributeDefinitionBands.CONTEXT_METHOD:
@@ -147,9 +145,8 @@ public class NewAttribute extends Attribute {
     }
 
     /**
-     * ErrorAttribute extends <code>NewAttribute</code> and manages attributes
-     * encountered by ASM that have had an error action specified to pack200
-     * (e.g. via one of the -C, -M, -F or -D command line options such as
+     * ErrorAttribute extends <code>NewAttribute</code> and manages attributes encountered by ASM that have had an error
+     * action specified to pack200 (e.g. via one of the -C, -M, -F or -D command line options such as
      * -Cattribute-name=error)
      */
     public static class ErrorAttribute extends NewAttribute {
@@ -160,16 +157,15 @@ public class NewAttribute extends Attribute {
 
         @Override
         protected Attribute read(final ClassReader cr, final int off, final int len, final char[] buf,
-                final int codeOff, final Label[] labels) {
+            final int codeOff, final Label[] labels) {
             throw new Error("Attribute " + type + " was found");
         }
 
     }
 
     /**
-     * StripAttribute extends <code>NewAttribute</code> and manages attributes
-     * encountered by ASM that have had an strip action specified to pack200
-     * (e.g. via one of the -C, -M, -F or -D command line options such as
+     * StripAttribute extends <code>NewAttribute</code> and manages attributes encountered by ASM that have had an strip
+     * action specified to pack200 (e.g. via one of the -C, -M, -F or -D command line options such as
      * -Cattribute-name=strip)
      */
     public static class StripAttribute extends NewAttribute {
@@ -180,16 +176,15 @@ public class NewAttribute extends Attribute {
 
         @Override
         protected Attribute read(final ClassReader cr, final int off, final int len, final char[] buf,
-                final int codeOff, final Label[] labels) {
+            final int codeOff, final Label[] labels) {
             // TODO Not sure if this works, can we really strip an attribute if we don't know the layout?
             return null;
         }
     }
 
     /**
-     * PassAttribute extends <code>NewAttribute</code> and manages attributes
-     * encountered by ASM that have had an pass action specified to pack200
-     * (e.g. via one of the -C, -M, -F or -D command line options such as
+     * PassAttribute extends <code>NewAttribute</code> and manages attributes encountered by ASM that have had an pass
+     * action specified to pack200 (e.g. via one of the -C, -M, -F or -D command line options such as
      * -Cattribute-name=pass)
      */
     public static class PassAttribute extends NewAttribute {
@@ -200,7 +195,7 @@ public class NewAttribute extends Attribute {
 
         @Override
         protected Attribute read(final ClassReader cr, final int off, final int len, final char[] buf,
-                final int codeOff, final Label[] labels) {
+            final int codeOff, final Label[] labels) {
             throw new Segment.PassException();
         }
 

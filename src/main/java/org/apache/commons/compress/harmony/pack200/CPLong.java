@@ -29,10 +29,10 @@ public class CPLong extends CPConstant {
 
     @Override
     public int compareTo(final Object obj) {
-        if(theLong > ((CPLong)obj).theLong) {
+        if (theLong > ((CPLong) obj).theLong) {
             return 1;
         }
-        if (theLong == ((CPLong)obj).theLong) {
+        if (theLong == ((CPLong) obj).theLong) {
             return 0;
         }
         return -1;

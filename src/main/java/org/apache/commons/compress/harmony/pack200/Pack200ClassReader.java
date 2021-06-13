@@ -19,8 +19,7 @@ package org.apache.commons.compress.harmony.pack200;
 import org.objectweb.asm.ClassReader;
 
 /**
- * Wrapper for ClassReader that enables pack200 to obtain extra class file
- * information
+ * Wrapper for ClassReader that enables pack200 to obtain extra class file information
  */
 public class Pack200ClassReader extends ClassReader {
 
@@ -30,8 +29,7 @@ public class Pack200ClassReader extends ClassReader {
     private String fileName;
 
     /**
-     * @param b
-     *            the contents of class file in the format of bytes
+     * @param b the contents of class file in the format of bytes
      */
     public Pack200ClassReader(final byte[] b) {
         super(b);
@@ -40,9 +38,9 @@ public class Pack200ClassReader extends ClassReader {
     @Override
     public int readUnsignedShort(final int index) {
         // Doing this to check whether last load-constant instruction was ldc (18) or ldc_w (19)
-        // TODO:  Assess whether this impacts on performance
+        // TODO: Assess whether this impacts on performance
         final int unsignedShort = super.readUnsignedShort(index);
-        if(b[index - 1] == 19) {
+        if (b[index - 1] == 19) {
             lastUnsignedShort = unsignedShort;
         } else {
             lastUnsignedShort = Short.MIN_VALUE;
@@ -59,7 +57,7 @@ public class Pack200ClassReader extends ClassReader {
     @Override
     public String readUTF8(final int arg0, final char[] arg1) {
         final String utf8 = super.readUTF8(arg0, arg1);
-        if(!anySyntheticAttributes && "Synthetic".equals(utf8)) {
+        if (!anySyntheticAttributes && "Synthetic".equals(utf8)) {
             anySyntheticAttributes = true;
         }
         return utf8;

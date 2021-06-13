@@ -68,11 +68,9 @@ public abstract class Attribute extends ClassFileEntry {
     protected abstract int getLength();
 
     /**
-     * Answer the length of the receiver including its header (the u2 for the
-     * attribute name and the u4 for the attribute length). This is relevant
-     * when attributes are nested within other attributes - the outer attribute
-     * needs to take the inner attribute headers into account when calculating
-     * its length.
+     * Answer the length of the receiver including its header (the u2 for the attribute name and the u4 for the
+     * attribute length). This is relevant when attributes are nested within other attributes - the outer attribute
+     * needs to take the inner attribute headers into account when calculating its length.
      *
      * @return int adjusted length
      */
@@ -82,12 +80,11 @@ public abstract class Attribute extends ClassFileEntry {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] { getAttributeName() };
+        return new ClassFileEntry[] {getAttributeName()};
     }
 
     /**
-     * Answer true if the receiver needs to have BCI renumbering applied to it;
-     * otherwise answer false.
+     * Answer true if the receiver needs to have BCI renumbering applied to it; otherwise answer false.
      *
      * @return boolean BCI renumbering required
      */
@@ -96,8 +93,8 @@ public abstract class Attribute extends ClassFileEntry {
     }
 
     /**
-     * Answer true if the receiver is a source file attribute (which gets
-     * special handling when the class is built); otherwise answer false.
+     * Answer true if the receiver is a source file attribute (which gets special handling when the class is built);
+     * otherwise answer false.
      *
      * @return boolean source file attribute
      */
@@ -109,8 +106,7 @@ public abstract class Attribute extends ClassFileEntry {
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result
-                + ((attributeName == null) ? 0 : attributeName.hashCode());
+        result = PRIME * result + ((attributeName == null) ? 0 : attributeName.hashCode());
         return result;
     }
 

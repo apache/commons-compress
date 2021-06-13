@@ -29,9 +29,8 @@ import org.apache.commons.compress.harmony.pack200.Archive.SegmentUnit;
 import org.objectweb.asm.ClassReader;
 
 /**
- * Bands containing information about files in the pack200 archive and the file
- * contents for non-class-files. Corresponds to the <code>file_bands</code> set
- * of bands described in the specification.
+ * Bands containing information about files in the pack200 archive and the file contents for non-class-files.
+ * Corresponds to the <code>file_bands</code> set of bands described in the specification.
  */
 public class FileBands extends BandSet {
 
@@ -45,8 +44,8 @@ public class FileBands extends BandSet {
     private final PackingOptions options;
     private final CpBands cpBands;
 
-    public FileBands(final CpBands cpBands, final SegmentHeader segmentHeader,
-            final PackingOptions options, final SegmentUnit segmentUnit, final int effort) {
+    public FileBands(final CpBands cpBands, final SegmentHeader segmentHeader, final PackingOptions options,
+        final SegmentUnit segmentUnit, final int effort) {
         super(effort, segmentHeader);
         fileList = segmentUnit.getFileList();
         this.options = options;
@@ -61,16 +60,14 @@ public class FileBands extends BandSet {
         final int archiveModtime = segmentHeader.getArchive_modtime();
 
         final Set classNames = new HashSet();
-        for (final Iterator iterator = segmentUnit.getClassList().iterator(); iterator
-                .hasNext();) {
+        for (final Iterator iterator = segmentUnit.getClassList().iterator(); iterator.hasNext();) {
             final ClassReader reader = (ClassReader) iterator.next();
             classNames.add(reader.getClassName());
         }
         final CPUTF8 emptyString = cpBands.getCPUtf8("");
         long modtime;
         int latestModtime = Integer.MIN_VALUE;
-        final boolean isLatest = !PackingOptions.KEEP.equals(options
-                .getModificationTime());
+        final boolean isLatest = !PackingOptions.KEEP.equals(options.getModificationTime());
         for (int i = 0; i < size; i++) {
             final PackingFile packingFile = (PackingFile) fileList.get(i);
             final String name = packingFile.getName();
@@ -110,9 +107,8 @@ public class FileBands extends BandSet {
     }
 
     /**
-     * All input classes for the segment have now been read in, so this method
-     * is called so that this class can calculate/complete anything it could not
-     * do while classes were being read.
+     * All input classes for the segment have now been read in, so this method is called so that this class can
+     * calculate/complete anything it could not do while classes were being read.
      */
     public void finaliseBands() {
         file_name = new int[fileName.length];
@@ -132,38 +128,29 @@ public class FileBands extends BandSet {
     @Override
     public void pack(final OutputStream out) throws IOException, Pack200Exception {
         PackingUtils.log("Writing file bands...");
-        byte[] encodedBand = encodeBandInt("file_name", file_name,
-                Codec.UNSIGNED5);
+        byte[] encodedBand = encodeBandInt("file_name", file_name, Codec.UNSIGNED5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from file_name[" + file_name.length + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from file_name[" + file_name.length + "]");
 
-        encodedBand = encodeFlags("file_size", file_size, Codec.UNSIGNED5,
-                Codec.UNSIGNED5, segmentHeader.have_file_size_hi());
+        encodedBand = encodeFlags("file_size", file_size, Codec.UNSIGNED5, Codec.UNSIGNED5,
+            segmentHeader.have_file_size_hi());
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from file_size[" + file_size.length + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from file_size[" + file_size.length + "]");
 
         if (segmentHeader.have_file_modtime()) {
-            encodedBand = encodeBandInt("file_modtime", file_modtime,
-                    Codec.DELTA5);
+            encodedBand = encodeBandInt("file_modtime", file_modtime, Codec.DELTA5);
             out.write(encodedBand);
-            PackingUtils.log("Wrote " + encodedBand.length
-                    + " bytes from file_modtime[" + file_modtime.length + "]");
+            PackingUtils.log("Wrote " + encodedBand.length + " bytes from file_modtime[" + file_modtime.length + "]");
         }
         if (segmentHeader.have_file_options()) {
-            encodedBand = encodeBandInt("file_options", file_options,
-                    Codec.UNSIGNED5);
+            encodedBand = encodeBandInt("file_options", file_options, Codec.UNSIGNED5);
             out.write(encodedBand);
-            PackingUtils.log("Wrote " + encodedBand.length
-                    + " bytes from file_options[" + file_options.length + "]");
+            PackingUtils.log("Wrote " + encodedBand.length + " bytes from file_options[" + file_options.length + "]");
         }
 
-        encodedBand = encodeBandInt("file_bits", flatten(file_bits),
-                Codec.BYTE1);
+        encodedBand = encodeBandInt("file_bits", flatten(file_bits), Codec.BYTE1);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from file_bits[" + file_bits.length + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from file_bits[" + file_bits.length + "]");
     }
 
     private int[] flatten(final byte[][] bytes) {

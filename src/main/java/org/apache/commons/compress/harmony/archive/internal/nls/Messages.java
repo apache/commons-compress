@@ -32,16 +32,13 @@ import java.util.ResourceBundle;
 //import org.apache.commons.compress.harmony.kernel.vm.VM;
 
 /**
- * This class retrieves strings from a resource bundle and returns them,
- * formatting them with MessageFormat when required.
+ * This class retrieves strings from a resource bundle and returns them, formatting them with MessageFormat when
+ * required.
  * <p>
- * It is used by the system classes to provide national language support, by
- * looking up messages in the <code>
+ * It is used by the system classes to provide national language support, by looking up messages in the <code>
  *    org.apache.commons.compress.harmony.archive.internal.nls.messages
- * </code>
- * resource bundle. Note that if this file is not available, or an invalid key
- * is looked up, or resource bundle support is not available, the key itself
- * will be returned as the associated message. This means that the <em>KEY</em>
+ * </code> resource bundle. Note that if this file is not available, or an invalid key is looked up, or resource bundle
+ * support is not available, the key itself will be returned as the associated message. This means that the <em>KEY</em>
  * should a reasonable human-readable (english) string.
  *
  */
@@ -53,8 +50,7 @@ public class Messages {
     /**
      * Retrieves a message which has no arguments.
      *
-     * @param msg
-     *            String the key to look up.
+     * @param msg String the key to look up.
      * @return String the message for that key in the system message bundle.
      */
     static public String getString(final String msg) {
@@ -71,64 +67,53 @@ public class Messages {
     /**
      * Retrieves a message which takes 1 argument.
      *
-     * @param msg
-     *            String the key to look up.
-     * @param arg
-     *            Object the object to insert in the formatted output.
+     * @param msg String the key to look up.
+     * @param arg Object the object to insert in the formatted output.
      * @return String the message for that key in the system message bundle.
      */
     static public String getString(final String msg, final Object arg) {
-        return getString(msg, new Object[] { arg });
+        return getString(msg, new Object[] {arg});
     }
 
     /**
      * Retrieves a message which takes 1 integer argument.
      *
-     * @param msg
-     *            String the key to look up.
-     * @param arg
-     *            int the integer to insert in the formatted output.
+     * @param msg String the key to look up.
+     * @param arg int the integer to insert in the formatted output.
      * @return String the message for that key in the system message bundle.
      */
     static public String getString(final String msg, final int arg) {
-        return getString(msg, new Object[] { Integer.toString(arg) });
+        return getString(msg, new Object[] {Integer.toString(arg)});
     }
 
     /**
      * Retrieves a message which takes 1 character argument.
      *
-     * @param msg
-     *            String the key to look up.
-     * @param arg
-     *            char the character to insert in the formatted output.
+     * @param msg String the key to look up.
+     * @param arg char the character to insert in the formatted output.
      * @return String the message for that key in the system message bundle.
      */
     static public String getString(final String msg, final char arg) {
-        return getString(msg, new Object[] { String.valueOf(arg) });
+        return getString(msg, new Object[] {String.valueOf(arg)});
     }
 
     /**
      * Retrieves a message which takes 2 arguments.
      *
-     * @param msg
-     *            String the key to look up.
-     * @param arg1
-     *            Object an object to insert in the formatted output.
-     * @param arg2
-     *            Object another object to insert in the formatted output.
+     * @param msg String the key to look up.
+     * @param arg1 Object an object to insert in the formatted output.
+     * @param arg2 Object another object to insert in the formatted output.
      * @return String the message for that key in the system message bundle.
      */
     static public String getString(final String msg, final Object arg1, final Object arg2) {
-        return getString(msg, new Object[] { arg1, arg2 });
+        return getString(msg, new Object[] {arg1, arg2});
     }
 
     /**
      * Retrieves a message which takes several arguments.
      *
-     * @param msg
-     *            String the key to look up.
-     * @param args
-     *            Object[] the objects to insert in the formatted output.
+     * @param msg String the key to look up.
+     * @param args Object[] the objects to insert in the formatted output.
      * @return String the message for that key in the system message bundle.
      */
     static public String getString(final String msg, final Object[] args) {
@@ -146,24 +131,19 @@ public class Messages {
     }
 
     /**
-     * Generates a formatted text string given a source string containing
-     * "argument markers" of the form "{argNum}" where each argNum must be in
-     * the range 0..9. The result is generated by inserting the toString of each
-     * argument into the position indicated in the string.
+     * Generates a formatted text string given a source string containing "argument markers" of the form "{argNum}"
+     * where each argNum must be in the range 0..9. The result is generated by inserting the toString of each argument
+     * into the position indicated in the string.
      * <p>
-     * To insert the "{" character into the output, use a single backslash
-     * character to escape it (i.e. "\{"). The "}" character does not need to be
-     * escaped.
+     * To insert the "{" character into the output, use a single backslash character to escape it (i.e. "\{"). The "}"
+     * character does not need to be escaped.
      *
-     * @param format
-     *            String the format to use when printing.
-     * @param args
-     *            Object[] the arguments to use.
+     * @param format String the format to use when printing.
+     * @param args Object[] the arguments to use.
      * @return String the formatted message.
      */
     public static String format(final String format, final Object[] args) {
-        final StringBuilder answer = new StringBuilder(format.length()
-                + (args.length * 20));
+        final StringBuilder answer = new StringBuilder(format.length() + (args.length * 20));
         final String[] argStrings = new String[args.length];
         for (int i = 0; i < args.length; ++i) {
             if (args[i] == null) {
@@ -173,8 +153,7 @@ public class Messages {
             }
         }
         int lastI = 0;
-        for (int i = format.indexOf('{', 0); i >= 0; i = format.indexOf('{',
-                lastI)) {
+        for (int i = format.indexOf('{', 0); i >= 0; i = format.indexOf('{', lastI)) {
             if (i != 0 && format.charAt(i - 1) == '\\') {
                 // It's escaped, just print and loop.
                 if (i != 1) {
@@ -188,8 +167,7 @@ public class Messages {
                 answer.append(format.substring(lastI));
                 lastI = format.length();
             } else {
-                final int argnum = (byte) Character.digit(format.charAt(i + 1),
-                        10);
+                final int argnum = (byte) Character.digit(format.charAt(i + 1), 10);
                 if (argnum < 0 || format.charAt(i + 2) != '}') {
                     // Bad format, just print and loop.
                     answer.append(format.substring(lastI, i + 1));
@@ -215,20 +193,16 @@ public class Messages {
     /**
      * Changes the locale of the messages.
      *
-     * @param locale
-     *            Locale the locale to change to.
+     * @param locale Locale the locale to change to.
      * @param resource resource name.
      * @return The ResourceBundle.
      */
-    static public ResourceBundle setLocale(final Locale locale,
-            final String resource) {
+    static public ResourceBundle setLocale(final Locale locale, final String resource) {
         try {
             // VM.bootCallerClassLoader() returns null
-            final ClassLoader loader = null;//VM.bootCallerClassLoader();
-            return (ResourceBundle) AccessController
-                    .doPrivileged((PrivilegedAction<Object>) () -> ResourceBundle.getBundle(resource, locale,
-                            loader != null ? loader : ClassLoader
-                                    .getSystemClassLoader()));
+            final ClassLoader loader = null;// VM.bootCallerClassLoader();
+            return (ResourceBundle) AccessController.doPrivileged((PrivilegedAction<Object>) () -> ResourceBundle
+                .getBundle(resource, locale, loader != null ? loader : ClassLoader.getSystemClassLoader()));
         } catch (final MissingResourceException e) {
             // ignore
         }
@@ -239,7 +213,7 @@ public class Messages {
         // Attempt to load the messages.
         try {
             bundle = setLocale(Locale.getDefault(),
-                    "org.apache.commons.compress.harmony.archive.internal.nls.messages"); //$NON-NLS-1$
+                "org.apache.commons.compress.harmony.archive.internal.nls.messages"); //$NON-NLS-1$
         } catch (final Throwable e) {
             e.printStackTrace();
         }

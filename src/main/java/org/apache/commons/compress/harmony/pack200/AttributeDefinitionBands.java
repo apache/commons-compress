@@ -27,8 +27,7 @@ import java.util.Map;
 import org.objectweb.asm.Attribute;
 
 /**
- * Attribute Definition bands define how any unknown attributes should be read
- * by the decompressor.
+ * Attribute Definition bands define how any unknown attributes should be read by the decompressor.
  */
 public class AttributeDefinitionBands extends BandSet {
 
@@ -47,8 +46,7 @@ public class AttributeDefinitionBands extends BandSet {
     private final CpBands cpBands;
     private final Segment segment;
 
-    public AttributeDefinitionBands(final Segment segment, final int effort,
-            final Attribute[] attributePrototypes) {
+    public AttributeDefinitionBands(final Segment segment, final int effort, final Attribute[] attributePrototypes) {
         super(effort, segment.getSegmentHeader());
         this.cpBands = segment.getCpBands();
         this.segment = segment;
@@ -59,7 +57,9 @@ public class AttributeDefinitionBands extends BandSet {
 
         for (int i = 0; i < attributePrototypes.length; i++) {
             final NewAttribute newAttribute = (NewAttribute) attributePrototypes[i];
-            if(!(newAttribute instanceof NewAttribute.ErrorAttribute) && !(newAttribute instanceof NewAttribute.PassAttribute) && !(newAttribute instanceof NewAttribute.StripAttribute)) {
+            if (!(newAttribute instanceof NewAttribute.ErrorAttribute)
+                && !(newAttribute instanceof NewAttribute.PassAttribute)
+                && !(newAttribute instanceof NewAttribute.StripAttribute)) {
                 if (newAttribute.isContextClass()) {
                     classLayouts.put(newAttribute.type, newAttribute.getLayout());
                 }
@@ -86,27 +86,22 @@ public class AttributeDefinitionBands extends BandSet {
         if (codeLayouts.size() > 15) {
             segmentHeader.setHave_code_flags_hi(true);
         }
-        int[] availableClassIndices = { 25, 26, 27, 28, 29, 30, 31 };
+        int[] availableClassIndices = {25, 26, 27, 28, 29, 30, 31};
         if (classLayouts.size() > 7) {
             availableClassIndices = addHighIndices(availableClassIndices);
         }
-        addAttributeDefinitions(classLayouts, availableClassIndices,
-                CONTEXT_CLASS);
-        int[] availableMethodIndices = { 26, 27, 28, 29, 30, 31 };
+        addAttributeDefinitions(classLayouts, availableClassIndices, CONTEXT_CLASS);
+        int[] availableMethodIndices = {26, 27, 28, 29, 30, 31};
         if (methodAttributeLayouts.size() > 6) {
             availableMethodIndices = addHighIndices(availableMethodIndices);
         }
-        addAttributeDefinitions(methodLayouts, availableMethodIndices,
-                CONTEXT_METHOD);
-        int[] availableFieldIndices = { 18, 23, 24, 25, 26, 27, 28,
-                29, 30, 31 };
+        addAttributeDefinitions(methodLayouts, availableMethodIndices, CONTEXT_METHOD);
+        int[] availableFieldIndices = {18, 23, 24, 25, 26, 27, 28, 29, 30, 31};
         if (fieldAttributeLayouts.size() > 10) {
             availableFieldIndices = addHighIndices(availableFieldIndices);
         }
-        addAttributeDefinitions(fieldLayouts, availableFieldIndices,
-                CONTEXT_FIELD);
-        int[] availableCodeIndices = { 17, 18, 19, 20, 21, 22, 23,
-                24, 25, 26, 27, 28, 29, 30, 31 };
+        addAttributeDefinitions(fieldLayouts, availableFieldIndices, CONTEXT_FIELD);
+        int[] availableCodeIndices = {17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
         if (codeAttributeLayouts.size() > 15) {
             availableCodeIndices = addHighIndices(availableCodeIndices);
         }
@@ -114,9 +109,8 @@ public class AttributeDefinitionBands extends BandSet {
     }
 
     /**
-     * All input classes for the segment have now been read in, so this method
-     * is called so that this class can calculate/complete anything it could not
-     * do while classes were being read.
+     * All input classes for the segment have now been read in, so this method is called so that this class can
+     * calculate/complete anything it could not do while classes were being read.
      */
     public void finaliseBands() {
         addSyntheticDefinitions();
@@ -130,57 +124,43 @@ public class AttributeDefinitionBands extends BandSet {
         final int[] attributeDefinitionName = new int[attributeDefinitions.size()];
         final int[] attributeDefinitionLayout = new int[attributeDefinitions.size()];
         for (int i = 0; i < attributeDefinitionLayout.length; i++) {
-            final AttributeDefinition def = (AttributeDefinition) attributeDefinitions
-                    .get(i);
-            attributeDefinitionHeader[i] = def.contextType
-                    | (def.index + 1 << 2);
+            final AttributeDefinition def = (AttributeDefinition) attributeDefinitions.get(i);
+            attributeDefinitionHeader[i] = def.contextType | (def.index + 1 << 2);
             attributeDefinitionName[i] = def.name.getIndex();
             attributeDefinitionLayout[i] = def.layout.getIndex();
         }
 
-        byte[] encodedBand = encodeBandInt("attributeDefinitionHeader",
-                attributeDefinitionHeader, Codec.BYTE1);
+        byte[] encodedBand = encodeBandInt("attributeDefinitionHeader", attributeDefinitionHeader, Codec.BYTE1);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from attributeDefinitionHeader["
-                + attributeDefinitionHeader.length + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from attributeDefinitionHeader["
+            + attributeDefinitionHeader.length + "]");
 
-        encodedBand = encodeBandInt("attributeDefinitionName",
-                attributeDefinitionName, Codec.UNSIGNED5);
+        encodedBand = encodeBandInt("attributeDefinitionName", attributeDefinitionName, Codec.UNSIGNED5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from attributeDefinitionName["
-                + attributeDefinitionName.length + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from attributeDefinitionName["
+            + attributeDefinitionName.length + "]");
 
-        encodedBand = encodeBandInt("attributeDefinitionLayout",
-                attributeDefinitionLayout, Codec.UNSIGNED5);
+        encodedBand = encodeBandInt("attributeDefinitionLayout", attributeDefinitionLayout, Codec.UNSIGNED5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from attributeDefinitionLayout["
-                + attributeDefinitionLayout.length + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from attributeDefinitionLayout["
+            + attributeDefinitionLayout.length + "]");
     }
 
     private void addSyntheticDefinitions() {
-        final boolean anySytheticClasses = segment.getClassBands()
-                .isAnySyntheticClasses();
-        final boolean anySyntheticMethods = segment.getClassBands()
-                .isAnySyntheticMethods();
-        final boolean anySyntheticFields = segment.getClassBands()
-                .isAnySyntheticFields();
+        final boolean anySytheticClasses = segment.getClassBands().isAnySyntheticClasses();
+        final boolean anySyntheticMethods = segment.getClassBands().isAnySyntheticMethods();
+        final boolean anySyntheticFields = segment.getClassBands().isAnySyntheticFields();
         if (anySytheticClasses || anySyntheticMethods || anySyntheticFields) {
             final CPUTF8 syntheticUTF = cpBands.getCPUtf8("Synthetic");
             final CPUTF8 emptyUTF = cpBands.getCPUtf8("");
             if (anySytheticClasses) {
-                attributeDefinitions.add(new AttributeDefinition(12,
-                        CONTEXT_CLASS, syntheticUTF, emptyUTF));
+                attributeDefinitions.add(new AttributeDefinition(12, CONTEXT_CLASS, syntheticUTF, emptyUTF));
             }
             if (anySyntheticMethods) {
-                attributeDefinitions.add(new AttributeDefinition(12,
-                        CONTEXT_METHOD, syntheticUTF, emptyUTF));
+                attributeDefinitions.add(new AttributeDefinition(12, CONTEXT_METHOD, syntheticUTF, emptyUTF));
             }
             if (anySyntheticFields) {
-                attributeDefinitions.add(new AttributeDefinition(12,
-                        CONTEXT_FIELD, syntheticUTF, emptyUTF));
+                attributeDefinitions.add(new AttributeDefinition(12, CONTEXT_FIELD, syntheticUTF, emptyUTF));
             }
         }
     }
@@ -198,17 +178,14 @@ public class AttributeDefinitionBands extends BandSet {
         return temp;
     }
 
-    private void addAttributeDefinitions(final Map layouts, final int[] availableIndices,
-            final int contextType) {
+    private void addAttributeDefinitions(final Map layouts, final int[] availableIndices, final int contextType) {
         final int i = 0;
-        for (final Iterator iterator = layouts.keySet().iterator(); iterator
-                .hasNext();) {
+        for (final Iterator iterator = layouts.keySet().iterator(); iterator.hasNext();) {
             final String name = (String) iterator.next();
             final String layout = (String) layouts.get(name);
             final int index = availableIndices[i];
-            final AttributeDefinition definition = new AttributeDefinition(index,
-                    contextType, cpBands.getCPUtf8(name), cpBands
-                            .getCPUtf8(layout));
+            final AttributeDefinition definition = new AttributeDefinition(index, contextType, cpBands.getCPUtf8(name),
+                cpBands.getCPUtf8(layout));
             attributeDefinitions.add(definition);
             switch (contextType) {
             case CONTEXT_CLASS:
@@ -249,8 +226,7 @@ public class AttributeDefinitionBands extends BandSet {
         public CPUTF8 name;
         public CPUTF8 layout;
 
-        public AttributeDefinition(final int index, final int contextType, final CPUTF8 name,
-                final CPUTF8 layout) {
+        public AttributeDefinition(final int index, final int contextType, final CPUTF8 name, final CPUTF8 layout) {
             this.index = index;
             this.contextType = contextType;
             this.name = name;

@@ -87,8 +87,7 @@ public class BcBands extends BandSet {
     @Override
     public void read(final InputStream in) throws IOException, Pack200Exception {
 
-        final AttributeLayoutMap attributeDefinitionMap = segment
-                .getAttrDefinitionBands().getAttributeDefinitionMap();
+        final AttributeLayoutMap attributeDefinitionMap = segment.getAttrDefinitionBands().getAttributeDefinitionMap();
         final int classCount = header.getClassCount();
         final long[][] methodFlags = segment.getClassBands().getMethodFlags();
 
@@ -114,12 +113,10 @@ public class BcBands extends BandSet {
         int bcEscCount = 0;
         int bcEscRefCount = 0;
 
-        final AttributeLayout abstractModifier = attributeDefinitionMap
-                .getAttributeLayout(AttributeLayout.ACC_ABSTRACT,
-                        AttributeLayout.CONTEXT_METHOD);
-        final AttributeLayout nativeModifier = attributeDefinitionMap
-                .getAttributeLayout(AttributeLayout.ACC_NATIVE,
-                        AttributeLayout.CONTEXT_METHOD);
+        final AttributeLayout abstractModifier = attributeDefinitionMap.getAttributeLayout(AttributeLayout.ACC_ABSTRACT,
+            AttributeLayout.CONTEXT_METHOD);
+        final AttributeLayout nativeModifier = attributeDefinitionMap.getAttributeLayout(AttributeLayout.ACC_NATIVE,
+            AttributeLayout.CONTEXT_METHOD);
 
         methodByteCodePacked = new byte[classCount][][];
         int bcParsed = 0;
@@ -131,8 +128,7 @@ public class BcBands extends BandSet {
             methodByteCodePacked[c] = new byte[numberOfMethods][];
             for (int m = 0; m < numberOfMethods; m++) {
                 final long methodFlag = methodFlags[c][m];
-                if (!abstractModifier.matches(methodFlag)
-                        && !nativeModifier.matches(methodFlag)) {
+                if (!abstractModifier.matches(methodFlag) && !nativeModifier.matches(methodFlag)) {
                     final ByteArrayOutputStream codeBytes = new ByteArrayOutputStream();
                     byte code;
                     while ((code = (byte) (0xff & in.read())) != -1) {
@@ -262,17 +258,12 @@ public class BcBands extends BandSet {
                             if (nextInstruction == 132) { // iinc
                                 bcLocalCount++;
                                 bcShortCount++;
-                            } else if (endsWithLoad(nextInstruction)
-                                    || endsWithStore(nextInstruction)
-                                    || nextInstruction == 169) {
+                            } else if (endsWithLoad(nextInstruction) || endsWithStore(nextInstruction)
+                                || nextInstruction == 169) {
                                 bcLocalCount++;
                             } else {
-                                segment
-                                        .log(
-                                                Segment.LOG_LEVEL_VERBOSE,
-                                                "Found unhandled "
-                                                        + ByteCode
-                                                                .getByteCode(nextInstruction));
+                                segment.log(Segment.LOG_LEVEL_VERBOSE,
+                                    "Found unhandled " + ByteCode.getByteCode(nextInstruction));
                             }
                             i++;
                             break;
@@ -288,8 +279,7 @@ public class BcBands extends BandSet {
                             bcEscCount++;
                             break;
                         default:
-                            if (endsWithLoad(codePacked)
-                                    || endsWithStore(codePacked)) {
+                            if (endsWithLoad(codePacked) || endsWithStore(codePacked)) {
                                 bcLocalCount++;
                             } else if (startsWithIf(codePacked)) {
                                 bcLabelCount++;
@@ -300,20 +290,17 @@ public class BcBands extends BandSet {
             }
         }
         // other bytecode bands
-        bcCaseCount = decodeBandInt("bc_case_count", in, Codec.UNSIGNED5,
-                bcCaseCountCount);
+        bcCaseCount = decodeBandInt("bc_case_count", in, Codec.UNSIGNED5, bcCaseCountCount);
         int bcCaseValueCount = 0;
         for (int i = 0; i < bcCaseCount.length; i++) {
-            final boolean isTableSwitch = ((Boolean) switchIsTableSwitch.get(i))
-                    .booleanValue();
+            final boolean isTableSwitch = ((Boolean) switchIsTableSwitch.get(i)).booleanValue();
             if (isTableSwitch) {
                 bcCaseValueCount += 1;
             } else {
                 bcCaseValueCount += bcCaseCount[i];
             }
         }
-        bcCaseValue = decodeBandInt("bc_case_value", in, Codec.DELTA5,
-                bcCaseValueCount);
+        bcCaseValue = decodeBandInt("bc_case_value", in, Codec.DELTA5, bcCaseValueCount);
         // Every case value needs a label. We weren't able to count these
         // above, because we didn't know how many cases there were.
         // Have to correct it now.
@@ -325,36 +312,21 @@ public class BcBands extends BandSet {
         bcLocal = decodeBandInt("bc_local", in, Codec.UNSIGNED5, bcLocalCount);
         bcLabel = decodeBandInt("bc_label", in, Codec.BRANCH5, bcLabelCount);
         bcIntRef = decodeBandInt("bc_intref", in, Codec.DELTA5, bcIntRefCount);
-        bcFloatRef = decodeBandInt("bc_floatref", in, Codec.DELTA5,
-                bcFloatRefCount);
-        bcLongRef = decodeBandInt("bc_longref", in, Codec.DELTA5,
-                bcLongRefCount);
-        bcDoubleRef = decodeBandInt("bc_doubleref", in, Codec.DELTA5,
-                bcDoubleRefCount);
-        bcStringRef = decodeBandInt("bc_stringref", in, Codec.DELTA5,
-                bcStringRefCount);
-        bcClassRef = decodeBandInt("bc_classref", in, Codec.UNSIGNED5,
-                bcClassRefCount);
-        bcFieldRef = decodeBandInt("bc_fieldref", in, Codec.DELTA5,
-                bcFieldRefCount);
-        bcMethodRef = decodeBandInt("bc_methodref", in, Codec.UNSIGNED5,
-                bcMethodRefCount);
-        bcIMethodRef = decodeBandInt("bc_imethodref", in, Codec.DELTA5,
-                bcIMethodRefCount);
-        bcThisField = decodeBandInt("bc_thisfield", in, Codec.UNSIGNED5,
-                bcThisFieldCount);
-        bcSuperField = decodeBandInt("bc_superfield", in, Codec.UNSIGNED5,
-                bcSuperFieldCount);
-        bcThisMethod = decodeBandInt("bc_thismethod", in, Codec.UNSIGNED5,
-                bcThisMethodCount);
-        bcSuperMethod = decodeBandInt("bc_supermethod", in, Codec.UNSIGNED5,
-                bcSuperMethodCount);
-        bcInitRef = decodeBandInt("bc_initref", in, Codec.UNSIGNED5,
-                bcInitRefCount);
-        bcEscRef = decodeBandInt("bc_escref", in, Codec.UNSIGNED5,
-                bcEscRefCount);
-        bcEscRefSize = decodeBandInt("bc_escrefsize", in, Codec.UNSIGNED5,
-                bcEscRefCount);
+        bcFloatRef = decodeBandInt("bc_floatref", in, Codec.DELTA5, bcFloatRefCount);
+        bcLongRef = decodeBandInt("bc_longref", in, Codec.DELTA5, bcLongRefCount);
+        bcDoubleRef = decodeBandInt("bc_doubleref", in, Codec.DELTA5, bcDoubleRefCount);
+        bcStringRef = decodeBandInt("bc_stringref", in, Codec.DELTA5, bcStringRefCount);
+        bcClassRef = decodeBandInt("bc_classref", in, Codec.UNSIGNED5, bcClassRefCount);
+        bcFieldRef = decodeBandInt("bc_fieldref", in, Codec.DELTA5, bcFieldRefCount);
+        bcMethodRef = decodeBandInt("bc_methodref", in, Codec.UNSIGNED5, bcMethodRefCount);
+        bcIMethodRef = decodeBandInt("bc_imethodref", in, Codec.DELTA5, bcIMethodRefCount);
+        bcThisField = decodeBandInt("bc_thisfield", in, Codec.UNSIGNED5, bcThisFieldCount);
+        bcSuperField = decodeBandInt("bc_superfield", in, Codec.UNSIGNED5, bcSuperFieldCount);
+        bcThisMethod = decodeBandInt("bc_thismethod", in, Codec.UNSIGNED5, bcThisMethodCount);
+        bcSuperMethod = decodeBandInt("bc_supermethod", in, Codec.UNSIGNED5, bcSuperMethodCount);
+        bcInitRef = decodeBandInt("bc_initref", in, Codec.UNSIGNED5, bcInitRefCount);
+        bcEscRef = decodeBandInt("bc_escref", in, Codec.UNSIGNED5, bcEscRefCount);
+        bcEscRefSize = decodeBandInt("bc_escrefsize", in, Codec.UNSIGNED5, bcEscRefCount);
         bcEscSize = decodeBandInt("bc_escsize", in, Codec.UNSIGNED5, bcEscCount);
         bcEscByte = decodeBandInt("bc_escbyte", in, Codec.BYTE1, bcEscSize);
     }
@@ -365,50 +337,37 @@ public class BcBands extends BandSet {
         final long[][] methodFlags = segment.getClassBands().getMethodFlags();
         final int[] codeMaxNALocals = segment.getClassBands().getCodeMaxNALocals();
         final int[] codeMaxStack = segment.getClassBands().getCodeMaxStack();
-        final ArrayList[][] methodAttributes = segment.getClassBands()
-                .getMethodAttributes();
+        final ArrayList[][] methodAttributes = segment.getClassBands().getMethodAttributes();
         final String[][] methodDescr = segment.getClassBands().getMethodDescr();
 
-        final AttributeLayoutMap attributeDefinitionMap = segment
-                .getAttrDefinitionBands().getAttributeDefinitionMap();
+        final AttributeLayoutMap attributeDefinitionMap = segment.getAttrDefinitionBands().getAttributeDefinitionMap();
 
-        final AttributeLayout abstractModifier = attributeDefinitionMap
-                .getAttributeLayout(AttributeLayout.ACC_ABSTRACT,
-                        AttributeLayout.CONTEXT_METHOD);
-        final AttributeLayout nativeModifier = attributeDefinitionMap
-                .getAttributeLayout(AttributeLayout.ACC_NATIVE,
-                        AttributeLayout.CONTEXT_METHOD);
-        final AttributeLayout staticModifier = attributeDefinitionMap
-                .getAttributeLayout(AttributeLayout.ACC_STATIC,
-                        AttributeLayout.CONTEXT_METHOD);
+        final AttributeLayout abstractModifier = attributeDefinitionMap.getAttributeLayout(AttributeLayout.ACC_ABSTRACT,
+            AttributeLayout.CONTEXT_METHOD);
+        final AttributeLayout nativeModifier = attributeDefinitionMap.getAttributeLayout(AttributeLayout.ACC_NATIVE,
+            AttributeLayout.CONTEXT_METHOD);
+        final AttributeLayout staticModifier = attributeDefinitionMap.getAttributeLayout(AttributeLayout.ACC_STATIC,
+            AttributeLayout.CONTEXT_METHOD);
 
         final int[] wideByteCodeArray = new int[wideByteCodes.size()];
         for (int index = 0; index < wideByteCodeArray.length; index++) {
-            wideByteCodeArray[index] = ((Integer) wideByteCodes.get(index))
-                    .intValue();
+            wideByteCodeArray[index] = ((Integer) wideByteCodes.get(index)).intValue();
         }
-        final OperandManager operandManager = new OperandManager(bcCaseCount,
-                bcCaseValue, bcByte, bcShort, bcLocal, bcLabel, bcIntRef,
-                bcFloatRef, bcLongRef, bcDoubleRef, bcStringRef, bcClassRef,
-                bcFieldRef, bcMethodRef, bcIMethodRef, bcThisField,
-                bcSuperField, bcThisMethod, bcSuperMethod, bcInitRef,
-                wideByteCodeArray);
+        final OperandManager operandManager = new OperandManager(bcCaseCount, bcCaseValue, bcByte, bcShort, bcLocal,
+            bcLabel, bcIntRef, bcFloatRef, bcLongRef, bcDoubleRef, bcStringRef, bcClassRef, bcFieldRef, bcMethodRef,
+            bcIMethodRef, bcThisField, bcSuperField, bcThisMethod, bcSuperMethod, bcInitRef, wideByteCodeArray);
         operandManager.setSegment(segment);
 
         int i = 0;
-        final ArrayList orderedCodeAttributes = segment.getClassBands()
-                .getOrderedCodeAttributes();
+        final ArrayList orderedCodeAttributes = segment.getClassBands().getOrderedCodeAttributes();
         int codeAttributeIndex = 0;
 
         // Exception table fields
         final int[] handlerCount = segment.getClassBands().getCodeHandlerCount();
-        final int[][] handlerStartPCs = segment.getClassBands()
-                .getCodeHandlerStartP();
+        final int[][] handlerStartPCs = segment.getClassBands().getCodeHandlerStartP();
         final int[][] handlerEndPCs = segment.getClassBands().getCodeHandlerEndPO();
-        final int[][] handlerCatchPCs = segment.getClassBands()
-                .getCodeHandlerCatchPO();
-        final int[][] handlerClassTypes = segment.getClassBands()
-                .getCodeHandlerClassRCN();
+        final int[][] handlerCatchPCs = segment.getClassBands().getCodeHandlerCatchPO();
+        final int[][] handlerClassTypes = segment.getClassBands().getCodeHandlerClassRCN();
 
         final boolean allCodeHasFlags = segment.getSegmentHeader().getOptions().hasAllCodeFlags();
         final boolean[] codeHasFlags = segment.getClassBands().getCodeHasAttributes();
@@ -417,22 +376,17 @@ public class BcBands extends BandSet {
             final int numberOfMethods = methodFlags[c].length;
             for (int m = 0; m < numberOfMethods; m++) {
                 final long methodFlag = methodFlags[c][m];
-                if (!abstractModifier.matches(methodFlag)
-                        && !nativeModifier.matches(methodFlag)) {
+                if (!abstractModifier.matches(methodFlag) && !nativeModifier.matches(methodFlag)) {
                     final int maxStack = codeMaxStack[i];
                     int maxLocal = codeMaxNALocals[i];
-                    if (!staticModifier.matches(methodFlag))
-                     {
+                    if (!staticModifier.matches(methodFlag)) {
                         maxLocal++; // one for 'this' parameter
                     }
                     // I believe this has to take wide arguments into account
-                    maxLocal += SegmentUtils
-                            .countInvokeInterfaceArgs(methodDescr[c][m]);
+                    maxLocal += SegmentUtils.countInvokeInterfaceArgs(methodDescr[c][m]);
                     final String[] cpClass = segment.getCpBands().getCpClass();
-                    operandManager.setCurrentClass(cpClass[segment
-                            .getClassBands().getClassThisInts()[c]]);
-                    operandManager.setSuperClass(cpClass[segment
-                            .getClassBands().getClassSuperInts()[c]]);
+                    operandManager.setCurrentClass(cpClass[segment.getClassBands().getClassThisInts()[c]]);
+                    operandManager.setSuperClass(cpClass[segment.getClassBands().getClassSuperInts()[c]]);
                     final List exceptionTable = new ArrayList();
                     if (handlerCount != null) {
                         for (int j = 0; j < handlerCount[i]; j++) {
@@ -442,27 +396,25 @@ public class BcBands extends BandSet {
                                 // The handlerClass will be null if the
                                 // catch is a finally (that is, the
                                 // exception table catch_type should be 0
-                                cpHandlerClass = segment.getCpBands()
-                                        .cpClassValue(handlerClass);
+                                cpHandlerClass = segment.getCpBands().cpClassValue(handlerClass);
                             }
-                            final ExceptionTableEntry entry = new ExceptionTableEntry(
-                                    handlerStartPCs[i][j], handlerEndPCs[i][j],
-                                    handlerCatchPCs[i][j], cpHandlerClass);
+                            final ExceptionTableEntry entry = new ExceptionTableEntry(handlerStartPCs[i][j],
+                                handlerEndPCs[i][j], handlerCatchPCs[i][j], cpHandlerClass);
                             exceptionTable.add(entry);
                         }
                     }
-                    final CodeAttribute codeAttr = new CodeAttribute(maxStack,
-                            maxLocal, methodByteCodePacked[c][m], segment,
-                            operandManager, exceptionTable);
+                    final CodeAttribute codeAttr = new CodeAttribute(maxStack, maxLocal, methodByteCodePacked[c][m],
+                        segment, operandManager, exceptionTable);
                     final ArrayList methodAttributesList = methodAttributes[c][m];
                     // Make sure we add the code attribute in the right place
                     int indexForCodeAttr = 0;
                     for (int index = 0; index < methodAttributesList.size(); index++) {
                         final Attribute attribute = (Attribute) methodAttributesList.get(index);
-                        if(!(attribute instanceof NewAttribute) || (((NewAttribute)attribute).getLayoutIndex() >= 15)) {
+                        if (!(attribute instanceof NewAttribute)
+                            || (((NewAttribute) attribute).getLayoutIndex() >= 15)) {
                             break;
                         }
-                        indexForCodeAttr ++;
+                        indexForCodeAttr++;
                     }
                     methodAttributesList.add(indexForCodeAttr, codeAttr);
                     codeAttr.renumber(codeAttr.byteCodeOffsets);
@@ -470,20 +422,17 @@ public class BcBands extends BandSet {
                     if (allCodeHasFlags) {
                         currentAttributes = (List) orderedCodeAttributes.get(i);
                     } else if (codeHasFlags[i]) {
-                        currentAttributes = (List) orderedCodeAttributes
-                                .get(codeAttributeIndex);
+                        currentAttributes = (List) orderedCodeAttributes.get(codeAttributeIndex);
                         codeAttributeIndex++;
                     } else {
                         currentAttributes = Collections.EMPTY_LIST;
                     }
                     for (int index = 0; index < currentAttributes.size(); index++) {
-                        final Attribute currentAttribute = (Attribute) currentAttributes
-                                .get(index);
+                        final Attribute currentAttribute = (Attribute) currentAttributes.get(index);
                         codeAttr.addAttribute(currentAttribute);
                         // Fix up the line numbers if needed
                         if (currentAttribute.hasBCIRenumbering()) {
-                            ((BCIRenumberedAttribute) currentAttribute)
-                                    .renumber(codeAttr.byteCodeOffsets);
+                            ((BCIRenumberedAttribute) currentAttribute).renumber(codeAttr.byteCodeOffsets);
                         }
                     }
                     i++;
@@ -493,8 +442,7 @@ public class BcBands extends BandSet {
     }
 
     private boolean startsWithIf(final int codePacked) {
-        return (codePacked >= 153 && codePacked <= 166) || (codePacked == 198)
-                || (codePacked == 199);
+        return (codePacked >= 153 && codePacked <= 166) || (codePacked == 198) || (codePacked == 199);
     }
 
     private boolean endsWithLoad(final int codePacked) {

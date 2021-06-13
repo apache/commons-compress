@@ -64,14 +64,11 @@ public class IcBands extends BandSet {
     public void read(final InputStream in) throws IOException, Pack200Exception {
         // Read IC bands
         final int innerClassCount = header.getInnerClassCount();
-        final int[] icThisClassInts = decodeBandInt("ic_this_class", in,
-                Codec.UDELTA5, innerClassCount);
+        final int[] icThisClassInts = decodeBandInt("ic_this_class", in, Codec.UDELTA5, innerClassCount);
         final String[] icThisClass = getReferences(icThisClassInts, cpClass);
-        final int[] icFlags = decodeBandInt("ic_flags", in, Codec.UNSIGNED5,
-                innerClassCount);
+        final int[] icFlags = decodeBandInt("ic_flags", in, Codec.UNSIGNED5, innerClassCount);
         final int outerClasses = SegmentUtils.countBit16(icFlags);
-        final int[] icOuterClassInts = decodeBandInt("ic_outer_class", in,
-                Codec.DELTA5, outerClasses);
+        final int[] icOuterClassInts = decodeBandInt("ic_outer_class", in, Codec.DELTA5, outerClasses);
         final String[] icOuterClass = new String[outerClasses];
         for (int i = 0; i < icOuterClass.length; i++) {
             if (icOuterClassInts[i] == 0) {
@@ -80,8 +77,7 @@ public class IcBands extends BandSet {
                 icOuterClass[i] = cpClass[icOuterClassInts[i] - 1];
             }
         }
-        final int[] icNameInts = decodeBandInt("ic_name", in, Codec.DELTA5,
-                outerClasses);
+        final int[] icNameInts = decodeBandInt("ic_name", in, Codec.DELTA5, outerClasses);
         final String[] icName = new String[outerClasses];
         for (int i = 0; i < icName.length; i++) {
             if (icNameInts[i] == 0) {
@@ -115,53 +111,49 @@ public class IcBands extends BandSet {
 
     @Override
     public void unpack() throws IOException, Pack200Exception {
-    	final IcTuple[] allTuples = getIcTuples();
-    	thisClassToTuple = new HashMap(allTuples.length);
-    	outerClassToTuples = new HashMap(allTuples.length);
-    	for(int index = 0; index < allTuples.length; index++) {
+        final IcTuple[] allTuples = getIcTuples();
+        thisClassToTuple = new HashMap(allTuples.length);
+        outerClassToTuples = new HashMap(allTuples.length);
+        for (int index = 0; index < allTuples.length; index++) {
 
-    		final IcTuple tuple = allTuples[index];
+            final IcTuple tuple = allTuples[index];
 
-    		// generate mapping thisClassString -> IcTuple
-    		//  presumably this relation is 1:1
-    		//
-    		final Object result = thisClassToTuple.put(tuple.thisClassString(), tuple);
-    		if (result != null) {
-    			throw new Error("Collision detected in <thisClassString, IcTuple> mapping. " +
-    					"There are at least two inner clases with the same name.");
-    		}
+            // generate mapping thisClassString -> IcTuple
+            // presumably this relation is 1:1
+            //
+            final Object result = thisClassToTuple.put(tuple.thisClassString(), tuple);
+            if (result != null) {
+                throw new Error("Collision detected in <thisClassString, IcTuple> mapping. "
+                    + "There are at least two inner clases with the same name.");
+            }
 
-    		// generate mapping outerClassString -> IcTuple
-    		//  this relation is 1:M
+            // generate mapping outerClassString -> IcTuple
+            // this relation is 1:M
 
             // If it's not anon and the outer is not anon, it could be relevant
-    		if ( (!tuple.isAnonymous() && !tuple.outerIsAnonymous()) || (tuple.nestedExplicitFlagSet()) ) {
+            if ((!tuple.isAnonymous() && !tuple.outerIsAnonymous()) || (tuple.nestedExplicitFlagSet())) {
 
-    			// add tuple to corresponding bucket
-    			final String key = tuple.outerClassString();
-    			List bucket = (List)outerClassToTuples.get(key);
-    			if (bucket == null) {
-    				bucket = new ArrayList();
-    				outerClassToTuples.put(key, bucket);
-    			}
-    			bucket.add(tuple);
-    		}
-    	}
+                // add tuple to corresponding bucket
+                final String key = tuple.outerClassString();
+                List bucket = (List) outerClassToTuples.get(key);
+                if (bucket == null) {
+                    bucket = new ArrayList();
+                    outerClassToTuples.put(key, bucket);
+                }
+                bucket.add(tuple);
+            }
+        }
     }
-
 
     public IcTuple[] getIcTuples() {
         return icAll;
     }
 
     /**
-     * Answer the relevant IcTuples for the specified className and class
-     * constant pool.
+     * Answer the relevant IcTuples for the specified className and class constant pool.
      *
-     * @param className
-     *            String name of the class X for ic_relevant(X)
-     * @param cp
-     *            ClassConstantPool used to generate ic_relevant(X)
+     * @param className String name of the class X for ic_relevant(X)
+     * @param cp ClassConstantPool used to generate ic_relevant(X)
      * @return array of IcTuple
      */
     public IcTuple[] getRelevantIcTuples(final String className, final ClassConstantPool cp) {
@@ -169,13 +161,13 @@ public class IcBands extends BandSet {
         final List relevantTuples = new ArrayList();
 
         final List relevantCandidates = (List) outerClassToTuples.get(className);
-		if (relevantCandidates != null) {
-			for (int index = 0; index < relevantCandidates.size(); index++) {
-				final IcTuple tuple = (IcTuple) relevantCandidates.get(index);
-				relevantTuplesContains.add(tuple);
-				relevantTuples.add(tuple);
-			}
-		}
+        if (relevantCandidates != null) {
+            for (int index = 0; index < relevantCandidates.size(); index++) {
+                final IcTuple tuple = (IcTuple) relevantCandidates.get(index);
+                relevantTuplesContains.add(tuple);
+                relevantTuples.add(tuple);
+            }
+        }
 
         final List entries = cp.entries();
 
@@ -183,16 +175,16 @@ public class IcBands extends BandSet {
         // add it to ic_relevant. Repeat until no more
         // changes to ic_relevant.
 
-		for (int eIndex = 0; eIndex < entries.size(); eIndex++) {
-			final ConstantPoolEntry entry = (ConstantPoolEntry) entries.get(eIndex);
-			if (entry instanceof CPClass) {
-				final CPClass clazz = (CPClass) entry;
-				final IcTuple relevant = (IcTuple) thisClassToTuple.get(clazz.name);
-				if (relevant != null && relevantTuplesContains.add(relevant)) {
-					relevantTuples.add(relevant);
-				}
-			}
-		}
+        for (int eIndex = 0; eIndex < entries.size(); eIndex++) {
+            final ConstantPoolEntry entry = (ConstantPoolEntry) entries.get(eIndex);
+            if (entry instanceof CPClass) {
+                final CPClass clazz = (CPClass) entry;
+                final IcTuple relevant = (IcTuple) thisClassToTuple.get(clazz.name);
+                if (relevant != null && relevantTuplesContains.add(relevant)) {
+                    relevantTuples.add(relevant);
+                }
+            }
+        }
 
         // Not part of spec: fix up by adding to relevantTuples the parents
         // of inner classes which are themselves inner classes.
@@ -200,45 +192,44 @@ public class IcBands extends BandSet {
         // added
         // as well.
 
-		final ArrayList tuplesToScan = new ArrayList(relevantTuples);
-		final ArrayList tuplesToAdd = new ArrayList();
+        final ArrayList tuplesToScan = new ArrayList(relevantTuples);
+        final ArrayList tuplesToAdd = new ArrayList();
 
-		while (tuplesToScan.size() > 0) {
+        while (tuplesToScan.size() > 0) {
 
-			tuplesToAdd.clear();
-			for (int index = 0; index < tuplesToScan.size(); index++) {
-				final IcTuple aRelevantTuple = (IcTuple) tuplesToScan.get(index);
-				final IcTuple relevant = (IcTuple) thisClassToTuple
-						.get(aRelevantTuple.outerClassString());
-				if (relevant != null && !aRelevantTuple.outerIsAnonymous()) {
-					tuplesToAdd.add(relevant);
-				}
-			}
+            tuplesToAdd.clear();
+            for (int index = 0; index < tuplesToScan.size(); index++) {
+                final IcTuple aRelevantTuple = (IcTuple) tuplesToScan.get(index);
+                final IcTuple relevant = (IcTuple) thisClassToTuple.get(aRelevantTuple.outerClassString());
+                if (relevant != null && !aRelevantTuple.outerIsAnonymous()) {
+                    tuplesToAdd.add(relevant);
+                }
+            }
 
-			tuplesToScan.clear();
-			for (int index = 0; index < tuplesToAdd.size(); index++) {
-				final IcTuple tuple = (IcTuple) tuplesToAdd.get(index);
-				if (relevantTuplesContains.add(tuple)) {
-					relevantTuples.add(tuple);
-					tuplesToScan.add(tuple);
-				}
-			}
+            tuplesToScan.clear();
+            for (int index = 0; index < tuplesToAdd.size(); index++) {
+                final IcTuple tuple = (IcTuple) tuplesToAdd.get(index);
+                if (relevantTuplesContains.add(tuple)) {
+                    relevantTuples.add(tuple);
+                    tuplesToScan.add(tuple);
+                }
+            }
 
-		}
+        }
 
         // End not part of the spec. Ugh.
 
         // Now order the result as a subsequence of ic_all
-		Collections.sort(relevantTuples, (arg0, arg1) -> {
-        	final Integer index1 = Integer.valueOf(((IcTuple)arg0).getTupleIndex());
-        	final Integer index2 = Integer.valueOf(((IcTuple)arg1).getTupleIndex());
-        	return index1.compareTo(index2);
+        Collections.sort(relevantTuples, (arg0, arg1) -> {
+            final Integer index1 = Integer.valueOf(((IcTuple) arg0).getTupleIndex());
+            final Integer index2 = Integer.valueOf(((IcTuple) arg1).getTupleIndex());
+            return index1.compareTo(index2);
         });
 
-		final IcTuple[] relevantTuplesArray = new IcTuple[relevantTuples.size()];
-		for(int i = 0; i < relevantTuplesArray.length; i++) {
-			relevantTuplesArray[i] = (IcTuple)relevantTuples.get(i);
-		}
+        final IcTuple[] relevantTuplesArray = new IcTuple[relevantTuples.size()];
+        for (int i = 0; i < relevantTuplesArray.length; i++) {
+            relevantTuplesArray[i] = (IcTuple) relevantTuples.get(i);
+        }
 
         return relevantTuplesArray;
     }

@@ -29,7 +29,7 @@ public class CPDouble extends CPConstant {
 
     @Override
     public int compareTo(final Object obj) {
-        return Double.compare(theDouble, ((CPDouble)obj).theDouble);
+        return Double.compare(theDouble, ((CPDouble) obj).theDouble);
     }
 
     public double getDouble() {

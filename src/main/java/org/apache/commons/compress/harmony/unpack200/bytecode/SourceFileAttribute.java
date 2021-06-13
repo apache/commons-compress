@@ -76,7 +76,7 @@ public class SourceFileAttribute extends Attribute {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] { getAttributeName(), name };
+        return new ClassFileEntry[] {getAttributeName(), name};
     }
 
     @Override

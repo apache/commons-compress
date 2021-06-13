@@ -44,7 +44,8 @@ public class IcTuple {
      * @param nIndex the index of N in cpUTF8, or -1 if N is null
      * @param tIndex TODO
      */
-    public IcTuple(final String C, final int F, final String C2, final String N, final int cIndex, final int c2Index, final int nIndex, final int tIndex) {
+    public IcTuple(final String C, final int F, final String C2, final String N, final int cIndex, final int c2Index,
+        final int nIndex, final int tIndex) {
         this.C = C;
         this.F = F;
         this.C2 = C2;
@@ -80,20 +81,19 @@ public class IcTuple {
     private int cachedSimpleClassNameIndex = -1;
 
     /**
-     * Answer true if the receiver is predicted; answer false if the receiver is
-     * specified explicitly in the outer and name fields.
+     * Answer true if the receiver is predicted; answer false if the receiver is specified explicitly in the outer and
+     * name fields.
      *
-     * @return true if the receiver is predicted; answer false if the receiver is
-     * specified explicitly in the outer and name fields.
+     * @return true if the receiver is predicted; answer false if the receiver is specified explicitly in the outer and
+     *         name fields.
      */
     public boolean predicted() {
         return predictOuter || predictSimple;
     }
 
-
     /**
-     * Answer true if the receiver's bit 16 is set (indicating
-     * that explicit outer class and name fields are set).
+     * Answer true if the receiver's bit 16 is set (indicating that explicit outer class and name fields are set).
+     * 
      * @return boolean
      */
     public boolean nestedExplicitFlagSet() {
@@ -102,6 +102,7 @@ public class IcTuple {
 
     /**
      * Break the receiver into components at $ boundaries.
+     * 
      * @param className TODO
      * @return TODO
      */
@@ -128,8 +129,7 @@ public class IcTuple {
     }
 
     /**
-     * Answer the outer class name for the receiver. This may either be
-     * specified or inferred from inner class name.
+     * Answer the outer class name for the receiver. This may either be specified or inferred from inner class name.
      *
      * @return String name of outer class
      */
@@ -147,8 +147,7 @@ public class IcTuple {
     }
 
     /**
-     * Answer the full name of the inner class represented by this tuple
-     * (including its outer component)
+     * Answer the full name of the inner class represented by this tuple (including its outer component)
      *
      * @return String full name of inner class
      */
@@ -169,7 +168,6 @@ public class IcTuple {
         return anonymous;
     }
 
-
     public boolean outerIsAnonymous() {
         return outerIsAnonymous;
     }
@@ -177,8 +175,7 @@ public class IcTuple {
     private boolean computeOuterIsAnonymous() {
         final String[] result = innerBreakAtDollar(cachedOuterClassString);
         if (result.length == 0) {
-            throw new Error(
-                    "Should have an outer before checking if it's anonymous");
+            throw new Error("Should have an outer before checking if it's anonymous");
         }
 
         for (int index = 0; index < result.length; index++) {
@@ -316,9 +313,15 @@ public class IcTuple {
     private void generateHashCode() {
         hashcodeComputed = true;
         cachedHashCode = 17;
-        if(C != null) { cachedHashCode =+ C.hashCode(); }
-        if(C2 != null) { cachedHashCode =+ C2.hashCode(); }
-        if(N != null) { cachedHashCode =+ N.hashCode(); }
+        if (C != null) {
+            cachedHashCode = +C.hashCode();
+        }
+        if (C2 != null) {
+            cachedHashCode = +C2.hashCode();
+        }
+        if (N != null) {
+            cachedHashCode = +N.hashCode();
+        }
     }
 
     @Override
@@ -346,11 +349,11 @@ public class IcTuple {
     }
 
     public int getTupleIndex() {
-    	return tIndex;
+        return tIndex;
     }
 
     public int thisClassIndex() {
-        if(predicted()) {
+        if (predicted()) {
             return cIndex;
         }
         return -1;

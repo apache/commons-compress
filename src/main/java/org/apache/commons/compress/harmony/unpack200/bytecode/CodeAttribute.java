@@ -35,8 +35,8 @@ public class CodeAttribute extends BCIRenumberedAttribute {
     public int maxStack;
     private static CPUTF8 attributeName;
 
-    public CodeAttribute(final int maxStack, final int maxLocals, final byte codePacked[],
-            final Segment segment, final OperandManager operandManager, final List exceptionTable) {
+    public CodeAttribute(final int maxStack, final int maxLocals, final byte codePacked[], final Segment segment,
+        final OperandManager operandManager, final List exceptionTable) {
         super(attributeName);
         this.maxLocals = maxLocals;
         this.maxStack = maxStack;
@@ -53,8 +53,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
             byteCode.extractOperands(operandManager, segment, codeLength);
             byteCodes.add(byteCode);
             codeLength += byteCode.getLength();
-            final int lastBytecodePosition = ((Integer) byteCodeOffsets
-                    .get(byteCodeOffsets.size() - 1)).intValue();
+            final int lastBytecodePosition = ((Integer) byteCodeOffsets.get(byteCodeOffsets.size() - 1)).intValue();
             // This code assumes all multiple byte bytecodes are
             // replaced by a single-byte bytecode followed by
             // another bytecode.
@@ -66,8 +65,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
             // entering this loop, so make sure I don't add one
             // after the last element.
             if (i < (codePacked.length - 1)) {
-                byteCodeOffsets.add(Integer.valueOf(lastBytecodePosition
-                        + byteCode.getLength()));
+                byteCodeOffsets.add(Integer.valueOf(lastBytecodePosition + byteCode.getLength()));
             }
             if (byteCode.getOpcode() == 0xC4) {
                 // Special processing for wide bytecode - it knows what its
@@ -89,12 +87,11 @@ public class CodeAttribute extends BCIRenumberedAttribute {
     @Override
     protected int getLength() {
         int attributesSize = 0;
-        for(int it = 0; it < attributes.size(); it++) {
+        for (int it = 0; it < attributes.size(); it++) {
             final Attribute attribute = (Attribute) attributes.get(it);
             attributesSize += attribute.getLengthIncludingHeader();
         }
-        return 2 + 2 + 4 + codeLength + 2 + exceptionTable.size()
-                * (2 + 2 + 2 + 2) + 2 + attributesSize;
+        return 2 + 2 + 4 + codeLength + 2 + exceptionTable.size() * (2 + 2 + 2 + 2) + 2 + attributesSize;
     }
 
     @Override
@@ -104,7 +101,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
         nestedEntries.addAll(byteCodes);
         nestedEntries.addAll(attributes);
         // Don't forget to add the ExceptionTable catch_types
-        for(int iter = 0; iter < exceptionTable.size(); iter++) {
+        for (int iter = 0; iter < exceptionTable.size(); iter++) {
             final ExceptionTableEntry entry = (ExceptionTableEntry) exceptionTable.get(iter);
             final CPClass catchType = entry.getCatchType();
             // If the catch type is null, this is a finally
@@ -114,8 +111,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
                 nestedEntries.add(catchType);
             }
         }
-        final ClassFileEntry[] nestedEntryArray = new ClassFileEntry[nestedEntries
-                .size()];
+        final ClassFileEntry[] nestedEntryArray = new ClassFileEntry[nestedEntries.size()];
         nestedEntries.toArray(nestedEntryArray);
         return nestedEntryArray;
     }
@@ -123,17 +119,17 @@ public class CodeAttribute extends BCIRenumberedAttribute {
     @Override
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
-        for(int it = 0; it < attributes.size(); it++) {
+        for (int it = 0; it < attributes.size(); it++) {
             final Attribute attribute = (Attribute) attributes.get(it);
             attribute.resolve(pool);
         }
 
-        for(int it = 0; it < byteCodes.size(); it++) {
+        for (int it = 0; it < byteCodes.size(); it++) {
             final ByteCode byteCode = (ByteCode) byteCodes.get(it);
             byteCode.resolve(pool);
         }
 
-        for(int it = 0; it < exceptionTable.size(); it++) {
+        for (int it = 0; it < exceptionTable.size(); it++) {
             final ExceptionTableEntry entry = (ExceptionTableEntry) exceptionTable.get(it);
             entry.resolve(pool);
         }
@@ -150,19 +146,19 @@ public class CodeAttribute extends BCIRenumberedAttribute {
         dos.writeShort(maxLocals);
 
         dos.writeInt(codeLength);
-        for(int it = 0; it < byteCodes.size(); it++) {
+        for (int it = 0; it < byteCodes.size(); it++) {
             final ByteCode byteCode = (ByteCode) byteCodes.get(it);
             byteCode.write(dos);
         }
 
         dos.writeShort(exceptionTable.size());
-        for(int it = 0; it < exceptionTable.size(); it++) {
+        for (int it = 0; it < exceptionTable.size(); it++) {
             final ExceptionTableEntry entry = (ExceptionTableEntry) exceptionTable.get(it);
             entry.write(dos);
         }
 
         dos.writeShort(attributes.size());
-        for(int it = 0; it < attributes.size(); it++) {
+        for (int it = 0; it < attributes.size(); it++) {
             final Attribute attribute = (Attribute) attributes.get(it);
             attribute.write(dos);
         }
@@ -170,11 +166,11 @@ public class CodeAttribute extends BCIRenumberedAttribute {
 
     public void addAttribute(final Attribute attribute) {
         attributes.add(attribute);
-        if(attribute instanceof LocalVariableTableAttribute) {
-            ((LocalVariableTableAttribute)attribute).setCodeLength(codeLength);
+        if (attribute instanceof LocalVariableTableAttribute) {
+            ((LocalVariableTableAttribute) attribute).setCodeLength(codeLength);
         }
-        if(attribute instanceof LocalVariableTypeTableAttribute) {
-            ((LocalVariableTypeTableAttribute)attribute).setCodeLength(codeLength);
+        if (attribute instanceof LocalVariableTypeTableAttribute) {
+            ((LocalVariableTypeTableAttribute) attribute).setCodeLength(codeLength);
         }
     }
 
@@ -186,7 +182,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
 
     @Override
     public void renumber(final List byteCodeOffsets) {
-        for(int iter = 0; iter < exceptionTable.size(); iter++) {
+        for (int iter = 0; iter < exceptionTable.size(); iter++) {
             final ExceptionTableEntry entry = (ExceptionTableEntry) exceptionTable.get(iter);
             entry.renumber(byteCodeOffsets);
         }

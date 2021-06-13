@@ -29,7 +29,7 @@ public class CPUTF8 extends ConstantPoolEntry implements Comparable {
 
     @Override
     public int compareTo(final Object arg0) {
-        return string.compareTo(((CPUTF8)arg0).string);
+        return string.compareTo(((CPUTF8) arg0).string);
     }
 
     @Override

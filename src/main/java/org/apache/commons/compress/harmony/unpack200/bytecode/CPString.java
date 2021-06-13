@@ -55,7 +55,7 @@ public class CPString extends CPConstant {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] { name };
+        return new ClassFileEntry[] {name};
     }
 
     private boolean hashcodeComputed;

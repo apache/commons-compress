@@ -23,12 +23,10 @@ import java.util.jar.JarInputStream;
 
 import org.apache.commons.compress.java.util.jar.Pack200.Packer;
 
-
 /**
- * This class provides the binding between the standard Pack200 interface and the
- * internal interface for (un)packing. As this uses generics for the SortedMap,
- * this class must be compiled and run on a Java 1.5 system. However, Java 1.5
- * is not necessary to use the internal libraries for unpacking.
+ * This class provides the binding between the standard Pack200 interface and the internal interface for (un)packing. As
+ * this uses generics for the SortedMap, this class must be compiled and run on a Java 1.5 system. However, Java 1.5 is
+ * not necessary to use the internal libraries for unpacking.
  */
 public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
 
@@ -37,8 +35,7 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
     @Override
     public void pack(final JarFile file, final OutputStream out) throws IOException {
         if (file == null || out == null) {
-            throw new IllegalArgumentException(
-                    "Must specify both input and output streams");
+            throw new IllegalArgumentException("Must specify both input and output streams");
         }
         completed(0);
         try {
@@ -52,8 +49,7 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
     @Override
     public void pack(final JarInputStream in, final OutputStream out) throws IOException {
         if (in == null || out == null) {
-            throw new IllegalArgumentException(
-                    "Must specify both input and output streams");
+            throw new IllegalArgumentException("Must specify both input and output streams");
         }
         completed(0);
         final PackingOptions options = new PackingOptions();
@@ -68,39 +64,38 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
     }
 
     @Override
-    protected void firePropertyChange(final String propertyName, final Object oldValue,
-            final Object newValue) {
+    protected void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) {
         super.firePropertyChange(propertyName, oldValue, newValue);
-        if(newValue != null && !newValue.equals(oldValue)) {
+        if (newValue != null && !newValue.equals(oldValue)) {
             if (propertyName.startsWith(CLASS_ATTRIBUTE_PFX)) {
                 final String attributeName = propertyName.substring(CLASS_ATTRIBUTE_PFX.length());
-                options.addClassAttributeAction(attributeName, (String)newValue);
+                options.addClassAttributeAction(attributeName, (String) newValue);
             } else if (propertyName.startsWith(CODE_ATTRIBUTE_PFX)) {
                 final String attributeName = propertyName.substring(CODE_ATTRIBUTE_PFX.length());
-                options.addCodeAttributeAction(attributeName, (String)newValue);
+                options.addCodeAttributeAction(attributeName, (String) newValue);
             } else if (propertyName.equals(DEFLATE_HINT)) {
                 options.setDeflateHint((String) newValue);
             } else if (propertyName.equals(EFFORT)) {
-                options.setEffort(Integer.parseInt((String)newValue));
+                options.setEffort(Integer.parseInt((String) newValue));
             } else if (propertyName.startsWith(FIELD_ATTRIBUTE_PFX)) {
                 final String attributeName = propertyName.substring(FIELD_ATTRIBUTE_PFX.length());
-                options.addFieldAttributeAction(attributeName, (String)newValue);
+                options.addFieldAttributeAction(attributeName, (String) newValue);
             } else if (propertyName.equals(KEEP_FILE_ORDER)) {
-                options.setKeepFileOrder(Boolean.parseBoolean((String)newValue));
+                options.setKeepFileOrder(Boolean.parseBoolean((String) newValue));
             } else if (propertyName.startsWith(METHOD_ATTRIBUTE_PFX)) {
                 final String attributeName = propertyName.substring(METHOD_ATTRIBUTE_PFX.length());
-                options.addMethodAttributeAction(attributeName, (String)newValue);
+                options.addMethodAttributeAction(attributeName, (String) newValue);
             } else if (propertyName.equals(MODIFICATION_TIME)) {
-                options.setModificationTime((String)newValue);
+                options.setModificationTime((String) newValue);
             } else if (propertyName.startsWith(PASS_FILE_PFX)) {
-                if(oldValue != null && !oldValue.equals("")) {
-                    options.removePassFile((String)oldValue);
+                if (oldValue != null && !oldValue.equals("")) {
+                    options.removePassFile((String) oldValue);
                 }
                 options.addPassFile((String) newValue);
             } else if (propertyName.equals(SEGMENT_LIMIT)) {
-                options.setSegmentLimit(Long.parseLong((String)newValue));
+                options.setSegmentLimit(Long.parseLong((String) newValue));
             } else if (propertyName.equals(UNKNOWN_ATTRIBUTE)) {
-                options.setUnknownAttributeAction((String)newValue);
+                options.setUnknownAttributeAction((String) newValue);
             }
         }
     }

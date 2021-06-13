@@ -50,7 +50,7 @@ public class SignatureAttribute extends Attribute {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] { getAttributeName(), signature };
+        return new ClassFileEntry[] {getAttributeName(), signature};
     }
 
     @Override

@@ -20,8 +20,7 @@ import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * This class implements the byte code form for those bytecodes which have field
- * references (and only field references).
+ * This class implements the byte code form for those bytecodes which have field references (and only field references).
  */
 public class FieldRefForm extends ReferenceForm {
 

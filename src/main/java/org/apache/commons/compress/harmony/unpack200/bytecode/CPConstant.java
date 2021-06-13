@@ -17,8 +17,7 @@
 package org.apache.commons.compress.harmony.unpack200.bytecode;
 
 /**
- * Abstract superclass for constant pool constant entries such as numbers or
- * Strings
+ * Abstract superclass for constant pool constant entries such as numbers or Strings
  */
 public abstract class CPConstant extends ConstantPoolEntry {
 
@@ -29,10 +28,8 @@ public abstract class CPConstant extends ConstantPoolEntry {
      *
      * @param tag TODO
      * @param value TODO
-     * @param globalIndex
-     *            index in CpBands
-     * @throws NullPointerException
-     *             if value is null
+     * @param globalIndex index in CpBands
+     * @throws NullPointerException if value is null
      */
     public CPConstant(final byte tag, final Object value, final int globalIndex) {
         super(tag, globalIndex);

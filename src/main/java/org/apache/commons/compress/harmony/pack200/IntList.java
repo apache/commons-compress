@@ -19,9 +19,8 @@ package org.apache.commons.compress.harmony.pack200;
 import java.util.Arrays;
 
 /**
- * IntList is based on <code>java.util.ArrayList</code>, but is written
- * specifically for ints in order to reduce boxing and unboxing to Integers,
- * reduce the memory required and improve performance of pack200.
+ * IntList is based on <code>java.util.ArrayList</code>, but is written specifically for ints in order to reduce boxing
+ * and unboxing to Integers, reduce the memory required and improve performance of pack200.
  */
 public class IntList {
 
@@ -40,8 +39,7 @@ public class IntList {
     /**
      * Constructs a new instance of IntList with the specified capacity.
      *
-     * @param capacity
-     *            the initial capacity of this IntList
+     * @param capacity the initial capacity of this IntList
      */
     public IntList(final int capacity) {
         if (capacity < 0) {
@@ -54,8 +52,7 @@ public class IntList {
     /**
      * Adds the specified object at the end of this IntList.
      *
-     * @param object
-     *            the object to add
+     * @param object the object to add
      * @return true
      */
     public boolean add(final int object) {
@@ -72,14 +69,11 @@ public class IntList {
         if (0 < location && location < size) {
             if (firstIndex == 0 && lastIndex == array.length) {
                 growForInsert(location, 1);
-            } else if ((location < size / 2 && firstIndex > 0)
-                    || lastIndex == array.length) {
-                System.arraycopy(array, firstIndex, array, --firstIndex,
-                        location);
+            } else if ((location < size / 2 && firstIndex > 0) || lastIndex == array.length) {
+                System.arraycopy(array, firstIndex, array, --firstIndex, location);
             } else {
                 final int index = location + firstIndex;
-                System.arraycopy(array, index, array, index + 1, size
-                        - location);
+                System.arraycopy(array, index, array, index + 1, size - location);
                 lastIndex++;
             }
             array[location + firstIndex] = object;
@@ -161,8 +155,7 @@ public class IntList {
             }
             final int[] newArray = new int[size + increment];
             if (size > 0) {
-                System.arraycopy(array, firstIndex, newArray, newArray.length
-                        - size, size);
+                System.arraycopy(array, firstIndex, newArray, newArray.length - size, size);
             }
             firstIndex = newArray.length - size;
             lastIndex = newArray.length;
@@ -183,8 +176,7 @@ public class IntList {
         final int newFirst = increment - required;
         // Copy elements after location to the new array skipping inserted
         // elements
-        System.arraycopy(array, location + firstIndex, newArray, newFirst
-                + location + required, size - location);
+        System.arraycopy(array, location + firstIndex, newArray, newFirst + location + required, size - location);
         // Copy elements before location to the new array from firstIndex
         System.arraycopy(array, firstIndex, newArray, newFirst, location);
         firstIndex = newFirst;
@@ -220,12 +212,10 @@ public class IntList {
             final int elementIndex = firstIndex + location;
             result = array[elementIndex];
             if (location < size / 2) {
-                System.arraycopy(array, firstIndex, array, firstIndex + 1,
-                        location);
+                System.arraycopy(array, firstIndex, array, firstIndex + 1, location);
                 array[firstIndex++] = 0;
             } else {
-                System.arraycopy(array, elementIndex + 1, array,
-                        elementIndex, size - location - 1);
+                System.arraycopy(array, elementIndex + 1, array, elementIndex, size - location - 1);
                 array[--lastIndex] = 0;
             }
         }

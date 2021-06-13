@@ -23,11 +23,10 @@ import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 
 /**
- * Parses the file band headers (not including the actual bits themselves). At
- * the end of this parse call, the input stream will be positioned at the start
- * of the file_bits themselves, and there will be Sum(file_size) bits remaining
- * in the stream with BYTE1 compression. A decent implementation will probably
- * just stream the bytes out to the reconstituted Jar rather than caching them.
+ * Parses the file band headers (not including the actual bits themselves). At the end of this parse call, the input
+ * stream will be positioned at the start of the file_bits themselves, and there will be Sum(file_size) bits remaining
+ * in the stream with BYTE1 compression. A decent implementation will probably just stream the bytes out to the
+ * reconstituted Jar rather than caching them.
  */
 public class FileBands extends BandSet {
 
@@ -63,19 +62,15 @@ public class FileBands extends BandSet {
         final int numberOfFiles = header.getNumberOfFiles();
         final SegmentOptions options = header.getOptions();
 
-        fileName = parseReferences("file_name", in, Codec.UNSIGNED5,
-                numberOfFiles, cpUTF8);
-        fileSize = parseFlags("file_size", in, numberOfFiles, Codec.UNSIGNED5,
-                options.hasFileSizeHi());
+        fileName = parseReferences("file_name", in, Codec.UNSIGNED5, numberOfFiles, cpUTF8);
+        fileSize = parseFlags("file_size", in, numberOfFiles, Codec.UNSIGNED5, options.hasFileSizeHi());
         if (options.hasFileModtime()) {
-            fileModtime = decodeBandInt("file_modtime", in, Codec.DELTA5,
-                    numberOfFiles);
+            fileModtime = decodeBandInt("file_modtime", in, Codec.DELTA5, numberOfFiles);
         } else {
             fileModtime = new int[numberOfFiles];
         }
         if (options.hasFileOptions()) {
-            fileOptions = decodeBandInt("file_options", in, Codec.UNSIGNED5,
-                    numberOfFiles);
+            fileOptions = decodeBandInt("file_options", in, Codec.UNSIGNED5, numberOfFiles);
         } else {
             fileOptions = new int[numberOfFiles];
         }
@@ -95,8 +90,7 @@ public class FileBands extends BandSet {
             fileBits[i] = new byte[size];
             final int read = in.read(fileBits[i]);
             if (size != 0 && read < size) {
-                throw new Pack200Exception("Expected to read " + size
-                        + " bytes but read " + read);
+                throw new Pack200Exception("Expected to read " + size + " bytes but read " + read);
             }
         }
     }

@@ -31,7 +31,7 @@ public class CPString extends CPConstant {
 
     @Override
     public int compareTo(final Object arg0) {
-        return string.compareTo(((CPString)arg0).string);
+        return string.compareTo(((CPString) arg0).string);
     }
 
     @Override

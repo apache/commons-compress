@@ -20,8 +20,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
- * Abstract superclass for reference constant pool entries, such as a method or
- * field reference.
+ * Abstract superclass for reference constant pool entries, such as a method or field reference.
  */
 public abstract class CPRef extends ConstantPoolEntry {
 
@@ -37,10 +36,8 @@ public abstract class CPRef extends ConstantPoolEntry {
      * @param type TODO
      * @param className TODO
      * @param descriptor TODO
-     * @param globalIndex
-     *            index in CpBands
-     * @throws NullPointerException
-     *             if descriptor or className is null
+     * @param globalIndex index in CpBands
+     * @throws NullPointerException if descriptor or className is null
      */
     public CPRef(final byte type, final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
         super(type, globalIndex);

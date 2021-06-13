@@ -22,8 +22,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPInterfaceMethodR
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * This class implements the byte code form for those bytecodes which have
- * IMethod references (and only IMethod references).
+ * This class implements the byte code form for those bytecodes which have IMethod references (and only IMethod
+ * references).
  */
 public class IMethodRefForm extends ReferenceForm {
 
@@ -44,16 +44,17 @@ public class IMethodRefForm extends ReferenceForm {
     /*
      * (non-Javadoc)
      *
-     * @see org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#setByteCodeOperands(org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode,
-     *      org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
-     *      org.apache.commons.compress.harmony.unpack200.Segment)
+     * @see
+     * org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#setByteCodeOperands(org.apache.commons.
+     * compress.harmony.unpack200.bytecode.ByteCode,
+     * org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
+     * org.apache.commons.compress.harmony.unpack200.Segment)
      */
     @Override
-    public void setByteCodeOperands(final ByteCode byteCode,
-            final OperandManager operandManager, final int codeLength) {
+    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager,
+        final int codeLength) {
         super.setByteCodeOperands(byteCode, operandManager, codeLength);
-        final int count = ((CPInterfaceMethodRef) byteCode
-                .getNestedClassFileEntries()[0]).invokeInterfaceCount();
+        final int count = ((CPInterfaceMethodRef) byteCode.getNestedClassFileEntries()[0]).invokeInterfaceCount();
         byteCode.getRewrite()[3] = count;
     }
 }

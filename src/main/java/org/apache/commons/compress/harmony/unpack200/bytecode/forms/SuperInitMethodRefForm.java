@@ -17,8 +17,7 @@
 package org.apache.commons.compress.harmony.unpack200.bytecode.forms;
 
 /**
- * This class is used to determine which init method should be called, based on
- * the last superclass reference.
+ * This class is used to determine which init method should be called, based on the last superclass reference.
  */
 public class SuperInitMethodRefForm extends InitMethodReferenceForm {
 
@@ -28,7 +27,7 @@ public class SuperInitMethodRefForm extends InitMethodReferenceForm {
 
     @Override
     protected String context(
-            final org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager operandManager) {
+        final org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager operandManager) {
         return operandManager.getSuperClass();
     }
 }

@@ -39,7 +39,7 @@ public class CPNameAndType extends ConstantPoolEntry implements Comparable {
         if (obj instanceof CPNameAndType) {
             final CPNameAndType nat = (CPNameAndType) obj;
             final int compareSignature = signature.compareTo(nat.signature);
-            if(compareSignature == 0) {
+            if (compareSignature == 0) {
                 return name.compareTo(nat.name);
             }
             return compareSignature;

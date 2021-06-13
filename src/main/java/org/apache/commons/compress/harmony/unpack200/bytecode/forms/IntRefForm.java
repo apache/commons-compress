@@ -20,8 +20,7 @@ import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * This class implements the byte code form for those bytecodes which have int
- * references (and only int references).
+ * This class implements the byte code form for those bytecodes which have int references (and only int references).
  */
 public class IntRefForm extends SingleByteReferenceForm {
 

@@ -29,9 +29,8 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 
 /**
- * Archive is the main entry point to pack200 and represents a packed archive.
- * An archive is constructed with either a JarInputStream and an output stream
- * or a JarFile as input and an OutputStream. Options can be set, then
+ * Archive is the main entry point to pack200 and represents a packed archive. An archive is constructed with either a
+ * JarInputStream and an output stream or a JarFile as input and an OutputStream. Options can be set, then
  * <code>pack()</code> is called, to pack the Jar file into a pack200 archive.
  */
 public class Archive {
@@ -50,10 +49,10 @@ public class Archive {
      * @param options - packing options (if null then defaults are used)
      * @throws IOException If an I/O error occurs.
      */
-    public Archive(final JarInputStream inputStream, OutputStream outputStream,
-            PackingOptions options) throws IOException {
+    public Archive(final JarInputStream inputStream, OutputStream outputStream, PackingOptions options)
+        throws IOException {
         jarInputStream = inputStream;
-        if(options == null) {
+        if (options == null) {
             // use all defaults
             options = new PackingOptions();
         }
@@ -73,9 +72,8 @@ public class Archive {
      * @param options - packing options (if null then defaults are used)
      * @throws IOException If an I/O error occurs.
      */
-    public Archive(final JarFile jarFile, OutputStream outputStream,
-            PackingOptions options) throws IOException {
-        if(options == null) { // use all defaults
+    public Archive(final JarFile jarFile, OutputStream outputStream, PackingOptions options) throws IOException {
+        if (options == null) { // use all defaults
             options = new PackingOptions();
         }
         this.options = options;
@@ -90,6 +88,7 @@ public class Archive {
 
     /**
      * Pack the archive
+     * 
      * @throws Pack200Exception TODO
      * @throws IOException If an I/O error occurs.
      */
@@ -114,11 +113,9 @@ public class Archive {
         PackingUtils.log("Start to perform a normal packing");
         List packingFileList;
         if (jarInputStream != null) {
-            packingFileList = PackingUtils.getPackingFileListFromJar(
-                    jarInputStream, options.isKeepFileOrder());
+            packingFileList = PackingUtils.getPackingFileListFromJar(jarInputStream, options.isKeepFileOrder());
         } else {
-            packingFileList = PackingUtils.getPackingFileListFromJar(jarFile,
-                    options.isKeepFileOrder());
+            packingFileList = PackingUtils.getPackingFileListFromJar(jarFile, options.isKeepFileOrder());
         }
 
         final List segmentUnitList = splitIntoSegments(packingFileList);
@@ -134,15 +131,13 @@ public class Archive {
             packedByteAmount += segmentUnit.getPackedByteAmount();
         }
 
-        PackingUtils.log("Total: Packed " + previousByteAmount
-                + " input bytes of " + packingFileList.size() + " files into "
-                + packedByteAmount + " bytes in " + segmentSize + " segments");
+        PackingUtils.log("Total: Packed " + previousByteAmount + " input bytes of " + packingFileList.size()
+            + " files into " + packedByteAmount + " bytes in " + segmentSize + " segments");
 
         outputStream.close();
     }
 
-    private List splitIntoSegments(final List packingFileList) throws IOException,
-            Pack200Exception {
+    private List splitIntoSegments(final List packingFileList) throws IOException, Pack200Exception {
         final List segmentUnitList = new ArrayList();
         List classes = new ArrayList();
         List files = new ArrayList();
@@ -177,16 +172,15 @@ public class Archive {
         return segmentUnitList;
     }
 
-    private boolean addJarEntry(final PackingFile packingFile, final List javaClasses,
-            final List files) throws IOException, Pack200Exception {
+    private boolean addJarEntry(final PackingFile packingFile, final List javaClasses, final List files)
+        throws IOException, Pack200Exception {
         final long segmentLimit = options.getSegmentLimit();
         if (segmentLimit != -1 && segmentLimit != 0) {
             // -1 is a special case where only one segment is created and
             // 0 is a special case where one segment is created for each file
             // except for files in "META-INF"
             final long packedSize = estimateSize(packingFile);
-            if (packedSize + currentSegmentSize > segmentLimit
-                    && currentSegmentSize > 0) {
+            if (packedSize + currentSegmentSize > segmentLimit && currentSegmentSize > 0) {
                 // don't add this JarEntry to the current segment
                 return false;
             }
@@ -196,8 +190,7 @@ public class Archive {
 
         final String name = packingFile.getName();
         if (name.endsWith(".class") && !options.isPassFile(name)) {
-            final Pack200ClassReader classParser = new Pack200ClassReader(
-                    packingFile.contents);
+            final Pack200ClassReader classParser = new Pack200ClassReader(packingFile.contents);
             classParser.setFileName(name);
             javaClasses.add(classParser);
             packingFile.contents = new byte[0];
@@ -321,7 +314,7 @@ public class Archive {
             return deflateHint;
         }
 
-        public boolean isDirectory(){
+        public boolean isDirectory() {
             return isDirectory;
         }
 

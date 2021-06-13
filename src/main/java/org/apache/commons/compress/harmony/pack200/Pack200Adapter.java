@@ -26,34 +26,34 @@ import java.util.TreeMap;
  */
 public abstract class Pack200Adapter {
 
-	protected static final int DEFAULT_BUFFER_SIZE = 8192;
+    protected static final int DEFAULT_BUFFER_SIZE = 8192;
 
-	private final PropertyChangeSupport support = new PropertyChangeSupport(this);
+    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
-	private final SortedMap<String, String> properties = new TreeMap<>();
+    private final SortedMap<String, String> properties = new TreeMap<>();
 
-	public SortedMap<String, String> properties() {
-		return properties;
-	}
+    public SortedMap<String, String> properties() {
+        return properties;
+    }
 
-	public void addPropertyChangeListener(final PropertyChangeListener listener) {
-		support.addPropertyChangeListener(listener);
-	}
+    public void addPropertyChangeListener(final PropertyChangeListener listener) {
+        support.addPropertyChangeListener(listener);
+    }
 
-	protected void firePropertyChange(final String propertyName, final Object oldValue,
-			final Object newValue) {
-		support.firePropertyChange(propertyName, oldValue, newValue);
-	}
+    protected void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) {
+        support.firePropertyChange(propertyName, oldValue, newValue);
+    }
 
-	public void removePropertyChangeListener(final PropertyChangeListener listener) {
-		support.removePropertyChangeListener(listener);
-	}
+    public void removePropertyChangeListener(final PropertyChangeListener listener) {
+        support.removePropertyChangeListener(listener);
+    }
 
-	/**
-	 * Completion between 0..1.
-	 * @param value Completion between 0..1.
-	 */
-	protected void completed(final double value) {
-		firePropertyChange("pack.progress", null, String.valueOf((int)(100*value))); //$NON-NLS-1$
-	}
+    /**
+     * Completion between 0..1.
+     * 
+     * @param value Completion between 0..1.
+     */
+    protected void completed(final double value) {
+        firePropertyChange("pack.progress", null, String.valueOf((int) (100 * value))); //$NON-NLS-1$
+    }
 }

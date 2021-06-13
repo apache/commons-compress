@@ -20,9 +20,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * This class implements the byte code form for those bytecodes which have float
- * references (and only float references). This excludes iinc (which has its own
- * form, IincForm).
+ * This class implements the byte code form for those bytecodes which have float references (and only float references).
+ * This excludes iinc (which has its own form, IincForm).
  */
 public class LocalForm extends ByteCodeForm {
 
@@ -33,13 +32,15 @@ public class LocalForm extends ByteCodeForm {
     /*
      * (non-Javadoc)
      *
-     * @see org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#setByteCodeOperands(org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode,
-     *      org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
-     *      org.apache.commons.compress.harmony.unpack200.SegmentConstantPool)
+     * @see
+     * org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#setByteCodeOperands(org.apache.commons.
+     * compress.harmony.unpack200.bytecode.ByteCode,
+     * org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
+     * org.apache.commons.compress.harmony.unpack200.SegmentConstantPool)
      */
     @Override
-    public void setByteCodeOperands(final ByteCode byteCode,
-            final OperandManager operandManager, final int codeLength) {
-        byteCode.setOperandBytes(new int[] { operandManager.nextLocal() });
+    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager,
+        final int codeLength) {
+        byteCode.setOperandBytes(new int[] {operandManager.nextLocal()});
     }
 }

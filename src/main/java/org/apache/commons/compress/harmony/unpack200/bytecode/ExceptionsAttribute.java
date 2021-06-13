@@ -34,8 +34,7 @@ public class ExceptionsAttribute extends Attribute {
         }
         int result = 1;
         for (int index = 0; index < array.length; index++) {
-            result = prime * result
-                    + (array[index] == null ? 0 : array[index].hashCode());
+            result = prime * result + (array[index] == null ? 0 : array[index].hashCode());
         }
         return result;
     }

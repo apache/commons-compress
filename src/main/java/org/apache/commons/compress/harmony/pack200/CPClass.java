@@ -30,7 +30,7 @@ public class CPClass extends CPConstant implements Comparable {
         this.className = utf8.getUnderlyingString();
         final char[] chars = className.toCharArray();
         for (int i = 0; i < chars.length; i++) {
-            if(chars[i] <= 0x2D) {
+            if (chars[i] <= 0x2D) {
                 isInnerClass = true;
                 return;
             }
@@ -40,7 +40,7 @@ public class CPClass extends CPConstant implements Comparable {
 
     @Override
     public int compareTo(final Object arg0) {
-        return className.compareTo(((CPClass)arg0).className);
+        return className.compareTo(((CPClass) arg0).className);
     }
 
     @Override

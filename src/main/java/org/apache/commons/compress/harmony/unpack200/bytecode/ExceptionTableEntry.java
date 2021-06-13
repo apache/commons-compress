@@ -36,26 +36,18 @@ public class ExceptionTableEntry {
     private int catchTypeIndex;
 
     /**
-     * Create a new ExceptionTableEntry. Exception tables are of two kinds:
-     * either a normal one (with a Throwable as the catch_type) or a finally
-     * clause (which has no catch_type). In the class file, the finally clause
-     * is represented as catch_type == 0.
+     * Create a new ExceptionTableEntry. Exception tables are of two kinds: either a normal one (with a Throwable as the
+     * catch_type) or a finally clause (which has no catch_type). In the class file, the finally clause is represented
+     * as catch_type == 0.
      *
-     * To create a finally clause with this method, pass in null for the
-     * catchType.
+     * To create a finally clause with this method, pass in null for the catchType.
      *
-     * @param startPC
-     *            int
-     * @param endPC
-     *            int
-     * @param handlerPC
-     *            int
-     * @param catchType
-     *            CPClass (if it's a normal catch) or null (if it's a finally
-     *            clause).
+     * @param startPC int
+     * @param endPC int
+     * @param handlerPC int
+     * @param catchType CPClass (if it's a normal catch) or null (if it's a finally clause).
      */
-    public ExceptionTableEntry(final int startPC, final int endPC, final int handlerPC,
-            final CPClass catchType) {
+    public ExceptionTableEntry(final int startPC, final int endPC, final int handlerPC, final CPClass catchType) {
         this.startPC = startPC;
         this.endPC = endPC;
         this.handlerPC = handlerPC;
@@ -72,11 +64,9 @@ public class ExceptionTableEntry {
     public void renumber(final List byteCodeOffsets) {
         startPcRenumbered = ((Integer) byteCodeOffsets.get(startPC)).intValue();
         final int endPcIndex = startPC + endPC;
-        endPcRenumbered = ((Integer) byteCodeOffsets.get(endPcIndex))
-                .intValue();
+        endPcRenumbered = ((Integer) byteCodeOffsets.get(endPcIndex)).intValue();
         final int handlerPcIndex = endPcIndex + handlerPC;
-        handlerPcRenumbered = ((Integer) byteCodeOffsets.get(handlerPcIndex))
-                .intValue();
+        handlerPcRenumbered = ((Integer) byteCodeOffsets.get(handlerPcIndex)).intValue();
     }
 
     public CPClass getCatchType() {

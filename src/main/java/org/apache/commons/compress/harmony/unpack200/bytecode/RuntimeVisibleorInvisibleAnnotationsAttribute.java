@@ -22,17 +22,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Annotations class file attribute, either a RuntimeVisibleAnnotations
- * attribute or a RuntimeInvisibleAnnotations attribute.
+ * Annotations class file attribute, either a RuntimeVisibleAnnotations attribute or a RuntimeInvisibleAnnotations
+ * attribute.
  */
-public class RuntimeVisibleorInvisibleAnnotationsAttribute extends
-        AnnotationsAttribute {
+public class RuntimeVisibleorInvisibleAnnotationsAttribute extends AnnotationsAttribute {
 
     private final int num_annotations;
     private final Annotation[] annotations;
 
-    public RuntimeVisibleorInvisibleAnnotationsAttribute(final CPUTF8 name,
-            final Annotation[] annotations) {
+    public RuntimeVisibleorInvisibleAnnotationsAttribute(final CPUTF8 name, final Annotation[] annotations) {
         super(name);
         this.num_annotations = annotations.length;
         this.annotations = annotations;
@@ -69,8 +67,7 @@ public class RuntimeVisibleorInvisibleAnnotationsAttribute extends
 
     @Override
     public String toString() {
-        return attributeName.underlyingString() + ": " + num_annotations
-                + " annotations";
+        return attributeName.underlyingString() + ": " + num_annotations + " annotations";
     }
 
     @Override

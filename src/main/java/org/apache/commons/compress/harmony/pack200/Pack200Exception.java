@@ -26,8 +26,7 @@ public class Pack200Exception extends Exception {
     /**
      * Create a new Pack200 exception with the given message
      *
-     * @param message
-     *            the text message to display
+     * @param message the text message to display
      */
     public Pack200Exception(final String message) {
         super(message);

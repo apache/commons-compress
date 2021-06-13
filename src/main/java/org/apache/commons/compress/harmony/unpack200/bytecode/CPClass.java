@@ -34,10 +34,8 @@ public class CPClass extends ConstantPoolEntry {
      * Creates a new CPClass
      *
      * @param name TODO
-     * @param globalIndex
-     *            index in CpBands
-     * @throws NullPointerException
-     *             if name is null
+     * @param globalIndex index in CpBands
+     * @throws NullPointerException if name is null
      */
     public CPClass(final CPUTF8 name, final int globalIndex) {
         super(ConstantPoolEntry.CP_Class, globalIndex);
@@ -65,7 +63,7 @@ public class CPClass extends ConstantPoolEntry {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] { utf8, };
+        return new ClassFileEntry[] {utf8,};
     }
 
     private boolean hashcodeComputed;

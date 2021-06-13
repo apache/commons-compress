@@ -27,8 +27,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Inner class bands (corresponds to the <code>ic_bands</code> set of bands in
- * the pack200 specification)
+ * Inner class bands (corresponds to the <code>ic_bands</code> set of bands in the pack200 specification)
  */
 public class IcBands extends BandSet {
 
@@ -44,9 +43,8 @@ public class IcBands extends BandSet {
     }
 
     /**
-     * All input classes for the segment have now been read in, so this method
-     * is called so that this class can calculate/complete anything it could not
-     * do while classes were being read.
+     * All input classes for the segment have now been read in, so this method is called so that this class can
+     * calculate/complete anything it could not do while classes were being read.
      */
     public void finaliseBands() {
         segmentHeader.setIc_count(innerClasses.size());
@@ -66,47 +64,41 @@ public class IcBands extends BandSet {
             final IcTuple icTuple = (IcTuple) innerClassesList.get(i);
             ic_this_class[i] = icTuple.C.getIndex();
             ic_flags[i] = icTuple.F;
-            if((icTuple.F & (1<<16)) != 0) {
+            if ((icTuple.F & (1 << 16)) != 0) {
                 ic_outer_class[index2] = icTuple.C2 == null ? 0 : icTuple.C2.getIndex() + 1;
                 ic_name[index2] = icTuple.N == null ? 0 : icTuple.N.getIndex() + 1;
                 index2++;
             }
         }
-        byte[] encodedBand = encodeBandInt("ic_this_class", ic_this_class,
-                Codec.UDELTA5);
+        byte[] encodedBand = encodeBandInt("ic_this_class", ic_this_class, Codec.UDELTA5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from ic_this_class[" + ic_this_class.length + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from ic_this_class[" + ic_this_class.length + "]");
 
         encodedBand = encodeBandInt("ic_flags", ic_flags, Codec.UNSIGNED5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from ic_flags[" + ic_flags.length + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from ic_flags[" + ic_flags.length + "]");
 
-        encodedBand = encodeBandInt("ic_outer_class", ic_outer_class,
-                Codec.DELTA5);
+        encodedBand = encodeBandInt("ic_outer_class", ic_outer_class, Codec.DELTA5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from ic_outer_class[" + ic_outer_class.length + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from ic_outer_class[" + ic_outer_class.length + "]");
 
         encodedBand = encodeBandInt("ic_name", ic_name, Codec.DELTA5);
         out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length
-                + " bytes from ic_name[" + ic_name.length + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from ic_name[" + ic_name.length + "]");
     }
 
-    public void addInnerClass(final String name, final String outerName, final String innerName,
-            int flags) {
-        if(outerName != null || innerName != null) {
-            if(namesArePredictable(name, outerName, innerName)) {
+    public void addInnerClass(final String name, final String outerName, final String innerName, int flags) {
+        if (outerName != null || innerName != null) {
+            if (namesArePredictable(name, outerName, innerName)) {
                 final IcTuple innerClass = new IcTuple(cpBands.getCPClass(name), flags, null, null);
                 addToMap(outerName, innerClass);
                 innerClasses.add(innerClass);
             } else {
-                flags |= (1<<16);
-                final IcTuple icTuple = new IcTuple(cpBands.getCPClass(name), flags, cpBands.getCPClass(outerName), cpBands.getCPUtf8(innerName));
+                flags |= (1 << 16);
+                final IcTuple icTuple = new IcTuple(cpBands.getCPClass(name), flags, cpBands.getCPClass(outerName),
+                    cpBands.getCPUtf8(innerName));
                 final boolean added = innerClasses.add(icTuple);
-                if(added) {
+                if (added) {
                     bit16Count++;
                     addToMap(outerName, icTuple);
                 }
@@ -128,14 +120,14 @@ public class IcBands extends BandSet {
 
     private void addToMap(final String outerName, final IcTuple icTuple) {
         List tuples = (List) outerToInner.get(outerName);
-        if(tuples == null) {
+        if (tuples == null) {
             tuples = new ArrayList();
             outerToInner.put(outerName, tuples);
             tuples.add(icTuple);
         } else {
             for (final Iterator iterator = tuples.iterator(); iterator.hasNext();) {
                 final IcTuple icT = (IcTuple) iterator.next();
-                if(icTuple.equals(icT)) {
+                if (icTuple.equals(icT)) {
                     return;
                 }
             }
@@ -143,8 +135,7 @@ public class IcBands extends BandSet {
         }
     }
 
-    private boolean namesArePredictable(final String name, final String outerName,
-            final String innerName) {
+    private boolean namesArePredictable(final String name, final String outerName, final String innerName) {
         // TODO: Could be multiple characters, not just $
         return name.equals(outerName + '$' + innerName) && innerName.indexOf('$') == -1;
     }
@@ -165,9 +156,10 @@ public class IcBands extends BandSet {
 
         @Override
         public boolean equals(final Object o) {
-            if(o instanceof IcTuple) {
-                final IcTuple icT = (IcTuple)o;
-                return C.equals(icT.C) && F == icT.F && (C2 != null ? C2.equals(icT.C2) : icT.C2 == null) && (N != null ? N.equals(icT.N) : icT.N == null);
+            if (o instanceof IcTuple) {
+                final IcTuple icT = (IcTuple) o;
+                return C.equals(icT.C) && F == icT.F && (C2 != null ? C2.equals(icT.C2) : icT.C2 == null)
+                    && (N != null ? N.equals(icT.N) : icT.N == null);
             }
             return false;
         }
@@ -179,7 +171,7 @@ public class IcBands extends BandSet {
 
         @Override
         public int compareTo(final Object arg0) {
-            return C.compareTo(((IcTuple)arg0).C);
+            return C.compareTo(((IcTuple) arg0).C);
         }
 
         public boolean isAnonymous() {
@@ -193,7 +185,7 @@ public class IcBands extends BandSet {
     public IcTuple getIcTuple(final CPClass inner) {
         for (final Iterator iterator = innerClasses.iterator(); iterator.hasNext();) {
             final IcTuple icTuple = (IcTuple) iterator.next();
-            if(icTuple.C.equals(inner)) {
+            if (icTuple.C.equals(inner)) {
                 return icTuple;
             }
         }

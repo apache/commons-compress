@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * SegmentHeader is the header band of a {@link Segment}. Corresponds to
- * <code>segment_header</code> in the pack200 specification.
+ * SegmentHeader is the header band of a {@link Segment}. Corresponds to <code>segment_header</code> in the pack200
+ * specification.
  */
 public class SegmentHeader extends BandSet {
 
@@ -33,7 +33,7 @@ public class SegmentHeader extends BandSet {
                         // should always use the default encoding
     }
 
-    private static final int[] magic = { 0xCA, 0xFE, 0xD0, 0x0D };
+    private static final int[] magic = {0xCA, 0xFE, 0xD0, 0x0D};
     private static final int archive_minver = 7;
     private static final int archive_majver = 150;
 
@@ -90,7 +90,7 @@ public class SegmentHeader extends BandSet {
         writeArchiveSpecialCounts(out);
         writeCpCounts(out);
         writeClassCounts(out);
-        if (band_headers.size()> 0) {
+        if (band_headers.size() > 0) {
             out.write(encodeScalar(band_headers.toArray(), Codec.BYTE1));
         }
     }
@@ -99,8 +99,7 @@ public class SegmentHeader extends BandSet {
         if (attribute_definition_count > 0 || band_headers.size() > 0) {
             archive_options |= 1;
         }
-        if (cp_Int_count > 0 || cp_Float_count > 0 || cp_Long_count > 0
-                || cp_Double_count > 0) {
+        if (cp_Int_count > 0 || cp_Float_count > 0 || cp_Long_count > 0 || cp_Double_count > 0) {
             archive_options |= (1 << 1);
         }
         if (have_all_code_flags) {
@@ -243,8 +242,7 @@ public class SegmentHeader extends BandSet {
         this.class_count = class_count;
     }
 
-    private void writeCpCounts(final OutputStream out) throws IOException,
-            Pack200Exception {
+    private void writeCpCounts(final OutputStream out) throws IOException, Pack200Exception {
         out.write(encodeScalar(cp_Utf8_count, Codec.UNSIGNED5));
         if ((archive_options & (1 << 1)) != 0) { // have_cp_numbers
             out.write(encodeScalar(cp_Int_count, Codec.UNSIGNED5));
@@ -261,8 +259,7 @@ public class SegmentHeader extends BandSet {
         out.write(encodeScalar(cp_Imethod_count, Codec.UNSIGNED5));
     }
 
-    private void writeClassCounts(final OutputStream out) throws IOException,
-            Pack200Exception {
+    private void writeClassCounts(final OutputStream out) throws IOException, Pack200Exception {
         final int default_class_minver = 0;
         final int default_class_majver = majverCounter.getMostCommon();
         out.write(encodeScalar(ic_count, Codec.UNSIGNED5));
@@ -271,17 +268,14 @@ public class SegmentHeader extends BandSet {
         out.write(encodeScalar(class_count, Codec.UNSIGNED5));
     }
 
-    private void writeArchiveSpecialCounts(final OutputStream out)
-            throws IOException, Pack200Exception {
+    private void writeArchiveSpecialCounts(final OutputStream out) throws IOException, Pack200Exception {
         if ((archive_options & 1) > 0) { // have_special_formats
             out.write(encodeScalar(band_headers.size(), Codec.UNSIGNED5));
-            out.write(encodeScalar(attribute_definition_count,
-                    Codec.UNSIGNED5));
+            out.write(encodeScalar(attribute_definition_count, Codec.UNSIGNED5));
         }
     }
 
-    private void writeArchiveFileCounts(final OutputStream out) throws IOException,
-            Pack200Exception {
+    private void writeArchiveFileCounts(final OutputStream out) throws IOException, Pack200Exception {
         if ((archive_options & (1 << 4)) > 0) { // have_file_headers
             out.write(encodeScalar(archive_size_hi, Codec.UNSIGNED5));
             out.write(encodeScalar(archive_size_lo, Codec.UNSIGNED5));

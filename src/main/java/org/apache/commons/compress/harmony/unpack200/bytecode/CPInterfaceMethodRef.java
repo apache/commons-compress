@@ -23,9 +23,8 @@ public class CPInterfaceMethodRef extends CPRef {
     }
 
     /**
-     * This method answers the value this method will use for an invokeinterface
-     * call. This is equal to 1 + the count of all the args, where longs and
-     * doubles count for 2 and all others count for 1.
+     * This method answers the value this method will use for an invokeinterface call. This is equal to 1 + the count of
+     * all the args, where longs and doubles count for 2 and all others count for 1.
      *
      * @return integer count
      */

@@ -24,8 +24,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * This class implements the byte code form for those bytecodes which have
- * string references (and only string references).
+ * This class implements the byte code form for those bytecodes which have string references (and only string
+ * references).
  */
 public class StringRefForm extends SingleByteReferenceForm {
 
@@ -49,18 +49,16 @@ public class StringRefForm extends SingleByteReferenceForm {
     }
 
     @Override
-    protected void setNestedEntries(final ByteCode byteCode,
-            final OperandManager operandManager, final int offset) throws Pack200Exception {
-        final SegmentConstantPool globalPool = operandManager
-                .globalConstantPool();
+    protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset)
+        throws Pack200Exception {
+        final SegmentConstantPool globalPool = operandManager.globalConstantPool();
         ClassFileEntry[] nested = null;
-        nested = new ClassFileEntry[] { ((CPString) globalPool.getValue(
-                getPoolID(), offset)) };
+        nested = new ClassFileEntry[] {((CPString) globalPool.getValue(getPoolID(), offset))};
         byteCode.setNested(nested);
         if (widened) {
-            byteCode.setNestedPositions(new int[][] { { 0, 2 } });
+            byteCode.setNestedPositions(new int[][] {{0, 2}});
         } else {
-            byteCode.setNestedPositions(new int[][] { { 0, 1 } });
+            byteCode.setNestedPositions(new int[][] {{0, 1}});
         }
     }
 }

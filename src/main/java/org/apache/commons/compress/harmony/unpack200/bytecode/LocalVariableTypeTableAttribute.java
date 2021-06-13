@@ -43,9 +43,8 @@ public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
         attributeName = cpUTF8Value;
     }
 
-    public LocalVariableTypeTableAttribute(
-            final int local_variable_type_table_length, final int[] start_pcs,
-            final int[] lengths, final CPUTF8[] names, final CPUTF8[] signatures, final int[] indexes) {
+    public LocalVariableTypeTableAttribute(final int local_variable_type_table_length, final int[] start_pcs,
+        final int[] lengths, final CPUTF8[] names, final CPUTF8[] signatures, final int[] indexes) {
         super(attributeName);
         this.local_variable_type_table_length = local_variable_type_table_length;
         this.start_pcs = start_pcs;
@@ -97,8 +96,7 @@ public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
             nestedEntries.add(names[i]);
             nestedEntries.add(signatures[i]);
         }
-        final ClassFileEntry[] nestedEntryArray = new ClassFileEntry[nestedEntries
-                .size()];
+        final ClassFileEntry[] nestedEntryArray = new ClassFileEntry[nestedEntries.size()];
         nestedEntries.toArray(nestedEntryArray);
         return nestedEntryArray;
     }
@@ -118,8 +116,7 @@ public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
         // Remember the unrenumbered start_pcs, since that's used later
         // to calculate end position.
         final int[] unrenumbered_start_pcs = new int[start_pcs.length];
-        System.arraycopy(start_pcs, 0, unrenumbered_start_pcs, 0,
-                start_pcs.length);
+        System.arraycopy(start_pcs, 0, unrenumbered_start_pcs, 0, start_pcs.length);
 
         // Next renumber start_pcs in place
         super.renumber(byteCodeOffsets);
@@ -157,19 +154,16 @@ public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
                 revisedLength = maxSize - start_pc;
             } else {
                 // We're indexed into the byte code array
-                final int stopValue = ((Integer) byteCodeOffsets.get(stopIndex))
-                        .intValue();
+                final int stopValue = ((Integer) byteCodeOffsets.get(stopIndex)).intValue();
                 revisedLength = stopValue - start_pc;
             }
             lengths[index] = revisedLength;
         }
     }
 
-
     @Override
     public String toString() {
-        return "LocalVariableTypeTable: " + +local_variable_type_table_length
-                + " varaibles";
+        return "LocalVariableTypeTable: " + +local_variable_type_table_length + " varaibles";
     }
 
 }

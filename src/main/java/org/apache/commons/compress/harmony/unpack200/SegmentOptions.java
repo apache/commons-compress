@@ -19,12 +19,10 @@ package org.apache.commons.compress.harmony.unpack200;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 
 /**
- * Stores the combinations of bit flags that can be used in the segment header
- * options. Whilst this could be defined in {@link Segment}, it's cleaner to
- * pull it out into a separate class, not least because methods can then be used
- * to determine the semantic meaning of the flags. In languages with a
- * pre-processor, these may be defined by macros that do bitflag manipulation
- * instead.
+ * Stores the combinations of bit flags that can be used in the segment header options. Whilst this could be defined in
+ * {@link Segment}, it's cleaner to pull it out into a separate class, not least because methods can then be used to
+ * determine the semantic meaning of the flags. In languages with a pre-processor, these may be defined by macros that
+ * do bitflag manipulation instead.
  */
 public class SegmentOptions {
 
@@ -55,8 +53,7 @@ public class SegmentOptions {
     private static final int HAVE_SPECIAL_FORMATS = 1 << 0;
 
     /**
-     * The bit flags that are defined as unused by the specification;
-     * specifically, every bit above bit 13 and bit 3.
+     * The bit flags that are defined as unused by the specification; specifically, every bit above bit 13 and bit 3.
      */
     private static final int UNUSED = -1 << 13 | 1 << 3;
 
@@ -65,10 +62,8 @@ public class SegmentOptions {
     /**
      * Creates a new segment options with the given integer value.
      *
-     * @param options
-     *            the integer value to use as the flags
-     * @throws Pack200Exception
-     *             if an unused bit (bit 3 or bit 13+) is non-zero
+     * @param options the integer value to use as the flags
+     * @throws Pack200Exception if an unused bit (bit 3 or bit 13+) is non-zero
      */
     public SegmentOptions(final int options) throws Pack200Exception {
         if ((options & UNUSED) != 0) {

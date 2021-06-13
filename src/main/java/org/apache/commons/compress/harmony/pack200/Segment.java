@@ -55,35 +55,31 @@ public class Segment implements ClassVisitor {
     private Attribute[] nonStandardAttributePrototypes;
 
     /**
-     * The main method on Segment. Reads in all the class files, packs them and
-     * then writes the packed segment out to the given OutputStream.
+     * The main method on Segment. Reads in all the class files, packs them and then writes the packed segment out to
+     * the given OutputStream.
      *
      * @param segmentUnit TODO
-     * @param out
-     *            the OutputStream to write the packed Segment to
-     * @param options
-     *            packing options
+     * @param out the OutputStream to write the packed Segment to
+     * @param options packing options
      * @throws IOException If an I/O error occurs.
      * @throws Pack200Exception TODO
      */
     public void pack(final SegmentUnit segmentUnit, final OutputStream out, final PackingOptions options)
-            throws IOException, Pack200Exception {
+        throws IOException, Pack200Exception {
         this.options = options;
         this.stripDebug = options.isStripDebug();
         final int effort = options.getEffort();
         nonStandardAttributePrototypes = options.getUnknownAttributePrototypes();
 
-        PackingUtils.log("Start to pack a new segment with "
-                + segmentUnit.fileListSize() + " files including "
-                + segmentUnit.classListSize() + " classes");
+        PackingUtils.log("Start to pack a new segment with " + segmentUnit.fileListSize() + " files including "
+            + segmentUnit.classListSize() + " classes");
 
         PackingUtils.log("Initialize a header for the segment");
         segmentHeader = new SegmentHeader();
         segmentHeader.setFile_count(segmentUnit.fileListSize());
         segmentHeader.setHave_all_code_flags(!stripDebug);
         if (!options.isKeepDeflateHint()) {
-            segmentHeader.setDeflate_hint("true".equals(options
-                    .getDeflateHint()));
+            segmentHeader.setDeflate_hint("true".equals(options.getDeflateHint()));
         }
 
         PackingUtils.log("Setup constant pool bands for the segment");
@@ -123,7 +119,7 @@ public class Segment implements ClassVisitor {
         final int finalNumberOfClasses = classBands.numClassesProcessed();
         segmentHeader.setClass_count(finalNumberOfClasses);
         cpBands.pack(bandsOutputStream);
-        if(finalNumberOfClasses > 0) {
+        if (finalNumberOfClasses > 0) {
             attributeDefinitionBands.pack(bandsOutputStream);
             icBands.pack(bandsOutputStream);
             classBands.pack(bandsOutputStream);
@@ -140,21 +136,18 @@ public class Segment implements ClassVisitor {
         segmentUnit.addPackedByteAmount(headerOutputStream.size());
         segmentUnit.addPackedByteAmount(bandsOutputStream.size());
 
-        PackingUtils.log("Wrote total of " + segmentUnit.getPackedByteAmount()
-                + " bytes");
-        PackingUtils.log("Transmitted " + segmentUnit.fileListSize() + " files of "
-                + segmentUnit.getByteAmount() + " input bytes in a segment of "
-                + segmentUnit.getPackedByteAmount() + " bytes");
+        PackingUtils.log("Wrote total of " + segmentUnit.getPackedByteAmount() + " bytes");
+        PackingUtils.log("Transmitted " + segmentUnit.fileListSize() + " files of " + segmentUnit.getByteAmount()
+            + " input bytes in a segment of " + segmentUnit.getPackedByteAmount() + " bytes");
     }
 
     private void processClasses(final SegmentUnit segmentUnit, final Attribute[] attributes) throws Pack200Exception {
         segmentHeader.setClass_count(segmentUnit.classListSize());
         for (final Iterator iterator = segmentUnit.getClassList().iterator(); iterator.hasNext();) {
-            final Pack200ClassReader classReader = (Pack200ClassReader) iterator
-                    .next();
+            final Pack200ClassReader classReader = (Pack200ClassReader) iterator.next();
             currentClassReader = classReader;
             int flags = 0;
-            if(stripDebug) {
+            if (stripDebug) {
                 flags |= ClassReader.SKIP_DEBUG;
             }
             try {
@@ -167,16 +160,15 @@ public class Segment implements ClassVisitor {
                 options.addPassFile(name);
                 cpBands.addCPUtf8(name);
                 boolean found = false;
-                for (final Iterator iterator2 = segmentUnit.getFileList().iterator(); iterator2
-                        .hasNext();) {
+                for (final Iterator iterator2 = segmentUnit.getFileList().iterator(); iterator2.hasNext();) {
                     final PackingFile file = (PackingFile) iterator2.next();
-                    if(file.getName().equals(name)) {
+                    if (file.getName().equals(name)) {
                         found = true;
                         file.setContents(classReader.b);
                         break;
                     }
                 }
-                if(!found) {
+                if (!found) {
                     throw new Pack200Exception("Error passing file " + name);
                 }
             }
@@ -185,16 +177,15 @@ public class Segment implements ClassVisitor {
 
     @Override
     public void visit(final int version, final int access, final String name, final String signature,
-            final String superName, final String[] interfaces) {
+        final String superName, final String[] interfaces) {
         bcBands.setCurrentClass(name, superName);
         segmentHeader.addMajorVersion(version);
-        classBands.addClass(version, access, name, signature, superName,
-                interfaces);
+        classBands.addClass(version, access, name, signature, superName, interfaces);
     }
 
     @Override
     public void visitSource(final String source, final String debug) {
-        if(!stripDebug) {
+        if (!stripDebug) {
             classBands.addSourceFile(source);
         }
     }
@@ -207,24 +198,23 @@ public class Segment implements ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
-        return new SegmentAnnotationVisitor(MetadataBandGroup.CONTEXT_CLASS,
-                desc, visible);
+        return new SegmentAnnotationVisitor(MetadataBandGroup.CONTEXT_CLASS, desc, visible);
     }
 
     @Override
     public void visitAttribute(final Attribute attribute) {
-        if(attribute.isUnknown()) {
+        if (attribute.isUnknown()) {
             final String action = options.getUnknownAttributeAction();
-            if(action.equals(PackingOptions.PASS)) {
+            if (action.equals(PackingOptions.PASS)) {
                 passCurrentClass();
             } else if (action.equals(PackingOptions.ERROR)) {
                 throw new Error("Unknown attribute encountered");
             } // else skip
-        } else if(attribute instanceof NewAttribute) {
+        } else if (attribute instanceof NewAttribute) {
             final NewAttribute newAttribute = (NewAttribute) attribute;
-            if(newAttribute.isUnknown(AttributeDefinitionBands.CONTEXT_CLASS)) {
+            if (newAttribute.isUnknown(AttributeDefinitionBands.CONTEXT_CLASS)) {
                 final String action = options.getUnknownClassAttributeAction(newAttribute.type);
-                if(action.equals(PackingOptions.PASS)) {
+                if (action.equals(PackingOptions.PASS)) {
                     passCurrentClass();
                 } else if (action.equals(PackingOptions.ERROR)) {
                     throw new Error("Unknown attribute encountered");
@@ -237,21 +227,20 @@ public class Segment implements ClassVisitor {
     }
 
     @Override
-    public void visitInnerClass(final String name, final String outerName,
-            final String innerName, final int flags) {
+    public void visitInnerClass(final String name, final String outerName, final String innerName, final int flags) {
         icBands.addInnerClass(name, outerName, innerName, flags);
     }
 
     @Override
-    public FieldVisitor visitField(final int flags, final String name, final String desc,
-            final String signature, final Object value) {
+    public FieldVisitor visitField(final int flags, final String name, final String desc, final String signature,
+        final Object value) {
         classBands.addField(flags, name, desc, signature, value);
         return fieldVisitor;
     }
 
     @Override
-    public MethodVisitor visitMethod(final int flags, final String name, final String desc,
-            final String signature, final String[] exceptions) {
+    public MethodVisitor visitMethod(final int flags, final String name, final String desc, final String signature,
+        final String[] exceptions) {
         classBands.addMethod(flags, name, desc, signature, exceptions);
         return methodVisitor;
     }
@@ -262,18 +251,15 @@ public class Segment implements ClassVisitor {
     }
 
     /**
-     * This class implements MethodVisitor to visit the contents and metadata
-     * related to methods in a class file.
+     * This class implements MethodVisitor to visit the contents and metadata related to methods in a class file.
      *
-     * It delegates to BcBands for bytecode related visits and to ClassBands for
-     * everything else.
+     * It delegates to BcBands for bytecode related visits and to ClassBands for everything else.
      */
     public class SegmentMethodVisitor implements MethodVisitor {
 
         @Override
         public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
-            return new SegmentAnnotationVisitor(
-                    MetadataBandGroup.CONTEXT_METHOD, desc, visible);
+            return new SegmentAnnotationVisitor(MetadataBandGroup.CONTEXT_METHOD, desc, visible);
         }
 
         @Override
@@ -283,19 +269,18 @@ public class Segment implements ClassVisitor {
 
         @Override
         public void visitAttribute(final Attribute attribute) {
-            if(attribute.isUnknown()) {
+            if (attribute.isUnknown()) {
                 final String action = options.getUnknownAttributeAction();
-                if(action.equals(PackingOptions.PASS)) {
+                if (action.equals(PackingOptions.PASS)) {
                     passCurrentClass();
                 } else if (action.equals(PackingOptions.ERROR)) {
                     throw new Error("Unknown attribute encountered");
                 } // else skip
-            } else if(attribute instanceof NewAttribute) {
+            } else if (attribute instanceof NewAttribute) {
                 final NewAttribute newAttribute = (NewAttribute) attribute;
                 if (attribute.isCodeAttribute()) {
                     if (newAttribute.isUnknown(AttributeDefinitionBands.CONTEXT_CODE)) {
-                        final String action = options
-                                .getUnknownCodeAttributeAction(newAttribute.type);
+                        final String action = options.getUnknownCodeAttributeAction(newAttribute.type);
                         if (action.equals(PackingOptions.PASS)) {
                             passCurrentClass();
                         } else if (action.equals(PackingOptions.ERROR)) {
@@ -305,8 +290,7 @@ public class Segment implements ClassVisitor {
                     classBands.addCodeAttribute(newAttribute);
                 } else {
                     if (newAttribute.isUnknown(AttributeDefinitionBands.CONTEXT_METHOD)) {
-                        final String action = options
-                                .getUnknownMethodAttributeAction(newAttribute.type);
+                        final String action = options.getUnknownMethodAttributeAction(newAttribute.type);
                         if (action.equals(PackingOptions.PASS)) {
                             passCurrentClass();
                         } else if (action.equals(PackingOptions.ERROR)) {
@@ -327,7 +311,7 @@ public class Segment implements ClassVisitor {
 
         @Override
         public void visitFrame(final int arg0, final int arg1, final Object[] arg2, final int arg3,
-                final Object[] arg4) {
+            final Object[] arg4) {
             // TODO: Java 6 - implement support for this
 
         }
@@ -339,17 +323,16 @@ public class Segment implements ClassVisitor {
 
         @Override
         public void visitLineNumber(final int line, final Label start) {
-            if(!stripDebug) {
+            if (!stripDebug) {
                 classBands.addLineNumber(line, start);
             }
         }
 
         @Override
-        public void visitLocalVariable(final String name, final String desc,
-                final String signature, final Label start, final Label end, final int index) {
-            if(!stripDebug) {
-                classBands.addLocalVariable(name, desc, signature, start, end,
-                        index);
+        public void visitLocalVariable(final String name, final String desc, final String signature, final Label start,
+            final Label end, final int index) {
+            if (!stripDebug) {
+                classBands.addLocalVariable(name, desc, signature, start, end, index);
             }
         }
 
@@ -359,15 +342,13 @@ public class Segment implements ClassVisitor {
         }
 
         @Override
-        public AnnotationVisitor visitParameterAnnotation(final int parameter,
-                final String desc, final boolean visible) {
-            return new SegmentAnnotationVisitor(
-                    MetadataBandGroup.CONTEXT_METHOD, parameter, desc, visible);
+        public AnnotationVisitor visitParameterAnnotation(final int parameter, final String desc,
+            final boolean visible) {
+            return new SegmentAnnotationVisitor(MetadataBandGroup.CONTEXT_METHOD, parameter, desc, visible);
         }
 
         @Override
-        public void visitTryCatchBlock(final Label start, final Label end, final Label handler,
-                final String type) {
+        public void visitTryCatchBlock(final Label start, final Label end, final Label handler, final String type) {
             classBands.addHandler(start, end, handler, type);
         }
 
@@ -378,8 +359,7 @@ public class Segment implements ClassVisitor {
         }
 
         @Override
-        public void visitFieldInsn(final int opcode, final String owner, final String name,
-                final String desc) {
+        public void visitFieldInsn(final int opcode, final String owner, final String name, final String desc) {
             bcBands.visitFieldInsn(opcode, owner, name, desc);
         }
 
@@ -414,8 +394,7 @@ public class Segment implements ClassVisitor {
         }
 
         @Override
-        public void visitMethodInsn(final int opcode, final String owner, final String name,
-                final String desc) {
+        public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc) {
             bcBands.visitMethodInsn(opcode, owner, name, desc);
         }
 
@@ -425,8 +404,7 @@ public class Segment implements ClassVisitor {
         }
 
         @Override
-        public void visitTableSwitchInsn(final int min, final int max, final Label dflt,
-                final Label[] labels) {
+        public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label[] labels) {
             bcBands.visitTableSwitchInsn(min, max, dflt, labels);
         }
 
@@ -447,8 +425,7 @@ public class Segment implements ClassVisitor {
     }
 
     /**
-     * SegmentAnnotationVisitor implements <code>AnnotationVisitor</code> to
-     * visit Annotations found in a class file.
+     * SegmentAnnotationVisitor implements <code>AnnotationVisitor</code> to visit Annotations found in a class file.
      */
     public class SegmentAnnotationVisitor implements AnnotationVisitor {
 
@@ -465,8 +442,7 @@ public class Segment implements ClassVisitor {
         private final List nestNameRU = new ArrayList();
         private final List nestPairN = new ArrayList();
 
-        public SegmentAnnotationVisitor(final int context, final String desc,
-                final boolean visible) {
+        public SegmentAnnotationVisitor(final int context, final String desc, final boolean visible) {
             this.context = context;
             this.desc = desc;
             this.visible = visible;
@@ -476,8 +452,8 @@ public class Segment implements ClassVisitor {
             this.context = context;
         }
 
-        public SegmentAnnotationVisitor(final int context, final int parameter,
-                final String desc, final boolean visible) {
+        public SegmentAnnotationVisitor(final int context, final int parameter, final String desc,
+            final boolean visible) {
             this.context = context;
             this.parameter = parameter;
             this.desc = desc;
@@ -492,6 +468,7 @@ public class Segment implements ClassVisitor {
             nameRU.add(name);
             addValueAndTag(value, T, values);
         }
+
         @Override
         public AnnotationVisitor visitAnnotation(String name, final String desc) {
             T.add("@");
@@ -511,8 +488,7 @@ public class Segment implements ClassVisitor {
                 }
 
                 @Override
-                public AnnotationVisitor visitAnnotation(final String arg0,
-                        final String arg1) {
+                public AnnotationVisitor visitAnnotation(final String arg0, final String arg1) {
                     throw new RuntimeException("Not yet supported");
 //                    return null;
                 }
@@ -553,11 +529,14 @@ public class Segment implements ClassVisitor {
         @Override
         public void visitEnd() {
             if (desc == null) {
-                Segment.this.classBands.addAnnotationDefault(nameRU, T, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
-            } else if(parameter != -1) {
-                Segment.this.classBands.addParameterAnnotation(parameter, desc, visible, nameRU, T, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
+                Segment.this.classBands.addAnnotationDefault(nameRU, T, values, caseArrayN, nestTypeRS, nestNameRU,
+                    nestPairN);
+            } else if (parameter != -1) {
+                Segment.this.classBands.addParameterAnnotation(parameter, desc, visible, nameRU, T, values, caseArrayN,
+                    nestTypeRS, nestNameRU, nestPairN);
             } else {
-                Segment.this.classBands.addAnnotation(context, desc, visible, nameRU, T, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
+                Segment.this.classBands.addAnnotation(context, desc, visible, nameRU, T, values, caseArrayN, nestTypeRS,
+                    nestNameRU, nestPairN);
             }
         }
 
@@ -573,7 +552,7 @@ public class Segment implements ClassVisitor {
         }
     }
 
-    public class ArrayVisitor implements AnnotationVisitor  {
+    public class ArrayVisitor implements AnnotationVisitor {
 
         private final int indexInCaseArrayN;
         private final List caseArrayN;
@@ -600,8 +579,7 @@ public class Segment implements ClassVisitor {
         }
 
         @Override
-        public AnnotationVisitor visitAnnotation(final String arg0,
-                final String arg1) {
+        public AnnotationVisitor visitAnnotation(final String arg0, final String arg1) {
             throw new RuntimeException("Not yet supported");
         }
 
@@ -631,31 +609,30 @@ public class Segment implements ClassVisitor {
     }
 
     /**
-     * SegmentFieldVisitor implements <code>FieldVisitor</code> to visit the
-     * metadata relating to fields in a class file.
+     * SegmentFieldVisitor implements <code>FieldVisitor</code> to visit the metadata relating to fields in a class
+     * file.
      */
     public class SegmentFieldVisitor implements FieldVisitor {
 
         @Override
         public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
-            return new SegmentAnnotationVisitor(MetadataBandGroup.CONTEXT_FIELD,
-                    desc, visible);
+            return new SegmentAnnotationVisitor(MetadataBandGroup.CONTEXT_FIELD, desc, visible);
         }
 
         @Override
         public void visitAttribute(final Attribute attribute) {
-            if(attribute.isUnknown()) {
+            if (attribute.isUnknown()) {
                 final String action = options.getUnknownAttributeAction();
-                if(action.equals(PackingOptions.PASS)) {
+                if (action.equals(PackingOptions.PASS)) {
                     passCurrentClass();
                 } else if (action.equals(PackingOptions.ERROR)) {
                     throw new Error("Unknown attribute encountered");
                 } // else skip
-            } else if(attribute instanceof NewAttribute) {
+            } else if (attribute instanceof NewAttribute) {
                 final NewAttribute newAttribute = (NewAttribute) attribute;
-                if(newAttribute.isUnknown(AttributeDefinitionBands.CONTEXT_FIELD)) {
+                if (newAttribute.isUnknown(AttributeDefinitionBands.CONTEXT_FIELD)) {
                     final String action = options.getUnknownFieldAttributeAction(newAttribute.type);
-                    if(action.equals(PackingOptions.PASS)) {
+                    if (action.equals(PackingOptions.PASS)) {
                         passCurrentClass();
                     } else if (action.equals(PackingOptions.ERROR)) {
                         throw new Error("Unknown attribute encountered");
@@ -674,7 +651,7 @@ public class Segment implements ClassVisitor {
 
     // helper method for annotation visitors
     private void addValueAndTag(final Object value, final List T, final List values) {
-        if(value instanceof Integer) {
+        if (value instanceof Integer) {
             T.add("I");
             values.add(value);
         } else if (value instanceof Double) {
@@ -688,25 +665,24 @@ public class Segment implements ClassVisitor {
             values.add(value);
         } else if (value instanceof Byte) {
             T.add("B");
-            values.add(Integer.valueOf(((Byte)value).intValue()));
+            values.add(Integer.valueOf(((Byte) value).intValue()));
         } else if (value instanceof Character) {
             T.add("C");
-            values.add(Integer.valueOf(((Character)value).charValue()));
+            values.add(Integer.valueOf(((Character) value).charValue()));
         } else if (value instanceof Short) {
             T.add("S");
-            values.add(Integer.valueOf(((Short)value).intValue()));
+            values.add(Integer.valueOf(((Short) value).intValue()));
         } else if (value instanceof Boolean) {
             T.add("Z");
-            values.add(Integer.valueOf(((Boolean)value).booleanValue() ? 1 : 0));
+            values.add(Integer.valueOf(((Boolean) value).booleanValue() ? 1 : 0));
         } else if (value instanceof String) {
             T.add("s");
             values.add(value);
         } else if (value instanceof Type) {
             T.add("c");
-            values.add(((Type)value).toString());
+            values.add(((Type) value).toString());
         }
     }
-
 
     public boolean lastConstantHadWideIndex() {
         return currentClassReader.lastConstantHadWideIndex();
@@ -737,10 +713,8 @@ public class Segment implements ClassVisitor {
     }
 
     /**
-     * Exception indicating that the class currently being visited contains an
-     * unknown attribute, which means that by default the class file needs to be
-     * passed through as-is in the file_bands rather than being packed with
-     * pack200.
+     * Exception indicating that the class currently being visited contains an unknown attribute, which means that by
+     * default the class file needs to be passed through as-is in the file_bands rather than being packed with pack200.
      */
     public static class PassException extends RuntimeException {
 

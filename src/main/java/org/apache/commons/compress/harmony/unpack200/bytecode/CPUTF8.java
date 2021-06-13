@@ -31,8 +31,7 @@ public class CPUTF8 extends ConstantPoolEntry {
      *
      * @param utf8 TODO
      * @param globalIndex - index in CpBands
-     * @throws NullPointerException
-     *             if utf8 is null
+     * @throws NullPointerException if utf8 is null
      */
     public CPUTF8(final String utf8, final int globalIndex) {
         super(ConstantPoolEntry.CP_UTF8, globalIndex);

@@ -20,9 +20,8 @@ import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * This class implements references to fields defined in the superclass, which
- * is set by this class in the OperandManager. Pack200 allows the superclass to
- * be inferred from context; this class tracks previous field reference
+ * This class implements references to fields defined in the superclass, which is set by this class in the
+ * OperandManager. Pack200 allows the superclass to be inferred from context; this class tracks previous field reference
  * superclasses to allow this.
  */
 public class SuperFieldRefForm extends ClassSpecificReferenceForm {

@@ -42,7 +42,7 @@ public class EnclosingMethodAttribute extends Attribute {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        if(method != null) {
+        if (method != null) {
             return new ClassFileEntry[] {attributeName, cpClass, method};
         }
         return new ClassFileEntry[] {attributeName, cpClass};
@@ -63,7 +63,7 @@ public class EnclosingMethodAttribute extends Attribute {
         super.resolve(pool);
         cpClass.resolve(pool);
         class_index = pool.indexOf(cpClass);
-        if(method != null) {
+        if (method != null) {
             method.resolve(pool);
             method_index = pool.indexOf(method);
         } else {

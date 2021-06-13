@@ -33,9 +33,8 @@ import java.util.zip.GZIPInputStream;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 
 /**
- * Archive is the main entry point to unpack200. An archive is constructed with
- * either two file names, a pack file and an output file name or an input stream
- * and an output streams. Then <code>unpack()</code> is called, to unpack the
+ * Archive is the main entry point to unpack200. An archive is constructed with either two file names, a pack file and
+ * an output file name or an input stream and an output streams. Then <code>unpack()</code> is called, to unpack the
  * pack200 archive.
  */
 public class Archive {
@@ -63,13 +62,11 @@ public class Archive {
      *
      * @param inputFile TODO
      * @param outputFile TODO
-     * @throws FileNotFoundException
-     *             if the input file does not exist
+     * @throws FileNotFoundException if the input file does not exist
      * @throws FileNotFoundException TODO
      * @throws IOException TODO
      */
-    public Archive(final String inputFile, final String outputFile)
-            throws FileNotFoundException, IOException {
+    public Archive(final String inputFile, final String outputFile) throws FileNotFoundException, IOException {
         this.inputFileName = inputFile;
         this.outputFileName = outputFile;
         inputStream = new FileInputStream(inputFile);
@@ -77,16 +74,14 @@ public class Archive {
     }
 
     /**
-     * Creates an Archive with streams for the input and output files. Note: If
-     * you use this method then calling {@link #setRemovePackFile(boolean)} will
-     * have no effect.
+     * Creates an Archive with streams for the input and output files. Note: If you use this method then calling
+     * {@link #setRemovePackFile(boolean)} will have no effect.
      *
      * @param inputStream TODO
      * @param outputStream TODO
      * @throws IOException TODO
      */
-    public Archive(final InputStream inputStream, final JarOutputStream outputStream)
-            throws IOException {
+    public Archive(final InputStream inputStream, final JarOutputStream outputStream) throws IOException {
         this.inputStream = inputStream;
         this.outputStream = outputStream;
     }
@@ -109,13 +104,12 @@ public class Archive {
             inputStream.mark(2);
             if (((inputStream.read() & 0xFF) | (inputStream.read() & 0xFF) << 8) == GZIPInputStream.GZIP_MAGIC) {
                 inputStream.reset();
-                inputStream = new BufferedInputStream(new GZIPInputStream(
-                        inputStream));
+                inputStream = new BufferedInputStream(new GZIPInputStream(inputStream));
             } else {
                 inputStream.reset();
             }
             inputStream.mark(4);
-            final int[] magic = { 0xCA, 0xFE, 0xD0, 0x0D }; // Magic word for
+            final int[] magic = {0xCA, 0xFE, 0xD0, 0x0D}; // Magic word for
             // pack200
             final int word[] = new int[4];
             for (int i = 0; i < word.length; i++) {
@@ -148,18 +142,14 @@ public class Archive {
                     i++;
                     final Segment segment = new Segment();
                     segment.setLogLevel(logLevel);
-                    segment
-                            .setLogStream(logFile != null ? (OutputStream) logFile
-                                    : (OutputStream) System.out);
+                    segment.setLogStream(logFile != null ? (OutputStream) logFile : (OutputStream) System.out);
                     segment.setPreRead(false);
 
                     if (i == 1) {
                         segment.log(Segment.LOG_LEVEL_VERBOSE,
-                                "Unpacking from " + inputFileName + " to "
-                                        + outputFileName);
+                            "Unpacking from " + inputFileName + " to " + outputFileName);
                     }
-                    segment.log(Segment.LOG_LEVEL_VERBOSE, "Reading segment "
-                            + i);
+                    segment.log(Segment.LOG_LEVEL_VERBOSE, "Reading segment " + i);
                     if (overrideDeflateHint) {
                         segment.overrideDeflateHint(deflateHint);
                     }
@@ -167,8 +157,7 @@ public class Archive {
                     outputStream.flush();
 
                     if (inputStream instanceof FileInputStream) {
-                        inputFileName = ((FileInputStream) inputStream).getFD()
-                                .toString();
+                        inputFileName = ((FileInputStream) inputStream).getFD().toString();
                     }
                 }
             }
@@ -190,7 +179,7 @@ public class Archive {
         }
         if (removePackFile) {
             boolean deleted = false;
-            if(inputFileName != null) {
+            if (inputFileName != null) {
                 final File file = new File(inputFileName);
                 deleted = file.delete();
             }
@@ -208,11 +197,9 @@ public class Archive {
     }
 
     /**
-     * If removePackFile is set to true, the input file is deleted after
-     * unpacking.
+     * If removePackFile is set to true, the input file is deleted after unpacking.
      *
-     * @param removePackFile If true, the input file is deleted after
-     * unpacking.
+     * @param removePackFile If true, the input file is deleted after unpacking.
      */
     public void setRemovePackFile(final boolean removePackFile) {
         this.removePackFile = removePackFile;
@@ -238,8 +225,7 @@ public class Archive {
         this.logFile = new FileOutputStream(logFileName);
     }
 
-    public void setLogFile(final String logFileName, final boolean append)
-            throws FileNotFoundException {
+    public void setLogFile(final String logFileName, final boolean append) throws FileNotFoundException {
         logFile = new FileOutputStream(logFileName, append);
     }
 

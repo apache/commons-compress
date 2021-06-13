@@ -13,14 +13,14 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- */package org.apache.commons.compress.harmony.unpack200.bytecode.forms;
+ */
+package org.apache.commons.compress.harmony.unpack200.bytecode.forms;
 
 import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * This class implements the byte code form for those bytecodes which have float
- * references (and only float references).
+ * This class implements the byte code form for those bytecodes which have float references (and only float references).
  */
 public class FloatRefForm extends SingleByteReferenceForm {
 

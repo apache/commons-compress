@@ -85,10 +85,9 @@ public class SegmentHeader {
     private final Segment segment;
 
     /**
-     * The magic header for a Pack200 Segment is 0xCAFED00D. I wonder where they
-     * get their inspiration from ...
+     * The magic header for a Pack200 Segment is 0xCAFED00D. I wonder where they get their inspiration from ...
      */
-    private static final int[] magic = { 0xCA, 0xFE, 0xD0, 0x0D };
+    private static final int[] magic = {0xCA, 0xFE, 0xD0, 0x0D};
 
     public SegmentHeader(final Segment segment) {
         this.segment = segment;
@@ -100,22 +99,17 @@ public class SegmentHeader {
 
     private int archiveSizeOffset;
 
-    public void read(final InputStream in) throws IOException, Pack200Exception,
-            Error, Pack200Exception {
+    public void read(final InputStream in) throws IOException, Pack200Exception, Error, Pack200Exception {
 
-        final int word[] = decodeScalar("archive_magic_word", in, Codec.BYTE1,
-                magic.length);
+        final int word[] = decodeScalar("archive_magic_word", in, Codec.BYTE1, magic.length);
         for (int m = 0; m < magic.length; m++) {
             if (word[m] != magic[m]) {
                 throw new Error("Bad header");
             }
         }
-        setArchiveMinorVersion(decodeScalar("archive_minver", in,
-                Codec.UNSIGNED5));
-        setArchiveMajorVersion(decodeScalar("archive_majver", in,
-                Codec.UNSIGNED5));
-        options = new SegmentOptions(decodeScalar("archive_options", in,
-                Codec.UNSIGNED5));
+        setArchiveMinorVersion(decodeScalar("archive_minver", in, Codec.UNSIGNED5));
+        setArchiveMajorVersion(decodeScalar("archive_majver", in, Codec.UNSIGNED5));
+        options = new SegmentOptions(decodeScalar("archive_options", in, Codec.UNSIGNED5));
         parseArchiveFileCounts(in);
         parseArchiveSpecialCounts(in);
         parseCpCounts(in);
@@ -137,10 +131,8 @@ public class SegmentHeader {
     /**
      * Sets the minor version of this archive
      *
-     * @param version
-     *            the minor version of the archive
-     * @throws Pack200Exception
-     *             if the minor version is not 7
+     * @param version the minor version of the archive
+     * @throws Pack200Exception if the minor version is not 7
      */
     private void setArchiveMinorVersion(final int version) throws Pack200Exception {
         if (version != 7) {
@@ -152,15 +144,12 @@ public class SegmentHeader {
     /**
      * Sets the major version of this archive.
      *
-     * @param version
-     *            the minor version of the archive
-     * @throws Pack200Exception
-     *             if the major version is not 150
+     * @param version the minor version of the archive
+     * @throws Pack200Exception if the major version is not 150
      */
     private void setArchiveMajorVersion(final int version) throws Pack200Exception {
         if (version != 150) {
-            throw new Pack200Exception("Invalid segment major version: "
-                    + version);
+            throw new Pack200Exception("Invalid segment major version: " + version);
         }
         archiveMajor = version;
     }
@@ -242,13 +231,11 @@ public class SegmentHeader {
     }
 
     /**
-     * Obtain the band headers data as an input stream. If no band headers are
-     * present, this will return an empty input stream to prevent any further
-     * reads taking place.
+     * Obtain the band headers data as an input stream. If no band headers are present, this will return an empty input
+     * stream to prevent any further reads taking place.
      *
-     * Note that as a stream, data consumed from this input stream can't be
-     * re-used. Data is only read from this stream if the encoding is such that
-     * additional information needs to be decoded from the stream itself.
+     * Note that as a stream, data consumed from this input stream can't be re-used. Data is only read from this stream
+     * if the encoding is such that additional information needs to be decoded from the stream itself.
      *
      * @return the band headers input stream
      */
@@ -272,118 +259,79 @@ public class SegmentHeader {
         return options;
     }
 
-    private void parseArchiveFileCounts(final InputStream in) throws IOException,
-            Pack200Exception {
+    private void parseArchiveFileCounts(final InputStream in) throws IOException, Pack200Exception {
         if (options.hasArchiveFileCounts()) {
-            setArchiveSize((long)decodeScalar("archive_size_hi", in, Codec.UNSIGNED5) << 32
-                    | decodeScalar("archive_size_lo", in, Codec.UNSIGNED5));
+            setArchiveSize((long) decodeScalar("archive_size_hi", in, Codec.UNSIGNED5) << 32 |
+                decodeScalar("archive_size_lo", in, Codec.UNSIGNED5));
             archiveSizeOffset = in.available();
-            setSegmentsRemaining(decodeScalar("archive_next_count", in,
-                    Codec.UNSIGNED5));
-            setArchiveModtime(decodeScalar("archive_modtime", in,
-                    Codec.UNSIGNED5));
-            numberOfFiles = decodeScalar("file_count", in,
-                    Codec.UNSIGNED5);
+            setSegmentsRemaining(decodeScalar("archive_next_count", in, Codec.UNSIGNED5));
+            setArchiveModtime(decodeScalar("archive_modtime", in, Codec.UNSIGNED5));
+            numberOfFiles = decodeScalar("file_count", in, Codec.UNSIGNED5);
         }
     }
 
-    private void parseArchiveSpecialCounts(final InputStream in) throws IOException,
-            Pack200Exception {
+    private void parseArchiveSpecialCounts(final InputStream in) throws IOException, Pack200Exception {
         if (getOptions().hasSpecialFormats()) {
-            bandHeadersSize = decodeScalar("band_headers_size", in,
-                    Codec.UNSIGNED5);
-            setAttributeDefinitionCount(decodeScalar("attr_definition_count",
-                    in, Codec.UNSIGNED5));
+            bandHeadersSize = decodeScalar("band_headers_size", in, Codec.UNSIGNED5);
+            setAttributeDefinitionCount(decodeScalar("attr_definition_count", in, Codec.UNSIGNED5));
         }
     }
 
-    private void parseClassCounts(final InputStream in) throws IOException,
-            Pack200Exception {
+    private void parseClassCounts(final InputStream in) throws IOException, Pack200Exception {
         innerClassCount = decodeScalar("ic_count", in, Codec.UNSIGNED5);
-        defaultClassMinorVersion = decodeScalar("default_class_minver",
-                in, Codec.UNSIGNED5);
-        defaultClassMajorVersion = decodeScalar("default_class_majver",
-                in, Codec.UNSIGNED5);
+        defaultClassMinorVersion = decodeScalar("default_class_minver", in, Codec.UNSIGNED5);
+        defaultClassMajorVersion = decodeScalar("default_class_majver", in, Codec.UNSIGNED5);
         classCount = decodeScalar("class_count", in, Codec.UNSIGNED5);
     }
 
-    private void parseCpCounts(final InputStream in) throws IOException,
-            Pack200Exception {
+    private void parseCpCounts(final InputStream in) throws IOException, Pack200Exception {
         cpUTF8Count = decodeScalar("cp_Utf8_count", in, Codec.UNSIGNED5);
         if (getOptions().hasCPNumberCounts()) {
             cpIntCount = decodeScalar("cp_Int_count", in, Codec.UNSIGNED5);
-            cpFloatCount = decodeScalar("cp_Float_count", in,
-                    Codec.UNSIGNED5);
-            cpLongCount = decodeScalar("cp_Long_count", in,
-                    Codec.UNSIGNED5);
-            cpDoubleCount = decodeScalar("cp_Double_count", in,
-                    Codec.UNSIGNED5);
+            cpFloatCount = decodeScalar("cp_Float_count", in, Codec.UNSIGNED5);
+            cpLongCount = decodeScalar("cp_Long_count", in, Codec.UNSIGNED5);
+            cpDoubleCount = decodeScalar("cp_Double_count", in, Codec.UNSIGNED5);
         }
-        cpStringCount = decodeScalar("cp_String_count", in,
-                Codec.UNSIGNED5);
+        cpStringCount = decodeScalar("cp_String_count", in, Codec.UNSIGNED5);
         cpClassCount = decodeScalar("cp_Class_count", in, Codec.UNSIGNED5);
-        cpSignatureCount = decodeScalar("cp_Signature_count", in,
-                Codec.UNSIGNED5);
-        cpDescriptorCount = decodeScalar("cp_Descr_count", in,
-                Codec.UNSIGNED5);
+        cpSignatureCount = decodeScalar("cp_Signature_count", in, Codec.UNSIGNED5);
+        cpDescriptorCount = decodeScalar("cp_Descr_count", in, Codec.UNSIGNED5);
         cpFieldCount = decodeScalar("cp_Field_count", in, Codec.UNSIGNED5);
-        cpMethodCount = decodeScalar("cp_Method_count", in,
-                Codec.UNSIGNED5);
-        cpIMethodCount = decodeScalar("cp_Imethod_count", in,
-                Codec.UNSIGNED5);
+        cpMethodCount = decodeScalar("cp_Method_count", in, Codec.UNSIGNED5);
+        cpIMethodCount = decodeScalar("cp_Imethod_count", in, Codec.UNSIGNED5);
     }
 
     /**
-     * Decode a number of scalars from the band file. A scalar is like a band,
-     * but does not perform any band code switching.
+     * Decode a number of scalars from the band file. A scalar is like a band, but does not perform any band code
+     * switching.
      *
-     * @param name
-     *            the name of the scalar (primarily for logging/debugging
-     *            purposes)
-     * @param in
-     *            the input stream to read from
-     * @param codec
-     *            the codec for this scalar
+     * @param name the name of the scalar (primarily for logging/debugging purposes)
+     * @param in the input stream to read from
+     * @param codec the codec for this scalar
      * @return an array of decoded <code>long[]</code> values
-     * @throws IOException
-     *             if there is a problem reading from the underlying input
-     *             stream
-     * @throws Pack200Exception
-     *             if there is a problem decoding the value or that the value is
-     *             invalid
+     * @throws IOException if there is a problem reading from the underlying input stream
+     * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
-    private int[] decodeScalar(final String name, final InputStream in, final BHSDCodec codec,
-            final int n) throws IOException, Pack200Exception {
-        segment.log(Segment.LOG_LEVEL_VERBOSE, "Parsed #" + name + " (" + n
-                + ")");
+    private int[] decodeScalar(final String name, final InputStream in, final BHSDCodec codec, final int n)
+        throws IOException, Pack200Exception {
+        segment.log(Segment.LOG_LEVEL_VERBOSE, "Parsed #" + name + " (" + n + ")");
         return codec.decodeInts(n, in);
     }
 
     /**
-     * Decode a scalar from the band file. A scalar is like a band, but does not
-     * perform any band code switching.
+     * Decode a scalar from the band file. A scalar is like a band, but does not perform any band code switching.
      *
-     * @param name
-     *            the name of the scalar (primarily for logging/debugging
-     *            purposes)
-     * @param in
-     *            the input stream to read from
-     * @param codec
-     *            the codec for this scalar
+     * @param name the name of the scalar (primarily for logging/debugging purposes)
+     * @param in the input stream to read from
+     * @param codec the codec for this scalar
      * @return the decoded value
-     * @throws IOException
-     *             if there is a problem reading from the underlying input
-     *             stream
-     * @throws Pack200Exception
-     *             if there is a problem decoding the value or that the value is
-     *             invalid
+     * @throws IOException if there is a problem reading from the underlying input stream
+     * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
     private int decodeScalar(final String name, final InputStream in, final BHSDCodec codec)
-            throws IOException, Pack200Exception {
+        throws IOException, Pack200Exception {
         final int ret = codec.decode(in);
-        segment
-                .log(Segment.LOG_LEVEL_VERBOSE, "Parsed #" + name + " as "
-                        + ret);
+        segment.log(Segment.LOG_LEVEL_VERBOSE, "Parsed #" + name + " as " + ret);
         return ret;
     }
 
@@ -408,22 +356,15 @@ public class SegmentHeader {
     }
 
     /**
-     * Completely reads in a byte array, akin to the implementation in
-     * {@link java.lang.DataInputStream}. TODO Refactor out into a separate
-     * InputStream handling class
+     * Completely reads in a byte array, akin to the implementation in {@link java.lang.DataInputStream}. TODO Refactor
+     * out into a separate InputStream handling class
      *
-     * @param in
-     *            the input stream to read from
-     * @param data
-     *            the byte array to read into
-     * @throws IOException
-     *             if a problem occurs during reading from the underlying stream
-     * @throws Pack200Exception
-     *             if a problem occurs with an unexpected value or unsupported
-     *             codec
+     * @param in the input stream to read from
+     * @param data the byte array to read into
+     * @throws IOException if a problem occurs during reading from the underlying stream
+     * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */
-    private void readFully(final InputStream in, final byte[] data) throws IOException,
-            Pack200Exception {
+    private void readFully(final InputStream in, final byte[] data) throws IOException, Pack200Exception {
         int total = in.read(data);
         if (total == -1) {
             throw new EOFException("Failed to read any data from input stream");
@@ -431,8 +372,7 @@ public class SegmentHeader {
         while (total < data.length) {
             final int delta = in.read(data, total, data.length - total);
             if (delta == -1) {
-                throw new EOFException(
-                        "Failed to read some data from input stream");
+                throw new EOFException("Failed to read some data from input stream");
             }
             total += delta;
         }
