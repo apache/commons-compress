@@ -474,7 +474,12 @@ public class SevenZFile implements Closeable {
             return initializeArchive(startHeader, password, true);
         }
         // No valid header found - probably first file of multipart archive was removed too early. Scan for end header.
-        return tryToLocateEndHeader(password);
+        if (options.getTryToRecoverBrokenArchives()) {
+            return tryToLocateEndHeader(password);
+        }
+        throw new IOException("archive seems to be invalid.\nYou may want to retry and enable the"
+            + " tryToRecoverBrokenArchives if the archive could be a multi volume archive that has been closed"
+            + " prematurely.");
     }
 
     private Archive tryToLocateEndHeader(final byte[] password) throws IOException {

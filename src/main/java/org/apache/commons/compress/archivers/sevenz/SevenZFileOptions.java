@@ -26,13 +26,17 @@ package org.apache.commons.compress.archivers.sevenz;
 public class SevenZFileOptions {
     private static final int DEFAUL_MEMORY_LIMIT_IN_KB = Integer.MAX_VALUE;
     private static final boolean DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES= false;
+    private static final boolean DEFAULT_TRY_TO_RECOVER_BROKEN_ARCHIVES = false;
 
     private final int maxMemoryLimitInKb;
     private final boolean useDefaultNameForUnnamedEntries;
+    private final boolean tryToRecoverBrokenArchives;
 
-    private SevenZFileOptions(final int maxMemoryLimitInKb, final boolean useDefaultNameForUnnamedEntries) {
+    private SevenZFileOptions(final int maxMemoryLimitInKb, final boolean useDefaultNameForUnnamedEntries,
+        final boolean tryToRecoverBrokenArchives) {
         this.maxMemoryLimitInKb = maxMemoryLimitInKb;
         this.useDefaultNameForUnnamedEntries = useDefaultNameForUnnamedEntries;
+        this.tryToRecoverBrokenArchives = tryToRecoverBrokenArchives;
     }
 
     /**
@@ -44,7 +48,8 @@ public class SevenZFileOptions {
      * </ul>
      */
     public static final SevenZFileOptions DEFAULT = new SevenZFileOptions(DEFAUL_MEMORY_LIMIT_IN_KB,
-        DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES);
+        DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES,
+        DEFAULT_TRY_TO_RECOVER_BROKEN_ARCHIVES);
 
     /**
      * Obtains a builder for SevenZFileOptions.
@@ -78,6 +83,15 @@ public class SevenZFileOptions {
     }
 
     /**
+     * Whether {@link SevenZFile} shall try to recover from a certain type of broken archive.
+     * @return whether SevenZFile shall try to recover from a certain type of broken archive.
+     * @since 1.21
+     */
+    public boolean getTryToRecoverBrokenArchives() {
+        return tryToRecoverBrokenArchives;
+    }
+
+    /**
      * Mutable builder for the immutable {@link SevenZFileOptions}.
      *
      * @since 1.19
@@ -85,6 +99,8 @@ public class SevenZFileOptions {
     public static class Builder {
         private int maxMemoryLimitInKb = DEFAUL_MEMORY_LIMIT_IN_KB;
         private boolean useDefaultNameForUnnamedEntries = DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES;
+        private boolean tryToRecoverBrokenArchives = DEFAULT_TRY_TO_RECOVER_BROKEN_ARCHIVES;
+
         /**
          * Sets the maximum amount of memory to use for parsing the
          * archive and during extraction.
@@ -114,12 +130,32 @@ public class SevenZFileOptions {
         }
 
         /**
+         * Sets whether {@link SevenZFile} will try to revover broken archives where the CRC of the file's metadata is
+         * 0.
+         *
+         * <p>This special kind of broken archive is encountered when mutli volume archives are closed prematurely. If
+         * you enable this option SevenZFile will trust data that looks as if it could contain metadata of an archive
+         * and allocate big amounts of memory. It is strongly recommended to not enable this option without setting
+         * {@link #withMaxMemoryLimitInKb} at the same time.
+         *
+         * @param tryToRecoverBrokenArchives if true SevenZFile will try to recover archives that are broken in the
+         * specific way
+         * @return the reconfigured builder
+         * @since 1.21
+         */
+        public Builder withTryToRecoverBrokenArchives(final boolean tryToRecoverBrokenArchives) {
+            this.tryToRecoverBrokenArchives = tryToRecoverBrokenArchives;
+            return this;
+        }
+
+        /**
          * Create the {@link SevenZFileOptions}.
          *
          * @return configured {@link SevenZFileOptions}.
          */
         public SevenZFileOptions build() {
-            return new SevenZFileOptions(maxMemoryLimitInKb, useDefaultNameForUnnamedEntries);
+            return new SevenZFileOptions(maxMemoryLimitInKb, useDefaultNameForUnnamedEntries,
+                tryToRecoverBrokenArchives);
         }
     }
 }

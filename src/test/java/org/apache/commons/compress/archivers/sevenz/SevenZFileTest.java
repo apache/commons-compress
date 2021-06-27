@@ -173,7 +173,12 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     private void test7zUnarchive(final File f, final SevenZMethod m) throws Exception {
-        test7zUnarchive(f, m, (char[]) null);
+        test7zUnarchive(f, m, false);
+    }
+
+    private void test7zUnarchive(final File f, final SevenZMethod m, boolean tryToRecoverBrokenArchives)
+        throws Exception {
+        test7zUnarchive(f, m, (char[]) null, tryToRecoverBrokenArchives);
     }
 
     @Test
@@ -413,8 +418,14 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void test7zUnarchiveWithDefectHeader() throws Exception {
+    public void test7zUnarchiveWithDefectHeaderFailsByDefault() throws Exception {
+        thrown.expect(IOException.class);
         test7zUnarchive(getFile("bla.noendheaderoffset.7z"), SevenZMethod.LZMA);
+    }
+
+    @Test
+    public void test7zUnarchiveWithDefectHeader() throws Exception {
+        test7zUnarchive(getFile("bla.noendheaderoffset.7z"), SevenZMethod.LZMA, true);
     }
 
     @Test
@@ -725,7 +736,8 @@ public class SevenZFileTest extends AbstractTestCase {
         testFiles.add(getPath("COMPRESS-542-endheadercorrupted2.7z"));
 
         for (final Path file : testFiles) {
-            try (SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(file))) {
+            try (SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(file),
+                     SevenZFileOptions.builder().withTryToRecoverBrokenArchives(true).build())) {
                 fail("Expected IOException: start header corrupt and unable to guess end header");
             } catch (final IOException e) {
                 assertEquals("Start header corrupt and unable to guess end header", e.getMessage());
@@ -751,7 +763,13 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     private void test7zUnarchive(final File f, final SevenZMethod m, final char[] password) throws Exception {
-        try (SevenZFile sevenZFile = new SevenZFile(f, password)) {
+        test7zUnarchive(f, m, password, false);
+    }
+
+    private void test7zUnarchive(final File f, final SevenZMethod m, final char[] password,
+        final boolean tryToRecoverBrokenArchives) throws Exception {
+        try (SevenZFile sevenZFile = new SevenZFile(f, password,
+                 SevenZFileOptions.builder().withTryToRecoverBrokenArchives(tryToRecoverBrokenArchives).build())) {
             test7zUnarchive(sevenZFile, m);
         }
     }

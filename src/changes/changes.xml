@@ -191,6 +191,10 @@ The <action> type attribute can be add,update,fix,remove.
         Also added sanity checks before even trying to parse an
         archive and made SevenZFileOptions' maxMemorySizeInKb apply to
         the stored metadata for an archive.
+
+        And further added an option that needs to be enabled in order
+        to make SevenZFile try to recover a broken archive. This is a
+        backwards incompatible change.
       </action>
       <action issue="COMPRESS-546" type="fix" date="2020-08-15"
               due-to="Maksim Zuev" dev="PeterLee">
