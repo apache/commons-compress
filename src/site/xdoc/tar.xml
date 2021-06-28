@@ -56,7 +56,7 @@
           file is added.  This is the default.</li>
           <li><code>LONGFILE_TRUNCATE</code>: truncate such names.</li>
           <li><code>LONGFILE_GNU</code>: use a GNU tar variant now
-          refered to as "oldgnu" of storing such names.  If you choose
+          referred to as "oldgnu" of storing such names.  If you choose
           the GNU tar option, the archive can not be extracted using
           many other tar implementations like the ones of OpenBSD,
           Solaris or MacOS X.</li> 
@@ -129,7 +129,7 @@
         <p><code>TarArchiveInputStream</code> will recognize sparse
         file entries stored using the "oldgnu" format
         (<code>-&#x2d;sparse-version=0.0</code> in GNU tar) but is not
-        able to extract them correctly.  <a href="#Unsupported
+        able to extract them correctly.  <a href="examples.html#Unsupported
         Features"><code>canReadEntryData</code></a> will return false
         on such entries.  The other variants of sparse files can
         currently not be detected at all.</p>

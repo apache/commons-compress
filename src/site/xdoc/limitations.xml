@@ -161,7 +161,7 @@
      </section>
      <section name="PACK200">
        <ul>
-         <li>Pack200 support in Commons Comppress relies on the
+         <li>Pack200 support in Commons Compress relies on the
          <code>Pack200</code> class of the Java classlib. Java 14
          removed support and thus Pack200 will not work at all when
          running on Java 14 or later.</li>
