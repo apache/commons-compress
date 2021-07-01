@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 import java.util.jar.JarInputStream;
-import org.apache.commons.compress.java.util.jar.Pack200;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 
@@ -128,7 +127,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
     public void finish() throws IOException {
         if (!finished) {
             finished = true;
-            final Pack200.Packer p = Pack200.newPacker();
+            final Pack200Facade.Packer p = Pack200Facade.newPacker();
             if (properties != null) {
                 p.properties().putAll(properties);
             }

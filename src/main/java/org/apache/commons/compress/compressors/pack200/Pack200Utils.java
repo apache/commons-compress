@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
-import org.apache.commons.compress.java.util.jar.Pack200;
 
 /**
  * Utility methods for Pack200.
@@ -130,16 +129,16 @@ public class Pack200Utils {
         if (props == null) {
             props = new HashMap<>();
         }
-        props.put(Pack200.Packer.SEGMENT_LIMIT, "-1");
+        props.put(Pack200Facade.Packer.SEGMENT_LIMIT, "-1");
         final File tempFile = File.createTempFile("commons-compress", "pack200normalize");
         try {
             try (OutputStream fos = Files.newOutputStream(tempFile.toPath());
                  JarFile jarFile = new JarFile(from)) {
-                final Pack200.Packer packer = Pack200.newPacker();
+                final Pack200Facade.Packer packer = Pack200Facade.newPacker();
                 packer.properties().putAll(props);
                 packer.pack(jarFile, fos);
             }
-            final Pack200.Unpacker unpacker = Pack200.newUnpacker();
+            final Pack200Facade.Unpacker unpacker = Pack200Facade.newUnpacker();
             try (JarOutputStream jos = new JarOutputStream(Files.newOutputStream(to.toPath()))) {
                 unpacker.unpack(tempFile, jos);
             }
