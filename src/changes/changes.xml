@@ -290,6 +290,11 @@ The <action> type attribute can be add,update,fix,remove.
         Fixes a specific case for ZIP but affects other formats as
         well.
       </action>
+      <action issue="COMPRESS-507" type="add" date="2021-07-02"
+              due-to="Gary Gregory, Apache Harmony" dev="ggregory">
+        Commons Compress cannot be built with JDK14 due to Pack200 removal. 
+        Add Pack200 implementation from Apache Harmony.
+      </action>
       <!-- UPDATE -->
       <action type="update" date="2020-08-18">
         Update from Java 7 to 8.
