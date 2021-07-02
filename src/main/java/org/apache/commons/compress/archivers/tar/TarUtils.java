@@ -754,8 +754,8 @@ public class TarUtils {
                                 throw new IOException("Paxheader value size " + restLen
                                     + " exceeds size of header record");
                             } else {
-                                final byte[] rest = new byte[restLen];
-                                final int got = IOUtils.readFully(inputStream, rest);
+                                final byte[] rest = IOUtils.readRange(inputStream, restLen);
+                                final int got = rest.length;
                                 if (got != restLen) {
                                     throw new IOException("Failed to read "
                                             + "Paxheader. Expected "

@@ -123,9 +123,8 @@ class BinaryTree {
             throw new IOException("Cannot read the size of the encoded tree, unexpected end of stream");
         }
 
-        final byte[] encodedTree = new byte[size];
-        final int read = IOUtils.readFully(inputStream, encodedTree);
-        if (read != size) {
+        final byte[] encodedTree = IOUtils.readRange(inputStream, size);
+        if (encodedTree.length != size) {
             throw new EOFException();
         }
 

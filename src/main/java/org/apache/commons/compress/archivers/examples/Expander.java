@@ -327,7 +327,7 @@ public class Expander {
     public void expand(final SevenZFile archive, final File targetDirectory)
         throws IOException, ArchiveException {
         expand(archive::getNextEntry, (entry, out) -> {
-            final byte[] buffer = new byte[8024];
+            final byte[] buffer = new byte[8192];
             int n;
             while (-1 != (n = archive.read(buffer))) {
                 out.write(buffer, 0, n);

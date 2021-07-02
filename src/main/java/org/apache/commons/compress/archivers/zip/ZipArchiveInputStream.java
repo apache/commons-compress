@@ -278,7 +278,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                 // first local file header - look for it and fail with
                 // the appropriate error message if this is a split
                 // archive.
-                readFirstLocalFileHeader(lfhBuf);
+                readFirstLocalFileHeader();
             } else {
                 readFully(lfhBuf);
             }
@@ -339,15 +339,13 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         final int extraLen = ZipShort.getValue(lfhBuf, off);
         off += SHORT; // NOSONAR - assignment as documentation
 
-        final byte[] fileName = new byte[fileNameLen];
-        readFully(fileName);
+        final byte[] fileName = readRange(fileNameLen);
         current.entry.setName(entryEncoding.decode(fileName), fileName);
         if (hasUTF8Flag) {
             current.entry.setNameSource(ZipArchiveEntry.NameSource.NAME_WITH_EFS_FLAG);
         }
 
-        final byte[] extraData = new byte[extraLen];
-        readFully(extraData);
+        final byte[] extraData = readRange(extraLen);
         try {
             current.entry.setExtra(extraData);
         } catch (RuntimeException ex) {
@@ -410,9 +408,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
      * deals with splitting/spanning markers that may prefix the first
      * LFH.
      */
-    private void readFirstLocalFileHeader(final byte[] lfh) throws IOException {
-        readFully(lfh);
-        final ZipLong sig = new ZipLong(lfh);
+    private void readFirstLocalFileHeader() throws IOException {
+        readFully(lfhBuf);
+        final ZipLong sig = new ZipLong(lfhBuf);
 
         if (!skipSplitSig && sig.equals(ZipLong.DD_SIG)) {
             throw new UnsupportedZipFeatureException(UnsupportedZipFeatureException.Feature.SPLITTING);
@@ -423,8 +421,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
             // Just skip over the marker.
             final byte[] missedLfhBytes = new byte[4];
             readFully(missedLfhBytes);
-            System.arraycopy(lfh, 4, lfh, 0, LFH_LEN - 4);
-            System.arraycopy(missedLfhBytes, 0, lfh, LFH_LEN - 4, 4);
+            System.arraycopy(lfhBuf, 4, lfhBuf, 0, LFH_LEN - 4);
+            System.arraycopy(missedLfhBytes, 0, lfhBuf, LFH_LEN - 4, 4);
         }
     }
 
@@ -880,6 +878,15 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         if (count < len) {
             throw new EOFException();
         }
+    }
+
+    private byte[] readRange(int len) throws IOException {
+        final byte[] ret = IOUtils.readRange(in, len);
+        count(ret.length);
+        if (ret.length < len) {
+            throw new EOFException();
+        }
+        return ret;
     }
 
     private void readDataDescriptor() throws IOException {

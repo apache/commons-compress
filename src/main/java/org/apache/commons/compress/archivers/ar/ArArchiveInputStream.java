@@ -101,8 +101,8 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 
         if (offset == 0) {
             final byte[] expected = ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER);
-            final byte[] realized = new byte[expected.length];
-            final int read = IOUtils.readFully(input, realized);
+            final byte[] realized = IOUtils.readRange(input, expected.length);
+            final int read = realized.length;
             trackReadBytes(read);
             if (read != expected.length) {
                 throw new IOException("Failed to read header. Occurred at byte: " + getBytesRead());
@@ -133,8 +133,8 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 
         {
             final byte[] expected = ArchiveUtils.toAsciiBytes(ArArchiveEntry.TRAILER);
-            final byte[] realized = new byte[expected.length];
-            final int read = IOUtils.readFully(input, realized);
+            final byte[] realized = IOUtils.readRange(input, expected.length);
+            final int read = realized.length;
             trackReadBytes(read);
             if (read != expected.length) {
                 throw new IOException("Failed to read entry trailer. Occurred at byte: " + getBytesRead());
@@ -340,8 +340,8 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     private String getBSDLongName(final String bsdLongName) throws IOException {
         final int nameLen =
             Integer.parseInt(bsdLongName.substring(BSD_LONGNAME_PREFIX_LEN));
-        final byte[] name = new byte[nameLen];
-        final int read = IOUtils.readFully(input, name);
+        final byte[] name = IOUtils.readRange(input, nameLen);
+        final int read = name.length;
         trackReadBytes(read);
         if (read != nameLen) {
             throw new EOFException();
@@ -386,8 +386,8 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      */
     private ArArchiveEntry readGNUStringTable(final byte[] length, final int offset, final int len) throws IOException {
         final int bufflen = asInt(length, offset, len); // Assume length will fit in an int
-        namebuffer = new byte[bufflen];
-        final int read = IOUtils.readFully(input, namebuffer, 0, bufflen);
+        namebuffer = IOUtils.readRange(input, bufflen);
+        final int read = namebuffer.length;
         trackReadBytes(read);
         if (read != bufflen){
             throw new IOException("Failed to read complete // record: expected="

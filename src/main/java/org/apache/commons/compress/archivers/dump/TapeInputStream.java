@@ -297,8 +297,7 @@ class TapeInputStream extends FilterInputStream {
                 // this block is compressed.
                 final int flags = (h >> 1) & 0x07;
                 int length = (h >> 4) & 0x0FFFFFFF;
-                final byte[] compBuffer = new byte[length];
-                readFully(compBuffer, 0, length);
+                final byte[] compBuffer = readRange(length);
                 bytesRead += length;
 
                 if (!decompress) {
@@ -353,6 +352,14 @@ class TapeInputStream extends FilterInputStream {
         if (count < len) {
             throw new ShortFileException();
         }
+    }
+
+    private byte[] readRange(final int len) throws IOException {
+        final byte[] ret = IOUtils.readRange(in, len);
+        if (ret.length < len) {
+            throw new ShortFileException();
+        }
+        return ret;
     }
 
     /**

@@ -22,6 +22,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+import org.apache.commons.compress.utils.IOUtils;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -337,10 +338,11 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
             final int datalen = DumpArchiveConstants.TP_SIZE * entry.getHeaderCount();
 
             if (blockBuffer.length < datalen) {
-                blockBuffer = new byte[datalen];
-            }
-
-            if (raw.read(blockBuffer, 0, datalen) != datalen) {
+                blockBuffer = IOUtils.readRange(raw, datalen);
+                if (blockBuffer.length != datalen) {
+                    throw new EOFException();
+                }
+            } else if (raw.read(blockBuffer, 0, datalen) != datalen) {
                 throw new EOFException();
             }
 

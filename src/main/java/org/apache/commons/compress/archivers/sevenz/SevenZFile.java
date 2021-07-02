@@ -646,7 +646,6 @@ public class SevenZFile implements Closeable {
         int nid =  getUnsignedByte(input);
         while (nid != NID.kEnd) {
             final long propertySize = readUint64(input);
-            assertFitsIntoNonNegativeInt("propertySize", propertySize);
             final byte[] property = new byte[(int)propertySize];
             get(input, property);
             nid = getUnsignedByte(input);
@@ -704,8 +703,8 @@ public class SevenZFile implements Closeable {
                     folder.getUnpackSize(), folder.crc);
         }
         final int unpackSize = assertFitsIntoNonNegativeInt("unpackSize", folder.getUnpackSize());
-        final byte[] nextHeader = new byte[unpackSize];
-        if (IOUtils.readFully(inputStreamStack, nextHeader) < unpackSize) {
+        final byte[] nextHeader = IOUtils.readRange(inputStreamStack, unpackSize);
+        if (nextHeader.length < unpackSize) {
             throw new IOException("premature end of stream");
         }
         inputStreamStack.close();

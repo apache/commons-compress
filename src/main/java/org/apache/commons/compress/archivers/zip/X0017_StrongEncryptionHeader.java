@@ -371,11 +371,11 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
             this.hashSize = ZipShort.getValue(data, offset + ivSize + 22 + erdSize);
             final int resize = ZipShort.getValue(data, offset + ivSize + 24 + erdSize);
 
-            this.recipientKeyHash = new byte[this.hashSize];
             if (resize < this.hashSize) {
                 throw new ZipException("Invalid X0017_StrongEncryptionHeader: resize " + resize
                     + " is too small to hold hashSize" + this.hashSize);
             }
+            this.recipientKeyHash = new byte[this.hashSize];
             this.keyBlob = new byte[resize - this.hashSize];
             // TODO: this looks suspicious, 26 rather than 24 would be "after" resize
             assertDynamicLengthFits("resize", resize, ivSize + 24 + erdSize, length);

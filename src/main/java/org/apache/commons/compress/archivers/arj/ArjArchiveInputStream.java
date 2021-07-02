@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.arj;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -122,10 +123,14 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         }
     }
 
-    private void readFully(final DataInputStream dataIn, final byte[] b)
+    private byte[] readRange(final InputStream in, final int len)
         throws IOException {
-        dataIn.readFully(b);
+        final byte[] b = IOUtils.readRange(in, len);
         count(b.length);
+        if (b.length < len) {
+            throw new EOFException();
+        }
+        return b;
     }
 
     private byte[] readHeader() throws IOException {
@@ -144,8 +149,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
                 return null;
             }
             if (basicHeaderSize <= 2600) {
-                basicHeaderBytes = new byte[basicHeaderSize];
-                readFully(in, basicHeaderBytes);
+                basicHeaderBytes = readRange(in, basicHeaderSize);
                 final long basicHeaderCrc32 = read32(in) & 0xFFFFFFFFL;
                 final CRC32 crc32 = new CRC32();
                 crc32.update(basicHeaderBytes);
@@ -166,8 +170,9 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
                 new ByteArrayInputStream(basicHeaderBytes));
 
         final int firstHeaderSize = basicHeader.readUnsignedByte();
-        final byte[] firstHeaderBytes = new byte[firstHeaderSize - 1];
-        basicHeader.readFully(firstHeaderBytes);
+        final byte[] firstHeaderBytes = readRange(basicHeader, firstHeaderSize - 1);
+        pushedBackBytes(firstHeaderBytes.length);
+
         final DataInputStream firstHeader = new DataInputStream(
                 new ByteArrayInputStream(firstHeaderBytes));
 
@@ -185,7 +190,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         hdr.securityEnvelopeFilePosition = read32(firstHeader);
         hdr.fileSpecPosition = read16(firstHeader);
         hdr.securityEnvelopeLength = read16(firstHeader);
-        pushedBackBytes(20); // count has already counted them via readFully
+        pushedBackBytes(20); // count has already counted them via readRange
         hdr.encryptionVersion = firstHeader.readUnsignedByte();
         hdr.lastChapter = firstHeader.readUnsignedByte();
 
@@ -201,8 +206,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
 
         final  int extendedHeaderSize = read16(in);
         if (extendedHeaderSize > 0) {
-            hdr.extendedHeaderBytes = new byte[extendedHeaderSize];
-            readFully(in, hdr.extendedHeaderBytes);
+            hdr.extendedHeaderBytes = readRange(in, extendedHeaderSize);
             final long extendedHeaderCrc32 = 0xffffFFFFL & read32(in);
             final CRC32 crc32 = new CRC32();
             crc32.update(hdr.extendedHeaderBytes);
@@ -222,8 +226,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         try (final DataInputStream basicHeader = new DataInputStream(new ByteArrayInputStream(basicHeaderBytes))) {
 
             final int firstHeaderSize = basicHeader.readUnsignedByte();
-            final byte[] firstHeaderBytes = new byte[firstHeaderSize - 1];
-            basicHeader.readFully(firstHeaderBytes);
+            final byte[] firstHeaderBytes = readRange(basicHeader, firstHeaderSize - 1);
+            pushedBackBytes(firstHeaderBytes.length);
             try (final DataInputStream firstHeader = new DataInputStream(new ByteArrayInputStream(firstHeaderBytes))) {
 
                 final LocalFileHeader localFileHeader = new LocalFileHeader();
@@ -252,8 +256,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
                 final ArrayList<byte[]> extendedHeaders = new ArrayList<>();
                 int extendedHeaderSize;
                 while ((extendedHeaderSize = read16(in)) > 0) {
-                    final byte[] extendedHeaderBytes = new byte[extendedHeaderSize];
-                    readFully(in, extendedHeaderBytes);
+                    final byte[] extendedHeaderBytes = readRange(in, extendedHeaderSize);
                     final long extendedHeaderCrc32 = 0xffffFFFFL & read32(in);
                     final CRC32 crc32 = new CRC32();
                     crc32.update(extendedHeaderBytes);

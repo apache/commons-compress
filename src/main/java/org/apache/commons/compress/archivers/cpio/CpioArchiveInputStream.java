@@ -354,17 +354,25 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         return count;
     }
 
+    private final byte[] readRange(final int len)
+            throws IOException {
+        final byte[] b = IOUtils.readRange(in, len);
+        count(b.length);
+        if (b.length < len) {
+            throw new EOFException();
+        }
+        return b;
+    }
+
     private long readBinaryLong(final int length, final boolean swapHalfWord)
             throws IOException {
-        final byte[] tmp = new byte[length];
-        readFully(tmp, 0, tmp.length);
+        final byte[] tmp = readRange(length);
         return CpioUtil.byteArray2long(tmp, swapHalfWord);
     }
 
     private long readAsciiLong(final int length, final int radix)
             throws IOException {
-        final byte[] tmpBuffer = new byte[length];
-        readFully(tmpBuffer, 0, tmpBuffer.length);
+        final byte[] tmpBuffer = readRange(length);
         return Long.parseLong(ArchiveUtils.toAsciiString(tmpBuffer), radix);
     }
 
@@ -481,8 +489,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
 
     private String readCString(final int length) throws IOException {
         // don't include trailing NUL in file name to decode
-        final byte[] tmpBuffer = new byte[length - 1];
-        readFully(tmpBuffer, 0, tmpBuffer.length);
+        final byte[] tmpBuffer = readRange(length - 1);
         if (this.in.read() == -1) {
             throw new EOFException();
         }

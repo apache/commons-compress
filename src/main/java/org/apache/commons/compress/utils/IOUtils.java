@@ -280,4 +280,102 @@ public final class IOUtils {
     public static void copy(final File sourceFile, final OutputStream outputStream) throws IOException {
         Files.copy(sourceFile.toPath(), outputStream);
     }
+
+    /**
+     * Copies part of the content of a InputStream into an OutputStream.
+     * Uses a default buffer size of 8024 bytes.
+     *
+     * @param input
+     *            the InputStream to copy
+     * @param output
+     *            the target Stream
+     * @param len
+     *            maximum amount of bytes to copy
+     * @return the number of bytes copied
+     * @throws IOException
+     *             if an error occurs
+     * @since 1.21
+     */
+    public static long copyRange(final InputStream input, final long len, final OutputStream output)
+        throws IOException {
+        return copyRange(input, len, output, COPY_BUF_SIZE);
+    }
+
+    /**
+     * Copies part of the content of a InputStream into an OutputStream
+     *
+     * @param input
+     *            the InputStream to copy
+     * @param len
+     *            maximum amount of bytes to copy
+     * @param output
+     *            the target Stream
+     * @param buffersize
+     *            the buffer size to use, must be bigger than 0
+     * @return the number of bytes copied
+     * @throws IOException
+     *             if an error occurs
+     * @throws IllegalArgumentException
+     *             if buffersize is smaller than or equal to 0
+     * @since 1.21
+     */
+    public static long copyRange(final InputStream input, final long len, final OutputStream output,
+        final int buffersize) throws IOException {
+        if (buffersize < 1) {
+            throw new IllegalArgumentException("buffersize must be bigger than 0");
+        }
+        final byte[] buffer = new byte[(int) Math.min(buffersize, len)];
+        int n = 0;
+        long count = 0;
+        while (count < len && -1 != (n = input.read(buffer, 0, (int) Math.min(len - count, buffer.length)))) {
+            output.write(buffer, 0, n);
+            count += n;
+        }
+        return count;
+    }
+
+    /**
+     * Gets part of the contents of an <code>InputStream</code> as a <code>byte[]</code>.
+     *
+     * @param input  the <code>InputStream</code> to read from
+     * @param len
+     *            maximum amount of bytes to copy
+     * @return the requested byte array
+     * @throws NullPointerException if the input is null
+     * @throws IOException if an I/O error occurs
+     * @since 1.21
+     */
+    public static byte[] readRange(final InputStream input, final int len) throws IOException {
+        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+        copyRange(input, len, output);
+        return output.toByteArray();
+    }
+
+    /**
+     * Gets part of the contents of an <code>ReadableByteChannel</code> as a <code>byte[]</code>.
+     *
+     * @param input  the <code>ReadableByteChannel</code> to read from
+     * @param len
+     *            maximum amount of bytes to copy
+     * @return the requested byte array
+     * @throws NullPointerException if the input is null
+     * @throws IOException if an I/O error occurs
+     * @since 1.21
+     */
+    public static byte[] readRange(final ReadableByteChannel input, final int len) throws IOException {
+        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+        final ByteBuffer b = ByteBuffer.allocate(Math.min(len, COPY_BUF_SIZE));
+        int read = 0;
+        while (read < len) {
+            final int readNow = input.read(b);
+            if (readNow <= 0) {
+                break;
+            }
+            output.write(b.array(), 0, readNow);
+            b.rewind();
+            read += readNow;
+        }
+        return output.toByteArray();
+    }
+
 }
