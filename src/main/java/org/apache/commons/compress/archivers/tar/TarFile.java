@@ -667,8 +667,11 @@ public class TarFile implements Closeable {
 
         private int currentSparseInputStreamIndex;
 
-        BoundedTarEntryInputStream(final TarArchiveEntry entry, final SeekableByteChannel channel) {
+        BoundedTarEntryInputStream(final TarArchiveEntry entry, final SeekableByteChannel channel) throws IOException {
             super(entry.getDataOffset(), entry.getRealSize());
+            if (channel.size() - entry.getSize() < entry.getDataOffset()) {
+                throw new IOException("entry size exceeds archive size");
+            }
             this.entry = entry;
             this.channel = channel;
         }
