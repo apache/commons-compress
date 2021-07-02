@@ -295,6 +295,9 @@ The <action> type attribute can be add,update,fix,remove.
         Commons Compress cannot be built with JDK14 due to Pack200 removal. 
         Add Pack200 implementation from Apache Harmony.
       </action>
+      <action type="fix" date="2021-07-02" due-to="Arturo Bernal" dev="ggregory">
+        Simplify Assertions #205.
+      </action>
       <!-- UPDATE -->
       <action type="update" date="2020-08-18">
         Update from Java 7 to 8.
