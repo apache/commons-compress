@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.jar.JarOutputStream;
-import java.util.jar.Pack200;
+import org.apache.commons.compress.java.util.jar.Pack200;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.CloseShieldFilterInputStream;

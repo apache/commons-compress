@@ -60,6 +60,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       org.tukaani.xz;resolution:=optional,
       org.brotli.dec;resolution:=optional,
       com.github.luben.zstd;resolution:=optional,
+      org.objectweb.asm;resolution:=optional,
       javax.crypto.*;resolution:=optional,
       *
     </commons.osgi.import>
@@ -115,6 +116,16 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <version>1.9</version>
       <optional>true</optional>
     </dependency>
+
+    <!-- Pack200 -->
+    <dependency>
+      <groupId>asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>3.2</version>
+      <optional>true</optional>
+    </dependency>
+
+    <!--  Test -->
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
@@ -128,7 +139,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <scope>test</scope>
     </dependency>
 
-    <!-- integration test verifiying OSGi bundle works -->
+    <!-- integration test verifying OSGi bundle works -->
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
       <artifactId>pax-exam-container-native</artifactId>
@@ -217,9 +228,19 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <email>ebourg at apache.org</email>
     </developer>
     <developer>
-      <name>Gary Gregory</name>
       <id>ggregory</id>
+      <name>Gary Gregory</name>
       <email>ggregory at apache.org</email>
+      <url>https://www.garygregory.com</url>
+      <organization>The Apache Software Foundation</organization>
+      <organizationUrl>https://www.apache.org/</organizationUrl>      
+      <roles>
+        <role>PMC Member</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+      <properties>
+        <picUrl>https://people.apache.org/~ggregory/img/garydgregory80.png</picUrl>
+      </properties>
     </developer>
     <developer>
       <name>Rob Tompkins</name>

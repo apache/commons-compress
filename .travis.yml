@@ -51,8 +51,9 @@ matrix:
 #        - java -version
 #        - $JAVA_HOME/bin/java -version
 
+# TEMP  -Ddoclint=none
 script:
-  - mvn -V --no-transfer-progress
+  - mvn -V --no-transfer-progress -Ddoclint=none
  
 after_success:
-  - mvn -V --no-transfer-progress clean test jacoco:report coveralls:report -Ptravis-jacoco javadoc:javadoc -Ddoclint=all
+  - mvn -V --no-transfer-progress clean test jacoco:report coveralls:report -Ptravis-jacoco javadoc:javadoc -Ddoclint=none
