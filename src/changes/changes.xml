@@ -133,6 +133,16 @@ you relied on the recovery attempt.">
         of a traditional tar header while bigNumberMode is
         BIGNUMBER_ERROR, and address this in java docs.
       </action>
+      <action issue="COMPRESS-536" type="update" date="2020-06-03"
+              due-to="Jin Xu">
+        Made an inner class static
+        Github Pull Request #107.
+      </action>
+      <action issue="COMPRESS-535" type="update" date="2020-06-06"
+              due-to="Jin Xu">
+        added an early exit to a loop in BZip2CompressorOutputStream
+        Github Pull Request #106.
+      </action>
       <action issue="COMPRESS-404" type="update" date="2020-06-08" due-to="theobisproject">
         Update the class of variable file in TarArchiveEntry from
         java.io.File to java.nio.file.Path. Corresponding constructors
@@ -223,6 +233,11 @@ you relied on the recovery attempt.">
               due-to="Maksim Zuev" dev="PeterLee">
         Throw an declared IOException if a null entry is met when
         reading a global pax header instead of a runtime NPE.
+      </action>
+      <action issue="COMPRESS-545" type="fix" date="2020-09-02"
+              due-to="Maksim Zuev" dev="PeterLee">
+        ZIP extraction could lead to ArrayIndexOutOfBoundsExceptions
+        rather than the expected IOException.
       </action>
       <action issue="COMPRESS-547" type="fix" date="2020-09-02"
               due-to="Maksim Zuev" dev="PeterLee">
@@ -388,6 +403,26 @@ you relied on the recovery attempt.">
         the disk number needs to be encoded.
 
         Github Pull Request #169.
+      </action>
+      <action issue="COMPRESS-577" type="update" date="2021-05-22"
+              due-to="Arturo Bernal" dev="Arturo Bernal">
+        Some minor improvements.
+        Github Pull Request #193.
+      </action>
+      <action issue="COMPRESS-578" type="update" date="2021-05-22"
+              due-to="Arturo Bernal" dev="Arturo Bernal">
+        Java8 improvements.
+        Github Pull Request #194.
+      </action>
+      <action issue="COMPRESS-579" type="update" date="2021-05-22"
+              due-to="Arturo Bernal" dev="Arturo Bernal">
+        Remove redundant local variable.
+        Github Pull Request #195.
+      </action>
+      <action issue="COMPRESS-580" type="update" date="2021-05-22"
+              due-to="Arturo Bernal" dev="Arturo Bernal">
+        Remove redundant operation
+        Github Pull Request #196.
       </action>
       <action issue="COMPRESS-566" type="add" date="2021-05-24"
               due-to="Brett Okken">
