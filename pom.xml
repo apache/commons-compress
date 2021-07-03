@@ -552,26 +552,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       </build>
     </profile>
     <profile>
-      <id>java14+</id>
-      <activation>
-        <jdk>[14,)</jdk>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <excludes>
-                <exclude>**/DetectCompressorTestCase.java</exclude>
-                <exclude>**/Pack200TestCase.java</exclude>
-                <exclude>**/Pack200UtilsTest.java</exclude>
-              </excludes>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
       <id>java11+</id>
       <activation>
         <jdk>[11,)</jdk>
