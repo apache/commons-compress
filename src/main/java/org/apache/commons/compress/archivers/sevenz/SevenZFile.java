@@ -615,7 +615,7 @@ public class SevenZFile implements Closeable {
         int nid = getUnsignedByte(header);
 
         if (nid == NID.kArchiveProperties) {
-            sanityCheckArchiveProperties(header, stats);
+            sanityCheckArchiveProperties(header);
             nid = getUnsignedByte(header);
         }
 
@@ -652,7 +652,7 @@ public class SevenZFile implements Closeable {
         }
     }
 
-    private void sanityCheckArchiveProperties(final ByteBuffer header, final ArchiveStatistics stats)
+    private void sanityCheckArchiveProperties(final ByteBuffer header)
         throws IOException {
         int nid =  getUnsignedByte(header);
         while (nid != NID.kEnd) {
@@ -878,7 +878,7 @@ public class SevenZFile implements Closeable {
         final int numFoldersInt = (int) readUint64(header);
         final Folder[] folders = new Folder[numFoldersInt];
         archive.folders = folders;
-        final int external = getUnsignedByte(header);
+        /* final int external = */ getUnsignedByte(header);
         for (int i = 0; i < numFoldersInt; i++) {
             folders[i] = readFolder(header);
         }
@@ -1391,7 +1391,7 @@ public class SevenZFile implements Closeable {
                     break;
                 }
                 case NID.kName: {
-                    final int external = getUnsignedByte(header);
+                    /* final int external = */ getUnsignedByte(header);
                     final byte[] names = new byte[(int) (size - 1)];
                     final int namesLength = names.length;
                     get(header, names);
@@ -1412,7 +1412,7 @@ public class SevenZFile implements Closeable {
                 }
                 case NID.kCTime: {
                     final BitSet timesDefined = readAllOrBits(header, numFilesInt);
-                    final int external = getUnsignedByte(header);
+                    /* final int external = */ getUnsignedByte(header);
                     for (int i = 0; i < numFilesInt; i++) {
                         checkEntryIsInitialized(fileMap, i);
                         final SevenZArchiveEntry entryAtIndex = fileMap.get(i);
@@ -1425,7 +1425,7 @@ public class SevenZFile implements Closeable {
                 }
                 case NID.kATime: {
                     final BitSet timesDefined = readAllOrBits(header, numFilesInt);
-                    final int external = getUnsignedByte(header);
+                    /* final int external = */ getUnsignedByte(header);
                     for (int i = 0; i < numFilesInt; i++) {
                         checkEntryIsInitialized(fileMap, i);
                         final SevenZArchiveEntry entryAtIndex = fileMap.get(i);
@@ -1438,7 +1438,7 @@ public class SevenZFile implements Closeable {
                 }
                 case NID.kMTime: {
                     final BitSet timesDefined = readAllOrBits(header, numFilesInt);
-                    final int external = getUnsignedByte(header);
+                    /* final int external = */ getUnsignedByte(header);
                     for (int i = 0; i < numFilesInt; i++) {
                         checkEntryIsInitialized(fileMap, i);
                         final SevenZArchiveEntry entryAtIndex = fileMap.get(i);
@@ -1451,7 +1451,7 @@ public class SevenZFile implements Closeable {
                 }
                 case NID.kWinAttributes: {
                     final BitSet attributesDefined = readAllOrBits(header, numFilesInt);
-                    final int external = getUnsignedByte(header);
+                    /* final int external = */ getUnsignedByte(header);
                     for (int i = 0; i < numFilesInt; i++) {
                         checkEntryIsInitialized(fileMap, i);
                         final SevenZArchiveEntry entryAtIndex = fileMap.get(i);

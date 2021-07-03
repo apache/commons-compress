@@ -953,11 +953,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         final int numberOfHeaders = orderedAndFiltered.size();
         for (int i = 0; i < numberOfHeaders; i++) {
             final TarArchiveStructSparse str = orderedAndFiltered.get(i);
-            if (i + 1 < numberOfHeaders) {
-                if (str.getOffset() + str.getNumbytes() > orderedAndFiltered.get(i + 1).getOffset()) {
-                    throw new IOException("Corrupted TAR archive. Sparse blocks for "
-                        + getName() + " overlap each other.");
-                }
+            if (i + 1 < numberOfHeaders
+                && str.getOffset() + str.getNumbytes() > orderedAndFiltered.get(i + 1).getOffset()) {
+                throw new IOException("Corrupted TAR archive. Sparse blocks for "
+                    + getName() + " overlap each other.");
             }
             if (str.getOffset() + str.getNumbytes() < 0) {
                 // integer overflow?
