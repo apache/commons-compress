@@ -42,8 +42,14 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Compress Release Notes</title>
   </properties>
   <body>
-    <release version="1.21" date="not released, yet (Java 8)"
-             description="Release 1.21">
+    <release version="1.21" date="not released, et"
+             description="Release 1.21 (Java 8)
+----------------------------------------
+
+SevenZFileOptions has a new setting that needs to be enabled explicity
+if SevenZFile should try to recover broken archives - a feature
+introduced with Commons Compress 1.19. This is a breaking change if
+you relied on the recovery attempt.">
       <action type="update" date="2020-03-07"
               due-to="Peter Alfred Lee">
         Made sure ZstdCompressorOutputStream no longer used
@@ -99,7 +105,7 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action issue="COMPRESS-515" type="fix" date="2020-05-22" due-to="ian-lavallee">
         Add the archive name in the exception in the constructor of
-        ZipFIle to make it a more specific exception.
+        ZipFile to make it a more specific exception.
         Github Pull Request #102.
       </action>
       <action issue="COMPRESS-530" type="fix" date="2020-05-26">
@@ -204,6 +210,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" date="2020-08-22" dev="PeterLee">
         Add a new maven profile in pom.xml for JDK14+ to ignore the
         failing tests about Pack200.
+
+        This has later been superseeded by adding the Apache Harmony
+        classes for Pack200 support.
       </action>
       <action issue="COMPRESS-548" type="fix" date="2020-08-24"
               due-to="Maksim Zuev" dev="PeterLee">

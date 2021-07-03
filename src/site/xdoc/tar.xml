@@ -126,13 +126,12 @@
 
       <subsection name="Sparse files">
 
-        <p><code>TarArchiveInputStream</code> will recognize sparse
+        <p>Prior to Commons Compress 1.20 <code>TarArchiveInputStream</code> would recognize sparse
         file entries stored using the "oldgnu" format
-        (<code>-&#x2d;sparse-version=0.0</code> in GNU tar) but is not
-        able to extract them correctly.  <a href="#Unsupported
-        Features"><code>canReadEntryData</code></a> will return false
-        on such entries.  The other variants of sparse files can
-        currently not be detected at all.</p>
+        (<code>-&#x2d;sparse-version=0.0</code> in GNU tar) but not
+        able to extract them correctly. Starting with Commons Compress
+        all GNU and POSIX variants of sparse files are recognized and
+        can be raed.</p>
       </subsection>
 
       <subsection name="Consuming Archives Completely">
@@ -223,6 +222,13 @@
         </ul>
       </subsection>
 
+      <subsection name="Random Access">
+        <p>Starting with Commons Compress 1.21 the tar package
+        contains a <code>TarFile</code> class that provides random
+        access to archives. Except for the ability to access entries
+        out of order <code>TarFile</code> is not superior to
+        <code>TarArchiveInputStream</code>.</p>
+      </subsection>
     </section>
   </body>
 </document>

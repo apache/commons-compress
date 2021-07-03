@@ -161,10 +161,14 @@
      </section>
      <section name="PACK200">
        <ul>
-         <li>Pack200 support in Commons Comppress relies on the
+         <li><p>Pack200 support in Commons Comppress prior to 1.21 relies on the
          <code>Pack200</code> class of the Java classlib. Java 14
          removed support and thus Pack200 will not work at all when
-         running on Java 14 or later.</li>
+         running on Java 14 or later.</p>
+         <p>Starting with Commons Compress 1.21 the classlib
+         implementation is no longer used at all, instead Commons
+         Compress contains the pack200 code of the retired Apache
+         Harmony project.</p></li>
        </ul>
      </section>
      <section name="SNAPPY">

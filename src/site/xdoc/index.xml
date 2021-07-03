@@ -52,12 +52,26 @@
         </section>
 
         <section name="Status">
-          <p>The current release is 1.20 and requires Java 7.</p>
+          <p>The current release is 1.21 and requires Java 8.</p>
 
           <p>Below we highlight some new features, for a full list
           of changes see the <a href="changes-report.html">Changes
           Report</a>.</p>
 
+          <subsection name="What's new in 1.21?">
+            <ul>
+              <li>A new class <code>TarFile</code> provides random
+              access to TAR archives.</li>
+              <li>Commons Compress now ships with a copy of the
+              Pack200 code of the retired Apache Harmony project. The
+              pack200 support in Commons Compress no longer uses the
+              implementation of the Java class library - and thus also
+              works for Java 14 and later.</li>
+              <li>Added new methods supporting
+              <code>java.nio.Path</code> as an alternative to
+              <code>java.io.File</code> to many classes.</li>
+            </ul>
+          </subsection>
           <subsection name="What's new in 1.20?">
             <ul>
               <li><code>SevenZFile</code> now supports random
