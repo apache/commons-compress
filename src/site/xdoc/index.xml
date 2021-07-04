@@ -47,6 +47,9 @@
                 and
                 the <a href="http://jrpm.sourceforge.net/">jRPM</a>
                 project.</li>
+              <li>The pack200 code has originally been part of the now
+                retired <a href="https://harmony.apache.org/">Apache
+                Harmony&#x2122;</a> project.</li>
             </ul>
 
         </section>
@@ -246,22 +249,21 @@
           <p>Currently the bzip2, Pack200, XZ, gzip, lzma, brotli,
             Zstandard and Z formats are
             supported as compressors where gzip support is mostly provided by
-            the <code>java.util.zip</code> package and Pack200 support
-            by the <code>java.util.jar</code> package of the Java
+            the <code>java.util.zip</code> package of the Java
             class library.  XZ and lzma support is provided by the public
             domain <a href="https://tukaani.org/xz/java.html">XZ for
             Java</a> library.  Brotli support is provided by the MIT
             licensed <a href="https://github.com/google/brotli">Google
             Brotli decoder</a>. Zstandard support is provided by the BSD
             licensed <a href="https://github.com/luben/zstd-jni">Zstd-jni</a>.
-            As of Commons Compress 1.20 support for the DEFLATE64, Z and Brotli
+            As of Commons Compress 1.21 support for the DEFLATE64, Z and Brotli
             formats is read-only.</p>
 
           <p>The ar, arj, cpio, dump, tar, 7z and zip formats are supported as
             archivers where the <a href="zip.html">zip</a>
             implementation provides capabilities that go beyond the
             features found in java.util.zip.  As of Commons Compress
-            1.20 support for the dump and arj formats is
+            1.21 support for the dump and arj formats is
             read-only - 7z can read most compressed and encrypted
             archives but only write unencrypted ones.  LZMA(2) support
             in 7z requires <a href="https://tukaani.org/xz/java.html">XZ for

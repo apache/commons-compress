@@ -37,7 +37,7 @@
          exception with a message like "Illegal seek" we recommend you
          wrap your stream in a <code>SkipShieldingInputStream</code>
          from our utils package before passing it to Compress.</li>
-         <li>Commons Compress cannot be built on JDK 14 or newer.</li>
+         <li>Commons Compress prior to 1.21 cannot be built on JDK 14 or newer.</li>
        </ul>
      </section>
 
@@ -168,7 +168,7 @@
          <p>Starting with Commons Compress 1.21 the classlib
          implementation is no longer used at all, instead Commons
          Compress contains the pack200 code of the retired Apache
-         Harmony project.</p></li>
+         Harmony&#x2122; project.</p></li>
        </ul>
      </section>
      <section name="SNAPPY">
@@ -217,7 +217,7 @@
          including the most common STORED and DEFLATEd.  IMPLODE,
          SHRINK, DEFLATE64 and BZIP2 support is read-only.</li>
          <li>no support for encryption</li>
-         <li> or multi-volume archives prior to Compress 1.20</li>
+         <li>no support for multi-volume archives prior to Compress 1.20</li>
          <li>It is currently not possible to write split archives with
          more than 64k segments. When creating split archives with more
          than 100 segments you will need to adjust the file names as

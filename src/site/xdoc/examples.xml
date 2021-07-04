@@ -98,8 +98,9 @@ CompressorInputStream input = new CompressorStreamFactory()
         stream. As of 1.14 this setting only affects decompressing Z,
         XZ and LZMA compressed streams.</p>
         <p>Since Compress 1.19 <code>SevenZFile</code> also has an
-        optional constructor to pass an upper memory limit. Supported
-        are LZMA compressed streams.</p>
+        optional constructor to pass an upper memory limit which is supported
+        are LZMA compressed streams. Since Compress 1.21 this setting
+        also is taken into account when reading the metadata of an archive.</p>
         <p>For the Snappy and LZ4 formats the amount of memory used
         during compression is directly proportional to the window
         size.</p>
@@ -239,7 +240,7 @@ try (InputStream fi = Files.newInputStream(Paths.get("my.tar.gz"));
         archive, you can first use <code>createArchiveEntry</code> for
         each file. In general this will set a few flags (usually the
         last modified time, the size and the information whether this
-        is a file or directory) based on the <code>File</code>
+        is a file or directory) based on the <code>File</code> or <code>Path</code>
         instance. Alternatively you can create the
         <code>ArchiveEntry</code> subclass corresponding to your
         format directly. Often you may want to set additional flags
@@ -430,6 +431,23 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
         will likely be significantly slower than sequential
         access.</p>
 
+        <h4><a name="Recovering from Certain Broken 7z Archives"></a>Recovering from Certain Broken 7z Archives</h4>
+
+        <p>Starting with Compress 1.19 <code>SevenZFile</code> tries
+        to recover archives that look as if they were part of a
+        multi-volume archive where the first volume has been removed
+        too early.</p>
+
+        <p>Starting with Compress 1.21 this option has to be enabled
+        explicitly in <code>SevenZFileOptions</code>. The way recovery
+        works is by Compress scanning an archive from the end for
+        something that might look like valid 7z metadata and use that,
+        if it can successfully parse the block of data. When doing so
+        Compress may encounter blocks of metadata that look like the
+        metadata of very large archives which in turn may make
+        Compress allocate a lot of memory. Therefore we strongly
+        recommend you also set a memory limit inside the
+        <code>SevenZFileOptions</code> if you enable recovery.</p>
       </subsection>
 
       <subsection name="ar">
@@ -931,7 +949,7 @@ in.close();
         Compress offers two different stream classes for reading or
         writing either format.</p>
 
-        <p>Uncompressing a given frame LZ4 file (you would
+        <p>Uncompressing a given framed LZ4 file (you would
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
@@ -1014,9 +1032,11 @@ in.close();
         <p>The Pack200 package has a <a href="pack200.html">dedicated
           documentation page</a>.</p>
 
-        <p>The implementation of this package is provided by
+        <p>The implementation of this package used to be provided by
           the <code>java.util.zip</code> package of the Java class
-          library.</p>
+          library. Starting with Compress 1.21 the implementation uses
+          a copy of the pack200 code of the now retired Apache
+          Harmony&#x2122; project that ships with Compress itself.</p>
 
         <p>Uncompressing a given pack200 compressed file (you would
           certainly add exception handling and make sure all streams
