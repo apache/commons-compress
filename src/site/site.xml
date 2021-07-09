@@ -38,6 +38,7 @@
     </menu>
     <menu name="API Docs">
       <item name="Latest release" href="javadocs/api-release/index.html"/>
+      <item name="1.21" href="javadocs/api-1.21/index.html"/>
       <item name="1.20" href="javadocs/api-1.20/index.html"/>
       <item name="1.19" href="javadocs/api-1.19/index.html"/>
       <item name="1.18" href="javadocs/api-1.18/index.html"/>
