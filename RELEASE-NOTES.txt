@@ -8,16 +8,17 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 Release 1.21
 ------------
 
-Compress 1.20 now at least requires Java 8 to build and run.
+Compress 1.21 is the first release to require Java 8 to build and run.
 
-SevenZFileOptions has a new setting that needs to be enabled explicity
-if SevenZFile should try to recover broken archives - a feature
-introduced with Commons Compress 1.19. This is a breaking change if
-you relied on the recovery attempt.
+SevenZFileOptions has a new setting that needs to be enabled
+explicitly if SevenZFile should try to recover broken archives - a
+feature introduced with Commons Compress 1.19. This is a breaking
+change if you relied on the recovery attempt. The change was made to
+detect broken archives sooner, and to mitigate the OOM exploit.
 
-Several formats may now throw IOExceptions when reading broken
-archives or streams that would have caused arbitrary RuntimeExceptions
-in earlier versions of Compress.
+Several formats now throw IOExceptions when reading broken archives or
+streams that would have caused arbitrary RuntimeExceptions in earlier
+versions of Compress.
 
 New features:
 o Add writePreamble to ZipArchiveInputStream. This method could
