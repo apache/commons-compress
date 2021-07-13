@@ -121,7 +121,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>asm</groupId>
       <artifactId>asm</artifactId>
-      <version>3.2</version>
+      <version>3.3.1</version>
       <optional>true</optional>
     </dependency>
 
