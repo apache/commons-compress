@@ -159,9 +159,6 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
              */
 
             length = 4 + ((b >> 2) & 0x07);
-            if (length < 0) {
-                throw new IOException("Illegal block with a negative match length found");
-            }
             uncompressedBytesRemaining -= length;
             offset = (b & 0xE0) << 3;
             b = readOneByte();
