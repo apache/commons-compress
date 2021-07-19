@@ -2092,17 +2092,17 @@ public class SevenZFile implements Closeable {
         @Override
         public String toString() {
             return "Archive with " + numberOfEntries + " entries in " + numberOfFolders
-                + " folders. Estimated size " + (estimateSize()/1024l) + " kB.";
+                + " folders. Estimated size " + (estimateSize()/ 1024L) + " kB.";
         }
 
         long estimateSize() {
-            long lowerBound = 16l * numberOfPackedStreams /* packSizes, packCrcs in Archive */
+            long lowerBound = 16L * numberOfPackedStreams /* packSizes, packCrcs in Archive */
                 + numberOfPackedStreams / 8 /* packCrcsDefined in Archive */
                 + numberOfFolders * folderSize() /* folders in Archive */
                 + numberOfCoders * coderSize() /* coders in Folder */
                 + (numberOfOutStreams - numberOfFolders) * bindPairSize() /* bindPairs in Folder */
-                + 8l * (numberOfInStreams - numberOfOutStreams + numberOfFolders) /* packedStreams in Folder */
-                + 8l * numberOfOutStreams /* unpackSizes in Folder */
+                + 8L * (numberOfInStreams - numberOfOutStreams + numberOfFolders) /* packedStreams in Folder */
+                + 8L * numberOfOutStreams /* unpackSizes in Folder */
                 + numberOfEntries * entrySize() /* files in Archive */
                 + streamMapSize()
                 ;
