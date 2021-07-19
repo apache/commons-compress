@@ -525,7 +525,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         } else if (radix == 8) {
             tmp.append(Long.toOctalString(number));
         } else {
-            tmp.append(Long.toString(number));
+            tmp.append(number);
         }
 
         if (tmp.length() <= length) {

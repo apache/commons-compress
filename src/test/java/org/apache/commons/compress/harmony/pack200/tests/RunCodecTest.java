@@ -144,8 +144,7 @@ public class RunCodecTest extends TestCase {
     public void testToString() throws Pack200Exception {
         RunCodec runCodec = new RunCodec(3, Codec.UNSIGNED5, Codec.BYTE1);
         assertEquals(
-                "RunCodec[k=" + 3 + ";aCodec=" + Codec.UNSIGNED5.toString()
-                        + "bCodec=" + Codec.BYTE1.toString() + "]",
+                "RunCodec[k=" + 3 + ";aCodec=" + Codec.UNSIGNED5 + "bCodec=" + Codec.BYTE1 + "]",
                 runCodec.toString());
     }
 

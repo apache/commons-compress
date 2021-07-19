@@ -143,8 +143,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         if (LONGFILE_BSD == longFileMode &&
             (nLength > 16 || n.contains(" "))) {
             mustAppendName = true;
-            offset += write(ArArchiveInputStream.BSD_LONGNAME_PREFIX
-                            + String.valueOf(nLength));
+            offset += write(ArArchiveInputStream.BSD_LONGNAME_PREFIX + nLength);
         } else {
             offset += write(n);
         }

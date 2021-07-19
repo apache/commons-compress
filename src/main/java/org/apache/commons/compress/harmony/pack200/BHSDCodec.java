@@ -286,7 +286,7 @@ public final class BHSDCodec extends Codec {
     @Override
     public byte[] encode(final int value, final int last) throws Pack200Exception {
         if (!encodes(value)) {
-            throw new Pack200Exception("The codec " + toString() + " does not encode the value " + value);
+            throw new Pack200Exception("The codec " + this + " does not encode the value " + value);
         }
 
         long z = value;

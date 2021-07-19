@@ -50,7 +50,7 @@ public final class TarLister {
         } else {
             ais = new TarArchiveInputStream(fis);
         }
-        System.out.println("Created " + ais.toString());
+        System.out.println("Created " + ais);
         TarArchiveEntry ae;
         while((ae=ais.getNextTarEntry()) != null){
             log(ae);
