@@ -89,7 +89,7 @@ public class ParallelScatterZipCreatorTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void throwsExceptionWithCompressionLevelTooBig() throws Exception {
+    public void throwsExceptionWithCompressionLevelTooBig() {
         final int compressLevelTooBig = Deflater.BEST_COMPRESSION + 1;
         final ExecutorService es = Executors.newFixedThreadPool(1);
         final ScatterGatherBackingStoreSupplier supp = () -> new FileBasedScatterGatherBackingStore(tmp = File.createTempFile("parallelscatter", "n1"));
@@ -98,7 +98,7 @@ public class ParallelScatterZipCreatorTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void throwsExceptionWithCompressionLevelTooSmall() throws Exception {
+    public void throwsExceptionWithCompressionLevelTooSmall() {
         final int compressLevelTooSmall = Deflater.DEFAULT_COMPRESSION - 1;
         final ExecutorService es = Executors.newFixedThreadPool(1);
         final ScatterGatherBackingStoreSupplier supp = () -> new FileBasedScatterGatherBackingStore(tmp = File.createTempFile("parallelscatter", "n1"));

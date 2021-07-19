@@ -127,8 +127,7 @@ public class ArchiveTest extends TestCase {
         compareFiles(jarFile, jarFile2);
     }
 
-    public void testAlternativeConstructor() throws FileNotFoundException,
-            IOException, URISyntaxException, Pack200Exception {
+    public void testAlternativeConstructor() throws IOException, URISyntaxException, Pack200Exception {
         JarInputStream inStream = new JarInputStream(new FileInputStream(
                 new File(Archive.class.getResource(
                         "/pack200/sqlUnpacked.jar").toURI())));
@@ -298,8 +297,7 @@ public class ArchiveTest extends TestCase {
 		}
     }
 
-    private void compareJarEntries(JarFile jarFile, JarFile jarFile2)
-            throws IOException {
+    private void compareJarEntries(JarFile jarFile, JarFile jarFile2) {
         Enumeration entries = jarFile.entries();
         while (entries.hasMoreElements()) {
 

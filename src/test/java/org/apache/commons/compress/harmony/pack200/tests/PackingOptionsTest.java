@@ -637,8 +637,7 @@ public class PackingOptionsTest extends TestCase {
     // compareFiles(in, new JarFile(file));
     // }
 
-    private void compareJarEntries(JarFile jarFile, JarFile jarFile2)
-            throws IOException {
+    private void compareJarEntries(JarFile jarFile, JarFile jarFile2) {
         Enumeration entries = jarFile.entries();
         while (entries.hasMoreElements()) {
 

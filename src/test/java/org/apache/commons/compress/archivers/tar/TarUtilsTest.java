@@ -71,7 +71,7 @@ public class TarUtilsTest {
     }
 
     @Test
-    public void testParseOctal() throws Exception{
+    public void testParseOctal() {
         long value;
         byte [] buffer;
         final long MAX_OCTAL  = 077777777777L; // Allowed 11 digits
@@ -98,7 +98,7 @@ public class TarUtilsTest {
     }
 
     @Test
-    public void testParseOctalInvalid() throws Exception{
+    public void testParseOctalInvalid() {
         byte [] buffer;
         buffer=ByteUtils.EMPTY_BYTE_ARRAY;
         try {
@@ -204,14 +204,14 @@ public class TarUtilsTest {
     }
 
     @Test
-    public void testNegative() throws Exception {
+    public void testNegative() {
         final byte [] buffer = new byte[22];
         TarUtils.formatUnsignedOctalString(-1, buffer, 0, buffer.length);
         assertEquals("1777777777777777777777", new String(buffer, StandardCharsets.UTF_8));
     }
 
     @Test
-    public void testOverflow() throws Exception {
+    public void testOverflow() {
         final byte [] buffer = new byte[8-1]; // a lot of the numbers have 8-byte buffers (nul term)
         TarUtils.formatUnsignedOctalString(07777777L, buffer, 0, buffer.length);
         assertEquals("7777777", new String(buffer, StandardCharsets.UTF_8));
@@ -382,7 +382,7 @@ public class TarUtilsTest {
     }
 
     @Test
-    public void testParseOctalCompress330() throws Exception{
+    public void testParseOctalCompress330() {
         final long expected = 0100000;
         final byte [] buffer = new byte[] {
             32, 32, 32, 32, 32, 49, 48, 48, 48, 48, 48, 32
@@ -665,7 +665,7 @@ public class TarUtilsTest {
     }
 
     @Test
-    public void parsePAX01SparseHeadersRejectsOddNumberOfEntries() throws Exception {
+    public void parsePAX01SparseHeadersRejectsOddNumberOfEntries() {
         thrown.expect(RuntimeException.class);
         thrown.expectMessage(startsWith("Corrupted TAR archive"));
         final String map = "0,10,20,0,20";

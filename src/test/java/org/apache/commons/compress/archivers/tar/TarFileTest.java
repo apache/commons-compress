@@ -34,7 +34,6 @@ import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
-import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;
@@ -81,7 +80,7 @@ public class TarFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void testCompress197() throws Exception {
+    public void testCompress197() {
         try (final TarFile tarFile = new TarFile(getPath("COMPRESS-197.tar"))) {
         } catch (final IOException e) {
             fail("COMPRESS-197: " + e.getMessage());
@@ -127,7 +126,7 @@ public class TarFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void readsArchiveCompletely_COMPRESS245() throws Exception {
+    public void readsArchiveCompletely_COMPRESS245() {
         try {
             final Path tempTar = resultDir.toPath().resolve("COMPRESS-245.tar");
             try (final GZIPInputStream gin = new GZIPInputStream(
@@ -249,7 +248,7 @@ public class TarFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void testDirectoryWithLongNameEndsWithSlash() throws IOException, ArchiveException {
+    public void testDirectoryWithLongNameEndsWithSlash() throws IOException {
         final String rootPath = dir.getAbsolutePath();
         final String dirDirectory = "COMPRESS-509";
         final int count = 100;

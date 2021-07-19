@@ -21,7 +21,6 @@ package org.apache.commons.compress.archivers.sevenz;
 import org.junit.Test;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
@@ -39,7 +38,7 @@ public class AES256SHA256DecoderTest {
 
 
     @Test
-    public void testDecodeWithNonEmptyString() throws IOException {
+    public void testDecodeWithNonEmptyString() {
 
         final AES256SHA256Decoder aES256SHA256Decoder = new AES256SHA256Decoder();
         final BufferedInputStream bufferedInputStream = new BufferedInputStream(null, 3138);

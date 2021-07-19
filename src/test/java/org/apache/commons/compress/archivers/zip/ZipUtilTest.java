@@ -59,7 +59,7 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testZipLong() throws Exception {
+    public void testZipLong() {
         final ZipLong test = ZipUtil.toDosTime(time);
         assertEquals(test.getValue(), zl.getValue());
     }

@@ -164,7 +164,7 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
-    public void rejectsFileWithoutFrameDescriptor() throws IOException {
+    public void rejectsFileWithoutFrameDescriptor() {
         final byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18 // signature
         };
@@ -178,7 +178,7 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
-    public void rejectsFileWithoutBlockSizeByte() throws IOException {
+    public void rejectsFileWithoutBlockSizeByte() {
         final byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18, // signature
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
@@ -193,7 +193,7 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
-    public void rejectsFileWithWrongVersion() throws IOException {
+    public void rejectsFileWithWrongVersion() {
         final byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18, // signature
             0x24, // flag - Version 00, block independent, no block checksum, no content size, with content checksum
@@ -208,7 +208,7 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
-    public void rejectsFileWithInsufficientContentSize() throws IOException {
+    public void rejectsFileWithInsufficientContentSize() {
         final byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18, // signature
             0x6C, // flag - Version 01, block independent, no block checksum, with content size, with content checksum
@@ -224,7 +224,7 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
-    public void rejectsFileWithoutHeaderChecksum() throws IOException {
+    public void rejectsFileWithoutHeaderChecksum() {
         final byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18, // signature
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
@@ -240,7 +240,7 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
-    public void rejectsFileWithBadHeaderChecksum() throws IOException {
+    public void rejectsFileWithBadHeaderChecksum() {
         final byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18, // signature
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
@@ -293,7 +293,7 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
-    public void rejectsBlocksWithoutChecksum() throws IOException {
+    public void rejectsBlocksWithoutChecksum() {
         final byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18, // signature
             0x70, // flag - Version 01, block independent, with block checksum, no content size, no content checksum
@@ -313,7 +313,7 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
-    public void rejectsStreamsWithoutContentChecksum() throws IOException {
+    public void rejectsStreamsWithoutContentChecksum() {
         final byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18, // signature
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
@@ -334,7 +334,7 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
-    public void rejectsStreamsWithBadContentChecksum() throws IOException {
+    public void rejectsStreamsWithBadContentChecksum() {
         final byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18, // signature
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
@@ -407,7 +407,7 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
-    public void rejectsSkippableFrameFollowedByJunk() throws IOException {
+    public void rejectsSkippableFrameFollowedByJunk() {
         final byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -432,7 +432,7 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
-    public void rejectsSkippableFrameFollowedByTooFewBytes() throws IOException {
+    public void rejectsSkippableFrameFollowedByTooFewBytes() {
         final byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -457,7 +457,7 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
-    public void rejectsSkippableFrameWithPrematureEnd() throws IOException {
+    public void rejectsSkippableFrameWithPrematureEnd() {
         final byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -481,7 +481,7 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
-    public void rejectsSkippableFrameWithPrematureEndInLengthBytes() throws IOException {
+    public void rejectsSkippableFrameWithPrematureEndInLengthBytes() {
         final byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -504,7 +504,7 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
-    public void rejectsSkippableFrameWithBadSignatureTrailer() throws IOException {
+    public void rejectsSkippableFrameWithBadSignatureTrailer() {
         final byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -526,7 +526,7 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
-    public void rejectsSkippableFrameWithBadSignaturePrefix() throws IOException {
+    public void rejectsSkippableFrameWithBadSignaturePrefix() {
         final byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -548,7 +548,7 @@ public final class FramedLZ4CompressorInputStreamTest
     }
 
     @Test
-    public void rejectsTrailingBytesAfterValidFrame() throws IOException {
+    public void rejectsTrailingBytesAfterValidFrame() {
         final byte[] input = new byte[] {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum

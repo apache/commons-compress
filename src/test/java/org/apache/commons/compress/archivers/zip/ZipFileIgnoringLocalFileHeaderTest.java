@@ -42,7 +42,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         AbstractTestCase.rmdir(dir);
     }
 

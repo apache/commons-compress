@@ -28,7 +28,7 @@ import org.junit.Test;
 public class CircularBufferTest {
 
     @Test
-    public void testPutAndGet() throws Exception {
+    public void testPutAndGet() {
         final int size = 16;
         final CircularBuffer buffer = new CircularBuffer(size);
         for (int i = 0; i < size / 2; i++) {
@@ -46,7 +46,7 @@ public class CircularBufferTest {
     }
 
     @Test
-    public void testCopy() throws Exception {
+    public void testCopy() {
         final CircularBuffer buffer = new CircularBuffer(16);
 
         buffer.put(1);

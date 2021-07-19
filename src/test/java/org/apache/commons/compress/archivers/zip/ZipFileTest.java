@@ -593,7 +593,7 @@ public class ZipFileTest {
      * Test non power of 2 alignment.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalidAlignment() throws Exception {
+    public void testInvalidAlignment() {
         final ZipArchiveEntry entry = new ZipArchiveEntry("dummy");
         entry.setAlignment(3);
     }
@@ -751,13 +751,13 @@ public class ZipFileTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSetLevelTooSmallForZipArchiveOutputStream() throws Exception {
+    public void testSetLevelTooSmallForZipArchiveOutputStream() {
         final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
         outputStream.setLevel(Deflater.DEFAULT_COMPRESSION - 1);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSetLevelTooBigForZipArchiveOutputStream() throws Exception {
+    public void testSetLevelTooBigForZipArchiveOutputStream() {
         final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
         outputStream.setLevel(Deflater.BEST_COMPRESSION + 1);
     }

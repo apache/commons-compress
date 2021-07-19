@@ -89,7 +89,7 @@ public final class Lister {
         }
     }
 
-    private static void list7z(final File f) throws ArchiveException, IOException {
+    private static void list7z(final File f) throws IOException {
         try (SevenZFile z = new SevenZFile(f)) {
             System.out.println("Created " + z);
             ArchiveEntry ae;
@@ -101,7 +101,7 @@ public final class Lister {
         }
     }
 
-    private static void listZipUsingZipFile(final File f) throws ArchiveException, IOException {
+    private static void listZipUsingZipFile(final File f) throws IOException {
         try (ZipFile z = new ZipFile(f)) {
             System.out.println("Created " + z);
             for (final Enumeration<ZipArchiveEntry> en = z.getEntries(); en.hasMoreElements(); ) {
@@ -110,7 +110,7 @@ public final class Lister {
         }
     }
 
-    private static void listZipUsingTarFile(final File f) throws ArchiveException, IOException {
+    private static void listZipUsingTarFile(final File f) throws IOException {
         try (TarFile t = new TarFile(f)) {
             System.out.println("Created " + t);
             for (TarArchiveEntry en : t.getEntries()) {

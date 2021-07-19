@@ -99,7 +99,7 @@ public class SegmentHeader {
 
     private int archiveSizeOffset;
 
-    public void read(final InputStream in) throws IOException, Pack200Exception, Error, Pack200Exception {
+    public void read(final InputStream in) throws IOException, Error, Pack200Exception {
 
         final int word[] = decodeScalar("archive_magic_word", in, Codec.BYTE1, magic.length);
         for (int m = 0; m < magic.length; m++) {

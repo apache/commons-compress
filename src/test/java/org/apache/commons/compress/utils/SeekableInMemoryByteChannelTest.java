@@ -145,7 +145,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    public void shouldTruncateContentsProperly() throws IOException {
+    public void shouldTruncateContentsProperly() {
         //given
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData);
         //when
@@ -194,7 +194,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenTruncatingToIncorrectSize() throws IOException {
+    public void shouldThrowExceptionWhenTruncatingToIncorrectSize() {
         //given
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
         //when

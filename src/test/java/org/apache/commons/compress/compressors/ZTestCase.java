@@ -52,7 +52,7 @@ public final class ZTestCase extends AbstractTestCase {
     }
 
     @Test
-    public void testMatches() throws Exception {
+    public void testMatches() {
         assertFalse(ZCompressorInputStream.matches(new byte[] { 1, 2, 3, 4 }, 4));
         assertFalse(ZCompressorInputStream.matches(new byte[] { 0x1f, 2, 3, 4 }, 4));
         assertFalse(ZCompressorInputStream.matches(new byte[] { 1, (byte)0x9d, 3, 4 },

@@ -53,7 +53,7 @@ public class ZipEncodingTest {
     }
 
     @Test
-    public void testGetNonexistentEncoding() throws IOException {
+    public void testGetNonexistentEncoding() {
         final ZipEncoding ze = ZipEncodingHelper.getZipEncoding("I-am-a-banana");
         assertNotNull(ze);
         if (ze instanceof CharsetAccessor) {
@@ -63,7 +63,7 @@ public class ZipEncodingTest {
     }
 
     @Test
-    public void testIsUTF8() throws IOException {
+    public void testIsUTF8() {
        assertTrue(ZipEncodingHelper.isUTF8("UTF-8"));
        assertTrue(ZipEncodingHelper.isUTF8("UTF8"));
        Assert.assertEquals(Charset.defaultCharset().name().equals("UTF-8"), ZipEncodingHelper.isUTF8(null));

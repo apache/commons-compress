@@ -58,7 +58,7 @@ public class SegmentConstantPoolTest extends TestCase {
     String[] testMethodArray = { "<init>()", "clone()", "equals()", "<init>",
             "isNull()", "Other" };
 
-    public void testMatchSpecificPoolEntryIndex_SingleArray() throws Exception {
+    public void testMatchSpecificPoolEntryIndex_SingleArray() {
         MockSegmentConstantPool mockInstance = new MockSegmentConstantPool();
         // Elements should be found at the proper position.
         assertEquals(0, mockInstance.matchSpecificPoolEntryIndex(
@@ -84,7 +84,7 @@ public class SegmentConstantPoolTest extends TestCase {
                 testClassArray, "java/lang/String", 2));
     }
 
-    public void testMatchSpecificPoolEntryIndex_DoubleArray() throws Exception {
+    public void testMatchSpecificPoolEntryIndex_DoubleArray() {
         MockSegmentConstantPool mockInstance = new MockSegmentConstantPool();
         // Elements should be found at the proper position.
         assertEquals(0, mockInstance.matchSpecificPoolEntryIndex(

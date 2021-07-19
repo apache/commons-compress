@@ -157,7 +157,7 @@ public class ExpanderTest extends AbstractTestCase {
         verifyTargetDir();
     }
 
-    private void setup7z() throws IOException, ArchiveException {
+    private void setup7z() throws IOException {
         archive = new File(dir, "test.7z");
         final File dummy = new File(dir, "x");
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {

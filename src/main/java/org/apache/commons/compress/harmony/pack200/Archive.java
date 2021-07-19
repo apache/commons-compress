@@ -100,7 +100,7 @@ public class Archive {
         }
     }
 
-    private void doZeroEffortPack() throws IOException, Pack200Exception {
+    private void doZeroEffortPack() throws IOException {
         PackingUtils.log("Start to perform a zero-effort packing");
         if (jarInputStream != null) {
             PackingUtils.copyThroughJar(jarInputStream, outputStream);
@@ -137,7 +137,7 @@ public class Archive {
         outputStream.close();
     }
 
-    private List splitIntoSegments(final List packingFileList) throws IOException, Pack200Exception {
+    private List splitIntoSegments(final List packingFileList) {
         final List segmentUnitList = new ArrayList();
         List classes = new ArrayList();
         List files = new ArrayList();
@@ -172,8 +172,7 @@ public class Archive {
         return segmentUnitList;
     }
 
-    private boolean addJarEntry(final PackingFile packingFile, final List javaClasses, final List files)
-        throws IOException, Pack200Exception {
+    private boolean addJarEntry(final PackingFile packingFile, final List javaClasses, final List files) {
         final long segmentLimit = options.getSegmentLimit();
         if (segmentLimit != -1 && segmentLimit != 0) {
             // -1 is a special case where only one segment is created and

@@ -160,7 +160,7 @@ public class AttributeLayoutMap {
         return null;
     }
 
-    public AttributeLayout getAttributeLayout(final int index, final int context) throws Pack200Exception {
+    public AttributeLayout getAttributeLayout(final int index, final int context) {
         final Map map = layouts[context];
         return (AttributeLayout) map.get(Integer.valueOf(index));
     }

@@ -50,7 +50,7 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void forSeekableByteChannelsThrowsOnNullArg() throws IOException {
+    public void forSeekableByteChannelsThrowsOnNullArg() {
         thrown.expect(NullPointerException.class);
         MultiReadOnlySeekableByteChannel.forSeekableByteChannels(null);
     }
@@ -62,7 +62,7 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void forSeekableByteChannelsReturnsIdentityForSingleElement() throws IOException {
+    public void forSeekableByteChannelsReturnsIdentityForSingleElement() {
         final SeekableByteChannel e = makeEmpty();
         final SeekableByteChannel m = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(e);
         Assert.assertSame(e, m);
@@ -107,7 +107,7 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void closesAllAndThrowsExceptionIfCloseThrows() throws IOException {
+    public void closesAllAndThrowsExceptionIfCloseThrows() {
         final SeekableByteChannel[] ts = new ThrowingSeekableByteChannel[] {
             new ThrowingSeekableByteChannel(),
             new ThrowingSeekableByteChannel()
@@ -151,7 +151,7 @@ public class MultiReadOnlySeekableByteChannelTest {
         return new SeekableInMemoryByteChannel(arr);
     }
 
-    private SeekableByteChannel makeMulti(final byte[][] arr) throws IOException {
+    private SeekableByteChannel makeMulti(final byte[][] arr) {
         final SeekableByteChannel[] s = new SeekableByteChannel[arr.length];
         for (int i = 0; i < s.length; i++) {
             s[i] = makeSingle(arr[i]);
@@ -276,11 +276,11 @@ public class MultiReadOnlySeekableByteChannelTest {
             return 0;
         }
         @Override
-        public long position() throws IOException {
+        public long position() {
             return 0;
         }
         @Override
-        public SeekableByteChannel position(final long newPosition) throws IOException {
+        public SeekableByteChannel position(final long newPosition) {
             return this;
         }
         @Override
@@ -288,7 +288,7 @@ public class MultiReadOnlySeekableByteChannelTest {
             return 0;
         }
         @Override
-        public SeekableByteChannel truncate(final long size) throws IOException {
+        public SeekableByteChannel truncate(final long size) {
             return this;
         }
     }

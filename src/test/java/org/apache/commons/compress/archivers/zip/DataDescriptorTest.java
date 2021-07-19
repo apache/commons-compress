@@ -47,7 +47,7 @@ public class DataDescriptorTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         rmdir(dir);
     }
 

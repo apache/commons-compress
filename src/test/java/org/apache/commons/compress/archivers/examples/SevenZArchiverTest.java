@@ -85,7 +85,7 @@ public class SevenZArchiverTest extends AbstractTestCase {
         }
     }
 
-    private void verifyContent() throws IOException, ArchiveException {
+    private void verifyContent() throws IOException {
         try (SevenZFile z = new SevenZFile(target)) {
             assertDir("a", z.getNextEntry());
             assertDir("a/b", z.getNextEntry());

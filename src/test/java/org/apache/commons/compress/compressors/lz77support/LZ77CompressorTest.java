@@ -289,8 +289,7 @@ public class LZ77CompressorTest {
         assertEquals(LZ77Compressor.Block.BlockType.EOD, blocks.get(expectedSize - 1).getType());
     }
 
-    private static final void assertLiteralBlock(final String expectedContent, final LZ77Compressor.Block block)
-        throws IOException {
+    private static final void assertLiteralBlock(final String expectedContent, final LZ77Compressor.Block block) {
         assertLiteralBlock(expectedContent.getBytes(StandardCharsets.US_ASCII), block);
     }
 

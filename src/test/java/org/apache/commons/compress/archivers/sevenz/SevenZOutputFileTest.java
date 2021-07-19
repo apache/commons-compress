@@ -261,7 +261,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void testCantFinishTwice() throws Exception {
+    public void testCantFinishTwice() {
         output = new File(dir, "finish.7z");
         try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
             outArchive.finish();
