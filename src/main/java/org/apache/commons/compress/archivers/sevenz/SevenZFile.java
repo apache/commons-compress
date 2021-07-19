@@ -1172,7 +1172,7 @@ public class SevenZFile implements Closeable {
                 get(header, coders[i].properties);
             }
             // would need to keep looping as above:
-            while (moreAlternativeMethods) {
+            if (moreAlternativeMethods) {
                 throw new IOException("Alternative methods are unsupported, please report. " + // NOSONAR
                     "The reference implementation doesn't support them either.");
             }
