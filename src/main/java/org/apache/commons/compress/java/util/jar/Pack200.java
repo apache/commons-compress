@@ -58,19 +58,16 @@ public abstract class Pack200 {
      */
     public static Pack200.Packer newPacker() {
         return (Packer) AccessController
-                .doPrivileged(new PrivilegedAction<Object>() {
-                    public Object run() {
-                        String className = System
-                                .getProperty(SYSTEM_PROPERTY_PACKER,
-                                        "org.apache.commons.compress.harmony.pack200.Pack200PackerAdapter"); //$NON-NLS-1$
-                        try {
-                            // TODO Not sure if this will cause problems with
-                            // loading the packer
-                            return ClassLoader.getSystemClassLoader()
-                                    .loadClass(className).newInstance();
-                        } catch (Exception e) {
-                            throw new Error(Messages.getString("archive.3E",className), e); //$NON-NLS-1$
-                        }
+                .doPrivileged((PrivilegedAction<Object>) () -> {
+                    String className = System
+                            .getProperty(SYSTEM_PROPERTY_PACKER,
+                                    "org.apache.commons.compress.harmony.pack200.Pack200PackerAdapter"); //$NON-NLS-1$
+                    try {
+                        // TODO Not sure if this will cause problems with
+                        // loading the packer
+                        return ClassLoader.getSystemClassLoader().loadClass(className).newInstance();
+                    } catch (Exception e) {
+                        throw new Error(Messages.getString("archive.3E", className), e); //$NON-NLS-1$
                     }
                 });
 
@@ -88,17 +85,14 @@ public abstract class Pack200 {
      */
     public static Pack200.Unpacker newUnpacker() {
         return (Unpacker) AccessController
-                .doPrivileged(new PrivilegedAction<Object>() {
-                    public Object run() {
-                        String className = System
-                                .getProperty(SYSTEM_PROPERTY_UNPACKER,
-                                        "org.apache.commons.compress.harmony.unpack200.Pack200UnpackerAdapter");//$NON-NLS-1$
-                        try {
-                            return ClassLoader.getSystemClassLoader()
-                                    .loadClass(className).newInstance();
-                        } catch (Exception e) {
-                            throw new Error(Messages.getString("archive.3E",className), e); //$NON-NLS-1$
-                        }
+                .doPrivileged((PrivilegedAction<Object>) () -> {
+                    String className = System
+                            .getProperty(SYSTEM_PROPERTY_UNPACKER,
+                                    "org.apache.commons.compress.harmony.unpack200.Pack200UnpackerAdapter");//$NON-NLS-1$
+                    try {
+                        return ClassLoader.getSystemClassLoader().loadClass(className).newInstance();
+                    } catch (Exception e) {
+                        throw new Error(Messages.getString("archive.3E", className), e); //$NON-NLS-1$
                     }
                 });
     }
