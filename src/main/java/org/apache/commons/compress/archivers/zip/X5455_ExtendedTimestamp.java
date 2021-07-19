@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.zip;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 import java.util.zip.ZipException;
 
 /**
@@ -564,9 +565,9 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
             // The ZipLong==ZipLong clauses handle the cases where both are null.
             // and only last 3 bits of flags matter.
             return ((flags & 0x07) == (xf.flags & 0x07)) &&
-                    (modifyTime == xf.modifyTime || (modifyTime != null && modifyTime.equals(xf.modifyTime))) &&
-                    (accessTime == xf.accessTime || (accessTime != null && accessTime.equals(xf.accessTime))) &&
-                    (createTime == xf.createTime || (createTime != null && createTime.equals(xf.createTime)));
+                    Objects.equals(modifyTime, xf.modifyTime) &&
+                    Objects.equals(accessTime, xf.accessTime) &&
+                    Objects.equals(createTime, xf.createTime);
         }
         return false;
     }

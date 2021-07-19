@@ -18,6 +18,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.zip.ZipException;
 
 /**
@@ -325,9 +326,9 @@ public class X000A_NTFS implements ZipExtraField {
         if (o instanceof X000A_NTFS) {
             final X000A_NTFS xf = (X000A_NTFS) o;
 
-            return (modifyTime == xf.modifyTime || (modifyTime != null && modifyTime.equals(xf.modifyTime))) &&
-                    (accessTime == xf.accessTime || (accessTime != null && accessTime.equals(xf.accessTime))) &&
-                    (createTime == xf.createTime || (createTime != null && createTime.equals(xf.createTime)));
+            return Objects.equals(modifyTime, xf.modifyTime) &&
+                   Objects.equals(accessTime, xf.accessTime) &&
+                   Objects.equals(createTime, xf.createTime);
         }
         return false;
     }
