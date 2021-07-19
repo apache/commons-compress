@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.BufferedInputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -36,6 +35,8 @@ import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+
+import static java.nio.charset.StandardCharsets.*;
 
 /**
  * Input stream that decompresses .gz files.
@@ -238,14 +239,12 @@ public class GzipCompressorInputStream extends CompressorInputStream
 
         // Original file name
         if ((flg & FNAME) != 0) {
-            parameters.setFilename(new String(readToNull(inData),
-                    StandardCharsets.ISO_8859_1));
+            parameters.setFilename(new String(readToNull(inData), ISO_8859_1));
         }
 
         // Comment
         if ((flg & FCOMMENT) != 0) {
-            parameters.setComment(new String(readToNull(inData),
-                    StandardCharsets.ISO_8859_1));
+            parameters.setComment(new String(readToNull(inData), ISO_8859_1));
         }
 
         // Header "CRC16" which is actually a truncated CRC32 (which isn't

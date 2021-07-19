@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
@@ -44,6 +43,8 @@ import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static java.nio.charset.StandardCharsets.*;
 
 public class ExpanderTest extends AbstractTestCase {
 
@@ -171,10 +172,10 @@ public class ExpanderTest extends AbstractTestCase {
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b/c"));
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/d.txt"));
-            aos.write("Hello, world 1".getBytes(StandardCharsets.UTF_8));
+            aos.write("Hello, world 1".getBytes(UTF_8));
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/c/e.txt"));
-            aos.write("Hello, world 2".getBytes(StandardCharsets.UTF_8));
+            aos.write("Hello, world 2".getBytes(UTF_8));
             aos.closeArchiveEntry();
             aos.finish();
         }
@@ -195,10 +196,10 @@ public class ExpanderTest extends AbstractTestCase {
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b/c"));
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/d.txt"));
-            aos.write("Hello, world 1".getBytes(StandardCharsets.UTF_8));
+            aos.write("Hello, world 1".getBytes(UTF_8));
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/c/e.txt"));
-            aos.write("Hello, world 2".getBytes(StandardCharsets.UTF_8));
+            aos.write("Hello, world 2".getBytes(UTF_8));
             aos.closeArchiveEntry();
             aos.finish();
         }
@@ -219,10 +220,10 @@ public class ExpanderTest extends AbstractTestCase {
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b/c"));
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/d.txt"));
-            aos.write("Hello, world 1".getBytes(StandardCharsets.UTF_8));
+            aos.write("Hello, world 1".getBytes(UTF_8));
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/c/e.txt"));
-            aos.write("Hello, world 2".getBytes(StandardCharsets.UTF_8));
+            aos.write("Hello, world 2".getBytes(UTF_8));
             aos.closeArchiveEntry();
             aos.finish();
         }
@@ -237,7 +238,7 @@ public class ExpanderTest extends AbstractTestCase {
         try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
              .createArchiveOutputStream("zip", Files.newOutputStream(archive.toPath()))) {
             aos.putArchiveEntry(aos.createArchiveEntry(dummy, entry));
-            aos.write("Hello, world 1".getBytes(StandardCharsets.UTF_8));
+            aos.write("Hello, world 1".getBytes(UTF_8));
             aos.closeArchiveEntry();
             aos.finish();
         }
@@ -253,7 +254,7 @@ public class ExpanderTest extends AbstractTestCase {
 
     private void assertHelloWorld(final String fileName, final String suffix) throws IOException {
         Assert.assertTrue(fileName + " does not exist", new File(resultDir, fileName).isFile());
-        final byte[] expected = ("Hello, world " + suffix).getBytes(StandardCharsets.UTF_8);
+        final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
         try (InputStream is = Files.newInputStream(new File(resultDir, fileName).toPath())) {
             final byte[] actual = IOUtils.toByteArray(is);
             Assert.assertArrayEquals(expected, actual);

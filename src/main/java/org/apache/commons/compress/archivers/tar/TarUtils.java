@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,6 +34,7 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 
+import static java.nio.charset.StandardCharsets.*;
 import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUMLEN;
 import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUM_OFFSET;
 import static org.apache.commons.compress.archivers.tar.TarConstants.SPARSE_NUMBYTES_LEN;
@@ -769,8 +769,7 @@ public class TarUtils {
                                     throw new IOException("Failed to read Paxheader."
                                        + "Value should end with a newline");
                                 }
-                                final String value = new String(rest, 0,
-                                        restLen - 1, StandardCharsets.UTF_8);
+                                final String value = new String(rest, 0, restLen - 1, UTF_8);
                                 headers.put(keyword, value);
 
                                 // for 0.0 PAX Headers

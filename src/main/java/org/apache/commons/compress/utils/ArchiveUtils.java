@@ -18,10 +18,11 @@
 
 package org.apache.commons.compress.utils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+
+import static java.nio.charset.StandardCharsets.*;
 
 /**
  * Generic Archive utilities
@@ -72,7 +73,7 @@ public class ArchiveUtils {
     public static boolean matchAsciiBuffer(
             final String expected, final byte[] buffer, final int offset, final int length){
         final byte[] buffer1;
-        buffer1 = expected.getBytes(StandardCharsets.US_ASCII);
+        buffer1 = expected.getBytes(US_ASCII);
         return isEqual(buffer1, 0, buffer1.length, buffer, offset, length, false);
     }
 
@@ -95,7 +96,7 @@ public class ArchiveUtils {
      * @return the bytes
      */
     public static byte[] toAsciiBytes(final String inputString){
-        return inputString.getBytes(StandardCharsets.US_ASCII);
+        return inputString.getBytes(US_ASCII);
     }
 
     /**
@@ -105,7 +106,7 @@ public class ArchiveUtils {
      * @return the bytes, interpreted as an Ascii string
      */
     public static String toAsciiString(final byte[] inputBytes){
-        return new String(inputBytes, StandardCharsets.US_ASCII);
+        return new String(inputBytes, US_ASCII);
     }
 
     /**
@@ -117,7 +118,7 @@ public class ArchiveUtils {
      * @return the bytes, interpreted as an Ascii string
      */
     public static String toAsciiString(final byte[] inputBytes, final int offset, final int length){
-        return new String(inputBytes, offset, length, StandardCharsets.US_ASCII);
+        return new String(inputBytes, offset, length, US_ASCII);
     }
 
     /**

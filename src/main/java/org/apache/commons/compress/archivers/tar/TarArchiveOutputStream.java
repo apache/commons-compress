@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -37,6 +36,8 @@ import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CountingOutputStream;
 import org.apache.commons.compress.utils.FixedLengthBlockOutputStream;
+
+import static java.nio.charset.StandardCharsets.*;
 
 /**
  * The TarOutputStream writes a UNIX tar archive as an OutputStream. Methods are provided to put
@@ -495,7 +496,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 + 3 /* blank, equals and newline */
                 + 2 /* guess 9 < actual length < 100 */;
             String line = len + " " + key + "=" + value + "\n";
-            int actualLength = line.getBytes(StandardCharsets.UTF_8).length;
+            int actualLength = line.getBytes(UTF_8).length;
             while (len != actualLength) {
                 // Adjust for cases where length < 10 or > 100
                 // or where UTF-8 encoding isn't a single octet
@@ -504,11 +505,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 // first pass so we'd need a second.
                 len = actualLength;
                 line = len + " " + key + "=" + value + "\n";
-                actualLength = line.getBytes(StandardCharsets.UTF_8).length;
+                actualLength = line.getBytes(UTF_8).length;
             }
             w.write(line);
         }
-        return w.toString().getBytes(StandardCharsets.UTF_8);
+        return w.toString().getBytes(UTF_8);
     }
 
     private String stripTo7Bits(final String name) {

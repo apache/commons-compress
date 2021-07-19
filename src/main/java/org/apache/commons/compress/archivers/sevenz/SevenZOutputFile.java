@@ -29,7 +29,6 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
@@ -48,6 +47,8 @@ import java.util.zip.CRC32;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.CountingOutputStream;
+
+import static java.nio.charset.StandardCharsets.*;
 
 /**
  * Writes a 7z file.
@@ -626,7 +627,7 @@ public class SevenZOutputFile implements Closeable {
         final DataOutputStream out = new DataOutputStream(baos);
         out.write(0);
         for (final SevenZArchiveEntry entry : files) {
-            out.write(entry.getName().getBytes(StandardCharsets.UTF_16LE));
+            out.write(entry.getName().getBytes(UTF_16LE));
             out.writeShort(0);
         }
         out.flush();

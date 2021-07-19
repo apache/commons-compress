@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
 
@@ -31,6 +30,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static java.nio.charset.StandardCharsets.*;
 import static org.apache.commons.compress.AbstractTestCase.mkdir;
 import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.junit.Assert.assertArrayEquals;
@@ -56,7 +56,7 @@ public class DataDescriptorTest {
         final ByteArrayOutputStream o = new ByteArrayOutputStream();
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(o)) {
             zos.putArchiveEntry(new ZipArchiveEntry("test1.txt"));
-            zos.write("foo".getBytes(StandardCharsets.UTF_8));
+            zos.write("foo".getBytes(UTF_8));
             zos.closeArchiveEntry();
         }
         final byte[] data = o.toByteArray();
@@ -96,7 +96,7 @@ public class DataDescriptorTest {
         final File f = new File(dir, "test.zip");
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(f)) {
             zos.putArchiveEntry(new ZipArchiveEntry("test1.txt"));
-            zos.write("foo".getBytes(StandardCharsets.UTF_8));
+            zos.write("foo".getBytes(UTF_8));
             zos.closeArchiveEntry();
         }
 
@@ -138,7 +138,7 @@ public class DataDescriptorTest {
         final ByteArrayOutputStream init = new ByteArrayOutputStream();
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(init)) {
             zos.putArchiveEntry(new ZipArchiveEntry("test1.txt"));
-            zos.write("foo".getBytes(StandardCharsets.UTF_8));
+            zos.write("foo".getBytes(UTF_8));
             zos.closeArchiveEntry();
         }
 

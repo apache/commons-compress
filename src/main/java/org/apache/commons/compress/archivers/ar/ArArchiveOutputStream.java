@@ -21,13 +21,14 @@ package org.apache.commons.compress.archivers.ar;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
+
+import static java.nio.charset.StandardCharsets.*;
 
 /**
  * Implements the "ar" archive format as an output stream.
@@ -125,7 +126,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private long write(final String data) throws IOException {
-        final byte[] bytes = data.getBytes(StandardCharsets.US_ASCII);
+        final byte[] bytes = data.getBytes(US_ASCII);
         write(bytes);
         return bytes.length;
     }

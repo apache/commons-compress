@@ -21,7 +21,6 @@ package org.apache.commons.compress.archivers.tar;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +37,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static java.nio.charset.StandardCharsets.*;
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
@@ -77,7 +77,7 @@ public class TarUtilsTest {
         final long MAX_OCTAL  = 077777777777L; // Allowed 11 digits
         final long MAX_OCTAL_OVERFLOW  = 0777777777777L; // in fact 12 for some implementations
         final String maxOctal = "777777777777"; // Maximum valid octal
-        buffer = maxOctal.getBytes(StandardCharsets.UTF_8);
+        buffer = maxOctal.getBytes(UTF_8);
         value = TarUtils.parseOctal(buffer,0, buffer.length);
         assertEquals(MAX_OCTAL_OVERFLOW, value);
         buffer[buffer.length - 1] = ' ';
@@ -112,19 +112,19 @@ public class TarUtilsTest {
             fail("Expected IllegalArgumentException - should be at least 2 bytes long");
         } catch (final IllegalArgumentException expected) {
         }
-        buffer = "abcdef ".getBytes(StandardCharsets.UTF_8); // Invalid input
+        buffer = "abcdef ".getBytes(UTF_8); // Invalid input
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException");
         } catch (final IllegalArgumentException expected) {
         }
-        buffer = " 0 07 ".getBytes(StandardCharsets.UTF_8); // Invalid - embedded space
+        buffer = " 0 07 ".getBytes(UTF_8); // Invalid - embedded space
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException - embedded space");
         } catch (final IllegalArgumentException expected) {
         }
-        buffer = " 0\00007 ".getBytes(StandardCharsets.UTF_8); // Invalid - embedded NUL
+        buffer = " 0\00007 ".getBytes(UTF_8); // Invalid - embedded NUL
         try {
             TarUtils.parseOctal(buffer,0, buffer.length);
             fail("Expected IllegalArgumentException - embedded NUL");
@@ -207,14 +207,14 @@ public class TarUtilsTest {
     public void testNegative() {
         final byte [] buffer = new byte[22];
         TarUtils.formatUnsignedOctalString(-1, buffer, 0, buffer.length);
-        assertEquals("1777777777777777777777", new String(buffer, StandardCharsets.UTF_8));
+        assertEquals("1777777777777777777777", new String(buffer, UTF_8));
     }
 
     @Test
     public void testOverflow() {
         final byte [] buffer = new byte[8-1]; // a lot of the numbers have 8-byte buffers (nul term)
         TarUtils.formatUnsignedOctalString(07777777L, buffer, 0, buffer.length);
-        assertEquals("7777777", new String(buffer, StandardCharsets.UTF_8));
+        assertEquals("7777777", new String(buffer, UTF_8));
         try {
             TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length);
             fail("Should have cause IllegalArgumentException");
@@ -415,7 +415,7 @@ public class TarUtilsTest {
     @Test
     public void readSimplePaxHeader() throws Exception {
         final Map<String, String> headers = TarUtils.parsePaxHeaders(
-                new ByteArrayInputStream("30 atime=1321711775.972059463\n".getBytes(StandardCharsets.UTF_8)),
+                new ByteArrayInputStream("30 atime=1321711775.972059463\n".getBytes(UTF_8)),
                 null, new HashMap<>());
         assertEquals(1, headers.size());
         assertEquals("1321711775.972059463", headers.get("atime"));
@@ -424,7 +424,7 @@ public class TarUtilsTest {
     @Test
     public void secondEntryWinsWhenPaxHeaderContainsDuplicateKey() throws Exception {
         final Map<String, String> headers = TarUtils.parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n11 foo=baz\n"
-                        .getBytes(StandardCharsets.UTF_8)), null, new HashMap<>());
+                        .getBytes(UTF_8)), null, new HashMap<>());
         assertEquals(1, headers.size());
         assertEquals("baz", headers.get("foo"));
     }
@@ -433,7 +433,7 @@ public class TarUtilsTest {
     public void paxHeaderEntryWithEmptyValueRemovesKey() throws Exception {
         final Map<String, String> headers = TarUtils
                 .parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n7 foo=\n"
-                        .getBytes(StandardCharsets.UTF_8)), null, new HashMap<>());
+                        .getBytes(UTF_8)), null, new HashMap<>());
         assertEquals(0, headers.size());
     }
 
@@ -441,7 +441,7 @@ public class TarUtilsTest {
     public void readPaxHeaderWithEmbeddedNewline() throws Exception {
         final Map<String, String> headers = TarUtils
                 .parsePaxHeaders(new ByteArrayInputStream("28 comment=line1\nline2\nand3\n"
-                        .getBytes(StandardCharsets.UTF_8)), null, new HashMap<>());
+                        .getBytes(UTF_8)), null, new HashMap<>());
         assertEquals(1, headers.size());
         assertEquals("line1\nline2\nand3", headers.get("comment"));
     }
@@ -450,9 +450,9 @@ public class TarUtilsTest {
     public void readNonAsciiPaxHeader() throws Exception {
         final String ae = "\u00e4";
         final String line = "11 path="+ ae + "\n";
-        assertEquals(11, line.getBytes(StandardCharsets.UTF_8).length);
+        assertEquals(11, line.getBytes(UTF_8).length);
         final Map<String, String> headers = TarUtils
-                .parsePaxHeaders(new ByteArrayInputStream(line.getBytes(StandardCharsets.UTF_8)), null, new HashMap<>());
+                .parsePaxHeaders(new ByteArrayInputStream(line.getBytes(UTF_8)), null, new HashMap<>());
         assertEquals(1, headers.size());
         assertEquals(ae, headers.get("path"));
     }
@@ -472,7 +472,7 @@ public class TarUtilsTest {
         thrown.expect(IOException.class);
         thrown.expectMessage(startsWith("Failed to read Paxheader"));
         TarUtils.parsePaxHeaders(
-            new ByteArrayInputStream("30 atime=1321711775.9720594634".getBytes(StandardCharsets.UTF_8)),
+            new ByteArrayInputStream("30 atime=1321711775.9720594634".getBytes(UTF_8)),
             null, Collections.emptyMap());
     }
 
@@ -482,7 +482,7 @@ public class TarUtilsTest {
             + "26 GNU.sparse.numbytes=10\n";
         final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         TarUtils.parsePaxHeaders(
-            new ByteArrayInputStream(header.getBytes(StandardCharsets.UTF_8)),
+            new ByteArrayInputStream(header.getBytes(UTF_8)),
             sparseHeaders, Collections.emptyMap());
         assertEquals(1, sparseHeaders.size());
         assertEquals(0, sparseHeaders.get(0).getOffset());
@@ -495,7 +495,7 @@ public class TarUtilsTest {
             + "24 GNU.sparse.offset=10\n";
         final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         TarUtils.parsePaxHeaders(
-            new ByteArrayInputStream(header.getBytes(StandardCharsets.UTF_8)),
+            new ByteArrayInputStream(header.getBytes(UTF_8)),
             sparseHeaders, Collections.emptyMap());
         assertEquals(2, sparseHeaders.size());
         assertEquals(0, sparseHeaders.get(0).getOffset());
@@ -511,7 +511,7 @@ public class TarUtilsTest {
         final String header = "23 GNU.sparse.offset=a\n"
             + "26 GNU.sparse.numbytes=10\n";
         TarUtils.parsePaxHeaders(
-            new ByteArrayInputStream(header.getBytes(StandardCharsets.UTF_8)),
+            new ByteArrayInputStream(header.getBytes(UTF_8)),
             null, Collections.emptyMap());
     }
 
@@ -522,7 +522,7 @@ public class TarUtilsTest {
         final String header = "23 GNU.sparse.offset=0\n"
             + "26 GNU.sparse.numbytes=1a\n";
         TarUtils.parsePaxHeaders(
-            new ByteArrayInputStream(header.getBytes(StandardCharsets.UTF_8)),
+            new ByteArrayInputStream(header.getBytes(UTF_8)),
             null, Collections.emptyMap());
     }
 
@@ -533,7 +533,7 @@ public class TarUtilsTest {
         final String header = "24 GNU.sparse.offset=-1\n"
             + "26 GNU.sparse.numbytes=10\n";
         TarUtils.parsePaxHeaders(
-            new ByteArrayInputStream(header.getBytes(StandardCharsets.UTF_8)),
+            new ByteArrayInputStream(header.getBytes(UTF_8)),
             null, Collections.emptyMap());
     }
 
@@ -544,7 +544,7 @@ public class TarUtilsTest {
         final String header = "23 GNU.sparse.offset=0\n"
             + "26 GNU.sparse.numbytes=-1\n";
         TarUtils.parsePaxHeaders(
-            new ByteArrayInputStream(header.getBytes(StandardCharsets.UTF_8)),
+            new ByteArrayInputStream(header.getBytes(UTF_8)),
             null, Collections.emptyMap());
     }
 

@@ -23,7 +23,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.NonWritableChannelException;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +32,8 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static java.nio.charset.StandardCharsets.*;
 
 /**
  * Initially based on <a
@@ -86,7 +87,7 @@ public class MultiReadOnlySeekableByteChannelTest {
     @Test
     public void checkForString() throws IOException {
         check("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-            .getBytes(StandardCharsets.UTF_8));
+            .getBytes(UTF_8));
     }
 
     @Test

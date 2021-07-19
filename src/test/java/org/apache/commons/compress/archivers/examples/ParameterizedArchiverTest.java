@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
@@ -44,6 +43,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 import org.junit.runners.Parameterized;
+
+import static java.nio.charset.StandardCharsets.*;
 
 @RunWith(Parameterized.class)
 public class ParameterizedArchiverTest extends AbstractTestCase {
@@ -74,10 +75,10 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
         final File c = new File(dir, "a/b/c");
         c.mkdirs();
         try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/d.txt").toPath())) {
-            os.write("Hello, world 1".getBytes(StandardCharsets.UTF_8));
+            os.write("Hello, world 1".getBytes(UTF_8));
         }
         try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/c/e.txt").toPath())) {
-            os.write("Hello, world 2".getBytes(StandardCharsets.UTF_8));
+            os.write("Hello, world 2".getBytes(UTF_8));
         }
         target = new File(resultDir, "test." + format);
     }
@@ -146,7 +147,7 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
         Assert.assertNotNull(expectedName + " does not exists", entry);
         Assert.assertEquals(expectedName, entry.getName());
         Assert.assertFalse(expectedName + " is a directory", entry.isDirectory());
-        final byte[] expected = ("Hello, world " + suffix).getBytes(StandardCharsets.UTF_8);
+        final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
         final byte[] actual = IOUtils.toByteArray(is);
         Assert.assertArrayEquals(expected, actual);
     }

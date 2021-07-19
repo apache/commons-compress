@@ -18,6 +18,7 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static java.nio.charset.StandardCharsets.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
@@ -27,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.zip.CRC32;
@@ -133,8 +133,8 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         try {
             // fix for test fails on Windows with default charset that is not UTF-8
             String encoding = null;
-            if (Charset.defaultCharset() != StandardCharsets.UTF_8) {
-                encoding = StandardCharsets.UTF_8.name();
+            if (Charset.defaultCharset() != UTF_8) {
+                encoding = UTF_8.name();
             }
 
             zf = new ZipFile(archive, encoding, true);
@@ -166,8 +166,8 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         try {
             // fix for test fails on Windows with default charset that is not UTF-8
             String encoding = null;
-            if (Charset.defaultCharset() != StandardCharsets.UTF_8) {
-                encoding = StandardCharsets.UTF_8.name();
+            if (Charset.defaultCharset() != UTF_8) {
+                encoding = UTF_8.name();
             }
 
             zi = new ZipArchiveInputStream(archive, encoding, true);
@@ -313,7 +313,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             }
 
             zos.putArchiveEntry(ze);
-            zos.write("Hello, world!".getBytes(StandardCharsets.US_ASCII));
+            zos.write("Hello, world!".getBytes(US_ASCII));
             zos.closeArchiveEntry();
 
             ze = new ZipArchiveEntry(EURO_FOR_DOLLAR_TXT);
@@ -330,7 +330,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             }
 
             zos.putArchiveEntry(ze);
-            zos.write("Give me your money!".getBytes(StandardCharsets.US_ASCII));
+            zos.write("Give me your money!".getBytes(US_ASCII));
             zos.closeArchiveEntry();
 
             ze = new ZipArchiveEntry(ASCII_TXT);
@@ -348,7 +348,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             }
 
             zos.putArchiveEntry(ze);
-            zos.write("ascii".getBytes(StandardCharsets.US_ASCII));
+            zos.write("ascii".getBytes(US_ASCII));
             zos.closeArchiveEntry();
 
             zos.finish();
@@ -407,8 +407,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
                        ne.limit() - ne.position());
 
             assertEquals(crc.getValue(), ucpf.getNameCRC32());
-            assertEquals(expectedName, new String(ucpf.getUnicodeName(),
-                    StandardCharsets.UTF_8));
+            assertEquals(expectedName, new String(ucpf.getUnicodeName(), UTF_8));
         }
     }
 

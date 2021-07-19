@@ -30,7 +30,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.CharBuffer;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.charset.StandardCharsets;
 import java.nio.charset.CharsetEncoder;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -51,6 +50,8 @@ import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+
+import static java.nio.charset.StandardCharsets.*;
 
 /**
  * Reads a 7z file, using SeekableByteChannel under
@@ -1400,7 +1401,7 @@ public class SevenZFile implements Closeable {
                     for (int i = 0; i < namesLength; i += 2) {
                         if (names[i] == 0 && names[i + 1] == 0) {
                             checkEntryIsInitialized(fileMap, nextFile);
-                            fileMap.get(nextFile).setName(new String(names, nextName, i - nextName, StandardCharsets.UTF_16LE));
+                            fileMap.get(nextFile).setName(new String(names, nextName, i - nextName, UTF_16LE));
                             nextName = i + 2;
                             nextFile++;
                         }
@@ -2056,7 +2057,7 @@ public class SevenZFile implements Closeable {
         return lastSegment + "~";
     }
 
-    private static final CharsetEncoder PASSWORD_ENCODER = StandardCharsets.UTF_16LE.newEncoder();
+    private static final CharsetEncoder PASSWORD_ENCODER = UTF_16LE.newEncoder();
 
     private static byte[] utf16Decode(final char[] chars) throws IOException {
         if (chars == null) {

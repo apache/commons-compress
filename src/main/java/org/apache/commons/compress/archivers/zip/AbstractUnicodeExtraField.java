@@ -18,9 +18,10 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import java.nio.charset.StandardCharsets;
 import java.util.zip.CRC32;
 import java.util.zip.ZipException;
+
+import static java.nio.charset.StandardCharsets.*;
 
 /**
  * A common base class for Unicode extra information extra fields.
@@ -51,7 +52,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         crc32.update(bytes, off, len);
         nameCRC32 = crc32.getValue();
 
-        unicodeName = text.getBytes(StandardCharsets.UTF_8);
+        unicodeName = text.getBytes(UTF_8);
     }
 
     /**

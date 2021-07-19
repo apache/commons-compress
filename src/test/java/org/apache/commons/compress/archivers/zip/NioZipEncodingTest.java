@@ -20,11 +20,12 @@
 package org.apache.commons.compress.archivers.zip;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import static java.nio.charset.StandardCharsets.*;
 
 public class NioZipEncodingTest {
 
@@ -32,63 +33,63 @@ public class NioZipEncodingTest {
 
     @Test
     public void umlautToUTF16BE() {
-        final NioZipEncoding e = new NioZipEncoding(StandardCharsets.UTF_16BE, false);
+        final NioZipEncoding e = new NioZipEncoding(UTF_16BE, false);
         final ByteBuffer bb = e.encode(UMLAUTS);
         final int off = bb.arrayOffset();
         final byte[] result = Arrays.copyOfRange(bb.array(), off, off + bb.limit() - bb.position());
-        Assert.assertArrayEquals(UMLAUTS.getBytes(StandardCharsets.UTF_16BE), result);
+        Assert.assertArrayEquals(UMLAUTS.getBytes(UTF_16BE), result);
     }
 
     @Test
     public void umlautToUTF8() {
-        final NioZipEncoding e = new NioZipEncoding(StandardCharsets.UTF_8, true);
+        final NioZipEncoding e = new NioZipEncoding(UTF_8, true);
         final ByteBuffer bb = e.encode("\u00e4\u00f6\u00fc");
         final int off = bb.arrayOffset();
         final byte[] result = Arrays.copyOfRange(bb.array(), off, off + bb.limit() - bb.position());
-        Assert.assertArrayEquals(UMLAUTS.getBytes(StandardCharsets.UTF_8), result);
+        Assert.assertArrayEquals(UMLAUTS.getBytes(UTF_8), result);
     }
 
     @Test
     public void umlautToISO88591() {
-        final NioZipEncoding e = new NioZipEncoding(StandardCharsets.ISO_8859_1, true);
+        final NioZipEncoding e = new NioZipEncoding(ISO_8859_1, true);
         final ByteBuffer bb = e.encode("\u00e4\u00f6\u00fc");
         final int off = bb.arrayOffset();
         final byte[] result = Arrays.copyOfRange(bb.array(), off, off + bb.limit() - bb.position());
-        Assert.assertArrayEquals(UMLAUTS.getBytes(StandardCharsets.ISO_8859_1), result);
+        Assert.assertArrayEquals(UMLAUTS.getBytes(ISO_8859_1), result);
     }
 
     @Test
     public void unmappableUmlauts() {
-        final NioZipEncoding e = new NioZipEncoding(StandardCharsets.US_ASCII, false);
+        final NioZipEncoding e = new NioZipEncoding(US_ASCII, false);
         final ByteBuffer bb = e.encode("\u00e4\u00f6\u00fc");
         final int off = bb.arrayOffset();
         final byte[] result = Arrays.copyOfRange(bb.array(), off, off + bb.limit() - bb.position());
-        Assert.assertEquals("%U00E4%U00F6%U00FC", new String(result, StandardCharsets.US_ASCII));
+        Assert.assertEquals("%U00E4%U00F6%U00FC", new String(result, US_ASCII));
     }
 
     private static final String RAINBOW_EMOJI = "\ud83c\udf08";
 
     @Test
     public void unmappableRainbowEmoji() {
-        final NioZipEncoding e = new NioZipEncoding(StandardCharsets.US_ASCII, false);
+        final NioZipEncoding e = new NioZipEncoding(US_ASCII, false);
         final ByteBuffer bb = e.encode(RAINBOW_EMOJI);
         final int off = bb.arrayOffset();
         final byte[] result = Arrays.copyOfRange(bb.array(), off, off + bb.limit() - bb.position());
-        Assert.assertEquals("%UD83C%UDF08", new String(result, StandardCharsets.US_ASCII));
+        Assert.assertEquals("%UD83C%UDF08", new String(result, US_ASCII));
     }
 
     @Test
     public void rainbowEmojiToSurrogatePairUTF16() {
-        final NioZipEncoding e = new NioZipEncoding(StandardCharsets.UTF_16BE, false);
+        final NioZipEncoding e = new NioZipEncoding(UTF_16BE, false);
         final ByteBuffer bb = e.encode(RAINBOW_EMOJI);
         final int off = bb.arrayOffset();
         final byte[] result = Arrays.copyOfRange(bb.array(), off, off + bb.limit() - bb.position());
-        Assert.assertArrayEquals(RAINBOW_EMOJI.getBytes(StandardCharsets.UTF_16BE), result);
+        Assert.assertArrayEquals(RAINBOW_EMOJI.getBytes(UTF_16BE), result);
     }
 
     @Test
     public void partialSurrogatePair() {
-        final NioZipEncoding e = new NioZipEncoding(StandardCharsets.US_ASCII, false);
+        final NioZipEncoding e = new NioZipEncoding(US_ASCII, false);
         final ByteBuffer bb = e.encode("\ud83c");
         final int off = bb.arrayOffset();
         final byte[] result = Arrays.copyOfRange(bb.array(), off, off + bb.limit() - bb.position());

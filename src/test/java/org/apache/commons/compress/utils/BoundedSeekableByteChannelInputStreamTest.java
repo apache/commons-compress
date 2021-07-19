@@ -20,8 +20,8 @@ package org.apache.commons.compress.utils;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
+import static java.nio.charset.StandardCharsets.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
@@ -31,11 +31,11 @@ public class BoundedSeekableByteChannelInputStreamTest {
     public void checkRestrictedRead() throws IOException {
         byte[] readContent;
         try (BoundedSeekableByteChannelInputStream input = new BoundedSeekableByteChannelInputStream(0, 5,
-                new SeekableInMemoryByteChannel("Hello World!".getBytes(StandardCharsets.UTF_8)))) {
+                new SeekableInMemoryByteChannel("Hello World!".getBytes(UTF_8)))) {
             readContent = IOUtils.toByteArray(input);
         }
         assertEquals(5, readContent.length);
-        assertArrayEquals("Hello".getBytes(StandardCharsets.UTF_8), readContent);
+        assertArrayEquals("Hello".getBytes(UTF_8), readContent);
     }
 
 }

@@ -19,13 +19,13 @@
 package org.apache.commons.compress.compressors.lz77support;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 
+import static java.nio.charset.StandardCharsets.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
@@ -38,7 +38,7 @@ public class LZ77CompressorTest {
          * Example from "An Explanation of the Deflate Algorithm" by "Antaeus Feldspar".
          * @see "http://zlib.net/feldspar.html"
          */
-        BLA = "Blah blah blah blah blah!".getBytes(StandardCharsets.US_ASCII);
+        BLA = "Blah blah blah blah blah!".getBytes(US_ASCII);
 
         /*
          * Example from Wikipedia article about LZSS.
@@ -57,7 +57,7 @@ public class LZ77CompressorTest {
                + "Do you like green eggs and ham?\n"
                + "\n"
                + "I do not like them, Sam-I-am.\n"
-               + "I do not like green eggs and ham.").getBytes(StandardCharsets.US_ASCII);
+               + "I do not like green eggs and ham.").getBytes(US_ASCII);
         ONE_TO_TEN = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     }
 
@@ -290,7 +290,7 @@ public class LZ77CompressorTest {
     }
 
     private static final void assertLiteralBlock(final String expectedContent, final LZ77Compressor.Block block) {
-        assertLiteralBlock(expectedContent.getBytes(StandardCharsets.US_ASCII), block);
+        assertLiteralBlock(expectedContent.getBytes(US_ASCII), block);
     }
 
     private static final void assertLiteralBlock(final byte[] expectedContent, final LZ77Compressor.Block block) {

@@ -17,6 +17,7 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import static java.nio.charset.StandardCharsets.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -30,7 +31,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
@@ -160,7 +160,7 @@ public class SevenZFileTest extends AbstractTestCase {
     public void test7zDecryptUnarchive() throws Exception {
         if (isStrongCryptoAvailable()) {
             test7zUnarchive(getFile("bla.encrypted.7z"), SevenZMethod.LZMA, // stack LZMA + AES
-                            "foo".getBytes(StandardCharsets.UTF_16LE));
+                            "foo".getBytes(UTF_16LE));
         }
     }
 
@@ -452,7 +452,7 @@ public class SevenZFileTest extends AbstractTestCase {
                         assert (bytesRead >= 0);
                         off += bytesRead;
                     }
-                    assertEquals(testTxtContents, new String(contents, StandardCharsets.UTF_8));
+                    assertEquals(testTxtContents, new String(contents, UTF_8));
                     break;
                 }
             }
@@ -506,7 +506,7 @@ public class SevenZFileTest extends AbstractTestCase {
                         off += bytesRead;
                     }
                     assertEquals(SevenZMethod.LZMA2, entry.getContentMethods().iterator().next().getMethod());
-                    assertEquals(filesTxtContents, new String(contents, StandardCharsets.UTF_8));
+                    assertEquals(filesTxtContents, new String(contents, UTF_8));
                     break;
                 }
             }
@@ -525,7 +525,7 @@ public class SevenZFileTest extends AbstractTestCase {
                 off += bytesRead;
             }
             assertEquals(SevenZMethod.LZMA2, nextEntry.getContentMethods().iterator().next().getMethod());
-            assertEquals(testTxtContents, new String(contents, StandardCharsets.UTF_8));
+            assertEquals(testTxtContents, new String(contents, UTF_8));
         }
     }
 
@@ -572,7 +572,7 @@ public class SevenZFileTest extends AbstractTestCase {
                     off += bytesRead;
                 }
                 assertEquals(SevenZMethod.LZMA2, testTxtEntry.getContentMethods().iterator().next().getMethod());
-                assertEquals(testTxtContents, new String(contents, StandardCharsets.UTF_8));
+                assertEquals(testTxtContents, new String(contents, UTF_8));
             }
 
             // then read the next entry using getNextEntry
@@ -637,7 +637,7 @@ public class SevenZFileTest extends AbstractTestCase {
                         off += bytesRead;
                     }
                     assertEquals(SevenZMethod.LZMA2, testTxtEntry.getContentMethods().iterator().next().getMethod());
-                    assertEquals(testTxtContents, new String(contents, StandardCharsets.UTF_8));
+                    assertEquals(testTxtContents, new String(contents, UTF_8));
                 }
             }
         }
@@ -677,7 +677,7 @@ public class SevenZFileTest extends AbstractTestCase {
                         off += bytesRead;
                     }
                     assertEquals(SevenZMethod.LZMA2, testTxtEntry.getContentMethods().iterator().next().getMethod());
-                    assertEquals(testTxtContents, new String(contents, StandardCharsets.UTF_8));
+                    assertEquals(testTxtContents, new String(contents, UTF_8));
                 }
             }
         }
@@ -712,7 +712,7 @@ public class SevenZFileTest extends AbstractTestCase {
 
             final SevenZArchiveEntry entry = out.createArchiveEntry(inputFile.toFile(), "test.txt");
             out.putArchiveEntry(entry);
-            out.write("Test".getBytes(StandardCharsets.UTF_8));
+            out.write("Test".getBytes(UTF_8));
             out.closeArchiveEntry();
 
             Files.deleteIfExists(inputFile);
@@ -788,7 +788,7 @@ public class SevenZFileTest extends AbstractTestCase {
             assert (bytesRead >= 0);
             off += bytesRead;
         }
-        assertEquals(TEST2_CONTENT, new String(contents, StandardCharsets.UTF_8));
+        assertEquals(TEST2_CONTENT, new String(contents, UTF_8));
         assertNull(sevenZFile.getNextEntry());
     }
 
@@ -803,7 +803,7 @@ public class SevenZFileTest extends AbstractTestCase {
                 assert (bytesRead >= 0);
                 off += bytesRead;
             }
-            assertEquals("Hello, world!\n", new String(contents, StandardCharsets.UTF_8));
+            assertEquals("Hello, world!\n", new String(contents, UTF_8));
             assertNull(sevenZFile.getNextEntry());
         }
     }

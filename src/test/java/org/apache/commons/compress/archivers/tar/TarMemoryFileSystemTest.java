@@ -28,13 +28,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.GroupPrincipal;
 import java.nio.file.attribute.UserPrincipal;
 
+import static java.nio.charset.StandardCharsets.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -44,7 +44,7 @@ public class TarMemoryFileSystemTest {
     public void tarFromMemoryFileSystem() throws IOException, ArchiveException {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
             final Path p = fileSystem.getPath("test.txt");
-            Files.write(p, "Test".getBytes(StandardCharsets.UTF_8));
+            Files.write(p, "Test".getBytes(UTF_8));
 
             final File f = File.createTempFile("commons-compress-memoryfs", ".tar");
             try (final OutputStream out = Files.newOutputStream(f.toPath());
@@ -71,7 +71,7 @@ public class TarMemoryFileSystemTest {
                 entry.setSize(content.length());
                 tarOut.putArchiveEntry(entry);
 
-                tarOut.write("Test".getBytes(StandardCharsets.UTF_8));
+                tarOut.write("Test".getBytes(UTF_8));
                 tarOut.closeArchiveEntry();
 
                 assertTrue(Files.exists(p));
@@ -86,7 +86,7 @@ public class TarMemoryFileSystemTest {
         final String group = "compress";
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().addUser(user).addGroup(group).build()) {
             final Path source = fileSystem.getPath("original-file.txt");
-            Files.write(source, "Test".getBytes(StandardCharsets.UTF_8));
+            Files.write(source, "Test".getBytes(UTF_8));
             Files.setAttribute(source, "posix:owner", (UserPrincipal) () -> user);
             Files.setAttribute(source, "posix:group", (GroupPrincipal) () -> group);
 

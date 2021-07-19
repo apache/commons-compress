@@ -20,8 +20,9 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
+
+import static java.nio.charset.StandardCharsets.*;
 
 /**
  * Static helper functions for robustly encoding file names in zip files.
@@ -73,10 +74,10 @@ public abstract class ZipEncodingHelper {
             // check platform's default encoding
             charsetName = Charset.defaultCharset().name();
         }
-        if (StandardCharsets.UTF_8.name().equalsIgnoreCase(charsetName)) {
+        if (UTF_8.name().equalsIgnoreCase(charsetName)) {
             return true;
         }
-        for (final String alias : StandardCharsets.UTF_8.aliases()) {
+        for (final String alias : UTF_8.aliases()) {
             if (alias.equalsIgnoreCase(charsetName)) {
                 return true;
             }

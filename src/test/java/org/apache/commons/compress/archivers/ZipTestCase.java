@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.archivers;
 
+import static java.nio.charset.StandardCharsets.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -33,7 +34,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -723,7 +723,7 @@ public final class ZipTestCase extends AbstractTestCase {
         try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
             InputStream inputStream = Channels.newInputStream(channel);
             ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream,
-                StandardCharsets.UTF_8.toString(), true, false, true)) {
+                UTF_8.toString(), true, false, true)) {
 
             ArchiveEntry entry;
             final int filesNum = countNonDirectories(directoryToZip);

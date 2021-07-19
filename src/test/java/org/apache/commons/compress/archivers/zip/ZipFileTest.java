@@ -18,6 +18,7 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static java.nio.charset.StandardCharsets.*;
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -33,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -489,14 +489,14 @@ public class ZipFileTest {
             inflatedEntry.setMethod(ZipEntry.DEFLATED);
             inflatedEntry.setAlignment(1024);
             zipOutput.putArchiveEntry(inflatedEntry);
-            zipOutput.write("Hello Deflated\n".getBytes(StandardCharsets.UTF_8));
+            zipOutput.write("Hello Deflated\n".getBytes(UTF_8));
             zipOutput.closeArchiveEntry();
 
             final ZipArchiveEntry storedEntry = new ZipArchiveEntry("stored.txt");
             storedEntry.setMethod(ZipEntry.STORED);
             storedEntry.setAlignment(1024);
             zipOutput.putArchiveEntry(storedEntry);
-            zipOutput.write("Hello Stored\n".getBytes(StandardCharsets.UTF_8));
+            zipOutput.write("Hello Stored\n".getBytes(UTF_8));
             zipOutput.closeArchiveEntry();
 
             final ZipArchiveEntry storedEntry2 = new ZipArchiveEntry("stored2.txt");
@@ -504,14 +504,14 @@ public class ZipFileTest {
             storedEntry2.setAlignment(1024);
             storedEntry2.addExtraField(new ResourceAlignmentExtraField(1));
             zipOutput.putArchiveEntry(storedEntry2);
-            zipOutput.write("Hello overload-alignment Stored\n".getBytes(StandardCharsets.UTF_8));
+            zipOutput.write("Hello overload-alignment Stored\n".getBytes(UTF_8));
             zipOutput.closeArchiveEntry();
 
             final ZipArchiveEntry storedEntry3 = new ZipArchiveEntry("stored3.txt");
             storedEntry3.setMethod(ZipEntry.STORED);
             storedEntry3.addExtraField(new ResourceAlignmentExtraField(1024));
             zipOutput.putArchiveEntry(storedEntry3);
-            zipOutput.write("Hello copy-alignment Stored\n".getBytes(StandardCharsets.UTF_8));
+            zipOutput.write("Hello copy-alignment Stored\n".getBytes(UTF_8));
             zipOutput.closeArchiveEntry();
 
         }
@@ -530,7 +530,7 @@ public class ZipFileTest {
             assertFalse(inflatedAlignmentEx.allowMethodChange());
             try (InputStream stream = zf.getInputStream(inflatedEntry)) {
                 Assert.assertEquals("Hello Deflated\n",
-                                new String(IOUtils.toByteArray(stream), StandardCharsets.UTF_8));
+                                new String(IOUtils.toByteArray(stream), UTF_8));
             }
             final ZipArchiveEntry storedEntry = zf.getEntry("stored.txt");
             final ResourceAlignmentExtraField storedAlignmentEx =
@@ -543,7 +543,7 @@ public class ZipFileTest {
             assertFalse(storedAlignmentEx.allowMethodChange());
             try (InputStream stream = zf.getInputStream(storedEntry)) {
                 Assert.assertEquals("Hello Stored\n",
-                                new String(IOUtils.toByteArray(stream), StandardCharsets.UTF_8));
+                                new String(IOUtils.toByteArray(stream), UTF_8));
             }
 
             final ZipArchiveEntry storedEntry2 = zf.getEntry("stored2.txt");
@@ -557,7 +557,7 @@ public class ZipFileTest {
             assertFalse(stored2AlignmentEx.allowMethodChange());
             try (InputStream stream = zf.getInputStream(storedEntry2)) {
                 Assert.assertEquals("Hello overload-alignment Stored\n",
-                                new String(IOUtils.toByteArray(stream), StandardCharsets.UTF_8));
+                                new String(IOUtils.toByteArray(stream), UTF_8));
             }
 
             final ZipArchiveEntry storedEntry3 = zf.getEntry("stored3.txt");
@@ -571,7 +571,7 @@ public class ZipFileTest {
             assertFalse(stored3AlignmentEx.allowMethodChange());
             try (InputStream stream = zf.getInputStream(storedEntry3)) {
                 Assert.assertEquals("Hello copy-alignment Stored\n",
-                                new String(IOUtils.toByteArray(stream), StandardCharsets.UTF_8));
+                                new String(IOUtils.toByteArray(stream), UTF_8));
             }
         }
     }
@@ -972,8 +972,8 @@ public class ZipFileTest {
     }
 
     private void assertFileEqualIgnoreEndOfLine(final File file1, final File file2) throws IOException {
-        final List<String> linesOfFile1 = Files.readAllLines(Paths.get(file1.getCanonicalPath()), StandardCharsets.UTF_8);
-        final List<String> linesOfFile2 = Files.readAllLines(Paths.get(file2.getCanonicalPath()), StandardCharsets.UTF_8);
+        final List<String> linesOfFile1 = Files.readAllLines(Paths.get(file1.getCanonicalPath()), UTF_8);
+        final List<String> linesOfFile2 = Files.readAllLines(Paths.get(file2.getCanonicalPath()), UTF_8);
 
         if(linesOfFile1.size() != linesOfFile2.size()) {
             fail("files not equal : " + file1.getName() + " , " + file2.getName());

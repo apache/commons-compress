@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.utils;
 
+import static java.nio.charset.StandardCharsets.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
@@ -33,7 +34,6 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.WritableByteChannel;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -253,7 +253,7 @@ public class FixedLengthBlockOutputStreamTest {
     private void testWriteAndPad(final int blockSize, final String text, final boolean doPartialWrite)
         throws IOException {
         final MockWritableByteChannel mock = new MockWritableByteChannel(blockSize, doPartialWrite);
-        final byte[] msg = text.getBytes(StandardCharsets.US_ASCII);
+        final byte[] msg = text.getBytes(US_ASCII);
 
         final ByteArrayOutputStream bos = mock.bos;
         try (FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(mock, blockSize)) {
@@ -267,7 +267,7 @@ public class FixedLengthBlockOutputStreamTest {
     private void testWriteAndPadToStream(final int blockSize, final String text, final boolean doPartialWrite)
         throws IOException {
         final MockOutputStream mock = new MockOutputStream(blockSize, doPartialWrite);
-        final byte[] msg = text.getBytes(StandardCharsets.US_ASCII);
+        final byte[] msg = text.getBytes(US_ASCII);
 
         final ByteArrayOutputStream bos = mock.bos;
         try (FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(mock, blockSize)) {
