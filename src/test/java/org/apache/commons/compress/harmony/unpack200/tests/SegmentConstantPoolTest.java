@@ -31,13 +31,13 @@ public class SegmentConstantPoolTest extends TestCase {
 
         public MockSegmentConstantPool() {
             super(new CpBands(new Segment()));
-        };
+        }
 
         public int matchSpecificPoolEntryIndex(String[] classNameArray,
                 String desiredClassName, int desiredIndex) {
             return super.matchSpecificPoolEntryIndex(classNameArray,
                     desiredClassName, desiredIndex);
-        };
+        }
 
         public int matchSpecificPoolEntryIndex(String[] classNameArray,
                 String[] methodNameArray, String desiredClassName,
@@ -45,7 +45,7 @@ public class SegmentConstantPoolTest extends TestCase {
             return super.matchSpecificPoolEntryIndex(classNameArray,
                     methodNameArray, desiredClassName, desiredMethodRegex,
                     desiredIndex);
-        };
+        }
 
         public boolean regexMatchesVisible(String regexString,
                 String compareString) {

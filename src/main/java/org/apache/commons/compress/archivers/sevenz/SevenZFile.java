@@ -1366,7 +1366,7 @@ public class SevenZFile implements Closeable {
     }
 
     private void readFilesInfo(final ByteBuffer header, final Archive archive) throws IOException {
-        final int numFilesInt = (int) readUint64(header);;
+        final int numFilesInt = (int) readUint64(header);
         final Map<Integer, SevenZArchiveEntry> fileMap = new HashMap<>();
         BitSet isEmptyStream = null;
         BitSet isEmptyFile = null;
