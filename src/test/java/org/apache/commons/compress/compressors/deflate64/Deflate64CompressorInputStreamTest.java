@@ -167,7 +167,6 @@ public class Deflate64CompressorInputStreamTest {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
-            in.close();
         }
     }
 
@@ -179,7 +178,6 @@ public class Deflate64CompressorInputStreamTest {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read(buf));
             assertEquals(-1, in.read(buf));
-            in.close();
         }
     }
 

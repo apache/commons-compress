@@ -216,7 +216,6 @@ public final class Pack200TestCase extends AbstractTestCase {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
-            in.close();
         }
     }
 
@@ -237,7 +236,6 @@ public final class Pack200TestCase extends AbstractTestCase {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read(buf));
             assertEquals(-1, in.read(buf));
-            in.close();
         }
     }
 
