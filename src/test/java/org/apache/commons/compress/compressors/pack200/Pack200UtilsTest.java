@@ -38,8 +38,7 @@ public final class Pack200UtilsTest extends AbstractTestCase {
         final File input = getFile("bla.jar");
         final File[] output = createTempDirAndFile();
         try {
-            Pack200Utils.normalize(input, output[1],
-                                   new HashMap<String, String>());
+            Pack200Utils.normalize(input, output[1], new HashMap<>());
             try (InputStream is = Files.newInputStream(output[1].toPath())) {
                 final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT
                         .createArchiveInputStream("jar", is);

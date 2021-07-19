@@ -416,7 +416,7 @@ public class TarUtilsTest {
     public void readSimplePaxHeader() throws Exception {
         final Map<String, String> headers = TarUtils.parsePaxHeaders(
                 new ByteArrayInputStream("30 atime=1321711775.972059463\n".getBytes(StandardCharsets.UTF_8)),
-                null, new HashMap<String, String>());
+                null, new HashMap<>());
         assertEquals(1, headers.size());
         assertEquals("1321711775.972059463", headers.get("atime"));
     }
@@ -424,7 +424,7 @@ public class TarUtilsTest {
     @Test
     public void secondEntryWinsWhenPaxHeaderContainsDuplicateKey() throws Exception {
         final Map<String, String> headers = TarUtils.parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n11 foo=baz\n"
-                        .getBytes(StandardCharsets.UTF_8)), null, new HashMap<String, String>());
+                        .getBytes(StandardCharsets.UTF_8)), null, new HashMap<>());
         assertEquals(1, headers.size());
         assertEquals("baz", headers.get("foo"));
     }
@@ -433,7 +433,7 @@ public class TarUtilsTest {
     public void paxHeaderEntryWithEmptyValueRemovesKey() throws Exception {
         final Map<String, String> headers = TarUtils
                 .parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n7 foo=\n"
-                        .getBytes(StandardCharsets.UTF_8)), null, new HashMap<String, String>());
+                        .getBytes(StandardCharsets.UTF_8)), null, new HashMap<>());
         assertEquals(0, headers.size());
     }
 
@@ -441,7 +441,7 @@ public class TarUtilsTest {
     public void readPaxHeaderWithEmbeddedNewline() throws Exception {
         final Map<String, String> headers = TarUtils
                 .parsePaxHeaders(new ByteArrayInputStream("28 comment=line1\nline2\nand3\n"
-                        .getBytes(StandardCharsets.UTF_8)), null, new HashMap<String, String>());
+                        .getBytes(StandardCharsets.UTF_8)), null, new HashMap<>());
         assertEquals(1, headers.size());
         assertEquals("line1\nline2\nand3", headers.get("comment"));
     }
@@ -452,7 +452,7 @@ public class TarUtilsTest {
         final String line = "11 path="+ ae + "\n";
         assertEquals(11, line.getBytes(StandardCharsets.UTF_8).length);
         final Map<String, String> headers = TarUtils
-                .parsePaxHeaders(new ByteArrayInputStream(line.getBytes(StandardCharsets.UTF_8)), null, new HashMap<String, String>());
+                .parsePaxHeaders(new ByteArrayInputStream(line.getBytes(StandardCharsets.UTF_8)), null, new HashMap<>());
         assertEquals(1, headers.size());
         assertEquals(ae, headers.get("path"));
     }
