@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.compress.AbstractTestCase;
