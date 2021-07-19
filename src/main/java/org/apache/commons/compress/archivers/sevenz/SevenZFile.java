@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.MemoryLimitException;
@@ -917,7 +916,7 @@ public class SevenZFile implements Closeable {
             for (int i = 0; i < stats.numberOfFolders; i++) {
                 numUnpackSubStreamsPerFolder.add(assertFitsIntoNonNegativeInt("numStreams", readUint64(header)));
             }
-            stats.numberOfUnpackSubStreams = numUnpackSubStreamsPerFolder.stream().collect(Collectors.summingLong(Integer::longValue));
+            stats.numberOfUnpackSubStreams = numUnpackSubStreamsPerFolder.stream().mapToLong(Integer::longValue).sum();
             nid = getUnsignedByte(header);
         } else {
             stats.numberOfUnpackSubStreams = stats.numberOfFolders;
