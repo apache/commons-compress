@@ -147,6 +147,10 @@ you relied on the recovery attempt.">
         Update the class of variable file in TarArchiveEntry from
         java.io.File to java.nio.file.Path. Corresponding constructors
         and methods are also modified/added.
+
+        NOTE: The UserID and GroupID will also be read if they are
+        available. The previous default value UserID:GroupdID of was 0:0.
+        This may cause a reproducibility problem.
         Github Pull Request #97.
       </action>
       <action issue="COMPRESS-539" type="update" date="2020-07-04" due-to="Robin Schimpf">
