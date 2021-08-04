@@ -367,6 +367,8 @@ public final class IOUtils {
         final ByteBuffer b = ByteBuffer.allocate(Math.min(len, COPY_BUF_SIZE));
         int read = 0;
         while (read < len) {
+            // Make sure we never read more than len bytes
+            b.limit(Math.min(len - read, b.capacity()));
             final int readNow = input.read(b);
             if (readNow <= 0) {
                 break;
