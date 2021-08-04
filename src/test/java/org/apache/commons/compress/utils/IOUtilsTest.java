@@ -23,6 +23,7 @@ import java.io.EOFException;
 import java.io.FilterInputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 
@@ -145,6 +146,43 @@ public class IOUtilsTest {
             final ByteBuffer b = ByteBuffer.allocate(1);
             Assert.assertEquals(1, in.read(b));
             Assert.assertArrayEquals(new byte[] { 4 }, b.array());
+        }
+    }
+
+    @Test
+    public void readRangeFromChannelDoesntReadMoreThanAskedForWhenItGotLessInFirstReadCall() throws IOException {
+        try (ReadableByteChannel in = new SeekableInMemoryByteChannel(new byte[] { 1, 2, 3, 4, 5, 6, 7 }) {
+            @Override
+            public int read(ByteBuffer buf) throws IOException {
+                // Trickle max 2 bytes at a time to trigger COMPRESS-584
+                final ByteBuffer temp = ByteBuffer.allocate(Math.min(2, buf.remaining()));
+                final int read = super.read(temp);
+                if (read > 0) {
+                    buf.put(temp.array(), 0, read);
+                }
+                return read;
+            }
+        }) {
+            final byte[] read = IOUtils.readRange(in, 5);
+            Assert.assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, read);
+        }
+    }
+
+    @Test
+    public void readRangeMoreThanCopyBufferSize() throws Exception {
+        final Field COPY_BUF_SIZE = IOUtils.class.getDeclaredField("COPY_BUF_SIZE");
+        COPY_BUF_SIZE.setAccessible(true);
+        final int copyBufSize = (int)COPY_BUF_SIZE.get(null);
+
+        // Make an input that requires two read loops to trigger COMPRESS-585
+        final byte[] input = new byte[copyBufSize + 10];
+
+        try (SeekableInMemoryByteChannel in = new SeekableInMemoryByteChannel(input)) {
+            // Ask for less than the input length, but more than the buffer size
+            final int toRead = copyBufSize + 1;
+            final byte[] read = IOUtils.readRange(in, toRead);
+            Assert.assertEquals(toRead, read.length);
+            Assert.assertEquals(toRead, in.position());
         }
     }
 
