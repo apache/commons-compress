@@ -105,7 +105,7 @@ public class Segment {
 
     private InputStream internalBuffer;
 
-    private ClassFile buildClassFile(final int classNum) throws Pack200Exception {
+    private ClassFile buildClassFile(final int classNum) {
         final ClassFile classFile = new ClassFile();
         final int[] major = classBands.getClassVersionMajor();
         final int[] minor = classBands.getClassVersionMinor();
@@ -467,7 +467,7 @@ public class Segment {
         parseSegment();
     }
 
-    void unpackWrite(final JarOutputStream out) throws IOException, Pack200Exception {
+    void unpackWrite(final JarOutputStream out) throws IOException {
         writeJar(out);
         if (logStream != null) {
             logStream.close();
@@ -482,9 +482,8 @@ public class Segment {
      *
      * @param out the JarOutputStream to write data to
      * @throws IOException if an error occurs while reading or writing to the streams
-     * @throws Pack200Exception if an error occurs while processing data
      */
-    public void writeJar(final JarOutputStream out) throws IOException, Pack200Exception {
+    public void writeJar(final JarOutputStream out) throws IOException {
         final String[] fileName = fileBands.getFileName();
         final int[] fileModtime = fileBands.getFileModtime();
         final long[] fileSize = fileBands.getFileSize();

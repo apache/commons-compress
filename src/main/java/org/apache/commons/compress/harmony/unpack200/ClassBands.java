@@ -402,8 +402,7 @@ public class ClassBands extends BandSet {
         }
     }
 
-    private int getCallCount(final int[][] methodAttrIndexes, final long[][] flags, final int context)
-        throws Pack200Exception {
+    private int getCallCount(final int[][] methodAttrIndexes, final long[][] flags, final int context) {
         int callCount = 0;
         for (int i = 0; i < methodAttrIndexes.length; i++) {
             for (int j = 0; j < methodAttrIndexes[i].length; j++) {
@@ -1088,7 +1087,7 @@ public class ClassBands extends BandSet {
         return classFlags;
     }
 
-    public long[] getClassFlags() throws Pack200Exception {
+    public long[] getClassFlags() {
         if (classAccessFlags == null) {
             long mask = 0x7FFF;
             for (int i = 0; i < 16; i++) {
@@ -1141,7 +1140,7 @@ public class ClassBands extends BandSet {
         return methodDescrInts;
     }
 
-    public long[][] getFieldFlags() throws Pack200Exception {
+    public long[][] getFieldFlags() {
         if (fieldAccessFlags == null) {
             long mask = 0x7FFF;
             for (int i = 0; i < 16; i++) {
@@ -1189,7 +1188,7 @@ public class ClassBands extends BandSet {
         return methodDescr;
     }
 
-    public long[][] getMethodFlags() throws Pack200Exception {
+    public long[][] getMethodFlags() {
         if (methodAccessFlags == null) {
             long mask = 0x7FFF;
             for (int i = 0; i < 16; i++) {

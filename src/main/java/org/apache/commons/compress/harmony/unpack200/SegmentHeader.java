@@ -362,9 +362,8 @@ public class SegmentHeader {
      * @param in the input stream to read from
      * @param data the byte array to read into
      * @throws IOException if a problem occurs during reading from the underlying stream
-     * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */
-    private void readFully(final InputStream in, final byte[] data) throws IOException, Pack200Exception {
+    private void readFully(final InputStream in, final byte[] data) throws IOException {
         int total = in.read(data);
         if (total == -1) {
             throw new EOFException("Failed to read any data from input stream");

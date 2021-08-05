@@ -79,9 +79,8 @@ public class Archive {
      *
      * @param inputStream TODO
      * @param outputStream TODO
-     * @throws IOException TODO
      */
-    public Archive(final InputStream inputStream, final JarOutputStream outputStream) throws IOException {
+    public Archive(final InputStream inputStream, final JarOutputStream outputStream) {
         this.inputStream = inputStream;
         this.outputStream = outputStream;
     }

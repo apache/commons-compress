@@ -149,7 +149,7 @@ public class AttributeLayoutMap {
         layoutsToBands.put(layout, newBands);
     }
 
-    public AttributeLayout getAttributeLayout(final String name, final int context) throws Pack200Exception {
+    public AttributeLayout getAttributeLayout(final String name, final int context) {
         final Map map = layouts[context];
         for (final Iterator iter = map.values().iterator(); iter.hasNext();) {
             final AttributeLayout layout = (AttributeLayout) iter.next();

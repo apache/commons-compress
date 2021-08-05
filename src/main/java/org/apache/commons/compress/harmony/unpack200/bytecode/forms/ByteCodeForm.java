@@ -28,7 +28,7 @@ public abstract class ByteCodeForm {
     protected static final boolean WIDENED = true;
 
     protected static final ByteCodeForm[] byteCodeArray = new ByteCodeForm[256];
-    protected static final Map byteCodesByName = new HashMap(256);
+    protected static final Map<String, ByteCodeForm> byteCodesByName = new HashMap<>(256);
     static {
         byteCodeArray[0] = new NoArgumentForm(0, "nop");
         byteCodeArray[1] = new NoArgumentForm(1, "aconst_null");
@@ -364,7 +364,7 @@ public abstract class ByteCodeForm {
     }
 
     public static ByteCodeForm get(final int opcode) {
-        return (ByteCodeForm) byteCodeArray[opcode];
+        return byteCodeArray[opcode];
     }
 
     @Override

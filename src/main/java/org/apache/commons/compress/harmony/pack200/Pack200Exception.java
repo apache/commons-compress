@@ -24,7 +24,7 @@ public class Pack200Exception extends Exception {
     private static final long serialVersionUID = 5168177401552611803L;
 
     /**
-     * Create a new Pack200 exception with the given message
+     * Creates a new Pack200 exception with the given message
      *
      * @param message the text message to display
      */

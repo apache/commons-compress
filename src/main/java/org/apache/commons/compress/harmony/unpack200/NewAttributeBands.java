@@ -225,17 +225,15 @@ public class NewAttributeBands extends BandSet {
             if (stream.read() != 'O') {
                 stream.reset();
                 return new Integral("P" + (char) stream.read());
-            } else {
-                return new Integral("PO" + (char) stream.read());
             }
+            return new Integral("PO" + (char) stream.read());
         case 'O':
             stream.mark(1);
             if (stream.read() != 'S') {
                 stream.reset();
                 return new Integral("O" + (char) stream.read());
-            } else {
-                return new Integral("OS" + (char) stream.read());
             }
+            return new Integral("OS" + (char) stream.read());
 
             // Replication
         case 'N':
@@ -738,7 +736,7 @@ public class NewAttributeBands extends BandSet {
 
         private boolean isFirstCallable;
 
-        public Callable(final List body) throws IOException {
+        public Callable(final List body) {
             this.body = body;
         }
 
@@ -830,7 +828,7 @@ public class NewAttributeBands extends BandSet {
             return tags.contains(Integer.valueOf((int) l));
         }
 
-        public UnionCase(final List tags, final List body) throws IOException {
+        public UnionCase(final List tags, final List body) {
             this.tags = tags;
             this.body = body;
         }
