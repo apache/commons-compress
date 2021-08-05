@@ -46,7 +46,7 @@ public class CPMember extends ClassFileEntry {
         this.name = name;
         this.descriptor = descriptor;
         this.flags = (short) flags;
-        this.attributes = (attributes == null ? Collections.EMPTY_LIST : attributes);
+        this.attributes = attributes == null ? Collections.EMPTY_LIST : attributes;
         if (name == null || descriptor == null) {
             throw new NullPointerException("Null arguments are not allowed");
         }
