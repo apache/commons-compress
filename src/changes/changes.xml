@@ -43,6 +43,14 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.22" date="not released, yet">
+      <!-- FIX -->
+        <!-- none yet -->
+      <!-- ADD -->
+        <!-- none yet -->
+      <!-- UPDATE -->
+      <action type="update" dev="ggregory" due-to="Gary Gregory">
+        Bump mockito-core from 3.11.1 to 3.11.2 #209.
+      </action>    
     </release>
     <release version="1.21" date="2021-07-12"
              description="Release 1.21 (Java 8)
