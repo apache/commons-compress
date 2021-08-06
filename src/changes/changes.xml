@@ -44,7 +44,9 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.22" date="not released, yet">
       <!-- FIX -->
-        <!-- none yet -->
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">
+        Fix some compiler warnings in pack200 packages.
+      </action>
       <!-- ADD -->
         <!-- none yet -->
       <!-- UPDATE -->
