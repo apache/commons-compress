@@ -57,6 +57,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="Dependabot">
         Bump memoryfilesystem from 2.1.0 to 2.2.0 #212.
       </action>
+      <action type="update" dev="ggregory" due-to="Dependabot">
+        Bump zstd-jni from 1.5.0-2 to 1.5.0-4 #215.
+      </action>
     </release>
     <release version="1.21" date="2021-07-12"
              description="Release 1.21 (Java 8)
