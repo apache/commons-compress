@@ -596,17 +596,15 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     public void addExtraField(final ZipExtraField ze) {
         if (ze instanceof UnparseableExtraFieldData) {
             unparseableExtra = (UnparseableExtraFieldData) ze;
+        } else if (extraFields == null) {
+            extraFields = new ZipExtraField[]{ ze };
         } else {
-            if (extraFields == null) {
-                extraFields = new ZipExtraField[]{ ze };
-            } else {
-                if (getExtraField(ze.getHeaderId()) != null) {
-                    removeExtraField(ze.getHeaderId());
-                }
-                final ZipExtraField[] zipExtraFields = copyOf(extraFields, extraFields.length + 1);
-                zipExtraFields[zipExtraFields.length - 1] = ze;
-                extraFields = zipExtraFields;
+            if (getExtraField(ze.getHeaderId()) != null) {
+                removeExtraField(ze.getHeaderId());
             }
+            final ZipExtraField[] zipExtraFields = copyOf(extraFields, extraFields.length + 1);
+            zipExtraFields[zipExtraFields.length - 1] = ze;
+            extraFields = zipExtraFields;
         }
         setExtra();
     }

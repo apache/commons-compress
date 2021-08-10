@@ -874,10 +874,8 @@ public class ZipFile implements Closeable {
                 && ze.getLocalHeaderOffset() > centralDirectoryStartRelativeOffset) {
                 throw new IOException("local file header for " + ze.getName() + " starts after central directory");
             }
-        } else {
-            if (ze.getLocalHeaderOffset() > centralDirectoryStartOffset) {
-                throw new IOException("local file header for " + ze.getName() + " starts after central directory");
-            }
+        } else if (ze.getLocalHeaderOffset() > centralDirectoryStartOffset) {
+            throw new IOException("local file header for " + ze.getName() + " starts after central directory");
         }
     }
 

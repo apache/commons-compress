@@ -280,15 +280,13 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         long devMin = entry.getDeviceMin();
         if (CPIO_TRAILER.equals(entry.getName())) {
             inode = devMin = 0;
+        } else if (inode == 0 && devMin == 0) {
+            inode = nextArtificalDeviceAndInode & 0xFFFFFFFF;
+            devMin = (nextArtificalDeviceAndInode++ >> 32) & 0xFFFFFFFF;
         } else {
-            if (inode == 0 && devMin == 0) {
-                inode = nextArtificalDeviceAndInode & 0xFFFFFFFF;
-                devMin = (nextArtificalDeviceAndInode++ >> 32) & 0xFFFFFFFF;
-            } else {
-                nextArtificalDeviceAndInode =
-                    Math.max(nextArtificalDeviceAndInode,
-                             inode + 0x100000000L * devMin) + 1;
-            }
+            nextArtificalDeviceAndInode =
+                Math.max(nextArtificalDeviceAndInode,
+                         inode + 0x100000000L * devMin) + 1;
         }
 
         writeAsciiLong(inode, 8, 16);
@@ -315,15 +313,13 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         long device = entry.getDevice();
         if (CPIO_TRAILER.equals(entry.getName())) {
             inode = device = 0;
+        } else if (inode == 0 && device == 0) {
+            inode = nextArtificalDeviceAndInode & 0777777;
+            device = (nextArtificalDeviceAndInode++ >> 18) & 0777777;
         } else {
-            if (inode == 0 && device == 0) {
-                inode = nextArtificalDeviceAndInode & 0777777;
-                device = (nextArtificalDeviceAndInode++ >> 18) & 0777777;
-            } else {
-                nextArtificalDeviceAndInode =
-                    Math.max(nextArtificalDeviceAndInode,
-                             inode + 01000000 * device) + 1;
-            }
+            nextArtificalDeviceAndInode =
+                Math.max(nextArtificalDeviceAndInode,
+                         inode + 01000000 * device) + 1;
         }
 
         writeAsciiLong(device, 6, 8);
@@ -346,15 +342,13 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         long device = entry.getDevice();
         if (CPIO_TRAILER.equals(entry.getName())) {
             inode = device = 0;
+        } else if (inode == 0 && device == 0) {
+            inode = nextArtificalDeviceAndInode & 0xFFFF;
+            device = (nextArtificalDeviceAndInode++ >> 16) & 0xFFFF;
         } else {
-            if (inode == 0 && device == 0) {
-                inode = nextArtificalDeviceAndInode & 0xFFFF;
-                device = (nextArtificalDeviceAndInode++ >> 16) & 0xFFFF;
-            } else {
-                nextArtificalDeviceAndInode =
-                    Math.max(nextArtificalDeviceAndInode,
-                             inode + 0x10000 * device) + 1;
-            }
+            nextArtificalDeviceAndInode =
+                Math.max(nextArtificalDeviceAndInode,
+                         inode + 0x10000 * device) + 1;
         }
 
         writeBinaryLong(device, 2, swapHalfWord);
