@@ -40,7 +40,7 @@ public class Pack200ClassReader extends ClassReader {
         // Doing this to check whether last load-constant instruction was ldc (18) or ldc_w (19)
         // TODO: Assess whether this impacts on performance
         final int unsignedShort = super.readUnsignedShort(index);
-        if (b[index - 1] == 19) {
+        if (index > 0 && b[index - 1] == 19) {
             lastUnsignedShort = unsignedShort;
         } else {
             lastUnsignedShort = Short.MIN_VALUE;
