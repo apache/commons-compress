@@ -39,10 +39,12 @@ public abstract class AbstractBandsTestCase extends TestCase {
             super(segment);
         }
 
+        @Override
         public int getClassCount() {
             return numClasses;
         }
 
+        @Override
         public SegmentOptions getOptions() {
             try {
                 return new SegmentOptions(0);
@@ -58,6 +60,7 @@ public abstract class AbstractBandsTestCase extends TestCase {
             super(segment);
         }
 
+        @Override
         public AttributeLayoutMap getAttributeDefinitionMap() {
             try {
                 return new AttributeLayoutMap();
@@ -71,10 +74,12 @@ public abstract class AbstractBandsTestCase extends TestCase {
 
     public class MockSegment extends Segment {
 
+        @Override
         protected AttrDefinitionBands getAttrDefinitionBands() {
             return new MockAttributeDefinitionBands(this);
         }
 
+        @Override
         public SegmentHeader getSegmentHeader() {
             return new MockSegmentHeader(this);
         }

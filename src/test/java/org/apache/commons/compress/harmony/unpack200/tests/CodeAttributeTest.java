@@ -47,6 +47,7 @@ public class CodeAttributeTest extends TestCase {
                     exceptionTable);
         }
 
+        @Override
         public int getLength() {
             return super.getLength();
         }
@@ -58,14 +59,17 @@ public class CodeAttributeTest extends TestCase {
             super(segment);
         }
 
+        @Override
         public CPFieldRef cpFieldValue(int index) {
             return null;
         }
 
+        @Override
         public CPString cpStringValue(int index) {
             return new CPString(new CPUTF8("Hello"), -1);
         }
 
+        @Override
         public CPMethodRef cpMethodValue(int index) {
             return null;
         }
@@ -101,6 +105,7 @@ public class CodeAttributeTest extends TestCase {
 
     public class MockSegment extends Segment {
 
+        @Override
         public SegmentConstantPool getConstantPool() {
             return new MockSegmentConstantPool(cpBands);
         }
@@ -112,6 +117,7 @@ public class CodeAttributeTest extends TestCase {
             super(bands);
         }
 
+        @Override
         protected int matchSpecificPoolEntryIndex(String[] nameArray,
                 String compareString, int desiredIndex) {
             return 1;

@@ -849,6 +849,7 @@ public class TarUtils {
      * @return sparse headers parsed from sparse map
      * @deprecated use #parseFromPAX01SparseHeaders instead
      */
+    @Deprecated
     protected static List<TarArchiveStructSparse> parsePAX01SparseHeaders(String sparseMap) {
         try {
             return parseFromPAX01SparseHeaders(sparseMap);

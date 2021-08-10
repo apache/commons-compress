@@ -39,6 +39,7 @@ public class SegmentTest extends TestCase {
     JarOutputStream out;
     File file;
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         if (in != null) {

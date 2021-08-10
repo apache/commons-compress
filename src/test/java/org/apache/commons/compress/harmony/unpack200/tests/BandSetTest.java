@@ -33,6 +33,7 @@ public class BandSetTest extends TestCase {
 
     public class MockSegment extends Segment {
 
+        @Override
         public SegmentHeader getSegmentHeader() {
             return new SegmentHeader(this);
         }
@@ -40,10 +41,12 @@ public class BandSetTest extends TestCase {
 
     private final BandSet bandSet = new BandSet(new MockSegment()) {
 
+        @Override
         public void read(InputStream inputStream) throws IOException,
                 Pack200Exception {
         }
 
+        @Override
         public void unpack() throws IOException, Pack200Exception {
         }
 

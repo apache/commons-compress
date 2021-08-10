@@ -63,54 +63,67 @@ public class BcBandsTest extends AbstractBandsTestCase {
             super(segment);
         }
 
+        @Override
         public CPString cpStringValue(int index) {
             return new CPString(cpUTF8, index);
         }
 
+        @Override
         public CPInteger cpIntegerValue(int index) {
             return new CPInteger(new Integer(21), index);
         }
 
+        @Override
         public CPClass cpClassValue(int index) {
             return cpClass;
         }
 
+        @Override
         public CPFloat cpFloatValue(int index) {
             return new CPFloat(new Float(2.5F), index);
         }
 
+        @Override
         public CPLong cpLongValue(int index) {
             return new CPLong(new Long(21L), index);
         }
 
+        @Override
         public CPDouble cpDoubleValue(int index) {
             return new CPDouble(new Double(2.5D), index);
         }
 
+        @Override
         public CPFieldRef cpFieldValue(int index) {
             return new CPFieldRef(cpClass, descriptor, index);
         }
 
+        @Override
         public CPMethodRef cpMethodValue(int index) {
             return new CPMethodRef(cpClass, descriptor, index);
         }
 
+        @Override
         public CPInterfaceMethodRef cpIMethodValue(int index) {
             return new CPInterfaceMethodRef(cpClass, descriptor, index);
         }
 
+        @Override
         public String[] getCpClass() {
             return new String[] {"Hello"};
         }
 
+        @Override
         public String[] getCpFieldClass() {
             return new String[]{};
         }
 
+        @Override
         public String[] getCpMethodClass() {
             return new String[]{};
         }
 
+        @Override
         public String[] getCpIMethodClass() {
             return new String[]{};
         }
@@ -122,6 +135,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
             super(segment);
         }
 
+        @Override
         public long[][] getMethodFlags() {
             long[][] flags = new long[numClasses][];
             for (int i = 0; i < flags.length; i++) {
@@ -130,6 +144,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
             return flags;
         }
 
+        @Override
         public int[] getCodeMaxStack() {
             int totalMethods = 0;
             for (int i = 0; i < numClasses; i++) {
@@ -138,6 +153,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
             return new int[totalMethods];
         }
 
+        @Override
         public int[] getCodeMaxNALocals() {
             int totalMethods = 0;
             for (int i = 0; i < numClasses; i++) {
@@ -146,6 +162,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
             return new int[totalMethods];
         }
 
+        @Override
         public boolean[] getCodeHasAttributes() {
             int totalMethods = 0;
             for (int i = 0; i < numClasses; i++) {
@@ -154,6 +171,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
             return new boolean[totalMethods];
         }
 
+        @Override
         public String[][] getMethodDescr() {
             String[][] descr = new String[numClasses][];
             for (int i = 0; i < descr.length; i++) {
@@ -165,6 +183,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
             return descr;
         }
 
+        @Override
         public int[] getClassThisInts() {
             int[] thisClasses = new int[numClasses];
             for (int index = 0; index < numClasses; index++) {
@@ -173,6 +192,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
             return thisClasses;
         }
 
+        @Override
         public int[] getClassSuperInts() {
             int[] superClasses = new int[numClasses];
             for (int index = 0; index < numClasses; index++) {
@@ -181,6 +201,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
             return superClasses;
         }
 
+        @Override
         public ArrayList[][] getMethodAttributes() {
             ArrayList[][] attributes = new ArrayList[numClasses][];
             for (int i = 0; i < attributes.length; i++) {
@@ -192,6 +213,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
             return attributes;
         }
 
+        @Override
         public ArrayList getOrderedCodeAttributes() {
             int totalMethods = 0;
             for (int classIndex = 0; classIndex < numMethods.length; classIndex++) {
@@ -210,10 +232,12 @@ public class BcBandsTest extends AbstractBandsTestCase {
 
         public CpBands cpBands;
 
+        @Override
         protected AttrDefinitionBands getAttrDefinitionBands() {
             return new MockAttributeDefinitionBands(this);
         }
 
+        @Override
         protected CpBands getCpBands() {
             if (null == cpBands) {
                 cpBands = new MockCpBands(this);
@@ -221,10 +245,12 @@ public class BcBandsTest extends AbstractBandsTestCase {
             return cpBands;
         }
 
+        @Override
         protected ClassBands getClassBands() {
             return new MockClassBands(this);
         }
 
+        @Override
         public SegmentConstantPool getConstantPool() {
             return cpBands.getConstantPool();
         }

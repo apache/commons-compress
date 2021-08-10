@@ -28,6 +28,7 @@ public class ConstantPoolTest extends TestCase {
 
     private ClassConstantPool pool;
 
+    @Override
     public void setUp() {
         pool = new ClassConstantPool();
     }

@@ -42,18 +42,22 @@ public class ClassBandsTest extends AbstractBandsTestCase {
             super(segment);
         }
 
+        @Override
         public String[] getCpClass() {
             return cpClasses;
         }
 
+        @Override
         public String[] getCpDescriptor() {
             return cpDescriptor;
         }
 
+        @Override
         public String[] getCpUTF8() {
             return cpUTF8;
         }
 
+        @Override
         public int[] getCpInt() {
             return new int[0];
         }
@@ -62,6 +66,7 @@ public class ClassBandsTest extends AbstractBandsTestCase {
             return new double[0];
         }
 
+        @Override
         public long[] getCpLong() {
             return new long[0];
         }
@@ -70,6 +75,7 @@ public class ClassBandsTest extends AbstractBandsTestCase {
             return new float[0];
         }
 
+        @Override
         public String[] getCpSignature() {
             return new String[0];
         }
@@ -77,6 +83,7 @@ public class ClassBandsTest extends AbstractBandsTestCase {
 
     public class MockSegment extends AbstractBandsTestCase.MockSegment {
 
+        @Override
         protected CpBands getCpBands() {
             return new MockCpBands(this);
         }

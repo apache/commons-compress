@@ -33,12 +33,14 @@ public class SegmentConstantPoolTest extends TestCase {
             super(new CpBands(new Segment()));
         }
 
+        @Override
         public int matchSpecificPoolEntryIndex(String[] classNameArray,
                 String desiredClassName, int desiredIndex) {
             return super.matchSpecificPoolEntryIndex(classNameArray,
                     desiredClassName, desiredIndex);
         }
 
+        @Override
         public int matchSpecificPoolEntryIndex(String[] classNameArray,
                 String[] methodNameArray, String desiredClassName,
                 String desiredMethodRegex, int desiredIndex) {

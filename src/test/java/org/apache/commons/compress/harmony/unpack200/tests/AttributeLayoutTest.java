@@ -30,6 +30,7 @@ public class AttributeLayoutTest extends TestCase {
 
     public class TestSegment extends Segment {
 
+        @Override
         public SegmentConstantPool getConstantPool() {
             final ClassFileEntry[][] data = new ClassFileEntry[][] {
                     {}, // ALL
@@ -49,6 +50,7 @@ public class AttributeLayoutTest extends TestCase {
             };
             return new SegmentConstantPool(null) {
 
+                @Override
                 public ClassFileEntry getValue(int cp, long index) {
                     if (index == -1)
                         return null;
