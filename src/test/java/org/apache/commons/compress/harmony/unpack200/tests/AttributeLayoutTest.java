@@ -52,8 +52,9 @@ public class AttributeLayoutTest extends TestCase {
 
                 @Override
                 public ClassFileEntry getValue(int cp, long index) {
-                    if (index == -1)
+                    if (index == -1) {
                         return null;
+                    }
                     return data[cp][(int) index];
                 }
 

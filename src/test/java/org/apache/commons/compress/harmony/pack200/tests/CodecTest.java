@@ -44,8 +44,9 @@ public class CodecTest extends TestCase {
         for (int i = 1; i <= 5; i++) {
             try {
                 new BHSDCodec(i, 256);
-                if (i == 5)
+                if (i == 5) {
                     fail("h=256 -> b!=5");
+                }
             } catch (IllegalArgumentException e) {
                 assertTrue(true);
             }
@@ -70,15 +71,17 @@ public class CodecTest extends TestCase {
     }
 
     public void testByte1() throws Exception {
-        for (int i = 0; i < 255; i++)
+        for (int i = 0; i < 255; i++) {
             decode(Codec.BYTE1, new byte[] { (byte) i }, i, 0);
+        }
     }
 
     public void testByte1Delta() throws Exception {
         Codec BYTE1D = new BHSDCodec(1, 256, 0, 1);
         long last = 0;
-        for (int i = 1; i < 255; i++)
+        for (int i = 1; i < 255; i++) {
             last = decode(BYTE1D, new byte[] { (byte) 1 }, i, last);
+        }
     }
 
     public void testByte1DeltaException() throws Exception {

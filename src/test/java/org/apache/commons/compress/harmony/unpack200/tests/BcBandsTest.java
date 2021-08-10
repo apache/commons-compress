@@ -656,8 +656,9 @@ public class BcBandsTest extends AbstractBandsTestCase {
      */
     public void testBcSuperMethodBand() throws IOException, Pack200Exception {
         // TODO: Need to fix this testcase so it has enough data to pass.
-        if (true)
+        if (true) {
             return;
+        }
         byte[] bytes = new byte[] { (byte) 220, (byte) 221, (byte) 222,
                 (byte) 227, (byte) 228, (byte) 229, (byte) 255, 8, 8, 8, 8, 8,
                 8 }; // bc_supermethod band
@@ -676,8 +677,9 @@ public class BcBandsTest extends AbstractBandsTestCase {
      */
     public void testBcInitRefRefBand() throws IOException, Pack200Exception {
         // TODO: Need to fix this testcase so it has enough data to pass.
-        if (true)
+        if (true) {
             return;
+        }
         byte[] bytes = new byte[] { (byte) 230, (byte) 231, (byte) 232,
                 (byte) 255, 8, 8, 8 }; // bc_initrefref band
         InputStream in = new ByteArrayInputStream(bytes);
