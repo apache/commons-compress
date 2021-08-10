@@ -64,7 +64,7 @@ public class PopulationCodecTest extends TestCase {
         }
         assertEquals(0, in.available());
     }
-    
+
     public void testEncodeSingleValue() {
         try {
             new PopulationCodec(BHSDCodec.SIGNED5, BHSDCodec.SIGNED5, BHSDCodec.UDELTA5).encode(5);

@@ -912,7 +912,7 @@ public class TarUtils {
      * The first number gives the number of entries in the map. Following are map entries, each one consisting of two numbers
      * giving the offset and size of the data block it describes.
      * @param inputStream parsing source.
-     * @param recordSize The size the TAR header 
+     * @param recordSize The size the TAR header
      * @return sparse headers
      * @throws IOException if an I/O error occurs.
      */

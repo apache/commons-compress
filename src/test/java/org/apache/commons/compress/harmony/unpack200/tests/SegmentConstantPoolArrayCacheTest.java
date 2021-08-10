@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 import org.apache.commons.compress.harmony.unpack200.SegmentConstantPoolArrayCache;
 
 public class SegmentConstantPoolArrayCacheTest extends TestCase {
-    
+
     public void testSingleSimpleArray() {
         SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
         String array[] = {"Zero", "One", "Two", "Three", "Four"};
@@ -32,7 +32,7 @@ public class SegmentConstantPoolArrayCacheTest extends TestCase {
         assertEquals(1, list.size());
         assertEquals(3, ((Integer)list.get(0)).intValue());
     }
-    
+
     public void testSingleMultipleHitArray() {
         SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
         String array[] = {"Zero", "OneThreeFour", "Two", "OneThreeFour", "OneThreeFour"};
@@ -54,7 +54,7 @@ public class SegmentConstantPoolArrayCacheTest extends TestCase {
         // through builds the cache.
         listOne = arrayCache.indexesForArrayKey(arrayOne, "Two");
         listTwo = arrayCache.indexesForArrayKey(arrayTwo, "Shared");
-        
+
         assertEquals(1, listOne.size());
         assertEquals(2, ((Integer)listOne.get(0)).intValue());
 
@@ -64,15 +64,15 @@ public class SegmentConstantPoolArrayCacheTest extends TestCase {
         assertEquals(1, ((Integer)listOne.get(0)).intValue());
         assertEquals(3, ((Integer)listOne.get(1)).intValue());
         assertEquals(4, ((Integer)listOne.get(2)).intValue());
-        
+
         assertEquals(4, listTwo.size());
         assertEquals(0, ((Integer)listTwo.get(0)).intValue());
         assertEquals(2, ((Integer)listTwo.get(1)).intValue());
         assertEquals(3, ((Integer)listTwo.get(2)).intValue());
         assertEquals(4, ((Integer)listTwo.get(3)).intValue());
-        
+
         List listThree = arrayCache.indexesForArrayKey(arrayOne, "Not found");
         assertEquals(0, listThree.size());
     }
-    
+
 }

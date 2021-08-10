@@ -28,7 +28,7 @@ import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 
 /**
- * 
+ *
  */
 public class CodecTest extends TestCase {
 

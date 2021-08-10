@@ -42,7 +42,7 @@ public class SegmentConstantPoolArrayCache {
 
     /**
      * Answer the indices for the given key in the given array. If no such key exists in the cached array, answer -1.
-     * 
+     *
      * @param array String[] array to search for the value
      * @param key String value for which to search
      * @return List collection of index positions in the array
@@ -90,7 +90,7 @@ public class SegmentConstantPoolArrayCache {
 
     /**
      * Cache the array passed in as the argument
-     * 
+     *
      * @param array String[] to cache
      */
     protected void cacheArray(final String[] array) {
@@ -122,7 +122,7 @@ public class SegmentConstantPoolArrayCache {
         /**
          * Answer the last known size of the array cached. If the last known size is not the same as the current size,
          * the array must have changed.
-         * 
+         *
          * @return int last known size of the cached array
          */
         public int lastKnownSize() {

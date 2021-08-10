@@ -26,7 +26,7 @@ import org.apache.commons.compress.harmony.unpack200.SegmentHeader;
 import org.apache.commons.compress.harmony.unpack200.SegmentOptions;
 
 /**
- * 
+ *
  */
 public abstract class AbstractBandsTestCase extends TestCase {
 

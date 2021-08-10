@@ -50,7 +50,7 @@ public abstract class Pack200Adapter {
 
     /**
      * Completion between 0..1.
-     * 
+     *
      * @param value Completion between 0..1.
      */
     protected void completed(final double value) {

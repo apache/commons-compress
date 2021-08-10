@@ -75,7 +75,7 @@ public class MetadataBandGroup extends BandSet {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.commons.compress.harmony.pack200.BandSet#pack(java.io.OutputStream)
      */
     @Override
@@ -209,7 +209,7 @@ public class MetadataBandGroup extends BandSet {
 
     /**
      * Add an annotation to this set of bands.
-     * 
+     *
      * @param numParams TODO
      * @param annoN TODO
      * @param pairN TODO

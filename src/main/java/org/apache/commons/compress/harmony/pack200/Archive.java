@@ -88,7 +88,7 @@ public class Archive {
 
     /**
      * Pack the archive
-     * 
+     *
      * @throws Pack200Exception TODO
      * @throws IOException If an I/O error occurs.
      */

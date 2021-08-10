@@ -134,7 +134,7 @@ public class GzipParameters {
     /**
      * Sets size of the buffer used to retrieve compressed data from
      * {@link Deflater} and write to underlying {@link OutputStream}.
-     * 
+     *
      * @param bufferSize the bufferSize to set. Must be a positive value.
      * @since 1.21
      */

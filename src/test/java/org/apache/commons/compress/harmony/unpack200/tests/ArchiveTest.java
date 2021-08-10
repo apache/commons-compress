@@ -219,7 +219,7 @@ public class ArchiveTest extends TestCase {
         archive.unpack();
         assertFalse(copy.exists());
     }
-    
+
     public void testDeflateHint() throws Exception {
         in = Archive.class
                 .getResourceAsStream("/pack200/sql.pack.gz");
@@ -231,7 +231,7 @@ public class ArchiveTest extends TestCase {
         archive.unpack();
         JarFile jarFile = new JarFile(file);
         assertEquals(ZipEntry.DEFLATED, jarFile.getEntry("bin/test/org/apache/harmony/sql/tests/internal/rowset/CachedRowSetImplTest.class").getMethod());
-        
+
         in = Archive.class
                 .getResourceAsStream("/pack200/sql.pack.gz");
         file = File.createTempFile("sql", ".jar");
@@ -242,7 +242,7 @@ public class ArchiveTest extends TestCase {
         archive.unpack();
         jarFile = new JarFile(file);
         assertEquals(ZipEntry.STORED, jarFile.getEntry("bin/test/org/apache/harmony/sql/tests/internal/rowset/CachedRowSetImplTest.class").getMethod());
-        
+
     }
 
     @Override
@@ -301,7 +301,7 @@ public class ArchiveTest extends TestCase {
         reader = new FileReader(logFile);
         assertTrue(reader.ready());
         reader.close();
-        
+
         // test append option
         long length = logFile.length();
         in = Archive.class

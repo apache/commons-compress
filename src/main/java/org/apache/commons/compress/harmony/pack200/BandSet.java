@@ -42,7 +42,7 @@ public abstract class BandSet {
 
     /**
      * Create a new BandSet
-     * 
+     *
      * @param effort - the packing effort to be used (must be 1-9)
      * @param header - the segment header
      */
@@ -53,7 +53,7 @@ public abstract class BandSet {
 
     /**
      * Write the packed set of bands to the given output stream
-     * 
+     *
      * @param out TODO
      * @throws IOException If an I/O error occurs.
      * @throws Pack200Exception TODO
@@ -62,7 +62,7 @@ public abstract class BandSet {
 
     /**
      * Encode a band without considering other Codecs
-     * 
+     *
      * @param band - the band
      * @param codec - the Codec to use
      * @return the encoded band
@@ -74,7 +74,7 @@ public abstract class BandSet {
 
     /**
      * Encode a single value with the given Codec
-     * 
+     *
      * @param value - the value to encode
      * @param codec - Codec to use
      * @return the encoded value
@@ -556,7 +556,7 @@ public abstract class BandSet {
 
     /**
      * Converts a list of Integers to an int[] array.
-     * 
+     *
      * @param integerList conversion source.
      * @return conversion result.
      */
@@ -570,7 +570,7 @@ public abstract class BandSet {
 
     /**
      * Converts a list of Longs to an long[] array.
-     * 
+     *
      * @param longList conversion source.
      * @return conversion result.
      */
@@ -584,7 +584,7 @@ public abstract class BandSet {
 
     /**
      * Converts a list of ConstantPoolEntrys to an int[] array of their indices
-     * 
+     *
      * @param list conversion source.
      * @return conversion result.
      */
@@ -601,7 +601,7 @@ public abstract class BandSet {
 
     /**
      * Converts a list of ConstantPoolEntrys or nulls to an int[] array of their indices +1 (or 0 for nulls)
-     * 
+     *
      * @param theList conversion source.
      * @return conversion result.
      */
@@ -663,7 +663,7 @@ public abstract class BandSet {
 
         /**
          * Create a new instance of BandData. The band is then analysed.
-         * 
+         *
          * @param band - the band of integers
          */
         public BandData(final int[] band) {

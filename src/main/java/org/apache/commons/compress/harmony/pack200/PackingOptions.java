@@ -90,7 +90,7 @@ public class PackingOptions {
 
     /**
      * Set the segment limit (equivalent to -S command line option)
-     * 
+     *
      * @param segmentLimit - the limit in bytes
      */
     public void setSegmentLimit(final long segmentLimit) {
@@ -103,7 +103,7 @@ public class PackingOptions {
 
     /**
      * Sets the compression effort level (0-9, equivalent to -E command line option)
-     * 
+     *
      * @param effort the compression effort level, 0-9.
      */
     public void setEffort(final int effort) {
@@ -189,7 +189,7 @@ public class PackingOptions {
 
     /**
      * Tell the compressor what to do if an unknown attribute is encountered
-     * 
+     *
      * @param unknownAttributeAction - the action to perform
      */
     public void setUnknownAttributeAction(final String unknownAttributeAction) {

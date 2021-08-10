@@ -42,7 +42,7 @@ import org.objectweb.asm.Type;
 public class Segment extends ClassVisitor {
 
      public static int ASM_API = Opcodes.ASM4; /* see https://asm.ow2.io/javadoc/org/objectweb/asm/Opcodes.html#ASM4 */
-     
+
     public Segment() {
         super(ASM_API);
     }
@@ -264,11 +264,11 @@ public class Segment extends ClassVisitor {
      * It delegates to BcBands for bytecode related visits and to ClassBands for everything else.
      */
     public class SegmentMethodVisitor extends MethodVisitor {
-        
+
         public SegmentMethodVisitor() {
             super(ASM_API);
         }
-        
+
         @Override
         public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
             return new SegmentAnnotationVisitor(MetadataBandGroup.CONTEXT_METHOD, desc, visible);
