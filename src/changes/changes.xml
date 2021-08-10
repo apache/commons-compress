@@ -62,7 +62,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="Dependabot">
         Bump zstd-jni from 1.5.0-2 to 1.5.0-4 #215.
       </action>
-      <action type="update" issue="COMPRESS-582" dev="ggregory" due-to=", Gary Gregory">
+      <action type="update" issue="COMPRESS-582" dev="ggregory" due-to="Alex Landau, Stephan, Gary Gregory">
         Bump Pack200 packages from ASM 3.2 to 9.2 #216. 
         Breaks binary compatibility in the internals of the pack200 implementation:
         - org.apache.commons.compress.harmony.pack200.Segment
