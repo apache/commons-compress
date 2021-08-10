@@ -78,6 +78,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.jacoco.version>0.8.7</commons.jacoco.version>
     <commons.japicmp.version>0.15.3</commons.japicmp.version>
     <commons.javadoc.version>3.3.0</commons.javadoc.version>
+    <asm.version>7.0</asm.version>
   </properties>
 
   <issueManagement>
@@ -119,9 +120,9 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
     <!-- Pack200 -->
     <dependency>
-      <groupId>asm</groupId>
+      <groupId>org.ow2.asm</groupId>
       <artifactId>asm</artifactId>
-      <version>3.2</version>
+      <version>${asm.version}</version>
       <optional>true</optional>
     </dependency>
 

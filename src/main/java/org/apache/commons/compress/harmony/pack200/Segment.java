@@ -32,12 +32,20 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+
 
 /**
  * A Pack200 archive consists of one or more Segments.
  */
-public class Segment implements ClassVisitor {
+public class Segment extends ClassVisitor {
+
+     public static int ASM_API = Opcodes.ASM4; /* see https://asm.ow2.io/javadoc/org/objectweb/asm/Opcodes.html#ASM4 */
+     
+    public Segment() {
+        super(ASM_API);
+    }
 
     private SegmentHeader segmentHeader;
     private CpBands cpBands;
@@ -255,8 +263,12 @@ public class Segment implements ClassVisitor {
      *
      * It delegates to BcBands for bytecode related visits and to ClassBands for everything else.
      */
-    public class SegmentMethodVisitor implements MethodVisitor {
-
+    public class SegmentMethodVisitor extends MethodVisitor {
+        
+        public SegmentMethodVisitor() {
+            super(ASM_API);
+        }
+        
         @Override
         public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
             return new SegmentAnnotationVisitor(MetadataBandGroup.CONTEXT_METHOD, desc, visible);
@@ -427,7 +439,7 @@ public class Segment implements ClassVisitor {
     /**
      * SegmentAnnotationVisitor implements <code>AnnotationVisitor</code> to visit Annotations found in a class file.
      */
-    public class SegmentAnnotationVisitor implements AnnotationVisitor {
+    public class SegmentAnnotationVisitor extends AnnotationVisitor {
 
         private int context = -1;
         private int parameter = -1;
@@ -443,17 +455,20 @@ public class Segment implements ClassVisitor {
         private final List nestPairN = new ArrayList();
 
         public SegmentAnnotationVisitor(final int context, final String desc, final boolean visible) {
+            super(ASM_API);
             this.context = context;
             this.desc = desc;
             this.visible = visible;
         }
 
         public SegmentAnnotationVisitor(final int context) {
+            super(ASM_API);
             this.context = context;
         }
 
         public SegmentAnnotationVisitor(final int context, final int parameter, final String desc,
             final boolean visible) {
+            super(ASM_API);
             this.context = context;
             this.parameter = parameter;
             this.desc = desc;
@@ -478,7 +493,7 @@ public class Segment implements ClassVisitor {
             nameRU.add(name);
             nestTypeRS.add(desc);
             nestPairN.add(Integer.valueOf(0));
-            return new AnnotationVisitor() {
+            return new AnnotationVisitor(context, av) {
                 @Override
                 public void visit(final String name, final Object value) {
                     final Integer numPairs = (Integer) nestPairN.remove(nestPairN.size() - 1);
@@ -552,7 +567,7 @@ public class Segment implements ClassVisitor {
         }
     }
 
-    public class ArrayVisitor implements AnnotationVisitor {
+    public class ArrayVisitor extends AnnotationVisitor {
 
         private final int indexInCaseArrayN;
         private final List caseArrayN;
@@ -561,6 +576,8 @@ public class Segment implements ClassVisitor {
         private final List T;
 
         public ArrayVisitor(final List caseArrayN, final List T, final List nameRU, final List values) {
+            super(ASM_API);
+
             this.caseArrayN = caseArrayN;
             this.T = T;
             this.nameRU = nameRU;
@@ -612,7 +629,11 @@ public class Segment implements ClassVisitor {
      * SegmentFieldVisitor implements <code>FieldVisitor</code> to visit the metadata relating to fields in a class
      * file.
      */
-    public class SegmentFieldVisitor implements FieldVisitor {
+    public class SegmentFieldVisitor extends FieldVisitor {
+
+        public SegmentFieldVisitor() {
+            super(ASM_API);
+        }
 
         @Override
         public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
