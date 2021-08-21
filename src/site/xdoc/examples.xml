@@ -99,7 +99,7 @@ CompressorInputStream input = new CompressorStreamFactory()
         XZ and LZMA compressed streams.</p>
         <p>Since Compress 1.19 <code>SevenZFile</code> also has an
         optional constructor to pass an upper memory limit which is supported
-        are LZMA compressed streams. Since Compress 1.21 this setting
+        in LZMA compressed streams. Since Compress 1.21 this setting
         also is taken into account when reading the metadata of an archive.</p>
         <p>For the Snappy and LZ4 formats the amount of memory used
         during compression is directly proportional to the window

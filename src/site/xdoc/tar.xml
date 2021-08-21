@@ -129,9 +129,9 @@
         <p>Prior to Commons Compress 1.20 <code>TarArchiveInputStream</code> would recognize sparse
         file entries stored using the "oldgnu" format
         (<code>-&#x2d;sparse-version=0.0</code> in GNU tar) but not
-        able to extract them correctly. Starting with Commons Compress
+        able to extract them correctly. Starting with Commons Compress 1.21
         all GNU and POSIX variants of sparse files are recognized and
-        can be raed.</p>
+        can be read.</p>
       </subsection>
 
       <subsection name="Consuming Archives Completely">
