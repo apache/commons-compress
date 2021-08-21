@@ -727,7 +727,7 @@ inputStream.read() // read data from the input stream
 
           A simple implementation to create a zip file might look like this:
 
-<source>
+<source><![CDATA[
 public class ScatterSample {
 
   ParallelScatterZipCreator scatterZipCreator = new ParallelScatterZipCreator();
@@ -737,7 +737,7 @@ public class ScatterSample {
   }
 
   public void addEntry(ZipArchiveEntry zipArchiveEntry, InputStreamSupplier streamSupplier) throws IOException {
-     if (zipArchiveEntry.isDirectory() &amp;&amp; !zipArchiveEntry.isUnixSymlink())
+     if (zipArchiveEntry.isDirectory() && !zipArchiveEntry.isUnixSymlink())
         dirs.addArchiveEntry(ZipArchiveEntryRequest.createZipArchiveEntryRequest(zipArchiveEntry, streamSupplier));
      else
         scatterZipCreator.addArchiveEntry( zipArchiveEntry, streamSupplier);
@@ -750,7 +750,7 @@ public class ScatterSample {
      scatterZipCreator.writeTo(zipArchiveOutputStream);
   }
 }
-</source>
+]]></source>
       </subsection>
 
     </section>
