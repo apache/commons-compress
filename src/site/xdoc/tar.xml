@@ -56,7 +56,7 @@
           file is added.  This is the default.</li>
           <li><code>LONGFILE_TRUNCATE</code>: truncate such names.</li>
           <li><code>LONGFILE_GNU</code>: use a GNU tar variant now
-          refered to as "oldgnu" of storing such names.  If you choose
+          referred to as "oldgnu" of storing such names.  If you choose
           the GNU tar option, the archive can not be extracted using
           many other tar implementations like the ones of OpenBSD,
           Solaris or MacOS X.</li> 
@@ -136,7 +136,7 @@
 
       <subsection name="Consuming Archives Completely">
 
-        <p>The end of a tar archive is signalled by two consecutive
+        <p>The end of a tar archive is signaled by two consecutive
         records of all zeros.  Unfortunately not all tar
         implementations adhere to this and some only write one record
         to end the archive.  Commons Compress will always write two

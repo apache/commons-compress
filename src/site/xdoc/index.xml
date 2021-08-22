@@ -99,10 +99,10 @@
           <subsection name="What's new in 1.18?">
             <ul>
               <li>The CPIO package now properly handles file names
-              using a mult-byte encoding.</li>
+              using a multi-byte encoding.</li>
               <li>ZipArchiveInputStream can now deal with APK files
               containing an APK signing block.</li>
-              <li>It is no possible to specifiy various parameters
+              <li>It is no possible to specify various parameters
               for Zstd output.</li>
             </ul>
           </subsection>
@@ -150,7 +150,7 @@
               <li>The 7z package as well as
               <code>ZipArchiveOutputStream</code> and
               <code>ZipFile</code> can now use
-              <code>SeekableByteChannel</code> when random acces is
+              <code>SeekableByteChannel</code> when random access is
               needed. This allows archives to be read from inputs and
               written to outputs that are seekable but are not
               represented by <code>File</code>s.</li>
