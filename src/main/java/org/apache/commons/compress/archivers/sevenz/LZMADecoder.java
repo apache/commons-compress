@@ -51,7 +51,9 @@ class LZMADecoder extends CoderBase {
         if (memoryUsageInKb > maxMemoryLimitInKb) {
             throw new MemoryLimitException(memoryUsageInKb, maxMemoryLimitInKb);
         }
-        return new LZMAInputStream(in, uncompressedLength, propsByte, dictSize);
+        final LZMAInputStream lzmaIn = new LZMAInputStream(in, uncompressedLength, propsByte, dictSize);
+        lzmaIn.enableRelaxedEndCondition();
+        return lzmaIn;
     }
 
     @SuppressWarnings("resource")
