@@ -141,8 +141,8 @@ public abstract class BandSet {
         final int[] counts) throws IOException, Pack200Exception {
         final int[][] result = new int[counts.length][];
         int totalCount = 0;
-        for (int i = 0; i < counts.length; i++) {
-            totalCount += counts[i];
+        for (int count : counts) {
+            totalCount += count;
         }
         final int[] twoDResult = decodeBandInt(name, in, defaultCodec, totalCount);
         int index = 0;

@@ -114,9 +114,7 @@ public class IcBands extends BandSet {
         final IcTuple[] allTuples = getIcTuples();
         thisClassToTuple = new HashMap(allTuples.length);
         outerClassToTuples = new HashMap(allTuples.length);
-        for (int index = 0; index < allTuples.length; index++) {
-
-            final IcTuple tuple = allTuples[index];
+        for (final IcTuple tuple : allTuples) {
 
             // generate mapping thisClassString -> IcTuple
             // presumably this relation is 1:1

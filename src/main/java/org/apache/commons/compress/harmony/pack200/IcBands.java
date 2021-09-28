@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -125,8 +124,8 @@ public class IcBands extends BandSet {
             outerToInner.put(outerName, tuples);
             tuples.add(icTuple);
         } else {
-            for (final Iterator iterator = tuples.iterator(); iterator.hasNext();) {
-                final IcTuple icT = (IcTuple) iterator.next();
+            for (Object tuple : tuples) {
+                final IcTuple icT = (IcTuple) tuple;
                 if (icTuple.equals(icT)) {
                     return;
                 }
@@ -183,8 +182,8 @@ public class IcBands extends BandSet {
     }
 
     public IcTuple getIcTuple(final CPClass inner) {
-        for (final Iterator iterator = innerClasses.iterator(); iterator.hasNext();) {
-            final IcTuple icTuple = (IcTuple) iterator.next();
+        for (Object element : innerClasses) {
+            final IcTuple icTuple = (IcTuple) element;
             if (icTuple.C.equals(inner)) {
                 return icTuple;
             }

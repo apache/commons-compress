@@ -29,11 +29,11 @@ public class SegmentOptionsTest extends TestCase {
     public void testUnused() {
         int[] unused = new int[] { 3, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
                 23, 24, 25, 26, 27, 28, 29, 30, 31 };
-        for (int i = 0; i < unused.length; i++) {
+        for (int element : unused) {
             try {
-                new SegmentOptions(1 << unused[i]);
+                new SegmentOptions(1 << element);
                 fail("Bit "
-                        + unused[i]
+                        + element
                         + " should be unused, but it's not caught during construction");
             } catch (Pack200Exception e) {
                 assertTrue(true);

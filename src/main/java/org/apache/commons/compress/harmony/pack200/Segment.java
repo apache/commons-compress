@@ -20,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.compress.harmony.pack200.Archive.PackingFile;
@@ -151,8 +150,8 @@ public class Segment extends ClassVisitor {
 
     private void processClasses(final SegmentUnit segmentUnit, final Attribute[] attributes) throws Pack200Exception {
         segmentHeader.setClass_count(segmentUnit.classListSize());
-        for (final Iterator iterator = segmentUnit.getClassList().iterator(); iterator.hasNext();) {
-            final Pack200ClassReader classReader = (Pack200ClassReader) iterator.next();
+        for (Object element : segmentUnit.getClassList()) {
+            final Pack200ClassReader classReader = (Pack200ClassReader) element;
             currentClassReader = classReader;
             int flags = 0;
             if (stripDebug) {
@@ -168,8 +167,8 @@ public class Segment extends ClassVisitor {
                 options.addPassFile(name);
                 cpBands.addCPUtf8(name);
                 boolean found = false;
-                for (final Iterator iterator2 = segmentUnit.getFileList().iterator(); iterator2.hasNext();) {
-                    final PackingFile file = (PackingFile) iterator2.next();
+                for (Object element2 : segmentUnit.getFileList()) {
+                    final PackingFile file = (PackingFile) element2;
                     if (file.getName().equals(name)) {
                         found = true;
                         file.setContents(classReader.b);

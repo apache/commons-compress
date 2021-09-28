@@ -19,7 +19,6 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -49,8 +48,8 @@ public class NewAttribute extends BCIRenumberedAttribute {
     @Override
     protected int getLength() {
         int length = 0;
-        for (int iter = 0; iter < lengths.size(); iter++) {
-            length += ((Integer) lengths.get(iter)).intValue();
+        for (Object length2 : lengths) {
+            length += ((Integer) length2).intValue();
         }
         return length;
     }
@@ -124,8 +123,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
     @Override
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
-        for (int iter = 0; iter < body.size(); iter++) {
-            final Object element = body.get(iter);
+        for (final Object element : body) {
             if (element instanceof ClassFileEntry) {
                 ((ClassFileEntry) element).resolve(pool);
             }
@@ -136,8 +134,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         int total = 1;
-        for (int iter = 0; iter < body.size(); iter++) {
-            final Object element = body.get(iter);
+        for (final Object element : body) {
             if (element instanceof ClassFileEntry) {
                 total++;
             }
@@ -145,8 +142,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
         final ClassFileEntry[] nested = new ClassFileEntry[total];
         nested[0] = getAttributeName();
         int i = 1;
-        for (int iter = 0; iter < body.size(); iter++) {
-            final Object element = body.get(iter);
+        for (final Object element : body) {
             if (element instanceof ClassFileEntry) {
                 nested[i] = (ClassFileEntry) element;
                 i++;
@@ -209,8 +205,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
     public void renumber(final List byteCodeOffsets) {
         if (!renumbered) {
             Object previous = null;
-            for (final Iterator iter = body.iterator(); iter.hasNext();) {
-                final Object obj = iter.next();
+            for (Object obj : body) {
                 if (obj instanceof BCIndex) {
                     final BCIndex bcIndex = (BCIndex) obj;
                     bcIndex.setActualValue(((Integer) byteCodeOffsets.get(bcIndex.index)).intValue());

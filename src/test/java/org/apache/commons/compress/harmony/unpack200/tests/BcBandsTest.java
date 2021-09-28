@@ -216,8 +216,8 @@ public class BcBandsTest extends AbstractBandsTestCase {
         @Override
         public ArrayList getOrderedCodeAttributes() {
             int totalMethods = 0;
-            for (int classIndex = 0; classIndex < numMethods.length; classIndex++) {
-                totalMethods = totalMethods + numMethods[classIndex];
+            for (int numMethod : numMethods) {
+                totalMethods = totalMethods + numMethod;
             }
             ArrayList orderedAttributeList = new ArrayList();
             for (int classIndex = 0; classIndex < totalMethods; classIndex++) {
@@ -370,8 +370,8 @@ public class BcBandsTest extends AbstractBandsTestCase {
         assertEquals(4, bcBands.getMethodByteCodePacked()[0][0].length);
         int[] bc_byte = bcBands.getBcByte();
         assertEquals(4, bc_byte.length);
-        for (int i = 0; i < bc_byte.length; i++) {
-            assertEquals(8, bc_byte[i]);
+        for (int element : bc_byte) {
+            assertEquals(8, element);
         }
         assertEquals(1, bcBands.getBcLocal().length);
         assertEquals(1, bcBands.getBcClassRef().length);

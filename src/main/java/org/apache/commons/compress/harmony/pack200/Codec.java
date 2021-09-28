@@ -191,9 +191,9 @@ public abstract class Codec {
         }
         final byte[] encoded = new byte[total];
         int index = 0;
-        for (int i = 0; i < bytes.length; i++) {
-            System.arraycopy(bytes[i], 0, encoded, index, bytes[i].length);
-            index += bytes[i].length;
+        for (byte[] element : bytes) {
+            System.arraycopy(element, 0, encoded, index, element.length);
+            index += element.length;
         }
         return encoded;
     }

@@ -111,8 +111,8 @@ public abstract class AnnotationsAttribute extends Attribute {
                 entries.add(value);
             } else if (value instanceof ElementValue[]) {
                 final ElementValue[] values = (ElementValue[]) value;
-                for (int i = 0; i < values.length; i++) {
-                    entries.addAll(values[i].getClassFileEntries());
+                for (ElementValue value2 : values) {
+                    entries.addAll(value2.getClassFileEntries());
                 }
             } else if (value instanceof Annotation) {
                 entries.addAll(((Annotation) value).getClassFileEntries());
@@ -136,8 +136,8 @@ public abstract class AnnotationsAttribute extends Attribute {
                 ((Annotation) value).resolve(pool);
             } else if (value instanceof ElementValue[]) {
                 final ElementValue[] nestedValues = (ElementValue[]) value;
-                for (int i = 0; i < nestedValues.length; i++) {
-                    nestedValues[i].resolve(pool);
+                for (ElementValue nestedValue : nestedValues) {
+                    nestedValue.resolve(pool);
                 }
             }
         }
@@ -153,8 +153,8 @@ public abstract class AnnotationsAttribute extends Attribute {
             } else if (value instanceof ElementValue[]) {
                 final ElementValue[] nestedValues = (ElementValue[]) value;
                 dos.writeShort(nestedValues.length);
-                for (int i = 0; i < nestedValues.length; i++) {
-                    nestedValues[i].writeBody(dos);
+                for (ElementValue nestedValue : nestedValues) {
+                    nestedValue.writeBody(dos);
                 }
             } else {
                 throw new Error("");
@@ -179,8 +179,8 @@ public abstract class AnnotationsAttribute extends Attribute {
             case '[':
                 int length = 3;
                 final ElementValue[] nestedValues = (ElementValue[]) value;
-                for (int i = 0; i < nestedValues.length; i++) {
-                    length += nestedValues[i].getLength();
+                for (ElementValue nestedValue : nestedValues) {
+                    length += nestedValue.getLength();
                 }
                 return length;
             case '@':

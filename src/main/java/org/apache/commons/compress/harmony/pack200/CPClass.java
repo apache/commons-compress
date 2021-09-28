@@ -29,8 +29,8 @@ public class CPClass extends CPConstant implements Comparable {
         this.utf8 = utf8;
         this.className = utf8.getUnderlyingString();
         final char[] chars = className.toCharArray();
-        for (int i = 0; i < chars.length; i++) {
-            if (chars[i] <= 0x2D) {
+        for (char element : chars) {
+            if (element <= 0x2D) {
                 isInnerClass = true;
                 return;
             }

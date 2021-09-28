@@ -18,7 +18,6 @@ package org.apache.commons.compress.harmony.pack200;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -140,8 +139,8 @@ public class PackingOptions {
 
     public boolean isPassFile(final String passFileName) {
         if (passFiles != null) {
-            for (final Iterator iterator = passFiles.iterator(); iterator.hasNext();) {
-                String pass = (String) iterator.next();
+            for (Object passFile : passFiles) {
+                String pass = (String) passFile;
                 if (passFileName.equals(pass)) {
                     return true;
                 }
@@ -253,12 +252,12 @@ public class PackingOptions {
             String name, action;
             boolean prototypeExists;
             NewAttribute newAttribute;
-            for (final Iterator iteratorI = attributeActions.keySet().iterator(); iteratorI.hasNext();) {
-                name = (String) iteratorI.next();
+            for (Object element : attributeActions.keySet()) {
+                name = (String) element;
                 action = (String) attributeActions.get(name);
                 prototypeExists = false;
-                for (final Iterator iteratorJ = prototypes.iterator(); iteratorJ.hasNext();) {
-                    newAttribute = (NewAttribute) iteratorJ.next();
+                for (Object prototype : prototypes) {
+                    newAttribute = (NewAttribute) prototype;
                     if (newAttribute.type.equals(name)) {
                         // if the attribute exists, update its context
                         newAttribute.addContext(tag);

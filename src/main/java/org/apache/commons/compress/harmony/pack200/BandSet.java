@@ -21,7 +21,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -127,8 +126,8 @@ public abstract class BandSet {
                 }
                 if (betterCodec instanceof PopulationCodec) {
                     final int[] extraSpecifierInfo = results.extraMetadata;
-                    for (int i = 0; i < extraSpecifierInfo.length; i++) {
-                        segmentHeader.appendBandCodingSpecifier(extraSpecifierInfo[i]);
+                    for (int element : extraSpecifierInfo) {
+                        segmentHeader.appendBandCodingSpecifier(element);
                     }
                     return encodedBand;
                 }
@@ -263,8 +262,8 @@ public abstract class BandSet {
             System.out.print("");
         }
 
-        for (final Iterator iterator = codecFamiliesToTry.iterator(); iterator.hasNext();) {
-            final BHSDCodec[] family = (BHSDCodec[]) iterator.next();
+        for (Object element : codecFamiliesToTry) {
+            final BHSDCodec[] family = (BHSDCodec[]) element;
             tryCodecs(name, band, defaultCodec, bandData, results, encoded, family);
             if (timeToStop(results)) {
                 break;
@@ -288,8 +287,7 @@ public abstract class BandSet {
     private void tryCodecs(final String name, final int[] band, final BHSDCodec defaultCodec, final BandData bandData,
         final BandAnalysisResults results, final byte[] encoded, final BHSDCodec[] potentialCodecs)
         throws Pack200Exception {
-        for (int i = 0; i < potentialCodecs.length; i++) {
-            final BHSDCodec potential = potentialCodecs[i];
+        for (final BHSDCodec potential : potentialCodecs) {
             if (potential.equals(defaultCodec)) {
                 return; // don't try codecs with greater cardinality in the same 'family' as the default codec as there
                         // won't be any savings
@@ -357,8 +355,8 @@ public abstract class BandSet {
         final Map distinctValues = bandData.distinctValues;
 
         final List favoured = new ArrayList();
-        for (final Iterator iterator = distinctValues.keySet().iterator(); iterator.hasNext();) {
-            final Integer value = (Integer) iterator.next();
+        for (Object element : distinctValues.keySet()) {
+            final Integer value = (Integer) element;
             final Integer count = (Integer) distinctValues.get(value);
             if (count.intValue() > 2 || distinctValues.size() < 256) { // TODO: tweak
                 favoured.add(value);
@@ -473,20 +471,20 @@ public abstract class BandSet {
         final IntList extraBandMetadata = new IntList(3);
         if (favouredCodec != null) {
             final int[] specifiers = CodecEncoding.getSpecifier(favouredCodec, null);
-            for (int i = 0; i < specifiers.length; i++) {
-                extraBandMetadata.add(specifiers[i]);
+            for (int specifier2 : specifiers) {
+                extraBandMetadata.add(specifier2);
             }
         }
         if (tdefL == 0) {
             final int[] specifiers = CodecEncoding.getSpecifier(tokenCodec, null);
-            for (int i = 0; i < specifiers.length; i++) {
-                extraBandMetadata.add(specifiers[i]);
+            for (int specifier2 : specifiers) {
+                extraBandMetadata.add(specifier2);
             }
         }
         if (unfavouredCodec != null) {
             final int[] specifiers = CodecEncoding.getSpecifier(unfavouredCodec, null);
-            for (int i = 0; i < specifiers.length; i++) {
-                extraBandMetadata.add(specifiers[i]);
+            for (int specifier2 : specifiers) {
+                extraBandMetadata.add(specifier2);
             }
         }
         final int[] extraMetadata = extraBandMetadata.toArray();
@@ -627,14 +625,14 @@ public abstract class BandSet {
      */
     private long[] flatten(final long[][] flags) {
         int totalSize = 0;
-        for (int i = 0; i < flags.length; i++) {
-            totalSize += flags[i].length;
+        for (long[] flag : flags) {
+            totalSize += flag.length;
         }
         final long[] flatArray = new long[totalSize];
         int index = 0;
-        for (int i = 0; i < flags.length; i++) {
-            for (int j = 0; j < flags[i].length; j++) {
-                flatArray[index] = flags[i][j];
+        for (long[] flag : flags) {
+            for (long element : flag) {
+                flatArray[index] = element;
                 index++;
             }
         }

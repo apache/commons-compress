@@ -293,8 +293,8 @@ public class CpBands extends BandSet {
         for (int i = 0; i < cpSignatureCount; i++) {
             final String form = cpSignatureForm[i];
             final char[] chars = form.toCharArray();
-            for (int j = 0; j < chars.length; j++) {
-                if (chars[j] == 'L') {
+            for (char element : chars) {
+                if (element == 'L') {
                     cpSignatureInts[i] = -1;
                     lCount++;
                 }
@@ -355,11 +355,11 @@ public class CpBands extends BandSet {
         int bigSuffixCount = 0;
         final int[] suffix = decodeBandInt("cpUTF8Suffix", in, Codec.UNSIGNED5, cpUTF8Count - 1);
 
-        for (int i = 0; i < suffix.length; i++) {
-            if (suffix[i] == 0) {
+        for (int element : suffix) {
+            if (element == 0) {
                 bigSuffixCount++;
             } else {
-                charCount += suffix[i];
+                charCount += element;
             }
         }
         final char[] data = new char[charCount];

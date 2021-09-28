@@ -211,8 +211,8 @@ public class SegmentConstantPool {
             return -1;
         }
 
-        for (int index = 0; index < indexList.size(); index++) {
-            final int arrayIndex = ((Integer) indexList.get(index)).intValue();
+        for (Object element : indexList) {
+            final int arrayIndex = ((Integer) element).intValue();
             if (regexMatches(secondaryCompareRegex, secondaryArray[arrayIndex])) {
                 instanceCount++;
                 if (instanceCount == desiredIndex) {

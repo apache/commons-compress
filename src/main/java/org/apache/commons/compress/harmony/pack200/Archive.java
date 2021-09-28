@@ -20,7 +20,6 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -228,14 +227,14 @@ public class Archive {
 
             // Calculate the amount of bytes in classes and files before packing
             Pack200ClassReader classReader;
-            for (final Iterator iterator = classList.iterator(); iterator.hasNext();) {
-                classReader = (Pack200ClassReader) iterator.next();
+            for (Object element : classList) {
+                classReader = (Pack200ClassReader) element;
                 byteAmount += classReader.b.length;
             }
 
             PackingFile file;
-            for (final Iterator iterator = fileList.iterator(); iterator.hasNext();) {
-                file = (PackingFile) iterator.next();
+            for (Object element : fileList) {
+                file = (PackingFile) element;
                 byteAmount += file.contents.length;
             }
         }

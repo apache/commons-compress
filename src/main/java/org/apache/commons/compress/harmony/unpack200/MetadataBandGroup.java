@@ -147,13 +147,13 @@ public class MetadataBandGroup {
                 } else if (type.equals("RVPA") || type.equals("RIPA")) {
                     anno_N_Index = 0;
                     pair_N_Index = 0;
-                    for (int i = 0; i < param_NB.length; i++) {
-                        attributes.add(getParameterAttribute(param_NB[i], name_RU_Iterator));
+                    for (int element : param_NB) {
+                        attributes.add(getParameterAttribute(element, name_RU_Iterator));
                     }
                 }
             } else if (type.equals("AD")) {
-                for (int i = 0; i < T.length; i++) {
-                    attributes.add(new AnnotationDefaultAttribute(new ElementValue(T[i], getNextValue(T[i]))));
+                for (int element : T) {
+                    attributes.add(new AnnotationDefaultAttribute(new ElementValue(element, getNextValue(element))));
                 }
             }
         }

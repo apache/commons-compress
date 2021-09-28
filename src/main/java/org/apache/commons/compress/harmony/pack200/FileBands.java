@@ -19,7 +19,6 @@ package org.apache.commons.compress.harmony.pack200;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
@@ -60,8 +59,8 @@ public class FileBands extends BandSet {
         final int archiveModtime = segmentHeader.getArchive_modtime();
 
         final Set classNames = new HashSet();
-        for (final Iterator iterator = segmentUnit.getClassList().iterator(); iterator.hasNext();) {
-            final ClassReader reader = (ClassReader) iterator.next();
+        for (Object element : segmentUnit.getClassList()) {
+            final ClassReader reader = (ClassReader) element;
             classNames.add(reader.getClassName());
         }
         final CPUTF8 emptyString = cpBands.getCPUtf8("");
@@ -155,14 +154,14 @@ public class FileBands extends BandSet {
 
     private int[] flatten(final byte[][] bytes) {
         int total = 0;
-        for (int i = 0; i < bytes.length; i++) {
-            total += bytes[i].length;
+        for (byte[] element : bytes) {
+            total += element.length;
         }
         final int[] band = new int[total];
         int index = 0;
-        for (int i = 0; i < bytes.length; i++) {
-            for (int j = 0; j < bytes[i].length; j++) {
-                band[index++] = bytes[i][j] & 0xFF;
+        for (byte[] element : bytes) {
+            for (byte element2 : element) {
+                band[index++] = element2 & 0xFF;
             }
         }
         return band;

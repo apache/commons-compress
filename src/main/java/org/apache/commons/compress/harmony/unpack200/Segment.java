@@ -128,9 +128,9 @@ public class Segment {
         // Get the source file attribute
         final ArrayList classAttributes = classBands.getClassAttributes()[classNum];
         SourceFileAttribute sourceFileAttribute = null;
-        for (int index = 0; index < classAttributes.size(); index++) {
-            if (((Attribute) classAttributes.get(index)).isSourceFileAttribute()) {
-                sourceFileAttribute = ((SourceFileAttribute) classAttributes.get(index));
+        for (Object classAttribute : classAttributes) {
+            if (((Attribute) classAttribute).isSourceFileAttribute()) {
+                sourceFileAttribute = ((SourceFileAttribute) classAttribute);
             }
         }
 
@@ -224,8 +224,8 @@ public class Segment {
         final InnerClassesAttribute innerClassesAttribute = new InnerClassesAttribute("InnerClasses");
         final IcTuple[] ic_relevant = getIcBands().getRelevantIcTuples(fullName, cp);
         final List ic_stored = computeIcStored(ic_local, ic_relevant);
-        for (int index = 0; index < ic_stored.size(); index++) {
-            final IcTuple icStored = (IcTuple) ic_stored.get(index);
+        for (Object element : ic_stored) {
+            final IcTuple icStored = (IcTuple) element;
             final int innerClassIndex = icStored.thisClassIndex();
             final int outerClassIndex = icStored.outerClassIndex();
             final int simpleClassNameIndex = icStored.simpleClassNameIndex();
@@ -312,19 +312,19 @@ public class Segment {
 
         // add ic_local
         if (ic_local != null) {
-            for (int index = 0; index < ic_local.length; index++) {
-                if (isInResult.add(ic_local[index])) {
-                    result.add(ic_local[index]);
+            for (IcTuple element : ic_local) {
+                if (isInResult.add(element)) {
+                    result.add(element);
                 }
             }
         }
 
         // add ic_relevant
-        for (int index = 0; index < ic_relevant.length; index++) {
-            if (isInResult.add(ic_relevant[index])) {
-                result.add(ic_relevant[index]);
+        for (IcTuple element : ic_relevant) {
+            if (isInResult.add(element)) {
+                result.add(element);
             } else {
-                duplicates.add(ic_relevant[index]);
+                duplicates.add(element);
             }
         }
 

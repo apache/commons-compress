@@ -33,8 +33,8 @@ public class ExceptionsAttribute extends Attribute {
             return 0;
         }
         int result = 1;
-        for (int index = 0; index < array.length; index++) {
-            result = prime * result + (array[index] == null ? 0 : array[index].hashCode());
+        for (Object element : array) {
+            result = prime * result + (element == null ? 0 : element.hashCode());
         }
         return result;
     }
@@ -103,8 +103,8 @@ public class ExceptionsAttribute extends Attribute {
     public String toString() {
         final StringBuffer sb = new StringBuffer();
         sb.append("Exceptions: ");
-        for (int i = 0; i < exceptions.length; i++) {
-            sb.append(exceptions[i]);
+        for (CPClass exception : exceptions) {
+            sb.append(exception);
             sb.append(' ');
         }
         return sb.toString();
@@ -113,8 +113,8 @@ public class ExceptionsAttribute extends Attribute {
     @Override
     protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(exceptionIndexes.length);
-        for (int i = 0; i < exceptionIndexes.length; i++) {
-            dos.writeShort(exceptionIndexes[i]);
+        for (int element : exceptionIndexes) {
+            dos.writeShort(element);
         }
     }
 

@@ -61,8 +61,8 @@ public class ByteCode extends ClassFileEntry {
 
     @Override
     protected void doWrite(final DataOutputStream dos) throws IOException {
-        for (int i = 0; i < rewrite.length; i++) {
-            dos.writeByte(rewrite[i]);
+        for (int element : rewrite) {
+            dos.writeByte(element);
         }
     }
 

@@ -226,21 +226,21 @@ public class MetadataBandGroup extends BandSet {
         final List nameRU, final List t, final List values, final List caseArrayN, final List nestTypeRS,
         final List nestNameRU, final List nestPairN) {
         param_NB.add(numParams);
-        for (int i = 0; i < annoN.length; i++) {
-            anno_N.add(annoN[i]);
+        for (int element : annoN) {
+            anno_N.add(element);
         }
         pair_N.addAll(pairN);
-        for (final Iterator iterator = typeRS.iterator(); iterator.hasNext();) {
-            final String desc = (String) iterator.next();
+        for (Object element : typeRS) {
+            final String desc = (String) element;
             type_RS.add(cpBands.getCPSignature(desc));
         }
-        for (final Iterator iterator = nameRU.iterator(); iterator.hasNext();) {
-            final String name = (String) iterator.next();
+        for (Object element : nameRU) {
+            final String name = (String) element;
             name_RU.add(cpBands.getCPUtf8(name));
         }
         final Iterator valuesIterator = values.iterator();
-        for (final Iterator iterator = t.iterator(); iterator.hasNext();) {
-            final String tag = (String) iterator.next();
+        for (Object element : t) {
+            final String tag = (String) element;
             T.add(tag);
             if (tag.equals("B") || tag.equals("C") || tag.equals("I") || tag.equals("S") || tag.equals("Z")) {
                 final Integer value = (Integer) valuesIterator.next();
@@ -268,21 +268,21 @@ public class MetadataBandGroup extends BandSet {
             }
             // do nothing here for [ or @ (handled below)
         }
-        for (final Iterator iterator = caseArrayN.iterator(); iterator.hasNext();) {
-            final int arraySize = ((Integer) iterator.next()).intValue();
+        for (Object element : caseArrayN) {
+            final int arraySize = ((Integer) element).intValue();
             casearray_N.add(arraySize);
             numBackwardsCalls += arraySize;
         }
-        for (final Iterator iterator = nestTypeRS.iterator(); iterator.hasNext();) {
-            final String type = (String) iterator.next();
+        for (Object element : nestTypeRS) {
+            final String type = (String) element;
             nesttype_RS.add(cpBands.getCPSignature(type));
         }
-        for (final Iterator iterator = nestNameRU.iterator(); iterator.hasNext();) {
-            final String name = (String) iterator.next();
+        for (Object element : nestNameRU) {
+            final String name = (String) element;
             nestname_RU.add(cpBands.getCPUtf8(name));
         }
-        for (final Iterator iterator = nestPairN.iterator(); iterator.hasNext();) {
-            final Integer numPairs = (Integer) iterator.next();
+        for (Object element : nestPairN) {
+            final Integer numPairs = (Integer) element;
             nestpair_N.add(numPairs.intValue());
             numBackwardsCalls += numPairs.intValue();
         }
@@ -305,14 +305,14 @@ public class MetadataBandGroup extends BandSet {
         type_RS.add(cpBands.getCPSignature(desc));
         pair_N.add(nameRU.size());
 
-        for (final Iterator iterator = nameRU.iterator(); iterator.hasNext();) {
-            final String name = (String) iterator.next();
+        for (Object element : nameRU) {
+            final String name = (String) element;
             name_RU.add(cpBands.getCPUtf8(name));
         }
 
         final Iterator valuesIterator = values.iterator();
-        for (final Iterator iterator = t.iterator(); iterator.hasNext();) {
-            final String tag = (String) iterator.next();
+        for (Object element : t) {
+            final String tag = (String) element;
             T.add(tag);
             if (tag.equals("B") || tag.equals("C") || tag.equals("I") || tag.equals("S") || tag.equals("Z")) {
                 final Integer value = (Integer) valuesIterator.next();
@@ -340,21 +340,21 @@ public class MetadataBandGroup extends BandSet {
             }
             // do nothing here for [ or @ (handled below)
         }
-        for (final Iterator iterator = caseArrayN.iterator(); iterator.hasNext();) {
-            final int arraySize = ((Integer) iterator.next()).intValue();
+        for (Object element : caseArrayN) {
+            final int arraySize = ((Integer) element).intValue();
             casearray_N.add(arraySize);
             numBackwardsCalls += arraySize;
         }
-        for (final Iterator iterator = nestTypeRS.iterator(); iterator.hasNext();) {
-            final String type = (String) iterator.next();
+        for (Object element : nestTypeRS) {
+            final String type = (String) element;
             nesttype_RS.add(cpBands.getCPSignature(type));
         }
-        for (final Iterator iterator = nestNameRU.iterator(); iterator.hasNext();) {
-            final String name = (String) iterator.next();
+        for (Object element : nestNameRU) {
+            final String name = (String) element;
             nestname_RU.add(cpBands.getCPUtf8(name));
         }
-        for (final Iterator iterator = nestPairN.iterator(); iterator.hasNext();) {
-            final Integer numPairs = (Integer) iterator.next();
+        for (Object element : nestPairN) {
+            final Integer numPairs = (Integer) element;
             nestpair_N.add(numPairs.intValue());
             numBackwardsCalls += numPairs.intValue();
         }

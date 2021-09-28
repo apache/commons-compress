@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -55,8 +54,8 @@ public class AttributeDefinitionBands extends BandSet {
         final Map fieldLayouts = new HashMap();
         final Map codeLayouts = new HashMap();
 
-        for (int i = 0; i < attributePrototypes.length; i++) {
-            final NewAttribute newAttribute = (NewAttribute) attributePrototypes[i];
+        for (Attribute attributePrototype : attributePrototypes) {
+            final NewAttribute newAttribute = (NewAttribute) attributePrototype;
             if (!(newAttribute instanceof NewAttribute.ErrorAttribute)
                 && !(newAttribute instanceof NewAttribute.PassAttribute)
                 && !(newAttribute instanceof NewAttribute.StripAttribute)) {
@@ -180,8 +179,8 @@ public class AttributeDefinitionBands extends BandSet {
 
     private void addAttributeDefinitions(final Map layouts, final int[] availableIndices, final int contextType) {
         final int i = 0;
-        for (final Iterator iterator = layouts.keySet().iterator(); iterator.hasNext();) {
-            final String name = (String) iterator.next();
+        for (Object element : layouts.keySet()) {
+            final String name = (String) element;
             final String layout = (String) layouts.get(name);
             final int index = availableIndices[i];
             final AttributeDefinition definition = new AttributeDefinition(index, contextType, cpBands.getCPUtf8(name),

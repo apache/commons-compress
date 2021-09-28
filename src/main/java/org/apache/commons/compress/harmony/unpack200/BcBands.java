@@ -408,8 +408,8 @@ public class BcBands extends BandSet {
                     final ArrayList methodAttributesList = methodAttributes[c][m];
                     // Make sure we add the code attribute in the right place
                     int indexForCodeAttr = 0;
-                    for (int index = 0; index < methodAttributesList.size(); index++) {
-                        final Attribute attribute = (Attribute) methodAttributesList.get(index);
+                    for (Object element : methodAttributesList) {
+                        final Attribute attribute = (Attribute) element;
                         if (!(attribute instanceof NewAttribute)
                             || (((NewAttribute) attribute).getLayoutIndex() >= 15)) {
                             break;
@@ -427,8 +427,8 @@ public class BcBands extends BandSet {
                     } else {
                         currentAttributes = Collections.EMPTY_LIST;
                     }
-                    for (int index = 0; index < currentAttributes.size(); index++) {
-                        final Attribute currentAttribute = (Attribute) currentAttributes.get(index);
+                    for (Object currentAttribute2 : currentAttributes) {
+                        final Attribute currentAttribute = (Attribute) currentAttribute2;
                         codeAttr.addAttribute(currentAttribute);
                         // Fix up the line numbers if needed
                         if (currentAttribute.hasBCIRenumbering()) {

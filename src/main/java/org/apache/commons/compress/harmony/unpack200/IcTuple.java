@@ -178,8 +178,8 @@ public class IcTuple {
             throw new Error("Should have an outer before checking if it's anonymous");
         }
 
-        for (int index = 0; index < result.length; index++) {
-            if (isAllDigits(result[index])) {
+        for (String element : result) {
+            if (isAllDigits(element)) {
                 return true;
             }
         }

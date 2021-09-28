@@ -279,9 +279,9 @@ public class ArchiveTest extends TestCase {
     	File folder = new File(Archive.class
     			.getResource("/pack200/jars").toURI());
     	String[] children = folder.list();
-    	for (int i = 0; i < children.length; i++) {
-			if(children[i].endsWith(".jar") && !children[i].endsWith("Unpacked.jar")) {
-				File inputFile = new File(folder, children[i]);
+    	for (String child : children) {
+			if(child.endsWith(".jar") && !child.endsWith("Unpacked.jar")) {
+				File inputFile = new File(folder, child);
 				in = new JarFile(inputFile);
 				file = File.createTempFile("temp", ".pack.gz");
 		        file.deleteOnExit();

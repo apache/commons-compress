@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.compress.harmony.pack200.BHSDCodec;
@@ -80,8 +79,8 @@ public class NewAttributeBands extends BandSet {
      * @throws Pack200Exception TODO
      */
     public List parseAttributes(final InputStream in, final int occurrenceCount) throws IOException, Pack200Exception {
-        for (int i = 0; i < attributeLayoutElements.size(); i++) {
-            final AttributeLayoutElement element = (AttributeLayoutElement) attributeLayoutElements.get(i);
+        for (Object attributeLayoutElement : attributeLayoutElements) {
+            final AttributeLayoutElement element = (AttributeLayoutElement) attributeLayoutElement;
             element.readBands(in, occurrenceCount);
         }
 
@@ -102,8 +101,8 @@ public class NewAttributeBands extends BandSet {
     private Attribute getOneAttribute(final int index, final List elements) {
         final NewAttribute attribute = new NewAttribute(segment.getCpBands().cpUTF8Value(attributeLayout.getName()),
             attributeLayout.getIndex());
-        for (int i = 0; i < elements.size(); i++) {
-            final AttributeLayoutElement element = (AttributeLayoutElement) elements.get(i);
+        for (Object element2 : elements) {
+            final AttributeLayoutElement element = (AttributeLayoutElement) element2;
             element.addToAttribute(index, attribute);
         }
         return attribute;
@@ -139,8 +138,8 @@ public class NewAttributeBands extends BandSet {
                     callable.setFirstCallable(true);
                 }
                 final List body = callable.body; // Look for calls in the body
-                for (int iIndex = 0; iIndex < body.size(); iIndex++) {
-                    final LayoutElement layoutElement = (LayoutElement) body.get(iIndex);
+                for (Object element2 : body) {
+                    final LayoutElement layoutElement = (LayoutElement) element2;
                     // Set the callable for each call
                     backwardsCalls += resolveCallsForElement(i, callable, layoutElement);
                 }
@@ -183,8 +182,8 @@ public class NewAttributeBands extends BandSet {
             }
         } else if (layoutElement instanceof Replication) {
             final List children = ((Replication) layoutElement).layoutElements;
-            for (final Iterator iterator = children.iterator(); iterator.hasNext();) {
-                final LayoutElement object = (LayoutElement) iterator.next();
+            for (Object child : children) {
+                final LayoutElement object = (LayoutElement) child;
                 backwardsCalls += resolveCallsForElement(i, currentCallable, object);
             }
         }
@@ -462,8 +461,8 @@ public class NewAttributeBands extends BandSet {
             for (int i = 0; i < count; i++) {
                 arrayCount += countElement.getValue(i);
             }
-            for (int i = 0; i < layoutElements.size(); i++) {
-                final LayoutElement element = (LayoutElement) layoutElements.get(i);
+            for (Object layoutElement : layoutElements) {
+                final LayoutElement element = (LayoutElement) layoutElement;
                 element.readBands(in, arrayCount);
             }
         }
@@ -480,8 +479,8 @@ public class NewAttributeBands extends BandSet {
             }
             final long numElements = countElement.getValue(index);
             for (int i = offset; i < offset + numElements; i++) {
-                for (int it = 0; it < layoutElements.size(); it++) {
-                    final LayoutElement element = (LayoutElement) layoutElements.get(it);
+                for (Object layoutElement : layoutElements) {
+                    final LayoutElement element = (LayoutElement) layoutElement;
                     element.addToAttribute(i, attribute);
                 }
             }
@@ -521,19 +520,19 @@ public class NewAttributeBands extends BandSet {
             caseCounts = new int[unionCases.size()];
             for (int i = 0; i < caseCounts.length; i++) {
                 final UnionCase unionCase = (UnionCase) unionCases.get(i);
-                for (int j = 0; j < values.length; j++) {
-                    if (unionCase.hasTag(values[j])) {
+                for (int value : values) {
+                    if (unionCase.hasTag(value)) {
                         caseCounts[i]++;
                     }
                 }
                 unionCase.readBands(in, caseCounts[i]);
             }
             // Count number of default cases then read the default bands
-            for (int i = 0; i < values.length; i++) {
+            for (int value : values) {
                 boolean found = false;
-                for (int it = 0; it < unionCases.size(); it++) {
-                    final UnionCase unionCase = (UnionCase) unionCases.get(it);
-                    if (unionCase.hasTag(values[i])) {
+                for (Object element : unionCases) {
+                    final UnionCase unionCase = (UnionCase) element;
+                    if (unionCase.hasTag(value)) {
                         found = true;
                     }
                 }
@@ -542,8 +541,8 @@ public class NewAttributeBands extends BandSet {
                 }
             }
             if (defaultCaseBody != null) {
-                for (int i = 0; i < defaultCaseBody.size(); i++) {
-                    final LayoutElement element = (LayoutElement) defaultCaseBody.get(i);
+                for (Object element2 : defaultCaseBody) {
+                    final LayoutElement element = (LayoutElement) element2;
                     element.readBands(in, defaultCount);
                 }
             }
@@ -556,8 +555,8 @@ public class NewAttributeBands extends BandSet {
             final int[] tagBand = unionTag.band;
             final long tag = unionTag.getValue(n);
             boolean defaultCase = true;
-            for (int i = 0; i < unionCases.size(); i++) {
-                final UnionCase element = (UnionCase) unionCases.get(i);
+            for (Object element2 : unionCases) {
+                final UnionCase element = (UnionCase) element2;
                 if (element.hasTag(tag)) {
                     defaultCase = false;
                     for (int j = 0; j < n; j++) {
@@ -573,8 +572,8 @@ public class NewAttributeBands extends BandSet {
                 int defaultOffset = 0;
                 for (int j = 0; j < n; j++) {
                     boolean found = false;
-                    for (int i = 0; i < unionCases.size(); i++) {
-                        final UnionCase element = (UnionCase) unionCases.get(i);
+                    for (Object element2 : unionCases) {
+                        final UnionCase element = (UnionCase) element2;
                         if (element.hasTag(tagBand[j])) {
                             found = true;
                         }
@@ -584,8 +583,8 @@ public class NewAttributeBands extends BandSet {
                     }
                 }
                 if (defaultCaseBody != null) {
-                    for (int i = 0; i < defaultCaseBody.size(); i++) {
-                        final LayoutElement element = (LayoutElement) defaultCaseBody.get(i);
+                    for (Object element2 : defaultCaseBody) {
+                        final LayoutElement element = (LayoutElement) element2;
                         element.addToAttribute(defaultOffset, attribute);
                     }
                 }
@@ -750,8 +749,8 @@ public class NewAttributeBands extends BandSet {
          * @param attribute TODO
          */
         public void addNextToAttribute(final NewAttribute attribute) {
-            for (int i = 0; i < body.size(); i++) {
-                final LayoutElement element = (LayoutElement) body.get(i);
+            for (Object element2 : body) {
+                final LayoutElement element = (LayoutElement) element2;
                 element.addToAttribute(index, attribute);
             }
             index++;
@@ -773,8 +772,8 @@ public class NewAttributeBands extends BandSet {
             } else {
                 count = this.count;
             }
-            for (int i = 0; i < body.size(); i++) {
-                final LayoutElement element = (LayoutElement) body.get(i);
+            for (Object element2 : body) {
+                final LayoutElement element = (LayoutElement) element2;
                 element.readBands(in, count);
             }
         }
@@ -783,8 +782,8 @@ public class NewAttributeBands extends BandSet {
         public void addToAttribute(final int n, final NewAttribute attribute) {
             if (isFirstCallable) {
                 // Ignore n because bands also contain element parts from calls
-                for (int i = 0; i < body.size(); i++) {
-                    final LayoutElement element = (LayoutElement) body.get(i);
+                for (Object element2 : body) {
+                    final LayoutElement element = (LayoutElement) element2;
                     element.addToAttribute(index, attribute);
                 }
                 index++;
@@ -836,8 +835,8 @@ public class NewAttributeBands extends BandSet {
         @Override
         public void readBands(final InputStream in, final int count) throws IOException, Pack200Exception {
             if (body != null) {
-                for (int i = 0; i < body.size(); i++) {
-                    final LayoutElement element = (LayoutElement) body.get(i);
+                for (Object element2 : body) {
+                    final LayoutElement element = (LayoutElement) element2;
                     element.readBands(in, count);
                 }
             }
@@ -846,8 +845,8 @@ public class NewAttributeBands extends BandSet {
         @Override
         public void addToAttribute(final int index, final NewAttribute attribute) {
             if (body != null) {
-                for (int i = 0; i < body.size(); i++) {
-                    final LayoutElement element = (LayoutElement) body.get(i);
+                for (Object element2 : body) {
+                    final LayoutElement element = (LayoutElement) element2;
                     element.addToAttribute(index, attribute);
                 }
             }
@@ -995,8 +994,8 @@ public class NewAttributeBands extends BandSet {
     public void setBackwardsCalls(final int[] backwardsCalls) throws IOException {
         int index = 0;
         parseLayout();
-        for (int i = 0; i < attributeLayoutElements.size(); i++) {
-            final AttributeLayoutElement element = (AttributeLayoutElement) attributeLayoutElements.get(i);
+        for (Object attributeLayoutElement : attributeLayoutElements) {
+            final AttributeLayoutElement element = (AttributeLayoutElement) attributeLayoutElement;
             if (element instanceof Callable && ((Callable) element).isBackwardsCallable()) {
                 ((Callable) element).addCount(backwardsCalls[index]);
                 index++;

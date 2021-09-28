@@ -98,9 +98,9 @@ public class LookupSwitchForm extends SwitchForm {
         // match-offset pairs
         // The case_values aren't overwritten, but the
         // case_pcs will get overwritten by fixUpByteCodeTargets
-        for (int index = 0; index < case_values.length; index++) {
+        for (int case_value : case_values) {
             // match
-            setRewrite4Bytes(case_values[index], rewriteIndex, newRewrite);
+            setRewrite4Bytes(case_value, rewriteIndex, newRewrite);
             rewriteIndex += 4;
             // offset
             newRewrite[rewriteIndex++] = -1;

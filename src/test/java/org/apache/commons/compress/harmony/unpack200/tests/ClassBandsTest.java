@@ -113,9 +113,9 @@ public class ClassBandsTest extends AbstractBandsTestCase {
                 + classFlags.length;
         byte[] bytes = new byte[total];
         int index = 0;
-        for (int i = 0; i < allArrays.length; i++) {
-            for (int j = 0; j < allArrays[i].length; j++) {
-                bytes[index] = allArrays[i][j];
+        for (byte[] array : allArrays) {
+            for (byte element : array) {
+                bytes[index] = element;
                 index++;
             }
         }
@@ -148,14 +148,14 @@ public class ClassBandsTest extends AbstractBandsTestCase {
                 classInterfaceCount, classFieldCount, classMethodCount,
                 methodDescr, methodFlagsLo, classFlags, };
         int total = 0;
-        for (int i = 0; i < allArrays.length; i++) {
-            total += allArrays[i].length;
+        for (byte[] array : allArrays) {
+            total += array.length;
         }
         byte[] bytes = new byte[total];
         int index = 0;
-        for (int i = 0; i < allArrays.length; i++) {
-            for (int j = 0; j < allArrays[i].length; j++) {
-                bytes[index] = allArrays[i][j];
+        for (byte[] array : allArrays) {
+            for (byte element : array) {
+                bytes[index] = element;
                 index++;
             }
         }

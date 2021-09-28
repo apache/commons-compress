@@ -235,12 +235,12 @@ public class CodecEncoding {
                 specifier[1] = kx;
                 index++;
             }
-            for (int i = 0; i < aSpecifier.length; i++) {
-                specifier[index] = aSpecifier[i];
+            for (int element : aSpecifier) {
+                specifier[index] = element;
                 index++;
             }
-            for (int i = 0; i < bSpecifier.length; i++) {
-                specifier[index] = bSpecifier[i];
+            for (int element : bSpecifier) {
+                specifier[index] = element;
                 index++;
             }
             return specifier;
@@ -279,16 +279,16 @@ public class CodecEncoding {
                 + tokenSpecifier.length];
             specifier[0] = first;
             int index = 1;
-            for (int i = 0; i < favouredSpecifier.length; i++) {
-                specifier[index] = favouredSpecifier[i];
+            for (int element : favouredSpecifier) {
+                specifier[index] = element;
                 index++;
             }
-            for (int i = 0; i < tokenSpecifier.length; i++) {
-                specifier[index] = tokenSpecifier[i];
+            for (int element : tokenSpecifier) {
+                specifier[index] = element;
                 index++;
             }
-            for (int i = 0; i < unfavouredSpecifier.length; i++) {
-                specifier[index] = unfavouredSpecifier[i];
+            for (int element : unfavouredSpecifier) {
+                specifier[index] = element;
                 index++;
             }
             return specifier;

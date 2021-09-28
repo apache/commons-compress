@@ -283,8 +283,7 @@ public abstract class ByteCodeForm {
 
         // Put all the bytecodes in a HashMap so we can
         // get them by either name or number
-        for (int i = 0; i < byteCodeArray.length; i++) {
-            final ByteCodeForm byteCode = byteCodeArray[i];
+        for (final ByteCodeForm byteCode : byteCodeArray) {
             if (byteCode != null) {
                 byteCodesByName.put(byteCode.getName(), byteCode);
             }

@@ -69,8 +69,8 @@ public class CPMember extends ClassFileEntry {
         super.resolve(pool);
         nameIndex = pool.indexOf(name);
         descriptorIndex = pool.indexOf(descriptor);
-        for (int it = 0; it < attributes.size(); it++) {
-            final Attribute attribute = (Attribute) attributes.get(it);
+        for (Object attribute2 : attributes) {
+            final Attribute attribute = (Attribute) attribute2;
             attribute.resolve(pool);
         }
     }

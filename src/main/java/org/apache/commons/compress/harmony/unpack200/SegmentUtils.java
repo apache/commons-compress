@@ -74,8 +74,8 @@ public final class SegmentUtils {
 
     public static int countMatches(final long[] flags, final IMatcher matcher) {
         int count = 0;
-        for (int i = 0; i < flags.length; i++) {
-            if (matcher.matches(flags[i])) {
+        for (long flag : flags) {
+            if (matcher.matches(flag)) {
                 count++;
             }
         }
@@ -84,8 +84,8 @@ public final class SegmentUtils {
 
     public static int countBit16(final int[] flags) {
         int count = 0;
-        for (int i = 0; i < flags.length; i++) {
-            if ((flags[i] & (1 << 16)) != 0) {
+        for (int flag : flags) {
+            if ((flag & (1 << 16)) != 0) {
                 count++;
             }
         }
@@ -94,8 +94,8 @@ public final class SegmentUtils {
 
     public static int countBit16(final long[] flags) {
         int count = 0;
-        for (int i = 0; i < flags.length; i++) {
-            if ((flags[i] & (1 << 16)) != 0) {
+        for (long flag : flags) {
+            if ((flag & (1 << 16)) != 0) {
                 count++;
             }
         }
@@ -104,9 +104,9 @@ public final class SegmentUtils {
 
     public static int countBit16(final long[][] flags) {
         int count = 0;
-        for (int i = 0; i < flags.length; i++) {
-            for (int j = 0; j < flags[i].length; j++) {
-                if ((flags[i][j] & (1 << 16)) != 0) {
+        for (long[] flag : flags) {
+            for (long element : flag) {
+                if ((element & (1 << 16)) != 0) {
                     count++;
                 }
             }
@@ -116,8 +116,8 @@ public final class SegmentUtils {
 
     public static int countMatches(final long[][] flags, final IMatcher matcher) {
         int count = 0;
-        for (int i = 0; i < flags.length; i++) {
-            count += countMatches(flags[i], matcher);
+        for (long[] flag : flags) {
+            count += countMatches(flag, matcher);
         }
         return count;
     }

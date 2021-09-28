@@ -49,8 +49,8 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
     @Override
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
-        for (int i = 0; i < parameter_annotations.length; i++) {
-            parameter_annotations[i].resolve(pool);
+        for (ParameterAnnotation parameter_annotation : parameter_annotations) {
+            parameter_annotation.resolve(pool);
         }
     }
 
@@ -82,29 +82,29 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
 
         public void writeBody(final DataOutputStream dos) throws IOException {
             dos.writeShort(num_annotations);
-            for (int i = 0; i < annotations.length; i++) {
-                annotations[i].writeBody(dos);
+            for (Annotation annotation : annotations) {
+                annotation.writeBody(dos);
             }
         }
 
         public void resolve(final ClassConstantPool pool) {
-            for (int i = 0; i < annotations.length; i++) {
-                annotations[i].resolve(pool);
+            for (Annotation annotation : annotations) {
+                annotation.resolve(pool);
             }
         }
 
         public int getLength() {
             int length = 2;
-            for (int i = 0; i < annotations.length; i++) {
-                length += annotations[i].getLength();
+            for (Annotation annotation : annotations) {
+                length += annotation.getLength();
             }
             return length;
         }
 
         public List getClassFileEntries() {
             final List nested = new ArrayList();
-            for (int i = 0; i < annotations.length; i++) {
-                nested.addAll(annotations[i].getClassFileEntries());
+            for (Annotation annotation : annotations) {
+                nested.addAll(annotation.getClassFileEntries());
             }
             return nested;
         }
@@ -115,8 +115,8 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
     protected ClassFileEntry[] getNestedClassFileEntries() {
         final List nested = new ArrayList();
         nested.add(attributeName);
-        for (int i = 0; i < parameter_annotations.length; i++) {
-            nested.addAll(parameter_annotations[i].getClassFileEntries());
+        for (ParameterAnnotation parameter_annotation : parameter_annotations) {
+            nested.addAll(parameter_annotation.getClassFileEntries());
         }
         final ClassFileEntry[] nestedEntries = new ClassFileEntry[nested.size()];
         for (int i = 0; i < nestedEntries.length; i++) {

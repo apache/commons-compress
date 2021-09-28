@@ -19,7 +19,6 @@ package org.apache.commons.compress.harmony.unpack200;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -135,8 +134,8 @@ public class AttributeLayoutMap {
 
     public AttributeLayoutMap() throws Pack200Exception {
         final AttributeLayout[] defaultAttributeLayouts = getDefaultAttributeLayouts();
-        for (int i = 0; i < defaultAttributeLayouts.length; i++) {
-            add(defaultAttributeLayouts[i]);
+        for (AttributeLayout defaultAttributeLayout : defaultAttributeLayouts) {
+            add(defaultAttributeLayout);
         }
     }
 
@@ -151,8 +150,8 @@ public class AttributeLayoutMap {
 
     public AttributeLayout getAttributeLayout(final String name, final int context) {
         final Map map = layouts[context];
-        for (final Iterator iter = map.values().iterator(); iter.hasNext();) {
-            final AttributeLayout layout = (AttributeLayout) iter.next();
+        for (Object element : map.values()) {
+            final AttributeLayout layout = (AttributeLayout) element;
             if (layout.getName().equals(name)) {
                 return layout;
             }
@@ -171,8 +170,7 @@ public class AttributeLayoutMap {
      * @throws Pack200Exception Thrown when the name layout/name combination exists twice for a context.
      */
     public void checkMap() throws Pack200Exception {
-        for (int i = 0; i < layouts.length; i++) {
-            final Map map = layouts[i];
+        for (final Map map : layouts) {
             Collection c = map.values();
             if (!(c instanceof List)) {
                 c = new ArrayList(c);

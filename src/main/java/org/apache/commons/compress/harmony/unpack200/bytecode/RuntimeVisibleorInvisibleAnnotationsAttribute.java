@@ -48,8 +48,8 @@ public class RuntimeVisibleorInvisibleAnnotationsAttribute extends AnnotationsAt
     @Override
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
-        for (int i = 0; i < annotations.length; i++) {
-            annotations[i].resolve(pool);
+        for (Annotation annotation : annotations) {
+            annotation.resolve(pool);
         }
     }
 
@@ -74,8 +74,8 @@ public class RuntimeVisibleorInvisibleAnnotationsAttribute extends AnnotationsAt
     protected ClassFileEntry[] getNestedClassFileEntries() {
         final List nested = new ArrayList();
         nested.add(attributeName);
-        for (int i = 0; i < annotations.length; i++) {
-            nested.addAll(annotations[i].getClassFileEntries());
+        for (Annotation annotation : annotations) {
+            nested.addAll(annotation.getClassFileEntries());
         }
         final ClassFileEntry[] nestedEntries = new ClassFileEntry[nested.size()];
         for (int i = 0; i < nestedEntries.length; i++) {
