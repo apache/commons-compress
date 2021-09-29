@@ -756,6 +756,16 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
+    @Test
+    public void testSevenZWithEOS() throws IOException {
+        try(final SevenZFile sevenZFile = new SevenZFile(getFile("lzma-with-eos.7z"))) {
+            final List<SevenZArchiveEntry> entries = (List<SevenZArchiveEntry>) sevenZFile.getEntries();
+            for (final SevenZArchiveEntry entry : entries) {
+                IOUtils.toByteArray(sevenZFile.getInputStream(entry));
+            }
+        }
+    }
+
     private void test7zUnarchive(final File f, final SevenZMethod m, final byte[] password) throws Exception {
         try (SevenZFile sevenZFile = new SevenZFile(f, password)) {
             test7zUnarchive(sevenZFile, m);
