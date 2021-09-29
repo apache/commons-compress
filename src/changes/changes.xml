@@ -474,6 +474,12 @@ you relied on the recovery attempt.">
         NullPointerExcpetion rather than an IOException if the archive
         ended while more sparse headers were expected.
       </action>
+      <action issue="COMPRESS-591" type="update" date="2021-09-29"
+              due-to="Lasse Collin" dev="Peter Lee">
+        Call enableRelaxedEndCondition() to enable decoding of 7z
+        files containing LZMA streams with end marker.
+        Github Pull Request #223.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">
