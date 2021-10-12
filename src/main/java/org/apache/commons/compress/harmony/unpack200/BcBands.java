@@ -189,12 +189,12 @@ public class BcBands extends BandSet {
                             bcLabelCount++;
                             break;
                         case 170: // tableswitch
-                            switchIsTableSwitch.add(Boolean.valueOf(true));
+                            switchIsTableSwitch.add(Boolean.TRUE);
                             bcCaseCountCount++;
                             bcLabelCount++;
                             break;
                         case 171: // lookupswitch
-                            switchIsTableSwitch.add(Boolean.valueOf(false));
+                            switchIsTableSwitch.add(Boolean.FALSE);
                             bcCaseCountCount++;
                             bcLabelCount++;
                             break;
