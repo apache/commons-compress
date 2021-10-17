@@ -239,12 +239,12 @@ public final class IOUtils {
     // Assuming our copy() works just as well as theirs!  :-)
 
     /**
-     * Gets the contents of an <code>InputStream</code> as a <code>byte[]</code>.
+     * Gets the contents of an {@code InputStream} as a {@code byte[]}.
      * <p>
      * This method buffers the input internally, so there is no need to use a
-     * <code>BufferedInputStream</code>.
+     * {@code BufferedInputStream}.
      *
-     * @param input  the <code>InputStream</code> to read from
+     * @param input  the {@code InputStream} to read from
      * @return the requested byte array
      * @throws NullPointerException if the input is null
      * @throws IOException if an I/O error occurs
@@ -335,9 +335,9 @@ public final class IOUtils {
     }
 
     /**
-     * Gets part of the contents of an <code>InputStream</code> as a <code>byte[]</code>.
+     * Gets part of the contents of an {@code InputStream} as a {@code byte[]}.
      *
-     * @param input  the <code>InputStream</code> to read from
+     * @param input  the {@code InputStream} to read from
      * @param len
      *            maximum amount of bytes to copy
      * @return the requested byte array
@@ -352,9 +352,9 @@ public final class IOUtils {
     }
 
     /**
-     * Gets part of the contents of an <code>ReadableByteChannel</code> as a <code>byte[]</code>.
+     * Gets part of the contents of an {@code ReadableByteChannel} as a {@code byte[]}.
      *
-     * @param input  the <code>ReadableByteChannel</code> to read from
+     * @param input  the {@code ReadableByteChannel} to read from
      * @param len
      *            maximum amount of bytes to copy
      * @return the requested byte array

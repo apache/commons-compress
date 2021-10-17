@@ -34,7 +34,7 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
 
     /**
      * Creates a new XZ compressor using the default LZMA2 options.
-     * This is equivalent to <code>XZCompressorOutputStream(outputStream, 6)</code>.
+     * This is equivalent to {@code XZCompressorOutputStream(outputStream, 6)}.
      * @param outputStream the stream to wrap
      * @throws IOException on error
      */
@@ -75,7 +75,7 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
     }
 
     /**
-     * Flushes the encoder and calls <code>outputStream.flush()</code>.
+     * Flushes the encoder and calls {@code outputStream.flush()}.
      * All buffered pending data will then be decompressible from
      * the output stream. Calling this function very often may increase
      * the compressed file size a lot.

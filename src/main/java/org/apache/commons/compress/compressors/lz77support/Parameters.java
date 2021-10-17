@@ -29,8 +29,8 @@ public final class Parameters {
 
     /**
      * Initializes the builder for the compressor's parameters with a
-     * <code>minBackReferenceLength</code> of 3 and <code>max*Length</code>
-     * equal to <code>windowSize - 1</code>.
+     * {@code minBackReferenceLength} of 3 and {@code max*Length}
+     * equal to {@code windowSize - 1}.
      *
      * <p>It is recommended to not use this method directly but rather
      * tune a pre-configured builder created by a format specific
@@ -70,8 +70,8 @@ public final class Parameters {
         /**
          * Sets the minimal length of a back-reference.
          *
-         * <p>Ensures <code>maxBackReferenceLength</code> is not
-         * smaller than <code>minBackReferenceLength</code>.
+         * <p>Ensures {@code maxBackReferenceLength} is not
+         * smaller than {@code minBackReferenceLength}.
          *
          * <p>It is recommended to not use this method directly but
          * rather tune a pre-configured builder created by a format
@@ -81,8 +81,8 @@ public final class Parameters {
          * @param minBackReferenceLength the minimal length of a back-reference found. A
          * true minimum of 3 is hard-coded inside of this implementation
          * but bigger lengths can be configured.
-         * @throws IllegalArgumentException if <code>windowSize</code>
-         * is smaller than <code>minBackReferenceLength</code>.
+         * @throws IllegalArgumentException if {@code windowSize}
+         * is smaller than {@code minBackReferenceLength}.
          * @return the builder
          */
         public Builder withMinBackReferenceLength(final int minBackReferenceLength) {
@@ -106,9 +106,9 @@ public final class Parameters {
          *
          * @param maxBackReferenceLength maximal length of a
          * back-reference found. A value smaller than
-         * <code>minBackReferenceLength</code> is interpreted as
-         * <code>minBackReferenceLength</code>. <code>maxBackReferenceLength</code>
-         * is capped at <code>windowSize - 1</code>.
+         * {@code minBackReferenceLength} is interpreted as
+         * {@code minBackReferenceLength}. {@code maxBackReferenceLength}
+         * is capped at {@code windowSize - 1}.
          * @return the builder
          */
         public Builder withMaxBackReferenceLength(final int maxBackReferenceLength) {
@@ -127,7 +127,7 @@ public final class Parameters {
          *
          * @param maxOffset maximal offset of a back-reference. A
          * non-positive value as well as values bigger than
-         * <code>windowSize - 1</code> are interpreted as <code>windowSize
+         * {@code windowSize - 1} are interpreted as <code>windowSize
          * - 1</code>.
          * @return the builder
          */
@@ -146,8 +146,8 @@ public final class Parameters {
          *
          * @param maxLiteralLength maximal length of a literal
          * block. Negative numbers and 0 as well as values bigger than
-         * <code>windowSize</code> are interpreted as
-         * <code>windowSize</code>.
+         * {@code windowSize} are interpreted as
+         * {@code windowSize}.
          * @return the builder
          */
         public Builder withMaxLiteralLength(final int maxLiteralLength) {

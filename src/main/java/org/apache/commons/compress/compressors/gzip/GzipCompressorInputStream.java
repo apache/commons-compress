@@ -53,7 +53,7 @@ import static java.nio.charset.StandardCharsets.*;
  * </p>
  *
  * <p>
- * Instead of using <code>GZIPInputStream</code>, this class has its own .gz
+ * Instead of using {@code GZIPInputStream}, this class has its own .gz
  * container format decoder. The actual decompression is done with
  * {@link java.util.zip.Inflater}.
  * </p>
@@ -119,7 +119,7 @@ public class GzipCompressorInputStream extends CompressorInputStream
      * from the specified input stream.
      * <p>
      * This is equivalent to
-     * <code>GzipCompressorInputStream(inputStream, false)</code> and thus
+     * {@code GzipCompressorInputStream(inputStream, false)} and thus
      * will not decompress concatenated .gz files.
      *
      * @param inputStream  the InputStream from which this object should
@@ -136,12 +136,12 @@ public class GzipCompressorInputStream extends CompressorInputStream
      * Constructs a new input stream that decompresses gzip-compressed data
      * from the specified input stream.
      * <p>
-     * If <code>decompressConcatenated</code> is {@code false}:
+     * If {@code decompressConcatenated} is {@code false}:
      * This decompressor might read more input than it will actually use.
-     * If <code>inputStream</code> supports <code>mark</code> and
-     * <code>reset</code>, then the input position will be adjusted
+     * If {@code inputStream} supports {@code mark} and
+     * {@code reset}, then the input position will be adjusted
      * so that it is right after the last byte of the compressed stream.
-     * If <code>mark</code> isn't supported, the input position will be
+     * If {@code mark} isn't supported, the input position will be
      * undefined.
      *
      * @param inputStream  the InputStream from which this object should

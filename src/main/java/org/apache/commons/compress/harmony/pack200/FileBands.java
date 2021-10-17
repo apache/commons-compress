@@ -29,7 +29,7 @@ import org.objectweb.asm.ClassReader;
 
 /**
  * Bands containing information about files in the pack200 archive and the file contents for non-class-files.
- * Corresponds to the <code>file_bands</code> set of bands described in the specification.
+ * Corresponds to the {@code file_bands} set of bands described in the specification.
  */
 public class FileBands extends BandSet {
 

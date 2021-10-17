@@ -436,7 +436,7 @@ public class Segment extends ClassVisitor {
     }
 
     /**
-     * SegmentAnnotationVisitor implements <code>AnnotationVisitor</code> to visit Annotations found in a class file.
+     * SegmentAnnotationVisitor implements {@code AnnotationVisitor} to visit Annotations found in a class file.
      */
     public class SegmentAnnotationVisitor extends AnnotationVisitor {
 
@@ -625,7 +625,7 @@ public class Segment extends ClassVisitor {
     }
 
     /**
-     * SegmentFieldVisitor implements <code>FieldVisitor</code> to visit the metadata relating to fields in a class
+     * SegmentFieldVisitor implements {@code FieldVisitor} to visit the metadata relating to fields in a class
      * file.
      */
     public class SegmentFieldVisitor extends FieldVisitor {

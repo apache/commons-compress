@@ -60,7 +60,7 @@ public class MetadataBandGroup extends BandSet {
      * Constructs a new MetadataBandGroup
      *
      * @param type must be either AD, RVA, RIA, RVPA or RIPA.
-     * @param context <code>CONTEXT_CLASS</code>, <code>CONTEXT_METHOD</code> or <code>CONTEXT_FIELD</code>
+     * @param context {@code CONTEXT_CLASS}, {@code CONTEXT_METHOD} or {@code CONTEXT_FIELD}
      * @param cpBands constant pool bands
      * @param segmentHeader segment header
      * @param effort packing effort

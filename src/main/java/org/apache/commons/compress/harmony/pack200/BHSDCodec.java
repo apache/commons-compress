@@ -37,8 +37,8 @@ import java.util.List;
  * <dd>The maximum number of bytes that each value is encoded as. B must be a value between [1..5]. For a pass-through
  * coding (where each byte is encoded as itself, aka {@link #BYTE1}, B is 1 (each byte takes a maximum of 1 byte).</dd>
  * <dt>H</dt>
- * <dd>The radix of the integer. Values are defined as a sequence of values, where value <code>n</code> is multiplied by
- * <code>H^<sup>n</sup></code>. So the number 1234 may be represented as the sequence 4 3 2 1 with a radix (H) of 10.
+ * <dd>The radix of the integer. Values are defined as a sequence of values, where value {@code n} is multiplied by
+ * {@code H^<sup>n</sup>}. So the number 1234 may be represented as the sequence 4 3 2 1 with a radix (H) of 10.
  * Note that other permutations are also possible; 43 2 1 will also encode 1234. The co-parameter L is defined as 256-H.
  * This is important because only the last value in a sequence may be &lt; L; all prior values must be &gt; L.</dd>
  * <dt>S</dt>
@@ -46,9 +46,9 @@ import java.util.List;
  * complement) or 2 (signed, two's complement)</dd>
  * <dt>D</dt>
  * <dd>Whether the codec represents a delta encoding. This may be 0 (no delta) or 1 (delta encoding). A delta encoding
- * of 1 indicates that values are cumulative; a sequence of <code>1 1 1 1 1</code> will represent the sequence
- * <code>1 2 3 4 5</code>. For this reason, the codec supports two variants of decode; one
- * {@link #decode(InputStream, long) with} and one {@link #decode(InputStream) without} a <code>last</code> parameter.
+ * of 1 indicates that values are cumulative; a sequence of {@code 1 1 1 1 1} will represent the sequence
+ * {@code 1 2 3 4 5}. For this reason, the codec supports two variants of decode; one
+ * {@link #decode(InputStream, long) with} and one {@link #decode(InputStream) without} a {@code last} parameter.
  * If the codec is a non-delta encoding, then the value is ignored if passed. If the codec is a delta encoding, it is a
  * run-time error to call the value without the extra parameter, and the previous value should be returned. (It was
  * designed this way to support multi-threaded access without requiring a new instance of the Codec to be cloned for
@@ -277,7 +277,7 @@ public final class BHSDCodec extends Codec {
      * True if this encoding can code the given value
      *
      * @param value the value to check
-     * @return <code>true</code> if the encoding can encode this value
+     * @return {@code true} if the encoding can encode this value
      */
     public boolean encodes(final long value) {
         return value >= smallest && value <= largest;

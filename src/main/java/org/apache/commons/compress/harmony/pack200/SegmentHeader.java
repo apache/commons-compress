@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * SegmentHeader is the header band of a {@link Segment}. Corresponds to <code>segment_header</code> in the pack200
+ * SegmentHeader is the header band of a {@link Segment}. Corresponds to {@code segment_header} in the pack200
  * specification.
  */
 public class SegmentHeader extends BandSet {

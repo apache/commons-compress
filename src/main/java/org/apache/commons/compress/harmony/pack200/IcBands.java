@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Inner class bands (corresponds to the <code>ic_bands</code> set of bands in the pack200 specification)
+ * Inner class bands (corresponds to the {@code ic_bands} set of bands in the pack200 specification)
  */
 public class IcBands extends BandSet {
 

@@ -37,8 +37,8 @@ public abstract class ZipUtil {
 
     /**
      * Convert a Date object to a DOS date/time field.
-     * @param time the <code>Date</code> to convert
-     * @return the date as a <code>ZipLong</code>
+     * @param time the {@code Date} to convert
+     * @return the date as a {@code ZipLong}
      */
     public static ZipLong toDosTime(final Date time) {
         return new ZipLong(toDosTime(time.getTime()));
@@ -47,7 +47,7 @@ public abstract class ZipUtil {
     /**
      * Convert a Date object to a DOS date/time field.
      *
-     * <p>Stolen from InfoZip's <code>fileio.c</code></p>
+     * <p>Stolen from InfoZip's {@code fileio.c}</p>
      * @param t number of milliseconds since the epoch
      * @return the date as a byte array
      */
@@ -60,7 +60,7 @@ public abstract class ZipUtil {
     /**
      * Convert a Date object to a DOS date/time field.
      *
-     * <p>Stolen from InfoZip's <code>fileio.c</code></p>
+     * <p>Stolen from InfoZip's {@code fileio.c}</p>
      * @param t number of milliseconds since the epoch
      * @param buf the output buffer
      * @param offset

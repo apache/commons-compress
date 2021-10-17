@@ -981,7 +981,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * Sets the default compression method for subsequent entries.
      *
      * <p>Default is DEFLATED.</p>
-     * @param method an <code>int</code> from java.util.zip.ZipEntry
+     * @param method an {@code int} from java.util.zip.ZipEntry
      */
     public void setMethod(final int method) {
         this.method = method;

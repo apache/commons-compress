@@ -227,10 +227,10 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * @throws IOException if the underlying stream throws or signals
      * an EOF before the amount of data promised for the block have
      * been read
-     * @throws NullPointerException if <code>b</code> is null
-     * @throws IndexOutOfBoundsException if <code>off</code> is
-     * negative, <code>len</code> is negative, or <code>len</code> is
-     * greater than <code>b.length - off</code>
+     * @throws NullPointerException if {@code b} is null
+     * @throws IndexOutOfBoundsException if {@code off} is
+     * negative, {@code len} is negative, or {@code len} is
+     * greater than {@code b.length - off}
      */
     protected final int readLiteral(final byte[] b, final int off, final int len) throws IOException {
         final int avail = available();
@@ -301,10 +301,10 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * @param len maximum amount of data to read
      * @return number of bytes read, may be 0. Will never return -1 as
      * EOF-detection is the responsibility of the subclass
-     * @throws NullPointerException if <code>b</code> is null
-     * @throws IndexOutOfBoundsException if <code>off</code> is
-     * negative, <code>len</code> is negative, or <code>len</code> is
-     * greater than <code>b.length - off</code>
+     * @throws NullPointerException if {@code b} is null
+     * @throws IndexOutOfBoundsException if {@code off} is
+     * negative, {@code len} is negative, or {@code len} is
+     * greater than {@code b.length - off}
      */
     protected final int readBackReference(final byte[] b, final int off, final int len) {
         final int avail = available();

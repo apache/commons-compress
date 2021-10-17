@@ -1339,7 +1339,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         private long pos;
 
         /**
-         * Creates a new <code>BoundedInputStream</code> that wraps the given input
+         * Creates a new {@code BoundedInputStream} that wraps the given input
          * stream and limits it to a certain size.
          *
          * @param in The wrapped input stream

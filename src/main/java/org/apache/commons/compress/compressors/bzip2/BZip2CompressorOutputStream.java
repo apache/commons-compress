@@ -351,7 +351,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      * @throws IOException
      *             if an I/O error occurs in the specified stream.
      * @throws NullPointerException
-     *             if <code>out == null</code>.
+     *             if {@code out == null}.
      */
     public BZip2CompressorOutputStream(final OutputStream out)
         throws IOException {
@@ -369,9 +369,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      * @throws IOException
      *             if an I/O error occurs in the specified stream.
      * @throws IllegalArgumentException
-     *             if <code>(blockSize &lt; 1) || (blockSize &gt; 9)</code>.
+     *             if {@code (blockSize &lt; 1) || (blockSize &gt; 9)}.
      * @throws NullPointerException
-     *             if <code>out == null</code>.
+     *             if {@code out == null}.
      *
      * @see #MIN_BLOCKSIZE
      * @see #MAX_BLOCKSIZE

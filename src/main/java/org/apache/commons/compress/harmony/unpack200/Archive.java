@@ -34,7 +34,7 @@ import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 
 /**
  * Archive is the main entry point to unpack200. An archive is constructed with either two file names, a pack file and
- * an output file name or an input stream and an output streams. Then <code>unpack()</code> is called, to unpack the
+ * an output file name or an input stream and an output streams. Then {@code unpack()} is called, to unpack the
  * pack200 archive.
  */
 public class Archive {

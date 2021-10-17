@@ -268,8 +268,8 @@ public class ZipArchiveInputStreamTest {
     }
 
     /**
-     * <code>getNextZipEntry()</code> should throw a <code>ZipException</code> rather than return
-     * <code>null</code> when an unexpected structure is encountered.
+     * {@code getNextZipEntry()} should throw a {@code ZipException} rather than return
+     * {@code null} when an unexpected structure is encountered.
      */
     @Test
     public void testThrowOnInvalidEntry() throws Exception {

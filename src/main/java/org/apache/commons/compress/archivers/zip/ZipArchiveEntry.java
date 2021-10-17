@@ -324,7 +324,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     /**
      * Sets the internal file attributes.
-     * @param value an <code>int</code> value
+     * @param value an {@code int} value
      */
     public void setInternalAttributes(final int value) {
         internalAttributes = value;
@@ -345,7 +345,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     /**
      * Sets the external file attributes.
-     * @param value an <code>long</code> value
+     * @param value an {@code long} value
      */
     public void setExternalAttributes(final long value) {
         externalAttributes = value;
@@ -354,7 +354,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     /**
      * Sets Unix permissions in a way that is understood by Info-Zip's
      * unzip command.
-     * @param mode an <code>int</code> value
+     * @param mode an {@code int} value
      */
     public void setUnixMode(final int mode) {
         // CheckStyle:MagicNumberCheck OFF - no point
@@ -401,7 +401,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
 
     /**
      * Set the platform (UNIX or FAT).
-     * @param platform an <code>int</code> value - 0 is FAT, 3 is UNIX
+     * @param platform an {@code int} value - 0 is FAT, 3 is UNIX
      */
     protected void setPlatform(final int platform) {
         this.platform = platform;

@@ -65,7 +65,7 @@ public class DeflateCompressorOutputStream extends CompressorOutputStream {
     }
 
     /**
-     * Flushes the encoder and calls <code>outputStream.flush()</code>.
+     * Flushes the encoder and calls {@code outputStream.flush()}.
      * All buffered pending data will then be decompressible from
      * the output stream. Calling this function very often may increase
      * the compressed file size a lot.

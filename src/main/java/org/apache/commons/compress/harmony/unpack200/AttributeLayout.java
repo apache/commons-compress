@@ -110,7 +110,7 @@ public class AttributeLayout implements IMatcher {
 
     /**
      * Construct a default AttributeLayout (equivalent to
-     * <code>new AttributeLayout(name, context, layout, index, true);</code>)
+     * {@code new AttributeLayout(name, context, layout, index, true);})
      *
      * @param name TODO
      * @param context TODO

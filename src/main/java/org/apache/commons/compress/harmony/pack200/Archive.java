@@ -30,7 +30,7 @@ import java.util.zip.ZipEntry;
 /**
  * Archive is the main entry point to pack200 and represents a packed archive. An archive is constructed with either a
  * JarInputStream and an output stream or a JarFile as input and an OutputStream. Options can be set, then
- * <code>pack()</code> is called, to pack the Jar file into a pack200 archive.
+ * {@code pack()} is called, to pack the Jar file into a pack200 archive.
  */
 public class Archive {
 

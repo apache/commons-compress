@@ -148,7 +148,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      * @param encoding
      *            The encoding of file names to expect - use null for
      *            the platform's default.
-     * @throws IllegalArgumentException if <code>blockSize</code> is not bigger than 0
+     * @throws IllegalArgumentException if {@code blockSize} is not bigger than 0
      * @since 1.6
      */
     public CpioArchiveInputStream(final InputStream in, final int blockSize, final String encoding) {

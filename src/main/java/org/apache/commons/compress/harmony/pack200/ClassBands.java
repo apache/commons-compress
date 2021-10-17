@@ -33,7 +33,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 
 /**
- * Class bands (corresponds to the <code>class_bands</code> set of bands in the pack200 specification)
+ * Class bands (corresponds to the {@code class_bands} set of bands in the pack200 specification)
  */
 public class ClassBands extends BandSet {
 

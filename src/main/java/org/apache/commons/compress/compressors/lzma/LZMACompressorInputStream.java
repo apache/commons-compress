@@ -49,7 +49,7 @@ public class LZMACompressorInputStream extends CompressorInputStream
      *                          the input is corrupt or truncated, the .lzma
      *                          headers specify sizes that are not supported
      *                          by this implementation, or the underlying
-     *                          <code>inputStream</code> throws an exception
+     *                          {@code inputStream} throws an exception
      */
     public LZMACompressorInputStream(final InputStream inputStream)
             throws IOException {
@@ -69,7 +69,7 @@ public class LZMACompressorInputStream extends CompressorInputStream
      *                          the input is corrupt or truncated, the .lzma
      *                          headers specify sizes that are not supported
      *                          by this implementation, or the underlying
-     *                          <code>inputStream</code> throws an exception
+     *                          {@code inputStream} throws an exception
      *
      * @since 1.14
      */

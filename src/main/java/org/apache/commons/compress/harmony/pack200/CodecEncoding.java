@@ -76,7 +76,7 @@ public class CodecEncoding {
      * @param value the canonical encoding value
      * @param in the input stream to read additional byte headers from
      * @param defaultCodec TODO
-     * @return the corresponding codec, or <code>null</code> if the default should be used
+     * @return the corresponding codec, or {@code null} if the default should be used
      *
      * @throws IOException if there is a problem reading from the input stream (which in reality, is never, since the
      *         band_headers are likely stored in a byte array and accessed via a ByteArrayInputStream. However, an

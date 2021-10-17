@@ -21,7 +21,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Label;
 
 /**
- * NewAttribute extends <code>Attribute</code> and manages unknown attributes encountered by ASM that have had a layout
+ * NewAttribute extends {@code Attribute} and manages unknown attributes encountered by ASM that have had a layout
  * definition given to pack200 (e.g. via one of the -C, -M, -F or -D command line options)
  */
 public class NewAttribute extends Attribute {
@@ -145,7 +145,7 @@ public class NewAttribute extends Attribute {
     }
 
     /**
-     * ErrorAttribute extends <code>NewAttribute</code> and manages attributes encountered by ASM that have had an error
+     * ErrorAttribute extends {@code NewAttribute} and manages attributes encountered by ASM that have had an error
      * action specified to pack200 (e.g. via one of the -C, -M, -F or -D command line options such as
      * -Cattribute-name=error)
      */
@@ -164,7 +164,7 @@ public class NewAttribute extends Attribute {
     }
 
     /**
-     * StripAttribute extends <code>NewAttribute</code> and manages attributes encountered by ASM that have had an strip
+     * StripAttribute extends {@code NewAttribute} and manages attributes encountered by ASM that have had an strip
      * action specified to pack200 (e.g. via one of the -C, -M, -F or -D command line options such as
      * -Cattribute-name=strip)
      */
@@ -183,7 +183,7 @@ public class NewAttribute extends Attribute {
     }
 
     /**
-     * PassAttribute extends <code>NewAttribute</code> and manages attributes encountered by ASM that have had an pass
+     * PassAttribute extends {@code NewAttribute} and manages attributes encountered by ASM that have had an pass
      * action specified to pack200 (e.g. via one of the -C, -M, -F or -D command line options such as
      * -Cattribute-name=pass)
      */

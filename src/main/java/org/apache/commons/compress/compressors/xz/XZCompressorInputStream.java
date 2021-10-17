@@ -73,7 +73,7 @@ public class XZCompressorInputStream extends CompressorInputStream
      *                          the input is corrupt or truncated, the .xz
      *                          headers specify options that are not supported
      *                          by this implementation, or the underlying
-     *                          <code>inputStream</code> throws an exception
+     *                          {@code inputStream} throws an exception
      */
     public XZCompressorInputStream(final InputStream inputStream)
             throws IOException {
@@ -95,7 +95,7 @@ public class XZCompressorInputStream extends CompressorInputStream
      *                          the input is corrupt or truncated, the .xz
      *                          headers specify options that are not supported
      *                          by this implementation, or the underlying
-     *                          <code>inputStream</code> throws an exception
+     *                          {@code inputStream} throws an exception
      */
     public XZCompressorInputStream(final InputStream inputStream,
                                    final boolean decompressConcatenated)
@@ -121,7 +121,7 @@ public class XZCompressorInputStream extends CompressorInputStream
      *                          the input is corrupt or truncated, the .xz
      *                          headers specify options that are not supported
      *                          by this implementation,
-     *                          or the underlying <code>inputStream</code> throws an exception
+     *                          or the underlying {@code inputStream} throws an exception
      *
      * @since 1.14
      */

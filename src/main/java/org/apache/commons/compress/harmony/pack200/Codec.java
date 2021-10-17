@@ -134,12 +134,12 @@ public abstract class Codec {
     public abstract int decode(InputStream in, long last) throws IOException, Pack200Exception;
 
     /**
-     * Decodes a sequence of <code>n</code> values from <code>in</code>. This should probably be used in most cases,
+     * Decodes a sequence of {@code n} values from {@code in}. This should probably be used in most cases,
      * since some codecs (such as {@link PopulationCodec}) only work when the number of values to be read is known.
      *
      * @param n the number of values to decode
      * @param in the input stream to read from
-     * @return an array of <code>int</code> values corresponding to values decoded
+     * @return an array of {@code int} values corresponding to values decoded
      * @throws IOException if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
@@ -154,12 +154,12 @@ public abstract class Codec {
     }
 
     /**
-     * Decodes a sequence of <code>n</code> values from <code>in</code>.
+     * Decodes a sequence of {@code n} values from {@code in}.
      *
      * @param n the number of values to decode
      * @param in the input stream to read from
      * @param firstValue the first value in the band if it has already been read
-     * @return an array of <code>int</code> values corresponding to values decoded, with firstValue as the first value
+     * @return an array of {@code int} values corresponding to values decoded, with firstValue as the first value
      *         in the array.
      * @throws IOException if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid

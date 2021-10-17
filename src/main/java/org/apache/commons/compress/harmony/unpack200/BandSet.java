@@ -61,13 +61,13 @@ public abstract class BandSet {
     }
 
     /**
-     * Decode a band and return an array of <code>int</code> values
+     * Decode a band and return an array of {@code int} values
      *
      * @param name the name of the band (primarily for logging/debugging purposes)
      * @param in the InputStream to decode from
      * @param codec the default Codec for this band
      * @param count the number of elements to read
-     * @return an array of decoded <code>int</code> values
+     * @return an array of decoded {@code int} values
      * @throws IOException if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
@@ -127,13 +127,13 @@ public abstract class BandSet {
     }
 
     /**
-     * Decode a band and return an array of <code>int[]</code> values
+     * Decode a band and return an array of {@code int[]} values
      *
      * @param name the name of the band (primarily for logging/debugging purposes)
      * @param in the InputStream to decode from
      * @param defaultCodec the default codec for this band
      * @param counts the numbers of elements to read for each int array within the array to be returned
-     * @return an array of decoded <code>int[]</code> values
+     * @return an array of decoded {@code int[]} values
      * @throws IOException if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
@@ -207,8 +207,8 @@ public abstract class BandSet {
     }
 
     /**
-     * Parses <i>count</i> references from <code>in</code>, using <code>codec</code> to decode the values as indexes
-     * into <code>reference</code> (which is populated prior to this call). An exception is thrown if a decoded index
+     * Parses <i>count</i> references from {@code in}, using {@code codec} to decode the values as indexes
+     * into {@code reference} (which is populated prior to this call). An exception is thrown if a decoded index
      * falls outside the range [0..reference.length-1].
      *
      * @param name the band name
@@ -227,8 +227,8 @@ public abstract class BandSet {
     }
 
     /**
-     * Parses <i>count</i> references from <code>in</code>, using <code>codec</code> to decode the values as indexes
-     * into <code>reference</code> (which is populated prior to this call). An exception is thrown if a decoded index
+     * Parses <i>count</i> references from {@code in}, using {@code codec} to decode the values as indexes
+     * into {@code reference} (which is populated prior to this call). An exception is thrown if a decoded index
      * falls outside the range [0..reference.length-1]. Unlike the other parseReferences, this post-processes the result
      * into an array of results.
      *

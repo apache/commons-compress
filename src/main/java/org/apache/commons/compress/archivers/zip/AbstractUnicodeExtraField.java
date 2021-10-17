@@ -43,9 +43,9 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
      * @param bytes The encoded of the file name or comment in the zip
      * file.
      * @param off The offset of the encoded file name or comment in
-     * <code>bytes</code>.
+     * {@code bytes}.
      * @param len The length of the encoded file name or comment in
-     * <code>bytes</code>.
+     * {@code bytes}.
      */
     protected AbstractUnicodeExtraField(final String text, final byte[] bytes, final int off, final int len) {
         final CRC32 crc32 = new CRC32();

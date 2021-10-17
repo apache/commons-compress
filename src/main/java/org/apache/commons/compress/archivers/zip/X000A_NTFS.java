@@ -87,7 +87,7 @@ public class X000A_NTFS implements ZipExtraField {
      * Length of the extra field in the local file data - without
      * Header-ID or length specifier.
      *
-     * @return a <code>ZipShort</code> for the length of the data of this extra field
+     * @return a {@code ZipShort} for the length of the data of this extra field
      */
     @Override
     public ZipShort getLocalFileDataLength() {
@@ -105,7 +105,7 @@ public class X000A_NTFS implements ZipExtraField {
      * local length, because central cannot contain access or create
      * timestamps.</p>
      *
-     * @return a <code>ZipShort</code> for the length of the data of this extra field
+     * @return a {@code ZipShort} for the length of the data of this extra field
      */
     @Override
     public ZipShort getCentralDirectoryLength() {

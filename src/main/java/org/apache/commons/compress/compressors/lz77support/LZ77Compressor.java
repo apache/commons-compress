@@ -27,9 +27,9 @@ import java.util.Objects;
  *
  * <p>Most LZ77 derived algorithms split input data into blocks of
  * uncompressed data (called literal blocks) and back-references
- * (pairs of offsets and lengths) that state "add <code>length</code>
+ * (pairs of offsets and lengths) that state "add {@code length}
  * bytes that are the same as those already written starting
- * <code>offset</code> bytes before the current position. The details
+ * {@code offset} bytes before the current position. The details
  * of how those blocks and back-references are encoded are quite
  * different between the algorithms and some algorithms perform
  * additional steps (Huffman encoding in the case of DEFLATE for
@@ -47,7 +47,7 @@ import java.util.Objects;
  * talk about it :-), LZSS would likely be closer to the truth but
  * LZ77 has become the synonym for a whole family of algorithms.</p>
  *
- * <p>The API consists of a compressor that is fed <code>byte</code>s
+ * <p>The API consists of a compressor that is fed {@code byte}s
  * and emits {@link Block}s to a registered callback where the blocks
  * represent either {@link LiteralBlock literal blocks}, {@link
  * BackReference back-references} or {@link EOD end of data
@@ -58,24 +58,24 @@ import java.util.Objects;
  * <p>Several parameters influence the outcome of the "compression":</p>
  * <dl>
  *
- *  <dt><code>windowSize</code></dt> <dd>the size of the sliding
+ *  <dt>{@code windowSize}</dt> <dd>the size of the sliding
  *  window, must be a power of two - this determines the maximum
  *  offset a back-reference can take. The compressor maintains a
- *  buffer of twice of <code>windowSize</code> - real world values are
+ *  buffer of twice of {@code windowSize} - real world values are
  *  in the area of 32k.</dd>
  *
- *  <dt><code>minBackReferenceLength</code></dt>
+ *  <dt>{@code minBackReferenceLength}</dt>
  *  <dd>Minimal length of a back-reference found. A true minimum of 3 is
  *  hard-coded inside of this implementation but bigger lengths can be
  *  configured.</dd>
  *
- *  <dt><code>maxBackReferenceLength</code></dt>
+ *  <dt>{@code maxBackReferenceLength}</dt>
  *  <dd>Maximal length of a back-reference found.</dd>
  *
- *  <dt><code>maxOffset</code></dt>
+ *  <dt>{@code maxOffset}</dt>
  *  <dd>Maximal offset of a back-reference.</dd>
  *
- *  <dt><code>maxLiteralLength</code></dt>
+ *  <dt>{@code maxLiteralLength}</dt>
  *  <dd>Maximal length of a literal block.</dd>
  * </dl>
  *
@@ -253,7 +253,7 @@ public class LZ77Compressor {
      * Initializes a compressor with parameters and a callback.
      * @param params the parameters
      * @param callback the callback
-     * @throws NullPointerException if either parameter is <code>null</code>
+     * @throws NullPointerException if either parameter is {@code null}
      */
     public LZ77Compressor(final Parameters params, final Callback callback) {
         Objects.requireNonNull(params, "params");
@@ -458,7 +458,7 @@ public class LZ77Compressor {
      * Inserts the current three byte sequence into the dictionary and
      * returns the previous head of the hash-chain.
      *
-     * <p>Updates <code>insertHash</code> and <code>prev</code> as a
+     * <p>Updates {@code insertHash} and {@code prev} as a
      * side effect.</p>
      */
     private int insertString(final int pos) {

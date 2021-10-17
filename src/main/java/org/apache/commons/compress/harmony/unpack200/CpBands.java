@@ -162,7 +162,7 @@ public class CpBands extends BandSet {
      * Parses the constant pool descriptor definitions, using {@link #cpDescriptorCount} to populate
      * {@link #cpDescriptor}. For ease of use, the cpDescriptor is stored as a string of the form <i>name:type</i>,
      * largely to make it easier for representing field and method descriptors (e.g.
-     * <code>out:java.lang.PrintStream</code>) in a way that is compatible with passing String arrays.
+     * {@code out:java.lang.PrintStream}) in a way that is compatible with passing String arrays.
      *
      * @param in the input stream to read from
      * @throws IOException if a problem occurs during reading from the underlying stream
@@ -274,9 +274,9 @@ public class CpBands extends BandSet {
      * Parses the constant pool signature classes, using {@link #cpSignatureCount} to populate {@link #cpSignature}. A
      * signature form is akin to the bytecode representation of a class; Z for boolean, I for int, [ for array etc.
      * However, although classes are started with L, the classname does not follow the form; instead, there is a
-     * separate array of classes. So an array corresponding to <code>public static void main(String args[])</code> has a
-     * form of <code>[L(V)</code> and a classes array of <code>[java.lang.String]</code>. The {@link #cpSignature} is a
-     * string representation identical to the bytecode equivalent <code>[Ljava/lang/String;(V)</code> TODO Check that
+     * separate array of classes. So an array corresponding to {@code public static void main(String args[])} has a
+     * form of {@code [L(V)} and a classes array of {@code [java.lang.String]}. The {@link #cpSignature} is a
+     * string representation identical to the bytecode equivalent {@code [Ljava/lang/String;(V)} TODO Check that
      * the form is as above and update other types e.g. J
      *
      * @param in the input stream to read from

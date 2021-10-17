@@ -246,13 +246,13 @@ public class TarArchiveInputStream extends ArchiveInputStream {
 
 
     /**
-     * Skips over and discards <code>n</code> bytes of data from this input
-     * stream. The <code>skip</code> method may, for a variety of reasons, end
-     * up skipping over some smaller number of bytes, possibly <code>0</code>.
+     * Skips over and discards {@code n} bytes of data from this input
+     * stream. The {@code skip} method may, for a variety of reasons, end
+     * up skipping over some smaller number of bytes, possibly {@code 0}.
      * This may result from any of a number of conditions; reaching end of file
-     * or end of entry before <code>n</code> bytes have been skipped; are only
+     * or end of entry before {@code n} bytes have been skipped; are only
      * two possibilities. The actual number of bytes skipped is returned. If
-     * <code>n</code> is negative, no bytes are skipped.
+     * {@code n} is negative, no bytes are skipped.
      *
      *
      * @param n

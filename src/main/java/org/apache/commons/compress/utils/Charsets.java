@@ -33,17 +33,17 @@ import java.nio.charset.StandardCharsets;
  * </p>
  *
  * <dl>
- * <dt><code>US-ASCII</code></dt>
+ * <dt>{@code US-ASCII}</dt>
  * <dd>Seven-bit ASCII, a.k.a. ISO646-US, a.k.a. the Basic Latin block of the Unicode character set.</dd>
- * <dt><code>ISO-8859-1</code></dt>
+ * <dt>{@code ISO-8859-1}</dt>
  * <dd>ISO Latin Alphabet No. 1, a.k.a. ISO-LATIN-1.</dd>
- * <dt><code>UTF-8</code></dt>
+ * <dt>{@code UTF-8}</dt>
  * <dd>Eight-bit Unicode Transformation Format.</dd>
- * <dt><code>UTF-16BE</code></dt>
+ * <dt>{@code UTF-16BE}</dt>
  * <dd>Sixteen-bit Unicode Transformation Format, big-endian byte order.</dd>
- * <dt><code>UTF-16LE</code></dt>
+ * <dt>{@code UTF-16LE}</dt>
  * <dd>Sixteen-bit Unicode Transformation Format, little-endian byte order.</dd>
- * <dt><code>UTF-16</code></dt>
+ * <dt>{@code UTF-16}</dt>
  * <dd>Sixteen-bit Unicode Transformation Format, byte order specified by a mandatory initial byte-order mark (either order
  * accepted on input, big-endian used on output.)</dd>
  * </dl>
