@@ -75,6 +75,9 @@ The <action> type attribute can be add,update,fix,remove.
         avoid reading more from a channel than asked for.
         Github Pull Request #214.
       </action>
+      <action type="update" dev="ggregory" due-to="Dependabot">
+        Bump maven-javadoc-plugin from 3.3.0 to 3.3.1 #221.
+      </action>
     </release>
     <release version="1.21" date="2021-07-12"
              description="Release 1.21 (Java 8)
