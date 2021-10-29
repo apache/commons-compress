@@ -489,6 +489,11 @@ you relied on the recovery attempt.">
         files containing LZMA streams with end marker.
         Github Pull Request #223.
       </action>
+      <action issue="COMPRESS-592" type="fix" date="2021-10-29"
+              dev="Peter Lee" due-to="Roland Kreuzer">
+        Use LinkedHashMap for fileMap in SevenZFile.readFilesInfo,
+        as it will be read in specific order.
+      </action>
     </release>
     <release version="1.20" date="2020-02-08"
              description="Release 1.20 (Java 7)">

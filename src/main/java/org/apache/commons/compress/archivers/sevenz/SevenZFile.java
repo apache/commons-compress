@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -1367,7 +1368,7 @@ public class SevenZFile implements Closeable {
 
     private void readFilesInfo(final ByteBuffer header, final Archive archive) throws IOException {
         final int numFilesInt = (int) readUint64(header);
-        final Map<Integer, SevenZArchiveEntry> fileMap = new HashMap<>();
+        final Map<Integer, SevenZArchiveEntry> fileMap = new LinkedHashMap<>();
         BitSet isEmptyStream = null;
         BitSet isEmptyFile = null;
         BitSet isAnti = null;

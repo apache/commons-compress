@@ -766,7 +766,22 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
-    private void test7zUnarchive(final File f, final SevenZMethod m, final byte[] password) throws Exception {
+    @Test
+    public void readBigSevenZipFile() throws IOException {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-592.7z"))) {
+            SevenZArchiveEntry entry = sevenZFile.getNextEntry();
+            while (entry != null) {
+                if (entry.hasStream()) {
+                    byte[] content = new byte[(int) entry.getSize()];
+                    sevenZFile.read(content);
+                }
+                entry = sevenZFile.getNextEntry();
+            }
+        }
+    }
+
+
+        private void test7zUnarchive(final File f, final SevenZMethod m, final byte[] password) throws Exception {
         try (SevenZFile sevenZFile = new SevenZFile(f, password)) {
             test7zUnarchive(sevenZFile, m);
         }
