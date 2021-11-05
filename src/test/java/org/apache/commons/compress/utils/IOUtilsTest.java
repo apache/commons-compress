@@ -27,8 +27,6 @@ import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 
-import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -145,6 +143,41 @@ public class IOUtilsTest {
             Assert.assertArrayEquals(new byte[] { 1, 2, 3 }, read);
             final ByteBuffer b = ByteBuffer.allocate(1);
             Assert.assertEquals(1, in.read(b));
+            Assert.assertArrayEquals(new byte[] { 4 }, b.array());
+        }
+    }
+
+    @Test
+    public void readRangeFromChannelHandlesPartialRead() throws IOException {
+        byte[] bytes = {1, 2, 3, 4, 5};
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        try (ReadableByteChannel in = new ReadableByteChannel() {
+            @Override
+            public int read(ByteBuffer dst) throws IOException {
+                if (! byteBuffer.hasRemaining()) return -1;
+                int wanted = dst.remaining();
+                for (int bytesReadSoFar = 1; bytesReadSoFar <= wanted ; bytesReadSoFar++) {
+                    byte currentByte = byteBuffer.get();
+                    dst.put(currentByte);
+                    if (currentByte == 2) return bytesReadSoFar; // simulate one partial read
+                }
+                return wanted;
+            }
+
+            @Override
+            public boolean isOpen() {
+                throw new UnsupportedOperationException("not called");
+            }
+
+            @Override
+            public void close() {}
+        }) {
+            byte[] read = IOUtils.readRange(in, 3);
+            Assert.assertEquals(2, byteBuffer.remaining());
+            Assert.assertArrayEquals(new byte[] { 1, 2, 3 }, read);
+            final ByteBuffer b = ByteBuffer.allocate(1);
+            Assert.assertEquals(1, in.read(b));
+            Assert.assertEquals(1, byteBuffer.remaining());
             Assert.assertArrayEquals(new byte[] { 4 }, b.array());
         }
     }
