@@ -50,6 +50,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">
         Close File input stream after unpacking in Pack200UnpackerAdapter.unpack(File, JarOutputStream).
       </action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">
+        Pack200UnpackerAdapter.unpack(InputStream, JarOutputStream) should not close its given input stream.
+      </action>
       <!-- ADD -->
         <!-- none yet -->
       <!-- UPDATE -->

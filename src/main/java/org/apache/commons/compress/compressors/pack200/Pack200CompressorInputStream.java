@@ -178,9 +178,11 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
                 u.properties().putAll(props);
             }
             if (f == null) {
-                // unpack would close this stream but we
-                // want to give the user code more control
-                u.unpack(new CloseShieldFilterInputStream(in), jarOut);
+                // unpack would close this stream but we want to give the call site more control
+                // TODO unpack should not close its given stream.
+                try (final CloseShieldFilterInputStream closeShield = new CloseShieldFilterInputStream(in)) {
+                    u.unpack(closeShield, jarOut);
+                }
             } else {
                 u.unpack(f, jarOut);
             }

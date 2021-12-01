@@ -52,7 +52,6 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
             throw new IOException("Failed to unpack Jar:" + e);
         }
         completed(1);
-        in.close();
     }
 
     /*
