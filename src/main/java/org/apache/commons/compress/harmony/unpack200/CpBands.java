@@ -87,8 +87,8 @@ public class CpBands extends BandSet {
     private Map mapDescriptor;
     private Map<String, Integer> mapUTF8;
 
-// TODO: Not used
-    private Map mapSignature;
+    // TODO: Not used
+    private Map<String, Integer> mapSignature;
 
     private int intOffset;
     private int floatOffset;
@@ -288,7 +288,7 @@ public class CpBands extends BandSet {
         cpSignatureInts = decodeBandInt("cp_Signature_form", in, Codec.DELTA5, cpSignatureCount);
         final String[] cpSignatureForm = getReferences(cpSignatureInts, cpUTF8);
         cpSignature = new String[cpSignatureCount];
-        mapSignature = new HashMap();
+        mapSignature = new HashMap<>();
         int lCount = 0;
         for (int i = 0; i < cpSignatureCount; i++) {
             final String form = cpSignatureForm[i];
@@ -470,7 +470,7 @@ public class CpBands extends BandSet {
                 return cpUTF8Value(index.intValue());
             }
             if (searchForIndex) {
-                index = (Integer) mapSignature.get(string);
+                index = mapSignature.get(string);
             }
             if (index != null) {
                 return cpSignatureValue(index.intValue());
