@@ -42,7 +42,7 @@ public final class XZTestCase extends AbstractTestCase {
         try (OutputStream out = Files.newOutputStream(output.toPath())) {
             try (CompressorOutputStream cos = new CompressorStreamFactory()
                     .createCompressorOutputStream("xz", out)) {
-                IOUtils.copy(Files.newInputStream(input.toPath()), cos);
+                Files.copy(input.toPath(), cos);
             }
         }
     }
