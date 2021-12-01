@@ -68,12 +68,10 @@ public final class Pack200TestCase extends AbstractTestCase {
     private void jarUnarchiveAll(final boolean useFile, final Pack200Strategy mode)
         throws Exception {
         final File input = getFile("bla.pack");
-        try (InputStream is = useFile
-                ? new Pack200CompressorInputStream(input, mode)
-                : new Pack200CompressorInputStream(Files.newInputStream(input.toPath()),
-                mode)) {
-            final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT
-                    .createArchiveInputStream("jar", is);
+        try (
+            InputStream is = useFile ? new Pack200CompressorInputStream(input, mode)
+                : new Pack200CompressorInputStream(Files.newInputStream(input.toPath()), mode);
+            ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
 
             ArchiveEntry entry = in.getNextEntry();
             while (entry != null) {
@@ -84,13 +82,9 @@ public final class Pack200TestCase extends AbstractTestCase {
                     entry = in.getNextEntry();
                     continue;
                 }
-                final OutputStream out = Files.newOutputStream(archiveEntry.toPath());
-                IOUtils.copy(in, out);
-                out.close();
+                Files.copy(in, archiveEntry.toPath());
                 entry = in.getNextEntry();
             }
-
-            in.close();
         }
     }
 
@@ -110,10 +104,8 @@ public final class Pack200TestCase extends AbstractTestCase {
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
 
-        try (OutputStream out = new Pack200CompressorOutputStream(Files.newOutputStream(output.toPath()),
-                mode)) {
-            final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT
-                    .createArchiveOutputStream("jar", out);
+        try (OutputStream out = new Pack200CompressorOutputStream(Files.newOutputStream(output.toPath()), mode);
+             ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("jar", out)) {
 
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
             IOUtils.copy(Files.newInputStream(file1.toPath()), os);
@@ -122,18 +114,14 @@ public final class Pack200TestCase extends AbstractTestCase {
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
             IOUtils.copy(Files.newInputStream(file2.toPath()), os);
             os.closeArchiveEntry();
-
-            os.close();
         }
 
-        try (InputStream is = new Pack200CompressorInputStream(output)) {
-            final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT
-                    .createArchiveInputStream("jar", is);
+        try (InputStream is = new Pack200CompressorInputStream(output);
+            final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
             final List<String> files = new ArrayList<>();
             files.add("testdata/test1.xml");
             files.add("testdata/test2.xml");
             checkArchiveContent(in, files);
-            in.close();
         }
     }
 
@@ -192,11 +180,10 @@ public final class Pack200TestCase extends AbstractTestCase {
         final File output = new File(dir, "bla.pack");
         final Map<String, String> m = new HashMap<>();
         m.put("foo", "bar");
-        try (OutputStream out = Files.newOutputStream(output.toPath())) {
-            final OutputStream os = new Pack200CompressorOutputStream(out, m);
+        try (OutputStream out = Files.newOutputStream(output.toPath());
+             OutputStream os = new Pack200CompressorOutputStream(out, m)) {
             os.write(1);
-            os.write(new byte[] { 2, 3 });
-            os.close();
+            os.write(new byte[] {2, 3});
         }
     }
 
