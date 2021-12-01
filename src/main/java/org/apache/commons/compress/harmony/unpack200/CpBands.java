@@ -85,7 +85,7 @@ public class CpBands extends BandSet {
 
     private Map mapClass;
     private Map mapDescriptor;
-    private Map mapUTF8;
+    private Map<String, Integer> mapUTF8;
 
 // TODO: Not used
     private Map mapSignature;
@@ -347,7 +347,7 @@ public class CpBands extends BandSet {
     private void parseCpUtf8(final InputStream in) throws IOException, Pack200Exception {
         final int cpUTF8Count = header.getCpUTF8Count();
         cpUTF8 = new String[cpUTF8Count];
-        mapUTF8 = new HashMap(cpUTF8Count + 1);
+        mapUTF8 = new HashMap<>(cpUTF8Count + 1);
         cpUTF8[0] = ""; //$NON-NLS-1$
         mapUTF8.put("", Integer.valueOf(0));
         final int[] prefix = decodeBandInt("cpUTF8Prefix", in, Codec.DELTA5, cpUTF8Count - 2);
@@ -464,7 +464,7 @@ public class CpBands extends BandSet {
         if (cputf8 == null) {
             Integer index = null;
             if (searchForIndex) {
-                index = (Integer) mapUTF8.get(string);
+                index = mapUTF8.get(string);
             }
             if (index != null) {
                 return cpUTF8Value(index.intValue());
