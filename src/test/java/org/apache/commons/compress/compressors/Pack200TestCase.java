@@ -108,11 +108,15 @@ public final class Pack200TestCase extends AbstractTestCase {
              ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("jar", out)) {
 
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
-            IOUtils.copy(Files.newInputStream(file1.toPath()), os);
+            try (InputStream inputStream = Files.newInputStream(file1.toPath())) {
+                IOUtils.copy(inputStream, os);
+            }
             os.closeArchiveEntry();
 
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
-            IOUtils.copy(Files.newInputStream(file2.toPath()), os);
+            try (InputStream inputStream = Files.newInputStream(file2.toPath())) {
+                IOUtils.copy(inputStream, os);
+            }
             os.closeArchiveEntry();
         }
 
