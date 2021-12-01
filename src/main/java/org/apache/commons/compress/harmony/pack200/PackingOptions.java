@@ -37,7 +37,7 @@ public class PackingOptions {
     private boolean gzip = true;
     private boolean stripDebug = false;
     private boolean keepFileOrder = true;
-    private long segmentLimit = 1000000L;
+    private long segmentLimit = 1_000_000L;
     private int effort = 5;
     private String deflateHint = KEEP;
     private String modificationTime = KEEP;
