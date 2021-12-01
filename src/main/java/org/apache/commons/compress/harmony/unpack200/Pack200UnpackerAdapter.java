@@ -66,7 +66,7 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
             throw new IllegalArgumentException("Must specify both input and output streams");
         }
         final int size = (int) file.length();
-        final int bufferSize = (size > 0 && size < DEFAULT_BUFFER_SIZE ? size : DEFAULT_BUFFER_SIZE);
+        final int bufferSize = size > 0 && size < DEFAULT_BUFFER_SIZE ? size : DEFAULT_BUFFER_SIZE;
         final InputStream in = new BufferedInputStream(new FileInputStream(file), bufferSize);
         unpack(in, out);
     }
