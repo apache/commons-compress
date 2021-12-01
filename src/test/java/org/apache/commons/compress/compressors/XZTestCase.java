@@ -34,14 +34,13 @@ import org.junit.Test;
 public final class XZTestCase extends AbstractTestCase {
 
     @Test
-    public void testXZCreation()  throws Exception {
+    public void testXZCreation() throws Exception {
         final long max = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax();
-        System.out.println("XZTestCase: HeapMax="+max+" bytes "+(double)max/(1024*1024)+" MB");
+        System.out.println("XZTestCase: HeapMax=" + max + " bytes " + (double) max / (1024 * 1024) + " MB");
         final File input = getFile("test1.xml");
         final File output = new File(dir, "test1.xml.xz");
         try (OutputStream out = Files.newOutputStream(output.toPath())) {
-            try (CompressorOutputStream cos = new CompressorStreamFactory()
-                    .createCompressorOutputStream("xz", out)) {
+            try (CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("xz", out)) {
                 Files.copy(input.toPath(), cos);
             }
         }
@@ -52,9 +51,8 @@ public final class XZTestCase extends AbstractTestCase {
         final File input = getFile("bla.tar.xz");
         final File output = new File(dir, "bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
-            try (CompressorInputStream in = new CompressorStreamFactory()
-                    .createCompressorInputStream("xz", is);
-                    OutputStream out = Files.newOutputStream(output.toPath())) {
+            try (CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("xz", is);
+                OutputStream out = Files.newOutputStream(output.toPath())) {
                 IOUtils.copy(in, out);
             }
         }
@@ -64,8 +62,7 @@ public final class XZTestCase extends AbstractTestCase {
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {
         final File input = getFile("multiple.xz");
         try (InputStream is = Files.newInputStream(input.toPath())) {
-            try (CompressorInputStream in = new CompressorStreamFactory()
-                    .createCompressorInputStream("xz", is)) {
+            try (CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("xz", is)) {
                 assertEquals('a', in.read());
                 assertEquals(-1, in.read());
             }
