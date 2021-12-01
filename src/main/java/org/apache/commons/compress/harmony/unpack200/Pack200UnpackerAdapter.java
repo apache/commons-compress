@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.jar.JarOutputStream;
 
 import org.apache.commons.compress.harmony.pack200.Pack200Adapter;
@@ -67,7 +68,8 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
         }
         final int size = (int) file.length();
         final int bufferSize = size > 0 && size < DEFAULT_BUFFER_SIZE ? size : DEFAULT_BUFFER_SIZE;
-        final InputStream in = new BufferedInputStream(new FileInputStream(file), bufferSize);
-        unpack(in, out);
+        try (final InputStream in = new BufferedInputStream(Files.newInputStream(file.toPath()), bufferSize)) {
+            unpack(in, out);
+        }
     }
 }

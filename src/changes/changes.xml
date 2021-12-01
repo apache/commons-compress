@@ -47,6 +47,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">
         Fix some compiler warnings in pack200 packages.
       </action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">
+        Close File input stream after unpacking in Pack200UnpackerAdapter.unpack(File, JarOutputStream).
+      </action>
       <!-- ADD -->
         <!-- none yet -->
       <!-- UPDATE -->
