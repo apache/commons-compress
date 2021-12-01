@@ -318,7 +318,7 @@ public final class BHSDCodec extends Codec {
             throw new Pack200Exception("unable to encode");
         }
 
-        final List byteList = new ArrayList();
+        final List<Byte> byteList = new ArrayList<>();
         for (int n = 0; n < b; n++) {
             long byteN;
             if (z < l) {
@@ -338,7 +338,7 @@ public final class BHSDCodec extends Codec {
         }
         final byte[] bytes = new byte[byteList.size()];
         for (int i = 0; i < bytes.length; i++) {
-            bytes[i] = ((Byte) byteList.get(i)).byteValue();
+            bytes[i] = byteList.get(i).byteValue();
         }
         return bytes;
     }
