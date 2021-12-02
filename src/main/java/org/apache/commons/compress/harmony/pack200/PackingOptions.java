@@ -41,12 +41,12 @@ public class PackingOptions {
     private int effort = 5;
     private String deflateHint = KEEP;
     private String modificationTime = KEEP;
-    private List passFiles;
+    private List<String> passFiles;
     private String unknownAttributeAction = PASS;
-    private Map classAttributeActions;
-    private Map fieldAttributeActions;
-    private Map methodAttributeActions;
-    private Map codeAttributeActions;
+    private Map<String, String> classAttributeActions;
+    private Map<String, String> fieldAttributeActions;
+    private Map<String, String> methodAttributeActions;
+    private Map<String, String> codeAttributeActions;
     private boolean verbose = false;
     private String logFile;
 
@@ -139,8 +139,7 @@ public class PackingOptions {
 
     public boolean isPassFile(final String passFileName) {
         if (passFiles != null) {
-            for (Object passFile : passFiles) {
-                String pass = (String) passFile;
+            for (String pass : passFiles) {
                 if (passFileName.equals(pass)) {
                     return true;
                 }
@@ -167,7 +166,7 @@ public class PackingOptions {
      */
     public void addPassFile(String passFileName) {
         if (passFiles == null) {
-            passFiles = new ArrayList();
+            passFiles = new ArrayList<>();
         }
         String fileSeparator = System.getProperty("file.separator");
         if (fileSeparator.equals("\\")) {
@@ -201,28 +200,28 @@ public class PackingOptions {
 
     public void addClassAttributeAction(final String attributeName, final String action) {
         if (classAttributeActions == null) {
-            classAttributeActions = new HashMap();
+            classAttributeActions = new HashMap<>();
         }
         classAttributeActions.put(attributeName, action);
     }
 
     public void addFieldAttributeAction(final String attributeName, final String action) {
         if (fieldAttributeActions == null) {
-            fieldAttributeActions = new HashMap();
+            fieldAttributeActions = new HashMap<>();
         }
         fieldAttributeActions.put(attributeName, action);
     }
 
     public void addMethodAttributeAction(final String attributeName, final String action) {
         if (methodAttributeActions == null) {
-            methodAttributeActions = new HashMap();
+            methodAttributeActions = new HashMap<>();
         }
         methodAttributeActions.put(attributeName, action);
     }
 
     public void addCodeAttributeAction(final String attributeName, final String action) {
         if (codeAttributeActions == null) {
-            codeAttributeActions = new HashMap();
+            codeAttributeActions = new HashMap<>();
         }
         codeAttributeActions.put(attributeName, action);
     }
@@ -247,15 +246,12 @@ public class PackingOptions {
         this.logFile = logFile;
     }
 
-    private void addOrUpdateAttributeActions(final List prototypes, final Map attributeActions, final int tag) {
+    private void addOrUpdateAttributeActions(final List<Attribute> prototypes, final Map<String, String> attributeActions, final int tag) {
         if ((attributeActions != null) && (attributeActions.size() > 0)) {
-            String name, action;
-            boolean prototypeExists;
             NewAttribute newAttribute;
-            for (Object element : attributeActions.keySet()) {
-                name = (String) element;
-                action = (String) attributeActions.get(name);
-                prototypeExists = false;
+            for (String name : attributeActions.keySet()) {
+                String action = attributeActions.get(name);
+                boolean prototypeExists = false;
                 for (Object prototype : prototypes) {
                     newAttribute = (NewAttribute) prototype;
                     if (newAttribute.type.equals(name)) {
@@ -284,16 +280,12 @@ public class PackingOptions {
 
     public Attribute[] getUnknownAttributePrototypes() {
         if (unknownAttributeTypes == null) {
-            final List prototypes = new ArrayList();
+            final List<Attribute> prototypes = new ArrayList<>();
             addOrUpdateAttributeActions(prototypes, classAttributeActions, AttributeDefinitionBands.CONTEXT_CLASS);
-
             addOrUpdateAttributeActions(prototypes, methodAttributeActions, AttributeDefinitionBands.CONTEXT_METHOD);
-
             addOrUpdateAttributeActions(prototypes, fieldAttributeActions, AttributeDefinitionBands.CONTEXT_FIELD);
-
             addOrUpdateAttributeActions(prototypes, codeAttributeActions, AttributeDefinitionBands.CONTEXT_CODE);
-
-            unknownAttributeTypes = (Attribute[]) prototypes.toArray(new Attribute[0]);
+            unknownAttributeTypes = prototypes.toArray(new Attribute[0]);
         }
         return unknownAttributeTypes;
     }
@@ -302,7 +294,7 @@ public class PackingOptions {
         if (classAttributeActions == null) {
             return unknownAttributeAction;
         }
-        String action = (String) classAttributeActions.get(type);
+        String action = classAttributeActions.get(type);
         if (action == null) {
             action = unknownAttributeAction;
         }
@@ -313,7 +305,7 @@ public class PackingOptions {
         if (methodAttributeActions == null) {
             return unknownAttributeAction;
         }
-        String action = (String) methodAttributeActions.get(type);
+        String action = methodAttributeActions.get(type);
         if (action == null) {
             action = unknownAttributeAction;
         }
@@ -324,7 +316,7 @@ public class PackingOptions {
         if (fieldAttributeActions == null) {
             return unknownAttributeAction;
         }
-        String action = (String) fieldAttributeActions.get(type);
+        String action = fieldAttributeActions.get(type);
         if (action == null) {
             action = unknownAttributeAction;
         }
@@ -335,7 +327,7 @@ public class PackingOptions {
         if (codeAttributeActions == null) {
             return unknownAttributeAction;
         }
-        String action = (String) codeAttributeActions.get(type);
+        String action = codeAttributeActions.get(type);
         if (action == null) {
             action = unknownAttributeAction;
         }
