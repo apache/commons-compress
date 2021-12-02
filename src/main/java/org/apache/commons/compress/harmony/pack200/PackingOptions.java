@@ -294,44 +294,28 @@ public class PackingOptions {
         if (classAttributeActions == null) {
             return unknownAttributeAction;
         }
-        String action = classAttributeActions.get(type);
-        if (action == null) {
-            action = unknownAttributeAction;
-        }
-        return action;
+        return classAttributeActions.getOrDefault(type, unknownAttributeAction);
     }
 
     public String getUnknownMethodAttributeAction(final String type) {
         if (methodAttributeActions == null) {
             return unknownAttributeAction;
         }
-        String action = methodAttributeActions.get(type);
-        if (action == null) {
-            action = unknownAttributeAction;
-        }
-        return action;
+        return methodAttributeActions.getOrDefault(type, unknownAttributeAction);
     }
 
     public String getUnknownFieldAttributeAction(final String type) {
         if (fieldAttributeActions == null) {
             return unknownAttributeAction;
         }
-        String action = fieldAttributeActions.get(type);
-        if (action == null) {
-            action = unknownAttributeAction;
-        }
-        return action;
+        return fieldAttributeActions.getOrDefault(type, unknownAttributeAction);
     }
 
     public String getUnknownCodeAttributeAction(final String type) {
         if (codeAttributeActions == null) {
             return unknownAttributeAction;
         }
-        String action = codeAttributeActions.get(type);
-        if (action == null) {
-            action = unknownAttributeAction;
-        }
-        return action;
+        return codeAttributeActions.getOrDefault(type, unknownAttributeAction);
     }
 
 }
