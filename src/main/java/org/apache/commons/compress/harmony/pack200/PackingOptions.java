@@ -43,10 +43,10 @@ public class PackingOptions {
     private String modificationTime = KEEP;
     private List<String> passFiles;
     private String unknownAttributeAction = PASS;
-    private Map<String, String> classAttributeActions;
-    private Map<String, String> fieldAttributeActions;
-    private Map<String, String> methodAttributeActions;
-    private Map<String, String> codeAttributeActions;
+    private final Map<String, String> classAttributeActions= new HashMap<>();
+    private final Map<String, String> fieldAttributeActions= new HashMap<>();
+    private final Map<String, String> methodAttributeActions= new HashMap<>();
+    private final Map<String, String> codeAttributeActions= new HashMap<>();
     private boolean verbose = false;
     private String logFile;
 
@@ -199,30 +199,18 @@ public class PackingOptions {
     }
 
     public void addClassAttributeAction(final String attributeName, final String action) {
-        if (classAttributeActions == null) {
-            classAttributeActions = new HashMap<>();
-        }
         classAttributeActions.put(attributeName, action);
     }
 
     public void addFieldAttributeAction(final String attributeName, final String action) {
-        if (fieldAttributeActions == null) {
-            fieldAttributeActions = new HashMap<>();
-        }
         fieldAttributeActions.put(attributeName, action);
     }
 
     public void addMethodAttributeAction(final String attributeName, final String action) {
-        if (methodAttributeActions == null) {
-            methodAttributeActions = new HashMap<>();
-        }
         methodAttributeActions.put(attributeName, action);
     }
 
     public void addCodeAttributeAction(final String attributeName, final String action) {
-        if (codeAttributeActions == null) {
-            codeAttributeActions = new HashMap<>();
-        }
         codeAttributeActions.put(attributeName, action);
     }
 
