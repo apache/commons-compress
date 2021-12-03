@@ -24,10 +24,11 @@ import java.util.Map;
 import org.objectweb.asm.Attribute;
 
 /**
- * Utility class to manage the various options available for pack200
+ * Utility class to manage the various options available for pack200.
  */
 public class PackingOptions {
 
+    public static final long SEGMENT_LIMIT = 1_000_000L;
     public static final String STRIP = "strip";
     public static final String ERROR = "error";
     public static final String PASS = "pass";
@@ -35,9 +36,9 @@ public class PackingOptions {
 
     // All options are initially set to their defaults
     private boolean gzip = true;
-    private boolean stripDebug = false;
+    private boolean stripDebug;
     private boolean keepFileOrder = true;
-    private long segmentLimit = 1_000_000L;
+    private long segmentLimit = SEGMENT_LIMIT;
     private int effort = 5;
     private String deflateHint = KEEP;
     private String modificationTime = KEEP;
@@ -47,7 +48,7 @@ public class PackingOptions {
     private final Map<String, String> fieldAttributeActions= new HashMap<>();
     private final Map<String, String> methodAttributeActions= new HashMap<>();
     private final Map<String, String> codeAttributeActions= new HashMap<>();
-    private boolean verbose = false;
+    private boolean verbose;
     private String logFile;
 
     private Attribute[] unknownAttributeTypes;
