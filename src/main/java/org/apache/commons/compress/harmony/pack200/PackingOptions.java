@@ -28,6 +28,7 @@ import org.objectweb.asm.Attribute;
  */
 public class PackingOptions {
 
+    private static final Attribute[] EMPTY_ATTRIBUTE_ARRAY = new Attribute[0];
     public static final long SEGMENT_LIMIT = 1_000_000L;
     public static final String STRIP = "strip";
     public static final String ERROR = "error";
@@ -44,10 +45,10 @@ public class PackingOptions {
     private String modificationTime = KEEP;
     private final List<String> passFiles = new ArrayList<>();
     private String unknownAttributeAction = PASS;
-    private final Map<String, String> classAttributeActions= new HashMap<>();
-    private final Map<String, String> fieldAttributeActions= new HashMap<>();
-    private final Map<String, String> methodAttributeActions= new HashMap<>();
-    private final Map<String, String> codeAttributeActions= new HashMap<>();
+    private final Map<String, String> classAttributeActions = new HashMap<>();
+    private final Map<String, String> fieldAttributeActions = new HashMap<>();
+    private final Map<String, String> methodAttributeActions = new HashMap<>();
+    private final Map<String, String> codeAttributeActions = new HashMap<>();
     private boolean verbose;
     private String logFile;
 
@@ -70,12 +71,12 @@ public class PackingOptions {
     }
 
     private void addOrUpdateAttributeActions(final List<Attribute> prototypes, final Map<String, String> attributeActions, final int tag) {
-        if ((attributeActions != null) && (attributeActions.size() > 0)) {
+        if (attributeActions != null && attributeActions.size() > 0) {
             NewAttribute newAttribute;
-            for (String name : attributeActions.keySet()) {
-                String action = attributeActions.get(name);
+            for (final String name : attributeActions.keySet()) {
+                final String action = attributeActions.get(name);
                 boolean prototypeExists = false;
-                for (Object prototype : prototypes) {
+                for (final Object prototype : prototypes) {
                     newAttribute = (NewAttribute) prototype;
                     if (newAttribute.type.equals(name)) {
                         // if the attribute exists, update its context
@@ -133,6 +134,10 @@ public class PackingOptions {
         return modificationTime;
     }
 
+    private String getOrDefault(final Map<String, String> map, final String type, final String defaultValue) {
+        return map == null ? defaultValue : map.getOrDefault(type, defaultValue);
+    }
+
     public long getSegmentLimit() {
         return segmentLimit;
     }
@@ -148,37 +153,25 @@ public class PackingOptions {
             addOrUpdateAttributeActions(prototypes, methodAttributeActions, AttributeDefinitionBands.CONTEXT_METHOD);
             addOrUpdateAttributeActions(prototypes, fieldAttributeActions, AttributeDefinitionBands.CONTEXT_FIELD);
             addOrUpdateAttributeActions(prototypes, codeAttributeActions, AttributeDefinitionBands.CONTEXT_CODE);
-            unknownAttributeTypes = prototypes.toArray(new Attribute[0]);
+            unknownAttributeTypes = prototypes.toArray(EMPTY_ATTRIBUTE_ARRAY);
         }
         return unknownAttributeTypes;
     }
 
     public String getUnknownClassAttributeAction(final String type) {
-        if (classAttributeActions == null) {
-            return unknownAttributeAction;
-        }
-        return classAttributeActions.getOrDefault(type, unknownAttributeAction);
+        return getOrDefault(classAttributeActions, type, unknownAttributeAction);
     }
 
     public String getUnknownCodeAttributeAction(final String type) {
-        if (codeAttributeActions == null) {
-            return unknownAttributeAction;
-        }
-        return codeAttributeActions.getOrDefault(type, unknownAttributeAction);
+        return getOrDefault(codeAttributeActions, type, unknownAttributeAction);
     }
 
     public String getUnknownFieldAttributeAction(final String type) {
-        if (fieldAttributeActions == null) {
-            return unknownAttributeAction;
-        }
-        return fieldAttributeActions.getOrDefault(type, unknownAttributeAction);
+        return getOrDefault(fieldAttributeActions, type, unknownAttributeAction);
     }
 
     public String getUnknownMethodAttributeAction(final String type) {
-        if (methodAttributeActions == null) {
-            return unknownAttributeAction;
-        }
-        return methodAttributeActions.getOrDefault(type, unknownAttributeAction);
+        return getOrDefault(methodAttributeActions, type, unknownAttributeAction);
     }
 
     public boolean isGzip() {
@@ -226,8 +219,7 @@ public class PackingOptions {
 
     public void setDeflateHint(final String deflateHint) {
         if (!KEEP.equals(deflateHint) && !"true".equals(deflateHint) && !"false".equals(deflateHint)) {
-            throw new IllegalArgumentException(
-                "Bad argument: -H " + deflateHint + " ? deflate hint should be either true, false or keep (default)");
+            throw new IllegalArgumentException("Bad argument: -H " + deflateHint + " ? deflate hint should be either true, false or keep (default)");
         }
         this.deflateHint = deflateHint;
     }
@@ -255,8 +247,7 @@ public class PackingOptions {
 
     public void setModificationTime(final String modificationTime) {
         if (!KEEP.equals(modificationTime) && !"latest".equals(modificationTime)) {
-            throw new IllegalArgumentException("Bad argument: -m " + modificationTime
-                + " ? transmit modtimes should be either latest or keep (default)");
+            throw new IllegalArgumentException("Bad argument: -m " + modificationTime + " ? transmit modtimes should be either latest or keep (default)");
         }
         this.modificationTime = modificationTime;
     }
@@ -266,7 +257,7 @@ public class PackingOptions {
     }
 
     /**
-     * Set the segment limit (equivalent to -S command line option)
+     * Sets the segment limit (equivalent to -S command line option)
      *
      * @param segmentLimit - the limit in bytes
      */
@@ -275,9 +266,9 @@ public class PackingOptions {
     }
 
     /**
-     * Set strip debug attributes. If true, all debug attributes (i.e. LineNumberTable, SourceFile, LocalVariableTable
-     * and LocalVariableTypeTable attributes) are stripped when reading the input class files and not included in the
-     * output archive.
+     * Sets strip debug attributes. If true, all debug attributes (i.e. LineNumberTable, SourceFile, LocalVariableTable and
+     * LocalVariableTypeTable attributes) are stripped when reading the input class files and not included in the output
+     * archive.
      *
      * @param stripDebug If true, all debug attributes.
      */
@@ -286,14 +277,13 @@ public class PackingOptions {
     }
 
     /**
-     * Tell the compressor what to do if an unknown attribute is encountered
+     * Sets the compressor behavior when an unknown attribute is encountered.
      *
      * @param unknownAttributeAction - the action to perform
      */
     public void setUnknownAttributeAction(final String unknownAttributeAction) {
         this.unknownAttributeAction = unknownAttributeAction;
-        if (!PASS.equals(unknownAttributeAction) && !ERROR.equals(unknownAttributeAction)
-            && !STRIP.equals(unknownAttributeAction)) {
+        if (!PASS.equals(unknownAttributeAction) && !ERROR.equals(unknownAttributeAction) && !STRIP.equals(unknownAttributeAction)) {
             throw new RuntimeException("Incorrect option for -U, " + unknownAttributeAction);
         }
     }
