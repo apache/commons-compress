@@ -42,7 +42,7 @@ public class PackingOptions {
     private int effort = 5;
     private String deflateHint = KEEP;
     private String modificationTime = KEEP;
-    private List<String> passFiles;
+    private final List<String> passFiles = new ArrayList<>();
     private String unknownAttributeAction = PASS;
     private final Map<String, String> classAttributeActions= new HashMap<>();
     private final Map<String, String> fieldAttributeActions= new HashMap<>();
@@ -139,21 +139,19 @@ public class PackingOptions {
     }
 
     public boolean isPassFile(final String passFileName) {
-        if (passFiles != null) {
-            for (String pass : passFiles) {
-                if (passFileName.equals(pass)) {
-                    return true;
+        for (String pass : passFiles) {
+            if (passFileName.equals(pass)) {
+                return true;
+            }
+            if (!pass.endsWith(".class")) { // a whole directory is
+                // passed
+                if (!pass.endsWith("/")) {
+                    // Make sure we don't get any false positives (e.g.
+                    // exclude "org/apache/harmony/pack" should not match
+                    // files under "org/apache/harmony/pack200/")
+                    pass = pass + "/";
                 }
-                if (!pass.endsWith(".class")) { // a whole directory is
-                    // passed
-                    if (!pass.endsWith("/")) {
-                        // Make sure we don't get any false positives (e.g.
-                        // exclude "org/apache/harmony/pack" should not match
-                        // files under "org/apache/harmony/pack200/")
-                        pass = pass + "/";
-                    }
-                    return passFileName.startsWith(pass);
-                }
+                return passFileName.startsWith(pass);
             }
         }
         return false;
@@ -166,9 +164,6 @@ public class PackingOptions {
      * @param passFileName the file name
      */
     public void addPassFile(String passFileName) {
-        if (passFiles == null) {
-            passFiles = new ArrayList<>();
-        }
         String fileSeparator = System.getProperty("file.separator");
         if (fileSeparator.equals("\\")) {
             // Need to escape backslashes for replaceAll(), which uses regex
