@@ -96,6 +96,10 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="kinow" due-to="Gary Gregory">
         Bump commons.japicmp.version from 0.15.3 to 0.15.4.
       </action>
+      <action issue="COMPRESS-596" type="fix" date="2021-12-07"
+              dev="Peter Lee" due-to="Tamas Mucs">
+        Fix minor problem in examples.
+      </action>
     </release>
     <release version="1.21" date="2021-07-12"
              description="Release 1.21 (Java 8)

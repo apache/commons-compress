@@ -275,7 +275,7 @@ try (ArchiveOutputStream o = ... create the stream for your format ...) {
         }
         o.closeArchiveEntry();
     }
-    out.finish();
+    o.finish();
 }
 ]]></source>
 
