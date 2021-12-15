@@ -66,7 +66,7 @@ The <action> type attribute can be add,update,fix,remove.
         Bump memoryfilesystem from 2.1.0 to 2.2.0 #212.
       </action>
       <action type="update" dev="ggregory" due-to="Dependabot">
-        Bump zstd-jni from 1.5.0-2 to 1.5.0-4 #215.
+        Bump zstd-jni from 1.5.0-2 to 1.5.0-5 #215, #233.
       </action>
       <action type="update" issue="COMPRESS-582" dev="ggregory" due-to="Alex Landau, Stephan, Gary Gregory">
         Bump Pack200 packages from ASM 3.2 to 9.2 #216. 
