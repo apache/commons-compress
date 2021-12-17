@@ -53,6 +53,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">
         Pack200UnpackerAdapter.unpack(InputStream, JarOutputStream) should not close its given input stream.
       </action>
+      <action issue="COMPRESS-596" type="fix" date="2021-12-07" dev="Peter Lee" due-to="Tamas Mucs">
+        Fix minor problem in examples.
+      </action>
       <!-- ADD -->
         <!-- none yet -->
       <!-- UPDATE -->
@@ -95,10 +98,6 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action type="update" dev="kinow" due-to="Gary Gregory">
         Bump commons.japicmp.version from 0.15.3 to 0.15.4.
-      </action>
-      <action issue="COMPRESS-596" type="fix" date="2021-12-07"
-              dev="Peter Lee" due-to="Tamas Mucs">
-        Fix minor problem in examples.
       </action>
     </release>
     <release version="1.21" date="2021-07-12"
