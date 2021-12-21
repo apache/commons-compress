@@ -29,6 +29,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collections;
@@ -175,6 +176,16 @@ public class ZipFile implements Closeable {
     }
 
     /**
+     * Opens the given path for reading, assuming "UTF8" for file names.
+     * @param path path to the archive.
+     * @throws IOException if an error occurs while reading the file.
+     * @since 1.22
+     */
+    public ZipFile(final Path path) throws IOException {
+        this(path, ZipEncodingHelper.UTF8);
+    }
+
+    /**
      * Opens the given file for reading, assuming "UTF8".
      *
      * @param name name of the archive.
@@ -182,7 +193,7 @@ public class ZipFile implements Closeable {
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(final String name) throws IOException {
-        this(new File(name), ZipEncodingHelper.UTF8);
+        this(new File(name).toPath(), ZipEncodingHelper.UTF8);
     }
 
     /**
@@ -196,7 +207,7 @@ public class ZipFile implements Closeable {
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(final String name, final String encoding) throws IOException {
-        this(new File(name), encoding, true);
+        this(new File(name).toPath(), encoding, true);
     }
 
     /**
@@ -210,7 +221,20 @@ public class ZipFile implements Closeable {
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(final File f, final String encoding) throws IOException {
-        this(f, encoding, true);
+        this(f.toPath(), encoding, true);
+    }
+
+    /**
+     * Opens the given path for reading, assuming the specified
+     * encoding for file names and scanning for unicode extra fields.
+     * @param path path to the archive.
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
+     * @throws IOException if an error occurs while reading the file.
+     * @since 1.22
+     */
+    public ZipFile(final Path path, final String encoding) throws IOException {
+        this(path, encoding, true);
     }
 
     /**
@@ -227,7 +251,23 @@ public class ZipFile implements Closeable {
      */
     public ZipFile(final File f, final String encoding, final boolean useUnicodeExtraFields)
         throws IOException {
-        this(f, encoding, useUnicodeExtraFields, false);
+        this(f.toPath(), encoding, useUnicodeExtraFields, false);
+    }
+
+    /**
+     * Opens the given path for reading, assuming the specified
+     * encoding for file names.
+     * @param path path to the archive.
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
+     * @param useUnicodeExtraFields whether to use InfoZIP Unicode
+     * Extra Fields (if present) to set the file names.
+     * @throws IOException if an error occurs while reading the file.
+     * @since 1.22
+     */
+    public ZipFile(final Path path, final String encoding, final boolean useUnicodeExtraFields)
+            throws IOException {
+        this(path, encoding, useUnicodeExtraFields, false);
     }
 
     /**
@@ -260,6 +300,35 @@ public class ZipFile implements Closeable {
         throws IOException {
         this(Files.newByteChannel(f.toPath(), EnumSet.of(StandardOpenOption.READ)),
              f.getAbsolutePath(), encoding, useUnicodeExtraFields, true, ignoreLocalFileHeader);
+    }
+
+    /**
+     * Opens the given path for reading, assuming the specified
+     * encoding for file names.
+     * <p>By default the central directory record and all local file headers of the archive will be read immediately
+     * which may take a considerable amount of time when the archive is big. The {@code ignoreLocalFileHeader} parameter
+     * can be set to {@code true} which restricts parsing to the central directory. Unfortunately the local file header
+     * may contain information not present inside of the central directory which will not be available when the argument
+     * is set to {@code true}. This includes the content of the Unicode extra field, so setting {@code
+     * ignoreLocalFileHeader} to {@code true} means {@code useUnicodeExtraFields} will be ignored effectively. Also
+     * {@link #getRawInputStream} is always going to return {@code null} if {@code ignoreLocalFileHeader} is {@code
+     * true}.</p>
+     * @param path path to the archive.
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
+     * @param useUnicodeExtraFields whether to use InfoZIP Unicode
+     * Extra Fields (if present) to set the file names.
+     * @param ignoreLocalFileHeader whether to ignore information
+     * stored inside the local file header (see the notes in this method's javadoc)
+     * @throws IOException if an error occurs while reading the file.
+     * @since 1.22
+     */
+    public ZipFile(final Path path, final String encoding, final boolean useUnicodeExtraFields,
+                   final boolean ignoreLocalFileHeader)
+            throws IOException {
+        this(Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ)),
+                path.toAbsolutePath().toString(), encoding, useUnicodeExtraFields,
+                true, ignoreLocalFileHeader);
     }
 
     /**

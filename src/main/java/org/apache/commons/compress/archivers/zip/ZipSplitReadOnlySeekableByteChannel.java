@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +36,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * {@link MultiReadOnlySeekableByteChannel} that knows what a split ZIP archive should look like.
@@ -155,30 +158,40 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * the beginning of a split archive
      */
     public static SeekableByteChannel buildFromLastSplitSegment(final File lastSegmentFile) throws IOException {
-        final String extension = FileNameUtils.getExtension(lastSegmentFile.getCanonicalPath());
+        return buildFromLastSplitSegment(lastSegmentFile.toPath());
+    }
+
+    /**
+     * Concatenates zip split files from the last segment (the extension MUST be .zip)
+     * @param lastSegmentPath the last segment of zip split files, note that the extension MUST be .zip
+     * @return SeekableByteChannel that concatenates all zip split files
+     * @throws IllegalArgumentException if the lastSegmentPath's extension is NOT .zip
+     * @throws IOException if the first channel doesn't seem to hold
+     * the beginning of a split archive
+     * @since 1.22
+     */
+    public static SeekableByteChannel buildFromLastSplitSegment(final Path lastSegmentPath) throws IOException {
+        final String extension = FileNameUtils.getExtensionFrom(lastSegmentPath);
         if (!extension.equalsIgnoreCase(ArchiveStreamFactory.ZIP)) {
             throw new IllegalArgumentException("The extension of last zip split segment should be .zip");
         }
 
-        final File parent = lastSegmentFile.getParentFile();
-        final String fileBaseName = FileNameUtils.getBaseName(lastSegmentFile.getCanonicalPath());
-        final ArrayList<File> splitZipSegments = new ArrayList<>();
+        final Path parent = Objects.nonNull(lastSegmentPath.getParent()) ? lastSegmentPath.getParent()
+                : lastSegmentPath.getFileSystem().getPath(".");
+        final String fileBaseName = FileNameUtils.getBaseNameFrom(lastSegmentPath);
+        final ArrayList<Path> splitZipSegments;
 
         // zip split segments should be like z01,z02....z(n-1) based on the zip specification
         final Pattern pattern = Pattern.compile(Pattern.quote(fileBaseName) + ".[zZ][0-9]+");
-        final File[] children = parent.listFiles();
-        if (children != null) {
-            for (final File file : children) {
-                if (!pattern.matcher(file.getName()).matches()) {
-                    continue;
-                }
-
-                splitZipSegments.add(file);
-            }
+        try (Stream<Path> walk = Files.walk(parent, 1)) {
+            splitZipSegments = walk
+                    .filter(Files::isRegularFile)
+                    .filter(path -> pattern.matcher(path.getFileName().toString()).matches())
+                    .sorted(new ZipSplitSegmentComparator())
+                    .collect(Collectors.toCollection(ArrayList::new));
         }
 
-        splitZipSegments.sort(new ZipSplitSegmentComparator());
-        return forFiles(lastSegmentFile, splitZipSegments);
+        return forPaths(lastSegmentPath, splitZipSegments);
     }
 
     /**
@@ -193,9 +206,29 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * the beginning of a split archive
      */
     public static SeekableByteChannel forFiles(final File... files) throws IOException {
-        final List<SeekableByteChannel> channels = new ArrayList<>();
+        final List<Path> paths = new ArrayList<>();
         for (final File f : Objects.requireNonNull(files, "files must not be null")) {
-            channels.add(Files.newByteChannel(f.toPath(), StandardOpenOption.READ));
+            paths.add(f.toPath());
+        }
+
+        return forPaths(paths.toArray(new Path[0]));
+    }
+
+    /**
+     * Concatenates the given file paths.
+     * @param paths the file paths to concatenate, note that the LAST FILE of files should be the LAST SEGMENT(.zip)
+     * and these files should be added in correct order (e.g.: .z01, .z02... .z99, .zip)
+     * @return SeekableByteChannel that concatenates all provided files
+     * @throws NullPointerException if files is null
+     * @throws IOException if opening a channel for one of the files fails
+     * @throws IOException if the first channel doesn't seem to hold
+     * the beginning of a split archive
+     * @since 1.22
+     */
+    public static SeekableByteChannel forPaths(final Path... paths) throws IOException {
+        final List<SeekableByteChannel> channels = new ArrayList<>();
+        for (final Path path : Objects.requireNonNull(paths, "paths must not be null")) {
+            channels.add(Files.newByteChannel(path, StandardOpenOption.READ));
         }
         if (channels.size() == 1) {
             return channels.get(0);
@@ -218,21 +251,45 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
         Objects.requireNonNull(files, "files");
         Objects.requireNonNull(lastSegmentFile, "lastSegmentFile");
 
-        final List<File> filesList = new ArrayList<>();
+        final List<Path> filesList = new ArrayList<>();
         for (final File f : files) {
-            filesList.add(f);
+            filesList.add(f.toPath());
         }
-        filesList.add(lastSegmentFile);
 
-        return forFiles(filesList.toArray(new File[0]));
+        return forPaths(lastSegmentFile.toPath(), filesList);
     }
 
-    private static class ZipSplitSegmentComparator implements Comparator<File>, Serializable {
+    /**
+     * Concatenates the given file paths.
+     * @param lastSegmentPath the last segment path of split zip segments, its extension must be .zip
+     * @param paths the file paths to concatenate except for the last segment,
+     * note these files should be added in correct order (e.g.: .z01, .z02... .z99)
+     * @return SeekableByteChannel that concatenates all provided files
+     * @throws IOException if the first channel doesn't seem to hold
+     * the beginning of a split archive
+     * @throws NullPointerException if files or lastSegmentPath is null
+     * @since 1.22
+     */
+    public static SeekableByteChannel forPaths(final Path lastSegmentPath, final Iterable<Path> paths) throws IOException {
+        Objects.requireNonNull(paths, "paths");
+        Objects.requireNonNull(lastSegmentPath, "lastSegmentPath");
+
+        final List<Path> filesList = new ArrayList<>();
+        for (final Path f : paths) {
+            filesList.add(f);
+        }
+        filesList.add(lastSegmentPath);
+
+        return forPaths(filesList.toArray(new Path[0]));
+    }
+
+    private static class ZipSplitSegmentComparator implements Comparator<Path>, Serializable {
         private static final long serialVersionUID = 20200123L;
+
         @Override
-        public int compare(final File file1, final File file2) {
-            final String extension1 = FileNameUtils.getExtension(file1.getPath());
-            final String extension2 = FileNameUtils.getExtension(file2.getPath());
+        public int compare(final Path file1, final Path file2) {
+            final String extension1 = FileNameUtils.getExtensionFrom(file1);
+            final String extension2 = FileNameUtils.getExtensionFrom(file2);
 
             if (!extension1.startsWith("z")) {
                 return -1;

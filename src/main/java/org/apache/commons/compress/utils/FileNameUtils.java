@@ -19,6 +19,7 @@
 package org.apache.commons.compress.utils;
 
 import java.io.File;
+import java.nio.file.Path;
 
 /**
  * Generic file name utilities.
@@ -51,6 +52,29 @@ public class FileNameUtils {
     }
 
     /**
+     * Returns the extension (i.e. the part after the last ".") of a file.
+     * <p>Will return an empty string if the file name doesn't contain
+     * any dots. Only the last segment of a the file name is consulted
+     * - i.e. all leading directories of the {@code filename}
+     * parameter are skipped.</p>
+     * @return the extension of filename
+     * @param path the path of the file to obtain the extension of.
+     * @since 1.22
+     */
+    public static String getExtensionFrom(final Path path) {
+        if (path == null) {
+            return null;
+        }
+
+        final String name = path.getFileName().toString();
+        final int extensionPosition = name.lastIndexOf('.');
+        if (extensionPosition <= 0 || extensionPosition == name.length() - 1) {
+            return "";
+        }
+        return name.substring(extensionPosition + 1);
+    }
+
+    /**
      * Returns the basename (i.e. the part up to and not including the
      * last ".") of the last path segment of a filename.
      *
@@ -67,6 +91,31 @@ public class FileNameUtils {
         }
 
         final String name = new File(filename).getName();
+
+        final int extensionPosition = name.lastIndexOf('.');
+        if (extensionPosition < 0) {
+            return name;
+        }
+
+        return name.substring(0, extensionPosition);
+    }
+
+    /**
+     * Returns the basename (i.e. the part up to and not including the
+     * last ".") of the last path segment of a filename.
+     * <p>Will return the file name itself if it doesn't contain any
+     * dots. All leading directories of the {@code filename} parameter
+     * are skipped.</p>
+     * @return the basename of filename
+     * @param path the path of the file to obtain the basename of.
+     * @since 1.22
+     */
+    public static String getBaseNameFrom(final Path path) {
+        if (path == null) {
+            return null;
+        }
+
+        final String name = path.getFileName().toString();
 
         final int extensionPosition = name.lastIndexOf('.');
         if (extensionPosition < 0) {
