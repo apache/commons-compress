@@ -61,6 +61,9 @@ The <action> type attribute can be add,update,fix,remove.
         avoid reading more from a channel than asked for.
         Github Pull Request #214.
       </action>
+      <action type="fix" dev="ggregory" due-to="Helder Magalhães, Gary Gregory, PeterAlfredLee">
+        Documentation nits #217.
+      </action>
       <!-- ADD -->
       <action issue="COMPRESS-602" type="add" dev="ggregory" due-to="Postelnicu George, Gary Gregory">
         Migrate zip package to use NIO #236.
