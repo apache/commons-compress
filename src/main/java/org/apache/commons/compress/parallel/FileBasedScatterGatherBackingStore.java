@@ -27,7 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 /**
- * ScatterGatherBackingStore that is backed by a file.
+ * ScatterGatherBackingStore that is backed by a path.
  *
  * @since 1.10
  */
@@ -41,7 +41,8 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
     }
 
     /**
-     * ScatterGatherBackingStore that is backed by a path.
+     * Constructs a new instance for the given path.
+     *
      * @param target The path to offload compressed data into.
      * @throws FileNotFoundException if the file doesn't exist
      * @since 1.22
