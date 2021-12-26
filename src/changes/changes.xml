@@ -111,6 +111,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="Dependabot">
         Bump org.apache.felix.framework from 7.0.1 to 7.0.3 #232.
       </action>
+      <action type="update" dev="kinow" due-to="Dependabot">
+        Bump slf4j-api from 1.7.30 to 1.7.32 #213.
+      </action>
     </release>
     <release version="1.21" date="2021-07-12"
              description="Release 1.21 (Java 8)
