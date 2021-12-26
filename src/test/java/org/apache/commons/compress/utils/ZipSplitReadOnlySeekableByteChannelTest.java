@@ -21,7 +21,7 @@ package org.apache.commons.compress.utils;
 import org.apache.commons.compress.archivers.zip.ZipSplitReadOnlySeekableByteChannel;
 import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.File;
@@ -181,12 +181,12 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
         return channels;
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void forPathsThrowsOnNullArg() throws IOException {
         ZipSplitReadOnlySeekableByteChannel.forPaths(null);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void forPathsOfTwoParametersThrowsOnNullArg() throws IOException {
         ZipSplitReadOnlySeekableByteChannel.forPaths(null, null);
     }

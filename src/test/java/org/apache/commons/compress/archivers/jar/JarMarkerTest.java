@@ -22,11 +22,12 @@ import static org.junit.Assert.fail;
 
 import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.zip.JarMarker;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class JarMarkerTest {
 
-    @Test public void testJarMarkerLengthCheck() {
+    @Test
+    public void testJarMarkerLengthCheck() {
         final JarMarker jarMarker = JarMarker.getInstance();
         try {
             jarMarker.parseFromLocalFileData(null,0,1);

@@ -18,18 +18,20 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import org.junit.jupiter.api.Test;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import org.junit.Test;
-
 public class CoverageTest {
 
-    @Test public void testNidInstance() {
+    @Test
+    public void testNidInstance() {
         assertNotNull(new NID());
     }
 
-    @Test public void testCLIInstance() {
+    @Test
+    public void testCLIInstance() {
         final CLI foo = new CLI();
         assertNotNull(foo);
         try {

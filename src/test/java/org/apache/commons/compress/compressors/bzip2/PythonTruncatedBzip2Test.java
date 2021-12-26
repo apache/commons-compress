@@ -28,11 +28,11 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testcase porting a test from Python's testsuite.
@@ -46,7 +46,7 @@ public class PythonTruncatedBzip2Test {
     private static byte[] TRUNCATED_DATA;
     private ReadableByteChannel bz2Channel;
 
-    @BeforeClass
+    @BeforeAll
     public static void initializeTestData() throws IOException {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         final BZip2CompressorOutputStream bz2out = new BZip2CompressorOutputStream(out);
@@ -58,19 +58,19 @@ public class PythonTruncatedBzip2Test {
         TRUNCATED_DATA = copyOfRange(DATA, 0, DATA.length - 10);
     }
 
-    @Before
+    @BeforeEach
     public void initializeChannel() throws IOException {
         final InputStream source = new ByteArrayInputStream(TRUNCATED_DATA);
         this.bz2Channel = makeBZ2C(source);
     }
 
-    @After
+    @AfterEach
     public void closeChannel() throws IOException {
         bz2Channel.close();
         bz2Channel = null;
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testTruncatedData() throws IOException {
         //with BZ2File(self.filename) as f:
         //    self.assertRaises(EOFError, f.read)

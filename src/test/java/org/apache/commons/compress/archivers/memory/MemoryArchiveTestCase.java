@@ -24,9 +24,8 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 
-import org.junit.Test;
-
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.junit.jupiter.api.Test;
 
 public final class MemoryArchiveTestCase {
 

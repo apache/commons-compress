@@ -30,7 +30,7 @@ import java.util.TimeZone;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ArjArchiveInputStreamTest extends AbstractTestCase {
 

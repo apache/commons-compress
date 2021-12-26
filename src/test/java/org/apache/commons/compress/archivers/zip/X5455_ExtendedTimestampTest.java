@@ -17,9 +17,9 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,12 +66,12 @@ public class X5455_ExtendedTimestampTest {
 
     private File tmpDir;
 
-    @Before
+    @BeforeEach
     public void before() {
         xf = new X5455_ExtendedTimestamp();
     }
 
-    @After
+    @AfterEach
     public void removeTempFiles() {
         if (tmpDir != null) {
             rmdir(tmpDir);

@@ -29,7 +29,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test zip encodings.

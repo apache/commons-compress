@@ -24,10 +24,10 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -54,12 +54,12 @@ import static org.junit.Assert.assertArrayEquals;
 public class ZipMemoryFileSystemTest {
     private Path dir;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         dir = Files.createTempDirectory(UUID.randomUUID().toString());
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws IOException {
         try (Stream<Path> walk = Files.walk(dir)) {
             walk.sorted(Comparator.reverseOrder())

@@ -23,41 +23,32 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.IOUtils;
-
 import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
 public class XXHash32Test {
 
-    private final File file;
-    private final String expectedChecksum;
-
-    public XXHash32Test(final String fileName, final String c) throws IOException {
-        file = AbstractTestCase.getFile(fileName);
-        expectedChecksum = c;
-    }
-
-    @Parameters
-    public static Collection<Object[]> factory() {
-        return Arrays.asList(new Object[][] {
+    public static Stream<Arguments> factory() {
+        return Stream.of(
             // reference checksums created with xxh32sum
-            { "bla.tar", "fbb5c8d1" },
-            { "bla.tar.xz", "4106a208" },
-            { "8.posix.tar.gz", "9fce116a" },
-        });
+            Arguments.of("bla.tar", "fbb5c8d1"),
+            Arguments.of("bla.tar.xz", "4106a208"),
+            Arguments.of("8.posix.tar.gz", "9fce116a")
+        );
     }
 
-    @Test
-    public void verifyChecksum() throws IOException {
+    @ParameterizedTest
+    @MethodSource("factory")
+    public void verifyChecksum(final String fileName, final String expectedChecksum) throws IOException {
         final XXHash32 h = new XXHash32();
+        final File file = AbstractTestCase.getFile(fileName);
         try (InputStream s = Files.newInputStream(file.toPath())) {
             final byte[] b = IOUtils.toByteArray(s);
             h.update(b, 0, b.length);

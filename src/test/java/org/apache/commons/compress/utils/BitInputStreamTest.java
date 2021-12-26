@@ -24,18 +24,18 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BitInputStreamTest {
 
-    @Test(expected = IOException.class)
+    @Test
     public void shouldNotAllowReadingOfANegativeAmountOfBits() throws IOException {
         try (final BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
             bis.readBits(-1);
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void shouldNotAllowReadingOfMoreThan63BitsAtATime() throws IOException {
         try (final BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
             bis.readBits(64);

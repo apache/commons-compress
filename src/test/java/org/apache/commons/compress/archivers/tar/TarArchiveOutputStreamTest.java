@@ -47,7 +47,7 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TarArchiveOutputStreamTest extends AbstractTestCase {
 
@@ -95,7 +95,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testBigNumberErrorMode() throws Exception {
         final TarArchiveEntry t = new TarArchiveEntry("foo");
         t.setSize(0100000000000L);
@@ -785,7 +785,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tarIn.close();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testWriteLongFileNameThrowsException() throws Exception {
         final String n = "01234567890123456789012345678901234567890123456789"
                 + "01234567890123456789012345678901234567890123456789"

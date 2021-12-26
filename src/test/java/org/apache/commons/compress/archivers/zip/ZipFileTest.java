@@ -53,14 +53,14 @@ import java.util.zip.ZipEntry;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ZipFileTest {
     private ZipFile zf = null;
 
-    @After
+    @AfterEach
     public void tearDown() {
         ZipFile.closeQuietly(zf);
     }
@@ -579,7 +579,7 @@ public class ZipFileTest {
     /**
      * Test too big alignment, resulting into exceeding extra field limit.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testEntryAlignmentExceed() throws Exception {
         final SeekableInMemoryByteChannel zipContent = new SeekableInMemoryByteChannel();
         try (ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(zipContent)) {
@@ -592,7 +592,7 @@ public class ZipFileTest {
     /**
      * Test non power of 2 alignment.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testInvalidAlignment() {
         final ZipArchiveEntry entry = new ZipArchiveEntry("dummy");
         entry.setAlignment(3);
@@ -750,19 +750,19 @@ public class ZipFileTest {
         assertFileEqualsToEntry(fileToCompare, zipEntry, zf);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSetLevelTooSmallForZipArchiveOutputStream() {
         final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
         outputStream.setLevel(Deflater.DEFAULT_COMPRESSION - 1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSetLevelTooBigForZipArchiveOutputStream() {
         final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
         outputStream.setLevel(Deflater.BEST_COMPRESSION + 1);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void throwsExceptionWhenWritingPreamble() throws IOException {
         final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
         outputStream.putArchiveEntry(new ZipArchiveEntry());

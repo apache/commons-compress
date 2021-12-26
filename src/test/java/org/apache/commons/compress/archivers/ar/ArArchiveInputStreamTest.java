@@ -34,7 +34,7 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ArArchiveInputStreamTest extends AbstractTestCase {
 
@@ -119,7 +119,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected=IllegalStateException.class)
+    @Test
     public void cantReadWithoutOpeningAnEntry() throws Exception {
         try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
@@ -127,7 +127,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected=IllegalStateException.class)
+    @Test
     public void cantReadAfterClose() throws Exception {
         try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {

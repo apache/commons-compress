@@ -19,8 +19,8 @@ package org.apache.commons.compress.archivers.zip;
 
 import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -36,7 +36,7 @@ public class ScatterZipOutputStreamTest {
     private File scatterFile = null;
     private File target = null;
 
-    @After
+    @AfterEach
     public void cleanup() {
         tryHardToDelete(scatterFile);
         tryHardToDelete(target);

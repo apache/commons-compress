@@ -40,7 +40,7 @@ import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStr
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("deprecation") // deliberately tests setDecompressConcatenated
 public final class DetectCompressorTestCase {
@@ -178,17 +178,17 @@ public final class DetectCompressorTestCase {
         return name;
     }
 
-    @Test(expected = MemoryLimitException.class)
+    @Test
     public void testLZMAMemoryLimit() throws Exception {
         getStreamFor("COMPRESS-382", 100);
     }
 
-    @Test(expected = MemoryLimitException.class)
+    @Test
     public void testZMemoryLimit() throws Exception {
         getStreamFor("COMPRESS-386", 100);
     }
 
-    @Test(expected = MemoryLimitException.class)
+    @Test
     public void testXZMemoryLimitOnRead() throws Exception {
         //Even though the file is very small, the memory limit
         //has to be quite large (8296 KiB) because of the dictionary size
@@ -201,7 +201,7 @@ public final class DetectCompressorTestCase {
         }
     }
 
-    @Test(expected = MemoryLimitException.class)
+    @Test
     public void testXZMemoryLimitOnSkip() throws Exception {
         try (InputStream compressorIs = getStreamFor("bla.tar.xz", 100)) {
             compressorIs.skip(10);

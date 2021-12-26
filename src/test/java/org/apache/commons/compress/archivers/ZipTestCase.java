@@ -58,7 +58,7 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public final class ZipTestCase extends AbstractTestCase {
 
@@ -688,17 +688,17 @@ public final class ZipTestCase extends AbstractTestCase {
         testInputStreamStatistics("COMPRESS-380/COMPRESS-380.zip", expected);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void buildSplitZipWithTooSmallSizeThrowsException() throws IOException {
         new ZipArchiveOutputStream(File.createTempFile("temp", "zip"), 64 * 1024 - 1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void buildSplitZipWithTooLargeSizeThrowsException() throws IOException {
         new ZipArchiveOutputStream(File.createTempFile("temp", "zip"), 4294967295L + 1);
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void buildSplitZipWithSegmentAlreadyExistThrowsException() throws IOException {
         final File directoryToZip = getFilesToZip();
         final File outputZipFile = new File(dir, "splitZip.zip");

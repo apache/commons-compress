@@ -19,7 +19,7 @@
 package org.apache.commons.compress.compressors.z;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +40,7 @@ import static org.apache.commons.compress.AbstractTestCase.getFile;
 public class ZCompressorInputStreamTest {
 
 
-    @Test(expected = IOException.class)
+    @Test
     public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() throws IOException {
         final SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration());
         final ZCompressorInputStream zCompressorInputStream = new ZCompressorInputStream(sequenceInputStream);

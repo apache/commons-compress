@@ -21,10 +21,10 @@ package org.apache.commons.compress.archivers.zip;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.IOUtils;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,12 +36,12 @@ public class ZipFileIgnoringLocalFileHeaderTest {
 
     private File dir;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         dir = AbstractTestCase.mkdir("dir");
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         AbstractTestCase.rmdir(dir);
     }

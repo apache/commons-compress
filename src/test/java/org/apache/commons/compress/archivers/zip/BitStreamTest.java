@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayInputStream;
 
 import org.apache.commons.compress.utils.ByteUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BitStreamTest {
 

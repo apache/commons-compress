@@ -32,15 +32,15 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.StreamingNotSupportedException;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static java.nio.charset.StandardCharsets.*;
 
 public class SevenZArchiverTest extends AbstractTestCase {
     private File target;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -61,7 +61,7 @@ public class SevenZArchiverTest extends AbstractTestCase {
         verifyContent();
     }
 
-    @Test(expected = StreamingNotSupportedException.class)
+    @Test
     public void outputStreamVersion() throws IOException, ArchiveException {
         try (OutputStream os = Files.newOutputStream(target.toPath())) {
             new Archiver().create("7z", os, dir);
@@ -78,7 +78,7 @@ public class SevenZArchiverTest extends AbstractTestCase {
     }
 
     // not really a 7z test but I didn't feel like adding a new test just for this
-    @Test(expected = ArchiveException.class)
+    @Test
     public void unknownFormat() throws IOException, ArchiveException {
         try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
             StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {

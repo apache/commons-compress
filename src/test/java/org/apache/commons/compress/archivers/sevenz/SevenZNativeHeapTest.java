@@ -30,7 +30,7 @@ import org.apache.commons.compress.archivers.sevenz.Coders.DeflateDecoder;
 import org.apache.commons.compress.archivers.sevenz.Coders.DeflateDecoder.DeflateDecoderInputStream;
 import org.apache.commons.compress.archivers.sevenz.Coders.DeflateDecoder.DeflateDecoderOutputStream;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SevenZNativeHeapTest extends AbstractTestCase {
 

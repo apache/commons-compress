@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -38,39 +39,33 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 import org.junit.runners.Parameterized;
 
 import static java.nio.charset.StandardCharsets.*;
 
-@RunWith(Parameterized.class)
 public class ParameterizedArchiverTest extends AbstractTestCase {
 
     // can't test 7z here as 7z cannot write to non-seekable streams
     // and reading logic would be different as well - see
     // SevenZArchiverTest class
-    @Parameters(name = "format={0}")
-    public static Collection<Object[]> data() {
-        return Arrays.asList(
-            new Object[] { "tar" },
-            new Object[] { "cpio" },
-            new Object[] { "zip" }
+    public static Stream<Arguments> data() {
+        return Stream.of(
+                Arguments.of("tar"),
+                Arguments.of("cpio"),
+                Arguments.of("zip")
         );
     }
 
-    private final String format;
     private File target;
 
-    public ParameterizedArchiverTest(final String format) {
-        this.format = format;
-    }
-
-    @Before
-    @Override
-    public void setUp() throws Exception {
+    public void setUp(final String format) throws Exception {
         super.setUp();
         final File c = new File(dir, "a/b/c");
         c.mkdirs();
@@ -83,39 +78,51 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
         target = new File(resultDir, "test." + format);
     }
 
-    @Test
-    public void fileVersion() throws IOException, ArchiveException {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void fileVersion(final String format) throws Exception {
+        // TODO How to parameterize a BeforeEach method?
+        setUp(format);
         new Archiver().create(format, target, dir);
-        verifyContent();
+        verifyContent(format);
     }
 
-    @Test
-    public void outputStreamVersion() throws IOException, ArchiveException {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void outputStreamVersion(final String format) throws Exception {
+        // TODO How to parameterize a BeforeEach method?
+        setUp(format);
         try (OutputStream os = Files.newOutputStream(target.toPath())) {
             new Archiver().create(format, os, dir);
         }
-        verifyContent();
+        verifyContent(format);
     }
 
-    @Test
-    public void channelVersion() throws IOException, ArchiveException {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void channelVersion(final String format) throws Exception {
+        // TODO How to parameterize a BeforeEach method?
+        setUp(format);
         try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
             StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             new Archiver().create(format, c, dir);
         }
-        verifyContent();
+        verifyContent(format);
     }
 
-    @Test
-    public void archiveStreamVersion() throws IOException, ArchiveException {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void archiveStreamVersion(final String format) throws Exception {
+        // TODO How to parameterize a BeforeEach method?
+        setUp(format);
         try (OutputStream os = Files.newOutputStream(target.toPath());
              ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, os)) {
             new Archiver().create(aos, dir);
         }
-        verifyContent();
+        verifyContent(format);
     }
 
-    private void verifyContent() throws IOException, ArchiveException {
+    private void verifyContent(final String format) throws IOException, ArchiveException {
         try (InputStream is = Files.newInputStream(target.toPath());
              BufferedInputStream bis = new BufferedInputStream(is);
              ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, bis)) {

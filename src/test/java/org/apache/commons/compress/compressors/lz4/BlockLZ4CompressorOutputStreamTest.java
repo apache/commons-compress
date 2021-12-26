@@ -24,8 +24,8 @@ import java.util.Arrays;
 
 import org.apache.commons.compress.compressors.lz77support.LZ77Compressor;
 import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class BlockLZ4CompressorOutputStreamTest {
 
@@ -48,7 +48,7 @@ public class BlockLZ4CompressorOutputStreamTest {
     }
 
     @Test
-    @Ignore("would pass if the algorithm used for rewriting the final pairs was smarter")
+    @Disabled("would pass if the algorithm used for rewriting the final pairs was smarter")
     public void canWriteBackReferenceFollowedByShortLiteralIfOffsetIsBigEnough() {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
         p.setBackReference(new LZ77Compressor.BackReference(10, 4));
@@ -56,7 +56,7 @@ public class BlockLZ4CompressorOutputStreamTest {
     }
 
     @Test
-    @Ignore("would pass if the algorithm used for rewriting the final pairs was smarter")
+    @Disabled("would pass if the algorithm used for rewriting the final pairs was smarter")
     public void canWriteBackReferenceFollowedByShortLiteralIfLengthIsBigEnough() {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
         p.setBackReference(new LZ77Compressor.BackReference(1, 10));

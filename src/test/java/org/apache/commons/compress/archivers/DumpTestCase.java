@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public final class DumpTestCase extends AbstractTestCase {
 

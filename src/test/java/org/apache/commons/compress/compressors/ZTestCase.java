@@ -30,7 +30,7 @@ import java.nio.file.Files;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.z.ZCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public final class ZTestCase extends AbstractTestCase {
 

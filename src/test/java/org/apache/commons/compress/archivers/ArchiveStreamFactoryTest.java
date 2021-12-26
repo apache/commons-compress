@@ -41,7 +41,7 @@ import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ArchiveStreamFactoryTest {
 
@@ -88,14 +88,14 @@ public class ArchiveStreamFactoryTest {
         }
     }
 
-    @Test(expected = StreamingNotSupportedException.class)
+    @Test
     public void cantRead7zFromStream() throws Exception {
         ArchiveStreamFactory.DEFAULT
             .createArchiveInputStream(ArchiveStreamFactory.SEVEN_Z,
                                       new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
     }
 
-    @Test(expected = StreamingNotSupportedException.class)
+    @Test
     public void cantWrite7zToStream() throws Exception {
         ArchiveStreamFactory.DEFAULT
             .createArchiveOutputStream(ArchiveStreamFactory.SEVEN_Z,

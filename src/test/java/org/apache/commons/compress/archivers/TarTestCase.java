@@ -36,7 +36,7 @@ import org.apache.commons.compress.archivers.tar.TarFile;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static java.nio.charset.StandardCharsets.*;
 import static org.junit.Assert.assertArrayEquals;

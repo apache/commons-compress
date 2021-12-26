@@ -20,7 +20,7 @@ package org.apache.commons.compress.archivers.zip;
 import org.apache.commons.compress.AbstractTestCase;
 import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.File;

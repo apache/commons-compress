@@ -31,11 +31,11 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BZip2CompressorInputStreamTest {
 
-    @Test(expected = IOException.class)
+    @Test
     public void shouldThrowAnIOExceptionWhenAppliedToAZipFile() throws Exception {
         try (InputStream in = Files.newInputStream(getFile("bla.zip").toPath())) {
             final BZip2CompressorInputStream bis = new BZip2CompressorInputStream(in);
@@ -103,7 +103,7 @@ public class BZip2CompressorInputStreamTest {
     /**
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-516">COMPRESS-516</a>
      */
-    @Test(expected = IOException.class)
+    @Test
     public void shouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS516() throws Exception {
         fuzzingTest(new int[] {
             0x50, 0x4b, 0x03, 0x04, 0x2e, 0x00, 0x00, 0x00, 0x0c, 0x00,
@@ -128,7 +128,7 @@ public class BZip2CompressorInputStreamTest {
     /**
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-519">COMPRESS-519</a>
      */
-    @Test(expected = IOException.class)
+    @Test
     public void shouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS519() throws Exception {
         fuzzingTest(new int[] {
             0x50, 0x4b, 0x03, 0x04, 0x2e, 0x00, 0x00, 0x00, 0x0c, 0x00,

@@ -28,15 +28,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ZipUtilTest {
 
     private Date time;
     private ZipLong zl;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         time = new Date();
         final Calendar cal = Calendar.getInstance();
@@ -248,14 +248,14 @@ public class ZipUtilTest {
         assertEquals(testDate.getTime() / 2000, (time.getTime() / 2000));
     }
 
-    @Test(expected = UnsupportedZipFeatureException.class)
+    @Test
     public void testUnsupportedMethod() throws Exception {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
         ze.setMethod(ZipMethod.EXPANDING_LEVEL_1.getCode());
         ZipUtil.checkRequestedFeatures(ze);
     }
 
-    @Test(expected = UnsupportedZipFeatureException.class)
+    @Test
     public void testUnknownMethod() throws Exception {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
         ze.setMethod(100);

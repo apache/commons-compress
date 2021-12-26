@@ -48,7 +48,7 @@ import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 public class ZipArchiveInputStreamTest {
@@ -695,7 +695,7 @@ public class ZipArchiveInputStreamTest {
         });
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void throwsIOExceptionIfThereIsCorruptedZip64Extra() throws IOException {
         try (InputStream fis = Files.newInputStream(getFile("COMPRESS-546.zip").toPath());
              ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis)) {

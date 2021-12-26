@@ -21,7 +21,7 @@ package org.apache.commons.compress.archivers.arj;
 import static org.junit.Assert.assertNotNull;
 
 import org.apache.commons.compress.archivers.arj.ArjArchiveEntry.HostOs;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CoverageTest {
 

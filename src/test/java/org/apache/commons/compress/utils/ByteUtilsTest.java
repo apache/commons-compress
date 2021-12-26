@@ -27,7 +27,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.commons.compress.utils.ByteUtils.InputStreamByteSupplier;
 import static org.apache.commons.compress.utils.ByteUtils.OutputStreamByteConsumer;
@@ -50,7 +50,7 @@ public class ByteUtilsTest {
         assertEquals(2 + 3 * 256 + 4 * 256 * 256 + 128L * 256 * 256 * 256, fromLittleEndian(b));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void fromLittleEndianFromArrayOneArgThrowsForLengthTooBig() {
         fromLittleEndian(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
     }
@@ -67,7 +67,7 @@ public class ByteUtilsTest {
         assertEquals(2 + 3 * 256 + 4 * 256 * 256 + 128L * 256 * 256 * 256, fromLittleEndian(b, 1, 4));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void fromLittleEndianFromArrayThrowsForLengthTooBig() {
         fromLittleEndian(ByteUtils.EMPTY_BYTE_ARRAY, 0, 9);
     }
@@ -84,12 +84,12 @@ public class ByteUtilsTest {
         assertEquals(2 + 3 * 256 + 4 * 256 * 256 + 128L * 256 * 256 * 256, fromLittleEndian(bin, 4));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void fromLittleEndianFromStreamThrowsForLengthTooBig() throws IOException {
         fromLittleEndian(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 9);
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void fromLittleEndianFromStreamThrowsForPrematureEnd() throws IOException {
         final ByteArrayInputStream bin = new ByteArrayInputStream(new byte[] { 2, 3 });
         fromLittleEndian(bin, 3);
@@ -108,12 +108,12 @@ public class ByteUtilsTest {
             fromLittleEndian(new InputStreamByteSupplier(bin), 4));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void fromLittleEndianFromSupplierThrowsForLengthTooBig() throws IOException {
         fromLittleEndian(new InputStreamByteSupplier(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)), 9);
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void fromLittleEndianFromSupplierThrowsForPrematureEnd() throws IOException {
         final ByteArrayInputStream bin = new ByteArrayInputStream(new byte[] { 2, 3 });
         fromLittleEndian(new InputStreamByteSupplier(bin), 3);
@@ -131,13 +131,13 @@ public class ByteUtilsTest {
         assertEquals(2 + 3 * 256 + 4 * 256 * 256 + 128L * 256 * 256 * 256, fromLittleEndian(din, 4));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void fromLittleEndianFromDataInputThrowsForLengthTooBig() throws IOException {
         final DataInput din = new DataInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
         fromLittleEndian(din, 9);
     }
 
-    @Test(expected = java.io.EOFException.class)
+    @Test
     public void fromLittleEndianFromDataInputThrowsForPrematureEnd() throws IOException {
         final DataInput din = new DataInputStream(new ByteArrayInputStream(new byte[] { 2, 3 }));
         fromLittleEndian(din, 3);

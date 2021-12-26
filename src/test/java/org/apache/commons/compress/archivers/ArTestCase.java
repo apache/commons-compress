@@ -35,8 +35,8 @@ import org.apache.commons.compress.archivers.ar.ArArchiveEntry;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.ar.ArArchiveOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public final class ArTestCase extends AbstractTestCase {
 
@@ -188,7 +188,7 @@ public final class ArTestCase extends AbstractTestCase {
     }
 
     // TODO: revisit - does AR not support storing directories?
-    @Ignore
+    @Disabled
     @Test
     public void XtestDirectoryEntryFromFile() throws Exception {
         final File[] tmp = createTempDirAndFile();
@@ -230,7 +230,7 @@ public final class ArTestCase extends AbstractTestCase {
     }
 
     // TODO: revisit - does AR not support storing directories?
-    @Ignore
+    @Disabled
     @Test
     public void XtestExplicitDirectoryEntry() throws Exception {
         final File[] tmp = createTempDirAndFile();

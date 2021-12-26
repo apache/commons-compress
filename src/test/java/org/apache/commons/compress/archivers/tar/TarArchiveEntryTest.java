@@ -41,7 +41,7 @@ import java.util.Locale;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TarArchiveEntryTest implements TarConstants {
 
@@ -135,42 +135,39 @@ public class TarArchiveEntryTest implements TarConstants {
         t.setSize(0100000000000L);
     }
 
-    @Test public void testExtraPaxHeaders() throws IOException {
+    @Test
+    public void testExtraPaxHeaders() throws IOException {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
 
         TarArchiveEntry entry = new TarArchiveEntry("./weasels");
-        entry.addPaxHeader("APACHE.mustelida","true");
-        entry.addPaxHeader("SCHILY.xattr.user.org.apache.weasels","maximum weasels");
-        entry.addPaxHeader("size","1");
-        assertEquals("extra header count",2,entry.getExtraPaxHeaders().size());
-        assertEquals("APACHE.mustelida","true",
-            entry.getExtraPaxHeader("APACHE.mustelida"));
-        assertEquals("SCHILY.xattr.user.org.apache.weasels","maximum weasels",
-            entry.getExtraPaxHeader("SCHILY.xattr.user.org.apache.weasels"));
-        assertEquals("size",entry.getSize(),1);
+        entry.addPaxHeader("APACHE.mustelida", "true");
+        entry.addPaxHeader("SCHILY.xattr.user.org.apache.weasels", "maximum weasels");
+        entry.addPaxHeader("size", "1");
+        assertEquals("extra header count", 2, entry.getExtraPaxHeaders().size());
+        assertEquals("APACHE.mustelida", "true", entry.getExtraPaxHeader("APACHE.mustelida"));
+        assertEquals("SCHILY.xattr.user.org.apache.weasels", "maximum weasels", entry.getExtraPaxHeader("SCHILY.xattr.user.org.apache.weasels"));
+        assertEquals("size", entry.getSize(), 1);
 
         tos.putArchiveEntry(entry);
         tos.write('W');
         tos.closeArchiveEntry();
         tos.close();
-        assertNotEquals("should have extra headers before clear",0,entry.getExtraPaxHeaders().size());
+        assertNotEquals("should have extra headers before clear", 0, entry.getExtraPaxHeaders().size());
         entry.clearExtraPaxHeaders();
-        assertEquals("extra headers should be empty after clear",0,entry.getExtraPaxHeaders().size());
+        assertEquals("extra headers should be empty after clear", 0, entry.getExtraPaxHeaders().size());
         final TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()));
         entry = tis.getNextTarEntry();
-        assertNotNull("couldn't get entry",entry);
+        assertNotNull("couldn't get entry", entry);
 
-        assertEquals("extra header count",2,entry.getExtraPaxHeaders().size());
-        assertEquals("APACHE.mustelida","true",
-            entry.getExtraPaxHeader("APACHE.mustelida"));
-        assertEquals("user.org.apache.weasels","maximum weasels",
-            entry.getExtraPaxHeader("SCHILY.xattr.user.org.apache.weasels"));
+        assertEquals("extra header count", 2, entry.getExtraPaxHeaders().size());
+        assertEquals("APACHE.mustelida", "true", entry.getExtraPaxHeader("APACHE.mustelida"));
+        assertEquals("user.org.apache.weasels", "maximum weasels", entry.getExtraPaxHeader("SCHILY.xattr.user.org.apache.weasels"));
 
-        assertEquals('W',tis.read());
-        assertTrue("should be at end of entry",tis.read() <0);
+        assertEquals('W', tis.read());
+        assertTrue("should be at end of entry", tis.read() < 0);
 
-        assertNull("should be at end of file",tis.getNextTarEntry());
+        assertNull("should be at end of file", tis.getNextTarEntry());
         tis.close();
     }
 
@@ -244,7 +241,7 @@ public class TarArchiveEntryTest implements TarConstants {
         assertNotEquals("", entry.getUserName());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void negativeOffsetInConstructorNotAllowed() throws IOException {
         byte[] entryContent = ("test1.xml\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
                 "\u0000" +
@@ -269,7 +266,7 @@ public class TarArchiveEntryTest implements TarConstants {
         new TarArchiveEntry(entryContent, ZipEncodingHelper.getZipEncoding(CharsetNames.ISO_8859_1), false, -1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void negativeOffsetInSetterNotAllowed() {
         new TarArchiveEntry("test").setDataOffset(-1);
     }
@@ -288,7 +285,7 @@ public class TarArchiveEntryTest implements TarConstants {
         assertEquals(20, strs.get(2).getOffset());
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void getOrderedSparseHeadersRejectsOverlappingStructs() throws Exception {
         final TarArchiveEntry te = new TarArchiveEntry("test");
         te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
@@ -296,7 +293,7 @@ public class TarArchiveEntryTest implements TarConstants {
         te.getOrderedSparseHeaders();
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void getOrderedSparseHeadersRejectsStructsWithReallyBigNumbers() throws Exception {
         final TarArchiveEntry te = new TarArchiveEntry("test");
         te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", String.valueOf(Long.MAX_VALUE)));
@@ -304,7 +301,7 @@ public class TarArchiveEntryTest implements TarConstants {
         te.getOrderedSparseHeaders();
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void getOrderedSparseHeadersRejectsStructsPointingBeyondOutputEntry() throws Exception {
         final TarArchiveEntry te = new TarArchiveEntry("test");
         te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(200, 2)));

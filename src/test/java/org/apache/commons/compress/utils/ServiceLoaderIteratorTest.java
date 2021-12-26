@@ -18,7 +18,7 @@
  */
 package org.apache.commons.compress.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 
@@ -34,7 +34,7 @@ public class ServiceLoaderIteratorTest {
 
 
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testNextThrowsNoSuchElementException() {
 
         final Class<String> clasz = String.class;
@@ -57,7 +57,7 @@ public class ServiceLoaderIteratorTest {
     }
 
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testRemoveThrowsUnsupportedOperationException() {
 
         final Class<Integer> clasz = Integer.class;

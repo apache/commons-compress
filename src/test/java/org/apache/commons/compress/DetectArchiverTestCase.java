@@ -34,7 +34,7 @@ import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public final class DetectArchiverTestCase extends AbstractTestCase {
 

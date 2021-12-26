@@ -28,9 +28,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 import static java.nio.charset.StandardCharsets.*;
@@ -322,7 +322,7 @@ public class MultiReadOnlySeekableByteChannelTest {
      * <q>ClosedChannelException - If this channel is closed</q>
      */
     @Test
-    @Ignore("we deliberately violate the spec")
+    @Disabled("we deliberately violate the spec")
     public void throwsClosedChannelExceptionWhenPositionIsReadOnClosedChannel() throws Exception {
         thrown.expect(ClosedChannelException.class);
         try (SeekableByteChannel c = testChannel()) {
