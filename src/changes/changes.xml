@@ -62,6 +62,9 @@ The <action> type attribute can be add,update,fix,remove.
         Github Pull Request #214.
       </action>
       <!-- ADD -->
+      <action issue="COMPRESS-602" type="add" dev="ggregory" due-to="Postelnicu George, Gary Gregory">
+        Migrate zip package to use NIO #236.
+      </action>
         <!-- none yet -->
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot">

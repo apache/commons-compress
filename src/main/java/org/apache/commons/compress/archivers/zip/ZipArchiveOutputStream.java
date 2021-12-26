@@ -365,8 +365,28 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @since 1.20
      */
     public ZipArchiveOutputStream(final File file, final long zipSplitSize) throws IOException {
+        this(file.toPath(), zipSplitSize);
+    }
+
+    /**
+     * Creates a split ZIP Archive.
+     * <p>The files making up the archive will use Z01, Z02,
+     * ... extensions and the last part of it will be the given {@code
+     * file}.</p>
+     * <p>Even though the stream writes to a file this stream will
+     * behave as if no random access was possible. This means the
+     * sizes of stored entries need to be known before the actual
+     * entry data is written.</p>
+     * @param path the path to the file that will become the last part of the split archive
+     * @param zipSplitSize maximum size of a single part of the split
+     * archive created by this stream. Must be between 64kB and about 4GB.
+     * @throws IOException on error
+     * @throws IllegalArgumentException if zipSplitSize is not in the required range
+     * @since 1.22
+     */
+    public ZipArchiveOutputStream(final Path path, final long zipSplitSize) throws IOException {
         def = new Deflater(level, true);
-        this.out = new ZipSplitOutputStream(file, zipSplitSize);
+        this.out = new ZipSplitOutputStream(path, zipSplitSize);
         streamCompressor = StreamCompressor.create(this.out, def);
         channel = null;
         isSplitZip = true;
@@ -516,6 +536,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     public void setUseZip64(final Zip64Mode mode) {
         zip64Mode = mode;
+    }
+
+    /**
+     * Returns the total number of bytes written to this stream.
+     * @return the number of written bytes
+     * @since 1.22
+     */
+    @Override
+    public long getBytesWritten() {
+        return streamCompressor.getTotalBytesWritten();
     }
 
     /**

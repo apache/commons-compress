@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 /**
  * ScatterGatherBackingStore that is backed by a file.
@@ -30,14 +32,24 @@ import java.nio.file.Files;
  * @since 1.10
  */
 public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingStore {
-    private final File target;
-    private final OutputStream os;
+    private final Path target;
+    private final OutputStream outputStream;
     private boolean closed;
 
     public FileBasedScatterGatherBackingStore(final File target) throws FileNotFoundException {
+        this(target.toPath());
+    }
+
+    /**
+     * ScatterGatherBackingStore that is backed by a path.
+     * @param target The path to offload compressed data into.
+     * @throws FileNotFoundException if the file doesn't exist
+     * @since 1.22
+     */
+    public FileBasedScatterGatherBackingStore(final Path target) throws FileNotFoundException {
         this.target = target;
         try {
-            os = Files.newOutputStream(target.toPath());
+            outputStream = Files.newOutputStream(target);
         } catch (final FileNotFoundException ex) {
             throw ex;
         } catch (final IOException ex) {
@@ -48,21 +60,20 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
 
     @Override
     public InputStream getInputStream() throws IOException {
-        return Files.newInputStream(target.toPath());
+        return Files.newInputStream(target);
     }
 
     @Override
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void closeForWriting() throws IOException {
         if (!closed) {
-            os.close();
+            outputStream.close();
             closed = true;
         }
     }
 
     @Override
     public void writeOut(final byte[] data, final int offset, final int length) throws IOException {
-        os.write(data, offset, length);
+        outputStream.write(data, offset, length);
     }
 
     @Override
@@ -70,9 +81,7 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
         try {
             closeForWriting();
         } finally {
-            if (target.exists() && !target.delete()) {
-                target.deleteOnExit();
-            }
+            Files.deleteIfExists(target);
         }
     }
 }
