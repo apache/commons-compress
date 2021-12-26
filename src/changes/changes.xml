@@ -56,6 +56,11 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-596" type="fix" date="2021-12-07" dev="Peter Lee" due-to="Tamas Mucs">
         Fix minor problem in examples.
       </action>
+      <action issue="COMPRESS-584" type="fix" date="2021-08-11" dev="matthijsln" due-to="Matthijs Laan, Peter Lee">
+        Add a limit to the copy buffer in IOUtils.readRange() to
+        avoid reading more from a channel than asked for.
+        Github Pull Request #214.
+      </action>
       <!-- ADD -->
         <!-- none yet -->
       <!-- UPDATE -->
@@ -78,11 +83,6 @@ The <action> type attribute can be add,update,fix,remove.
         - org.apache.commons.compress.harmony.pack200.SegmentMethodVisitor
         - org.apache.commons.compress.harmony.pack200.SegmentAnnotationVisitor
         - org.apache.commons.compress.harmony.pack200.SegmentFieldVisitor
-      </action>
-      <action issue="COMPRESS-584" type="fix" date="2021-08-11" dev="matthijsln" due-to="Matthijs Laan, Peter Lee">
-        Add a limit to the copy buffer in IOUtils.readRange() to
-        avoid reading more from a channel than asked for.
-        Github Pull Request #214.
       </action>
       <action type="update" dev="ggregory" due-to="Dependabot">
         Bump maven-javadoc-plugin from 3.3.0 to 3.3.1 #221.
