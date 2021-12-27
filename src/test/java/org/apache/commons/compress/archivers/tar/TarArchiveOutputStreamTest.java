@@ -18,13 +18,14 @@
 
 package org.apache.commons.compress.archivers.tar;
 
-import static java.nio.charset.StandardCharsets.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -41,6 +42,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
+
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
@@ -648,6 +650,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             assertEquals("recordSize",512,tos.getRecordSize());
         }
     }
+
     @Test
     public void testBlockSizes() throws Exception {
         final String fileName = "/test1.xml";
@@ -656,22 +659,17 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         testPadding(5120, fileName, contents); // PAX default
         testPadding(1<<15, fileName, contents); //PAX max
         testPadding(-2, fileName, contents);    // don't specify a block size -> use minimum length
-        try {
-            testPadding(511, fileName, contents);    // don't specify a block size -> use minimum length
-            fail("should have thrown an illegal argument exception");
-        } catch (final IllegalArgumentException e) {
-            //expected
-        }
-        try {
-            testPadding(0, fileName, contents);    // don't specify a block size -> use minimum length
-            fail("should have thrown an illegal argument exception");
-        } catch (final IllegalArgumentException e) {
-            //expected
-        }
+
+        // don't specify a block size -> use minimum length
+        assertThrows(IllegalArgumentException.class, () -> testPadding(511, fileName, contents));    
+            
+        // don't specify a block size -> use minimum length
+        assertThrows(IllegalArgumentException.class, () -> testPadding(0, fileName, contents));    
+        
         // test with "content" that is an exact multiple of record length
-        contents = new byte[2048];
-        java.util.Arrays.fill(contents, (byte) 42);
-        testPadding(TarConstants.DEFAULT_BLKSIZE, fileName, contents);
+        byte[] contents2 = new byte[2048];
+        java.util.Arrays.fill(contents2, (byte) 42);
+        testPadding(TarConstants.DEFAULT_BLKSIZE, fileName, contents2);
     }
 
     private void testPadding(int blockSize, final String fileName, final byte[] contents) throws IOException {

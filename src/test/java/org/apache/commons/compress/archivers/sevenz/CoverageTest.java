@@ -18,10 +18,10 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 public class CoverageTest {
 
@@ -34,11 +34,6 @@ public class CoverageTest {
     public void testCLIInstance() {
         final CLI foo = new CLI();
         assertNotNull(foo);
-        try {
-            CLI.main(new String[]{"/dev/null/not-there"});
-            fail("shouldn't be able to list contents of  a file that isn't there");
-        } catch (final Exception ignored) {
-
-        }
+        assertThrows(Exception.class, () -> CLI.main(new String[] { "/dev/null/not-there" }));
     }
 }

@@ -18,7 +18,7 @@
 
 package org.apache.commons.compress.archivers.tar;
 
-import static java.nio.charset.StandardCharsets.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.apache.commons.compress.AbstractTestCase.getPath;
 import static org.junit.Assert.assertEquals;
@@ -26,8 +26,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
@@ -126,11 +127,7 @@ public class TarArchiveEntryTest implements TarConstants {
         final TarArchiveEntry t = new TarArchiveEntry("");
         t.setSize(0);
         t.setSize(1);
-        try {
-            t.setSize(-1);
-            fail("Should have generated IllegalArgumentException");
-        } catch (final IllegalArgumentException expected) {
-        }
+        assertThrows(IllegalArgumentException.class, () -> t.setSize(-1));
         t.setSize(077777777777L);
         t.setSize(0100000000000L);
     }
