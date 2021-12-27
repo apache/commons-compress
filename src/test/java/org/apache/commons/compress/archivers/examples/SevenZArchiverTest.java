@@ -18,6 +18,9 @@
  */
 package org.apache.commons.compress.archivers.examples;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,13 +32,10 @@ import java.nio.file.StandardOpenOption;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.archivers.StreamingNotSupportedException;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static java.nio.charset.StandardCharsets.*;
 
 public class SevenZArchiverTest extends AbstractTestCase {
     private File target;
@@ -106,14 +106,14 @@ public class SevenZArchiverTest extends AbstractTestCase {
     }
 
     private void assertDir(final String expectedName, final ArchiveEntry entry) {
-        Assert.assertNotNull(expectedName + " does not exists", entry);
+        assertNotNull(entry, () -> expectedName + " does not exists");
         Assert.assertEquals(expectedName + "/", entry.getName());
         Assert.assertTrue(expectedName + " is not a directory", entry.isDirectory());
     }
 
     private void assertHelloWorld(final String expectedName, final String suffix, final ArchiveEntry entry, final SevenZFile z)
         throws IOException {
-        Assert.assertNotNull(expectedName + " does not exists", entry);
+        assertNotNull(entry, () -> expectedName + " does not exists");
         Assert.assertEquals(expectedName, entry.getName());
         Assert.assertFalse(expectedName + " is a directory", entry.isDirectory());
         final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);

@@ -18,6 +18,9 @@
  */
 package org.apache.commons.compress.archivers.examples;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -27,8 +30,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.stream.Stream;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -39,16 +40,9 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameters;
-import org.junit.runners.Parameterized;
-
-import static java.nio.charset.StandardCharsets.*;
 
 public class ParameterizedArchiverTest extends AbstractTestCase {
 
@@ -144,14 +138,14 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
     }
 
     private void assertDir(final String expectedName, final ArchiveEntry entry) {
-        Assert.assertNotNull(expectedName + " does not exists", entry);
+        assertNotNull(entry, () -> expectedName + " does not exists");
         Assert.assertEquals(expectedName + "/", entry.getName());
         Assert.assertTrue(expectedName + " is not a directory", entry.isDirectory());
     }
 
     private void assertHelloWorld(final String expectedName, final String suffix, final ArchiveEntry entry, final InputStream is)
         throws IOException {
-        Assert.assertNotNull(expectedName + " does not exists", entry);
+        assertNotNull(entry, () -> expectedName + " does not exists");
         Assert.assertEquals(expectedName, entry.getName());
         Assert.assertFalse(expectedName + " is a directory", entry.isDirectory());
         final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
