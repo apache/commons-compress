@@ -24,6 +24,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -31,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.MockEvilInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStream;
@@ -119,12 +119,7 @@ public final class DetectCompressorTestCase {
         assertNotNull(zstd);
         assertTrue(zstd instanceof ZstdCompressorInputStream);
 
-        try {
-            factory.createCompressorInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
-            fail("No exception thrown for an empty input stream");
-        } catch (final CompressorException e) {
-            // expected
-        }
+        assertThrows(CompressorException.class, () -> factory.createCompressorInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)));
     }
 
     @Test
@@ -145,12 +140,7 @@ public final class DetectCompressorTestCase {
         assertEquals(CompressorStreamFactory.Z, detect("COMPRESS-386"));
         assertEquals(CompressorStreamFactory.LZMA, detect("COMPRESS-382"));
 
-        try {
-            CompressorStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)));
-            fail("shouldn't be able to detect empty stream");
-        } catch (final CompressorException e) {
-            assertEquals("No Compressor found for the stream signature.", e.getMessage());
-        }
+        assertThrows(CompressorException.class, () -> CompressorStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))));
 
         try {
             CompressorStreamFactory.detect(null);
