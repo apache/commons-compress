@@ -34,7 +34,7 @@ import java.util.zip.CheckedOutputStream;
 
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ExplodeSupportTest {
 

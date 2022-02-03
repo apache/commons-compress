@@ -28,7 +28,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * JUnit testcase for a multi-volume zip file.
@@ -115,7 +115,7 @@ public class Maven221MultiVolumeTest {
         }
     }
 
-    @Test(expected=IOException.class)
+    @Test
     public void testRead7ZipMultiVolumeArchiveForFile() throws IOException {
         final File file = getFile("apache-maven-2.2.1.zip.001");
         try (final ZipFile zf = new ZipFile(file)) {

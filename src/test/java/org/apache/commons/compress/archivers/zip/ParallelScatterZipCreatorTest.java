@@ -21,8 +21,8 @@ import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
 import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -54,7 +54,7 @@ public class ParallelScatterZipCreatorTest {
     private File result;
     private File tmp;
 
-    @After
+    @AfterEach
     public void cleanup() {
         tryHardToDelete(result);
         tryHardToDelete(tmp);
@@ -88,7 +88,7 @@ public class ParallelScatterZipCreatorTest {
         callableApi(zipCreator -> zipCreator::submitStreamAwareCallable);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void throwsExceptionWithCompressionLevelTooBig() {
         final int compressLevelTooBig = Deflater.BEST_COMPRESSION + 1;
         final ExecutorService es = Executors.newFixedThreadPool(1);
@@ -97,7 +97,7 @@ public class ParallelScatterZipCreatorTest {
         new ParallelScatterZipCreator(es, supp, compressLevelTooBig);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void throwsExceptionWithCompressionLevelTooSmall() {
         final int compressLevelTooSmall = Deflater.DEFAULT_COMPRESSION - 1;
         final ExecutorService es = Executors.newFixedThreadPool(1);

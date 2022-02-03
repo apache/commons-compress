@@ -18,7 +18,7 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;

@@ -20,34 +20,27 @@ package org.apache.commons.compress.archivers.cpio;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.stream.Stream;
+
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameters;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
 public class CpioArchiveTest {
 
-    @Parameters(name = "using {0}")
-    public static Collection<Object[]> factory() {
-        return Arrays.asList(new Object[]  { CpioConstants.FORMAT_NEW },
-                new Object[]  { CpioConstants.FORMAT_NEW_CRC },
-                new Object[]  { CpioConstants.FORMAT_OLD_ASCII },
-                new Object[]  { CpioConstants.FORMAT_OLD_BINARY });
+    public static Stream<Arguments> factory() {
+        return Stream.of(
+                Arguments.of(CpioConstants.FORMAT_NEW),
+                Arguments.of(CpioConstants.FORMAT_NEW_CRC),
+                Arguments.of(CpioConstants.FORMAT_OLD_ASCII),
+                Arguments.of(CpioConstants.FORMAT_OLD_BINARY));
     }
 
-    private final short format;
-
-    public CpioArchiveTest(final short format) {
-        this.format = format;
-    }
-
-    @Test
-    public void utf18RoundtripTest() throws Exception {
+    @ParameterizedTest
+    @MethodSource("factory")
+    public void utf18RoundtripTest(final short format) throws Exception {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             try (CpioArchiveOutputStream os = new CpioArchiveOutputStream(baos, format, CpioConstants.BLOCK_SIZE,
                 "UTF-16LE")) {

@@ -19,6 +19,7 @@
 package org.apache.commons.compress;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -34,7 +35,7 @@ import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public final class DetectArchiverTestCase extends AbstractTestCase {
 
@@ -42,12 +43,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
 
     @Test
     public void testDetectionNotArchive() throws IOException {
-        try {
-            getStreamFor("test.txt");
-            fail("Expected ArchiveException");
-        } catch (final ArchiveException e) {
-            // expected
-        }
+        assertThrows(ArchiveException.class, () -> getStreamFor("test.txt"));
     }
 
     @Test

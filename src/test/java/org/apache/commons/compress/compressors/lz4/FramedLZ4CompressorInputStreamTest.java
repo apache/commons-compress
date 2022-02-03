@@ -22,7 +22,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -38,7 +38,7 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 public final class FramedLZ4CompressorInputStreamTest
@@ -156,7 +156,7 @@ public final class FramedLZ4CompressorInputStreamTest
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void rejectsNonLZ4Stream() throws IOException {
         try (InputStream a = new FramedLZ4CompressorInputStream(Files.newInputStream(getFile("bla.tar").toPath()))) {
              fail("expected exception");

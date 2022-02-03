@@ -23,7 +23,7 @@ import static org.junit.Assert.assertNotEquals;
 
 import java.math.BigInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * JUnit testcases for org.apache.commons.compress.archivers.zip.ZipEightByteInteger.

@@ -18,11 +18,11 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import org.junit.jupiter.api.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
-
-import org.junit.Test;
 
 /**
  * JUnit testcases for org.apache.commons.compress.archivers.zip.ZipShort.

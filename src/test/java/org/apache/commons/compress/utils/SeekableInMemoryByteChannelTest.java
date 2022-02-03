@@ -18,8 +18,8 @@
  */
 package org.apache.commons.compress.utils;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -94,7 +94,7 @@ public class SeekableInMemoryByteChannelTest {
         c.close();
     }
 
-    @Test(expected = ClosedChannelException.class)
+    @Test
     public void shouldThrowExceptionOnReadingClosedChannel() throws IOException {
         //given
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
@@ -135,7 +135,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
 
-    @Test(expected = ClosedChannelException.class)
+    @Test
     public void shouldThrowExceptionOnWritingToClosedChannel() throws IOException {
         //given
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
@@ -184,7 +184,7 @@ public class SeekableInMemoryByteChannelTest {
         c.close();
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void shouldThrowExceptionWhenSettingIncorrectPosition() throws IOException {
         //given
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
@@ -193,7 +193,7 @@ public class SeekableInMemoryByteChannelTest {
         c.close();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionWhenTruncatingToIncorrectSize() {
         //given
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
@@ -224,8 +224,8 @@ public class SeekableInMemoryByteChannelTest {
     /*
      * <q>ClosedChannelException - If this channel is closed</q>
      */
-    @Test(expected = ClosedChannelException.class)
-    @Ignore("we deliberately violate the spec")
+    @Test
+    @Disabled("we deliberately violate the spec")
     public void throwsClosedChannelExceptionWhenPositionIsReadOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
@@ -238,8 +238,8 @@ public class SeekableInMemoryByteChannelTest {
     /*
      * <q>ClosedChannelException - If this channel is closed</q>
      */
-    @Test(expected = ClosedChannelException.class)
-    @Ignore("we deliberately violate the spec")
+    @Test
+    @Disabled("we deliberately violate the spec")
     public void throwsClosedChannelExceptionWhenSizeIsReadOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
@@ -252,7 +252,7 @@ public class SeekableInMemoryByteChannelTest {
     /*
      * <q>ClosedChannelException - If this channel is closed</q>
      */
-    @Test(expected = ClosedChannelException.class)
+    @Test
     public void throwsClosedChannelExceptionWhenPositionIsSetOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
@@ -299,7 +299,7 @@ public class SeekableInMemoryByteChannelTest {
     /*
      * <q>IOException - If the new position is negative</q>
      */
-    @Test(expected = IOException.class)
+    @Test
     public void throwsIOExceptionWhenPositionIsSetToANegativeValue() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.position(-1);
@@ -393,7 +393,7 @@ public class SeekableInMemoryByteChannelTest {
     /*
      * <q>IllegalArgumentException - If the new position is negative</q>
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void throwsIllegalArgumentExceptionWhenTruncatingToANegativeSize() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.truncate(-1);
@@ -403,8 +403,8 @@ public class SeekableInMemoryByteChannelTest {
     /*
      * <q>ClosedChannelException - If this channel is closed</q>
      */
-    @Test(expected = ClosedChannelException.class)
-    @Ignore("we deliberately violate the spec")
+    @Test
+    @Disabled("we deliberately violate the spec")
     public void throwsClosedChannelExceptionWhenTruncateIsCalledOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();

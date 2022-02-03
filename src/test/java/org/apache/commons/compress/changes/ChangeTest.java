@@ -19,7 +19,7 @@
 package org.apache.commons.compress.changes;
 
 import org.apache.commons.compress.archivers.memory.MemoryArchiveEntry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.PipedInputStream;
 
@@ -33,7 +33,7 @@ import java.io.PipedInputStream;
 public class ChangeTest {
 
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testFailsToCreateChangeTakingFourArgumentsThrowsNullPointerExceptionOne() {
 
         final MemoryArchiveEntry memoryArchiveEntry = new MemoryArchiveEntry("x");
@@ -43,7 +43,7 @@ public class ChangeTest {
     }
 
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testFailsToCreateChangeTakingFourArgumentsThrowsNullPointerExceptionTwo() {
 
         final PipedInputStream pipedInputStream = new PipedInputStream(1);
@@ -53,7 +53,7 @@ public class ChangeTest {
     }
 
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testFailsToCreateChangeTakingThreeArgumentsThrowsNullPointerException() {
 
         final Change change  = new Change(null, (-407));

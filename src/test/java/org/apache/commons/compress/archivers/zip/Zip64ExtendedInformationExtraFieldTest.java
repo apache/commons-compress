@@ -24,7 +24,7 @@ import static org.junit.Assert.assertNull;
 import java.math.BigInteger;
 import java.util.zip.ZipException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class Zip64ExtendedInformationExtraFieldTest {
 

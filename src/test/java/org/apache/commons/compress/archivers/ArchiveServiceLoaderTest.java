@@ -23,16 +23,16 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import org.apache.commons.compress.archivers.TestArchiveStreamProvider.ArchiveInvocationConfirmationException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ArchiveServiceLoaderTest {
 
-    @Test(expected = ArchiveInvocationConfirmationException.class)
+    @Test
     public void testInputStream() throws ArchiveException {
         ArchiveStreamFactory.DEFAULT.createArchiveInputStream("ArchiveTestInput1", new ByteArrayInputStream(new byte[] {}));
     }
 
-    @Test(expected = ArchiveInvocationConfirmationException.class)
+    @Test
     public void testOutputStream() throws ArchiveException {
         ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ArchiveTestOutput1", new ByteArrayOutputStream());
     }

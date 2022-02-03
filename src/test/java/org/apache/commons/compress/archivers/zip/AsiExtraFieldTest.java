@@ -24,7 +24,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * JUnit testcases for org.apache.commons.compress.archivers.zip.AsiExtraField.

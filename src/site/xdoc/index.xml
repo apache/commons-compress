@@ -99,10 +99,10 @@
           <subsection name="What's new in 1.18?">
             <ul>
               <li>The CPIO package now properly handles file names
-              using a mult-byte encoding.</li>
+              using a multi-byte encoding.</li>
               <li>ZipArchiveInputStream can now deal with APK files
               containing an APK signing block.</li>
-              <li>It is no possible to specifiy various parameters
+              <li>It is no possible to specify various parameters
               for Zstd output.</li>
             </ul>
           </subsection>
@@ -124,7 +124,7 @@
             <ul>
               <li>Support for Zstandard compression.</li>
               <li>Read-only support for DEFLATE64 compression as
-              stand-alone CompressorInputStream and as method used in
+              stand-alone <code>CompressorInputStream</code> and as method used in
               ZIP and 7z archives.</li>
             </ul>
           </subsection>
@@ -150,13 +150,13 @@
               <li>The 7z package as well as
               <code>ZipArchiveOutputStream</code> and
               <code>ZipFile</code> can now use
-              <code>SeekableByteChannel</code> when random acces is
+              <code>SeekableByteChannel</code> when random access is
               needed. This allows archives to be read from inputs and
               written to outputs that are seekable but are not
               represented by <code>File</code>s.</li>
               <li>It is now possible to add Compressor- and
-              ArchiverStream implementations using the JDK's
-              ServiceLoader mechanism. Please see
+              <code>ArchiverStream</code> implementations using the JDK's
+              <code>ServiceLoader</code> mechanism. Please see
               <a href="examples.html#Extending_Commons_Compress">Extending Commons Compress</a>.</li>
               <li>Added support for writing the legacy LZMA format as
               compressor stream and inside 7z archives - this requires

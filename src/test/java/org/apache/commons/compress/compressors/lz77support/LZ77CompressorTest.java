@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static java.nio.charset.StandardCharsets.*;
 import static org.junit.Assert.assertArrayEquals;
@@ -268,7 +268,7 @@ public class LZ77CompressorTest {
         assertLiteralBlock("ah!", blocks.get(4));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void cantPrefillTwice() {
         final LZ77Compressor c = new LZ77Compressor(newParameters(128), block -> {
         });
@@ -276,7 +276,7 @@ public class LZ77CompressorTest {
         c.prefill(Arrays.copyOfRange(BLA, 2, 4));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void cantPrefillAfterCompress() throws IOException {
         final LZ77Compressor c = new LZ77Compressor(newParameters(128), block -> {
         });

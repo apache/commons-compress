@@ -18,7 +18,7 @@
  */
 package org.apache.commons.compress.compressors.lz77support;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertEquals;
 
@@ -109,12 +109,12 @@ public class ParametersTest {
         assertEquals(7, p.getMaxLiteralLength());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void windowSizeMustNotBeSmallerThanMinBackReferenceLength() {
         newParameters(128, 200, 300, 400, 500);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void windowSizeMustBeAPowerOfTwo() {
         newParameters(100, 200, 300, 400, 500);
     }

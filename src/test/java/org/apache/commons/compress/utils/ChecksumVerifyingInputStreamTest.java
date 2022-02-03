@@ -16,7 +16,7 @@
  */
 package org.apache.commons.compress.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class ChecksumVerifyingInputStreamTest {
 
 
 
-    @Test(expected = IOException.class)
+    @Test
     public void testReadTakingByteArrayThrowsIOException() throws IOException {
 
         final Adler32 adler32 = new Adler32();
@@ -49,7 +49,7 @@ public class ChecksumVerifyingInputStreamTest {
     }
 
 
-    @Test(expected = IOException.class)
+    @Test
     public void testReadTakingNoArgumentsThrowsIOException() throws IOException {
 
         final CRC32 cRC32_ = new CRC32();

@@ -22,8 +22,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.zip.ZipException;
 
@@ -52,7 +52,7 @@ public class ExtraFieldUtilsTest implements UnixStat {
     private byte[] data;
     private byte[] aLocal;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         a = new AsiExtraField();
         a.setMode(0755);

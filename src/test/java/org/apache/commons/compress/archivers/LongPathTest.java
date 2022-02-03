@@ -28,27 +28,27 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Stream;
 
-import junit.framework.AssertionFailedError;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * Test that can read various tar file examples.
  *
-  * Files must be in resources/longpath, and there must be a file.txt containing
+ * Files must be in resources/longpath, and there must be a file.txt containing
  * the list of files in the archives.
-*/
-@RunWith(Parameterized.class)
+ */
 public class LongPathTest extends AbstractTestCase {
 
     private static final ClassLoader CLASSLOADER = LongPathTest.class.getClassLoader();
@@ -63,37 +63,27 @@ public class LongPathTest extends AbstractTestCase {
         }
     }
 
-    private final File file;
-
-
-
-    public LongPathTest(final String file){
-        this.file = new File(ARCDIR, file);
-    }
-
-    @BeforeClass
+    @BeforeAll
     public static void setUpFileList() throws Exception {
         assertTrue(ARCDIR.exists());
-        final File listing= new File(ARCDIR,"files.txt");
-        assertTrue("files.txt is readable",listing.canRead());
+        final File listing = new File(ARCDIR, "files.txt");
+        assertTrue("files.txt is readable", listing.canRead());
         final BufferedReader br = new BufferedReader(Files.newBufferedReader(listing.toPath()));
         String line;
-        while ((line=br.readLine())!=null){
-            if (!line.startsWith("#")){
+        while ((line = br.readLine()) != null) {
+            if (!line.startsWith("#")) {
                 FILELIST.add(line);
             }
         }
         br.close();
     }
 
-    @Parameters(name = "file={0}")
-    public static Collection<Object[]> data() {
-        final Collection<Object[]> params = new ArrayList<>();
-        for (final String f : ARCDIR.list((dir, name) -> !name.endsWith(".txt")))
-        {
-            params.add(new Object[] { f });
+    public static Stream<Arguments> data() {
+        final Collection<Arguments> params = new ArrayList<>();
+        for (final String fileName : ARCDIR.list((dir, name) -> !name.endsWith(".txt"))) {
+            params.add(Arguments.of(new File(ARCDIR, fileName)));
         }
-      return params;
+        return params.stream();
     }
 
     @Override
@@ -107,8 +97,9 @@ public class LongPathTest extends AbstractTestCase {
         return entry.getName();
     }
 
-    @Test
-    public void testArchive() throws Exception {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testArchive(final File file) throws Exception {
         @SuppressWarnings("unchecked") // fileList is of correct type
         final
         ArrayList<String> expected = (ArrayList<String>) FILELIST.clone();

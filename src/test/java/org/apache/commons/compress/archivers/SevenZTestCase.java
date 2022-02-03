@@ -32,8 +32,8 @@ import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.sevenz.SevenZMethod;
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
 import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SevenZTestCase extends AbstractTestCase {
 
@@ -46,7 +46,7 @@ public class SevenZTestCase extends AbstractTestCase {
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         output = new File(dir, "bla.7z");

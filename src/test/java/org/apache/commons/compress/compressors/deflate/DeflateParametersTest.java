@@ -19,7 +19,7 @@
 package org.apache.commons.compress.compressors.deflate;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DeflateParametersTest {
 
@@ -30,13 +30,13 @@ public class DeflateParametersTest {
         Assert.assertEquals(5, p.getCompressionLevel());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldNotBeAbleToSetCompressionLevelToANegativeValue() {
         final DeflateParameters p = new DeflateParameters();
         p.setCompressionLevel(-2);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldNotBeAbleToSetCompressionLevelToADoubleDigitValue() {
         final DeflateParameters p = new DeflateParameters();
         p.setCompressionLevel(12);

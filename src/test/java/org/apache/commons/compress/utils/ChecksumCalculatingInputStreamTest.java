@@ -16,7 +16,7 @@
  */
 package org.apache.commons.compress.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -107,7 +107,7 @@ public class ChecksumCalculatingInputStreamTest {
     }
 
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testClassInstantiationWithParameterBeingNullThrowsNullPointerExceptionOne() {
 
         final ChecksumCalculatingInputStream checksumCalculatingInputStream = new ChecksumCalculatingInputStream(null,null);
@@ -116,7 +116,7 @@ public class ChecksumCalculatingInputStreamTest {
     }
 
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testClassInstantiationWithParameterBeingNullThrowsNullPointerExceptionTwo() {
 
         final ChecksumCalculatingInputStream checksumCalculatingInputStream = new ChecksumCalculatingInputStream(null,new ByteArrayInputStream(new byte[1]));
@@ -125,7 +125,7 @@ public class ChecksumCalculatingInputStreamTest {
     }
 
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testClassInstantiationWithParameterBeingNullThrowsNullPointerExceptionThree() {
 
         final ChecksumCalculatingInputStream checksumCalculatingInputStream = new ChecksumCalculatingInputStream(new CRC32(),null);

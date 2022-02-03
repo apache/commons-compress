@@ -26,9 +26,9 @@ import java.nio.file.Files;
 import java.util.Arrays;
 
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static java.nio.charset.StandardCharsets.*;
 import static org.apache.commons.compress.AbstractTestCase.mkdir;
@@ -41,12 +41,12 @@ public class DataDescriptorTest {
 
     private File dir;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         dir = mkdir("ddtest");
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         rmdir(dir);
     }

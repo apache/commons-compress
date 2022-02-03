@@ -41,7 +41,7 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 import static java.nio.charset.StandardCharsets.*;
@@ -67,7 +67,7 @@ public class ExpanderTest extends AbstractTestCase {
         verifyTargetDir();
     }
 
-    @Test(expected = StreamingNotSupportedException.class)
+    @Test
     public void sevenZInputStreamVersion() throws IOException, ArchiveException {
         setup7z();
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
@@ -75,7 +75,7 @@ public class ExpanderTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = StreamingNotSupportedException.class)
+    @Test
     public void sevenZInputStreamVersionWithAutoDetection() throws IOException, ArchiveException {
         setup7z();
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {

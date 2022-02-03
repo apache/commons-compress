@@ -29,7 +29,7 @@ import static org.junit.Assume.assumeTrue;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedInputStream;
 import java.io.File;

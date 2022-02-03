@@ -30,7 +30,7 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.lz77support.Parameters;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public final class SnappyRoundtripTest extends AbstractTestCase {
 

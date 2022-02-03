@@ -20,7 +20,7 @@ package org.apache.commons.compress.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SkipShieldingInputStreamTest {
 

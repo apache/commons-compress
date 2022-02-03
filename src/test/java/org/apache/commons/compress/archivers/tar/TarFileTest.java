@@ -36,7 +36,7 @@ import java.util.zip.GZIPInputStream;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -141,7 +141,7 @@ public class TarFileTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void shouldThrowAnExceptionOnTruncatedEntries() throws Exception {
         final File dir = mkdir("COMPRESS-279");
         try (final TarFile tarFile = new TarFile(getPath("COMPRESS-279.tar"))) {
@@ -294,37 +294,37 @@ public class TarFileTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testParseTarWithSpecialPaxHeaders() throws IOException {
         try (final TarFile tarFile = new TarFile(getPath("COMPRESS-530.tar"))) {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testParseTarWithNonNumberPaxHeaders() throws IOException {
         try (TarFile tarFile = new TarFile(getPath("COMPRESS-529.tar"))) {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testParseTarTruncatedInPadding() throws IOException {
         try (TarFile tarFile = new TarFile(getPath("COMPRESS-544_truncated_in_padding.tar"))) {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testParseTarTruncatedInContent() throws IOException {
         try (TarFile tarFile = new TarFile(getPath("COMPRESS-544_truncated_in_content.tar"))) {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testThrowExceptionWithNullEntry() throws IOException {
         try (TarFile tarFile = new TarFile(getPath("COMPRESS-554.tar"))) {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testThrowException() throws IOException {
         try (TarFile tarFile = new TarFile(getPath("COMPRESS-553.tar"))) {
         }
@@ -356,7 +356,7 @@ public class TarFileTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void rejectsArchivesWithNegativeSizes() throws Exception {
         try (TarFile tf = new TarFile(getFile("COMPRESS-569.tar"))) {
         }

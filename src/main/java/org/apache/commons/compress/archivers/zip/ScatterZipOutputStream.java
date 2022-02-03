@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -186,7 +187,18 @@ public class ScatterZipOutputStream implements Closeable {
      * @throws FileNotFoundException if the file cannot be found
      */
     public static ScatterZipOutputStream fileBased(final File file) throws FileNotFoundException {
-        return fileBased(file, Deflater.DEFAULT_COMPRESSION);
+        return pathBased(file.toPath(), Deflater.DEFAULT_COMPRESSION);
+    }
+
+    /**
+     * Create a {@link ScatterZipOutputStream} with default compression level that is backed by a file
+     * @param path The path to offload compressed data into.
+     * @return A ScatterZipOutputStream that is ready for use.
+     * @throws FileNotFoundException if the path cannot be found
+     * @since 1.22
+     */
+    public static ScatterZipOutputStream pathBased(final Path path) throws FileNotFoundException {
+        return pathBased(path, Deflater.DEFAULT_COMPRESSION);
     }
 
     /**
@@ -198,7 +210,19 @@ public class ScatterZipOutputStream implements Closeable {
      * @throws FileNotFoundException if the file cannot be found
      */
     public static ScatterZipOutputStream fileBased(final File file, final int compressionLevel) throws FileNotFoundException {
-        final ScatterGatherBackingStore bs = new FileBasedScatterGatherBackingStore(file);
+        return pathBased(file.toPath(), compressionLevel);
+    }
+
+    /**
+     * Create a {@link ScatterZipOutputStream} that is backed by a file
+     * @param path The path to offload compressed data into.
+     * @param compressionLevel The compression level to use, @see #Deflater
+     * @return A ScatterZipOutputStream that is ready for use.
+     * @throws FileNotFoundException if the path cannot be found
+     * @since 1.22
+     */
+    public static ScatterZipOutputStream pathBased(final Path path, final int compressionLevel) throws FileNotFoundException {
+        final ScatterGatherBackingStore bs = new FileBasedScatterGatherBackingStore(path);
         // lifecycle is bound to the ScatterZipOutputStream returned
         final StreamCompressor sc = StreamCompressor.create(compressionLevel, bs); //NOSONAR
         return new ScatterZipOutputStream(bs, sc);

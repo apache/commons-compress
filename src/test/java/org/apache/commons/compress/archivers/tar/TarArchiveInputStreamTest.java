@@ -45,7 +45,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TarArchiveInputStreamTest extends AbstractTestCase {
 
@@ -161,7 +161,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void shouldThrowAnExceptionOnTruncatedEntries() throws Exception {
         final File dir = mkdir("COMPRESS-279");
         final TarArchiveInputStream is = getTestStream("/COMPRESS-279.tar");
@@ -354,7 +354,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testParseTarWithSpecialPaxHeaders() throws IOException {
         try (InputStream in = Files.newInputStream(getFile("COMPRESS-530.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
@@ -363,7 +363,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testParseTarWithNonNumberPaxHeaders() throws IOException {
         try (InputStream in = Files.newInputStream(getFile("COMPRESS-529.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
@@ -371,7 +371,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testParseTarTruncatedInPadding() throws IOException {
         try (InputStream in = Files.newInputStream(getFile("COMPRESS-544_truncated_in_padding.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
@@ -380,7 +380,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testParseTarTruncatedInContent() throws IOException {
         try (InputStream in = Files.newInputStream(getFile("COMPRESS-544_truncated_in_content.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
@@ -389,7 +389,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testThrowExceptionWithNullEntry() throws IOException {
         try (InputStream in = Files.newInputStream(getFile("COMPRESS-554.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
@@ -398,7 +398,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testThrowException() throws IOException {
         try (InputStream in = Files.newInputStream(getFile("COMPRESS-553.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
@@ -433,7 +433,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void rejectsArchivesWithNegativeSizes() throws Exception {
         try (InputStream in = Files.newInputStream(getFile("COMPRESS-569.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {

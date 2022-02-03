@@ -34,7 +34,7 @@ import java.util.zip.CRC32;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.CharsetNames;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class UTF8ZipFilesTest extends AbstractTestCase {
 

@@ -52,7 +52,7 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 public class SevenZFileTest extends AbstractTestCase {
@@ -319,7 +319,7 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = MemoryLimitException.class)
+    @Test
     public void limitExtractionMemory() throws IOException {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"),
             SevenZFileOptions.builder().withMaxMemoryLimitInKb(1).build())) {

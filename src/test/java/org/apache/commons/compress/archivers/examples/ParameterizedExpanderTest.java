@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers.examples;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -27,8 +29,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -37,37 +38,27 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runners.Parameterized.Parameters;
-import org.junit.runners.Parameterized;
 
-import static java.nio.charset.StandardCharsets.*;
-
-@RunWith(Parameterized.class)
 public class ParameterizedExpanderTest extends AbstractTestCase {
 
     // 7z and ZIP using ZipFile is in ExpanderTest
     @Parameters(name = "format={0}")
-    public static Collection<Object[]> data() {
-        return Arrays.asList(
-            new Object[] { "tar" },
-            new Object[] { "cpio" },
-            new Object[] { "zip" }
+    public static Stream<Arguments> data() {
+        return Stream.of(
+                   Arguments.of("tar"),
+                   Arguments.of("cpio"),
+                   Arguments.of("zip")
         );
     }
 
-    private final String format;
     private File archive;
 
-    public ParameterizedExpanderTest(final String format) {
-        this.format = format;
-    }
-
-    @Before
-    @Override
-    public void setUp() throws Exception {
+    public void setUp(final String format) throws Exception {
         super.setUp();
         archive = new File(dir, "test." + format);
         final File dummy = new File(dir, "x");
@@ -92,44 +83,62 @@ public class ParameterizedExpanderTest extends AbstractTestCase {
         }
     }
 
-    @Test
-    public void fileVersion() throws IOException, ArchiveException {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void fileVersion(final String format) throws Exception {
+        // TODO How to parameterize a BeforeEach method?
+        setUp(format);
         new Expander().expand(format, archive, resultDir);
         verifyTargetDir();
     }
 
-    @Test
-    public void fileVersionWithAutoDetection() throws IOException, ArchiveException {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void fileVersionWithAutoDetection(final String format) throws Exception {
+        // TODO How to parameterize a BeforeEach method?
+        setUp(format);
         new Expander().expand(archive, resultDir);
         verifyTargetDir();
     }
 
-    @Test
-    public void inputStreamVersion() throws IOException, ArchiveException {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void inputStreamVersion(final String format) throws Exception {
+        // TODO How to parameterize a BeforeEach method?
+        setUp(format);
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
             new Expander().expand(format, i, resultDir);
         }
         verifyTargetDir();
     }
 
-    @Test
-    public void inputStreamVersionWithAutoDetection() throws IOException, ArchiveException {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void inputStreamVersionWithAutoDetection(final String format) throws Exception {
+        // TODO How to parameterize a BeforeEach method?
+        setUp(format);
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
             new Expander().expand(i, resultDir);
         }
         verifyTargetDir();
     }
 
-    @Test
-    public void channelVersion() throws IOException, ArchiveException {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void channelVersion(final String format) throws Exception {
+        // TODO How to parameterize a BeforeEach method?
+        setUp(format);
         try (SeekableByteChannel c = FileChannel.open(archive.toPath(), StandardOpenOption.READ)) {
             new Expander().expand(format, c, resultDir);
         }
         verifyTargetDir();
     }
 
-    @Test
-    public void archiveInputStreamVersion() throws IOException, ArchiveException {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void archiveInputStreamVersion(final String format) throws Exception {
+        // TODO How to parameterize a BeforeEach method?
+        setUp(format);
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()));
              ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, i)) {
             new Expander().expand(ais, resultDir);

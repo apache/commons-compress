@@ -18,48 +18,42 @@
  */
 package org.apache.commons.compress.compressors;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import static java.nio.charset.StandardCharsets.*;
-
-@RunWith(Parameterized.class)
 public class CompressorStreamFactoryRoundtripTest {
 
-    @Parameters(name = "{0}")
-    public static String[] data() {
-        return new String[] { //
-                CompressorStreamFactory.BZIP2, //
-                CompressorStreamFactory.DEFLATE, //
-                CompressorStreamFactory.GZIP, //
+    public static Stream<Arguments> data() {
+        // @formatter:off
+        return Stream.of(
+                Arguments.of(CompressorStreamFactory.BZIP2),
+                Arguments.of(CompressorStreamFactory.DEFLATE),
+                Arguments.of(CompressorStreamFactory.GZIP),
                 // CompressorStreamFactory.LZMA, // Not implemented yet
                 // CompressorStreamFactory.PACK200, // Bug
                 // CompressorStreamFactory.SNAPPY_FRAMED, // Not implemented yet
                 // CompressorStreamFactory.SNAPPY_RAW, // Not implemented yet
-                CompressorStreamFactory.XZ, //
+                Arguments.of(CompressorStreamFactory.XZ)
                 // CompressorStreamFactory.Z, // Not implemented yet
-        };
+        );
+        // @formatter:on
     }
 
-    private final String compressorName;
-
-    public CompressorStreamFactoryRoundtripTest(final String compressorName) {
-        this.compressorName = compressorName;
-    }
-
-    @Test
-    public void testCompressorStreamFactoryRoundtrip() throws Exception {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testCompressorStreamFactoryRoundtrip(final String compressorName) throws Exception {
         final CompressorStreamProvider factory = new CompressorStreamFactory();
         final ByteArrayOutputStream compressedOs = new ByteArrayOutputStream();
-        final CompressorOutputStream compressorOutputStream = factory.createCompressorOutputStream(compressorName,
-                compressedOs);
+        final CompressorOutputStream compressorOutputStream = factory.createCompressorOutputStream(compressorName, compressedOs);
         final String fixture = "The quick brown fox jumps over the lazy dog";
         compressorOutputStream.write(fixture.getBytes(UTF_8));
         compressorOutputStream.flush();

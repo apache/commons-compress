@@ -25,6 +25,10 @@ import static org.ops4j.pax.exam.CoreOptions.composite;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
+import java.lang.reflect.Method;
+
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -32,9 +36,6 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-
-import java.lang.reflect.Method;
-import javax.inject.Inject;
 
 @RunWith(PaxExam.class)
 public class OsgiITest {

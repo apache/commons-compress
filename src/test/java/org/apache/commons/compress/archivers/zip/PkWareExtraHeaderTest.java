@@ -23,7 +23,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.apache.commons.compress.archivers.zip.PKWareExtraHeader.EncryptionAlgorithm;
 import org.apache.commons.compress.archivers.zip.PKWareExtraHeader.HashAlgorithm;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PkWareExtraHeaderTest {
 

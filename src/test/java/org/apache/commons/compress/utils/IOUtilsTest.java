@@ -27,10 +27,8 @@ import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 
-import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
-
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class IOUtilsTest {
 
@@ -80,7 +78,7 @@ public class IOUtilsTest {
         Assert.assertArrayEquals(source, b.array());
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void readFullyOnChannelThrowsEof() throws IOException {
         final ByteBuffer b = ByteBuffer.allocate(21);
         final byte[] source = new byte[20];
@@ -90,12 +88,12 @@ public class IOUtilsTest {
         readFully(source, b);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void copyThrowsOnZeroBufferSize() throws IOException {
         IOUtils.copy(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), new ByteArrayOutputStream(), 0);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void copyRangeThrowsOnZeroBufferSize() throws IOException {
         IOUtils.copyRange(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 5, new ByteArrayOutputStream(), 0);
     }

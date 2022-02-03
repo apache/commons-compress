@@ -39,7 +39,7 @@ import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.hamcrest.core.IsInstanceOf;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class FixedLengthBlockOutputStreamTest {
 

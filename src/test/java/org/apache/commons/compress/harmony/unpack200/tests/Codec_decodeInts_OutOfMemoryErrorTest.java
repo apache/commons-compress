@@ -22,8 +22,8 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200Strategy;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests https://issues.apache.org/jira/browse/COMPRESS-599.
@@ -64,7 +64,7 @@ import org.junit.Test;
   at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:40)}
  * </pre>
  */
-@Ignore
+@Disabled
 public class Codec_decodeInts_OutOfMemoryErrorTest {
     private static final String BASE64_BYTES = "yv7QDQeW0ABgfwDuwOn8QwIGAAIBAQAAd9zc3Nzc3Nzc3Nzc3Nzc3NxuZXR3YXJl3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3GluZG93cwAAAwMUAxUDZmVzdA0K";
 

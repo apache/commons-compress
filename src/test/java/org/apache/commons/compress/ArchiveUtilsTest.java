@@ -20,7 +20,7 @@ package org.apache.commons.compress;
 
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.utils.ArchiveUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -138,7 +138,7 @@ public class ArchiveUtilsTest extends AbstractTestCase {
 
     }
 
-    @Test(expected = StringIndexOutOfBoundsException.class)
+    @Test
     public void testToAsciiStringThrowsStringIndexOutOfBoundsException() {
 
         final byte[] byteArray = new byte[3];

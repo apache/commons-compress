@@ -23,16 +23,16 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import org.apache.commons.compress.compressors.TestCompressorStreamProvider.InvocationConfirmationException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CompressorServiceLoaderTest {
 
-    @Test(expected = InvocationConfirmationException.class)
+    @Test
     public void testInputStream() throws CompressorException {
         new CompressorStreamFactory().createCompressorInputStream("TestInput1", new ByteArrayInputStream(new byte[] {}));
     }
 
-    @Test(expected = InvocationConfirmationException.class)
+    @Test
     public void testOutputStream() throws CompressorException {
         new CompressorStreamFactory().createCompressorOutputStream("TestOutput1", new ByteArrayOutputStream());
     }

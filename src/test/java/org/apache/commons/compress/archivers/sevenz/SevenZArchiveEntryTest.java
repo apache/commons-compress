@@ -18,23 +18,23 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
 public class SevenZArchiveEntryTest {
 
-    @Test(expected=UnsupportedOperationException.class)
+    @Test
     public void shouldThrowIfNoLastModifiedDateIsSet() {
         new SevenZArchiveEntry().getLastModifiedDate();
     }
 
-    @Test(expected=UnsupportedOperationException.class)
+    @Test
     public void shouldThrowIfNoCreationDateIsSet() {
         new SevenZArchiveEntry().getCreationDate();
     }
 
-    @Test(expected=UnsupportedOperationException.class)
+    @Test
     public void shouldThrowIfNoAccessDateIsSet() {
         new SevenZArchiveEntry().getAccessDate();
     }

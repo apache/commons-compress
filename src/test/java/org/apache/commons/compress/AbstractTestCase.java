@@ -42,8 +42,8 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 public abstract class AbstractTestCase {
 
@@ -55,7 +55,7 @@ public abstract class AbstractTestCase {
 
     protected final ArchiveStreamFactory factory = ArchiveStreamFactory.DEFAULT;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         dir = mkdir("dir");
         resultDir = mkdir("dir-result");
@@ -84,7 +84,7 @@ public abstract class AbstractTestCase {
         return getFile(path).toPath();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         rmdir(dir);
         rmdir(resultDir);

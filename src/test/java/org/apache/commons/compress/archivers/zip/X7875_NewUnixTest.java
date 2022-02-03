@@ -19,8 +19,8 @@
 package org.apache.commons.compress.archivers.zip;
 
 import org.apache.commons.compress.utils.ByteUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Enumeration;
@@ -39,7 +39,7 @@ public class X7875_NewUnixTest {
 
     private X7875_NewUnix xf;
 
-    @Before
+    @BeforeEach
     public void before() {
         xf = new X7875_NewUnix();
     }

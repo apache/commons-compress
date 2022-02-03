@@ -24,7 +24,7 @@ import java.util.Enumeration;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class Deflate64BugsTest {
 

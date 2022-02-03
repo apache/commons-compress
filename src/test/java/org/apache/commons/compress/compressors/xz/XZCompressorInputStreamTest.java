@@ -27,7 +27,7 @@ import java.nio.file.Files;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class XZCompressorInputStreamTest {
     @Test

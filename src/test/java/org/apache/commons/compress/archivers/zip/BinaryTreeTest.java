@@ -21,13 +21,13 @@ package org.apache.commons.compress.archivers.zip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BinaryTreeTest {
 
@@ -49,28 +49,15 @@ public class BinaryTreeTest {
         assertEquals(6, tree.read(stream));
         assertEquals(7, tree.read(stream));
     }
+
     @Test
-    public void testExceptions()  {
-         BinaryTree binaryFinary = new BinaryTree(4);
-         binaryFinary.addLeaf(0,0,0,1);
-        try {
-            binaryFinary.addLeaf(0,0,0,1);
-            fail("should have thrown illegalArgumentException");
-        } catch (final IllegalArgumentException e) {
-        }
+    public void testExceptions() {
+        final BinaryTree binaryFinary = new BinaryTree(4);
+        binaryFinary.addLeaf(0, 0, 0, 1);
+        assertThrows(IllegalArgumentException.class, () -> binaryFinary.addLeaf(0, 0, 0, 1));
 
-        final InputStream is = new ByteArrayInputStream(new byte[]{});
-        try {
-            BinaryTree.decode(is,0);
-            fail("should have thrown IOException");
-        } catch (final IOException e) {
-
-        }
-        binaryFinary = new BinaryTree(4);
-        try {
-            binaryFinary.read(new BitStream(new ByteArrayInputStream(new byte[] {0})));
-            fail("expected read fail");
-        } catch (final IOException e) {
-        }
+        final InputStream is = new ByteArrayInputStream(new byte[] {});
+        assertThrows(IOException.class, () -> BinaryTree.decode(is, 0));
+        assertThrows(IOException.class, () -> new BinaryTree(4).read(new BitStream(new ByteArrayInputStream(new byte[] { 0 }))));
     }
 }

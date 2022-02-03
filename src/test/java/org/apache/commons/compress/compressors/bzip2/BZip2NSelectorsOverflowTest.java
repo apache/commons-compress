@@ -19,7 +19,7 @@
 package org.apache.commons.compress.compressors.bzip2;
 
 import org.apache.commons.compress.AbstractTestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.InputStream;

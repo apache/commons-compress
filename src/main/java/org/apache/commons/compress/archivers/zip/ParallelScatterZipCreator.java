@@ -22,8 +22,9 @@ import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
 import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Deque;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -66,7 +67,7 @@ public class ParallelScatterZipCreator {
 
         @Override
         public ScatterGatherBackingStore get() throws IOException {
-            final File tempFile = File.createTempFile("parallelscatter", "n" + storeNum.incrementAndGet());
+            final Path tempFile = Files.createTempFile("parallelscatter", "n" + storeNum.incrementAndGet());
             return new FileBasedScatterGatherBackingStore(tempFile);
         }
     }

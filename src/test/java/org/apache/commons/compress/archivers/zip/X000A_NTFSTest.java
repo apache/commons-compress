@@ -17,7 +17,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 

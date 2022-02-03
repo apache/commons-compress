@@ -21,19 +21,21 @@ package org.apache.commons.compress.utils;
 import org.apache.commons.compress.archivers.zip.ZipSplitReadOnlySeekableByteChannel;
 import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.apache.commons.compress.AbstractTestCase.getPath;
 
 public class ZipSplitReadOnlySeekableByteChannelTest {
     @Rule
@@ -177,5 +179,32 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
         channels.add(Files.newByteChannel(lastFile.toPath(), StandardOpenOption.READ));
 
         return channels;
+    }
+
+    @Test
+    public void forPathsThrowsOnNullArg() throws IOException {
+        ZipSplitReadOnlySeekableByteChannel.forPaths(null);
+    }
+
+    @Test
+    public void forPathsOfTwoParametersThrowsOnNullArg() throws IOException {
+        ZipSplitReadOnlySeekableByteChannel.forPaths(null, null);
+    }
+
+    @Test
+    public void forPathsReturnCorrectClass() throws IOException {
+        final Path firstFile = getPath("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
+        final Path secondFile = getPath("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
+        final Path lastFile = getPath("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
+
+        final ArrayList<Path> list = new ArrayList<>();
+        list.add(firstFile);
+        list.add(secondFile);
+
+        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forPaths(lastFile, list);
+        Assert.assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
+
+        channel = ZipSplitReadOnlySeekableByteChannel.forPaths(firstFile, secondFile, lastFile);
+        Assert.assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
     }
 }

@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.utils.ByteUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -48,7 +48,7 @@ public class AbstractLZ77CompressorInputStreamTest {
         }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void cantPrefillAfterDataHasBeenRead() throws IOException {
         final byte[] data = new byte[] { 1, 2, 3, 4 };
         try (TestStream s = new TestStream(new ByteArrayInputStream(data))) {

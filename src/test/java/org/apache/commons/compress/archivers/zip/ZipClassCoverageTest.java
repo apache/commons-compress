@@ -21,12 +21,12 @@ package org.apache.commons.compress.archivers.zip;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import org.hamcrest.core.IsInstanceOf;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ZipClassCoverageTest {
 

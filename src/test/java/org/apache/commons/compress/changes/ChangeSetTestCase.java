@@ -39,7 +39,7 @@ import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Checks several ChangeSet business logics.
