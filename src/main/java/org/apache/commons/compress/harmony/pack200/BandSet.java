@@ -19,7 +19,6 @@ package org.apache.commons.compress.harmony.pack200;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -365,8 +364,7 @@ public abstract class BandSet {
 
         // Sort the favoured list with the most commonly occurring first
         if (distinctValues.size() > 255) {
-            Collections.sort(favoured,
-                (arg0, arg1) -> ((Integer) distinctValues.get(arg1)).compareTo((Integer) distinctValues.get(arg0)));
+            favoured.sort((arg0, arg1) -> ((Integer) distinctValues.get(arg1)).compareTo((Integer) distinctValues.get(arg0)));
         }
 
         final IntList unfavoured = new IntList();

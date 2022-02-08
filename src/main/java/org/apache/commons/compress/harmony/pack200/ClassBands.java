@@ -419,10 +419,10 @@ public class ClassBands extends BandSet {
             final NewAttributeBands bands1 = (NewAttributeBands) arg1;
             return bands0.getFlagIndex() - bands1.getFlagIndex();
         };
-        Collections.sort(classAttributeBands, comparator);
-        Collections.sort(methodAttributeBands, comparator);
-        Collections.sort(fieldAttributeBands, comparator);
-        Collections.sort(codeAttributeBands, comparator);
+        classAttributeBands.sort(comparator);
+        methodAttributeBands.sort(comparator);
+        fieldAttributeBands.sort(comparator);
+        codeAttributeBands.sort(comparator);
 
         for (Object classAttributeBand : classAttributeBands) {
             final NewAttributeBands bands = (NewAttributeBands) classAttributeBand;

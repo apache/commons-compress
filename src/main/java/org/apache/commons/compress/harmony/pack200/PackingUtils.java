@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -217,7 +216,7 @@ public class PackingUtils {
 
         // Sort files by name, "META-INF/MANIFEST.MF" should be put in the 1st
         // position
-        Collections.sort(packingFileList, (arg0, arg1) -> {
+        packingFileList.sort((arg0, arg1) -> {
             if (arg0 instanceof PackingFile && arg1 instanceof PackingFile) {
                 final String fileName0 = ((PackingFile) arg0).getName();
                 final String fileName1 = ((PackingFile) arg1).getName();

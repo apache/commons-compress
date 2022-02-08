@@ -19,7 +19,6 @@ package org.apache.commons.compress.harmony.unpack200;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -218,7 +217,7 @@ public class IcBands extends BandSet {
         // End not part of the spec. Ugh.
 
         // Now order the result as a subsequence of ic_all
-        Collections.sort(relevantTuples, (arg0, arg1) -> {
+        relevantTuples.sort((arg0, arg1) -> {
             final Integer index1 = Integer.valueOf(((IcTuple) arg0).getTupleIndex());
             final Integer index2 = Integer.valueOf(((IcTuple) arg1).getTupleIndex());
             return index1.compareTo(index2);
