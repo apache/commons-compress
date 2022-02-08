@@ -228,7 +228,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
             this.alignmentBoundary = 2;
             break;
         default:
-            throw new IllegalArgumentException("Unknown header type");
+            throw new IllegalArgumentException("Unknown header type " + format);
         }
         this.fileFormat = format;
     }
