@@ -567,8 +567,10 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @since 1.18
      */
     public int getHeaderPadCount(final long nameSize) {
-        if (this.alignmentBoundary == 0) { return 0; }
-        int size = this.headerSize + 1;  // Name has terminating null
+        if (this.alignmentBoundary == 0) {
+            return 0;
+        }
+        int size = this.headerSize + 1; // Name has terminating null
         if (name != null) {
             size += nameSize;
         }
@@ -584,11 +586,13 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *
      * @return the number of bytes needed to pad the data (0,1,2,3)
      */
-    public int getDataPadCount(){
-        if (this.alignmentBoundary == 0) { return 0; }
+    public int getDataPadCount() {
+        if (this.alignmentBoundary == 0) {
+            return 0;
+        }
         final long size = this.filesize;
         final int remain = (int) (size % this.alignmentBoundary);
-        if (remain > 0){
+        if (remain > 0) {
             return this.alignmentBoundary - remain;
         }
         return 0;
@@ -630,9 +634,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return Returns the number of links.
      */
     public long getNumberOfLinks() {
-        return nlink == 0 ?
-            isDirectory() ? 2 : 1
-            : nlink;
+        return nlink == 0 ? isDirectory() ? 2 : 1 : nlink;
     }
 
     /**
@@ -826,8 +828,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public void setSize(final long size) {
         if (size < 0 || size > 0xFFFFFFFFL) {
-            throw new IllegalArgumentException("Invalid entry size <" + size
-                                               + ">");
+            throw new IllegalArgumentException("Invalid entry size <" + size + ">");
         }
         this.filesize = size;
     }
