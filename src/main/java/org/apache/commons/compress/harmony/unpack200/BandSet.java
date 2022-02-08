@@ -106,7 +106,7 @@ public abstract class BandSet {
         // }
         if (codecUsed instanceof PopulationCodec) {
             final PopulationCodec popCodec = (PopulationCodec) codecUsed;
-            final int[] favoured = (int[]) popCodec.getFavoured().clone();
+            final int[] favoured = popCodec.getFavoured().clone();
             Arrays.sort(favoured);
             for (int i = 0; i < band.length; i++) {
                 final boolean favouredValue = Arrays.binarySearch(favoured, band[i]) > -1;
