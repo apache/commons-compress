@@ -118,8 +118,7 @@ class BlockSort {
     private static final int FALLBACK_QSORT_STACK_SIZE = 100;
 
     private static final int STACK_SIZE =
-        QSORT_STACK_SIZE < FALLBACK_QSORT_STACK_SIZE
-        ? FALLBACK_QSORT_STACK_SIZE : QSORT_STACK_SIZE;
+            Math.max(QSORT_STACK_SIZE, FALLBACK_QSORT_STACK_SIZE);
 
     /*
      * Used when sorting. If too many long comparisons happen, we stop sorting,
@@ -317,7 +316,7 @@ class BlockSort {
     }
 
     private int fmin(final int a, final int b) {
-        return a < b ? a : b;
+        return Math.min(a, b);
     }
 
     private void fpush(final int sp, final int lz, final int hz) {
@@ -878,11 +877,9 @@ class BlockSort {
                     stack_dd[sp] = d1;
                     sp++;
                 } else {
-                    int n = ((ltLo - lo) < (unLo - ltLo)) ? (ltLo - lo)
-                        : (unLo - ltLo);
+                    int n = Math.min(ltLo - lo, unLo - ltLo);
                     vswap(fmap, lo, unLo - n, n);
-                    int m = ((hi - gtHi) < (gtHi - unHi)) ? (hi - gtHi)
-                        : (gtHi - unHi);
+                    int m = Math.min(hi - gtHi, gtHi - unHi);
                     vswap(fmap, unLo, hi - m + 1, m);
 
                     n = lo + unLo - ltLo - 1;

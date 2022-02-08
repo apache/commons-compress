@@ -137,7 +137,7 @@ public class ArchiveUtils {
             final byte[] buffer1, final int offset1, final int length1,
             final byte[] buffer2, final int offset2, final int length2,
             final boolean ignoreTrailingNulls){
-        final int minLen=length1 < length2 ? length1 : length2;
+        final int minLen= Math.min(length1, length2);
         for (int i=0; i < minLen; i++){
             if (buffer1[offset1+i] != buffer2[offset2+i]){
                 return false;

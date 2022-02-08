@@ -469,7 +469,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
             return length;
         }
         private static int lengths(final int litLength, final int brLength) {
-            final int l = litLength < 15 ? litLength : 15;
+            final int l = Math.min(litLength, 15);
             final int br = brLength < 4 ? 0 : (brLength < 19 ? brLength - 4 : 15);
             return (l << BlockLZ4CompressorInputStream.SIZE_BITS) | br;
         }

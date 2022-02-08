@@ -1361,7 +1361,7 @@ public class SevenZFile implements Closeable {
                 }
             }
         }
-        stats.numberOfEntriesWithStream = stats.numberOfEntries - (emptyStreams > 0 ? emptyStreams : 0);
+        stats.numberOfEntriesWithStream = stats.numberOfEntries - Math.max(emptyStreams, 0);
     }
 
     private void readFilesInfo(final ByteBuffer header, final Archive archive) throws IOException {
