@@ -19,6 +19,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -153,11 +154,11 @@ public class ClassConstantPool {
 
     private void initialSort() {
         final TreeSet inCpAll = new TreeSet(
-            (arg0, arg1) -> ((ConstantPoolEntry) arg0).getGlobalIndex() - ((ConstantPoolEntry) arg1).getGlobalIndex());
+                Comparator.comparingInt(arg0 -> ((ConstantPoolEntry) arg0).getGlobalIndex()));
         final TreeSet cpUtf8sNotInCpAll = new TreeSet(
-            (arg0, arg1) -> ((CPUTF8) arg0).underlyingString().compareTo(((CPUTF8) arg1).underlyingString()));
+                Comparator.comparing(arg0 -> ((CPUTF8) arg0).underlyingString()));
         final TreeSet cpClassesNotInCpAll = new TreeSet(
-            (arg0, arg1) -> ((CPClass) arg0).getName().compareTo(((CPClass) arg1).getName()));
+                Comparator.comparing(arg0 -> ((CPClass) arg0).getName()));
 
         for (Object entry2 : entries) {
             final ConstantPoolEntry entry = (ConstantPoolEntry) entry2;
