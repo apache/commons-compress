@@ -559,18 +559,18 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the number of bytes needed to pad the header to the alignment boundary.
      *
-     * @param namesize
+     * @param nameSize
      *            The length of the name in bytes, as read in the stream.
      *            Without the trailing zero byte.
      * @return the number of bytes needed to pad the header (0,1,2,3)
      *
      * @since 1.18
      */
-    public int getHeaderPadCount(final long namesize) {
+    public int getHeaderPadCount(final long nameSize) {
         if (this.alignmentBoundary == 0) { return 0; }
         int size = this.headerSize + 1;  // Name has terminating null
         if (name != null) {
-            size += namesize;
+            size += nameSize;
         }
         final int remain = size % this.alignmentBoundary;
         if (remain > 0) {
