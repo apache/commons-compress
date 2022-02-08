@@ -49,10 +49,8 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
      *
      * @param is
      *            An InputStream to read compressed data from
-     *
-     * @throws IOException if reading fails
      */
-    public BlockLZ4CompressorInputStream(final InputStream is) throws IOException {
+    public BlockLZ4CompressorInputStream(final InputStream is) {
         super(is, WINDOW_SIZE);
     }
 

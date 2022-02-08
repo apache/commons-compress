@@ -124,10 +124,9 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * @param windowSize
      *            Size of the window kept for back-references, must be bigger than the biggest offset expected.
      *
-     * @throws IOException if reading fails
      * @throws IllegalArgumentException if windowSize is not bigger than 0
      */
-    public AbstractLZ77CompressorInputStream(final InputStream is, final int windowSize) throws IOException {
+    public AbstractLZ77CompressorInputStream(final InputStream is, final int windowSize) {
         this.in = new CountingInputStream(is);
         if (windowSize <= 0) {
             throw new IllegalArgumentException("windowSize must be bigger than 0");

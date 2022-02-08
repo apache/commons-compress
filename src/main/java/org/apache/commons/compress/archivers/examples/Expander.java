@@ -259,10 +259,9 @@ public class Expander {
      * @param archive the file to expand
      * @param targetDirectory the directory to write to
      * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be read for other reasons
      */
     public void expand(final ArchiveInputStream archive, final File targetDirectory)
-        throws IOException, ArchiveException {
+        throws IOException {
         expand(() -> {
             ArchiveEntry next = archive.getNextEntry();
             while (next != null && !archive.canReadEntryData(next)) {
@@ -278,11 +277,10 @@ public class Expander {
      * @param archive the file to expand
      * @param targetDirectory the directory to write to
      * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be read for other reasons
      * @since 1.21
      */
     public void expand(final TarFile archive, final File targetDirectory)
-        throws IOException, ArchiveException {
+        throws IOException {
         final Iterator<TarArchiveEntry> entryIterator = archive.getEntries().iterator();
         expand(() -> entryIterator.hasNext() ? entryIterator.next() : null,
             (entry, out) -> {
@@ -298,10 +296,9 @@ public class Expander {
      * @param archive the file to expand
      * @param targetDirectory the directory to write to
      * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be read for other reasons
      */
     public void expand(final ZipFile archive, final File targetDirectory)
-        throws IOException, ArchiveException {
+        throws IOException {
         final Enumeration<ZipArchiveEntry> entries = archive.getEntries();
         expand(() -> {
             ZipArchiveEntry next = entries.hasMoreElements() ? entries.nextElement() : null;
@@ -322,10 +319,9 @@ public class Expander {
      * @param archive the file to expand
      * @param targetDirectory the directory to write to
      * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be read for other reasons
      */
     public void expand(final SevenZFile archive, final File targetDirectory)
-        throws IOException, ArchiveException {
+        throws IOException {
         expand(archive::getNextEntry, (entry, out) -> {
             final byte[] buffer = new byte[8192];
             int n;

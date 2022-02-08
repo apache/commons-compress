@@ -93,10 +93,8 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
      *
      * @param os
      *            An OutputStream to read compressed data from
-     *
-     * @throws IOException if reading fails
      */
-    public BlockLZ4CompressorOutputStream(final OutputStream os) throws IOException {
+    public BlockLZ4CompressorOutputStream(final OutputStream os) {
         this(os, createParameterBuilder().build());
     }
 
@@ -107,10 +105,8 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
      *            An OutputStream to read compressed data from
      * @param params
      *            The parameters to use for LZ77 compression.
-     *
-     * @throws IOException if reading fails
      */
-    public BlockLZ4CompressorOutputStream(final OutputStream os, final Parameters params) throws IOException {
+    public BlockLZ4CompressorOutputStream(final OutputStream os, final Parameters params) {
         this.os = os;
         compressor = new LZ77Compressor(params,
             block -> {

@@ -36,9 +36,8 @@ public class DeflateCompressorOutputStream extends CompressorOutputStream {
     /**
      * Creates a Deflate compressed output stream with the default parameters.
      * @param outputStream the stream to wrap
-     * @throws IOException on error
      */
-    public DeflateCompressorOutputStream(final OutputStream outputStream) throws IOException {
+    public DeflateCompressorOutputStream(final OutputStream outputStream) {
         this(outputStream, new DeflateParameters());
     }
 
@@ -46,10 +45,9 @@ public class DeflateCompressorOutputStream extends CompressorOutputStream {
      * Creates a Deflate compressed output stream with the specified parameters.
      * @param outputStream the stream to wrap
      * @param parameters the deflate parameters to apply
-     * @throws IOException on error
      */
     public DeflateCompressorOutputStream(final OutputStream outputStream,
-                                         final DeflateParameters parameters) throws IOException {
+                                         final DeflateParameters parameters) {
         this.deflater = new Deflater(parameters.getCompressionLevel(), !parameters.withZlibHeader());
         this.out = new DeflaterOutputStream(outputStream, deflater);
     }

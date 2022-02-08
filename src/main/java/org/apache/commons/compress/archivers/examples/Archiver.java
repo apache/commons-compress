@@ -104,9 +104,8 @@ public class Archiver {
      * @param target the stream to write the new archive to.
      * @param directory the directory that contains the files to archive.
      * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be created for other reasons
      */
-    public void create(final ArchiveOutputStream target, final File directory) throws IOException, ArchiveException {
+    public void create(final ArchiveOutputStream target, final File directory) throws IOException {
         create(target, directory.toPath(), EMPTY_FileVisitOption);
     }
 
