@@ -384,7 +384,7 @@ public class NewAttributeBands extends BandSet {
 
         @Override
         public void addToAttribute(final int n, final NewAttribute attribute) {
-            long value = band[n];
+            int value = band[n];
             if (tag.equals("B") || tag.equals("FB")) {
                 attribute.addInteger(1, value);
             } else if (tag.equals("SB")) {
@@ -396,18 +396,18 @@ public class NewAttributeBands extends BandSet {
             } else if (tag.equals("I") || tag.equals("FI")) {
                 attribute.addInteger(4, value);
             } else if (tag.equals("SI")) {
-                attribute.addInteger(4, (int) value);
+                attribute.addInteger(4, value);
             } else if (tag.equals("V") || tag.equals("FV") || tag.equals("SV")) {
                 // Don't add V's - they shouldn't be written out to the class
                 // file
             } else if (tag.startsWith("PO")) {
                 final char uint_type = tag.substring(2).toCharArray()[0];
                 final int length = getLength(uint_type);
-                attribute.addBCOffset(length, (int) value);
+                attribute.addBCOffset(length, value);
             } else if (tag.startsWith("P")) {
                 final char uint_type = tag.substring(1).toCharArray()[0];
                 final int length = getLength(uint_type);
-                attribute.addBCIndex(length, (int) value);
+                attribute.addBCIndex(length, value);
             } else if (tag.startsWith("OS")) {
                 final char uint_type = tag.substring(2).toCharArray()[0];
                 final int length = getLength(uint_type);
@@ -416,17 +416,17 @@ public class NewAttributeBands extends BandSet {
                 } else if (length == 2) {
                     value = (short) value;
                 } else if (length == 4) {
-                    value = (int) value;
+                    value = value;
                 }
-                attribute.addBCLength(length, (int) value);
+                attribute.addBCLength(length, value);
             } else if (tag.startsWith("O")) {
                 final char uint_type = tag.substring(1).toCharArray()[0];
                 final int length = getLength(uint_type);
-                attribute.addBCLength(length, (int) value);
+                attribute.addBCLength(length, value);
             }
         }
 
-        long getValue(final int index) {
+        int getValue(final int index) {
             return band[index];
         }
 
@@ -553,7 +553,7 @@ public class NewAttributeBands extends BandSet {
             unionTag.addToAttribute(n, attribute);
             int offset = 0;
             final int[] tagBand = unionTag.band;
-            final long tag = unionTag.getValue(n);
+            final int tag = unionTag.getValue(n);
             boolean defaultCase = true;
             for (Object element2 : unionCases) {
                 final UnionCase element = (UnionCase) element2;
@@ -821,6 +821,10 @@ public class NewAttributeBands extends BandSet {
 
         public UnionCase(final List tags) {
             this.tags = tags;
+        }
+
+        public boolean hasTag(final int i) {
+            return tags.contains(Integer.valueOf(i));
         }
 
         public boolean hasTag(final long l) {
