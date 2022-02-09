@@ -36,6 +36,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPMethodRef;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPNameAndType;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPString;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
+import org.apache.commons.compress.utils.ExactMath;
 
 /**
  * Abstract superclass for a set of bands
@@ -118,7 +119,7 @@ public abstract class BandSet {
                         band[i] -= cardinality;
                     }
                     while (band[i] < bhsd.smallest()) {
-                        band[i] += cardinality;
+                        band[i] = ExactMath.add(band[i], cardinality);
                     }
                 }
             }

@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+import org.apache.commons.compress.utils.ExactMath;
+
 /**
  * A run codec is a grouping of two nested codecs; K values are decoded from the first codec, and the remaining codes
  * are decoded from the remaining codec. Note that since this codec maintains state, the instances are not reusable.
@@ -68,7 +70,7 @@ public class RunCodec extends Codec {
                     value -= cardinality;
                 }
                 while (value < bhsd.smallest()) {
-                    value += cardinality;
+                    value = ExactMath.add(value, cardinality);
                 }
             }
         }
@@ -98,7 +100,7 @@ public class RunCodec extends Codec {
                         band[i] -= cardinality;
                     }
                     while (band[i] < bhsd.smallest()) {
-                        band[i] += cardinality;
+                        band[i] = ExactMath.add(band[i], cardinality);
                     }
                 }
             }
@@ -117,7 +119,7 @@ public class RunCodec extends Codec {
                             band[i] -= cardinality;
                         }
                         while (band[i] < bhsd.smallest()) {
-                            band[i] += cardinality;
+                            band[i] = ExactMath.add(band[i], cardinality);
                         }
                     }
                 }

@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.utils.ExactMath;
 
 /**
  * A cpio archive consists of a sequence of files. There are several types of
@@ -572,7 +573,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         }
         int size = this.headerSize + 1; // Name has terminating null
         if (name != null) {
-            size += nameSize;
+            size = ExactMath.add(size, nameSize);
         }
         final int remain = size % this.alignmentBoundary;
         if (remain > 0) {

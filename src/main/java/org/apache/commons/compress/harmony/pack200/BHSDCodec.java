@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.compress.utils.ExactMath;
+
 /**
  * A BHSD codec is a means of encoding integer values as a sequence of bytes or vice versa using a specified "BHSD"
  * encoding mechanism. It uses a variable-length encoding and a modified sign representation such that small numbers are
@@ -243,7 +245,7 @@ public final class BHSDCodec extends Codec {
                     band[i] -= cardinality;
                 }
                 while (band[i] < smallest) {
-                    band[i] += cardinality;
+                    band[i] = ExactMath.add(band[i], cardinality);
                 }
             }
         }
@@ -260,7 +262,7 @@ public final class BHSDCodec extends Codec {
                     band[i] -= cardinality;
                 }
                 while (band[i] < smallest) {
-                    band[i] += cardinality;
+                    band[i] = ExactMath.add(band[i], cardinality);
                 }
             }
         }

@@ -25,6 +25,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.compress.harmony.pack200.Archive.PackingFile;
 import org.apache.commons.compress.harmony.pack200.Archive.SegmentUnit;
+import org.apache.commons.compress.utils.ExactMath;
 import org.objectweb.asm.ClassReader;
 
 /**
@@ -86,7 +87,7 @@ public class FileBands extends BandSet {
             }
             final byte[] bytes = packingFile.getContents();
             file_size[i] = bytes.length;
-            totalSize += file_size[i];
+            totalSize = ExactMath.add(totalSize, file_size[i]);
 
             // update modification time
             modtime = (packingFile.getModtime() + TimeZone.getDefault().getRawOffset()) / 1000L;
