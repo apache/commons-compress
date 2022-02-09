@@ -33,12 +33,13 @@ public class ExactMath {
     /**
      * Adds two values and throws an exception on overflow.
      *
-     * @param intValue the first value.
-     * @param longValue the second value.
+     * @param x the first value.
+     * @param y the second value.
      * @return addition of both values.
      * @throws ArithmeticException when there is an overflow.
      */
-    public static int add(final int intValue, final long longValue) {
-        return Math.addExact(intValue, Math.toIntExact(longValue));
+    public static int add(final int x, final long y) {
+        return Math.addExact(x, Math.toIntExact(y));
     }
+
 }

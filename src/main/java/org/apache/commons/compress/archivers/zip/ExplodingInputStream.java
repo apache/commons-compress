@@ -24,6 +24,7 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.utils.CloseShieldFilterInputStream;
 import org.apache.commons.compress.utils.CountingInputStream;
+import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 
 /**
@@ -200,7 +201,7 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
                     // EOF
                     return;
                 }
-                length += nextByte;
+                length = ExactMath.add(length, nextByte);
             }
             length += minimumMatchLength;
 

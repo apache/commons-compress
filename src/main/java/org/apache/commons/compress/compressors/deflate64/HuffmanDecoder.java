@@ -17,8 +17,10 @@
  */
 package org.apache.commons.compress.compressors.deflate64;
 
-import org.apache.commons.compress.utils.BitInputStream;
-import org.apache.commons.compress.utils.ByteUtils;
+import static org.apache.commons.compress.compressors.deflate64.HuffmanState.DYNAMIC_CODES;
+import static org.apache.commons.compress.compressors.deflate64.HuffmanState.FIXED_CODES;
+import static org.apache.commons.compress.compressors.deflate64.HuffmanState.INITIAL;
+import static org.apache.commons.compress.compressors.deflate64.HuffmanState.STORED;
 
 import java.io.Closeable;
 import java.io.EOFException;
@@ -27,10 +29,9 @@ import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
-import static org.apache.commons.compress.compressors.deflate64.HuffmanState.DYNAMIC_CODES;
-import static org.apache.commons.compress.compressors.deflate64.HuffmanState.FIXED_CODES;
-import static org.apache.commons.compress.compressors.deflate64.HuffmanState.INITIAL;
-import static org.apache.commons.compress.compressors.deflate64.HuffmanState.STORED;
+import org.apache.commons.compress.utils.BitInputStream;
+import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.compress.utils.ExactMath;
 
 class HuffmanDecoder implements Closeable {
 
@@ -325,14 +326,14 @@ class HuffmanDecoder implements Closeable {
                     final int runMask = RUN_LENGTH_TABLE[symbol - 257];
                     int run = runMask >>> 5;
                     final int runXtra = runMask & 0x1F;
-                    run += readBits(runXtra);
+                    run = ExactMath.add(run, readBits(runXtra));
 
                     final int distSym = nextSymbol(reader, distanceTree);
 
                     final int distMask = DISTANCE_TABLE[distSym];
                     int dist = distMask >>> 4;
                     final int distXtra = distMask & 0xF;
-                    dist += readBits(distXtra);
+                    dist = ExactMath.add(dist, readBits(distXtra));
 
                     if (runBuffer.length < run) {
                         runBuffer = new byte[run];

@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
+import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
@@ -205,7 +206,7 @@ class TapeInputStream extends FilterInputStream {
             }
 
             // do not copy data but still increment counters.
-            readOffset += n;
+            readOffset = ExactMath.add(readOffset, n);
             bytes += n;
         }
 

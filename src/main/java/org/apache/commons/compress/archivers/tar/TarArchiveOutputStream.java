@@ -35,6 +35,7 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CountingOutputStream;
+import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.FixedLengthBlockOutputStream;
 
 import static java.nio.charset.StandardCharsets.*;
@@ -432,7 +433,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 + "' before the '" + currSize
                 + "' bytes specified in the header were written");
         }
-        recordsWritten += (currSize / RECORD_SIZE);
+        recordsWritten = ExactMath.add(recordsWritten, (currSize / RECORD_SIZE));
+
         if (0 != currSize % RECORD_SIZE) {
             recordsWritten++;
         }
