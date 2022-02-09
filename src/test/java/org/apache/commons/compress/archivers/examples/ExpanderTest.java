@@ -158,6 +158,15 @@ public class ExpanderTest extends AbstractTestCase {
         verifyTargetDir();
     }
 
+    @Test
+    public void testCompress603Tar() throws IOException, ArchiveException {
+        setupTarForCompress603();
+        try (TarFile f = new TarFile(archive)) {
+            new Expander().expand(f, resultDir);
+        }
+        verifyTargetDir();
+    }
+
     private void setup7z() throws IOException {
         archive = new File(dir, "test.7z");
         final File dummy = new File(dir, "x");
@@ -223,6 +232,32 @@ public class ExpanderTest extends AbstractTestCase {
             aos.write("Hello, world 1".getBytes(UTF_8));
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/c/e.txt"));
+            aos.write("Hello, world 2".getBytes(UTF_8));
+            aos.closeArchiveEntry();
+            aos.finish();
+        }
+    }
+
+    private void setupTarForCompress603() throws IOException, ArchiveException {
+        archive = new File(dir, "test.tar");
+        final File dummy = new File(dir, "x");
+        try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
+            o.write(new byte[14]);
+        }
+        try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
+                .createArchiveOutputStream("tar", Files.newOutputStream(archive.toPath()))) {
+            aos.putArchiveEntry(aos.createArchiveEntry(dir, "./"));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dir, "./a"));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dir, "./a/b"));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dir, "./a/b/c"));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dummy, "./a/b/d.txt"));
+            aos.write("Hello, world 1".getBytes(UTF_8));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dummy, "./a/b/c/e.txt"));
             aos.write("Hello, world 2".getBytes(UTF_8));
             aos.closeArchiveEntry();
             aos.finish();

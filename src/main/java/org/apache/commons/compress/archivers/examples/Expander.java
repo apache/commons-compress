@@ -346,7 +346,10 @@ public class Expander {
         ArchiveEntry nextEntry = supplier.getNextReadableEntry();
         while (nextEntry != null) {
             final File f = new File(targetDirectory, nextEntry.getName());
-            if (!f.getCanonicalPath().startsWith(targetDirPath)) {
+            // check if targetDirectory and f are the same path - this may
+            // happen if the nextEntry.getName() is "./"
+            if (!f.getCanonicalPath().startsWith(targetDirPath)
+                    && !Files.isSameFile(targetDirectory.toPath(), f.toPath())) {
                 throw new IOException("Expanding " + nextEntry.getName()
                     + " would create file outside of " + targetDirectory);
             }

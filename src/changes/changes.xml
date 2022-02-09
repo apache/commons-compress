@@ -113,6 +113,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="kinow" due-to="Dependabot">
         Bump slf4j-api from 1.7.30 to 1.7.35 #213, #241.
       </action>
+      <action issue="COMPRESS-603" type="fix" date="2022-02-09" dev="Peter Lee" due-to="Matt Sicker">
+        Expander should be able to work if an entry's name is "./".
+      </action>
     </release>
     <release version="1.21" date="2021-07-12"
              description="Release 1.21 (Java 8)
