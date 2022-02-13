@@ -58,6 +58,71 @@ public class Expander {
     }
 
     /**
+     * @param targetDirectory May be null to simulate output to dev/null on Linux and NUL on Windows.
+     */
+    private void expand(final ArchiveEntrySupplier supplier, final EntryWriter writer, final Path targetDirectory)
+        throws IOException {
+        final boolean nullTarget = targetDirectory == null;
+        final Path targetDirPath = nullTarget ? null : targetDirectory.normalize();
+        ArchiveEntry nextEntry = supplier.getNextReadableEntry();
+        while (nextEntry != null) {
+            final Path targetPath = nullTarget ? null : targetDirectory.resolve(nextEntry.getName());
+            // check if targetDirectory and f are the same path - this may
+            // happen if the nextEntry.getName() is "./"
+            if (!nullTarget && !targetPath.normalize().startsWith(targetDirPath) && !Files.isSameFile(targetDirectory, targetPath)) {
+                throw new IOException("Expanding " + nextEntry.getName() + " would create file outside of " + targetDirectory);
+            }
+            if (nextEntry.isDirectory()) {
+                if (!nullTarget && !Files.isDirectory(targetPath) && Files.createDirectories(targetPath) == null) {
+                    throw new IOException("Failed to create directory " + targetPath);
+                }
+            } else {
+                final Path parent = nullTarget ? null : targetPath.getParent();
+                if (!nullTarget && !Files.isDirectory(parent) && Files.createDirectories(parent) == null) {
+                    throw new IOException("Failed to create directory " + parent);
+                }
+                if (nullTarget) {
+                    writer.writeEntryDataTo(nextEntry, null);
+                } else {
+                    try (OutputStream outputStream = Files.newOutputStream(targetPath)) {
+                        writer.writeEntryDataTo(nextEntry, outputStream);
+                    }
+                }
+            }
+            nextEntry = supplier.getNextReadableEntry();
+        }
+    }
+
+    /**
+     * Expands {@code archive} into {@code targetDirectory}.
+     *
+     * @param archive the file to expand
+     * @param targetDirectory the target directory, may be null to simulate output to dev/null on Linux and NUL on Windows.
+     * @throws IOException if an I/O error occurs
+     */
+    public void expand(final ArchiveInputStream archive, final File targetDirectory) throws IOException {
+        expand(archive, toPath(targetDirectory));
+    }
+
+    /**
+     * Expands {@code archive} into {@code targetDirectory}.
+     *
+     * @param archive the file to expand
+     * @param targetDirectory the target directory, may be null to simulate output to dev/null on Linux and NUL on Windows.
+     * @throws IOException if an I/O error occurs
+     * @since 1.22
+     */
+    public void expand(final ArchiveInputStream archive, final Path targetDirectory) throws IOException {
+        expand(() -> {
+            ArchiveEntry next = archive.getNextEntry();
+            while (next != null && !archive.canReadEntryData(next)) {
+                next = archive.getNextEntry();
+            }
+            return next;
+        }, (entry, out) -> IOUtils.copy(archive, out), targetDirectory);
+    }
+
+    /**
      * Expands {@code archive} into {@code targetDirectory}.
      *
      * <p>Tries to auto-detect the archive's format.</p>
@@ -69,66 +134,6 @@ public class Expander {
      */
     public void expand(final File archive, final File targetDirectory) throws IOException, ArchiveException {
         expand(archive.toPath(), toPath(targetDirectory));
-    }
-
-    /**
-     * Expands {@code archive} into {@code targetDirectory}.
-     *
-     * <p>Tries to auto-detect the archive's format.</p>
-     *
-     * @param archive the file to expand
-     * @param targetDirectory the target directory
-     * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be read for other reasons
-     * @since 1.22
-     */
-    public void expand(final Path archive, final Path targetDirectory) throws IOException, ArchiveException {
-        String format = null;
-        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(archive))) {
-            format = ArchiveStreamFactory.detect(inputStream);
-        }
-        expand(format, archive, targetDirectory);
-    }
-
-    /**
-     * Expands {@code archive} into {@code targetDirectory}.
-     *
-     * @param archive the file to expand
-     * @param targetDirectory the target directory
-     * @param format the archive format. This uses the same format as
-     * accepted by {@link ArchiveStreamFactory}.
-     * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be read for other reasons
-     */
-    public void expand(final String format, final File archive, final File targetDirectory) throws IOException, ArchiveException {
-        expand(format, archive.toPath(), toPath(targetDirectory));
-    }
-
-    private Path toPath(final File targetDirectory) {
-        return targetDirectory != null ? targetDirectory.toPath() : null;
-    }
-
-    /**
-     * Expands {@code archive} into {@code targetDirectory}.
-     *
-     * @param archive the file to expand
-     * @param targetDirectory the target directory
-     * @param format the archive format. This uses the same format as
-     * accepted by {@link ArchiveStreamFactory}.
-     * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be read for other reasons
-     * @since 1.22
-     */
-    public void expand(final String format, final Path archive, final Path targetDirectory) throws IOException, ArchiveException {
-        if (prefersSeekableByteChannel(format)) {
-            try (SeekableByteChannel channel = FileChannel.open(archive, StandardOpenOption.READ)) {
-                expand(format, channel, targetDirectory, CloseableConsumer.CLOSING_CONSUMER);
-            }
-            return;
-        }
-        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(archive))) {
-            expand(format, inputStream, targetDirectory, CloseableConsumer.CLOSING_CONSUMER);
-        }
     }
 
     /**
@@ -177,6 +182,71 @@ public class Expander {
             expand(c.track(ArchiveStreamFactory.DEFAULT.createArchiveInputStream(archive)),
                 targetDirectory);
         }
+    }
+
+    /**
+     * Expands {@code archive} into {@code targetDirectory}.
+     *
+     * <p>Tries to auto-detect the archive's format.</p>
+     *
+     * @param archive the file to expand
+     * @param targetDirectory the target directory
+     * @throws IOException if an I/O error occurs
+     * @throws ArchiveException if the archive cannot be read for other reasons
+     * @since 1.22
+     */
+    public void expand(final Path archive, final Path targetDirectory) throws IOException, ArchiveException {
+        String format = null;
+        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(archive))) {
+            format = ArchiveStreamFactory.detect(inputStream);
+        }
+        expand(format, archive, targetDirectory);
+    }
+
+    /**
+     * Expands {@code archive} into {@code targetDirectory}.
+     *
+     * @param archive the file to expand
+     * @param targetDirectory the target directory, may be null to simulate output to dev/null on Linux and NUL on Windows.
+     * @throws IOException if an I/O error occurs
+     */
+    public void expand(final SevenZFile archive, final File targetDirectory) throws IOException {
+        expand(archive, toPath(targetDirectory));
+    }
+
+    /**
+     * Expands {@code archive} into {@code targetDirectory}.
+     *
+     * @param archive the file to expand
+     * @param targetDirectory the target directory, may be null to simulate output to dev/null on Linux and NUL on Windows.
+     * @throws IOException if an I/O error occurs
+     * @since 1.22
+     */
+    public void expand(final SevenZFile archive, final Path targetDirectory)
+        throws IOException {
+        expand(archive::getNextEntry, (entry, out) -> {
+            final byte[] buffer = new byte[8192];
+            int n;
+            while (-1 != (n = archive.read(buffer))) {
+                if (out != null) {
+                    out.write(buffer, 0, n);
+                }
+            }
+        }, targetDirectory);
+    }
+
+    /**
+     * Expands {@code archive} into {@code targetDirectory}.
+     *
+     * @param archive the file to expand
+     * @param targetDirectory the target directory
+     * @param format the archive format. This uses the same format as
+     * accepted by {@link ArchiveStreamFactory}.
+     * @throws IOException if an I/O error occurs
+     * @throws ArchiveException if the archive cannot be read for other reasons
+     */
+    public void expand(final String format, final File archive, final File targetDirectory) throws IOException, ArchiveException {
+        expand(format, archive.toPath(), toPath(targetDirectory));
     }
 
     /**
@@ -249,6 +319,29 @@ public class Expander {
         try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
             expand(c.track(ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, archive)),
                 targetDirectory);
+        }
+    }
+
+    /**
+     * Expands {@code archive} into {@code targetDirectory}.
+     *
+     * @param archive the file to expand
+     * @param targetDirectory the target directory
+     * @param format the archive format. This uses the same format as
+     * accepted by {@link ArchiveStreamFactory}.
+     * @throws IOException if an I/O error occurs
+     * @throws ArchiveException if the archive cannot be read for other reasons
+     * @since 1.22
+     */
+    public void expand(final String format, final Path archive, final Path targetDirectory) throws IOException, ArchiveException {
+        if (prefersSeekableByteChannel(format)) {
+            try (SeekableByteChannel channel = FileChannel.open(archive, StandardOpenOption.READ)) {
+                expand(format, channel, targetDirectory, CloseableConsumer.CLOSING_CONSUMER);
+            }
+            return;
+        }
+        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(archive))) {
+            expand(format, inputStream, targetDirectory, CloseableConsumer.CLOSING_CONSUMER);
         }
     }
 
@@ -342,35 +435,6 @@ public class Expander {
      * @param archive the file to expand
      * @param targetDirectory the target directory, may be null to simulate output to dev/null on Linux and NUL on Windows.
      * @throws IOException if an I/O error occurs
-     */
-    public void expand(final ArchiveInputStream archive, final File targetDirectory) throws IOException {
-        expand(archive, toPath(targetDirectory));
-    }
-
-    /**
-     * Expands {@code archive} into {@code targetDirectory}.
-     *
-     * @param archive the file to expand
-     * @param targetDirectory the target directory, may be null to simulate output to dev/null on Linux and NUL on Windows.
-     * @throws IOException if an I/O error occurs
-     * @since 1.22
-     */
-    public void expand(final ArchiveInputStream archive, final Path targetDirectory) throws IOException {
-        expand(() -> {
-            ArchiveEntry next = archive.getNextEntry();
-            while (next != null && !archive.canReadEntryData(next)) {
-                next = archive.getNextEntry();
-            }
-            return next;
-        }, (entry, out) -> IOUtils.copy(archive, out), targetDirectory);
-    }
-
-    /**
-     * Expands {@code archive} into {@code targetDirectory}.
-     *
-     * @param archive the file to expand
-     * @param targetDirectory the target directory, may be null to simulate output to dev/null on Linux and NUL on Windows.
-     * @throws IOException if an I/O error occurs
      * @since 1.21
      */
     public void expand(final TarFile archive, final File targetDirectory) throws IOException {
@@ -431,78 +495,14 @@ public class Expander {
         }, targetDirectory);
     }
 
-    /**
-     * Expands {@code archive} into {@code targetDirectory}.
-     *
-     * @param archive the file to expand
-     * @param targetDirectory the target directory, may be null to simulate output to dev/null on Linux and NUL on Windows.
-     * @throws IOException if an I/O error occurs
-     */
-    public void expand(final SevenZFile archive, final File targetDirectory) throws IOException {
-        expand(archive, toPath(targetDirectory));
-    }
-
-    /**
-     * Expands {@code archive} into {@code targetDirectory}.
-     *
-     * @param archive the file to expand
-     * @param targetDirectory the target directory, may be null to simulate output to dev/null on Linux and NUL on Windows.
-     * @throws IOException if an I/O error occurs
-     * @since 1.22
-     */
-    public void expand(final SevenZFile archive, final Path targetDirectory)
-        throws IOException {
-        expand(archive::getNextEntry, (entry, out) -> {
-            final byte[] buffer = new byte[8192];
-            int n;
-            while (-1 != (n = archive.read(buffer))) {
-                if (out != null) {
-                    out.write(buffer, 0, n);
-                }
-            }
-        }, targetDirectory);
-    }
-
     private boolean prefersSeekableByteChannel(final String format) {
         return ArchiveStreamFactory.TAR.equalsIgnoreCase(format)
             || ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)
             || ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format);
     }
 
-    /**
-     * @param targetDirectory May be null to simulate output to dev/null on Linux and NUL on Windows.
-     */
-    private void expand(final ArchiveEntrySupplier supplier, final EntryWriter writer, final Path targetDirectory)
-        throws IOException {
-        final boolean nullTarget = targetDirectory == null;
-        final Path targetDirPath = nullTarget ? null : targetDirectory.normalize();
-        ArchiveEntry nextEntry = supplier.getNextReadableEntry();
-        while (nextEntry != null) {
-            final Path targetPath = nullTarget ? null : targetDirectory.resolve(nextEntry.getName());
-            // check if targetDirectory and f are the same path - this may
-            // happen if the nextEntry.getName() is "./"
-            if (!nullTarget && !targetPath.normalize().startsWith(targetDirPath) && !Files.isSameFile(targetDirectory, targetPath)) {
-                throw new IOException("Expanding " + nextEntry.getName() + " would create file outside of " + targetDirectory);
-            }
-            if (nextEntry.isDirectory()) {
-                if (!nullTarget && !Files.isDirectory(targetPath) && Files.createDirectories(targetPath) == null) {
-                    throw new IOException("Failed to create directory " + targetPath);
-                }
-            } else {
-                final Path parent = nullTarget ? null : targetPath.getParent();
-                if (!nullTarget && !Files.isDirectory(parent) && Files.createDirectories(parent) == null) {
-                    throw new IOException("Failed to create directory " + parent);
-                }
-                if (nullTarget) {
-                    writer.writeEntryDataTo(nextEntry, null);
-                } else {
-                    try (OutputStream outputStream = Files.newOutputStream(targetPath)) {
-                        writer.writeEntryDataTo(nextEntry, outputStream);
-                    }
-                }
-            }
-            nextEntry = supplier.getNextReadableEntry();
-        }
+    private Path toPath(final File targetDirectory) {
+        return targetDirectory != null ? targetDirectory.toPath() : null;
     }
 
 }
