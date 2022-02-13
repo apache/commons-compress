@@ -369,11 +369,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                 final InputStream bis = new BoundedInputStream(inputStream, current.entry.getCompressedSize());
                 switch (m) {
                 case UNSHRINKING:
-                    current.in = new UnshrinkingInputStream(bis);
+                    current.inputStream = new UnshrinkingInputStream(bis);
                     break;
                 case IMPLODING:
                     try {
-                        current.in = new ExplodingInputStream(
+                        current.inputStream = new ExplodingInputStream(
                             current.entry.getGeneralPurposeBit().getSlidingDictionarySize(),
                             current.entry.getGeneralPurposeBit().getNumberOfShannonFanoTrees(),
                             bis);
@@ -382,10 +382,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                     }
                     break;
                 case BZIP2:
-                    current.in = new BZip2CompressorInputStream(bis);
+                    current.inputStream = new BZip2CompressorInputStream(bis);
                     break;
                 case ENHANCED_DEFLATED:
-                    current.in = new Deflate64CompressorInputStream(bis);
+                    current.inputStream = new Deflate64CompressorInputStream(bis);
                     break;
                 default:
                     // we should never get here as all supported methods have been covered
@@ -395,7 +395,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                 }
             }
         } else if (m == ZipMethod.ENHANCED_DEFLATED) {
-            current.in = new Deflate64CompressorInputStream(inputStream);
+            current.inputStream = new Deflate64CompressorInputStream(inputStream);
         }
 
         entriesRead++;
@@ -529,7 +529,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                 || current.entry.getMethod() == ZipMethod.IMPLODING.getCode()
                 || current.entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode()
                 || current.entry.getMethod() == ZipMethod.BZIP2.getCode()) {
-            read = current.in.read(buffer, offset, length);
+            read = current.inputStream.read(buffer, offset, length);
         } else {
             throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(current.entry.getMethod()),
                     current.entry);
@@ -555,16 +555,16 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
             return getBytesInflated();
         }
         if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
-            return ((UnshrinkingInputStream) current.in).getCompressedCount();
+            return ((UnshrinkingInputStream) current.inputStream).getCompressedCount();
         }
         if (current.entry.getMethod() == ZipMethod.IMPLODING.getCode()) {
-            return ((ExplodingInputStream) current.in).getCompressedCount();
+            return ((ExplodingInputStream) current.inputStream).getCompressedCount();
         }
         if (current.entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode()) {
-            return ((Deflate64CompressorInputStream) current.in).getCompressedCount();
+            return ((Deflate64CompressorInputStream) current.inputStream).getCompressedCount();
         }
         if (current.entry.getMethod() == ZipMethod.BZIP2.getCode()) {
-            return ((BZip2CompressorInputStream) current.in).getCompressedCount();
+            return ((BZip2CompressorInputStream) current.inputStream).getCompressedCount();
         }
         return -1;
     }
@@ -1319,7 +1319,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         /**
          * The input stream decompressing the data for shrunk and imploded entries.
          */
-        private InputStream in;
+        private InputStream inputStream;
     }
 
     /**
