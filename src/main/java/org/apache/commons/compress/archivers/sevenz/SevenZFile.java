@@ -30,7 +30,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.CharBuffer;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.charset.CharsetEncoder;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
@@ -2056,13 +2055,11 @@ public class SevenZFile implements Closeable {
         return lastSegment + "~";
     }
 
-    private static final CharsetEncoder PASSWORD_ENCODER = UTF_16LE.newEncoder();
-
     private static byte[] utf16Decode(final char[] chars) throws IOException {
         if (chars == null) {
             return null;
         }
-        final ByteBuffer encoded = PASSWORD_ENCODER.encode(CharBuffer.wrap(chars));
+        final ByteBuffer encoded = UTF_16LE.encode(CharBuffer.wrap(chars));
         if (encoded.hasArray()) {
             return encoded.array();
         }
