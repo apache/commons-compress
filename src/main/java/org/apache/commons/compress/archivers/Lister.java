@@ -42,7 +42,20 @@ public final class Lister {
 
     private static final ArchiveStreamFactory FACTORY = ArchiveStreamFactory.DEFAULT;
 
-    public static void main(final String[] args) throws Exception {
+    /**
+     * Runs this class from the command line.
+     * <p>
+     * The name of the archive must be given as a command line argument.
+     * </p>
+     * <p>
+     * The optional second argument defines the archive type, in case the format is not recognized.
+     * </p>
+     * 
+     * @param args name of the archive and optional argument archive type.
+     * @throws ArchiveException Archiver related Exception.
+     * @throws IOException an I/O exception.
+     */
+    public static void main(final String[] args) throws ArchiveException, IOException {
         if (args.length == 0) {
             usage();
             return;
