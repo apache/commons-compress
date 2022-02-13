@@ -101,6 +101,46 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     public static final ArchiveStreamFactory DEFAULT = new ArchiveStreamFactory();
 
     /**
+     * Constant (value {@value}) used to identify the APK archive format.
+     * <p>
+     * APK file extensions are .apk, .xapk, .apks, .apkm
+     * </p>
+     *
+     * @since 1.22
+     */
+    public static final String APK = "apk";
+
+    /**
+     * Constant (value {@value}) used to identify the XAPK archive format.
+     * <p>
+     * APK file extensions are .apk, .xapk, .apks, .apkm
+     * </p>
+     *
+     * @since 1.22
+     */
+    public static final String XAPK = "xapk";
+
+    /**
+     * Constant (value {@value}) used to identify the APKS archive format.
+     * <p>
+     * APK file extensions are .apk, .xapk, .apks, .apkm
+     * </p>
+     *
+     * @since 1.22
+     */
+    public static final String APKS = "apks";
+
+    /**
+     * Constant (value {@value}) used to identify the APKM archive format.
+     * <p>
+     * APK file extensions are .apk, .xapk, .apks, .apkm
+     * </p>
+     *
+     * @since 1.22
+     */
+    public static final String APKM = "apkm";
+
+    /**
      * Constant (value {@value}) used to identify the AR archive format.
      * @since 1.1
      */

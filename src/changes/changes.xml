@@ -68,6 +68,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-602" type="add" dev="ggregory" due-to="Postelnicu George, Gary Gregory">
         Migrate zip package to use NIO #236.
       </action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">
+        Add APK file extension constants: ArchiveStreamFactory.APK, APKM, APKS, XAPK.
+      </action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot">
         Bump mockito-core from 3.11.1 to 4.2.0 #209, #224, #231, #235.
