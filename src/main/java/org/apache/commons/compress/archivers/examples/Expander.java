@@ -345,24 +345,24 @@ public class Expander {
         }
         ArchiveEntry nextEntry = supplier.getNextReadableEntry();
         while (nextEntry != null) {
-            final File f = new File(targetDirectory, nextEntry.getName());
+            final File targetFile = new File(targetDirectory, nextEntry.getName());
             // check if targetDirectory and f are the same path - this may
             // happen if the nextEntry.getName() is "./"
-            if (!f.getCanonicalPath().startsWith(targetDirPath)
-                    && !Files.isSameFile(targetDirectory.toPath(), f.toPath())) {
+            if (!targetFile.getCanonicalPath().startsWith(targetDirPath)
+                    && !Files.isSameFile(targetDirectory.toPath(), targetFile.toPath())) {
                 throw new IOException("Expanding " + nextEntry.getName()
                     + " would create file outside of " + targetDirectory);
             }
             if (nextEntry.isDirectory()) {
-                if (!f.isDirectory() && !f.mkdirs()) {
-                    throw new IOException("Failed to create directory " + f);
+                if (!targetFile.isDirectory() && !targetFile.mkdirs()) {
+                    throw new IOException("Failed to create directory " + targetFile);
                 }
             } else {
-                final File parent = f.getParentFile();
+                final File parent = targetFile.getParentFile();
                 if (!parent.isDirectory() && !parent.mkdirs()) {
                     throw new IOException("Failed to create directory " + parent);
                 }
-                try (OutputStream o = Files.newOutputStream(f.toPath())) {
+                try (OutputStream o = Files.newOutputStream(targetFile.toPath())) {
                     writer.writeEntryDataTo(nextEntry, o);
                 }
             }
