@@ -270,9 +270,7 @@ public class Segment {
             // existing classFile attributes.
             final Attribute[] originalAttrs = classFile.attributes;
             final Attribute[] newAttrs = new Attribute[originalAttrs.length + 1];
-            for (int index = 0; index < originalAttrs.length; index++) {
-                newAttrs[index] = originalAttrs[index];
-            }
+            System.arraycopy(originalAttrs, 0, newAttrs, 0, originalAttrs.length);
             newAttrs[newAttrs.length - 1] = innerClassesAttribute;
             classFile.attributes = newAttrs;
             cp.addWithNestedEntries(innerClassesAttribute);

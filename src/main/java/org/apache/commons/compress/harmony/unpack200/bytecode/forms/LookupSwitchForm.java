@@ -49,9 +49,7 @@ public class LookupSwitchForm extends SwitchForm {
 
         final int[] labelsArray = new int[case_count + 1];
         labelsArray[0] = default_pc;
-        for (int index = 1; index < case_count + 1; index++) {
-            labelsArray[index] = case_pcs[index - 1];
-        }
+        System.arraycopy(case_pcs, 0, labelsArray, 1, case_count + 1 - 1);
         byteCode.setByteCodeTargets(labelsArray);
 
         // All this gets dumped into the rewrite bytes of the

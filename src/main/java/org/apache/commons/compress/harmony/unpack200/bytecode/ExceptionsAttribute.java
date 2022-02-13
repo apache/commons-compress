@@ -74,9 +74,7 @@ public class ExceptionsAttribute extends Attribute {
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         final ClassFileEntry[] result = new ClassFileEntry[exceptions.length + 1];
-        for (int i = 0; i < exceptions.length; i++) {
-            result[i] = exceptions[i];
-        }
+        System.arraycopy(exceptions, 0, result, 0, exceptions.length);
         result[exceptions.length] = getAttributeName();
         return result;
     }

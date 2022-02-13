@@ -166,9 +166,7 @@ public class AttributeDefinitionBands extends BandSet {
 
     private int[] addHighIndices(final int[] availableIndices) {
         final int[] temp = new int[availableIndices.length + 32];
-        for (int i = 0; i < availableIndices.length; i++) {
-            temp[i] = availableIndices[i];
-        }
+        System.arraycopy(availableIndices, 0, temp, 0, availableIndices.length);
         int j = 32;
         for (int i = availableIndices.length; i < temp.length; i++) {
             temp[i] = j;
