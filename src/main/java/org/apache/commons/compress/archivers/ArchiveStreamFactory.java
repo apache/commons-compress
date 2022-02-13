@@ -360,8 +360,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * read from a stream
      * @throws IllegalArgumentException if the archiver name or stream is null
      */
-    public ArchiveInputStream createArchiveInputStream(final String archiverName, final InputStream in)
-            throws ArchiveException {
+    public ArchiveInputStream createArchiveInputStream(final String archiverName, final InputStream in) throws ArchiveException {
         return createArchiveInputStream(archiverName, in, entryEncoding);
     }
 
@@ -398,7 +397,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             }
             return new TarArchiveInputStream(in);
         }
-        if (JAR.equalsIgnoreCase(archiverName)) {
+        if (JAR.equalsIgnoreCase(archiverName) || APK.equalsIgnoreCase(archiverName)) {
             if (actualEncoding != null) {
                 return new JarArchiveInputStream(in, actualEncoding);
             }
