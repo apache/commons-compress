@@ -80,6 +80,12 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">
         Add APK file extension constants: ArchiveStreamFactory.APK, APKM, APKS, XAPK.
       </action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">
+        ArchiveStreamFactory.createArchiveInputStream(String, InputStream, String) supports the "APK" format (it's a JAR).
+      </action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">
+        Expander example now has NIO Path versions of IO File APIs.
+      </action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot">
         Bump mockito-core from 3.11.1 to 4.3.1 #209, #224, #231, #235, #243.
