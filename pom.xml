@@ -202,6 +202,18 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <version>${slf4j.version}</version>
       <scope>test</scope>
     </dependency>    
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.11.0</version>
+      <scope>test</scope>
+    </dependency>    
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.12.0</version>
+      <scope>test</scope>
+    </dependency>    
 
     <dependency>
       <groupId>org.osgi</groupId>
