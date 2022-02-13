@@ -61,7 +61,7 @@ public final class IOUtils {
      * @param input
      *            the InputStream to copy
      * @param output
-     *            the target Stream
+     *            the target, may be null to simulate output to dev/null on Linux and NUL on Windows
      * @return the number of bytes copied
      * @throws IOException
      *             if an error occurs
@@ -76,7 +76,7 @@ public final class IOUtils {
      * @param input
      *            the InputStream to copy
      * @param output
-     *            the target Stream
+     *            the target, may be null to simulate output to dev/null on Linux and NUL on Windows
      * @param buffersize
      *            the buffer size to use, must be bigger than 0
      * @return the number of bytes copied
@@ -93,7 +93,9 @@ public final class IOUtils {
         int n = 0;
         long count=0;
         while (-1 != (n = input.read(buffer))) {
-            output.write(buffer, 0, n);
+            if (output != null) {
+                output.write(buffer, 0, n);
+            }
             count += n;
         }
         return count;
@@ -309,7 +311,7 @@ public final class IOUtils {
      * @param len
      *            maximum amount of bytes to copy
      * @param output
-     *            the target Stream
+     *            the target, may be null to simulate output to dev/null on Linux and NUL on Windows
      * @param buffersize
      *            the buffer size to use, must be bigger than 0
      * @return the number of bytes copied
@@ -328,7 +330,9 @@ public final class IOUtils {
         int n = 0;
         long count = 0;
         while (count < len && -1 != (n = input.read(buffer, 0, (int) Math.min(len - count, buffer.length)))) {
-            output.write(buffer, 0, n);
+            if (output != null) {
+                output.write(buffer, 0, n);
+            }
             count += n;
         }
         return count;
