@@ -134,8 +134,8 @@ public final class Lister {
 
     private static void usage() {
         System.out.println("Parameters: archive-name [archive-type]\n");
-        System.out.println("the magic archive-type 'zipfile' prefers ZipFile over ZipArchiveInputStream");
-        System.out.println("the magic archive-type 'tarfile' prefers TarFile over TarArchiveInputStream");
+        System.out.println("The magic archive-type 'zipfile' prefers ZipFile over ZipArchiveInputStream");
+        System.out.println("The magic archive-type 'tarfile' prefers TarFile over TarArchiveInputStream");
     }
 
 }
