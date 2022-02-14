@@ -149,7 +149,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private NameSource nameSource = NameSource.NAME;
     private CommentSource commentSource = CommentSource.COMMENT;
     private long diskNumberStart;
-    static final ZipArchiveEntry[] EMPTY_ZIP_ARCHIVE_ENTRY_ARRAY = new ZipArchiveEntry[0];
+    static final ZipArchiveEntry[] EMPTY_ZIP_ARCHIVE_ENTRY_ARRAY = {};
 
     /**
      * Creates a new zip entry with the specified name.
