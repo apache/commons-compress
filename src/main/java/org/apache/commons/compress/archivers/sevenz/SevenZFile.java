@@ -667,7 +667,7 @@ public class SevenZFile implements Closeable {
     private ByteBuffer readEncodedHeader(final ByteBuffer header, final Archive archive,
                                          final byte[] password) throws IOException {
         final int pos = header.position();
-        ArchiveStatistics stats = new ArchiveStatistics();
+        final ArchiveStatistics stats = new ArchiveStatistics();
         sanityCheckStreamsInfo(header, stats);
         stats.assertValidity(options.getMaxMemoryLimitInKb());
         header.position(pos);
@@ -848,7 +848,7 @@ public class SevenZFile implements Closeable {
             throw new IOException("Expected kCodersUnpackSize, got " + nid);
         }
 
-        for (int numberOfOutputStreams : numberOfOutputStreamsPerFolder) {
+        for (final int numberOfOutputStreams : numberOfOutputStreamsPerFolder) {
             for (int i = 0; i < numberOfOutputStreams; i++) {
                 final long unpackSize = readUint64(header);
                 if (unpackSize < 0) {
@@ -1934,10 +1934,10 @@ public class SevenZFile implements Closeable {
         long value = 0;
         for (int i = 0; i < 8; i++) {
             if ((firstByte & mask) == 0) {
-                return value | ((firstByte & (mask - 1)) << (8 * i));
+                return value | (firstByte & mask - 1) << 8 * i;
             }
             final long nextByte = getUnsignedByte(in);
-            value |= nextByte << (8 * i);
+            value |= nextByte << 8 * i;
             mask >>>= 1;
         }
         return value;
@@ -2089,11 +2089,11 @@ public class SevenZFile implements Closeable {
         @Override
         public String toString() {
             return "Archive with " + numberOfEntries + " entries in " + numberOfFolders
-                + " folders. Estimated size " + (estimateSize()/ 1024L) + " kB.";
+                + " folders. Estimated size " + estimateSize()/ 1024L + " kB.";
         }
 
         long estimateSize() {
-            long lowerBound = 16L * numberOfPackedStreams /* packSizes, packCrcs in Archive */
+            final long lowerBound = 16L * numberOfPackedStreams /* packSizes, packCrcs in Archive */
                 + numberOfPackedStreams / 8 /* packCrcsDefined in Archive */
                 + numberOfFolders * folderSize() /* folders in Archive */
                 + numberOfCoders * coderSize() /* coders in Folder */
@@ -2106,7 +2106,7 @@ public class SevenZFile implements Closeable {
             return 2 * lowerBound /* conservative guess */;
         }
 
-        void assertValidity(int maxMemoryLimitInKb) throws IOException {
+        void assertValidity(final int maxMemoryLimitInKb) throws IOException {
             if (numberOfEntriesWithStream > 0 && numberOfFolders == 0) {
                 throw new IOException("archive with entries but no folders");
             }
