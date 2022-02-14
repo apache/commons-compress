@@ -73,6 +73,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Arturo Bernal">
         Replace manual copy of array contents with System.arraycopy() #246.
       </action>
+      <action type="fix" dev="ggregory" due-to="Glavo, Bruno P. Kinoshita, PeterAlfredLee, Gary Gregory">
+        Fix thread safety issues when encoding 7z password #248.
+      </action>
       <!-- ADD -->
       <action issue="COMPRESS-602" type="add" dev="ggregory" due-to="Postelnicu George, Gary Gregory">
         Migrate zip package to use NIO #236.
