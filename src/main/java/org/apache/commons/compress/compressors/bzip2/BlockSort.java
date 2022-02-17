@@ -790,7 +790,7 @@ class BlockSort {
         }
     }
 
-    private static byte med3(final byte a, final byte b, final byte c) {
+    private static int med3(final int a, final int b, final int c) {
         return (a < b) ? (b < c ? b : a < c ? c : a) : (b > c ? b : a > c ? c
                                                         : a);
     }
@@ -826,8 +826,9 @@ class BlockSort {
                 }
             } else {
                 final int d1 = d + 1;
-                final int med = med3(block[fmap[lo] + d1],
-                                     block[fmap[hi] + d1], block[fmap[(lo + hi) >>> 1] + d1]) & 0xff;
+                final int med = med3(block[fmap[lo] + d1] & 0xff,
+                                     block[fmap[hi] + d1] & 0xff,
+                                     block[fmap[(lo + hi) >>> 1] + d1] & 0xff);
 
                 int unLo = lo;
                 int unHi = hi;
