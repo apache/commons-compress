@@ -1699,32 +1699,31 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Strips Windows' drive letter as well as any leading slashes,
-     * turns path separators into forward slahes.
+     * Strips Windows' drive letter as well as any leading slashes, turns path separators into forward slashes.
      */
-    private static String normalizeFileName(String fileName,
-                                            final boolean preserveAbsolutePath) {
+    private static String normalizeFileName(String fileName, final boolean preserveAbsolutePath) {
         if (!preserveAbsolutePath) {
-            final String osname = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
+            final String property = System.getProperty("os.name");
+            if (property != null) {
+                final String osName = property.toLowerCase(Locale.ROOT);
 
-            // Strip off drive letters!
-            // REVIEW Would a better check be "(File.separator == '\')"?
+                // Strip off drive letters!
+                // REVIEW Would a better check be "(File.separator == '\')"?
 
-            if (osname.startsWith("windows")) {
-                if (fileName.length() > 2) {
-                    final char ch1 = fileName.charAt(0);
-                    final char ch2 = fileName.charAt(1);
+                if (osName.startsWith("windows")) {
+                    if (fileName.length() > 2) {
+                        final char ch1 = fileName.charAt(0);
+                        final char ch2 = fileName.charAt(1);
 
-                    if (ch2 == ':'
-                        && (ch1 >= 'a' && ch1 <= 'z'
-                            || ch1 >= 'A' && ch1 <= 'Z')) {
-                        fileName = fileName.substring(2);
+                        if (ch2 == ':' && (ch1 >= 'a' && ch1 <= 'z' || ch1 >= 'A' && ch1 <= 'Z')) {
+                            fileName = fileName.substring(2);
+                        }
                     }
-                }
-            } else if (osname.contains("netware")) {
-                final int colon = fileName.indexOf(':');
-                if (colon != -1) {
-                    fileName = fileName.substring(colon + 1);
+                } else if (osName.contains("netware")) {
+                    final int colon = fileName.indexOf(':');
+                    if (colon != -1) {
+                        fileName = fileName.substring(colon + 1);
+                    }
                 }
             }
         }
