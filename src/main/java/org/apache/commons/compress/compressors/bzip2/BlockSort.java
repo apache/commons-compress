@@ -315,10 +315,6 @@ class BlockSort {
         }
     }
 
-    private int fmin(final int a, final int b) {
-        return Math.min(a, b);
-    }
-
     private void fpush(final int sp, final int lz, final int hz) {
         stack_ll[sp] = lz;
         stack_hh[sp] = hz;
@@ -421,9 +417,9 @@ class BlockSort {
                 continue;
             }
 
-            n = fmin(ltLo - lo, unLo - ltLo);
+            n = Math.min(ltLo - lo, unLo - ltLo);
             fvswap(fmap, lo, unLo - n, n);
-            int m = fmin(hi - gtHi, gtHi - unHi);
+            int m = Math.min(hi - gtHi, gtHi - unHi);
             fvswap(fmap, unHi + 1, hi - m + 1, m);
 
             n = lo + unLo - ltLo - 1;
