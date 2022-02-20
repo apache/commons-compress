@@ -249,9 +249,6 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
         final long len = ByteUtils.fromLittleEndian(supplier, 4);
         final boolean uncompressed = (len & UNCOMPRESSED_FLAG_MASK) != 0;
         final int realLen = (int) (len & (~UNCOMPRESSED_FLAG_MASK));
-        if (realLen < 0) {
-            throw new IOException("Found illegal block with negative size");
-        }
         if (realLen == 0) {
             verifyContentChecksum();
             if (!decompressConcatenated) {
