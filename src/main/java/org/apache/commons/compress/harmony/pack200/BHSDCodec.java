@@ -310,11 +310,8 @@ public final class BHSDCodec extends Codec {
             }
         } else if (z < 0) {
             // Need to use integer overflow here to represent negatives.
-            if (cardinality < 4294967296L) {
-                z += cardinality;
-            } else {
-                z += 4294967296L; // this value is equal to (1 << 32).
-            }
+            // 4294967296L is the 1 << 32.
+            z += Math.min(cardinality, 4294967296L);
         }
         if (z < 0) {
             throw new Pack200Exception("unable to encode");

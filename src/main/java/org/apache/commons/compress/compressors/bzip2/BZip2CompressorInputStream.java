@@ -514,7 +514,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
                 selectorMtf[i] = (byte) j;
             }
         }
-        final int nSelectors = selectors > MAX_SELECTORS ? MAX_SELECTORS : selectors;
+        final int nSelectors = Math.min(selectors, MAX_SELECTORS);
 
         /* Undo the MTF values for the selectors. */
         for (int v = nGroups; --v >= 0;) {

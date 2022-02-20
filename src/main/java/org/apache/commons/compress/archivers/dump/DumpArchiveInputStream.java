@@ -481,8 +481,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         while (len > 0) {
-            final int sz = len > readBuf.length - recordOffset
-                ? readBuf.length - recordOffset : len;
+            final int sz = Math.min(len, readBuf.length - recordOffset);
 
             // copy any data we have
             if (recordOffset + sz <= readBuf.length) {
