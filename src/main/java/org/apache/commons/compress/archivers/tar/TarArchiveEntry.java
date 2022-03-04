@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.tar;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -28,6 +29,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.DosFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFileAttributes;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -158,6 +161,26 @@ import org.apache.commons.compress.utils.IOUtils;
  * </pre>
  * <p>which is identical to new-style POSIX up to the first 130 bytes of the prefix.</p>
  *
+ * <p>
+ * The C structure for the xstar-specific parts of a xstar Tar Entry's header is:
+ * <pre>
+ * struct xstar_in_header {
+ *  char fill[345];         // offset 0     Everything before t_prefix
+ *  char prefix[1];         // offset 345   Prefix for t_name
+ *  char fill2;             // offset 346
+ *  char fill3[8];          // offset 347
+ *  char isextended;        // offset 355
+ *  struct sparse sp[SIH];  // offset 356   8 x 12
+ *  char realsize[12];      // offset 452   Real size for sparse data
+ *  char offset[12];        // offset 464   Offset for multivolume data
+ *  char atime[12];         // offset 476
+ *  char ctime[12];         // offset 488
+ *  char mfill[8];          // offset 500
+ *  char xmagic[4];         // offset 508   "tar"
+ * };
+ * </pre>
+ * </p>
+ *
  * @NotThreadSafe
  */
 
@@ -190,7 +213,13 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     private long size;
 
     /** The entry's modification time. */
-    private long modTime;
+    private FileTime modTime;
+
+    /** The entry's creation time. */
+    private FileTime cTime;
+
+    /** The entry's last access time. */
+    private FileTime aTime;
 
     /** If the header checksum is reasonably correct. */
     private boolean checkSumOK;
@@ -314,7 +343,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         this.name = name;
         this.mode = isDir ? DEFAULT_DIR_MODE : DEFAULT_FILE_MODE;
         this.linkFlag = isDir ? LF_DIR : LF_NORMAL;
-        this.modTime = System.currentTimeMillis() / MILLIS_PER_SECOND;
+        this.modTime = FileTime.from(Instant.now());
         this.userName = "";
     }
 
@@ -437,7 +466,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         } catch (final IOException e) {
             // Ignore exceptions from NIO for backwards compatibility
             // Fallback to get the last modified date of the file from the old file api
-            this.modTime = file.lastModified() / MILLIS_PER_SECOND;
+            this.modTime = FileTime.fromMillis(file.lastModified());
         }
         preserveAbsolutePath = false;
     }
@@ -474,7 +503,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         final Set<String> availableAttributeViews = file.getFileSystem().supportedFileAttributeViews();
         if (availableAttributeViews.contains("posix")) {
             final PosixFileAttributes posixFileAttributes = Files.readAttributes(file, PosixFileAttributes.class, options);
-            setModTime(posixFileAttributes.lastModifiedTime());
+            setLastModifiedTime(posixFileAttributes.lastModifiedTime());
+            setCreationTime(posixFileAttributes.creationTime());
+            setLastAccessTime(posixFileAttributes.lastAccessTime());
             this.userName = posixFileAttributes.owner().getName();
             this.groupName = posixFileAttributes.group().getName();
             if (availableAttributeViews.contains("unix")) {
@@ -483,11 +514,15 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             }
         } else if (availableAttributeViews.contains("dos")) {
             final DosFileAttributes dosFileAttributes = Files.readAttributes(file, DosFileAttributes.class, options);
-            setModTime(dosFileAttributes.lastModifiedTime());
+            setLastModifiedTime(dosFileAttributes.lastModifiedTime());
+            setCreationTime(dosFileAttributes.creationTime());
+            setLastAccessTime(dosFileAttributes.lastAccessTime());
             this.userName = Files.getOwner(file, options).getName();
         } else {
             final BasicFileAttributes basicFileAttributes = Files.readAttributes(file, BasicFileAttributes.class, options);
-            setModTime(basicFileAttributes.lastModifiedTime());
+            setLastModifiedTime(basicFileAttributes.lastModifiedTime());
+            setCreationTime(basicFileAttributes.creationTime());
+            setLastAccessTime(basicFileAttributes.lastAccessTime());
             this.userName = Files.getOwner(file, options).getName();
         }
     }
@@ -816,18 +851,20 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * to this method is in "Java time".
      *
      * @param time This entry's new modification time.
+     * @see TarArchiveEntry#setLastModifiedTime(FileTime)
      */
     public void setModTime(final long time) {
-        modTime = time / MILLIS_PER_SECOND;
+        setLastModifiedTime(FileTime.fromMillis(time));
     }
 
     /**
      * Set this entry's modification time.
      *
      * @param time This entry's new modification time.
+     * @see TarArchiveEntry#setLastModifiedTime(FileTime)
      */
     public void setModTime(final Date time) {
-        modTime = time.getTime() / MILLIS_PER_SECOND;
+        setLastModifiedTime(FileTime.fromMillis(time.getTime()));
     }
 
     /**
@@ -835,23 +872,93 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      *
      * @param time This entry's new modification time.
      * @since 1.21
+     * @see TarArchiveEntry#setLastModifiedTime(FileTime)
      */
     public void setModTime(final FileTime time) {
-        modTime = time.to(TimeUnit.SECONDS);
+        setLastModifiedTime(time);
+    }
+
+    /**
+     * Get this entry's modification time.
+     * This is equivalent to {@link TarArchiveEntry#getLastModifiedTime()}, but precision is truncated to milliseconds.
+     *
+     * @return This entry's modification time.
+     * @see TarArchiveEntry#getLastModifiedTime()
+     */
+    public Date getModTime() {
+        return new Date(modTime.toMillis());
+    }
+
+    /**
+     * Get this entry's modification time.
+     * This is equivalent to {@link TarArchiveEntry#getLastModifiedTime()}, but precision is truncated to milliseconds.
+     *
+     * @return This entry's modification time.
+     * @see TarArchiveEntry#getLastModifiedTime()
+     */
+    @Override
+    public Date getLastModifiedDate() {
+        return getModTime();
     }
 
     /**
      * Get this entry's modification time.
      *
+     * @since 1.22
      * @return This entry's modification time.
      */
-    public Date getModTime() {
-        return new Date(modTime * MILLIS_PER_SECOND);
+    public FileTime getLastModifiedTime() {
+        return modTime;
     }
 
-    @Override
-    public Date getLastModifiedDate() {
-        return getModTime();
+    /**
+     * Set this entry's modification time.
+     *
+     * @param time This entry's new modification time.
+     * @since 1.22
+     */
+    public void setLastModifiedTime(final FileTime time) {
+        modTime = Objects.requireNonNull(time, "Time must not be null");
+    }
+
+    /**
+     * Get this entry's creation time.
+     *
+     * @since 1.22
+     * @return This entry's creation time.
+     */
+    public FileTime getCreationTime() {
+        return cTime;
+    }
+
+    /**
+     * Set this entry's creation time.
+     *
+     * @param time This entry's new creation time.
+     * @since 1.22
+     */
+    public void setCreationTime(final FileTime time) {
+        cTime = time;
+    }
+
+    /**
+     * Get this entry's last access time.
+     *
+     * @since 1.22
+     * @return This entry's last access time.
+     */
+    public FileTime getLastAccessTime() {
+        return aTime;
+    }
+
+    /**
+     * Set this entry's last access time.
+     *
+     * @param time This entry's new last access time.
+     * @since 1.22
+     */
+    public void setLastAccessTime(final FileTime time) {
+        aTime = time;
     }
 
     /**
@@ -1360,8 +1467,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         throws IOException {
     /*
      * The following headers are defined for Pax.
-     * atime, ctime, charset: cannot use these without changing TarArchiveEntry fields
+     * charset: cannot use these without changing TarArchiveEntry fields
      * mtime
+     * atime
+     * ctime
      * comment
      * gid, gname
      * linkpath
@@ -1405,7 +1514,13 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 setSize(size);
                 break;
             case "mtime":
-                setModTime((long) (Double.parseDouble(val) * 1000));
+                setLastModifiedTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
+                break;
+            case "ctime":
+                setCreationTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
+                break;
+            case "atime":
+                setLastAccessTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
                 break;
             case "SCHILY.devminor":
                 final int devMinor = Integer.parseInt(val);
@@ -1437,7 +1552,12 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
     }
 
-
+    private static Instant parseInstantFromDecimalSeconds(String value) {
+        BigDecimal epochSeconds = new BigDecimal(value);
+        long seconds = epochSeconds.longValue();
+        long nanos = epochSeconds.remainder(BigDecimal.ONE).movePointRight(9).longValue();
+        return Instant.ofEpochSecond(seconds, nanos);
+    }
 
     /**
      * If this entry represents a file, and the file is a directory, return
@@ -1509,14 +1629,12 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         offset = writeEntryHeaderField(groupId, outbuf, offset, GIDLEN,
                                        starMode);
         offset = writeEntryHeaderField(size, outbuf, offset, SIZELEN, starMode);
-        offset = writeEntryHeaderField(modTime, outbuf, offset, MODTIMELEN,
-                                       starMode);
+        offset = writeEntryHeaderField(modTime.to(TimeUnit.SECONDS), outbuf, offset,
+                                       MODTIMELEN, starMode);
 
         final int csOffset = offset;
 
-        for (int c = 0; c < CHKSUMLEN; ++c) {
-            outbuf[offset++] = (byte) ' ';
-        }
+        offset = fill((byte) ' ', offset, outbuf, CHKSUMLEN);
 
         outbuf[offset++] = linkFlag;
         offset = TarUtils.formatNameBytes(linkName, outbuf, offset, NAMELEN,
@@ -1532,13 +1650,43 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         offset = writeEntryHeaderField(devMinor, outbuf, offset, DEVLEN,
                                        starMode);
 
-        while (offset < outbuf.length) {
-            outbuf[offset++] = 0;
+        if (starMode) {
+            // skip prefix
+            offset = fill(0, offset, outbuf, PREFIXLEN_XSTAR);
+            offset = writeEntryHeaderOptionalTimeField(aTime, offset, outbuf, ATIMELEN_XSTAR);
+            offset = writeEntryHeaderOptionalTimeField(cTime, offset, outbuf, CTIMELEN_XSTAR);
+            // 8-byte fill
+            offset = fill(0, offset, outbuf, 8);
+            // Do not write MAGIC_XSTAR because it causes issues with some TAR tools
+            // This makes it effectively XUSTAR, which guarantees compatibility with USTAR
+            offset = fill(0, offset, outbuf, XSTAR_MAGIC_LEN);
         }
+
+        offset = fill(0, offset, outbuf, outbuf.length - offset); // NOSONAR - assignment as documentation
 
         final long chk = TarUtils.computeCheckSum(outbuf);
 
         TarUtils.formatCheckSumOctalBytes(chk, outbuf, csOffset, CHKSUMLEN);
+    }
+
+    private int writeEntryHeaderOptionalTimeField(FileTime time, int offset, byte[] outbuf, int fieldLength) {
+        if (time != null) {
+            offset = writeEntryHeaderField(time.to(TimeUnit.SECONDS), outbuf, offset, fieldLength, true);
+        } else {
+            offset = fill(0, offset, outbuf, fieldLength);
+        }
+        return offset;
+    }
+
+    private int fill(int value, int offset, byte[] outbuf, int length) {
+        return fill((byte) value, offset, outbuf, length);
+    }
+
+    private int fill(byte value, int offset, byte[] outbuf, int length) {
+        for (int i = 0; i < length; i++) {
+            outbuf[offset++] = value;
+        }
+        return offset;
     }
 
     private int writeEntryHeaderField(final long value, final byte[] outbuf, final int offset,
@@ -1617,7 +1765,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             throw new IOException("broken archive, entry with negative size");
         }
         offset += SIZELEN;
-        modTime = parseOctalOrBinary(header, offset, MODTIMELEN, lenient);
+        modTime = FileTime.from(parseOctalOrBinary(header, offset, MODTIMELEN, lenient), TimeUnit.SECONDS);
         offset += MODTIMELEN;
         checkSumOK = TarUtils.verifyCheckSum(header);
         offset += CHKSUMLEN;
@@ -1647,7 +1795,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         final int type = evaluateType(header);
         switch (type) {
         case FORMAT_OLDGNU: {
+            aTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, ATIMELEN_GNU, lenient));
             offset += ATIMELEN_GNU;
+            cTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, CTIMELEN_GNU, lenient));
             offset += CTIMELEN_GNU;
             offset += OFFSETLEN_GNU;
             offset += LONGNAMESLEN_GNU;
@@ -1665,9 +1815,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             final String xstarPrefix = oldStyle
                 ? TarUtils.parseName(header, offset, PREFIXLEN_XSTAR)
                 : TarUtils.parseName(header, offset, PREFIXLEN_XSTAR, encoding);
+            offset += PREFIXLEN_XSTAR;
             if (!xstarPrefix.isEmpty()) {
                 name = xstarPrefix + "/" + name;
             }
+            aTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, ATIMELEN_XSTAR, lenient));
+            offset += ATIMELEN_XSTAR;
+            cTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, CTIMELEN_XSTAR, lenient));
+            offset += CTIMELEN_XSTAR; // NOSONAR - assignment as documentation
             break;
         }
         case FORMAT_POSIX:
@@ -1675,6 +1830,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             final String prefix = oldStyle
                 ? TarUtils.parseName(header, offset, PREFIXLEN)
                 : TarUtils.parseName(header, offset, PREFIXLEN, encoding);
+            offset += PREFIXLEN; // NOSONAR - assignment as documentation
             // SunOS tar -E does not add / to directory names, so fix
             // up to be consistent
             if (isDirectory() && !name.endsWith("/")){
@@ -1685,6 +1841,13 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             }
         }
         }
+    }
+
+    private static FileTime fileTimeFromOptionalSeconds(long seconds) {
+        if (seconds <= 0) {
+            return null;
+        }
+        return FileTime.from(seconds, TimeUnit.SECONDS);
     }
 
     private long parseOctalOrBinary(final byte[] header, final int offset, final int length, final boolean lenient) {
@@ -1750,13 +1913,73 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             return FORMAT_OLDGNU;
         }
         if (ArchiveUtils.matchAsciiBuffer(MAGIC_POSIX, header, MAGIC_OFFSET, MAGICLEN)) {
-            if (ArchiveUtils.matchAsciiBuffer(MAGIC_XSTAR, header, XSTAR_MAGIC_OFFSET,
-                                              XSTAR_MAGIC_LEN)) {
+            if (isXstar(header)) {
                 return FORMAT_XSTAR;
             }
             return FORMAT_POSIX;
         }
         return 0;
+    }
+
+    /**
+     * Check for XSTAR / XUSTAR format.
+     *
+     * Use the same logic found in star version 1.6 in {@code header.c}, function {@code isxmagic(TCB *ptb)}.
+     */
+    private boolean isXstar(byte[] header) {
+        // Check if this is XSTAR
+        if (ArchiveUtils.matchAsciiBuffer(MAGIC_XSTAR, header, XSTAR_MAGIC_OFFSET, XSTAR_MAGIC_LEN)) {
+            return true;
+        }
+
+        // Check if this is XUSTAR
+        if (isInvalidPrefix(header)) {
+            return false;
+        }
+        if (isInvalidXtarTime(header, XSTAR_ATIME_OFFSET, ATIMELEN_XSTAR)) {
+            return false;
+        }
+        if (isInvalidXtarTime(header, XSTAR_CTIME_OFFSET, CTIMELEN_XSTAR)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isInvalidPrefix(byte[] header) {
+        // prefix[130] is is guaranteed to be '\0' with XSTAR/XUSTAR
+        if (header[XSTAR_PREFIX_OFFSET + 130] != 0) {
+            // except when typeflag is 'M'
+            if (header[LF_OFFSET] == LF_MULTIVOLUME) {
+                // We come only here if we try to read in a multivolume archive starting past volume #0
+                if ((header[XSTAR_MULTIVOLUME_OFFSET] & 0x80) == 0
+                        && header[XSTAR_MULTIVOLUME_OFFSET + 11] != ' ') {
+                    return true;
+                }
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isInvalidXtarTime(byte[] buffer, int offset, int length) {
+        // If atime[0]...atime[10] or ctime[0]...ctime[10] is not a POSIX octal number it cannot be 'xstar'.
+        if ((buffer[offset] & 0x80) == 0) {
+            int lastIndex = length - 1;
+            for (int i = 0; i < lastIndex; i++) {
+                byte b = buffer[offset + i];
+                if (b < '0' || b > '7') {
+                    return true;
+                }
+            }
+            // Check for both POSIX compliant end of number characters if not using base 256
+            byte b = buffer[offset + lastIndex];
+            if (b != ' ' && b != 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     void fillGNUSparse0xData(final Map<String, String> headers) {
