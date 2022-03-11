@@ -82,6 +82,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Arturo Bernal, Gary Gregory, Bruno P. Kinoshita">
         Use Math.min and Math.max calculations. #247.
       </action>
+      <action issue="COMPRESS-603" type="fix" date="2022-02-09" dev="Peter Lee" due-to="Matt Sicker">
+        Expander should be able to work if an entry's name is "./".
+      </action>
       <!-- ADD -->
       <action issue="COMPRESS-602" type="add" dev="ggregory" due-to="Postelnicu George, Gary Gregory">
         Migrate zip package to use NIO #236.
@@ -139,9 +142,6 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action type="update" dev="kinow" due-to="Dependabot">
         Bump slf4j-api from 1.7.30 to 1.7.35 #213, #241.
-      </action>
-      <action issue="COMPRESS-603" type="fix" date="2022-02-09" dev="Peter Lee" due-to="Matt Sicker">
-        Expander should be able to work if an entry's name is "./".
       </action>
     </release>
     <release version="1.21" date="2021-07-12"
