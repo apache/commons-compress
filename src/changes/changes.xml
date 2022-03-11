@@ -85,6 +85,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-603" type="fix" date="2022-02-09" dev="Peter Lee" due-to="Matt Sicker">
         Expander should be able to work if an entry's name is "./".
       </action>
+      <action issue="COMPRESS-604" type="fix" dev="ggregory" due-to="Andre Brait">
+        Ensure compatibility with Java 8 #252.
+      </action>
       <!-- ADD -->
       <action issue="COMPRESS-602" type="add" dev="ggregory" due-to="Postelnicu George, Gary Gregory">
         Migrate zip package to use NIO #236.
