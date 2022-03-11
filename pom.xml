@@ -621,7 +621,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <jdk>[9,)</jdk>
       </activation>
       <properties>
-        <maven.compiler.release>9</maven.compiler.release>
+        <maven.compiler.release>8</maven.compiler.release>
         <animal.sniffer.skip>true</animal.sniffer.skip>
         <!-- coverall version 4.3.0 does not work with java 9, see https://github.com/trautonen/coveralls-maven-plugin/issues/112 -->
         <coveralls.skip>true</coveralls.skip>
