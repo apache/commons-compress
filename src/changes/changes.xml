@@ -97,7 +97,7 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot">
-        Bump mockito-core from 3.11.1 to 4.3.1 #209, #224, #231, #235, #243.
+        Bump mockito-core from 3.11.1 to 4.4.0 #209, #224, #231, #235, #243, #253.
       </action>
       <action type="update" dev="ggregory" due-to="Dependabot">
         Bump org.apache.felix.framework from 7.0.0 to 7.0.1 #208.
