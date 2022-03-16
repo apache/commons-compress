@@ -316,10 +316,12 @@ public class TarArchiveEntryTest implements TarConstants {
         assertNull("mtime", entry.getExtraPaxHeader("mtime"));
         assertNull("atime", entry.getExtraPaxHeader("atime"));
         assertNull("ctime", entry.getExtraPaxHeader("ctime"));
+        assertNull("birthtime", entry.getExtraPaxHeader("LIBARCHIVE.creationtime"));
         assertEquals("size", entry.getSize(), 1);
         assertEquals("mtime", FileTime.from(Instant.parse("2022-03-14T01:25:03.599853900Z")), entry.getLastModifiedTime());
         assertEquals("atime", FileTime.from(Instant.parse("2022-03-14T01:31:00.706927200Z")), entry.getLastAccessTime());
-        assertEquals("ctime", FileTime.from(Instant.parse("2022-03-14T01:28:59.700505300Z")), entry.getCreationTime());
+        assertEquals("ctime", FileTime.from(Instant.parse("2022-03-14T01:28:59.700505300Z")), entry.getStatusChangeTime());
+        assertEquals("birthtime", FileTime.from(Instant.parse("2022-03-14T01:29:00.723509000Z")), entry.getCreationTime());
     }
 
     @Test
@@ -341,9 +343,11 @@ public class TarArchiveEntryTest implements TarConstants {
         assertNull("mtime", entry.getExtraPaxHeader("mtime"));
         assertNull("atime", entry.getExtraPaxHeader("atime"));
         assertNull("ctime", entry.getExtraPaxHeader("ctime"));
+        assertNull("birthtime", entry.getExtraPaxHeader("LIBARCHIVE.creationtime"));
         assertEquals("mtime", FileTime.from(Instant.parse("2022-03-14T01:25:03Z")), entry.getLastModifiedTime());
         assertNull("atime", entry.getLastAccessTime());
-        assertNull("ctime", entry.getCreationTime());
+        assertNull("ctime", entry.getStatusChangeTime());
+        assertNull("birthtime", entry.getCreationTime());
 
         assertEquals('W', tis.read());
         assertTrue("should be at end of entry", tis.read() < 0);
@@ -372,9 +376,11 @@ public class TarArchiveEntryTest implements TarConstants {
         assertNull("mtime", entry.getExtraPaxHeader("mtime"));
         assertNull("atime", entry.getExtraPaxHeader("atime"));
         assertNull("ctime", entry.getExtraPaxHeader("ctime"));
+        assertNull("birthtime", entry.getExtraPaxHeader("LIBARCHIVE.creationtime"));
         assertEquals("mtime", FileTime.from(Instant.parse("2022-03-14T01:25:03Z")), entry.getLastModifiedTime());
         assertEquals("atime", FileTime.from(Instant.parse("2022-03-14T01:31:00Z")), entry.getLastAccessTime());
-        assertEquals("ctime", FileTime.from(Instant.parse("2022-03-14T01:28:59Z")), entry.getCreationTime());
+        assertEquals("ctime", FileTime.from(Instant.parse("2022-03-14T01:28:59Z")), entry.getStatusChangeTime());
+        assertNull("birthtime", entry.getCreationTime());
 
         assertEquals('W', tis.read());
         assertTrue("should be at end of entry", tis.read() < 0);
@@ -403,9 +409,45 @@ public class TarArchiveEntryTest implements TarConstants {
         assertNull("mtime", entry.getExtraPaxHeader("mtime"));
         assertNull("atime", entry.getExtraPaxHeader("atime"));
         assertNull("ctime", entry.getExtraPaxHeader("ctime"));
+        assertNull("birthtime", entry.getExtraPaxHeader("LIBARCHIVE.creationtime"));
         assertEquals("mtime", FileTime.from(Instant.parse("2022-03-14T01:25:03.599853900Z")), entry.getLastModifiedTime());
         assertEquals("atime", FileTime.from(Instant.parse("2022-03-14T01:31:00.706927200Z")), entry.getLastAccessTime());
-        assertEquals("ctime", FileTime.from(Instant.parse("2022-03-14T01:28:59.700505300Z")), entry.getCreationTime());
+        assertEquals("ctime", FileTime.from(Instant.parse("2022-03-14T01:28:59.700505300Z")), entry.getStatusChangeTime());
+        assertEquals("birthtime", FileTime.from(Instant.parse("2022-03-14T01:29:00.723509000Z")), entry.getCreationTime());
+
+        assertEquals('W', tis.read());
+        assertTrue("should be at end of entry", tis.read() < 0);
+
+        assertNull("should be at end of file", tis.getNextTarEntry());
+        tis.close();
+    }
+
+    @Test
+    public void shouldWriteTimesAsPaxHeadersForPosixModeAndCreationTimeShouldBeUsedAsCtime() throws IOException {
+        TarArchiveEntry entry = createEntryForTimeTests();
+        entry.setStatusChangeTime(null);
+
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+        tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
+        tos.putArchiveEntry(entry);
+        tos.write('W');
+        tos.closeArchiveEntry();
+        tos.close();
+
+        final TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()));
+        entry = tis.getNextTarEntry();
+        assertNotNull("couldn't get entry", entry);
+
+        assertEquals("extra header count", 0, entry.getExtraPaxHeaders().size());
+        assertNull("mtime", entry.getExtraPaxHeader("mtime"));
+        assertNull("atime", entry.getExtraPaxHeader("atime"));
+        assertNull("ctime", entry.getExtraPaxHeader("ctime"));
+        assertNull("birthtime", entry.getExtraPaxHeader("LIBARCHIVE.creationtime"));
+        assertEquals("mtime", FileTime.from(Instant.parse("2022-03-14T01:25:03.599853900Z")), entry.getLastModifiedTime());
+        assertEquals("atime", FileTime.from(Instant.parse("2022-03-14T01:31:00.706927200Z")), entry.getLastAccessTime());
+        assertEquals("ctime", FileTime.from(Instant.parse("2022-03-14T01:29:00.723509000Z")), entry.getStatusChangeTime());
+        assertEquals("birthtime", FileTime.from(Instant.parse("2022-03-14T01:29:00.723509000Z")), entry.getCreationTime());
 
         assertEquals('W', tis.read());
         assertTrue("should be at end of entry", tis.read() < 0);
@@ -420,6 +462,7 @@ public class TarArchiveEntryTest implements TarConstants {
         entry.addPaxHeader("mtime", "1647221103.5998539");
         entry.addPaxHeader("atime", "1647221460.7069272");
         entry.addPaxHeader("ctime", "1647221339.7005053");
+        entry.addPaxHeader("LIBARCHIVE.creationtime", "1647221340.7235090");
         return entry;
     }
 

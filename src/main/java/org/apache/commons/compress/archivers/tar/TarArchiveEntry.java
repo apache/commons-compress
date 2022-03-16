@@ -212,14 +212,35 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /** The entry's size. */
     private long size;
 
-    /** The entry's modification time. */
-    private FileTime modTime;
+    /**
+     * The entry's modification time.
+     * Corresponds to the POSIX {@code mtime} attribute.
+     */
+    private FileTime mTime;
 
-    /** The entry's creation time. */
+    /**
+     * The entry's status change time.
+     * Corresponds to the POSIX {@code ctime} attribute.
+     *
+     * @since 1.22
+     */
     private FileTime cTime;
 
-    /** The entry's last access time. */
+    /**
+     * The entry's last access time.
+     * Corresponds to the POSIX {@code atime} attribute.
+     *
+     * @since 1.22
+     */
     private FileTime aTime;
+
+    /**
+     * The entry's creation time.
+     * Corresponds to the POSIX {@code birthtime} attribute.
+     *
+     * @since 1.22
+     */
+    private FileTime birthTime;
 
     /** If the header checksum is reasonably correct. */
     private boolean checkSumOK;
@@ -343,7 +364,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         this.name = name;
         this.mode = isDir ? DEFAULT_DIR_MODE : DEFAULT_FILE_MODE;
         this.linkFlag = isDir ? LF_DIR : LF_NORMAL;
-        this.modTime = FileTime.from(Instant.now());
+        this.mTime = FileTime.from(Instant.now());
         this.userName = "";
     }
 
@@ -466,7 +487,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         } catch (final IOException e) {
             // Ignore exceptions from NIO for backwards compatibility
             // Fallback to get the last modified date of the file from the old file api
-            this.modTime = FileTime.fromMillis(file.lastModified());
+            this.mTime = FileTime.fromMillis(file.lastModified());
         }
         preserveAbsolutePath = false;
     }
@@ -511,6 +532,11 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             if (availableAttributeViews.contains("unix")) {
                 this.userId = ((Number) Files.getAttribute(file, "unix:uid", options)).longValue();
                 this.groupId = ((Number) Files.getAttribute(file, "unix:gid", options)).longValue();
+                try {
+                    setStatusChangeTime((FileTime) Files.getAttribute(file, "unix:ctime", options));
+                } catch (final IllegalArgumentException ex) { // NOSONAR
+                    // ctime is not supported
+                }
             }
         } else if (availableAttributeViews.contains("dos")) {
             final DosFileAttributes dosFileAttributes = Files.readAttributes(file, DosFileAttributes.class, options);
@@ -886,7 +912,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @see TarArchiveEntry#getLastModifiedTime()
      */
     public Date getModTime() {
-        return new Date(modTime.toMillis());
+        return new Date(mTime.toMillis());
     }
 
     /**
@@ -908,7 +934,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @return This entry's modification time.
      */
     public FileTime getLastModifiedTime() {
-        return modTime;
+        return mTime;
     }
 
     /**
@@ -918,26 +944,26 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @since 1.22
      */
     public void setLastModifiedTime(final FileTime time) {
-        modTime = Objects.requireNonNull(time, "Time must not be null");
+        mTime = Objects.requireNonNull(time, "Time must not be null");
     }
 
     /**
-     * Get this entry's creation time.
+     * Get this entry's status change time.
      *
      * @since 1.22
-     * @return This entry's creation time.
+     * @return This entry's status change time.
      */
-    public FileTime getCreationTime() {
+    public FileTime getStatusChangeTime() {
         return cTime;
     }
 
     /**
-     * Set this entry's creation time.
+     * Set this entry's status change time.
      *
-     * @param time This entry's new creation time.
+     * @param time This entry's new status change time.
      * @since 1.22
      */
-    public void setCreationTime(final FileTime time) {
+    public void setStatusChangeTime(final FileTime time) {
         cTime = time;
     }
 
@@ -959,6 +985,26 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     public void setLastAccessTime(final FileTime time) {
         aTime = time;
+    }
+
+    /**
+     * Get this entry's creation time.
+     *
+     * @since 1.22
+     * @return This entry's computed creation time.
+     */
+    public FileTime getCreationTime() {
+        return birthTime;
+    }
+
+    /**
+     * Set this entry's creation time.
+     *
+     * @param time This entry's new creation time.
+     * @since 1.22
+     */
+    public void setCreationTime(final FileTime time) {
+        birthTime = time;
     }
 
     /**
@@ -1471,6 +1517,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * mtime
      * atime
      * ctime
+     * LIBARCHIVE.creationtime
      * comment
      * gid, gname
      * linkpath
@@ -1516,11 +1563,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             case "mtime":
                 setLastModifiedTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
                 break;
-            case "ctime":
-                setCreationTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
-                break;
             case "atime":
                 setLastAccessTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
+                break;
+            case "ctime":
+                setStatusChangeTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
+                break;
+            case "LIBARCHIVE.creationtime":
+                setCreationTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
                 break;
             case "SCHILY.devminor":
                 final int devMinor = Integer.parseInt(val);
@@ -1629,7 +1679,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         offset = writeEntryHeaderField(groupId, outbuf, offset, GIDLEN,
                                        starMode);
         offset = writeEntryHeaderField(size, outbuf, offset, SIZELEN, starMode);
-        offset = writeEntryHeaderField(modTime.to(TimeUnit.SECONDS), outbuf, offset,
+        offset = writeEntryHeaderField(mTime.to(TimeUnit.SECONDS), outbuf, offset,
                                        MODTIMELEN, starMode);
 
         final int csOffset = offset;
@@ -1765,7 +1815,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             throw new IOException("broken archive, entry with negative size");
         }
         offset += SIZELEN;
-        modTime = FileTime.from(parseOctalOrBinary(header, offset, MODTIMELEN, lenient), TimeUnit.SECONDS);
+        mTime = FileTime.from(parseOctalOrBinary(header, offset, MODTIMELEN, lenient), TimeUnit.SECONDS);
         offset += MODTIMELEN;
         checkSumOK = TarUtils.verifyCheckSum(header);
         offset += CHKSUMLEN;

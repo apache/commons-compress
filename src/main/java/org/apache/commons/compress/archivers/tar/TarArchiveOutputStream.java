@@ -234,8 +234,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Set the long file mode. This can be LONGFILE_ERROR(0), LONGFILE_TRUNCATE(1) or
-     * LONGFILE_GNU(2). This specifies the treatment of long file names (names &gt;=
+     * Set the long file mode. This can be LONGFILE_ERROR(0), LONGFILE_TRUNCATE(1), LONGFILE_GNU(2) or
+     * LONGFILE_POSIX(3). This specifies the treatment of long file names (names &gt;=
      * TarConstants.NAMELEN). Default is LONGFILE_ERROR.
      *
      * @param longFileMode the mode to use
@@ -245,9 +245,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Set the big number mode. This can be BIGNUMBER_ERROR(0), BIGNUMBER_POSIX(1) or
-     * BIGNUMBER_STAR(2). This specifies the treatment of big files (sizes &gt;
-     * TarConstants.MAXSIZE) and other numeric values to big to fit into a traditional tar header.
+     * Set the big number mode. This can be BIGNUMBER_ERROR(0), BIGNUMBER_STAR(1) or
+     * BIGNUMBER_POSIX(2). This specifies the treatment of big files (sizes &gt;
+     * TarConstants.MAXSIZE) and other numeric values too big to fit into a traditional tar header.
      * Default is BIGNUMBER_ERROR.
      *
      * @param bigNumberMode the mode to use
@@ -371,7 +371,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             final String entryName = entry.getName();
             final boolean paxHeaderContainsPath = handleLongName(entry, entryName, paxHeaders, "path",
                 TarConstants.LF_GNUTYPE_LONGNAME, "file name");
-
             final String linkName = entry.getLinkName();
             final boolean paxHeaderContainsLinkPath = linkName != null && !linkName.isEmpty()
                 && handleLongName(entry, linkName, paxHeaders, "linkpath",
@@ -606,12 +605,19 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             TarConstants.MAXSIZE);
         addPaxHeaderForBigNumber(paxHeaders, "gid", entry.getLongGroupId(),
             TarConstants.MAXID);
-        addFileTimePaxHeader(paxHeaders, "ctime", entry.getCreationTime());
-        addFileTimePaxHeader(paxHeaders, "atime", entry.getLastAccessTime());
         addFileTimePaxHeaderForBigNumber(paxHeaders, "mtime",
-            entry.getLastModifiedTime(), TarConstants.MAXSIZE);
+                entry.getLastModifiedTime(), TarConstants.MAXSIZE);
+        addFileTimePaxHeader(paxHeaders, "atime", entry.getLastAccessTime());
+        if (entry.getStatusChangeTime() != null) {
+            addFileTimePaxHeader(paxHeaders, "ctime", entry.getStatusChangeTime());
+        } else {
+            // ctime is usually set from creation time on platforms where the real ctime is not available
+            addFileTimePaxHeader(paxHeaders, "ctime", entry.getCreationTime());
+        }
         addPaxHeaderForBigNumber(paxHeaders, "uid", entry.getLongUserId(),
             TarConstants.MAXID);
+        // libarchive extensions
+        addFileTimePaxHeader(paxHeaders, "LIBARCHIVE.creationtime", entry.getCreationTime());
         // star extensions by J\u00f6rg Schilling
         addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devmajor",
             entry.getDevMajor(), TarConstants.MAXID);
