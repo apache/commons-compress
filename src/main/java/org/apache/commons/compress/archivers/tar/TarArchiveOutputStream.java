@@ -618,7 +618,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             TarConstants.MAXID);
         // libarchive extensions
         addFileTimePaxHeader(paxHeaders, "LIBARCHIVE.creationtime", entry.getCreationTime());
-        // star extensions by J\u00f6rg Schilling
+        // star extensions by Jörg Schilling
         addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devmajor",
             entry.getDevMajor(), TarConstants.MAXID);
         addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devminor",
@@ -639,9 +639,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         final String header, final FileTime value,
         final long maxValue) {
         if (value != null) {
-            Instant instant = value.toInstant();
-            long seconds = instant.getEpochSecond();
-            int nanos = instant.getNano();
+            final Instant instant = value.toInstant();
+            final long seconds = instant.getEpochSecond();
+            final int nanos = instant.getNano();
             if (nanos == 0) {
                 addPaxHeaderForBigNumber(paxHeaders, header, seconds, maxValue);
             } else {
@@ -653,9 +653,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     private void addFileTimePaxHeader(final Map<String, String> paxHeaders,
         final String header, final FileTime value) {
         if (value != null) {
-            Instant instant = value.toInstant();
-            long seconds = instant.getEpochSecond();
-            int nanos = instant.getNano();
+            final Instant instant = value.toInstant();
+            final long seconds = instant.getEpochSecond();
+            final int nanos = instant.getNano();
             if (nanos == 0) {
                 paxHeaders.put(header, String.valueOf(seconds));
             } else {
@@ -666,9 +666,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private void addInstantPaxHeader(final Map<String, String> paxHeaders,
         final String header, final long seconds, final int nanos) {
-        BigDecimal bdSeconds = BigDecimal.valueOf(seconds);
-        BigDecimal bdNanos = BigDecimal.valueOf(nanos).movePointLeft(9).setScale(7, RoundingMode.DOWN);
-        BigDecimal timestamp = bdSeconds.add(bdNanos);
+        final BigDecimal bdSeconds = BigDecimal.valueOf(seconds);
+        final BigDecimal bdNanos = BigDecimal.valueOf(nanos).movePointLeft(9).setScale(7, RoundingMode.DOWN);
+        final BigDecimal timestamp = bdSeconds.add(bdNanos);
         paxHeaders.put(header, timestamp.toPlainString());
     }
 

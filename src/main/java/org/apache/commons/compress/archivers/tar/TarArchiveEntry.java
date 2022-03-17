@@ -613,8 +613,25 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient)
         throws IOException {
+        this(Collections.emptyMap(), headerBuf, encoding, lenient);
+    }
+
+    /**
+     * Construct an entry from an archive's header bytes. File is set to null.
+     *
+     * @param globalPaxHeaders the parsed global PAX headers, or null if this is the first one.
+     * @param headerBuf The header bytes from a tar archive entry.
+     * @param encoding encoding to use for file names
+     * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be
+     * ignored and the fields set to {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
+     * @since 1.22
+     * @throws IllegalArgumentException if any of the numeric fields have an invalid format
+     * @throws IOException on error
+     */
+    public TarArchiveEntry(final Map<String, String> globalPaxHeaders, final byte[] headerBuf,
+            final ZipEncoding encoding, final boolean lenient) throws IOException {
         this(false);
-        parseTarHeader(headerBuf, encoding, false, lenient);
+        parseTarHeader(globalPaxHeaders, headerBuf, encoding, false, lenient);
     }
 
     /**
@@ -631,6 +648,24 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient,
             final long dataOffset) throws IOException {
         this(headerBuf, encoding, lenient);
+        setDataOffset(dataOffset);
+    }
+
+    /**
+     * Construct an entry from an archive's header bytes for random access tar. File is set to null.
+     * @param globalPaxHeaders the parsed global PAX headers, or null if this is the first one.
+     * @param headerBuf the header bytes from a tar archive entry.
+     * @param encoding encoding to use for file names.
+     * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be
+     * ignored and the fields set to {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
+     * @param dataOffset position of the entry data in the random access file.
+     * @since 1.22
+     * @throws IllegalArgumentException if any of the numeric fields have an invalid format.
+     * @throws IOException on error.
+     */
+    public TarArchiveEntry(final Map<String, String> globalPaxHeaders, final byte[] headerBuf,
+            final ZipEncoding encoding, final boolean lenient, final long dataOffset) throws IOException {
+        this(globalPaxHeaders,headerBuf, encoding, lenient);
         setDataOffset(dataOffset);
     }
 
@@ -1602,10 +1637,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
     }
 
-    private static Instant parseInstantFromDecimalSeconds(String value) {
-        BigDecimal epochSeconds = new BigDecimal(value);
-        long seconds = epochSeconds.longValue();
-        long nanos = epochSeconds.remainder(BigDecimal.ONE).movePointRight(9).longValue();
+    private static Instant parseInstantFromDecimalSeconds(final String value) {
+        final BigDecimal epochSeconds = new BigDecimal(value);
+        final long seconds = epochSeconds.longValue();
+        final long nanos = epochSeconds.remainder(BigDecimal.ONE).movePointRight(9).longValue();
         return Instant.ofEpochSecond(seconds, nanos);
     }
 
@@ -1728,15 +1763,15 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         return offset;
     }
 
-    private int fill(int value, int offset, byte[] outbuf, int length) {
+    private int fill(final int value, final int offset, final byte[] outbuf, final int length) {
         return fill((byte) value, offset, outbuf, length);
     }
 
-    private int fill(byte value, int offset, byte[] outbuf, int length) {
+    private int fill(final byte value, final int offset, final byte[] outbuf, final int length) {
         for (int i = 0; i < length; i++) {
-            outbuf[offset++] = value;
+            outbuf[offset + i] = value;
         }
-        return offset;
+        return offset + length;
     }
 
     private int writeEntryHeaderField(final long value, final byte[] outbuf, final int offset,
@@ -1789,15 +1824,21 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     private void parseTarHeader(final byte[] header, final ZipEncoding encoding,
                                 final boolean oldStyle, final boolean lenient)
         throws IOException {
+        parseTarHeader(Collections.emptyMap(), header, encoding, oldStyle, lenient);
+    }
+
+    private void parseTarHeader(final Map<String, String> globalPaxHeaders, final byte[] header,
+                                final ZipEncoding encoding, final boolean oldStyle, final boolean lenient)
+        throws IOException {
         try {
-            parseTarHeaderUnwrapped(header, encoding, oldStyle, lenient);
+            parseTarHeaderUnwrapped(globalPaxHeaders, header, encoding, oldStyle, lenient);
         } catch (IllegalArgumentException ex) {
             throw new IOException("Corrupted TAR archive.", ex);
         }
     }
 
-    private void parseTarHeaderUnwrapped(final byte[] header, final ZipEncoding encoding,
-                                         final boolean oldStyle, final boolean lenient)
+    private void parseTarHeaderUnwrapped(final Map<String, String> globalPaxHeaders, final byte[] header,
+                                         final ZipEncoding encoding, final boolean oldStyle, final boolean lenient)
         throws IOException {
         int offset = 0;
 
@@ -1842,7 +1883,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             offset += 2 * DEVLEN;
         }
 
-        final int type = evaluateType(header);
+        final int type = evaluateType(globalPaxHeaders, header);
         switch (type) {
         case FORMAT_OLDGNU: {
             aTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, ATIMELEN_GNU, lenient));
@@ -1958,12 +1999,12 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @param header The tar entry header buffer to evaluate the format for.
      * @return format type
      */
-    private int evaluateType(final byte[] header) {
+    private int evaluateType(final Map<String, String> globalPaxHeaders, final byte[] header) {
         if (ArchiveUtils.matchAsciiBuffer(MAGIC_GNU, header, MAGIC_OFFSET, MAGICLEN)) {
             return FORMAT_OLDGNU;
         }
         if (ArchiveUtils.matchAsciiBuffer(MAGIC_POSIX, header, MAGIC_OFFSET, MAGICLEN)) {
-            if (isXstar(header)) {
+            if (isXstar(globalPaxHeaders, header)) {
                 return FORMAT_XSTAR;
             }
             return FORMAT_POSIX;
@@ -1976,10 +2017,22 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      *
      * Use the same logic found in star version 1.6 in {@code header.c}, function {@code isxmagic(TCB *ptb)}.
      */
-    private boolean isXstar(byte[] header) {
+    private boolean isXstar(final Map<String, String> globalPaxHeaders, final byte[] header) {
         // Check if this is XSTAR
         if (ArchiveUtils.matchAsciiBuffer(MAGIC_XSTAR, header, XSTAR_MAGIC_OFFSET, XSTAR_MAGIC_LEN)) {
             return true;
+        }
+
+        /*
+        If SCHILY.archtype is present in the global PAX header, we can use it to identify the type of archive.
+
+        Possible values for XSTAR:
+        - xustar: 'xstar' format without "tar" signature at header offset 508.
+        - exustar: 'xustar' format variant that always includes x-headers and g-headers.
+         */
+        final String archType = globalPaxHeaders.get("SCHILY.archtype");
+        if (archType != null) {
+            return "xustar".equals(archType) || "exustar".equals(archType);
         }
 
         // Check if this is XUSTAR
@@ -1996,7 +2049,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         return true;
     }
 
-    private boolean isInvalidPrefix(byte[] header) {
+    private boolean isInvalidPrefix(final byte[] header) {
         // prefix[130] is is guaranteed to be '\0' with XSTAR/XUSTAR
         if (header[XSTAR_PREFIX_OFFSET + 130] != 0) {
             // except when typeflag is 'M'
@@ -2013,18 +2066,18 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         return false;
     }
 
-    private boolean isInvalidXtarTime(byte[] buffer, int offset, int length) {
+    private boolean isInvalidXtarTime(final byte[] buffer, final int offset, final int length) {
         // If atime[0]...atime[10] or ctime[0]...ctime[10] is not a POSIX octal number it cannot be 'xstar'.
         if ((buffer[offset] & 0x80) == 0) {
-            int lastIndex = length - 1;
+            final int lastIndex = length - 1;
             for (int i = 0; i < lastIndex; i++) {
-                byte b = buffer[offset + i];
+                final byte b = buffer[offset + i];
                 if (b < '0' || b > '7') {
                     return true;
                 }
             }
             // Check for both POSIX compliant end of number characters if not using base 256
-            byte b = buffer[offset + lastIndex];
+            final byte b = buffer[offset + lastIndex];
             if (b != ' ' && b != 0) {
                 return true;
             }

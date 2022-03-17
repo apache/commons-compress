@@ -254,7 +254,8 @@ public class TarFile implements Closeable {
         }
 
         try {
-            currEntry = new TarArchiveEntry(headerBuf.array(), zipEncoding, lenient, archive.position());
+            final long position = archive.position();
+            currEntry = new TarArchiveEntry(globalPaxHeaders, headerBuf.array(), zipEncoding, lenient, position);
         } catch (final IllegalArgumentException e) {
             throw new IOException("Error detected parsing the header", e);
         }
