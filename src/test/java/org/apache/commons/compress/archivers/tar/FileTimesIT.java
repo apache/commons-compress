@@ -31,6 +31,24 @@ import static org.junit.Assert.*;
 
 public class FileTimesIT extends AbstractTestCase {
 
+    // Old BSD tar format
+    @Test
+    public void readTimeFromTarOldBsdTar() throws Exception {
+        final String file = "COMPRESS-612/test-times-oldbsdtar.tar";
+        try (final InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
+             final TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+            final TarArchiveEntry e = tin.getNextTarEntry();
+            assertNotNull(e);
+            assertTrue(e.getExtraPaxHeaders().isEmpty());
+            assertEquals("mtime", toFileTime("2022-03-17T01:52:25Z"), e.getLastModifiedTime());
+            assertNull("atime", e.getLastAccessTime());
+            assertNull("ctime", e.getStatusChangeTime());
+            assertNull("birthtime", e.getCreationTime());
+            assertNull(tin.getNextTarEntry());
+        }
+    }
+
+    // Old UNIX V7 tar format
     @Test
     public void readTimeFromTarV7() throws Exception {
         final String file = "COMPRESS-612/test-times-v7.tar";
@@ -41,12 +59,14 @@ public class FileTimesIT extends AbstractTestCase {
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("mtime", toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime());
             assertNull("atime", e.getLastAccessTime());
-            assertNull("ctime", e.getCreationTime());
+            assertNull("ctime", e.getStatusChangeTime());
             assertNull("birthtime", e.getCreationTime());
             assertNull(tin.getNextTarEntry());
         }
     }
 
+    // Format used by GNU tar of versions prior to 1.12
+    // Created using GNU tar
     @Test
     public void readTimeFromTarOldGnu() throws Exception {
         final String file = "COMPRESS-612/test-times-oldgnu.tar";
@@ -57,12 +77,14 @@ public class FileTimesIT extends AbstractTestCase {
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("mtime", toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime());
             assertNull("atime", e.getLastAccessTime());
-            assertNull("ctime", e.getCreationTime());
+            assertNull("ctime", e.getStatusChangeTime());
             assertNull("birthtime", e.getCreationTime());
             assertNull(tin.getNextTarEntry());
         }
     }
 
+    // Format used by GNU tar of versions prior to 1.12
+    // Created using GNU tar
     @Test
     public void readTimeFromTarOldGnuIncremental() throws Exception {
         final String file = "COMPRESS-612/test-times-oldgnu-incremental.tar";
@@ -74,7 +96,7 @@ public class FileTimesIT extends AbstractTestCase {
             assertEquals("name", "test-times.txt", e.getName());
             assertEquals("mtime", toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime());
             assertNull("atime", e.getLastAccessTime());
-            assertNull("ctime", e.getCreationTime());
+            assertNull("ctime", e.getStatusChangeTime());
             assertNull("birthtime", e.getCreationTime());
             e = tin.getNextTarEntry();
             assertNotNull(e);
@@ -88,6 +110,26 @@ public class FileTimesIT extends AbstractTestCase {
         }
     }
 
+    // GNU tar format 1989 (violates POSIX)
+    // Created using s-tar 1.6, which somehow differs from GNU tar's.
+    @Test
+    public void readTimeFromTarGnuTar() throws Exception {
+        final String file = "COMPRESS-612/test-times-gnutar.tar";
+        try (final InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
+             final TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+            final TarArchiveEntry e = tin.getNextTarEntry();
+            assertNotNull(e);
+            assertTrue(e.getExtraPaxHeaders().isEmpty());
+            assertEquals("mtime", toFileTime("2022-03-17T01:52:25Z"), e.getLastModifiedTime());
+            assertEquals("atime", toFileTime("2022-03-17T01:52:25Z"), e.getLastModifiedTime());
+            assertEquals("ctime", toFileTime("2022-03-17T01:52:25Z"), e.getLastModifiedTime());
+            assertNull("birthtime", e.getCreationTime());
+            assertNull(tin.getNextTarEntry());
+        }
+    }
+
+    // GNU tar format 1989 (violates POSIX)
+    // Created using GNU tar
     @Test
     public void readTimeFromTarGnu() throws Exception {
         final String file = "COMPRESS-612/test-times-gnu.tar";
@@ -98,12 +140,14 @@ public class FileTimesIT extends AbstractTestCase {
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("mtime", toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime());
             assertNull("atime", e.getLastAccessTime());
-            assertNull("ctime", e.getCreationTime());
+            assertNull("ctime", e.getStatusChangeTime());
             assertNull("birthtime", e.getCreationTime());
             assertNull(tin.getNextTarEntry());
         }
     }
 
+    // GNU tar format 1989 (violates POSIX)
+    // Created using GNU tar
     @Test
     public void readTimeFromTarGnuIncremental() throws Exception {
         final String file = "COMPRESS-612/test-times-gnu-incremental.tar";
@@ -115,7 +159,7 @@ public class FileTimesIT extends AbstractTestCase {
             assertEquals("name", "test-times.txt", e.getName());
             assertEquals("mtime", toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime());
             assertNull("atime", e.getLastAccessTime());
-            assertNull("ctime", e.getCreationTime());
+            assertNull("ctime", e.getStatusChangeTime());
             assertNull("birthtime", e.getCreationTime());
             e = tin.getNextTarEntry();
             assertNotNull(e);
@@ -129,6 +173,7 @@ public class FileTimesIT extends AbstractTestCase {
         }
     }
 
+    // Standard POSIX.1-1988 tar format
     @Test
     public void readTimeFromTarUstar() throws Exception {
         final String file = "COMPRESS-612/test-times-ustar.tar";
@@ -139,12 +184,13 @@ public class FileTimesIT extends AbstractTestCase {
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("mtime", toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime());
             assertNull("atime", e.getLastAccessTime());
-            assertNull("ctime", e.getCreationTime());
+            assertNull("ctime", e.getStatusChangeTime());
             assertNull("birthtime", e.getCreationTime());
             assertNull(tin.getNextTarEntry());
         }
     }
 
+    // Old star format from 1985
     @Test
     public void readTimeFromTarStarFolder() throws Exception {
         final String file = "COMPRESS-612/test-times-star-folder.tar";
@@ -171,6 +217,7 @@ public class FileTimesIT extends AbstractTestCase {
         }
     }
 
+    // Extended standard tar (star 1994)
     @Test
     public void readTimeFromTarXstar() throws Exception {
         final String file = "COMPRESS-612/test-times-xstar.tar";
@@ -187,6 +234,7 @@ public class FileTimesIT extends AbstractTestCase {
         }
     }
 
+    // Extended standard tar (star 1994)
     @Test
     public void readTimeFromTarXstarIncremental() throws Exception {
         final String file = "COMPRESS-612/test-times-xstar-incremental.tar";
@@ -212,6 +260,7 @@ public class FileTimesIT extends AbstractTestCase {
         }
     }
 
+    // Extended standard tar (star 1994)
     @Test
     public void readTimeFromTarXstarFolder() throws Exception {
         final String file = "COMPRESS-612/test-times-xstar-folder.tar";
@@ -238,6 +287,7 @@ public class FileTimesIT extends AbstractTestCase {
         }
     }
 
+    // 'xstar' format without tar signature
     @Test
     public void readTimeFromTarXustar() throws Exception {
         final String file = "COMPRESS-612/test-times-xustar.tar";
@@ -254,6 +304,7 @@ public class FileTimesIT extends AbstractTestCase {
         }
     }
 
+    // 'xstar' format without tar signature
     @Test
     public void readTimeFromTarXustarIncremental() throws Exception {
         final String file = "COMPRESS-612/test-times-xustar-incremental.tar";
@@ -279,6 +330,7 @@ public class FileTimesIT extends AbstractTestCase {
         }
     }
 
+    // 'xstar' format without tar signature
     @Test
     public void readTimeFromTarXustarFolder() throws Exception {
         final String file = "COMPRESS-612/test-times-xustar-folder.tar";
@@ -305,6 +357,7 @@ public class FileTimesIT extends AbstractTestCase {
         }
     }
 
+    // 'xustar' format - always x-header
     @Test
     public void readTimeFromTarExustar() throws Exception {
         final String file = "COMPRESS-612/test-times-exustar-folder.tar";
@@ -340,6 +393,8 @@ public class FileTimesIT extends AbstractTestCase {
         assertEquals("SCHILY.volhdr.volno", "1", e.getExtraPaxHeader("SCHILY.volhdr.volno"));
     }
 
+    // Extended POSIX.1-2001 standard tar
+    // Created using GNU tar
     @Test
     public void readTimeFromTarPosix() throws Exception {
         final String file = "COMPRESS-612/test-times-posix.tar";
@@ -356,6 +411,8 @@ public class FileTimesIT extends AbstractTestCase {
         }
     }
 
+    // Extended POSIX.1-2001 standard tar
+    // Created using s-tar 1.6, which somehow differs from GNU tar's.
     @Test
     public void readTimeFromTarPax() throws Exception {
         final String file = "COMPRESS-612/test-times-pax-folder.tar";
@@ -383,6 +440,8 @@ public class FileTimesIT extends AbstractTestCase {
         }
     }
 
+    // Extended POSIX.1-2001 standard tar + x-header
+    // Created using s-tar 1.6
     @Test
     public void readTimeFromTarEpax() throws Exception {
         final String file = "COMPRESS-612/test-times-epax-folder.tar";
@@ -410,6 +469,8 @@ public class FileTimesIT extends AbstractTestCase {
         }
     }
 
+    // Extended POSIX.1-2001 standard tar
+    // Created using GNU tar on Linux
     @Test
     public void readTimeFromTarPosixLinux() throws Exception {
         final String file = "COMPRESS-612/test-times-posix-linux.tar";
@@ -426,6 +487,8 @@ public class FileTimesIT extends AbstractTestCase {
         }
     }
 
+    // Extended POSIX.1-2001 standard tar
+    // Created using BSD tar on Windows
     @Test
     public void readTimeFromTarPosixLibArchive() throws Exception {
         final String file = "COMPRESS-612/test-times-bsd-folder.tar";
