@@ -121,8 +121,8 @@ public class FileTimesIT extends AbstractTestCase {
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("mtime", toFileTime("2022-03-17T01:52:25Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-17T01:52:25Z"), e.getLastModifiedTime());
-            assertEquals("ctime", toFileTime("2022-03-17T01:52:25Z"), e.getLastModifiedTime());
+            assertEquals("atime", toFileTime("2022-03-17T01:52:25Z"), e.getLastAccessTime());
+            assertEquals("ctime", toFileTime("2022-03-17T01:52:25Z"), e.getStatusChangeTime());
             assertNull("birthtime", e.getCreationTime());
             assertNull(tin.getNextTarEntry());
         }
