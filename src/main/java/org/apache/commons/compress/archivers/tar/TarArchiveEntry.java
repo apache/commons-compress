@@ -62,12 +62,14 @@ import org.apache.commons.compress.utils.IOUtils;
  * or listing the contents of an archive. These entries have their
  * header filled in using the header bytes. They also set the File
  * to null, since they reference an archive entry not a file.
+ * </p>
  * <p>
  * TarEntries that are created from Files that are to be written
  * into an archive are instantiated with the {@link TarArchiveEntry#TarArchiveEntry(File)}
  * or {@link TarArchiveEntry#TarArchiveEntry(Path)} constructor.
  * These entries have their header filled in using the File's information.
  * They also keep a reference to the File for convenience when writing entries.
+ * </p>
  * <p>
  * Finally, TarEntries can be constructed from nothing but a name.
  * This allows the programmer to construct the entry by hand, for
@@ -75,109 +77,114 @@ import org.apache.commons.compress.utils.IOUtils;
  * the archive, and the header information is constructed from
  * other information. In this case the header fields are set to
  * defaults and the File is set to null.
- *
+ * </p>
  * <p>
  * The C structure for a Tar Entry's header is:
+ * </p>
  * <pre>
  * struct header {
- * char name[100];     // TarConstants.NAMELEN    - offset   0
- * char mode[8];       // TarConstants.MODELEN    - offset 100
- * char uid[8];        // TarConstants.UIDLEN     - offset 108
- * char gid[8];        // TarConstants.GIDLEN     - offset 116
- * char size[12];      // TarConstants.SIZELEN    - offset 124
- * char mtime[12];     // TarConstants.MODTIMELEN - offset 136
- * char chksum[8];     // TarConstants.CHKSUMLEN  - offset 148
- * char linkflag[1];   //                         - offset 156
- * char linkname[100]; // TarConstants.NAMELEN    - offset 157
- * The following fields are only present in new-style POSIX tar archives:
- * char magic[6];      // TarConstants.MAGICLEN   - offset 257
- * char version[2];    // TarConstants.VERSIONLEN - offset 263
- * char uname[32];     // TarConstants.UNAMELEN   - offset 265
- * char gname[32];     // TarConstants.GNAMELEN   - offset 297
- * char devmajor[8];   // TarConstants.DEVLEN     - offset 329
- * char devminor[8];   // TarConstants.DEVLEN     - offset 337
- * char prefix[155];   // TarConstants.PREFIXLEN  - offset 345
- * // Used if "name" field is not long enough to hold the path
- * char pad[12];       // NULs                    - offset 500
+ *   char name[100];     // TarConstants.NAMELEN    - offset   0
+ *   char mode[8];       // TarConstants.MODELEN    - offset 100
+ *   char uid[8];        // TarConstants.UIDLEN     - offset 108
+ *   char gid[8];        // TarConstants.GIDLEN     - offset 116
+ *   char size[12];      // TarConstants.SIZELEN    - offset 124
+ *   char mtime[12];     // TarConstants.MODTIMELEN - offset 136
+ *   char chksum[8];     // TarConstants.CHKSUMLEN  - offset 148
+ *   char linkflag[1];   //                         - offset 156
+ *   char linkname[100]; // TarConstants.NAMELEN    - offset 157
+ *   // The following fields are only present in new-style POSIX tar archives:
+ *   char magic[6];      // TarConstants.MAGICLEN   - offset 257
+ *   char version[2];    // TarConstants.VERSIONLEN - offset 263
+ *   char uname[32];     // TarConstants.UNAMELEN   - offset 265
+ *   char gname[32];     // TarConstants.GNAMELEN   - offset 297
+ *   char devmajor[8];   // TarConstants.DEVLEN     - offset 329
+ *   char devminor[8];   // TarConstants.DEVLEN     - offset 337
+ *   char prefix[155];   // TarConstants.PREFIXLEN  - offset 345
+ *   // Used if "name" field is not long enough to hold the path
+ *   char pad[12];       // NULs                    - offset 500
  * } header;
+ * </pre>
+ * <p>
  * All unused bytes are set to null.
  * New-style GNU tar files are slightly different from the above.
  * For values of size larger than 077777777777L (11 7s)
  * or uid and gid larger than 07777777L (7 7s)
  * the sign bit of the first byte is set, and the rest of the
  * field is the binary representation of the number.
- * See TarUtils.parseOctalOrBinary.
- * </pre>
- *
+ * See {@link TarUtils#parseOctalOrBinary(byte[], int, int)}.
  * <p>
  * The C structure for a old GNU Tar Entry's header is:
+ * </p>
  * <pre>
  * struct oldgnu_header {
- * char unused_pad1[345]; // TarConstants.PAD1LEN_GNU       - offset 0
- * char atime[12];        // TarConstants.ATIMELEN_GNU      - offset 345
- * char ctime[12];        // TarConstants.CTIMELEN_GNU      - offset 357
- * char offset[12];       // TarConstants.OFFSETLEN_GNU     - offset 369
- * char longnames[4];     // TarConstants.LONGNAMESLEN_GNU  - offset 381
- * char unused_pad2;      // TarConstants.PAD2LEN_GNU       - offset 385
- * struct sparse sp[4];   // TarConstants.SPARSELEN_GNU     - offset 386
- * char isextended;       // TarConstants.ISEXTENDEDLEN_GNU - offset 482
- * char realsize[12];     // TarConstants.REALSIZELEN_GNU   - offset 483
- * char unused_pad[17];   // TarConstants.PAD3LEN_GNU       - offset 495
+ *   char unused_pad1[345]; // TarConstants.PAD1LEN_GNU       - offset 0
+ *   char atime[12];        // TarConstants.ATIMELEN_GNU      - offset 345
+ *   char ctime[12];        // TarConstants.CTIMELEN_GNU      - offset 357
+ *   char offset[12];       // TarConstants.OFFSETLEN_GNU     - offset 369
+ *   char longnames[4];     // TarConstants.LONGNAMESLEN_GNU  - offset 381
+ *   char unused_pad2;      // TarConstants.PAD2LEN_GNU       - offset 385
+ *   struct sparse sp[4];   // TarConstants.SPARSELEN_GNU     - offset 386
+ *   char isextended;       // TarConstants.ISEXTENDEDLEN_GNU - offset 482
+ *   char realsize[12];     // TarConstants.REALSIZELEN_GNU   - offset 483
+ *   char unused_pad[17];   // TarConstants.PAD3LEN_GNU       - offset 495
  * };
  * </pre>
+ * <p> 
  * Whereas, "struct sparse" is:
+ * </p>
  * <pre>
  * struct sparse {
- * char offset[12];   // offset 0
- * char numbytes[12]; // offset 12
+ *   char offset[12];   // offset 0
+ *   char numbytes[12]; // offset 12
  * };
  * </pre>
- *
  * <p>
  * The C structure for a xstar (Jörg Schilling star) Tar Entry's header is:
+ * </p>
  * <pre>
  * struct star_header {
- *  char name[100];     // offset   0
- *  char mode[8];       // offset 100
- *  char uid[8];        // offset 108
- *  char gid[8];        // offset 116
- *  char size[12];      // offset 124
- *  char mtime[12];     // offset 136
- *  char chksum[8];     // offset 148
- *  char typeflag;      // offset 156
- *  char linkname[100]; // offset 157
- *  char magic[6];      // offset 257
- *  char version[2];    // offset 263
- *  char uname[32];     // offset 265
- *  char gname[32];     // offset 297
- *  char devmajor[8];   // offset 329
- *  char devminor[8];   // offset 337
- *  char prefix[131];   // offset 345
- *  char atime[12];     // offset 476
- *  char ctime[12];     // offset 488
- *  char mfill[8];      // offset 500
- *  char xmagic[4];     // offset 508  "tar"
+ *   char name[100];     // offset   0
+ *   char mode[8];       // offset 100
+ *   char uid[8];        // offset 108
+ *   char gid[8];        // offset 116
+ *   char size[12];      // offset 124
+ *   char mtime[12];     // offset 136
+ *   char chksum[8];     // offset 148
+ *   char typeflag;      // offset 156
+ *   char linkname[100]; // offset 157
+ *   char magic[6];      // offset 257
+ *   char version[2];    // offset 263
+ *   char uname[32];     // offset 265
+ *   char gname[32];     // offset 297
+ *   char devmajor[8];   // offset 329
+ *   char devminor[8];   // offset 337
+ *   char prefix[131];   // offset 345
+ *   char atime[12];     // offset 476
+ *   char ctime[12];     // offset 488
+ *   char mfill[8];      // offset 500
+ *   char xmagic[4];     // offset 508  "tar\0"
  * };
  * </pre>
- * <p>which is identical to new-style POSIX up to the first 130 bytes of the prefix.</p>
- *
+ * <p>
+ * which is identical to new-style POSIX up to the first 130 bytes of the prefix.
+ * </p>
  * <p>
  * The C structure for the xstar-specific parts of a xstar Tar Entry's header is:
  * </p>
  * <pre>
  * struct xstar_in_header {
- *  char fill[345];         // offset 0     Everything before t_prefix
- *  char prefix[1];         // offset 345   Prefix for t_name
- *  char fill2;             // offset 346
- *  char fill3[8];          // offset 347
- *  char isextended;        // offset 355
- *  struct sparse sp[SIH];  // offset 356   8 x 12
- *  char realsize[12];      // offset 452   Real size for sparse data
- *  char offset[12];        // offset 464   Offset for multivolume data
- *  char atime[12];         // offset 476
- *  char ctime[12];         // offset 488
- *  char mfill[8];          // offset 500
- *  char xmagic[4];         // offset 508   "tar"
+ *   char fill[345];         // offset 0     Everything before t_prefix
+ *   char prefix[1];         // offset 345   Prefix for t_name
+ *   char fill2;             // offset 346
+ *   char fill3[8];          // offset 347
+ *   char isextended;        // offset 355
+ *   struct sparse sp[SIH];  // offset 356   8 x 12
+ *   char realsize[12];      // offset 452   Real size for sparse data
+ *   char offset[12];        // offset 464   Offset for multivolume data
+ *   char atime[12];         // offset 476
+ *   char ctime[12];         // offset 488
+ *   char mfill[8];          // offset 500
+ *   char xmagic[4];         // offset 508   "tar\0"
  * };
  * </pre>
  *
