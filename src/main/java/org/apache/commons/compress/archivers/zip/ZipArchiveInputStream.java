@@ -18,6 +18,11 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
@@ -27,6 +32,7 @@ import java.io.PushbackInputStream;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.zip.CRC32;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
@@ -40,11 +46,6 @@ import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInpu
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
-
-import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC;
 
 /**
  * Implements an input stream that can read Zip archives.
@@ -546,6 +547,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     /**
      * @since 1.17
      */
+    @SuppressWarnings("resource") // checkInputStream() does not allocate.
     @Override
     public long getCompressedCount() {
         if (current.entry.getMethod() == ZipArchiveOutputStream.STORED) {
@@ -555,16 +557,16 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
             return getBytesInflated();
         }
         if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
-            return ((UnshrinkingInputStream) current.inputStream).getCompressedCount();
+            return ((InputStreamStatistics) current.checkInputStream()).getCompressedCount();
         }
         if (current.entry.getMethod() == ZipMethod.IMPLODING.getCode()) {
-            return ((ExplodingInputStream) current.inputStream).getCompressedCount();
+            return ((InputStreamStatistics) current.checkInputStream()).getCompressedCount();
         }
         if (current.entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode()) {
-            return ((Deflate64CompressorInputStream) current.inputStream).getCompressedCount();
+            return ((InputStreamStatistics) current.checkInputStream()).getCompressedCount();
         }
         if (current.entry.getMethod() == ZipMethod.BZIP2.getCode()) {
-            return ((BZip2CompressorInputStream) current.inputStream).getCompressedCount();
+            return ((InputStreamStatistics) current.checkInputStream()).getCompressedCount();
         }
         return -1;
     }
@@ -1320,6 +1322,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
          * The input stream decompressing the data for shrunk and imploded entries.
          */
         private InputStream inputStream;
+        
+        @SuppressWarnings("unchecked") // Caller beware
+        private <T extends InputStream> T checkInputStream() {
+            return (T) Objects.requireNonNull(inputStream, "inputStream");
+        }
     }
 
     /**
