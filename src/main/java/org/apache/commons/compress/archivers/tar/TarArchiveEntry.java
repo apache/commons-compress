@@ -163,6 +163,7 @@ import org.apache.commons.compress.utils.IOUtils;
  *
  * <p>
  * The C structure for the xstar-specific parts of a xstar Tar Entry's header is:
+ * </p>
  * <pre>
  * struct xstar_in_header {
  *  char fill[345];         // offset 0     Everything before t_prefix
@@ -179,11 +180,9 @@ import org.apache.commons.compress.utils.IOUtils;
  *  char xmagic[4];         // offset 508   "tar"
  * };
  * </pre>
- * </p>
  *
  * @NotThreadSafe
  */
-
 public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamOffsets {
     private static final TarArchiveEntry[] EMPTY_TAR_ARCHIVE_ENTRY_ARRAY = new TarArchiveEntry[0];
 
