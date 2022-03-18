@@ -550,22 +550,17 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     @SuppressWarnings("resource") // checkInputStream() does not allocate.
     @Override
     public long getCompressedCount() {
-        if (current.entry.getMethod() == ZipArchiveOutputStream.STORED) {
+        final int method = current.entry.getMethod();
+        if (method == ZipArchiveOutputStream.STORED) {
             return current.bytesRead;
         }
-        if (current.entry.getMethod() == ZipArchiveOutputStream.DEFLATED) {
+        if (method == ZipArchiveOutputStream.DEFLATED) {
             return getBytesInflated();
         }
-        if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode()) {
-            return ((InputStreamStatistics) current.checkInputStream()).getCompressedCount();
-        }
-        if (current.entry.getMethod() == ZipMethod.IMPLODING.getCode()) {
-            return ((InputStreamStatistics) current.checkInputStream()).getCompressedCount();
-        }
-        if (current.entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode()) {
-            return ((InputStreamStatistics) current.checkInputStream()).getCompressedCount();
-        }
-        if (current.entry.getMethod() == ZipMethod.BZIP2.getCode()) {
+        if (method == ZipMethod.UNSHRINKING.getCode() 
+            || method == ZipMethod.IMPLODING.getCode() 
+            || method == ZipMethod.ENHANCED_DEFLATED.getCode()
+            || method == ZipMethod.BZIP2.getCode()) {
             return ((InputStreamStatistics) current.checkInputStream()).getCompressedCount();
         }
         return -1;
