@@ -2054,7 +2054,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         if (header[XSTAR_PREFIX_OFFSET + 130] != 0) {
             // except when typeflag is 'M'
             if (header[LF_OFFSET] == LF_MULTIVOLUME) {
-                // We come only here if we try to read in a multivolume archive starting past volume #0
+                // We come only here if we try to read in a GNU/xstar/xustar multivolume archive starting past volume #0
+                // As of 1.22, commons-compress does not support multivolume tar archives.
+                // If/when it does, this should work as intended.
                 if ((header[XSTAR_MULTIVOLUME_OFFSET] & 0x80) == 0
                         && header[XSTAR_MULTIVOLUME_OFFSET + 11] != ' ') {
                     return true;

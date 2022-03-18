@@ -231,6 +231,7 @@ public interface TarConstants {
      * Offset inside the header for the "link flag" field.
      *
      * @since 1.22
+     * @see TarArchiveEntry
      */
     int    LF_OFFSET = 156;
 
@@ -365,6 +366,7 @@ public interface TarConstants {
      * Offset inside the header for the xtar multivolume data
      *
      * @since 1.22
+     * @see TarArchiveEntry
      */
     int XSTAR_MULTIVOLUME_OFFSET = 464;
 
@@ -391,6 +393,7 @@ public interface TarConstants {
      * Offset inside the header for the prefix field in xstar archives.
      *
      * @since 1.22
+     * @see TarArchiveEntry
      */
     int XSTAR_PREFIX_OFFSET = 345;
 
@@ -398,6 +401,7 @@ public interface TarConstants {
      * Offset inside the header for the atime field in xstar archives.
      *
      * @since 1.22
+     * @see TarArchiveEntry
      */
     int XSTAR_ATIME_OFFSET = 476;
 
@@ -412,6 +416,7 @@ public interface TarConstants {
      * Offset inside the header for the ctime field in xstar archives.
      *
      * @since 1.22
+     * @see TarArchiveEntry
      */
     int XSTAR_CTIME_OFFSET = 488;
 
