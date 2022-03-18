@@ -34,6 +34,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -304,6 +306,160 @@ public class TarArchiveEntryTest implements TarConstants {
         te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(200, 2)));
         te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
         te.getOrderedSparseHeaders();
+    }
+
+    @Test
+    public void shouldParseTimePaxHeadersAndNotCountAsExtraPaxHeaders() {
+        final TarArchiveEntry entry = createEntryForTimeTests();
+        assertEquals("extra header count", 0, entry.getExtraPaxHeaders().size());
+        assertNull("size", entry.getExtraPaxHeader("size"));
+        assertNull("mtime", entry.getExtraPaxHeader("mtime"));
+        assertNull("atime", entry.getExtraPaxHeader("atime"));
+        assertNull("ctime", entry.getExtraPaxHeader("ctime"));
+        assertNull("birthtime", entry.getExtraPaxHeader("LIBARCHIVE.creationtime"));
+        assertEquals("size", entry.getSize(), 1);
+        assertEquals("mtime", toFileTime("2022-03-14T01:25:03.599853900Z"), entry.getLastModifiedTime());
+        assertEquals("atime", toFileTime("2022-03-14T01:31:00.706927200Z"), entry.getLastAccessTime());
+        assertEquals("ctime", toFileTime("2022-03-14T01:28:59.700505300Z"), entry.getStatusChangeTime());
+        assertEquals("birthtime", toFileTime("2022-03-14T01:29:00.723509000Z"), entry.getCreationTime());
+    }
+
+    @Test
+    public void shouldNotWriteTimePaxHeadersByDefault() throws IOException {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
+            final TarArchiveEntry entry = createEntryForTimeTests();
+            tos.putArchiveEntry(entry);
+            tos.write('W');
+            tos.closeArchiveEntry();
+        }
+        try (final TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
+            final TarArchiveEntry entry = tis.getNextTarEntry();
+            assertNotNull("couldn't get entry", entry);
+
+            assertEquals("extra header count", 0, entry.getExtraPaxHeaders().size());
+            assertNull("mtime", entry.getExtraPaxHeader("mtime"));
+            assertNull("atime", entry.getExtraPaxHeader("atime"));
+            assertNull("ctime", entry.getExtraPaxHeader("ctime"));
+            assertNull("birthtime", entry.getExtraPaxHeader("LIBARCHIVE.creationtime"));
+            assertEquals("mtime", toFileTime("2022-03-14T01:25:03Z"), entry.getLastModifiedTime());
+            assertNull("atime", entry.getLastAccessTime());
+            assertNull("ctime", entry.getStatusChangeTime());
+            assertNull("birthtime", entry.getCreationTime());
+
+            assertEquals('W', tis.read());
+            assertTrue("should be at end of entry", tis.read() < 0);
+
+            assertNull("should be at end of file", tis.getNextTarEntry());
+        }
+    }
+
+    @Test
+    public void shouldWriteTimesForStarMode() throws IOException {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
+            final TarArchiveEntry entry = createEntryForTimeTests();
+            tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR);
+            tos.putArchiveEntry(entry);
+            tos.write('W');
+            tos.closeArchiveEntry();
+        }
+        try (final TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
+            final TarArchiveEntry entry = tis.getNextTarEntry();
+            assertNotNull("couldn't get entry", entry);
+
+            assertEquals("extra header count", 0, entry.getExtraPaxHeaders().size());
+            assertNull("mtime", entry.getExtraPaxHeader("mtime"));
+            assertNull("atime", entry.getExtraPaxHeader("atime"));
+            assertNull("ctime", entry.getExtraPaxHeader("ctime"));
+            assertNull("birthtime", entry.getExtraPaxHeader("LIBARCHIVE.creationtime"));
+            assertEquals("mtime", toFileTime("2022-03-14T01:25:03Z"), entry.getLastModifiedTime());
+            assertEquals("atime", toFileTime("2022-03-14T01:31:00Z"), entry.getLastAccessTime());
+            assertEquals("ctime", toFileTime("2022-03-14T01:28:59Z"), entry.getStatusChangeTime());
+            assertNull("birthtime", entry.getCreationTime());
+
+            assertEquals('W', tis.read());
+            assertTrue("should be at end of entry", tis.read() < 0);
+
+            assertNull("should be at end of file", tis.getNextTarEntry());
+        }
+    }
+
+    @Test
+    public void shouldWriteTimesAsPaxHeadersForPosixMode() throws IOException {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
+            final TarArchiveEntry entry = createEntryForTimeTests();
+            tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
+            tos.putArchiveEntry(entry);
+            tos.write('W');
+            tos.closeArchiveEntry();
+        }
+        try (final TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
+            final TarArchiveEntry entry = tis.getNextTarEntry();
+            assertNotNull("couldn't get entry", entry);
+
+            assertEquals("extra header count", 0, entry.getExtraPaxHeaders().size());
+            assertNull("mtime", entry.getExtraPaxHeader("mtime"));
+            assertNull("atime", entry.getExtraPaxHeader("atime"));
+            assertNull("ctime", entry.getExtraPaxHeader("ctime"));
+            assertNull("birthtime", entry.getExtraPaxHeader("LIBARCHIVE.creationtime"));
+            assertEquals("mtime", toFileTime("2022-03-14T01:25:03.599853900Z"), entry.getLastModifiedTime());
+            assertEquals("atime", toFileTime("2022-03-14T01:31:00.706927200Z"), entry.getLastAccessTime());
+            assertEquals("ctime", toFileTime("2022-03-14T01:28:59.700505300Z"), entry.getStatusChangeTime());
+            assertEquals("birthtime", toFileTime("2022-03-14T01:29:00.723509000Z"), entry.getCreationTime());
+
+            assertEquals('W', tis.read());
+            assertTrue("should be at end of entry", tis.read() < 0);
+
+            assertNull("should be at end of file", tis.getNextTarEntry());
+        }
+    }
+
+    @Test
+    public void shouldWriteTimesAsPaxHeadersForPosixModeAndCreationTimeShouldBeUsedAsCtime() throws IOException {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
+            final TarArchiveEntry entry = createEntryForTimeTests();
+            entry.setStatusChangeTime(null);
+            tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
+            tos.putArchiveEntry(entry);
+            tos.write('W');
+            tos.closeArchiveEntry();
+        }
+        try (final TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
+            final TarArchiveEntry entry = tis.getNextTarEntry();
+            assertNotNull("couldn't get entry", entry);
+
+            assertEquals("extra header count", 0, entry.getExtraPaxHeaders().size());
+            assertNull("mtime", entry.getExtraPaxHeader("mtime"));
+            assertNull("atime", entry.getExtraPaxHeader("atime"));
+            assertNull("ctime", entry.getExtraPaxHeader("ctime"));
+            assertNull("birthtime", entry.getExtraPaxHeader("LIBARCHIVE.creationtime"));
+            assertEquals("mtime", toFileTime("2022-03-14T01:25:03.599853900Z"), entry.getLastModifiedTime());
+            assertEquals("atime", toFileTime("2022-03-14T01:31:00.706927200Z"), entry.getLastAccessTime());
+            assertEquals("ctime", toFileTime("2022-03-14T01:29:00.723509000Z"), entry.getStatusChangeTime());
+            assertEquals("birthtime", toFileTime("2022-03-14T01:29:00.723509000Z"), entry.getCreationTime());
+
+            assertEquals('W', tis.read());
+            assertTrue("should be at end of entry", tis.read() < 0);
+
+            assertNull("should be at end of file", tis.getNextTarEntry());
+        }
+    }
+
+    private FileTime toFileTime(final String text) {
+        return FileTime.from(Instant.parse(text));
+    }
+
+    private TarArchiveEntry createEntryForTimeTests() {
+        final TarArchiveEntry entry = new TarArchiveEntry("./times.txt");
+        entry.addPaxHeader("size", "1");
+        entry.addPaxHeader("mtime", "1647221103.5998539");
+        entry.addPaxHeader("atime", "1647221460.7069272");
+        entry.addPaxHeader("ctime", "1647221339.7005053");
+        entry.addPaxHeader("LIBARCHIVE.creationtime", "1647221340.7235090");
+        return entry;
     }
 
     private void assertGnuMagic(final TarArchiveEntry t) {

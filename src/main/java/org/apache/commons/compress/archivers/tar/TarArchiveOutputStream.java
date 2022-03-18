@@ -22,13 +22,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
@@ -230,8 +234,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Set the long file mode. This can be LONGFILE_ERROR(0), LONGFILE_TRUNCATE(1) or
-     * LONGFILE_GNU(2). This specifies the treatment of long file names (names &gt;=
+     * Set the long file mode. This can be LONGFILE_ERROR(0), LONGFILE_TRUNCATE(1), LONGFILE_GNU(2) or
+     * LONGFILE_POSIX(3). This specifies the treatment of long file names (names &gt;=
      * TarConstants.NAMELEN). Default is LONGFILE_ERROR.
      *
      * @param longFileMode the mode to use
@@ -241,9 +245,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Set the big number mode. This can be BIGNUMBER_ERROR(0), BIGNUMBER_POSIX(1) or
-     * BIGNUMBER_STAR(2). This specifies the treatment of big files (sizes &gt;
-     * TarConstants.MAXSIZE) and other numeric values to big to fit into a traditional tar header.
+     * Set the big number mode. This can be BIGNUMBER_ERROR(0), BIGNUMBER_STAR(1) or
+     * BIGNUMBER_POSIX(2). This specifies the treatment of big files (sizes &gt;
+     * TarConstants.MAXSIZE) and other numeric values too big to fit into a traditional tar header.
      * Default is BIGNUMBER_ERROR.
      *
      * @param bigNumberMode the mode to use
@@ -367,7 +371,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             final String entryName = entry.getName();
             final boolean paxHeaderContainsPath = handleLongName(entry, entryName, paxHeaders, "path",
                 TarConstants.LF_GNUTYPE_LONGNAME, "file name");
-
             final String linkName = entry.getLinkName();
             final boolean paxHeaderContainsLinkPath = linkName != null && !linkName.isEmpty()
                 && handleLongName(entry, linkName, paxHeaders, "linkpath",
@@ -602,12 +605,20 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             TarConstants.MAXSIZE);
         addPaxHeaderForBigNumber(paxHeaders, "gid", entry.getLongGroupId(),
             TarConstants.MAXID);
-        addPaxHeaderForBigNumber(paxHeaders, "mtime",
-            entry.getModTime().getTime() / 1000,
-            TarConstants.MAXSIZE);
+        addFileTimePaxHeaderForBigNumber(paxHeaders, "mtime",
+                entry.getLastModifiedTime(), TarConstants.MAXSIZE);
+        addFileTimePaxHeader(paxHeaders, "atime", entry.getLastAccessTime());
+        if (entry.getStatusChangeTime() != null) {
+            addFileTimePaxHeader(paxHeaders, "ctime", entry.getStatusChangeTime());
+        } else {
+            // ctime is usually set from creation time on platforms where the real ctime is not available
+            addFileTimePaxHeader(paxHeaders, "ctime", entry.getCreationTime());
+        }
         addPaxHeaderForBigNumber(paxHeaders, "uid", entry.getLongUserId(),
             TarConstants.MAXID);
-        // star extensions by J\u00f6rg Schilling
+        // libarchive extensions
+        addFileTimePaxHeader(paxHeaders, "LIBARCHIVE.creationtime", entry.getCreationTime());
+        // star extensions by Jörg Schilling
         addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devmajor",
             entry.getDevMajor(), TarConstants.MAXID);
         addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devminor",
@@ -624,11 +635,48 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         }
     }
 
+    private void addFileTimePaxHeaderForBigNumber(final Map<String, String> paxHeaders,
+        final String header, final FileTime value,
+        final long maxValue) {
+        if (value != null) {
+            final Instant instant = value.toInstant();
+            final long seconds = instant.getEpochSecond();
+            final int nanos = instant.getNano();
+            if (nanos == 0) {
+                addPaxHeaderForBigNumber(paxHeaders, header, seconds, maxValue);
+            } else {
+                addInstantPaxHeader(paxHeaders, header, seconds, nanos);
+            }
+        }
+    }
+
+    private void addFileTimePaxHeader(final Map<String, String> paxHeaders,
+        final String header, final FileTime value) {
+        if (value != null) {
+            final Instant instant = value.toInstant();
+            final long seconds = instant.getEpochSecond();
+            final int nanos = instant.getNano();
+            if (nanos == 0) {
+                paxHeaders.put(header, String.valueOf(seconds));
+            } else {
+                addInstantPaxHeader(paxHeaders, header, seconds, nanos);
+            }
+        }
+    }
+
+    private void addInstantPaxHeader(final Map<String, String> paxHeaders,
+        final String header, final long seconds, final int nanos) {
+        final BigDecimal bdSeconds = BigDecimal.valueOf(seconds);
+        final BigDecimal bdNanos = BigDecimal.valueOf(nanos).movePointLeft(9).setScale(7, RoundingMode.DOWN);
+        final BigDecimal timestamp = bdSeconds.add(bdNanos);
+        paxHeaders.put(header, timestamp.toPlainString());
+    }
+
     private void failForBigNumbers(final TarArchiveEntry entry) {
         failForBigNumber("entry size", entry.getSize(), TarConstants.MAXSIZE);
         failForBigNumberWithPosixMessage("group id", entry.getLongGroupId(), TarConstants.MAXID);
         failForBigNumber("last modification time",
-            entry.getModTime().getTime() / 1000,
+            entry.getLastModifiedTime().to(TimeUnit.SECONDS),
             TarConstants.MAXSIZE);
         failForBigNumber("user id", entry.getLongUserId(), TarConstants.MAXID);
         failForBigNumber("mode", entry.getMode(), TarConstants.MAXID);
@@ -711,11 +759,10 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private void transferModTime(final TarArchiveEntry from, final TarArchiveEntry to) {
-        Date fromModTime = from.getModTime();
-        final long fromModTimeSeconds = fromModTime.getTime() / 1000;
+        long fromModTimeSeconds = from.getLastModifiedTime().to(TimeUnit.SECONDS);
         if (fromModTimeSeconds < 0 || fromModTimeSeconds > TarConstants.MAXSIZE) {
-            fromModTime = new Date(0);
+            fromModTimeSeconds = 0;
         }
-        to.setModTime(fromModTime);
+        to.setLastModifiedTime(FileTime.from(fromModTimeSeconds, TimeUnit.SECONDS));
     }
 }

@@ -228,6 +228,14 @@ public interface TarConstants {
     byte   LF_OLDNORM = 0;
 
     /**
+     * Offset inside the header for the "link flag" field.
+     *
+     * @since 1.22
+     * @see TarArchiveEntry
+     */
+    int    LF_OFFSET = 156;
+
+    /**
      * Normal file type.
      */
     byte   LF_NORMAL = (byte) '0';
@@ -306,6 +314,13 @@ public interface TarConstants {
     byte LF_PAX_GLOBAL_EXTENDED_HEADER = (byte) 'g';
 
     /**
+     * Identifies the entry as a multi-volume past volume #0
+     *
+     * @since 1.22
+     */
+    byte LF_MULTIVOLUME = (byte) 'M';
+
+    /**
      * The magic tag representing a POSIX tar archive.
      */
     String MAGIC_POSIX = "ustar\0";
@@ -348,6 +363,14 @@ public interface TarConstants {
     String MAGIC_XSTAR = "tar\0";
 
     /**
+     * Offset inside the header for the xtar multivolume data
+     *
+     * @since 1.22
+     * @see TarArchiveEntry
+     */
+    int XSTAR_MULTIVOLUME_OFFSET = 464;
+
+    /**
      * Offset inside the header for the xstar magic bytes.
      * @since 1.11
      */
@@ -367,11 +390,35 @@ public interface TarConstants {
     int PREFIXLEN_XSTAR = 131;
 
     /**
+     * Offset inside the header for the prefix field in xstar archives.
+     *
+     * @since 1.22
+     * @see TarArchiveEntry
+     */
+    int XSTAR_PREFIX_OFFSET = 345;
+
+    /**
+     * Offset inside the header for the atime field in xstar archives.
+     *
+     * @since 1.22
+     * @see TarArchiveEntry
+     */
+    int XSTAR_ATIME_OFFSET = 476;
+
+    /**
      * The length of the access time field in a xstar header buffer.
      *
      * @since 1.11
      */
     int ATIMELEN_XSTAR = 12;
+
+    /**
+     * Offset inside the header for the ctime field in xstar archives.
+     *
+     * @since 1.22
+     * @see TarArchiveEntry
+     */
+    int XSTAR_CTIME_OFFSET = 488;
 
     /**
      * The length of the created time field in a xstar header buffer.
