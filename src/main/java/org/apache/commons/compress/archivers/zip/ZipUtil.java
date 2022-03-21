@@ -19,9 +19,12 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
@@ -30,10 +33,31 @@ import java.util.zip.ZipEntry;
  * @Immutable
  */
 public abstract class ZipUtil {
+
+    /**
+     * <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms724290%28v=vs.85%29.aspx">Windows File Times</a>
+     * <br>
+     * A file time is a 64-bit value that represents the number of
+     * 100-nanosecond intervals that have elapsed since 12:00
+     * A.M. January 1, 1601 Coordinated Universal Time (UTC).
+     * This is the offset of Windows time 0 to Unix epoch in 100-nanosecond intervals.
+     *
+     * @since 1.22
+     */
+    public static final long WINDOWS_EPOCH_OFFSET = -116444736000000000L;
+
+    /**
+     * The amount of 100-nanosecond intervals in one second.
+     *
+     * @since 1.22
+     */
+    public static final long HUNDRED_NANOS_PER_SECOND = TimeUnit.SECONDS.toNanos(1) / 100;
+
     /**
      * Smallest date/time ZIP can handle.
      */
     private static final byte[] DOS_TIME_MIN = ZipLong.getBytes(0x00002100L);
+
 
     /**
      * Convert a Date object to a DOS date/time field.
@@ -356,5 +380,38 @@ public abstract class ZipUtil {
             }
             throw new UnsupportedZipFeatureException(m, ze);
         }
+    }
+
+    /**
+     * Converts FileTime to NTFS time (100-nanosecond units since 1 January 1601).
+     *
+     * @param time the FileTime
+     * @return the NTFS time in 100-nanosecond units
+     *
+     * @since 1.22
+     * @see ZipUtil#WINDOWS_EPOCH_OFFSET
+     * @see ZipUtil#ntfsTimeToFileTime(long)
+     */
+    public static long fileTimeToNtfsTime(final FileTime time) {
+        final Instant instant = time.toInstant();
+        final long javaHundredNanos = (instant.getEpochSecond() * HUNDRED_NANOS_PER_SECOND) + (instant.getNano() / 100);
+        return javaHundredNanos - WINDOWS_EPOCH_OFFSET;
+    }
+
+    /**
+     * Converts NTFS time (100-nanosecond units since 1 January 1601) to a FileTime.
+     *
+     * @param ntfsTime the NTFS time in 100-nanosecond units
+     * @return the FileTime
+     *
+     * @since 1.22
+     * @see ZipUtil#WINDOWS_EPOCH_OFFSET
+     * @see ZipUtil#fileTimeToNtfsTime(FileTime)
+     */
+    public static FileTime ntfsTimeToFileTime(final long ntfsTime) {
+        final long javaHundredsNanos = ntfsTime + WINDOWS_EPOCH_OFFSET;
+        final long javaSeconds = javaHundredsNanos / HUNDRED_NANOS_PER_SECOND;
+        final long javaNanos = (javaHundredsNanos % HUNDRED_NANOS_PER_SECOND) * 100;
+        return FileTime.from(Instant.ofEpochSecond(javaSeconds, javaNanos));
     }
 }
