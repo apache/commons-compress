@@ -209,7 +209,11 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /** Default permissions bits for files */
     public static final int DEFAULT_FILE_MODE = 0100644;
 
-    /** Convert millis to seconds */
+    /**
+     * Convert millis to seconds
+     * @deprecated since 1.22, this is not used anymore, and it may be removed in a future release.
+     */
+    @Deprecated
     public static final int MILLIS_PER_SECOND = 1000;
 
     private static FileTime fileTimeFromOptionalSeconds(long seconds) {
