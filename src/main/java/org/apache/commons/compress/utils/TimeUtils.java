@@ -1,0 +1,144 @@
+/*
+ *  Licensed to the Apache Software Foundation (ASF) under one or more
+ *  contributor license agreements.  See the NOTICE file distributed with
+ *  this work for additional information regarding copyright ownership.
+ *  The ASF licenses this file to You under the Apache License, Version 2.0
+ *  (the "License"); you may not use this file except in compliance with
+ *  the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+package org.apache.commons.compress.utils;
+
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Utility class for handling time-related types and conversions.
+ *
+ * @since 1.22
+ */
+public final class TimeUtils {
+
+    /** Private constructor to prevent instantiation of this utility class. */
+    private TimeUtils(){
+    }
+
+    /**
+     * <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms724290%28v=vs.85%29.aspx">Windows File Times</a>
+     * <p>
+     * A file time is a 64-bit value that represents the number of
+     * 100-nanosecond intervals that have elapsed since 12:00
+     * A.M. January 1, 1601 Coordinated Universal Time (UTC).
+     * This is the offset of Windows time 0 to Unix epoch in 100-nanosecond intervals.
+     * </p>
+     *
+     * @since 1.22
+     */
+    public static final long WINDOWS_EPOCH_OFFSET = -116444736000000000L;
+
+    /**
+     * The amount of 100-nanosecond intervals in one second.
+     *
+     * @since 1.22
+     */
+    public static final long HUNDRED_NANOS_PER_SECOND = TimeUnit.SECONDS.toNanos(1) / 100;
+
+    /**
+     * The amount of 100-nanosecond intervals in one millisecond.
+     *
+     * @since 1.22
+     */
+    public static final long HUNDRED_NANOS_PER_MILLISECOND = TimeUnit.MILLISECONDS.toNanos(1) / 100;
+
+    /**
+     * Converts NTFS time (100 nanosecond units since 1 January 1601) to Java time.
+     *
+     * @param ntfsTime the NTFS time in 100 nanosecond units
+     * @return the Date
+     * @since 1.22
+     */
+    public static Date ntfsTimeToDate(final long ntfsTime) {
+        final long javaHundredNanos = ntfsTime + WINDOWS_EPOCH_OFFSET;
+        final long javaMillis = javaHundredNanos / HUNDRED_NANOS_PER_MILLISECOND;
+        return new Date(javaMillis);
+    }
+
+    /**
+     * Converts Java time to NTFS time.
+     *
+     * @param date the Date
+     * @return the NTFS time
+     * @since 1.22
+     */
+    public static long dateToNtfsTime(final Date date) {
+        final long javaHundredNanos = date.getTime() * HUNDRED_NANOS_PER_MILLISECOND;
+        return javaHundredNanos - WINDOWS_EPOCH_OFFSET;
+    }
+
+    /**
+     * Converts FileTime to NTFS time (100-nanosecond units since 1 January 1601).
+     *
+     * @param time the FileTime
+     * @return the NTFS time in 100-nanosecond units
+     *
+     * @since 1.22
+     * @see TimeUtils#WINDOWS_EPOCH_OFFSET
+     * @see TimeUtils#ntfsTimeToFileTime(long)
+     */
+    public static long fileTimeToNtfsTime(final FileTime time) {
+        final Instant instant = time.toInstant();
+        final long javaHundredNanos = (instant.getEpochSecond() * HUNDRED_NANOS_PER_SECOND) + (instant.getNano() / 100);
+        return javaHundredNanos - WINDOWS_EPOCH_OFFSET;
+    }
+
+    /**
+     * Converts NTFS time (100-nanosecond units since 1 January 1601) to a FileTime.
+     *
+     * @param ntfsTime the NTFS time in 100-nanosecond units
+     * @return the FileTime
+     *
+     * @since 1.22
+     * @see TimeUtils#WINDOWS_EPOCH_OFFSET
+     * @see TimeUtils#fileTimeToNtfsTime(FileTime)
+     */
+    public static FileTime ntfsTimeToFileTime(final long ntfsTime) {
+        final long javaHundredsNanos = ntfsTime + WINDOWS_EPOCH_OFFSET;
+        final long javaSeconds = javaHundredsNanos / HUNDRED_NANOS_PER_SECOND;
+        final long javaNanos = (javaHundredsNanos % HUNDRED_NANOS_PER_SECOND) * 100;
+        return FileTime.from(Instant.ofEpochSecond(javaSeconds, javaNanos));
+    }
+
+    /**
+     * Converts {@link Date} to a {@link FileTime}.
+     * If the provided Date is {@code null}, the returned FileTime is also {@code null}.
+     *
+     * @param date the date to be converted.
+     * @return a {@link FileTime} which corresponds to the supplied date, or {@code null} if the date is {@code null}.
+     * @see TimeUtils#fileTimeToDate(FileTime)
+     */
+    public static FileTime dateToFileTime(final Date date) {
+        return date != null ? FileTime.fromMillis(date.getTime()) : null;
+    }
+
+    /**
+     * Converts {@link FileTime} to a {@link Date}.
+     * If the provided FileTime is {@code null}, the returned Date is also {@code null}.
+     *
+     * @param time the file time to be converted.
+     * @return a {@link Date} which corresponds to the supplied time, or {@code null} if the time is {@code null}.
+     * @see TimeUtils#dateToFileTime(Date)
+     */
+    public static Date fileTimeToDate(final FileTime time) {
+        return time != null ? new Date(time.toMillis()) : null;
+    }
+}

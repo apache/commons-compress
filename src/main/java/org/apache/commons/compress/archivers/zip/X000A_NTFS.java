@@ -17,6 +17,8 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import org.apache.commons.compress.utils.TimeUtils;
+
 import java.nio.file.attribute.FileTime;
 import java.util.Date;
 import java.util.Objects;
@@ -246,7 +248,7 @@ public class X000A_NTFS implements ZipExtraField {
     }
 
     /**
-     * Returns the modify time as as a {@link FileTime}
+     * Gets the modify time as as a {@link FileTime}
      * of this zip entry, or null if no such timestamp exists in the zip entry.
      *
      * @return modify time as a {@link FileTime} or null.
@@ -256,7 +258,7 @@ public class X000A_NTFS implements ZipExtraField {
     }
 
     /**
-     * Returns the access time as a {@link FileTime}
+     * Gets the access time as a {@link FileTime}
      * of this zip entry, or null if no such timestamp exists in the zip entry.
      *
      * @return access time as a {@link FileTime} or null.
@@ -266,7 +268,7 @@ public class X000A_NTFS implements ZipExtraField {
     }
 
     /**
-     * Returns the create time as a {@link FileTime}
+     * Gets the create time as a {@link FileTime}
      * of this zip entry, or null if no such timestamp exists in the zip entry.
      *
      * @return create time as a {@link FileTime} or null.
@@ -430,27 +432,27 @@ public class X000A_NTFS implements ZipExtraField {
         if (d == null) {
             return null;
         }
-        return fileTimeToZip(FileTime.fromMillis(d.getTime()));
+        return new ZipEightByteInteger(TimeUtils.dateToNtfsTime(d));
     }
 
-    private static ZipEightByteInteger fileTimeToZip(FileTime fileTime) {
-        if (fileTime == null) {
+    private static ZipEightByteInteger fileTimeToZip(final FileTime time) {
+        if (time == null) {
             return null;
         }
-        return new ZipEightByteInteger(ZipUtil.fileTimeToNtfsTime(fileTime));
+        return new ZipEightByteInteger(TimeUtils.fileTimeToNtfsTime(time));
     }
 
     private static Date zipToDate(final ZipEightByteInteger z) {
         if (z == null || ZipEightByteInteger.ZERO.equals(z)) {
             return null;
         }
-        return new Date(zipToFileTime(z).toMillis());
+        return TimeUtils.ntfsTimeToDate(z.getLongValue());
     }
 
     private static FileTime zipToFileTime(final ZipEightByteInteger z) {
         if (z == null || ZipEightByteInteger.ZERO.equals(z)) {
             return null;
         }
-        return ZipUtil.ntfsTimeToFileTime(z.getLongValue());
+        return TimeUtils.ntfsTimeToFileTime(z.getLongValue());
     }
 }

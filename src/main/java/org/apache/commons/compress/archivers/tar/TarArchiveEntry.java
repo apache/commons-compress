@@ -49,6 +49,7 @@ import org.apache.commons.compress.archivers.EntryStreamOffsets;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.TimeUtils;
 
 /**
  * This class represents an entry in a Tar archive. It consists
@@ -995,7 +996,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @see TarArchiveEntry#getLastModifiedTime()
      */
     public Date getModTime() {
-        return new Date(mTime.toMillis());
+        return TimeUtils.fileTimeToDate(mTime);
     }
 
     /**
@@ -1909,7 +1910,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @see TarArchiveEntry#setLastModifiedTime(FileTime)
      */
     public void setModTime(final Date time) {
-        setLastModifiedTime(FileTime.fromMillis(time.getTime()));
+        setLastModifiedTime(TimeUtils.dateToFileTime(time));
     }
 
     /**

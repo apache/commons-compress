@@ -39,6 +39,8 @@ import java.nio.file.attribute.FileTime;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.crypto.Cipher;
 
@@ -860,36 +862,26 @@ public class SevenZFileTest extends AbstractTestCase {
         return Cipher.getMaxAllowedKeyLength("AES/ECB/PKCS5Padding") >= 256;
     }
 
-    private void assertDates(SevenZArchiveEntry e, String modified, String access, String creation) {
-        if (modified != null) {
-            assertTrue(e.getHasLastModifiedDate());
-            FileTime time = FileTime.from(Instant.parse(modified));
-            assertEquals(time, e.getLastModifiedTime());
-            assertEquals(new Date(time.toMillis()), e.getLastModifiedDate());
+    private void assertDates(SevenZArchiveEntry entry, String modified, String access, String creation) {
+        assertDate(entry, modified, SevenZArchiveEntry::getHasLastModifiedDate,
+            SevenZArchiveEntry::getLastModifiedTime, SevenZArchiveEntry::getLastModifiedDate);
+        assertDate(entry, access, SevenZArchiveEntry::getHasAccessDate,
+            SevenZArchiveEntry::getAccessTime, SevenZArchiveEntry::getAccessDate);
+        assertDate(entry, creation, SevenZArchiveEntry::getHasCreationDate,
+            SevenZArchiveEntry::getCreationTime, SevenZArchiveEntry::getCreationDate);
+    }
+
+    private void assertDate(SevenZArchiveEntry entry, String value, Function<SevenZArchiveEntry, Boolean> hasValue,
+        Function<SevenZArchiveEntry, FileTime> timeFunction, Function<SevenZArchiveEntry, Date> dateFunction) {
+        if (value != null) {
+            assertTrue(hasValue.apply(entry));
+            final FileTime time = FileTime.from(Instant.parse(value));
+            assertEquals(time, timeFunction.apply(entry));
+            assertEquals(new Date(time.toMillis()), dateFunction.apply(entry));
         } else {
-            assertFalse(e.getHasLastModifiedDate());
-            assertThrows(UnsupportedOperationException.class, e::getLastModifiedTime);
-            assertThrows(UnsupportedOperationException.class, e::getLastModifiedDate);
-        }
-        if (access != null) {
-            assertTrue(e.getHasAccessDate());
-            FileTime time = FileTime.from(Instant.parse(access));
-            assertEquals(time, e.getAccessTime());
-            assertEquals(new Date(time.toMillis()), e.getAccessDate());
-        } else {
-            assertFalse(e.getHasAccessDate());
-            assertThrows(UnsupportedOperationException.class, e::getAccessTime);
-            assertThrows(UnsupportedOperationException.class, e::getAccessDate);
-        }
-        if (creation != null) {
-            assertTrue(e.getHasCreationDate());
-            FileTime time = FileTime.from(Instant.parse(creation));
-            assertEquals(time, e.getCreationTime());
-            assertEquals(new Date(time.toMillis()), e.getCreationDate());
-        } else {
-            assertFalse(e.getHasCreationDate());
-            assertThrows(UnsupportedOperationException.class, e::getCreationTime);
-            assertThrows(UnsupportedOperationException.class, e::getCreationDate);
+            assertFalse(hasValue.apply(entry));
+            assertThrows(UnsupportedOperationException.class, () -> timeFunction.apply(entry));
+            assertThrows(UnsupportedOperationException.class, () -> dateFunction.apply(entry));
         }
     }
 }

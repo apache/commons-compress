@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.Objects;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipUtil;
+import org.apache.commons.compress.utils.TimeUtils;
 
 /**
  * An entry in a 7z archive.
@@ -155,11 +155,11 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @see SevenZArchiveEntry#getCreationTime()
      */
     public Date getCreationDate() {
-        return new Date(getCreationTime().toMillis());
+        return TimeUtils.fileTimeToDate(getCreationTime());
     }
 
     /**
-     * Gets the creation date.
+     * Gets the creation time.
      *
      * @throws UnsupportedOperationException if the entry hasn't got a creation time.
      * @return the creation time
@@ -176,10 +176,10 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the creation date using NTFS time (100 nanosecond units
      * since 1 January 1601)
-     * @param ntfsCreationDate the new creation date
+     * @param ntfsCreationTime the new creation time
      */
-    public void setCreationDate(final long ntfsCreationDate) {
-        this.creationDate = ZipUtil.ntfsTimeToFileTime(ntfsCreationDate);
+    public void setCreationDate(final long ntfsCreationTime) {
+        this.creationDate = TimeUtils.ntfsTimeToFileTime(ntfsCreationTime);
     }
 
     /**
@@ -189,11 +189,11 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @see SevenZArchiveEntry#setCreationTime(FileTime)
      */
     public void setCreationDate(final Date creationDate) {
-        setCreationTime(toFileTime(creationDate));
+        setCreationTime(TimeUtils.dateToFileTime(creationDate));
     }
 
     /**
-     * Sets the creation date.
+     * Sets the creation time.
      *
      * @param time the new creation time
      * @since 1.22
@@ -232,11 +232,11 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      */
     @Override
     public Date getLastModifiedDate() {
-        return new Date(getLastModifiedTime().toMillis());
+        return TimeUtils.fileTimeToDate(getLastModifiedTime());
     }
 
     /**
-     * Gets the last modified date.
+     * Gets the last modified time.
      *
      * @throws UnsupportedOperationException if the entry hasn't got a last modified time.
      * @return the last modified time
@@ -253,10 +253,10 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the last modified date using NTFS time (100 nanosecond
      * units since 1 January 1601)
-     * @param ntfsLastModifiedDate the last modified date
+     * @param ntfsLastModifiedTime the last modified time
      */
-    public void setLastModifiedDate(final long ntfsLastModifiedDate) {
-        this.lastModifiedDate = ZipUtil.ntfsTimeToFileTime(ntfsLastModifiedDate);
+    public void setLastModifiedDate(final long ntfsLastModifiedTime) {
+        this.lastModifiedDate = TimeUtils.ntfsTimeToFileTime(ntfsLastModifiedTime);
     }
 
     /**
@@ -266,13 +266,13 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @see SevenZArchiveEntry#setLastModifiedTime(FileTime)
      */
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        setLastModifiedTime(toFileTime(lastModifiedDate));
+        setLastModifiedTime(TimeUtils.dateToFileTime(lastModifiedDate));
     }
 
     /**
-     * Sets the last modified date.
+     * Sets the last modified time.
      *
-     * @param time the new last modified date
+     * @param time the new last modified time
      * @since 1.22
      */
     public void setLastModifiedTime(final FileTime time) {
@@ -307,14 +307,14 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @see SevenZArchiveEntry#getAccessTime()
      */
     public Date getAccessDate() {
-        return new Date(getAccessTime().toMillis());
+        return TimeUtils.fileTimeToDate(getAccessTime());
     }
 
     /**
-     * Gets the access date.
+     * Gets the access time.
      *
      * @throws UnsupportedOperationException if the entry hasn't got an access time.
-     * @return the access date
+     * @return the access time
      * @since 1.22
      */
     public FileTime getAccessTime() {
@@ -328,10 +328,10 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the access date using NTFS time (100 nanosecond units
      * since 1 January 1601)
-     * @param ntfsAccessDate the access date
+     * @param ntfsAccessTime the access time
      */
-    public void setAccessDate(final long ntfsAccessDate) {
-        this.accessDate = ZipUtil.ntfsTimeToFileTime(ntfsAccessDate);
+    public void setAccessDate(final long ntfsAccessTime) {
+        this.accessDate = TimeUtils.ntfsTimeToFileTime(ntfsAccessTime);
     }
 
     /**
@@ -341,11 +341,11 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @see SevenZArchiveEntry#setAccessTime(FileTime)
      */
     public void setAccessDate(final Date accessDate) {
-        setAccessTime(toFileTime(accessDate));
+        setAccessTime(TimeUtils.dateToFileTime(accessDate));
     }
 
     /**
-     * Sets the access date.
+     * Sets the access time.
      *
      * @param time the new access time
      * @since 1.22
@@ -621,33 +621,24 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * to Java time.
      * @param ntfsTime the NTFS time in 100 nanosecond units
      * @return the Java time
-     * @deprecated since 1.22, this is not used anymore, and it may be removed in a future release.
-     * Prefer using {@link ZipUtil#ntfsTimeToFileTime(long)} instead.
+     * @deprecated since 1.22. Use {@link TimeUtils#ntfsTimeToDate(long)} instead.
+     * @see TimeUtils#ntfsTimeToDate(long)
      */
     @Deprecated
     public static Date ntfsTimeToJavaTime(final long ntfsTime) {
-        final FileTime fileTime = ZipUtil.ntfsTimeToFileTime(ntfsTime);
-        return new Date(fileTime.toMillis());
+        return TimeUtils.ntfsTimeToDate(ntfsTime);
     }
 
     /**
      * Converts Java time to NTFS time.
      * @param date the Java time
      * @return the NTFS time
-     * @deprecated since 1.22, this is not used anymore, and it may be removed in a future release.
-     * Prefer using {@link ZipUtil#fileTimeToNtfsTime(FileTime)} instead.
+     * @deprecated since 1.22. Use {@link TimeUtils#dateToNtfsTime(Date)} instead.
+     * @see TimeUtils#dateToNtfsTime(Date)
      */
     @Deprecated
     public static long javaTimeToNtfsTime(final Date date) {
-        final FileTime fileTime = FileTime.fromMillis(date.getTime());
-        return ZipUtil.fileTimeToNtfsTime(fileTime);
-    }
-
-    private static FileTime toFileTime(final Date date) {
-        if (date == null) {
-            return null;
-        }
-        return FileTime.fromMillis(date.getTime());
+        return TimeUtils.dateToNtfsTime(date);
     }
 
     private boolean equalSevenZMethods(final Iterable<? extends SevenZMethodConfiguration> c1,

@@ -50,8 +50,8 @@ import java.util.Map;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipUtil;
 import org.apache.commons.compress.utils.CountingOutputStream;
+import org.apache.commons.compress.utils.TimeUtils;
 
 /**
  * Writes a 7z file.
@@ -665,7 +665,7 @@ public class SevenZOutputFile implements Closeable {
             out.write(0);
             for (final SevenZArchiveEntry entry : files) {
                 if (entry.getHasCreationDate()) {
-                    final long ntfsTime = ZipUtil.fileTimeToNtfsTime(entry.getCreationTime());
+                    final long ntfsTime = TimeUtils.fileTimeToNtfsTime(entry.getCreationTime());
                     out.writeLong(Long.reverseBytes(ntfsTime));
                 }
             }
@@ -701,7 +701,7 @@ public class SevenZOutputFile implements Closeable {
             out.write(0);
             for (final SevenZArchiveEntry entry : files) {
                 if (entry.getHasAccessDate()) {
-                    final long ntfsTime = ZipUtil.fileTimeToNtfsTime(entry.getAccessTime());
+                    final long ntfsTime = TimeUtils.fileTimeToNtfsTime(entry.getAccessTime());
                     out.writeLong(Long.reverseBytes(ntfsTime));
                 }
             }
@@ -737,7 +737,7 @@ public class SevenZOutputFile implements Closeable {
             out.write(0);
             for (final SevenZArchiveEntry entry : files) {
                 if (entry.getHasLastModifiedDate()) {
-                    final long ntfsTime = ZipUtil.fileTimeToNtfsTime(entry.getLastModifiedTime());
+                    final long ntfsTime = TimeUtils.fileTimeToNtfsTime(entry.getLastModifiedTime());
                     out.writeLong(Long.reverseBytes(ntfsTime));
                 }
             }
