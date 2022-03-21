@@ -163,7 +163,7 @@ public class SevenZOutputFile implements Closeable {
         entry.setName(entryName);
         try {
             fillDates(inputFile.toPath(), entry);
-        } catch (IOException e) {
+        } catch (IOException e) { // NOSONAR
             entry.setLastModifiedDate(new Date(inputFile.lastModified()));
         }
         return entry;
