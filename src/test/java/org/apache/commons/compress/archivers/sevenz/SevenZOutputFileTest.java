@@ -28,8 +28,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -67,7 +69,8 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     public void testDirectoriesAndEmptyFiles() throws Exception {
         output = new File(dir, "empties.7z");
 
-        final Date accessDate = new Date();
+        final FileTime accessTime = getHundredNanosFileTime();
+        final Date accessDate = new Date(accessTime.toMillis());
         final Calendar cal = Calendar.getInstance();
         cal.add(Calendar.HOUR, -1);
         final Date creationDate = cal.getTime();
@@ -80,7 +83,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             entry = new SevenZArchiveEntry();
             entry.setName("foo/bar");
             entry.setCreationDate(creationDate);
-            entry.setAccessDate(accessDate);
+            entry.setAccessTime(accessTime);
             outArchive.putArchiveEntry(entry);
             outArchive.write(ByteUtils.EMPTY_BYTE_ARRAY);
             outArchive.closeArchiveEntry();
@@ -88,7 +91,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             entry = new SevenZArchiveEntry();
             entry.setName("foo/bar/boo0");
             entry.setCreationDate(creationDate);
-            entry.setAccessDate(accessDate);
+            entry.setAccessTime(accessTime);
             outArchive.putArchiveEntry(entry);
             outArchive.write(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
             outArchive.closeArchiveEntry();
@@ -96,7 +99,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             entry = new SevenZArchiveEntry();
             entry.setName("foo/bar/boo1");
             entry.setCreationDate(creationDate);
-            entry.setAccessDate(accessDate);
+            entry.setAccessTime(accessTime);
             outArchive.putArchiveEntry(entry);
             outArchive.write(new ByteArrayInputStream(new byte[] {'a'}));
             outArchive.closeArchiveEntry();
@@ -104,7 +107,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             entry = new SevenZArchiveEntry();
             entry.setName("foo/bar/boo10000");
             entry.setCreationDate(creationDate);
-            entry.setAccessDate(accessDate);
+            entry.setAccessTime(accessTime);
             outArchive.putArchiveEntry(entry);
             outArchive.write(new ByteArrayInputStream(new byte[10000]));
             outArchive.closeArchiveEntry();
@@ -112,7 +115,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             entry = new SevenZArchiveEntry();
             entry.setName("foo/bar/test.txt");
             entry.setCreationDate(creationDate);
-            entry.setAccessDate(accessDate);
+            entry.setAccessTime(accessTime);
             outArchive.putArchiveEntry(entry);
             outArchive.write(Paths.get("src/test/resources/test.txt"));
             outArchive.closeArchiveEntry();
@@ -159,6 +162,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertFalse(entry.isAntiItem());
             assertEquals(0, entry.getSize());
             assertFalse(entry.getHasLastModifiedDate());
+            assertEquals(accessTime, entry.getAccessTime());
             assertEquals(accessDate, entry.getAccessDate());
             assertEquals(creationDate, entry.getCreationDate());
 
@@ -169,6 +173,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertFalse(entry.isAntiItem());
             assertEquals(0, entry.getSize());
             assertFalse(entry.getHasLastModifiedDate());
+            assertEquals(accessTime, entry.getAccessTime());
             assertEquals(accessDate, entry.getAccessDate());
             assertEquals(creationDate, entry.getCreationDate());
 
@@ -179,6 +184,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertFalse(entry.isAntiItem());
             assertEquals(1, entry.getSize());
             assertFalse(entry.getHasLastModifiedDate());
+            assertEquals(accessTime, entry.getAccessTime());
             assertEquals(accessDate, entry.getAccessDate());
             assertEquals(creationDate, entry.getCreationDate());
 
@@ -189,6 +195,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertFalse(entry.isAntiItem());
             assertEquals(10000, entry.getSize());
             assertFalse(entry.getHasLastModifiedDate());
+            assertEquals(accessTime, entry.getAccessTime());
             assertEquals(accessDate, entry.getAccessDate());
             assertEquals(creationDate, entry.getCreationDate());
 
@@ -199,6 +206,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertFalse(entry.isAntiItem());
             assertEquals(Files.size(Paths.get("src/test/resources/test.txt")), entry.getSize());
             assertFalse(entry.getHasLastModifiedDate());
+            assertEquals(accessTime, entry.getAccessTime());
             assertEquals(accessDate, entry.getAccessDate());
             assertEquals(creationDate, entry.getCreationDate());
 
@@ -235,6 +243,13 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assert (archive.getNextEntry() == null);
         }
 
+    }
+
+    private FileTime getHundredNanosFileTime() {
+        final Instant now = Instant.now();
+        // By default, Java's instant has a precision of milliseconds.
+        // Add some nanos at the end to test 100ns intervals.
+        return FileTime.from(Instant.ofEpochSecond(now.getEpochSecond(), now.getNano() + 999900));
     }
 
     @Test

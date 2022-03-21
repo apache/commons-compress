@@ -18,11 +18,13 @@
 package org.apache.commons.compress.archivers;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Cipher;
@@ -86,10 +88,18 @@ public class SevenZTestCase extends AbstractTestCase {
             entry = archive.getNextEntry();
             assert (entry != null);
             assertEquals(entry.getName(), file1.getName());
+            BasicFileAttributes attributes = Files.readAttributes(file1.toPath(), BasicFileAttributes.class);
+            assertEquals(entry.getLastModifiedTime(), attributes.lastModifiedTime());
+            assertEquals(entry.getCreationTime(), attributes.creationTime());
+            assertNotNull(entry.getAccessTime());
 
             entry = archive.getNextEntry();
             assert (entry != null);
             assertEquals(entry.getName(), file2.getName());
+            attributes = Files.readAttributes(file2.toPath(), BasicFileAttributes.class);
+            assertEquals(entry.getLastModifiedTime(), attributes.lastModifiedTime());
+            assertEquals(entry.getCreationTime(), attributes.creationTime());
+            assertNotNull(entry.getAccessTime());
 
             assert (archive.getNextEntry() == null);
         }

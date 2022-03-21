@@ -18,15 +18,15 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import java.util.Arrays;
-import java.util.Calendar;
+import java.nio.file.attribute.FileTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Objects;
-import java.util.TimeZone;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipUtil;
 
 /**
  * An entry in a 7z archive.
@@ -42,9 +42,9 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     private boolean hasCreationDate;
     private boolean hasLastModifiedDate;
     private boolean hasAccessDate;
-    private long creationDate;
-    private long lastModifiedDate;
-    private long accessDate;
+    private FileTime creationDate;
+    private FileTime lastModifiedDate;
+    private FileTime accessDate;
     private boolean hasWindowsAttributes;
     private int windowsAttributes;
     private boolean hasCrc;
@@ -148,13 +148,26 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Gets the creation date.
-     * @throws UnsupportedOperationException if the entry hasn't got a
-     * creation date.
-     * @return the creation date
+     * This is equivalent to {@link SevenZArchiveEntry#getCreationTime()}, but precision is truncated to milliseconds.
+     *
+     * @throws UnsupportedOperationException if the entry hasn't got a creation date.
+     * @return the new creation date
+     * @see SevenZArchiveEntry#getCreationTime()
      */
     public Date getCreationDate() {
+        return new Date(getCreationTime().toMillis());
+    }
+
+    /**
+     * Gets the creation date.
+     *
+     * @throws UnsupportedOperationException if the entry hasn't got a creation time.
+     * @return the creation time
+     * @since 1.22
+     */
+    public FileTime getCreationTime() {
         if (hasCreationDate) {
-            return ntfsTimeToJavaTime(creationDate);
+            return creationDate;
         }
         throw new UnsupportedOperationException(
                 "The entry doesn't have this timestamp");
@@ -163,20 +176,32 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the creation date using NTFS time (100 nanosecond units
      * since 1 January 1601)
-     * @param ntfsCreationDate the creation date
+     * @param ntfsCreationDate the new creation date
      */
     public void setCreationDate(final long ntfsCreationDate) {
-        this.creationDate = ntfsCreationDate;
+        this.creationDate = ZipUtil.ntfsTimeToFileTime(ntfsCreationDate);
     }
 
     /**
-     * Sets the creation date,
-     * @param creationDate the creation date
+     * Sets the creation date.
+     *
+     * @param creationDate the new creation date
+     * @see SevenZArchiveEntry#setCreationTime(FileTime)
      */
     public void setCreationDate(final Date creationDate) {
-        hasCreationDate = creationDate != null;
+        setCreationTime(toFileTime(creationDate));
+    }
+
+    /**
+     * Sets the creation date.
+     *
+     * @param time the new creation time
+     * @since 1.22
+     */
+    public void setCreationTime(final FileTime time) {
+        hasCreationDate = time != null;
         if (hasCreationDate) {
-            this.creationDate = javaTimeToNtfsTime(creationDate);
+            this.creationDate = time;
         }
     }
 
@@ -199,14 +224,27 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Gets the last modified date.
-     * @throws UnsupportedOperationException if the entry hasn't got a
-     * last modified date.
+     * This is equivalent to {@link SevenZArchiveEntry#getLastModifiedTime()}, but precision is truncated to milliseconds.
+     *
+     * @throws UnsupportedOperationException if the entry hasn't got a last modified date.
      * @return the last modified date
+     * @see SevenZArchiveEntry#getLastModifiedTime()
      */
     @Override
     public Date getLastModifiedDate() {
+        return new Date(getLastModifiedTime().toMillis());
+    }
+
+    /**
+     * Gets the last modified date.
+     *
+     * @throws UnsupportedOperationException if the entry hasn't got a last modified time.
+     * @return the last modified time
+     * @since 1.22
+     */
+    public FileTime getLastModifiedTime() {
         if (hasLastModifiedDate) {
-            return ntfsTimeToJavaTime(lastModifiedDate);
+            return lastModifiedDate;
         }
         throw new UnsupportedOperationException(
                 "The entry doesn't have this timestamp");
@@ -218,17 +256,29 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @param ntfsLastModifiedDate the last modified date
      */
     public void setLastModifiedDate(final long ntfsLastModifiedDate) {
-        this.lastModifiedDate = ntfsLastModifiedDate;
+        this.lastModifiedDate = ZipUtil.ntfsTimeToFileTime(ntfsLastModifiedDate);
     }
 
     /**
-     * Sets the last modified date,
-     * @param lastModifiedDate the last modified date
+     * Sets the last modified date.
+     *
+     * @param lastModifiedDate the new last modified date
+     * @see SevenZArchiveEntry#setLastModifiedTime(FileTime)
      */
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        hasLastModifiedDate = lastModifiedDate != null;
+        setLastModifiedTime(toFileTime(lastModifiedDate));
+    }
+
+    /**
+     * Sets the last modified date.
+     *
+     * @param time the new last modified date
+     * @since 1.22
+     */
+    public void setLastModifiedTime(final FileTime time) {
+        hasLastModifiedDate = time != null;
         if (hasLastModifiedDate) {
-            this.lastModifiedDate = javaTimeToNtfsTime(lastModifiedDate);
+            this.lastModifiedDate = time;
         }
     }
 
@@ -250,13 +300,26 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Gets the access date.
-     * @throws UnsupportedOperationException if the entry hasn't got a
-     * access date.
+     * This is equivalent to {@link SevenZArchiveEntry#getAccessTime()}, but precision is truncated to milliseconds.
+     *
+     * @throws UnsupportedOperationException if the entry hasn't got an access date.
      * @return the access date
+     * @see SevenZArchiveEntry#getAccessTime()
      */
     public Date getAccessDate() {
+        return new Date(getAccessTime().toMillis());
+    }
+
+    /**
+     * Gets the access date.
+     *
+     * @throws UnsupportedOperationException if the entry hasn't got an access time.
+     * @return the access date
+     * @since 1.22
+     */
+    public FileTime getAccessTime() {
         if (hasAccessDate) {
-            return ntfsTimeToJavaTime(accessDate);
+            return accessDate;
         }
         throw new UnsupportedOperationException(
                 "The entry doesn't have this timestamp");
@@ -268,17 +331,29 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @param ntfsAccessDate the access date
      */
     public void setAccessDate(final long ntfsAccessDate) {
-        this.accessDate = ntfsAccessDate;
+        this.accessDate = ZipUtil.ntfsTimeToFileTime(ntfsAccessDate);
     }
 
     /**
-     * Sets the access date,
-     * @param accessDate the access date
+     * Sets the access date.
+     *
+     * @param accessDate the new access date
+     * @see SevenZArchiveEntry#setAccessTime(FileTime)
      */
     public void setAccessDate(final Date accessDate) {
-        hasAccessDate = accessDate != null;
+        setAccessTime(toFileTime(accessDate));
+    }
+
+    /**
+     * Sets the access date.
+     *
+     * @param time the new access time
+     * @since 1.22
+     */
+    public void setAccessTime(final FileTime time) {
+        hasAccessDate = time != null;
         if (hasAccessDate) {
-            this.accessDate = javaTimeToNtfsTime(accessDate);
+            this.accessDate = time;
         }
     }
 
@@ -528,9 +603,9 @@ public class SevenZArchiveEntry implements ArchiveEntry {
             hasCreationDate == other.hasCreationDate &&
             hasLastModifiedDate == other.hasLastModifiedDate &&
             hasAccessDate == other.hasAccessDate &&
-            creationDate == other.creationDate &&
-            lastModifiedDate == other.lastModifiedDate &&
-            accessDate == other.accessDate &&
+            Objects.equals(creationDate, other.creationDate) &&
+            Objects.equals(lastModifiedDate, other.lastModifiedDate) &&
+            Objects.equals(accessDate, other.accessDate) &&
             hasWindowsAttributes == other.hasWindowsAttributes &&
             windowsAttributes == other.windowsAttributes &&
             hasCrc == other.hasCrc &&
@@ -546,27 +621,33 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * to Java time.
      * @param ntfsTime the NTFS time in 100 nanosecond units
      * @return the Java time
+     * @deprecated since 1.22, this is not used anymore, and it may be removed in a future release.
+     * Prefer using {@link ZipUtil#ntfsTimeToFileTime(long)} instead.
      */
+    @Deprecated
     public static Date ntfsTimeToJavaTime(final long ntfsTime) {
-        final Calendar ntfsEpoch = Calendar.getInstance();
-        ntfsEpoch.setTimeZone(TimeZone.getTimeZone("GMT+0"));
-        ntfsEpoch.set(1601, 0, 1, 0, 0, 0);
-        ntfsEpoch.set(Calendar.MILLISECOND, 0);
-        final long realTime = ntfsEpoch.getTimeInMillis() + (ntfsTime / (10*1000));
-        return new Date(realTime);
+        final FileTime fileTime = ZipUtil.ntfsTimeToFileTime(ntfsTime);
+        return new Date(fileTime.toMillis());
     }
 
     /**
      * Converts Java time to NTFS time.
      * @param date the Java time
      * @return the NTFS time
+     * @deprecated since 1.22, this is not used anymore, and it may be removed in a future release.
+     * Prefer using {@link ZipUtil#fileTimeToNtfsTime(FileTime)} instead.
      */
+    @Deprecated
     public static long javaTimeToNtfsTime(final Date date) {
-        final Calendar ntfsEpoch = Calendar.getInstance();
-        ntfsEpoch.setTimeZone(TimeZone.getTimeZone("GMT+0"));
-        ntfsEpoch.set(1601, 0, 1, 0, 0, 0);
-        ntfsEpoch.set(Calendar.MILLISECOND, 0);
-        return ((date.getTime() - ntfsEpoch.getTimeInMillis())* 1000 * 10);
+        final FileTime fileTime = FileTime.fromMillis(date.getTime());
+        return ZipUtil.fileTimeToNtfsTime(fileTime);
+    }
+
+    private static FileTime toFileTime(final Date date) {
+        if (date == null) {
+            return null;
+        }
+        return FileTime.fromMillis(date.getTime());
     }
 
     private boolean equalSevenZMethods(final Iterable<? extends SevenZMethodConfiguration> c1,
