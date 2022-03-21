@@ -19,12 +19,9 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.file.attribute.FileTime;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
