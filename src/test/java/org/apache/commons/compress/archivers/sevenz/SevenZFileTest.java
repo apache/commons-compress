@@ -875,9 +875,10 @@ public class SevenZFileTest extends AbstractTestCase {
         Function<SevenZArchiveEntry, FileTime> timeFunction, Function<SevenZArchiveEntry, Date> dateFunction) {
         if (value != null) {
             assertTrue(hasValue.apply(entry));
-            final FileTime time = FileTime.from(Instant.parse(value));
-            assertEquals(time, timeFunction.apply(entry));
-            assertEquals(new Date(time.toMillis()), dateFunction.apply(entry));
+            final Instant parsedInstant = Instant.parse(value);
+            final FileTime parsedFileTime = FileTime.from(parsedInstant);
+            assertEquals(parsedFileTime, timeFunction.apply(entry));
+            assertEquals(Date.from(parsedInstant), dateFunction.apply(entry));
         } else {
             assertFalse(hasValue.apply(entry));
             assertThrows(UnsupportedOperationException.class, () -> timeFunction.apply(entry));
