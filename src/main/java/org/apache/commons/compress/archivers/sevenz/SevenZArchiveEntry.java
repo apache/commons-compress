@@ -176,10 +176,10 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the creation date using NTFS time (100 nanosecond units
      * since 1 January 1601)
-     * @param ntfsCreationTime the new creation time
+     * @param ntfsCreationDate the creation date
      */
-    public void setCreationDate(final long ntfsCreationTime) {
-        this.creationDate = TimeUtils.ntfsTimeToFileTime(ntfsCreationTime);
+    public void setCreationDate(final long ntfsCreationDate) {
+        this.creationDate = TimeUtils.ntfsTimeToFileTime(ntfsCreationDate);
     }
 
     /**
@@ -253,10 +253,10 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the last modified date using NTFS time (100 nanosecond
      * units since 1 January 1601)
-     * @param ntfsLastModifiedTime the last modified time
+     * @param ntfsLastModifiedDate the last modified date
      */
-    public void setLastModifiedDate(final long ntfsLastModifiedTime) {
-        this.lastModifiedDate = TimeUtils.ntfsTimeToFileTime(ntfsLastModifiedTime);
+    public void setLastModifiedDate(final long ntfsLastModifiedDate) {
+        this.lastModifiedDate = TimeUtils.ntfsTimeToFileTime(ntfsLastModifiedDate);
     }
 
     /**
@@ -328,10 +328,10 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the access date using NTFS time (100 nanosecond units
      * since 1 January 1601)
-     * @param ntfsAccessTime the access time
+     * @param ntfsAccessDate the access date
      */
-    public void setAccessDate(final long ntfsAccessTime) {
-        this.accessDate = TimeUtils.ntfsTimeToFileTime(ntfsAccessTime);
+    public void setAccessDate(final long ntfsAccessDate) {
+        this.accessDate = TimeUtils.ntfsTimeToFileTime(ntfsAccessDate);
     }
 
     /**
