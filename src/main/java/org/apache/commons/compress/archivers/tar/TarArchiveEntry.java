@@ -222,7 +222,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         if (seconds <= 0) {
             return null;
         }
-        return FileTime.from(seconds, TimeUnit.SECONDS);
+        return TimeUtils.unixTimeToFileTime(seconds);
     }
 
     /**
@@ -1528,7 +1528,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             throw new IOException("broken archive, entry with negative size");
         }
         offset += SIZELEN;
-        mTime = FileTime.from(parseOctalOrBinary(header, offset, MODTIMELEN, lenient), TimeUnit.SECONDS);
+        mTime = TimeUtils.unixTimeToFileTime(parseOctalOrBinary(header, offset, MODTIMELEN, lenient));
         offset += MODTIMELEN;
         checkSumOK = TarUtils.verifyCheckSum(header);
         offset += CHKSUMLEN;
@@ -2069,7 +2069,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         offset = writeEntryHeaderField(groupId, outbuf, offset, GIDLEN,
                                        starMode);
         offset = writeEntryHeaderField(size, outbuf, offset, SIZELEN, starMode);
-        offset = writeEntryHeaderField(mTime.to(TimeUnit.SECONDS), outbuf, offset,
+        offset = writeEntryHeaderField(TimeUtils.fileTimeToUnixTime(mTime), outbuf, offset,
                                        MODTIMELEN, starMode);
 
         final int csOffset = offset;
@@ -2124,7 +2124,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     private int writeEntryHeaderOptionalTimeField(final FileTime time, int offset, final byte[] outbuf, final int fieldLength) {
         if (time != null) {
-            offset = writeEntryHeaderField(time.to(TimeUnit.SECONDS), outbuf, offset, fieldLength, true);
+            offset = writeEntryHeaderField(TimeUtils.fileTimeToUnixTime(time), outbuf, offset, fieldLength, true);
         } else {
             offset = fill(0, offset, outbuf, fieldLength);
         }

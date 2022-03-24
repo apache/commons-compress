@@ -27,10 +27,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
-import org.apache.commons.compress.archivers.zip.JarMarker;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipExtraField;
-import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.compress.archivers.zip.*;
 import org.junit.jupiter.api.Test;
 
 public class JarArchiveOutputStreamTest {
@@ -56,13 +53,15 @@ public class JarArchiveOutputStreamTest {
             ZipArchiveEntry ze = zf.getEntry("foo/");
             assertNotNull(ze);
             ZipExtraField[] fes = ze.getExtraFields();
-            assertEquals(1, fes.length);
+            assertEquals(2, fes.length);
             assertTrue(fes[0] instanceof JarMarker);
+            assertTrue(fes[1] instanceof X000A_NTFS);
 
             ze = zf.getEntry("bar/");
             assertNotNull(ze);
             fes = ze.getExtraFields();
-            assertEquals(0, fes.length);
+            assertEquals(1, fes.length);
+            assertTrue(fes[0] instanceof X000A_NTFS);
         } finally {
             if (out != null) {
                 try {

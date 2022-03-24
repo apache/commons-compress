@@ -43,6 +43,7 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CountingOutputStream;
 import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.FixedLengthBlockOutputStream;
+import org.apache.commons.compress.utils.TimeUtils;
 
 /**
  * The TarOutputStream writes a UNIX tar archive as an OutputStream. Methods are provided to put
@@ -413,7 +414,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         failForBigNumber("entry size", entry.getSize(), TarConstants.MAXSIZE);
         failForBigNumberWithPosixMessage("group id", entry.getLongGroupId(), TarConstants.MAXID);
         failForBigNumber("last modification time",
-            entry.getLastModifiedTime().to(TimeUnit.SECONDS),
+            TimeUtils.fileTimeToUnixTime(entry.getLastModifiedTime()),
             TarConstants.MAXSIZE);
         failForBigNumber("user id", entry.getLongUserId(), TarConstants.MAXID);
         failForBigNumber("mode", entry.getMode(), TarConstants.MAXID);
@@ -682,11 +683,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private void transferModTime(final TarArchiveEntry from, final TarArchiveEntry to) {
-        long fromModTimeSeconds = from.getLastModifiedTime().to(TimeUnit.SECONDS);
+        long fromModTimeSeconds = TimeUtils.fileTimeToUnixTime(from.getLastModifiedTime());
         if (fromModTimeSeconds < 0 || fromModTimeSeconds > TarConstants.MAXSIZE) {
             fromModTimeSeconds = 0;
         }
-        to.setLastModifiedTime(FileTime.from(fromModTimeSeconds, TimeUnit.SECONDS));
+        to.setLastModifiedTime(TimeUtils.unixTimeToFileTime(fromModTimeSeconds));
     }
 
     /**

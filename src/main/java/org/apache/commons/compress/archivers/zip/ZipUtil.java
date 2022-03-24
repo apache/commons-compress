@@ -19,6 +19,7 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.attribute.FileTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,10 +31,93 @@ import java.util.zip.ZipEntry;
  * @Immutable
  */
 public abstract class ZipUtil {
+
     /**
+     * DOS time constant for representing timestamps before 1980.
+     * Smallest date/time ZIP can handle.
+     * <p>
+     * MS-DOS records file dates and times as packed 16-bit values. An MS-DOS date has the following format.
+     * </p>
+     * <p>
+     * Bits	Contents
+     * </p>
+     * <ul>
+     *   <li>0-4: Day of the month (1-31).</li>
+     *   <li>5-8: Month (1 = January, 2 = February, and so on).</li>
+     *   <li>9-15: Year offset from 1980 (add 1980 to get the actual year).</li>
+     * </ul>
+     *
+     * An MS-DOS time has the following format.
+     * <p>
+     * Bits	Contents
+     * </p>
+     * <ul>
+     *   <li>0-4: Second divided by 2.</li>
+     *   <li>5-10: Minute (0-59).</li>
+     *   <li>11-15: Hour (0-23 on a 24-hour clock).</li>
+     * </ul>
+     *
+     * This constant expresses the minimum DOS date of January 1st 1980 at 00:00:00 or, bit-by-bit:
+     * <ul>
+     * <li>Year: 0000000</li>
+     * <li>Month: 0001</li>
+     * <li>Day: 00001</li>
+     * <li>Hour: 00000</li>
+     * <li>Minute: 000000</li>
+     * <li>Seconds: 00000</li>
+     * </ul>
+     *
+     * <p>
+     * This was copied from {@link ZipEntry}.
+     * </p>
+     *
+     * @since 1.23
+     */
+    public static final long DOSTIME_BEFORE_1980 = (1 << 21) | (1 << 16); // 0x210000
+
+    /**
+     * DOS time constant for representing timestamps before 1980, as a byte array.
      * Smallest date/time ZIP can handle.
      */
-    private static final byte[] DOS_TIME_MIN = ZipLong.getBytes(0x00002100L);
+    private static final byte[] DOSTIME_BEFORE_1980_BYTES = ZipLong.getBytes(DOSTIME_BEFORE_1980);
+
+    /**
+     * Approximately 128 years, in milliseconds (ignoring leap years etc).
+     *
+     * <p>
+     * This establish an approximate high-bound value for DOS times in
+     * milliseconds since epoch, used to enable an efficient but
+     * sufficient bounds check to avoid generating extended last modified
+     * time entries.
+     * </p>
+     * <p>
+     * Calculating the exact number is locale dependent, would require loading
+     * TimeZone data eagerly, and would make little practical sense. Since DOS
+     * times theoretically go to 2107 - with compatibility not guaranteed
+     * after 2099 - setting this to a time that is before but near 2099
+     * should be sufficient.
+     * </p>
+     *
+     * <p>
+     * This was copied from {@link ZipEntry}.
+     * </p>
+     *
+     * @since 1.23
+     */
+    public static final long UPPER_DOSTIME_BOUND = 128L * 365 * 24 * 60 * 60 * 1000;
+
+    /**
+     * Checks if a given time exceeds the boundaries of a DOS time
+     *
+     * @param fileTime the FileTime to be checked
+     * @return true if the FileTime exceeds the boundaries of a DOS time, false otherwise
+     * @since 1.23
+     */
+    public static boolean exceedsDosTime(final FileTime fileTime) {
+        final long millis = fileTime.toMillis();
+        final long dosTime = ZipLong.getValue(toDosTime(millis));
+        return dosTime == DOSTIME_BEFORE_1980 || millis > UPPER_DOSTIME_BOUND;
+    }
 
     /**
      * Assumes a negative integer really is a positive integer that
@@ -112,7 +196,10 @@ public abstract class ZipUtil {
 
     /**
      * Converts DOS time to Java time (number of milliseconds since
-     * epoch).
+     * epoch). Accepts the extended DOS format used by {@link ZipEntry},
+     * where up to 1999 milliseconds can be stored in the upper
+     * 32 bits of the DOS time.
+     *
      * @param dosTime time to convert
      * @return converted time
      */
@@ -127,7 +214,7 @@ public abstract class ZipUtil {
         cal.set(Calendar.SECOND, (int) (dosTime << 1) & 0x3e);
         cal.set(Calendar.MILLISECOND, 0);
         // CheckStyle:MagicNumberCheck ON
-        return cal.getTime().getTime();
+        return cal.getTime().getTime() + (dosTime >> 32);
     }
 
     /**
@@ -285,21 +372,32 @@ public abstract class ZipUtil {
             || entry.getMethod() == ZipMethod.BZIP2.getCode();
     }
 
+    /**
+     * Converts Java time to DOS time, encoding any milliseconds lost in the conversion
+     * into the upper 32 bits of the returned long.
+     *
+     * @param c the calendar object used for data conversion
+     * @param t milliseconds since epoch
+     * @param buf the byte buffer where to put the resulting long
+     * @param offset the offset in the buffer from which to start writing
+     */
     static void toDosTime(final Calendar c, final long t, final byte[] buf, final int offset) {
         c.setTimeInMillis(t);
 
         final int year = c.get(Calendar.YEAR);
         if (year < 1980) {
-            copy(DOS_TIME_MIN, buf, offset); // stop callers from changing the array
+            copy(DOSTIME_BEFORE_1980_BYTES, buf, offset); // stop callers from changing the array
             return;
         }
-        final int month = c.get(Calendar.MONTH) + 1;
-        final long value =  ((year - 1980) << 25)
-                |         (month << 21)
-                |         (c.get(Calendar.DAY_OF_MONTH) << 16)
-                |         (c.get(Calendar.HOUR_OF_DAY) << 11)
-                |         (c.get(Calendar.MINUTE) << 5)
-                |         (c.get(Calendar.SECOND) >> 1);
+        long value =  ((year - 1980) << 25)
+                |     ((c.get(Calendar.MONTH) + 1) << 21)
+                |     (c.get(Calendar.DAY_OF_MONTH) << 16)
+                |     (c.get(Calendar.HOUR_OF_DAY) << 11)
+                |     (c.get(Calendar.MINUTE) << 5)
+                |     (c.get(Calendar.SECOND) >> 1);
+        if (value != DOSTIME_BEFORE_1980) {
+            value += ((t % 2000) << 32);
+        }
         ZipLong.putLong(value, buf, offset);
     }
 

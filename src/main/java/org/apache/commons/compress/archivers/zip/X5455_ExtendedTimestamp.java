@@ -83,8 +83,14 @@ import java.util.zip.ZipException;
  * @since 1.5
  */
 public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serializable {
-    private static final ZipShort HEADER_ID = new ZipShort(0x5455);
     private static final long serialVersionUID = 1L;
+
+    /**
+     * The header ID for this extra field.
+     *
+     * @since 1.23
+     */
+    public static final ZipShort HEADER_ID = new ZipShort(0x5455);
 
     /**
      * The bit set inside the flags by when the last modification time

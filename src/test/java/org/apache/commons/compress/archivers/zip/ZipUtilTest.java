@@ -171,8 +171,8 @@ public class ZipUtilTest {
     public void testOutsideCalendar(){
         final byte[] b1 = ZipUtil.toDosTime(160441200000L); // 1.1..1975
         assertEquals(0, b1[0]);
-        assertEquals(33, b1[1]);
-        assertEquals(0, b1[2]);
+        assertEquals(0, b1[1]);
+        assertEquals(33, b1[2]);
         assertEquals(0, b1[3]);
     }
 

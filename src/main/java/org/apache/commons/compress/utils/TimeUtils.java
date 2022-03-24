@@ -46,6 +46,40 @@ public final class TimeUtils {
      */
     static final long WINDOWS_EPOCH_OFFSET = -116444736000000000L;
 
+    /** The upper bound of the 32-bit unix time, the "year 2038 problem" */
+    public static final long UPPER_UNIXTIME_BOUND = 0x7fffffff;
+
+    /**
+     * Converts "standard UNIX time" (in seconds, UTC/GMT) to {@link FileTime}.
+     *
+     * @param time UNIX timestamp
+     * @return the corresponding FileTime
+     */
+    public static FileTime unixTimeToFileTime(final long time) {
+        return FileTime.from(time, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Converts {@link FileTime} to "standard UNIX time".
+     *
+     * @param time the original FileTime
+     * @return the UNIX timestamp
+     */
+    public static long fileTimeToUnixTime(final FileTime time) {
+        return time.to(TimeUnit.SECONDS);
+    }
+
+    /**
+     * Checks whether a FileTime exceeds the maximum for the "standard UNIX time".
+     * If the FileTime is null, this method always returns false.
+     *
+     * @param time the FileTime to evaluate, can be null
+     * @return true if the time exceeds the maximum UNIX time, false otherwise
+     */
+    public static boolean exceedsUnixTime(final FileTime time) {
+        return time != null && fileTimeToUnixTime(time) > UPPER_UNIXTIME_BOUND;
+    }
+
     /**
      * Converts NTFS time (100 nanosecond units since 1 January 1601) to Java time.
      *
