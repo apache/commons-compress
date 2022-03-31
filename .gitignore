@@ -1,9 +1,0 @@
-target
-.project
-.classpath
-.settings
-.idea
-*.iml
-*~
-/.externalToolBuilders/
-/maven-eclipse.xml
