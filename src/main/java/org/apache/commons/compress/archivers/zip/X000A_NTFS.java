@@ -252,6 +252,7 @@ public class X000A_NTFS implements ZipExtraField {
      * of this zip entry, or null if no such timestamp exists in the zip entry.
      *
      * @return modify time as a {@link FileTime} or null.
+     * @since 1.22
      */
     public FileTime getModifyFileTime() {
         return zipToFileTime(modifyTime);
@@ -262,6 +263,7 @@ public class X000A_NTFS implements ZipExtraField {
      * of this zip entry, or null if no such timestamp exists in the zip entry.
      *
      * @return access time as a {@link FileTime} or null.
+     * @since 1.22
      */
     public FileTime getAccessFileTime() {
         return zipToFileTime(accessTime);
@@ -272,6 +274,7 @@ public class X000A_NTFS implements ZipExtraField {
      * of this zip entry, or null if no such timestamp exists in the zip entry.
      *
      * @return create time as a {@link FileTime} or null.
+     * @since 1.22
      */
     public FileTime getCreateFileTime() {
         return zipToFileTime(createTime);
@@ -341,22 +344,31 @@ public class X000A_NTFS implements ZipExtraField {
      * Sets the modify time.
      *
      * @param time modify time as a {@link FileTime}
+     * @since 1.22
      */
-    public void setModifyFileTime(final FileTime time) { setModifyTime(fileTimeToZip(time)); }
+    public void setModifyFileTime(final FileTime time) {
+        setModifyTime(fileTimeToZip(time));
+    }
 
     /**
      * Sets the access time.
      *
      * @param time access time as a {@link FileTime}
+     * @since 1.22
      */
-    public void setAccessFileTime(final FileTime time) { setAccessTime(fileTimeToZip(time)); }
+    public void setAccessFileTime(final FileTime time) {
+        setAccessTime(fileTimeToZip(time));
+    }
 
     /**
      * Sets the create time.
      *
      * @param time create time as a {@link FileTime}
+     * @since 1.22
      */
-    public void setCreateFileTime(final FileTime time) { setCreateTime(fileTimeToZip(time)); }
+    public void setCreateFileTime(final FileTime time) {
+        setCreateTime(fileTimeToZip(time));
+    }
 
     /**
      * Returns a String representation of this class useful for
