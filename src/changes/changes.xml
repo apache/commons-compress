@@ -155,6 +155,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="kinow" due-to="Dependabot">
         Bump commons-parent from 52 to 53 #280.
       </action>
+      <action type="update" dev="kinow" due-to="Dependabot">
+        Bump actions/setup-java from 2 to 3 #278.
+      </action>
     </release>
     <release version="1.21" date="2021-07-12"
              description="Release 1.21 (Java 8)
