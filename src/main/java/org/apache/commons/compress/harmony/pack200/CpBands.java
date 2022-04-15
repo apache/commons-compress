@@ -471,11 +471,11 @@ public class CpBands extends BandSet {
             if (signature.length() > 1 && signature.indexOf('L') != -1) {
                 final List classes = new ArrayList();
                 final char[] chars = signature.toCharArray();
-                final StringBuffer signatureString = new StringBuffer();
+                final StringBuilder signatureString = new StringBuilder();
                 for (int i = 0; i < chars.length; i++) {
                     signatureString.append(chars[i]);
                     if (chars[i] == 'L') {
-                        final StringBuffer className = new StringBuffer();
+                        final StringBuilder className = new StringBuilder();
                         for (int j = i + 1; j < chars.length; j++) {
                             final char c = chars[j];
                             if (!Character.isLetter(c) && !Character.isDigit(c) && (c != '/') && (c != '$')

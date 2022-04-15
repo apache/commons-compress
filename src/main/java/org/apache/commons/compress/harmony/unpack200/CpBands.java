@@ -305,7 +305,7 @@ public class CpBands extends BandSet {
         for (int i = 0; i < cpSignatureCount; i++) {
             final String form = cpSignatureForm[i];
             final int len = form.length();
-            final StringBuffer signature = new StringBuffer(64);
+            final StringBuilder signature = new StringBuilder(64);
             final ArrayList list = new ArrayList();
             for (int j = 0; j < len; j++) {
                 final char c = form.charAt(j);
