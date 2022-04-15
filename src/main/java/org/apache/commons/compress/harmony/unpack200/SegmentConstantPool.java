@@ -154,13 +154,12 @@ public class SegmentConstantPool {
     public ConstantPoolEntry getInitMethodPoolEntry(final int cp, final long value, final String desiredClassName)
         throws Pack200Exception {
         int realIndex = -1;
-        final String desiredRegex = REGEX_MATCH_INIT;
         if (cp != CP_METHOD) {
             // TODO really an error?
             throw new Error("Nothing but CP_METHOD can be an <init>");
         }
         realIndex = matchSpecificPoolEntryIndex(bands.getCpMethodClass(), bands.getCpMethodDescriptor(),
-            desiredClassName, desiredRegex, (int) value);
+            desiredClassName, REGEX_MATCH_INIT, (int) value);
         return getConstantPoolEntry(cp, realIndex);
     }
 

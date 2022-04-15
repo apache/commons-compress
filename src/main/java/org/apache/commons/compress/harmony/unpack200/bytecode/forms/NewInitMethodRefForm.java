@@ -34,8 +34,7 @@ public class NewInitMethodRefForm extends InitMethodReferenceForm {
 
     @Override
     protected String context(final OperandManager operandManager) {
-        final String result = operandManager.getNewClass();
-        return result;
+        return operandManager.getNewClass();
     }
 
     @Override
