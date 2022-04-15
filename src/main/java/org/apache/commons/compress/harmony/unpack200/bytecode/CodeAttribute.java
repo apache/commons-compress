@@ -35,7 +35,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
     public int maxStack;
     private static CPUTF8 attributeName;
 
-    public CodeAttribute(final int maxStack, final int maxLocals, final byte codePacked[], final Segment segment,
+    public CodeAttribute(final int maxStack, final int maxLocals, final byte[] codePacked, final Segment segment,
         final OperandManager operandManager, final List exceptionTable) {
         super(attributeName);
         this.maxLocals = maxLocals;

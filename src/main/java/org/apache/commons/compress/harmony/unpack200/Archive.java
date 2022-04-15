@@ -110,7 +110,7 @@ public class Archive {
             inputStream.mark(4);
             final int[] magic = {0xCA, 0xFE, 0xD0, 0x0D}; // Magic word for
             // pack200
-            final int word[] = new int[4];
+            final int[] word = new int[4];
             for (int i = 0; i < word.length; i++) {
                 word[i] = inputStream.read();
             }

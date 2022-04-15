@@ -101,7 +101,7 @@ public class SegmentHeader {
 
     public void read(final InputStream in) throws IOException, Error, Pack200Exception {
 
-        final int word[] = decodeScalar("archive_magic_word", in, Codec.BYTE1, magic.length);
+        final int[] word = decodeScalar("archive_magic_word", in, Codec.BYTE1, magic.length);
         for (int m = 0; m < magic.length; m++) {
             if (word[m] != magic[m]) {
                 throw new Error("Bad header");

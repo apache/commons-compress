@@ -109,7 +109,7 @@ public class SegmentConstantPool {
         final String desiredClassName) throws Pack200Exception {
         final int index = (int) desiredIndex;
         int realIndex = -1;
-        String array[] = null;
+        String[] array = null;
         if (cp == CP_FIELD) {
             array = bands.getCpFieldClass();
         } else if (cp == CP_METHOD) {
@@ -130,7 +130,7 @@ public class SegmentConstantPool {
      * @return CPClass for that class name, or null if not found.
      */
     public ConstantPoolEntry getClassPoolEntry(final String name) {
-        final String classes[] = bands.getCpClass();
+        final String[] classes = bands.getCpClass();
         final int index = matchSpecificPoolEntryIndex(classes, name, 0);
         if (index == -1) {
             return null;
