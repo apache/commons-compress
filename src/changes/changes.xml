@@ -149,6 +149,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="kinow" due-to="Dependabot">
         Bump slf4j-api from 1.7.30 to 1.7.36 #213, #241, #258.
       </action>
+      <action type="update" dev="kinow" due-to="Dependabot">
+        Bump commons-parent from 52 to 53 #280.
+      </action>
     </release>
     <release version="1.21" date="2021-07-12"
              description="Release 1.21 (Java 8)
