@@ -184,8 +184,7 @@ public class AttributeLayout implements IMatcher {
             return getValue(layout, value, pool);
         }
         if (type.equals("Ljava/lang/String;")) { //$NON-NLS-1$
-            final ClassFileEntry value2 = getValue("KS", value, pool); //$NON-NLS-1$
-            return value2;
+            return getValue("KS", value, pool);
         }
         return getValue("K" + type + layout.substring(2), value, //$NON-NLS-1$
             pool);

@@ -226,10 +226,8 @@ public class ClassBands extends BandSet {
             }
         }
 
-        final int backwardsCallsUsed = parseFieldMetadataBands(in, fieldAttrCalls);
-
         // Parse non-predefined attribute bands
-        int backwardsCallIndex = backwardsCallsUsed;
+        int backwardsCallIndex = parseFieldMetadataBands(in, fieldAttrCalls);
         final int limit = options.hasFieldFlagsHi() ? 62 : 31;
         final AttributeLayout[] otherLayouts = new AttributeLayout[limit + 1];
         final int[] counts = new int[limit + 1];
@@ -352,11 +350,8 @@ public class ClassBands extends BandSet {
             }
         }
 
-        // Parse method metadata bands
-        final int backwardsCallsUsed = parseMethodMetadataBands(in, methodAttrCalls);
-
         // Parse non-predefined attribute bands
-        int backwardsCallIndex = backwardsCallsUsed;
+        int backwardsCallIndex = parseMethodMetadataBands(in, methodAttrCalls);
         final int limit = options.hasMethodFlagsHi() ? 62 : 31;
         final AttributeLayout[] otherLayouts = new AttributeLayout[limit + 1];
         final int[] counts = new int[limit + 1];

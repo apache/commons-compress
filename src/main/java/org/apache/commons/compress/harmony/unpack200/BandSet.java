@@ -266,13 +266,12 @@ public abstract class BandSet {
             }
             result1[i1] = reference[index];
         }
-        final String[] refs = result1;
         // TODO Merge the decode and parsing of a multiple structure into one
         int pos = 0;
         for (int i = 0; i < count; i++) {
             final int num = counts[i];
             result[i] = new String[num];
-            System.arraycopy(refs, pos, result[i], 0, num);
+            System.arraycopy(result1, pos, result[i], 0, num);
             pos += num;
         }
         return result;
@@ -357,12 +356,11 @@ public abstract class BandSet {
             final int index = indices[i1];
             result1[i1] = segment.getCpBands().cpUTF8Value(index);
         }
-        final CPUTF8[] refs = result1;
         int pos = 0;
         for (int i = 0; i < counts.length; i++) {
             final int num = counts[i];
             result[i] = new CPUTF8[num];
-            System.arraycopy(refs, pos, result[i], 0, num);
+            System.arraycopy(result1, pos, result[i], 0, num);
             pos += num;
         }
         return result;
@@ -452,12 +450,11 @@ public abstract class BandSet {
             final int index = indices[i1];
             result1[i1] = segment.getCpBands().cpSignatureValue(index);
         }
-        final CPUTF8[] refs = result1;
         int pos = 0;
         for (int i = 0; i < counts.length; i++) {
             final int num = counts[i];
             result[i] = new CPUTF8[num];
-            System.arraycopy(refs, pos, result[i], 0, num);
+            System.arraycopy(result1, pos, result[i], 0, num);
             pos += num;
         }
         return result;
