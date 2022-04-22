@@ -805,7 +805,7 @@ public class NewAttributeBands extends BandSet {
      * @throws IOException If an I/O error occurs.
      */
     private StringReader getStreamUpToMatchingBracket(final StringReader stream) throws IOException {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         int foundBracket = -1;
         while (foundBracket != 0) {
             final char c = (char) stream.read();
@@ -872,7 +872,7 @@ public class NewAttributeBands extends BandSet {
      * @throws IOException If an I/O error occurs.
      */
     private String readUpToMatchingBracket(final StringReader stream) throws IOException {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         int foundBracket = -1;
         while (foundBracket != 0) {
             final char c = (char) stream.read();

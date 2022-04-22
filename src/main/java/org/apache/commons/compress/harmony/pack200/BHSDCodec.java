@@ -422,7 +422,7 @@ public final class BHSDCodec extends Codec {
      */
     @Override
     public String toString() {
-        final StringBuffer buffer = new StringBuffer(11);
+        final StringBuilder buffer = new StringBuilder(11);
         buffer.append('(');
         buffer.append(b);
         buffer.append(',');
