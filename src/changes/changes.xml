@@ -94,6 +94,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Arturo Bernal">
         Inline variable. Remove redundant local variable. #283.
       </action>
+      <action type="fix" dev="ggregory" due-to="Arturo Bernal">
+        Use compare method #285.
+      </action>
       <!-- ADD -->
       <action issue="COMPRESS-602" type="add" dev="ggregory" due-to="Postelnicu George, Gary Gregory">
         Migrate zip package to use NIO #236.
