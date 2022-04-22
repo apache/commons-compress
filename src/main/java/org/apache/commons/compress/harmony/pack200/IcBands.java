@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -157,8 +158,8 @@ public class IcBands extends BandSet {
         public boolean equals(final Object o) {
             if (o instanceof IcTuple) {
                 final IcTuple icT = (IcTuple) o;
-                return C.equals(icT.C) && F == icT.F && (C2 != null ? C2.equals(icT.C2) : icT.C2 == null)
-                    && (N != null ? N.equals(icT.N) : icT.N == null);
+                return C.equals(icT.C) && F == icT.F && (Objects.equals(C2, icT.C2))
+                    && (Objects.equals(N, icT.N));
             }
             return false;
         }
