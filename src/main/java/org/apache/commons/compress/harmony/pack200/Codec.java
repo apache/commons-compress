@@ -145,7 +145,7 @@ public abstract class Codec {
      */
     public int[] decodeInts(final int n, final InputStream in) throws IOException, Pack200Exception {
         lastBandLength = 0;
-        final int result[] = new int[n];
+        final int[] result = new int[n];
         int last = 0;
         for (int i = 0; i < n; i++) {
             result[i] = last = decode(in, last);
@@ -166,7 +166,7 @@ public abstract class Codec {
      */
     public int[] decodeInts(final int n, final InputStream in, final int firstValue)
         throws IOException, Pack200Exception {
-        final int result[] = new int[n + 1];
+        final int[] result = new int[n + 1];
         result[0] = firstValue;
         int last = firstValue;
         for (int i = 1; i < n + 1; i++) {

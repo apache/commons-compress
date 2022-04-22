@@ -162,7 +162,7 @@ public abstract class BandSet {
         return parseFlags(name, in, new int[] {count}, (hasHi ? codec : null), codec)[0];
     }
 
-    public long[][] parseFlags(final String name, final InputStream in, final int counts[], final BHSDCodec codec,
+    public long[][] parseFlags(final String name, final InputStream in, final int[] counts, final BHSDCodec codec,
         final boolean hasHi) throws IOException, Pack200Exception {
         return parseFlags(name, in, counts, (hasHi ? codec : null), codec);
     }
@@ -172,7 +172,7 @@ public abstract class BandSet {
         return parseFlags(name, in, new int[] {count}, hiCodec, loCodec)[0];
     }
 
-    public long[][] parseFlags(final String name, final InputStream in, final int counts[], final BHSDCodec hiCodec,
+    public long[][] parseFlags(final String name, final InputStream in, final int[] counts, final BHSDCodec hiCodec,
         final BHSDCodec loCodec) throws IOException, Pack200Exception {
         final int count = counts.length;
         if (count == 0) {
@@ -244,7 +244,7 @@ public abstract class BandSet {
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported Codec
      */
     public String[][] parseReferences(final String name, final InputStream in, final BHSDCodec codec,
-        final int counts[], final String[] reference) throws IOException, Pack200Exception {
+        final int[] counts, final String[] reference) throws IOException, Pack200Exception {
         final int count = counts.length;
         if (count == 0) {
             return new String[][] {{}};

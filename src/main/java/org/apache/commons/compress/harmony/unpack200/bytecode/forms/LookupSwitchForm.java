@@ -38,11 +38,11 @@ public class LookupSwitchForm extends SwitchForm {
         final int codeLength) {
         final int case_count = operandManager.nextCaseCount();
         final int default_pc = operandManager.nextLabel();
-        final int case_values[] = new int[case_count];
+        final int[] case_values = new int[case_count];
         for (int index = 0; index < case_count; index++) {
             case_values[index] = operandManager.nextCaseValues();
         }
-        final int case_pcs[] = new int[case_count];
+        final int[] case_pcs = new int[case_count];
         for (int index = 0; index < case_count; index++) {
             case_pcs[index] = operandManager.nextLabel();
         }

@@ -214,7 +214,7 @@ public class CpBands extends BandSet {
     private void parseCpFloat(final InputStream in) throws IOException, Pack200Exception {
         final int cpFloatCount = header.getCpFloatCount();
         cpFloat = new float[cpFloatCount];
-        final int floatBits[] = decodeBandInt("cp_Float", in, Codec.UDELTA5, cpFloatCount);
+        final int[] floatBits = decodeBandInt("cp_Float", in, Codec.UDELTA5, cpFloatCount);
         for (int i = 0; i < cpFloatCount; i++) {
             cpFloat[i] = Float.intBitsToFloat(floatBits[i]);
         }
@@ -376,7 +376,7 @@ public class CpBands extends BandSet {
         }
 
         // Convert big suffix data to characters
-        final char bigSuffixData[][] = new char[bigSuffixCount][];
+        final char[][] bigSuffixData = new char[bigSuffixCount][];
         for (int i = 0; i < bigSuffixDataBand.length; i++) {
             bigSuffixData[i] = new char[bigSuffixDataBand[i].length];
             for (int j = 0; j < bigSuffixDataBand[i].length; j++) {

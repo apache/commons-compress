@@ -41,7 +41,7 @@ public class TableSwitchForm extends SwitchForm {
         int case_value = -1;
         case_value = operandManager.nextCaseValues();
 
-        final int case_pcs[] = new int[case_count];
+        final int[] case_pcs = new int[case_count];
         for (int index = 0; index < case_count; index++) {
             case_pcs[index] = operandManager.nextLabel();
         }

@@ -61,7 +61,7 @@ public class PopulationCodec extends Codec {
         lastBandLength = 0;
         favoured = new int[n]; // there must be <= n values, but probably a lot
         // less
-        int result[];
+        int[] result;
         // read table of favorites first
         int smallest = Integer.MAX_VALUE, absoluteSmallest;
         int last = 0;

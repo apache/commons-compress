@@ -187,12 +187,12 @@ public class Segment {
         final ClassFileEntry cfThis = cp.add(cpBands.cpClassValue(fullNameIndexInCpClass));
         final ClassFileEntry cfSuper = cp.add(cpBands.cpClassValue(classBands.getClassSuperInts()[classNum]));
         // add interfaces
-        final ClassFileEntry cfInterfaces[] = new ClassFileEntry[classBands.getClassInterfacesInts()[classNum].length];
+        final ClassFileEntry[] cfInterfaces = new ClassFileEntry[classBands.getClassInterfacesInts()[classNum].length];
         for (i = 0; i < cfInterfaces.length; i++) {
             cfInterfaces[i] = cp.add(cpBands.cpClassValue(classBands.getClassInterfacesInts()[classNum][i]));
         }
         // add fields
-        final ClassFileEntry cfFields[] = new ClassFileEntry[classBands.getClassFieldCount()[classNum]];
+        final ClassFileEntry[] cfFields = new ClassFileEntry[classBands.getClassFieldCount()[classNum]];
         // fieldDescr and fieldFlags used to create this
         for (i = 0; i < cfFields.length; i++) {
             final int descriptorIndex = classBands.getFieldDescrInts()[classNum][i];
@@ -204,7 +204,7 @@ public class Segment {
                 classBands.getFieldAttributes()[classNum][i]));
         }
         // add methods
-        final ClassFileEntry cfMethods[] = new ClassFileEntry[classBands.getClassMethodCount()[classNum]];
+        final ClassFileEntry[] cfMethods = new ClassFileEntry[classBands.getClassMethodCount()[classNum]];
         // methodDescr and methodFlags used to create this
         for (i = 0; i < cfMethods.length; i++) {
             final int descriptorIndex = classBands.getMethodDescrInts()[classNum][i];

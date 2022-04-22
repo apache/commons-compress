@@ -200,7 +200,7 @@ public class IcTuple {
         }
         // Class names must be calculated from
         // this class name.
-        final String nameComponents[] = innerBreakAtDollar(C);
+        final String[] nameComponents = innerBreakAtDollar(C);
         if (nameComponents.length == 0) {
             // Unable to predict outer class
             // throw new Error("Unable to predict outer class name: " + C);

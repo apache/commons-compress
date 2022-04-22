@@ -321,6 +321,10 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <name>Michael Hausegger</name>
       <email>hausegger.michael@googlemail.com</email>
     </contributor>
+    <contributor>
+      <name>Arturo Bernal</name>
+      <email>arturobernalg@yahoo.com</email>
+    </contributor>
   </contributors>
 
   <scm>
