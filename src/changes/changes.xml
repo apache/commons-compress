@@ -173,6 +173,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="kinow" due-to="Dependabot">
         Bump actions/setup-java from 2 to 3 #278.
       </action>
+      <action type="update" dev="kinow" due-to="Dependabot">
+        Bump github/codeql-action from 1 to 2 #287.
+      </action>
     </release>
     <release version="1.21" date="2021-07-12"
              description="Release 1.21 (Java 8)
