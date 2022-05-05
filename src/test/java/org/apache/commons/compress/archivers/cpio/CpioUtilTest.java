@@ -47,8 +47,9 @@ public class CpioUtilTest {
     }
 
     @Test
-    public void testLong2byteArrayWithZeroThrowsUnsupportedOperationException() {
-        assertThrows(UnsupportedOperationException.class, () -> CpioUtil.long2byteArray(0L, 0, false));
+    public void testByteArray2longThrowsUnsupportedOperationException() {
+        assertThrows(UnsupportedOperationException.class, () -> CpioUtil.byteArray2long(new byte[1], true));
+
     }
 
     @Test
@@ -57,9 +58,8 @@ public class CpioUtilTest {
     }
 
     @Test
-    public void testByteArray2longThrowsUnsupportedOperationException() {
-        assertThrows(UnsupportedOperationException.class, () -> CpioUtil.byteArray2long(new byte[1], true));
-
+    public void testLong2byteArrayWithZeroThrowsUnsupportedOperationException() {
+        assertThrows(UnsupportedOperationException.class, () -> CpioUtil.long2byteArray(0L, 0, false));
     }
 
 }
