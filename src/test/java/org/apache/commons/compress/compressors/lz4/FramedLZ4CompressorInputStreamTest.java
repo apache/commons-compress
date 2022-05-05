@@ -19,33 +19,28 @@
 package org.apache.commons.compress.compressors.lz4;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 
-public final class FramedLZ4CompressorInputStreamTest
-    extends AbstractTestCase {
-
-    @Rule
-    public final ExpectedException thrown = ExpectedException.none();
+public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testMatches() throws IOException {
@@ -158,9 +153,7 @@ public final class FramedLZ4CompressorInputStreamTest
 
     @Test
     public void rejectsNonLZ4Stream() throws IOException {
-        try (InputStream a = new FramedLZ4CompressorInputStream(Files.newInputStream(getFile("bla.tar").toPath()))) {
-             fail("expected exception");
-        }
+        assertThrows(IOException.class, () -> new FramedLZ4CompressorInputStream(Files.newInputStream(getFile("bla.tar").toPath())));
     }
 
     @Test
@@ -635,12 +628,13 @@ public final class FramedLZ4CompressorInputStreamTest
         return to;
     }
 
-    private void expectIOException(final String fileName) throws IOException {
-        thrown.expect(IOException.class);
-        try (InputStream is = Files.newInputStream(getFile(fileName).toPath())) {
-            final FramedLZ4CompressorInputStream in = new FramedLZ4CompressorInputStream(is);
-            IOUtils.toByteArray(in);
-        }
+    private void expectIOException(final String fileName) {
+        assertThrows(IOException.class, () -> {
+            try (InputStream is = Files.newInputStream(getFile(fileName).toPath())) {
+                final FramedLZ4CompressorInputStream in = new FramedLZ4CompressorInputStream(is);
+                IOUtils.toByteArray(in);
+            }
+        });
     }
 
 }
