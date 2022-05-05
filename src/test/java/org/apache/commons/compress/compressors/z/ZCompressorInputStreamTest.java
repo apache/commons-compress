@@ -30,6 +30,7 @@ import java.util.Collections;
 import org.apache.commons.compress.utils.IOUtils;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.junit.Assert.assertThrows;
 
 /**
  * Unit tests for class {@link ZCompressorInputStream}.
@@ -39,11 +40,10 @@ import static org.apache.commons.compress.AbstractTestCase.getFile;
  **/
 public class ZCompressorInputStreamTest {
 
-
     @Test
-    public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() throws IOException {
+    public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() {
         final SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration());
-        final ZCompressorInputStream zCompressorInputStream = new ZCompressorInputStream(sequenceInputStream);
+        assertThrows(IOException.class, () -> new ZCompressorInputStream(sequenceInputStream));
     }
 
     @Test
