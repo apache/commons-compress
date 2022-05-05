@@ -33,19 +33,20 @@ public class ArchiveUtilsTest extends AbstractTestCase {
 
     private static final int bytesToTest = 50;
     private static final byte[] byteTest = new byte[bytesToTest];
+    
     static {
-        for(int i=0; i < byteTest.length ;) {
-            byteTest[i]=(byte) i;
-            byteTest[i+1]=(byte) -i;
+        for (int i = 0; i < byteTest.length;) {
+            byteTest[i] = (byte) i;
+            byteTest[i + 1] = (byte) -i;
             i += 2;
         }
     }
 
     @Test
-    public void testCompareBA(){
-        final byte[] buffer1 = {1,2,3};
-        final byte[] buffer2 = {1,2,3,0};
-        final byte[] buffer3 = {1,2,3};
+    public void testCompareBA() {
+        final byte[] buffer1 = {1, 2, 3};
+        final byte[] buffer2 = {1, 2, 3, 0};
+        final byte[] buffer3 = {1, 2, 3};
         assertTrue(ArchiveUtils.isEqual(buffer1, buffer2, true));
         assertFalse(ArchiveUtils.isEqual(buffer1, buffer2, false));
         assertFalse(ArchiveUtils.isEqual(buffer1, buffer2));
@@ -57,9 +58,9 @@ public class ArchiveUtilsTest extends AbstractTestCase {
     }
 
     @Test
-    public void testCompareAscii(){
-        final byte[] buffer1 = {'a','b','c'};
-        final byte[] buffer2 = {'d','e','f',0};
+    public void testCompareAscii() {
+        final byte[] buffer1 = {'a', 'b', 'c'};
+        final byte[] buffer2 = {'d', 'e', 'f', 0};
         assertTrue(ArchiveUtils.matchAsciiBuffer("abc", buffer1));
         assertFalse(ArchiveUtils.matchAsciiBuffer("abc\0", buffer1));
         assertTrue(ArchiveUtils.matchAsciiBuffer("def\0", buffer2));
@@ -105,40 +106,28 @@ public class ArchiveUtilsTest extends AbstractTestCase {
 
     @Test
     public void testIsEqualWithNullWithPositive() {
-
         final byte[] byteArray = new byte[8];
         byteArray[1] = (byte) (-77);
-
-        assertFalse(ArchiveUtils.isEqualWithNull(byteArray, 0, (byte)0, byteArray, (byte)0, (byte)80));
-
+        assertFalse(ArchiveUtils.isEqualWithNull(byteArray, 0, (byte) 0, byteArray, (byte) 0, (byte) 80));
     }
 
     @Test
     public void testToAsciiBytes() {
-
         final byte[] byteArray = ArchiveUtils.toAsciiBytes("SOCKET");
-
-        assertArrayEquals(new byte[] {(byte)83, (byte)79, (byte)67, (byte)75, (byte)69, (byte)84}, byteArray);
-
+        assertArrayEquals(new byte[] {(byte) 83, (byte) 79, (byte) 67, (byte) 75, (byte) 69, (byte) 84}, byteArray);
         assertFalse(ArchiveUtils.isEqualWithNull(byteArray, 0, 46, byteArray, 63, 0));
-
     }
 
     @Test
     public void testToStringWithNonNull() {
-
         final SevenZArchiveEntry sevenZArchiveEntry = new SevenZArchiveEntry();
         final String string = ArchiveUtils.toString(sevenZArchiveEntry);
-
         assertEquals("-       0 null", string);
-
     }
 
     @Test
     public void testIsEqual() {
-
         assertTrue(ArchiveUtils.isEqual(null, 0, 0, null, 0, 0));
-
     }
 
     @Test
