@@ -33,6 +33,7 @@ import java.nio.file.StandardOpenOption;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.StreamingNotSupportedException;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,7 +66,7 @@ public class SevenZArchiverTest extends AbstractTestCase {
     @Test
     public void outputStreamVersion() throws IOException, ArchiveException {
         try (OutputStream os = Files.newOutputStream(target.toPath())) {
-            new Archiver().create("7z", os, dir);
+            assertThrows(StreamingNotSupportedException.class, () -> new Archiver().create("7z", os, dir));
         }
     }
 
