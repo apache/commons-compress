@@ -17,6 +17,8 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import static org.junit.Assert.assertThrows;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.tukaani.xz.LZMA2Options;
@@ -69,12 +71,12 @@ public class SevenZMethodConfigurationTest {
 
     @Test
     public void shouldNotAllowStringOptionsForLZMA() {
-        new SevenZMethodConfiguration(SevenZMethod.LZMA, "");
+        assertThrows(IllegalArgumentException.class, () -> new SevenZMethodConfiguration(SevenZMethod.LZMA, ""));
     }
 
     @Test
     public void shouldNotAllowStringOptionsForLZMA2() {
-        new SevenZMethodConfiguration(SevenZMethod.LZMA2, "");
+        assertThrows(IllegalArgumentException.class, () -> new SevenZMethodConfiguration(SevenZMethod.LZMA2, ""));
     }
 
 }
