@@ -18,6 +18,10 @@
  */
 package org.apache.commons.compress.compressors.deflate;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.IOException;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
@@ -33,12 +37,12 @@ public class DeflateParametersTest {
     @Test
     public void shouldNotBeAbleToSetCompressionLevelToANegativeValue() {
         final DeflateParameters p = new DeflateParameters();
-        p.setCompressionLevel(-2);
+        assertThrows(IllegalArgumentException.class, () -> p.setCompressionLevel(DeflateParameters.MIN_LEVEL - 1));
     }
 
     @Test
     public void shouldNotBeAbleToSetCompressionLevelToADoubleDigitValue() {
         final DeflateParameters p = new DeflateParameters();
-        p.setCompressionLevel(12);
+        assertThrows(IllegalArgumentException.class, () -> p.setCompressionLevel(DeflateParameters.MAX_LEVEL + 1));
     }
 }

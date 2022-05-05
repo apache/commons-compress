@@ -27,6 +27,9 @@ import java.util.zip.Deflater;
  */
 public class DeflateParameters {
 
+    static final int MAX_LEVEL = 9;
+    static final int MIN_LEVEL = 0;
+
     private boolean zlibHeader = true;
     private int compressionLevel = Deflater.DEFAULT_COMPRESSION;
 
@@ -70,7 +73,7 @@ public class DeflateParameters {
      * @see Deflater#BEST_COMPRESSION
      */
     public void setCompressionLevel(final int compressionLevel) {
-        if (compressionLevel < -1 || compressionLevel > 9) {
+        if (compressionLevel < MIN_LEVEL || compressionLevel > MAX_LEVEL) {
             throw new IllegalArgumentException("Invalid Deflate compression level: " + compressionLevel);
         }
         this.compressionLevel = compressionLevel;
