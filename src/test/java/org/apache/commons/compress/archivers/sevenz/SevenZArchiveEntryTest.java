@@ -59,8 +59,7 @@ public class SevenZArchiveEntryTest {
         final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         z1.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.COPY)));
-        z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER),
-                                           new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
+        z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER), new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
         assertNotEquals(z1, z2);
         assertNotEquals(z2, z1);
     }
@@ -69,10 +68,8 @@ public class SevenZArchiveEntryTest {
     public void sameMethodsYieldEqualEntries() {
         final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
-        z1.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER),
-                                           new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
-        z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER),
-                                           new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
+        z1.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER), new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
+        z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER), new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
         assertEquals(z1, z2);
         assertEquals(z2, z1);
     }
@@ -81,10 +78,8 @@ public class SevenZArchiveEntryTest {
     public void methodOrderMattersInEquals() {
         final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
-        z1.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2),
-                                           new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER)));
-        z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER),
-                                           new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
+        z1.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2), new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER)));
+        z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER), new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
         assertNotEquals(z1, z2);
         assertNotEquals(z2, z1);
     }
