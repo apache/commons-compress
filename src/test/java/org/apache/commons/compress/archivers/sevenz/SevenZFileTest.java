@@ -17,13 +17,15 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import static java.nio.charset.StandardCharsets.*;
+import static java.nio.charset.StandardCharsets.UTF_16LE;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -51,16 +53,11 @@ import org.apache.commons.compress.PasswordRequiredException;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 
 public class SevenZFileTest extends AbstractTestCase {
     private static final String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE"
         + " connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
-
-    @Rule
-    public final ExpectedException thrown = ExpectedException.none();
 
     // https://issues.apache.org/jira/browse/COMPRESS-320
     @Test
@@ -321,10 +318,11 @@ public class SevenZFileTest extends AbstractTestCase {
 
     @Test
     public void limitExtractionMemory() throws IOException {
-        try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"),
-            SevenZFileOptions.builder().withMaxMemoryLimitInKb(1).build())) {
-            // Do nothing. Exception should be thrown
-        }
+        assertThrows(MemoryLimitException.class, () -> {
+            try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"), SevenZFileOptions.builder().withMaxMemoryLimitInKb(1).build())) {
+                // Do nothing. Exception should be thrown
+            }
+        });
     }
 
     @Test
@@ -419,8 +417,7 @@ public class SevenZFileTest extends AbstractTestCase {
 
     @Test
     public void test7zUnarchiveWithDefectHeaderFailsByDefault() throws Exception {
-        thrown.expect(IOException.class);
-        test7zUnarchive(getFile("bla.noendheaderoffset.7z"), SevenZMethod.LZMA);
+        assertThrows(IOException.class, () -> test7zUnarchive(getFile("bla.noendheaderoffset.7z"), SevenZMethod.LZMA));
     }
 
     @Test
@@ -685,11 +682,9 @@ public class SevenZFileTest extends AbstractTestCase {
 
     @Test
     public void extractNonExistSpecifiedFile() throws Exception {
-        try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"));
-            SevenZFile anotherSevenZFile = new SevenZFile(getFile("bla.7z"))) {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z")); SevenZFile anotherSevenZFile = new SevenZFile(getFile("bla.7z"))) {
             for (final SevenZArchiveEntry nonExistEntry : anotherSevenZFile.getEntries()) {
-                thrown.expect(IllegalArgumentException.class);
-                sevenZFile.getInputStream(nonExistEntry);
+                assertThrows(IllegalArgumentException.class, () -> sevenZFile.getInputStream(nonExistEntry));
             }
         }
     }
