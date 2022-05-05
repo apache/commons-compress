@@ -2055,7 +2055,7 @@ public class SevenZFile implements Closeable {
         return lastSegment + "~";
     }
 
-    private static byte[] utf16Decode(final char[] chars) throws IOException {
+    private static byte[] utf16Decode(final char[] chars) {
         if (chars == null) {
             return null;
         }
