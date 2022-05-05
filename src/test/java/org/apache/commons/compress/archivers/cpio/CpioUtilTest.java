@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class CpioUtilTest {
 
@@ -56,26 +57,19 @@ public class CpioUtilTest {
 
     @Test
     public void testLong2byteArrayWithZeroThrowsUnsupportedOperationException() {
-
-        CpioUtil.long2byteArray(0L, 0, false);
-
+        assertThrows(UnsupportedOperationException.class, () -> CpioUtil.long2byteArray(0L, 0, false));
     }
 
 
     @Test
     public void testLong2byteArrayWithPositiveThrowsUnsupportedOperationException() {
-
-        CpioUtil.long2byteArray(0L, 1021, false);
-
+        assertThrows(UnsupportedOperationException.class, () -> CpioUtil.long2byteArray(0L, 1021, false));
     }
 
 
     @Test
     public void testByteArray2longThrowsUnsupportedOperationException() {
-
-        final byte[] byteArray = new byte[1];
-
-        CpioUtil.byteArray2long(byteArray, true);
+        assertThrows(UnsupportedOperationException.class, () -> CpioUtil.byteArray2long(new byte[1], true));
 
     }
 
