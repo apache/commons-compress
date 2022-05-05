@@ -18,15 +18,16 @@
 
 package org.apache.commons.compress;
 
-import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
-import org.apache.commons.compress.utils.ArchiveUtils;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.apache.commons.compress.utils.ArchiveUtils;
+import org.junit.jupiter.api.Test;
 
 public class ArchiveUtilsTest extends AbstractTestCase {
 
@@ -74,6 +75,7 @@ public class ArchiveUtilsTest extends AbstractTestCase {
 
     @Test
     public void sanitizeShortensString() {
+        // @formatter:off
         final String input = "012345678901234567890123456789012345678901234567890123456789"
             + "012345678901234567890123456789012345678901234567890123456789"
             + "012345678901234567890123456789012345678901234567890123456789"
@@ -84,6 +86,7 @@ public class ArchiveUtilsTest extends AbstractTestCase {
             + "012345678901234567890123456789012345678901234567890123456789"
             + "012345678901234567890123456789012345678901234567890123456789"
             + "012345678901...";
+        // @formatter:on
         assertEquals(expected, ArchiveUtils.sanitize(input));
     }
 
@@ -140,11 +143,8 @@ public class ArchiveUtilsTest extends AbstractTestCase {
 
     @Test
     public void testToAsciiStringThrowsStringIndexOutOfBoundsException() {
-
         final byte[] byteArray = new byte[3];
-
-        ArchiveUtils.toAsciiString(byteArray, 940, 2730);
-
+        assertThrows(StringIndexOutOfBoundsException.class, () -> ArchiveUtils.toAsciiString(byteArray, 940, 2730));
     }
 
     private void asciiToByteAndBackOK(final String inputString) {
