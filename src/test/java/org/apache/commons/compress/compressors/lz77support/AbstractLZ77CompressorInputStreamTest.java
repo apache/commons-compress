@@ -58,7 +58,7 @@ public class AbstractLZ77CompressorInputStreamTest {
         try (TestStream s = new TestStream(new ByteArrayInputStream(data))) {
             s.literal(3);
             assertEquals(1, s.read());
-            assertThrows(IllegalArgumentException.class, () -> s.prefill(new byte[] {1, 2, 3}));
+            assertThrows(IllegalStateException.class, () -> s.prefill(new byte[] {1, 2, 3}));
         }
     }
 
