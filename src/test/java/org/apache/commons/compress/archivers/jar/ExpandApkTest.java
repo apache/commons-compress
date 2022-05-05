@@ -40,7 +40,7 @@ public class ExpandApkTest {
     }
 
     private <T> T println(T object) {
-        System.out.println(object);
+        // System.out.println(object);
         return object;
     }
 }
