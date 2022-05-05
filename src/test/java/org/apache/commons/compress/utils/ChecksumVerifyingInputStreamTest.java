@@ -25,6 +25,7 @@ import java.util.zip.CRC32;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 /**
  * Unit tests for class {@link ChecksumVerifyingInputStream org.apache.commons.compress.utils.ChecksumVerifyingInputStream}.
@@ -40,7 +41,7 @@ public class ChecksumVerifyingInputStreamTest {
         final byte[] byteArray = new byte[3];
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
         final ChecksumVerifyingInputStream checksumVerifyingInputStream = new ChecksumVerifyingInputStream(adler32, byteArrayInputStream, (-1859L), (byte) (-68));
-        checksumVerifyingInputStream.read(byteArray);
+        assertThrows(IOException.class, () -> checksumVerifyingInputStream.read(byteArray));
     }
 
     @Test
@@ -49,7 +50,7 @@ public class ChecksumVerifyingInputStreamTest {
         final byte[] byteArray = new byte[9];
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
         final ChecksumVerifyingInputStream checksumVerifyingInputStream = new ChecksumVerifyingInputStream(cRC32_, byteArrayInputStream, (byte)1, (byte)1);
-        checksumVerifyingInputStream.read();
+        assertThrows(IOException.class, () -> checksumVerifyingInputStream.read());
     }
 
     @Test
