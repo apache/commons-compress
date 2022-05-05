@@ -18,6 +18,10 @@
  */
 package org.apache.commons.compress.compressors.lz77support;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,16 +29,15 @@ import java.io.InputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-
 public class AbstractLZ77CompressorInputStreamTest {
 
     private static class TestStream extends AbstractLZ77CompressorInputStream {
+        
         private boolean literal;
         TestStream(final InputStream in) throws IOException {
             super(in, 1024);
         }
+        
         @Override
         public int read(final byte[] b, final int off, final int len) throws IOException {
             if (literal) {
@@ -42,6 +45,7 @@ public class AbstractLZ77CompressorInputStreamTest {
             }
             return readBackReference(b, off, len);
         }
+        
         void literal(final int len) {
             startLiteral(len);
             literal = true;
@@ -50,11 +54,11 @@ public class AbstractLZ77CompressorInputStreamTest {
 
     @Test
     public void cantPrefillAfterDataHasBeenRead() throws IOException {
-        final byte[] data = new byte[] { 1, 2, 3, 4 };
+        final byte[] data = new byte[] {1, 2, 3, 4};
         try (TestStream s = new TestStream(new ByteArrayInputStream(data))) {
             s.literal(3);
             assertEquals(1, s.read());
-            s.prefill(new byte[] { 1, 2, 3 });
+            assertThrows(IllegalArgumentException.class, () -> s.prefill(new byte[] {1, 2, 3}));
         }
     }
 
