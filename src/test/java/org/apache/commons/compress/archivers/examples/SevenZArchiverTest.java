@@ -19,6 +19,7 @@
 package org.apache.commons.compress.archivers.examples;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
@@ -80,9 +81,9 @@ public class SevenZArchiverTest extends AbstractTestCase {
     // not really a 7z test but I didn't feel like adding a new test just for this
     @Test
     public void unknownFormat() throws IOException, ArchiveException {
-        try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
-            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-            new Archiver().create("unknown format", c, dir);
+        try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE, StandardOpenOption.CREATE,
+            StandardOpenOption.TRUNCATE_EXISTING)) {
+            assertThrows(ArchiveException.class, () -> new Archiver().create("unknown format", c, dir));
         }
     }
 
