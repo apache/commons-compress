@@ -28,6 +28,7 @@ import java.util.zip.Checksum;
  * @since 1.7
  */
 public class ChecksumVerifyingInputStream extends InputStream {
+
     private final InputStream in;
     private long bytesRemaining;
     private final long expectedChecksum;
@@ -78,9 +79,7 @@ public class ChecksumVerifyingInputStream extends InputStream {
             checksum.update(ret);
             --bytesRemaining;
         }
-        if (bytesRemaining <= 0 && expectedChecksum != checksum.getValue()) {
-            throw new IOException("Checksum verification failed");
-        }
+        verify();
         return ret;
     }
 
@@ -111,9 +110,7 @@ public class ChecksumVerifyingInputStream extends InputStream {
             checksum.update(b, off, ret);
             bytesRemaining -= ret;
         }
-        if (bytesRemaining <= 0 && expectedChecksum != checksum.getValue()) {
-            throw new IOException("Checksum verification failed");
-        }
+        verify();
         return ret;
     }
 
@@ -121,5 +118,11 @@ public class ChecksumVerifyingInputStream extends InputStream {
     public long skip(final long n) throws IOException {
         // Can't really skip, we have to hash everything to verify the checksum
         return read() >= 0 ? 1 : 0;
+    }
+
+    private void verify() throws IOException {
+        if (bytesRemaining <= 0 && expectedChecksum != checksum.getValue()) {
+            throw new IOException("Checksum verification failed");
+        }
     }
 }
