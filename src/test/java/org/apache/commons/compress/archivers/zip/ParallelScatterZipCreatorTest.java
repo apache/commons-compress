@@ -17,12 +17,13 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
-import org.apache.commons.compress.parallel.InputStreamSupplier;
-import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
-import org.apache.commons.compress.utils.IOUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.apache.commons.compress.AbstractTestCase.tryHardToDelete;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -38,12 +39,12 @@ import java.util.concurrent.Executors;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.apache.commons.compress.AbstractTestCase.tryHardToDelete;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
+import org.apache.commons.compress.parallel.InputStreamSupplier;
+import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
+import org.apache.commons.compress.utils.IOUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 public class ParallelScatterZipCreatorTest {
 
@@ -92,18 +93,18 @@ public class ParallelScatterZipCreatorTest {
     public void throwsExceptionWithCompressionLevelTooBig() {
         final int compressLevelTooBig = Deflater.BEST_COMPRESSION + 1;
         final ExecutorService es = Executors.newFixedThreadPool(1);
-        final ScatterGatherBackingStoreSupplier supp = () -> new FileBasedScatterGatherBackingStore(tmp = File.createTempFile("parallelscatter", "n1"));
-
-        new ParallelScatterZipCreator(es, supp, compressLevelTooBig);
+        assertThrows(IllegalArgumentException.class, () -> new ParallelScatterZipCreator(es,
+            () -> new FileBasedScatterGatherBackingStore(tmp = File.createTempFile("parallelscatter", "n1")), compressLevelTooBig));
+        es.shutdownNow();
     }
 
     @Test
     public void throwsExceptionWithCompressionLevelTooSmall() {
         final int compressLevelTooSmall = Deflater.DEFAULT_COMPRESSION - 1;
         final ExecutorService es = Executors.newFixedThreadPool(1);
-        final ScatterGatherBackingStoreSupplier supp = () -> new FileBasedScatterGatherBackingStore(tmp = File.createTempFile("parallelscatter", "n1"));
-
-        new ParallelScatterZipCreator(es, supp, compressLevelTooSmall);
+        assertThrows(IllegalArgumentException.class, () -> new ParallelScatterZipCreator(es,
+            () -> new FileBasedScatterGatherBackingStore(tmp = File.createTempFile("parallelscatter", "n1")), compressLevelTooSmall));
+        es.shutdownNow();
     }
 
     @Test
