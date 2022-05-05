@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import static java.nio.charset.StandardCharsets.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class LZ77CompressorTest {
 
@@ -270,18 +271,16 @@ public class LZ77CompressorTest {
 
     @Test
     public void cantPrefillTwice() {
-        final LZ77Compressor c = new LZ77Compressor(newParameters(128), block -> {
-        });
+        final LZ77Compressor c = new LZ77Compressor(newParameters(128), block -> {});
         c.prefill(Arrays.copyOfRange(BLA, 0, 2));
-        c.prefill(Arrays.copyOfRange(BLA, 2, 4));
+        assertThrows(IllegalStateException.class, () -> c.prefill(Arrays.copyOfRange(BLA, 2, 4)));
     }
 
     @Test
     public void cantPrefillAfterCompress() throws IOException {
-        final LZ77Compressor c = new LZ77Compressor(newParameters(128), block -> {
-        });
+        final LZ77Compressor c = new LZ77Compressor(newParameters(128), block -> {});
         c.compress(Arrays.copyOfRange(BLA, 0, 2));
-        c.prefill(Arrays.copyOfRange(BLA, 2, 4));
+        assertThrows(IllegalStateException.class, () -> c.prefill(Arrays.copyOfRange(BLA, 2, 4)));
     }
 
     private static final void assertSize(final int expectedSize, final List<LZ77Compressor.Block> blocks) {
