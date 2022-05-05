@@ -18,11 +18,12 @@
  */
 package org.apache.commons.compress.changes;
 
-import org.apache.commons.compress.archivers.memory.MemoryArchiveEntry;
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.assertThrows;
 
 import java.io.PipedInputStream;
 
+import org.apache.commons.compress.archivers.memory.MemoryArchiveEntry;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for class {@link Change}.
@@ -32,33 +33,21 @@ import java.io.PipedInputStream;
  **/
 public class ChangeTest {
 
-
     @Test
     public void testFailsToCreateChangeTakingFourArgumentsThrowsNullPointerExceptionOne() {
-
         final MemoryArchiveEntry memoryArchiveEntry = new MemoryArchiveEntry("x");
-
-        final Change change  = new Change(memoryArchiveEntry, null, false);
-
+        assertThrows(NullPointerException.class, () -> new Change(memoryArchiveEntry, null, false));
     }
-
 
     @Test
     public void testFailsToCreateChangeTakingFourArgumentsThrowsNullPointerExceptionTwo() {
-
         final PipedInputStream pipedInputStream = new PipedInputStream(1);
-
-        final Change change  = new Change(null, pipedInputStream, false);
-
+        assertThrows(NullPointerException.class, () -> new Change(null, pipedInputStream, false));
     }
-
 
     @Test
     public void testFailsToCreateChangeTakingThreeArgumentsThrowsNullPointerException() {
-
-        final Change change  = new Change(null, (-407));
-
+        assertThrows(NullPointerException.class, () -> new Change(null, (-407)));
     }
-
 
 }
