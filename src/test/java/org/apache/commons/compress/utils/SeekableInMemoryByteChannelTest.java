@@ -31,6 +31,7 @@ import static java.nio.charset.StandardCharsets.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 
 public class SeekableInMemoryByteChannelTest {
 
@@ -100,7 +101,7 @@ public class SeekableInMemoryByteChannelTest {
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
         //when
         c.close();
-        c.read(ByteBuffer.allocate(1));
+        assertThrows(ClosedChannelException.class, () -> c.read(ByteBuffer.allocate(1)));
     }
 
     @Test
@@ -141,7 +142,7 @@ public class SeekableInMemoryByteChannelTest {
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
         //when
         c.close();
-        c.write(ByteBuffer.allocate(1));
+        assertThrows(ClosedChannelException.class, () -> c.write(ByteBuffer.allocate(1)));
     }
 
     @Test
@@ -189,7 +190,7 @@ public class SeekableInMemoryByteChannelTest {
         //given
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
         //when
-        c.position(Integer.MAX_VALUE + 1L);
+        assertThrows(IOException.class, () -> c.position(Integer.MAX_VALUE + 1L));
         c.close();
     }
 
@@ -198,7 +199,7 @@ public class SeekableInMemoryByteChannelTest {
         //given
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
         //when
-        c.truncate(Integer.MAX_VALUE + 1L);
+        assertThrows(IllegalArgumentException.class, () -> c.truncate(Integer.MAX_VALUE + 1L));
         c.close();
     }
 
@@ -256,7 +257,7 @@ public class SeekableInMemoryByteChannelTest {
     public void throwsClosedChannelExceptionWhenPositionIsSetOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
-            c.position(0);
+            assertThrows(ClosedChannelException.class, () -> c.position(0));
         }
     }
 
@@ -302,7 +303,7 @@ public class SeekableInMemoryByteChannelTest {
     @Test
     public void throwsIOExceptionWhenPositionIsSetToANegativeValue() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
-            c.position(-1);
+            assertThrows(IOException.class, () -> c.position(-1));
         }
     }
 
@@ -396,7 +397,7 @@ public class SeekableInMemoryByteChannelTest {
     @Test
     public void throwsIllegalArgumentExceptionWhenTruncatingToANegativeSize() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
-            c.truncate(-1);
+            assertThrows(IllegalArgumentException.class, () -> c.truncate(-1));
         }
     }
 
