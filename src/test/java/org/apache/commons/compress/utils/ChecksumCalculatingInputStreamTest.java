@@ -26,6 +26,7 @@ import java.util.zip.CRC32;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 
 /**
  * Unit tests for class {@link ChecksumCalculatingInputStream org.apache.commons.compress.utils.ChecksumCalculatingInputStream}.
@@ -86,17 +87,17 @@ public class ChecksumCalculatingInputStreamTest {
 
     @Test
     public void testClassInstantiationWithParameterBeingNullThrowsNullPointerExceptionOne() {
-        final ChecksumCalculatingInputStream checksumCalculatingInputStream = new ChecksumCalculatingInputStream(null,null);
+        assertThrows(NullPointerException.class, () -> new ChecksumCalculatingInputStream(null, null));
     }
 
     @Test
     public void testClassInstantiationWithParameterBeingNullThrowsNullPointerExceptionTwo() {
-        final ChecksumCalculatingInputStream checksumCalculatingInputStream = new ChecksumCalculatingInputStream(null,new ByteArrayInputStream(new byte[1]));
+        assertThrows(NullPointerException.class, () -> new ChecksumCalculatingInputStream(null, new ByteArrayInputStream(new byte[1])));
     }
 
     @Test
     public void testClassInstantiationWithParameterBeingNullThrowsNullPointerExceptionThree() {
-        final ChecksumCalculatingInputStream checksumCalculatingInputStream = new ChecksumCalculatingInputStream(new CRC32(),null);
+        assertThrows(NullPointerException.class, () -> new ChecksumCalculatingInputStream(new CRC32(), null));
     }
 
 }
