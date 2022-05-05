@@ -19,6 +19,7 @@
 package org.apache.commons.compress.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -31,14 +32,14 @@ public class BitInputStreamTest {
     @Test
     public void shouldNotAllowReadingOfANegativeAmountOfBits() throws IOException {
         try (final BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
-            bis.readBits(-1);
+            assertThrows(IOException.class, () -> bis.readBits(-1));
         }
     }
 
     @Test
     public void shouldNotAllowReadingOfMoreThan63BitsAtATime() throws IOException {
         try (final BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
-            bis.readBits(64);
+            assertThrows(IOException.class, () -> bis.readBits(64));
         }
     }
 
