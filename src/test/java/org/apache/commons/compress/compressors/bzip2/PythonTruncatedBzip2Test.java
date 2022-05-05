@@ -19,6 +19,7 @@
 package org.apache.commons.compress.compressors.bzip2;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -72,11 +73,11 @@ public class PythonTruncatedBzip2Test {
 
     @Test
     public void testTruncatedData() throws IOException {
-        //with BZ2File(self.filename) as f:
-        //    self.assertRaises(EOFError, f.read)
+        // with BZ2File(self.filename) as f:
+        // self.assertRaises(EOFError, f.read)
         System.out.println("Attempt to read the whole thing in, should throw ...");
         final ByteBuffer buffer = ByteBuffer.allocate(8192);
-        bz2Channel.read(buffer);
+        assertThrows(IOException.class, () -> bz2Channel.read(buffer));
     }
 
     @Test
