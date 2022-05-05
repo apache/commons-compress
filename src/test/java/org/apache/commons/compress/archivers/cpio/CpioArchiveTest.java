@@ -31,34 +31,30 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class CpioArchiveTest {
 
     public static Stream<Arguments> factory() {
-        return Stream.of(
-                Arguments.of(CpioConstants.FORMAT_NEW),
-                Arguments.of(CpioConstants.FORMAT_NEW_CRC),
-                Arguments.of(CpioConstants.FORMAT_OLD_ASCII),
-                Arguments.of(CpioConstants.FORMAT_OLD_BINARY));
+        return Stream.of(Arguments.of(CpioConstants.FORMAT_NEW), Arguments.of(CpioConstants.FORMAT_NEW_CRC), Arguments.of(CpioConstants.FORMAT_OLD_ASCII),
+            Arguments.of(CpioConstants.FORMAT_OLD_BINARY));
     }
 
     @ParameterizedTest
     @MethodSource("factory")
     public void utf18RoundtripTest(final short format) throws Exception {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            try (CpioArchiveOutputStream os = new CpioArchiveOutputStream(baos, format, CpioConstants.BLOCK_SIZE,
-                "UTF-16LE")) {
+            try (CpioArchiveOutputStream os = new CpioArchiveOutputStream(baos, format, CpioConstants.BLOCK_SIZE, "UTF-16LE")) {
                 final CpioArchiveEntry entry = new CpioArchiveEntry(format, "T\u00e4st.txt", 4);
                 if (format == CpioConstants.FORMAT_NEW_CRC) {
                     entry.setChksum(10);
                 }
                 os.putArchiveEntry(entry);
-                os.write(new byte[] { 1, 2, 3, 4 });
+                os.write(new byte[] {1, 2, 3, 4});
                 os.closeArchiveEntry();
             }
             baos.close();
             try (ByteArrayInputStream bin = new ByteArrayInputStream(baos.toByteArray());
-                 CpioArchiveInputStream in = new CpioArchiveInputStream(bin, "UTF-16LE")) {
+                CpioArchiveInputStream in = new CpioArchiveInputStream(bin, "UTF-16LE")) {
                 final CpioArchiveEntry entry = (CpioArchiveEntry) in.getNextEntry();
                 Assert.assertNotNull(entry);
                 Assert.assertEquals("T\u00e4st.txt", entry.getName());
-                Assert.assertArrayEquals(new byte[] { 1, 2, 3, 4 }, IOUtils.toByteArray(in));
+                Assert.assertArrayEquals(new byte[] {1, 2, 3, 4}, IOUtils.toByteArray(in));
             }
         }
     }
