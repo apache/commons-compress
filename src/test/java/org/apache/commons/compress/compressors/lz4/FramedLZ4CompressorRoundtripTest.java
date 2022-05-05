@@ -69,8 +69,8 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
             params)) {
             IOUtils.copy(new ByteArrayInputStream(expected), los);
         }
-        System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-            + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
+        //    + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
         try (FramedLZ4CompressorInputStream sis = new FramedLZ4CompressorInputStream(
             new ByteArrayInputStream(bos.toByteArray()))) {
@@ -78,7 +78,7 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
             Assert.assertArrayEquals(expected, actual);
         }
 
-        System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
+        // System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
     // should yield decent compression
