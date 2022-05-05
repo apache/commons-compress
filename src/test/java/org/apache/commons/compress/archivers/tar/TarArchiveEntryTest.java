@@ -242,6 +242,7 @@ public class TarArchiveEntryTest implements TarConstants {
 
     @Test
     public void negativeOffsetInConstructorNotAllowed() throws IOException {
+        // @formatter:off
         byte[] entryContent = ("test1.xml\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
                 "\u0000" +
                 "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
@@ -262,7 +263,8 @@ public class TarArchiveEntryTest implements TarConstants {
                 "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
                 "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
                 "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000").getBytes(UTF_8);
-        assertThrows(IOException.class, () -> new TarArchiveEntry(entryContent, ZipEncodingHelper.getZipEncoding(CharsetNames.ISO_8859_1), false, -1));
+        // @formatter:on
+        assertThrows(IllegalArgumentException.class, () -> new TarArchiveEntry(entryContent, ZipEncodingHelper.getZipEncoding(CharsetNames.ISO_8859_1), false, -1));
     }
 
     @Test
@@ -289,7 +291,7 @@ public class TarArchiveEntryTest implements TarConstants {
         final TarArchiveEntry te = new TarArchiveEntry("test");
         te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
         te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(10, 5), new TarArchiveStructSparse(12, 1)));
-        te.getOrderedSparseHeaders();
+        assertThrows(IOException.class, () -> te.getOrderedSparseHeaders());
     }
 
     @Test
@@ -297,7 +299,7 @@ public class TarArchiveEntryTest implements TarConstants {
         final TarArchiveEntry te = new TarArchiveEntry("test");
         te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", String.valueOf(Long.MAX_VALUE)));
         te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(Long.MAX_VALUE, 2)));
-        te.getOrderedSparseHeaders();
+        assertThrows(IOException.class, () -> te.getOrderedSparseHeaders());
     }
 
     @Test
