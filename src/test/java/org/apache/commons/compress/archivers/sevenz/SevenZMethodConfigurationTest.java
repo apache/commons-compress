@@ -27,46 +27,37 @@ public class SevenZMethodConfigurationTest {
 
     @Test
     public void shouldAllowNullOptions() {
-        Assert.assertNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, null)
-                          .getOptions());
+        Assert.assertNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, null).getOptions());
     }
 
     @Test
     public void shouldAllowLZMA2OptionsForLZMA() {
-        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA,
-                                                           new LZMA2Options())
-                             .getOptions());
+        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA, new LZMA2Options()).getOptions());
     }
 
     @Test
     public void shouldAllowNumberForLZMA() {
-        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA, 42)
-                             .getOptions());
+        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA, 42).getOptions());
     }
 
     @Test
     public void shouldAllowLZMA2OptionsForLZMA2() {
-        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2,
-                                                           new LZMA2Options())
-                             .getOptions());
+        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, new LZMA2Options()).getOptions());
     }
 
     @Test
     public void shouldAllowNumberForLZMA2() {
-        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 42)
-                             .getOptions());
+        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 42).getOptions());
     }
 
     @Test
     public void shouldAllowNumberForBzip2() {
-        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.BZIP2, 42)
-                             .getOptions());
+        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.BZIP2, 42).getOptions());
     }
 
     @Test
     public void shouldAllowNumberForDeflate() {
-        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.DEFLATE, 42)
-                             .getOptions());
+        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.DEFLATE, 42).getOptions());
     }
 
     @Test
