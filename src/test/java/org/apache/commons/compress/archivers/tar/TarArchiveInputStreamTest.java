@@ -325,30 +325,29 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
             // -----------------------
             final String fileName = "/" + dirDirectory + "/" + subDir;
             final File tarF = new File(rootPath + "/tar" + i + ".tar");
-            final OutputStream dest = Files.newOutputStream(tarF.toPath());
-            final TarArchiveOutputStream out = new TarArchiveOutputStream(new BufferedOutputStream(dest));
-            out.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR);
-            out.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
+            try (final OutputStream dest = Files.newOutputStream(tarF.toPath())) {
+                final TarArchiveOutputStream out = new TarArchiveOutputStream(new BufferedOutputStream(dest));
+                out.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR);
+                out.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
 
-            final File file = new File(rootPath, fileName);
-            final TarArchiveEntry entry = new TarArchiveEntry(file);
-            entry.setName(fileName);
-            out.putArchiveEntry(entry);
-            out.closeArchiveEntry();
-            out.flush();
-            out.close();
+                final File file = new File(rootPath, fileName);
+                final TarArchiveEntry entry = new TarArchiveEntry(file);
+                entry.setName(fileName);
+                out.putArchiveEntry(entry);
+                out.closeArchiveEntry();
+                out.flush();
+            }
 
             // -----------------------
             // untar these tars
             // -----------------------
-            final InputStream is = Files.newInputStream(tarF.toPath());
-            final TarArchiveInputStream debInputStream = (TarArchiveInputStream) ArchiveStreamFactory.DEFAULT
-                    .createArchiveInputStream("tar", is);
-            TarArchiveEntry outEntry;
-            while ((outEntry = (TarArchiveEntry) debInputStream.getNextEntry()) != null) {
-                assertTrue(outEntry.getName().endsWith("/"));
+            try (final InputStream is = Files.newInputStream(tarF.toPath());
+                final TarArchiveInputStream debInputStream = (TarArchiveInputStream) ArchiveStreamFactory.DEFAULT.createArchiveInputStream("tar", is)) {
+                TarArchiveEntry outEntry;
+                while ((outEntry = (TarArchiveEntry) debInputStream.getNextEntry()) != null) {
+                    assertTrue(outEntry.getName(), outEntry.getName().endsWith("/"));
+                }
             }
-            debInputStream.close();
         }
     }
 
