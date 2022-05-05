@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers;
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -90,16 +91,14 @@ public class ArchiveStreamFactoryTest {
 
     @Test
     public void cantRead7zFromStream() throws Exception {
-        ArchiveStreamFactory.DEFAULT
-            .createArchiveInputStream(ArchiveStreamFactory.SEVEN_Z,
-                                      new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
+        assertThrows(StreamingNotSupportedException.class,
+            () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(ArchiveStreamFactory.SEVEN_Z, new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)));
     }
 
     @Test
     public void cantWrite7zToStream() throws Exception {
-        ArchiveStreamFactory.DEFAULT
-            .createArchiveOutputStream(ArchiveStreamFactory.SEVEN_Z,
-                                       new ByteArrayOutputStream());
+        assertThrows(StreamingNotSupportedException.class,
+            () -> ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.SEVEN_Z, new ByteArrayOutputStream()));
     }
 
     /**
