@@ -18,6 +18,9 @@
  */
 package org.apache.commons.compress.archivers.examples;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertThrows;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +35,6 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.compress.archivers.StreamingNotSupportedException;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
 import org.apache.commons.compress.archivers.tar.TarFile;
@@ -43,8 +45,6 @@ import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
-
-import static java.nio.charset.StandardCharsets.*;
 
 public class ExpanderTest extends AbstractTestCase {
 
@@ -121,11 +121,9 @@ public class ExpanderTest extends AbstractTestCase {
 
     @Test
     public void fileCantEscapeDoubleDotPath() throws IOException, ArchiveException {
-        thrown.expect(IOException.class);
-        thrown.expectMessage("Expanding ../foo would create file outside of");
         setupZip("../foo");
         try (ZipFile f = new ZipFile(archive)) {
-            new Expander().expand(f, resultDir);
+            assertThrows(IOException.class, () -> new Expander().expand(f, resultDir));
         }
     }
 
@@ -138,11 +136,9 @@ public class ExpanderTest extends AbstractTestCase {
         Assume.assumeTrue(s.exists());
         s.deleteOnExit();
         try {
-            thrown.expect(IOException.class);
-            thrown.expectMessage("Expanding ../" + sibling + "/a would create file outside of");
             setupZip("../" + sibling + "/a");
             try (ZipFile f = new ZipFile(archive)) {
-                new Expander().expand(f, resultDir);
+                assertThrows(IOException.class, () -> new Expander().expand(f, resultDir));
             }
         } finally {
             tryHardToDelete(s);
