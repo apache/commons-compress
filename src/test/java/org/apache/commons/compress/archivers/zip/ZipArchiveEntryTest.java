@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -40,9 +41,6 @@ import org.junit.rules.ExpectedException;
  *
  */
 public class ZipArchiveEntryTest {
-
-    @Rule
-    public final ExpectedException thrown = ExpectedException.none();
 
     /**
      * test handling of extra fields
@@ -307,9 +305,7 @@ public class ZipArchiveEntryTest {
         throws Exception {
         try (ZipFile zf = new ZipFile(getFile("COMPRESS-479.zip"))) {
             final ZipArchiveEntry ze = zf.getEntry("%U20AC_for_Dollar.txt");
-            thrown.expect(ZipException.class);
-            thrown.expectMessage("Unsupported version [116] for UniCode path extra data.");
-            ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.STRICT_FOR_KNOW_EXTRA_FIELDS);
+            assertThrows(ZipException.class, () -> ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.STRICT_FOR_KNOW_EXTRA_FIELDS));
         }
     }
 
@@ -354,9 +350,7 @@ public class ZipArchiveEntryTest {
         final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
         final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
         ze.setExtraFields(extraFields);
-        thrown.expect(ZipException.class);
-        thrown.expectMessage("Bad extra field starting at");
-        ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.DRACONIC);
+        assertThrows(ZipException.class, () -> ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.DRACONIC));
     }
 
     private ZipExtraField[] parsingModeBehaviorTestData() {
