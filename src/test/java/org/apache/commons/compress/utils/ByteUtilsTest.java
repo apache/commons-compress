@@ -18,23 +18,25 @@
 
 package org.apache.commons.compress.utils;
 
+import static org.apache.commons.compress.utils.ByteUtils.fromLittleEndian;
+import static org.apache.commons.compress.utils.ByteUtils.toLittleEndian;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.apache.commons.compress.utils.ByteUtils.InputStreamByteSupplier;
+import org.apache.commons.compress.utils.ByteUtils.OutputStreamByteConsumer;
 import org.junit.jupiter.api.Test;
-
-import static org.apache.commons.compress.utils.ByteUtils.InputStreamByteSupplier;
-import static org.apache.commons.compress.utils.ByteUtils.OutputStreamByteConsumer;
-import static org.apache.commons.compress.utils.ByteUtils.fromLittleEndian;
-import static org.apache.commons.compress.utils.ByteUtils.toLittleEndian;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 
 public class ByteUtilsTest {
 
@@ -52,7 +54,7 @@ public class ByteUtilsTest {
 
     @Test
     public void fromLittleEndianFromArrayOneArgThrowsForLengthTooBig() {
-        fromLittleEndian(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+        assertThrows(IllegalArgumentException.class, () -> fromLittleEndian(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }));
     }
 
     @Test
@@ -69,7 +71,7 @@ public class ByteUtilsTest {
 
     @Test
     public void fromLittleEndianFromArrayThrowsForLengthTooBig() {
-        fromLittleEndian(ByteUtils.EMPTY_BYTE_ARRAY, 0, 9);
+        assertThrows(IllegalArgumentException.class, () -> fromLittleEndian(ByteUtils.EMPTY_BYTE_ARRAY, 0, 9));
     }
 
     @Test
@@ -86,13 +88,13 @@ public class ByteUtilsTest {
 
     @Test
     public void fromLittleEndianFromStreamThrowsForLengthTooBig() throws IOException {
-        fromLittleEndian(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 9);
+        assertThrows(IllegalArgumentException.class, () -> fromLittleEndian(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 9));
     }
 
     @Test
     public void fromLittleEndianFromStreamThrowsForPrematureEnd() throws IOException {
         final ByteArrayInputStream bin = new ByteArrayInputStream(new byte[] { 2, 3 });
-        fromLittleEndian(bin, 3);
+        assertThrows(IOException.class, () -> fromLittleEndian(bin, 3));
     }
 
     @Test
@@ -110,13 +112,13 @@ public class ByteUtilsTest {
 
     @Test
     public void fromLittleEndianFromSupplierThrowsForLengthTooBig() throws IOException {
-        fromLittleEndian(new InputStreamByteSupplier(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)), 9);
+        assertThrows(IllegalArgumentException.class, () -> fromLittleEndian(new InputStreamByteSupplier(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)), 9));
     }
 
     @Test
     public void fromLittleEndianFromSupplierThrowsForPrematureEnd() throws IOException {
         final ByteArrayInputStream bin = new ByteArrayInputStream(new byte[] { 2, 3 });
-        fromLittleEndian(new InputStreamByteSupplier(bin), 3);
+        assertThrows(IOException.class, () -> fromLittleEndian(new InputStreamByteSupplier(bin), 3));
     }
 
     @Test
@@ -134,13 +136,13 @@ public class ByteUtilsTest {
     @Test
     public void fromLittleEndianFromDataInputThrowsForLengthTooBig() throws IOException {
         final DataInput din = new DataInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
-        fromLittleEndian(din, 9);
+        assertThrows(IllegalArgumentException.class, () -> fromLittleEndian(din, 9));
     }
 
     @Test
     public void fromLittleEndianFromDataInputThrowsForPrematureEnd() throws IOException {
         final DataInput din = new DataInputStream(new ByteArrayInputStream(new byte[] { 2, 3 }));
-        fromLittleEndian(din, 3);
+        assertThrows(EOFException.class, () -> fromLittleEndian(din, 3));
     }
 
     @Test
