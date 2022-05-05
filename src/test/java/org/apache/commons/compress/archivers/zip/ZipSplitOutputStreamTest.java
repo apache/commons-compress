@@ -17,11 +17,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.AbstractTestCase;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
+import static org.junit.Assert.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,28 +25,27 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 
+import org.apache.commons.compress.AbstractTestCase;
+import org.junit.Assert;
+import org.junit.jupiter.api.Test;
+
 public class ZipSplitOutputStreamTest extends AbstractTestCase {
-    @Rule
-    public final ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void throwsExceptionIfSplitSizeIsTooSmall() throws IOException {
-        thrown.expect(IllegalArgumentException.class);
-        new ZipSplitOutputStream(File.createTempFile("temp", "zip"), (64 * 1024 - 1));
+        assertThrows(IllegalArgumentException.class, () -> new ZipSplitOutputStream(File.createTempFile("temp", "zip"), (64 * 1024 - 1)));
     }
 
     @Test
     public void throwsExceptionIfSplitSizeIsTooLarge() throws IOException {
-        thrown.expect(IllegalArgumentException.class);
-        new ZipSplitOutputStream(File.createTempFile("temp", "zip"), (4 * 1024 * 1024 * 1024L));
+        assertThrows(IllegalArgumentException.class, () -> new ZipSplitOutputStream(File.createTempFile("temp", "zip"), (4 * 1024 * 1024 * 1024L)));
     }
 
     @Test
     public void throwsIfUnsplittableSizeLargerThanSplitSize() throws IOException {
-        thrown.expect(IllegalArgumentException.class);
         final long splitSize = 100 * 1024;
         final ZipSplitOutputStream output = new ZipSplitOutputStream(File.createTempFile("temp", "zip"), splitSize);
-        output.prepareToWriteUnsplittableContent(splitSize + 1);
+        assertThrows(IllegalArgumentException.class, () -> output.prepareToWriteUnsplittableContent(splitSize + 1));
     }
 
     @Test
