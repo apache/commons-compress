@@ -100,8 +100,8 @@ public final class FramedSnappyTestCase
             sos.write(b[0]);
             sos.write(b, 1, b.length - 1); // must be split into multiple compressed chunks
         }
-        System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-            + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
+        //    + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         try (InputStream is = Files.newInputStream(input.toPath());
              CompressorInputStream sis = new CompressorStreamFactory()
                  .createCompressorInputStream("snappy-framed", Files.newInputStream(outputSz.toPath()))) {
@@ -120,8 +120,8 @@ public final class FramedSnappyTestCase
                  .createCompressorOutputStream("snappy-framed", os)) {
             IOUtils.copy(is, sos);
         }
-        System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-            + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
+        //    + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         try (InputStream is = Files.newInputStream(input.toPath());
              CompressorInputStream sis = new CompressorStreamFactory()
                  .createCompressorInputStream("snappy-framed", Files.newInputStream(outputSz.toPath()))) {
