@@ -21,9 +21,10 @@ package org.apache.commons.compress.archivers.ar;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -123,7 +124,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
     public void cantReadWithoutOpeningAnEntry() throws Exception {
         try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            archive.read();
+            assertThrows(IllegalStateException.class, () -> archive.read());
         }
     }
 
@@ -132,7 +133,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
         try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             archive.close();
-            archive.read();
+            assertThrows(IllegalStateException.class, () -> archive.read());
         }
     }
 }
