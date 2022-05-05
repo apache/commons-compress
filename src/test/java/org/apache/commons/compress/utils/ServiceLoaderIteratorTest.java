@@ -18,11 +18,12 @@
  */
 package org.apache.commons.compress.utils;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 
 import java.util.NoSuchElementException;
 
-import static org.junit.Assert.assertFalse;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for class {@link ServiceLoaderIterator org.apache.commons.compress.utils.ServiceLoaderIterator}.
@@ -36,7 +37,7 @@ public class ServiceLoaderIteratorTest {
     public void testNextThrowsNoSuchElementException() {
         final Class<String> clasz = String.class;
         final ServiceLoaderIterator<String> serviceLoaderIterator = new ServiceLoaderIterator<>(clasz);
-        serviceLoaderIterator.next();
+        assertThrows(NoSuchElementException.class, () -> serviceLoaderIterator.next());
     }
 
     @Test
@@ -51,7 +52,7 @@ public class ServiceLoaderIteratorTest {
     public void testRemoveThrowsUnsupportedOperationException() {
         final Class<Integer> clasz = Integer.class;
         final ServiceLoaderIterator<Integer> serviceLoaderIterator = new ServiceLoaderIterator<>(clasz);
-        serviceLoaderIterator.remove();
+        assertThrows(UnsupportedOperationException.class, () -> serviceLoaderIterator.remove());
     }
 
 }
