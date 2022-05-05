@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.zip;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
@@ -43,12 +44,14 @@ public class ZipUtilTest {
         cal.setTime(time);
         final int year = cal.get(Calendar.YEAR);
         final int month = cal.get(Calendar.MONTH) + 1;
-        final long value =  ((year - 1980) << 25)
-            |         (month << 21)
-            |         (cal.get(Calendar.DAY_OF_MONTH) << 16)
-            |         (cal.get(Calendar.HOUR_OF_DAY) << 11)
-            |         (cal.get(Calendar.MINUTE) << 5)
-            |         (cal.get(Calendar.SECOND) >> 1);
+        // @formatter:off
+        final long value = ((year - 1980) << 25)
+            | (month << 21)
+            | (cal.get(Calendar.DAY_OF_MONTH) << 16)
+            | (cal.get(Calendar.HOUR_OF_DAY) << 11)
+            | (cal.get(Calendar.MINUTE) << 5)
+            | (cal.get(Calendar.SECOND) >> 1);
+        // @formatter:on
 
         final byte[] result = new byte[4];
         result[0] = (byte) ((value & 0xFF));
@@ -252,13 +255,13 @@ public class ZipUtilTest {
     public void testUnsupportedMethod() throws Exception {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
         ze.setMethod(ZipMethod.EXPANDING_LEVEL_1.getCode());
-        ZipUtil.checkRequestedFeatures(ze);
+        assertThrows(UnsupportedZipFeatureException.class, () -> ZipUtil.checkRequestedFeatures(ze));
     }
 
     @Test
     public void testUnknownMethod() throws Exception {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
         ze.setMethod(100);
-        ZipUtil.checkRequestedFeatures(ze);
+        assertThrows(UnsupportedZipFeatureException.class, () -> ZipUtil.checkRequestedFeatures(ze));
     }
 }
