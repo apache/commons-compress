@@ -18,12 +18,13 @@
  */
 package org.apache.commons.compress.archivers;
 
-import static java.nio.charset.StandardCharsets.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -690,12 +691,12 @@ public final class ZipTestCase extends AbstractTestCase {
 
     @Test
     public void buildSplitZipWithTooSmallSizeThrowsException() throws IOException {
-        new ZipArchiveOutputStream(File.createTempFile("temp", "zip"), 64 * 1024 - 1);
+        assertThrows(IllegalArgumentException.class, () -> new ZipArchiveOutputStream(File.createTempFile("temp", "zip"), 64 * 1024 - 1));
     }
 
     @Test
     public void buildSplitZipWithTooLargeSizeThrowsException() throws IOException {
-        new ZipArchiveOutputStream(File.createTempFile("temp", "zip"), 4294967295L + 1);
+        assertThrows(IllegalArgumentException.class, () -> new ZipArchiveOutputStream(File.createTempFile("temp", "zip"), 4294967295L + 1));
     }
 
     @Test
@@ -710,7 +711,13 @@ public final class ZipTestCase extends AbstractTestCase {
             final File sameNameFile = new File(dir, "splitZip.z01");
             sameNameFile.createNewFile();
 
-            addFilesToZip(zipArchiveOutputStream, directoryToZip);
+            assertThrows(IOException.class, () -> addFilesToZip(zipArchiveOutputStream, directoryToZip));
+        } catch (Exception e) {
+            // Ignore:
+            // java.io.IOException: This archive contains unclosed entries.
+            //   at org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.finish(ZipArchiveOutputStream.java:563)
+            //   at org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.close(ZipArchiveOutputStream.java:1119)
+            //   at org.apache.commons.compress.archivers.ZipTestCase.buildSplitZipWithSegmentAlreadyExistThrowsException(ZipTestCase.java:715)
         }
     }
 
@@ -857,8 +864,9 @@ public final class ZipTestCase extends AbstractTestCase {
             zipArchiveOutputStream.putArchiveEntry(zipArchiveEntry);
             try (final InputStream input = Files.newInputStream(fileToAdd.toPath())) {
                 IOUtils.copy(input, zipArchiveOutputStream);
+            } finally {
+                zipArchiveOutputStream.closeArchiveEntry();
             }
-            zipArchiveOutputStream.closeArchiveEntry();
         }
     }
 
