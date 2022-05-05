@@ -52,8 +52,8 @@ public class ZstdRoundtripTest extends AbstractTestCase {
              ZstdCompressorOutputStream zos = oc.wrap(os)) {
             IOUtils.copy(is, zos);
         }
-        System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-            + ", compressed bytes: " + output.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        //System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
+        //    + ", compressed bytes: " + output.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
         try (InputStream is = Files.newInputStream(input.toPath());
              ZstdCompressorInputStream zis = new ZstdCompressorInputStream(Files.newInputStream(output.toPath()))) {
@@ -61,7 +61,7 @@ public class ZstdRoundtripTest extends AbstractTestCase {
             final byte[] actual = IOUtils.toByteArray(zis);
             Assert.assertArrayEquals(expected, actual);
         }
-        System.err.println(output.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
+        // System.err.println(output.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
     @Test
