@@ -49,6 +49,19 @@ public class ChecksumVerifyingInputStream extends InputStream {
         this.bytesRemaining = size;
     }
 
+    @Override
+    public void close() throws IOException {
+        in.close();
+    }
+
+    /**
+     * @return bytes remaining to read
+     * @since 1.21
+     */
+    public long getBytesRemaining() {
+        return bytesRemaining;
+    }
+
     /**
      * Reads a single byte from the stream
      * @throws IOException if the underlying stream throws or the
@@ -108,18 +121,5 @@ public class ChecksumVerifyingInputStream extends InputStream {
     public long skip(final long n) throws IOException {
         // Can't really skip, we have to hash everything to verify the checksum
         return read() >= 0 ? 1 : 0;
-    }
-
-    @Override
-    public void close() throws IOException {
-        in.close();
-    }
-
-    /**
-     * @return bytes remaining to read
-     * @since 1.21
-     */
-    public long getBytesRemaining() {
-        return bytesRemaining;
     }
 }
