@@ -34,13 +34,9 @@ import java.util.Random;
 
 import org.apache.commons.compress.archivers.zip.ZipSplitReadOnlySeekableByteChannel;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 
 public class ZipSplitReadOnlySeekableByteChannelTest {
-    @Rule
-    public final ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void constructorThrowsOnNullArg() throws IOException {
