@@ -19,22 +19,27 @@
 
 package org.apache.commons.compress.compressors;
 
+import static org.junit.Assert.assertThrows;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import org.apache.commons.compress.compressors.TestCompressorStreamProvider.InvocationConfirmationException;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
 public class CompressorServiceLoaderTest {
 
     @Test
     public void testInputStream() throws CompressorException {
-        new CompressorStreamFactory().createCompressorInputStream("TestInput1", new ByteArrayInputStream(new byte[] {}));
+        assertThrows(InvocationConfirmationException.class,
+            () -> new CompressorStreamFactory().createCompressorInputStream("TestInput1", new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY)));
     }
 
     @Test
     public void testOutputStream() throws CompressorException {
-        new CompressorStreamFactory().createCompressorOutputStream("TestOutput1", new ByteArrayOutputStream());
+        assertThrows(InvocationConfirmationException.class,
+            () -> new CompressorStreamFactory().createCompressorOutputStream("TestOutput1", new ByteArrayOutputStream()));
     }
 
 }
