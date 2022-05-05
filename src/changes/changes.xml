@@ -122,6 +122,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-612" type="add" dev="ggregory" due-to="Andre Brait, Gary Gregory">
         Improve TAR support for file times #254.
       </action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">
+        Add SevenZArchiveEntry.setContentMethods(SevenZMethodConfiguration...).
+      </action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot">
         Bump mockito-core from 3.11.1 to 4.5.1 #209, #224, #231, #235, #243, #253, #286.

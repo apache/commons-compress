@@ -17,6 +17,7 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -468,6 +469,24 @@ public class SevenZArchiveEntry implements ArchiveEntry {
         } else {
             contentMethods = null;
         }
+    }
+
+    /**
+     * Sets the (compression) methods to use for entry's content - the
+     * default is LZMA2.
+     *
+     * <p>Currently only {@link SevenZMethod#COPY}, {@link
+     * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
+     * SevenZMethod#DEFLATE} are supported when writing archives.</p>
+     *
+     * <p>The methods will be consulted in iteration order to create
+     * the final output.</p>
+     *
+     * @param methods the methods to use for the content
+     * @since 1.22
+     */
+    public void setContentMethods(SevenZMethodConfiguration... methods) {
+        setContentMethods(Arrays.asList(methods));
     }
 
     /**
