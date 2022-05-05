@@ -52,6 +52,11 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertArrayEquals;
 
 public class ZipMemoryFileSystemTest {
+    
+    static void println(String x) {
+        // System.out.println(x);
+    }
+    
     private Path dir;
 
     @BeforeEach
@@ -63,7 +68,7 @@ public class ZipMemoryFileSystemTest {
     public void tearDown() throws IOException {
         try (Stream<Path> walk = Files.walk(dir)) {
             walk.sorted(Comparator.reverseOrder())
-                    .peek(path -> System.out.println("Deleting: " + path.toAbsolutePath()))
+                    .peek(path -> println("Deleting: " + path.toAbsolutePath()))
                     .forEach(path -> {
                         try {
                             Files.deleteIfExists(path);
@@ -114,7 +119,7 @@ public class ZipMemoryFileSystemTest {
                 try (Stream<Path> paths = Files.walk(dir, 1)) {
                     splitZips = paths
                             .filter(Files::isRegularFile)
-                            .peek(path -> System.out.println("Found: " + path.toAbsolutePath()))
+                            .peek(path -> println("Found: " + path.toAbsolutePath()))
                             .collect(Collectors.toList());
                 }
                 assertEquals(splitZips.size(), 2);
@@ -278,7 +283,7 @@ public class ZipMemoryFileSystemTest {
                 try (Stream<Path> paths = Files.walk(fileSystem.getPath("."), 1)) {
                     splitZips = paths
                             .filter(Files::isRegularFile)
-                            .peek(path -> System.out.println("Found: " + path.toAbsolutePath()))
+                            .peek(path -> println("Found: " + path.toAbsolutePath()))
                             .collect(Collectors.toList());
                 }
                 assertEquals(splitZips.size(), 2);
