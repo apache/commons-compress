@@ -33,6 +33,14 @@ public class ChecksumVerifyingInputStream extends InputStream {
     private final long expectedChecksum;
     private final Checksum checksum;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param checksum Checksum implementation.
+     * @param in the stream to wrap
+     * @param size the of the stream's content
+     * @param expectedChecksum the expected checksum
+     */
     public ChecksumVerifyingInputStream(final Checksum checksum, final InputStream in,
                                         final long size, final long expectedChecksum) {
         this.checksum = checksum;
@@ -99,10 +107,7 @@ public class ChecksumVerifyingInputStream extends InputStream {
     @Override
     public long skip(final long n) throws IOException {
         // Can't really skip, we have to hash everything to verify the checksum
-        if (read() >= 0) {
-            return 1;
-        }
-        return 0;
+        return read() >= 0 ? 1 : 0;
     }
 
     @Override
