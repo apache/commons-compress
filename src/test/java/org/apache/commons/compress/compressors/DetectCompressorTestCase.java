@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
+import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.MockEvilInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStream;
@@ -61,10 +62,12 @@ public final class DetectCompressorTestCase {
     }
 
     static class TestData {
+
         final String fileName; // The multiple file name
         final char[] entryNames; // expected entries ...
         final CompressorStreamFactory factory; // ... when using this factory
         final boolean concat; // expected value for decompressConcatenated
+
         TestData(final String name, final char[] names, final CompressorStreamFactory factory, final boolean concat) {
             this.fileName = name;
             this.entryNames = names;
@@ -170,12 +173,12 @@ public final class DetectCompressorTestCase {
 
     @Test
     public void testLZMAMemoryLimit() throws Exception {
-        getStreamFor("COMPRESS-382", 100);
+        assertThrows(MemoryLimitException.class, () -> getStreamFor("COMPRESS-382", 100));
     }
 
     @Test
     public void testZMemoryLimit() throws Exception {
-        getStreamFor("COMPRESS-386", 100);
+        assertThrows(MemoryLimitException.class, () -> getStreamFor("COMPRESS-386", 100));
     }
 
     @Test
@@ -187,14 +190,14 @@ public final class DetectCompressorTestCase {
         //This test is here instead of the xz unit test to make sure
         //that the parameter is properly passed via the CompressorStreamFactory
         try (InputStream compressorIs = getStreamFor("bla.tar.xz", 100)) {
-            compressorIs.read();
+            assertThrows(MemoryLimitException.class, () -> compressorIs.read());
         }
     }
 
     @Test
     public void testXZMemoryLimitOnSkip() throws Exception {
         try (InputStream compressorIs = getStreamFor("bla.tar.xz", 100)) {
-            compressorIs.skip(10);
+            assertThrows(MemoryLimitException.class, () -> compressorIs.skip(10));
         }
     }
 

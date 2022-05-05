@@ -54,9 +54,6 @@ import org.junit.rules.ExpectedException;
 
 public class ZipArchiveInputStreamTest {
 
-    @Rule
-    public final ExpectedException thrown = ExpectedException.none();
-
     /**
      * @see "https://issues.apache.org/jira/browse/COMPRESS-176"
      */
