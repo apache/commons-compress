@@ -23,9 +23,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -103,7 +103,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         t.setSize(0100000000000L);
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
-        tos.putArchiveEntry(t);
+        assertThrows(IllegalArgumentException.class, () -> tos.putArchiveEntry(t));
     }
 
     @Test
@@ -790,7 +790,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
                 + "01234567890123456789012345678901234567890123456789";
         final TarArchiveEntry t = new TarArchiveEntry(n);
         final TarArchiveOutputStream tos = new TarArchiveOutputStream(new ByteArrayOutputStream(), "ASCII");
-        tos.putArchiveEntry(t);
+        assertThrows(IllegalArgumentException.class, () -> tos.putArchiveEntry(t));
     }
 
     private static byte[] createTarArchiveContainingOneDirectory(final String fname,

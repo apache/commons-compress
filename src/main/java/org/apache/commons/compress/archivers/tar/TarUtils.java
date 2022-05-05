@@ -18,9 +18,16 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUMLEN;
+import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUM_OFFSET;
+import static org.apache.commons.compress.archivers.tar.TarConstants.SPARSE_NUMBYTES_LEN;
+import static org.apache.commons.compress.archivers.tar.TarConstants.SPARSE_OFFSET_LEN;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -33,12 +40,6 @@ import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
-
-import static java.nio.charset.StandardCharsets.*;
-import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUMLEN;
-import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUM_OFFSET;
-import static org.apache.commons.compress.archivers.tar.TarConstants.SPARSE_NUMBYTES_LEN;
-import static org.apache.commons.compress.archivers.tar.TarConstants.SPARSE_OFFSET_LEN;
 
 /**
  * This class provides static utility methods to work with byte streams.
@@ -854,7 +855,7 @@ public class TarUtils {
         try {
             return parseFromPAX01SparseHeaders(sparseMap);
         } catch (IOException ex) {
-            throw new RuntimeException(ex.getMessage(), ex);
+            throw new UncheckedIOException(ex.getMessage(), ex);
         }
     }
 
