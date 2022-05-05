@@ -17,6 +17,8 @@
 
 package org.apache.commons.compress.utils;
 
+import static org.junit.Assert.assertThrows;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
@@ -85,17 +87,18 @@ public class IOUtilsTest {
         for (byte i = 0; i < 20; i++) {
             source[i] = i;
         }
-        readFully(source, b);
+        assertThrows(EOFException.class, () -> readFully(source, b));
     }
 
     @Test
     public void copyThrowsOnZeroBufferSize() throws IOException {
-        IOUtils.copy(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), new ByteArrayOutputStream(), 0);
+        assertThrows(IllegalArgumentException.class, () -> IOUtils.copy(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), new ByteArrayOutputStream(), 0));
     }
 
     @Test
     public void copyRangeThrowsOnZeroBufferSize() throws IOException {
-        IOUtils.copyRange(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 5, new ByteArrayOutputStream(), 0);
+        assertThrows(IllegalArgumentException.class,
+            () -> IOUtils.copyRange(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 5, new ByteArrayOutputStream(), 0));
     }
 
     @Test
