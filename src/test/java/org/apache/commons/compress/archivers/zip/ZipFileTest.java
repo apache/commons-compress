@@ -18,7 +18,7 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static java.nio.charset.StandardCharsets.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -26,6 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
@@ -53,8 +54,8 @@ import java.util.zip.ZipEntry;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 public class ZipFileTest {
@@ -585,7 +586,7 @@ public class ZipFileTest {
         try (ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(zipContent)) {
             final ZipArchiveEntry inflatedEntry = new ZipArchiveEntry("inflated.txt");
             inflatedEntry.setMethod(ZipEntry.STORED);
-            inflatedEntry.setAlignment(0x20000);
+            assertThrows(IllegalArgumentException.class, () -> inflatedEntry.setAlignment(0x20000));
         }
     }
 
@@ -594,8 +595,7 @@ public class ZipFileTest {
      */
     @Test
     public void testInvalidAlignment() {
-        final ZipArchiveEntry entry = new ZipArchiveEntry("dummy");
-        entry.setAlignment(3);
+        assertThrows(IllegalArgumentException.class, () -> new ZipArchiveEntry("dummy").setAlignment(3));
     }
 
     @Test
@@ -752,21 +752,21 @@ public class ZipFileTest {
 
     @Test
     public void testSetLevelTooSmallForZipArchiveOutputStream() {
-        final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
-        outputStream.setLevel(Deflater.DEFAULT_COMPRESSION - 1);
+        final ZipArchiveOutputStream fixture = new ZipArchiveOutputStream(new ByteArrayOutputStream());
+        assertThrows(IllegalArgumentException.class, () -> fixture.setLevel(Deflater.DEFAULT_COMPRESSION - 1));
     }
 
     @Test
     public void testSetLevelTooBigForZipArchiveOutputStream() {
-        final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
-        outputStream.setLevel(Deflater.BEST_COMPRESSION + 1);
+        final ZipArchiveOutputStream fixture = new ZipArchiveOutputStream(new ByteArrayOutputStream());
+        assertThrows(IllegalArgumentException.class, () -> fixture.setLevel(Deflater.BEST_COMPRESSION + 1));
     }
 
     @Test
     public void throwsExceptionWhenWritingPreamble() throws IOException {
         final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
         outputStream.putArchiveEntry(new ZipArchiveEntry());
-        outputStream.writePreamble(ByteUtils.EMPTY_BYTE_ARRAY);
+        assertThrows(IllegalStateException.class, () -> outputStream.writePreamble(ByteUtils.EMPTY_BYTE_ARRAY));
     }
 
     @Test
