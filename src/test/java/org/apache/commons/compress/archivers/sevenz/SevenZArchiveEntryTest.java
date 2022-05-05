@@ -17,26 +17,32 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import org.junit.Assert;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 
+import org.junit.jupiter.api.Test;
+
+/**
+ * Tests {@link SevenZArchiveEntry}.
+ */
 public class SevenZArchiveEntryTest {
 
     @Test
     public void shouldThrowIfNoLastModifiedDateIsSet() {
-        new SevenZArchiveEntry().getLastModifiedDate();
+        assertThrows(UnsupportedOperationException.class, () -> new SevenZArchiveEntry().getLastModifiedDate());
     }
 
     @Test
     public void shouldThrowIfNoCreationDateIsSet() {
-        new SevenZArchiveEntry().getCreationDate();
+        assertThrows(UnsupportedOperationException.class, () -> new SevenZArchiveEntry().getCreationDate());
     }
 
     @Test
     public void shouldThrowIfNoAccessDateIsSet() {
-        new SevenZArchiveEntry().getAccessDate();
+        assertThrows(UnsupportedOperationException.class, () -> new SevenZArchiveEntry().getAccessDate());
     }
 
     @Test
@@ -44,8 +50,8 @@ public class SevenZArchiveEntryTest {
         final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.COPY)));
-        Assert.assertNotEquals(z1, z2);
-        Assert.assertNotEquals(z2, z1);
+        assertNotEquals(z1, z2);
+        assertNotEquals(z2, z1);
     }
 
     @Test
@@ -55,8 +61,8 @@ public class SevenZArchiveEntryTest {
         z1.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.COPY)));
         z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER),
                                            new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
-        Assert.assertNotEquals(z1, z2);
-        Assert.assertNotEquals(z2, z1);
+        assertNotEquals(z1, z2);
+        assertNotEquals(z2, z1);
     }
 
     @Test
@@ -67,8 +73,8 @@ public class SevenZArchiveEntryTest {
                                            new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
         z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER),
                                            new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
-        Assert.assertEquals(z1, z2);
-        Assert.assertEquals(z2, z1);
+        assertEquals(z1, z2);
+        assertEquals(z2, z1);
     }
 
     @Test
@@ -79,8 +85,8 @@ public class SevenZArchiveEntryTest {
                                            new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER)));
         z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER),
                                            new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
-        Assert.assertNotEquals(z1, z2);
-        Assert.assertNotEquals(z2, z1);
+        assertNotEquals(z1, z2);
+        assertNotEquals(z2, z1);
     }
 
     @Test
@@ -91,10 +97,10 @@ public class SevenZArchiveEntryTest {
         z1.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 1)));
         z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 2)));
         z3.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 2)));
-        Assert.assertNotEquals(z1, z2);
-        Assert.assertNotEquals(z2, z1);
-        Assert.assertEquals(z3, z2);
-        Assert.assertEquals(z2, z3);
+        assertNotEquals(z1, z2);
+        assertNotEquals(z2, z1);
+        assertEquals(z3, z2);
+        assertEquals(z2, z3);
     }
 
 }
