@@ -28,50 +28,38 @@ public class CpioUtilTest {
 
     @Test
     public void oldBinMagic2ByteArrayNotSwapped() {
-        assertArrayEquals(new byte[] { (byte) 0xc7, 0x71 },
-                          CpioUtil.long2byteArray(CpioConstants.MAGIC_OLD_BINARY,
-                                                  2, false));
+        assertArrayEquals(new byte[] {(byte) 0xc7, 0x71}, CpioUtil.long2byteArray(CpioConstants.MAGIC_OLD_BINARY, 2, false));
     }
 
     @Test
     public void oldBinMagic2ByteArraySwapped() {
-        assertArrayEquals(new byte[] { 0x71, (byte) 0xc7,  },
-                          CpioUtil.long2byteArray(CpioConstants.MAGIC_OLD_BINARY,
-                                                  2, true));
+        assertArrayEquals(new byte[] {0x71, (byte) 0xc7,}, CpioUtil.long2byteArray(CpioConstants.MAGIC_OLD_BINARY, 2, true));
     }
 
     @Test
     public void oldBinMagicFromByteArrayNotSwapped() {
-        assertEquals(CpioConstants.MAGIC_OLD_BINARY,
-                     CpioUtil.byteArray2long(new byte[] { (byte) 0xc7, 0x71 },
-                                             false));
+        assertEquals(CpioConstants.MAGIC_OLD_BINARY, CpioUtil.byteArray2long(new byte[] {(byte) 0xc7, 0x71}, false));
     }
 
     @Test
     public void oldBinMagicFromByteArraySwapped() {
-        assertEquals(CpioConstants.MAGIC_OLD_BINARY,
-                     CpioUtil.byteArray2long(new byte[] { 0x71, (byte) 0xc7 },
-                                             true));
+        assertEquals(CpioConstants.MAGIC_OLD_BINARY, CpioUtil.byteArray2long(new byte[] {0x71, (byte) 0xc7}, true));
     }
-
 
     @Test
     public void testLong2byteArrayWithZeroThrowsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> CpioUtil.long2byteArray(0L, 0, false));
     }
 
-
     @Test
     public void testLong2byteArrayWithPositiveThrowsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> CpioUtil.long2byteArray(0L, 1021, false));
     }
-
 
     @Test
     public void testByteArray2longThrowsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> CpioUtil.byteArray2long(new byte[1], true));
 
     }
-
 
 }
