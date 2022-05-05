@@ -65,7 +65,7 @@ public class ChecksumVerifyingInputStream extends InputStream {
             checksum.update(ret);
             --bytesRemaining;
         }
-        if (bytesRemaining == 0 && expectedChecksum != checksum.getValue()) {
+        if (bytesRemaining <= 0 && expectedChecksum != checksum.getValue()) {
             throw new IOException("Checksum verification failed");
         }
         return ret;
