@@ -35,6 +35,7 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.StreamingNotSupportedException;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
 import org.apache.commons.compress.archivers.tar.TarFile;
@@ -47,9 +48,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 public class ExpanderTest extends AbstractTestCase {
-
-    @Rule
-    public final ExpectedException thrown = ExpectedException.none();
 
     private File archive;
 
@@ -71,7 +69,7 @@ public class ExpanderTest extends AbstractTestCase {
     public void sevenZInputStreamVersion() throws IOException, ArchiveException {
         setup7z();
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
-            new Expander().expand("7z", i, resultDir);
+            assertThrows(StreamingNotSupportedException.class, () -> new Expander().expand("7z", i, resultDir));
         }
     }
 
@@ -79,7 +77,7 @@ public class ExpanderTest extends AbstractTestCase {
     public void sevenZInputStreamVersionWithAutoDetection() throws IOException, ArchiveException {
         setup7z();
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
-            new Expander().expand(i, resultDir);
+            assertThrows(StreamingNotSupportedException.class, () -> new Expander().expand(i, resultDir));
         }
     }
 
@@ -114,9 +112,9 @@ public class ExpanderTest extends AbstractTestCase {
     public void fileCantEscapeViaAbsolutePath() throws IOException, ArchiveException {
         setupZip("/tmp/foo");
         try (ZipFile f = new ZipFile(archive)) {
-            new Expander().expand(f, resultDir);
+            assertThrows(IOException.class, () -> new Expander().expand(f, resultDir));
         }
-        assertHelloWorld("tmp/foo", "1");
+        Assert.assertFalse(new File(resultDir, "tmp/foo").isFile());
     }
 
     @Test
