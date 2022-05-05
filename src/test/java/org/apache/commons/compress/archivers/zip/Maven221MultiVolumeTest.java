@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.zip;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -46,7 +47,8 @@ import org.junit.jupiter.api.Test;
  */
 public class Maven221MultiVolumeTest {
 
-    private static final String [] ENTRIES = new String [] {
+    private static final String[] ENTRIES = {
+        // @formatter:off
         "apache-maven-2.2.1/",
         "apache-maven-2.2.1/LICENSE.txt",
         "apache-maven-2.2.1/NOTICE.txt",
@@ -62,6 +64,7 @@ public class Maven221MultiVolumeTest {
         "apache-maven-2.2.1/conf/",
         "apache-maven-2.2.1/conf/settings.xml",
         "apache-maven-2.2.1/lib/"
+        // @formatter:on
     };
 
     private static final String LAST_ENTRY_NAME =
@@ -117,9 +120,6 @@ public class Maven221MultiVolumeTest {
 
     @Test
     public void testRead7ZipMultiVolumeArchiveForFile() throws IOException {
-        final File file = getFile("apache-maven-2.2.1.zip.001");
-        try (final ZipFile zf = new ZipFile(file)) {
-            // empty
-        }
+        assertThrows(IOException.class, () -> new ZipFile(getFile("apache-maven-2.2.1.zip.001")));
     }
 }
