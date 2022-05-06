@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.CharBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -41,6 +42,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.CRC32;
+import java.util.zip.CheckedInputStream;
 
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.utils.BoundedInputStream;
@@ -469,8 +471,7 @@ public class SevenZFile implements Closeable {
         }
 
         if (headerLooksValid) {
-            final StartHeader startHeader = readStartHeader(startHeaderCrc);
-            return initializeArchive(startHeader, password, true);
+            return initializeArchive(readStartHeader(startHeaderCrc), password, true);
         }
         // No valid header found - probably first file of multipart archive was removed too early. Scan for end header.
         if (options.getTryToRecoverBrokenArchives()) {
@@ -527,17 +528,20 @@ public class SevenZFile implements Closeable {
         assertFitsIntoNonNegativeInt("nextHeaderSize", startHeader.nextHeaderSize);
         final int nextHeaderSizeInt = (int) startHeader.nextHeaderSize;
         channel.position(SIGNATURE_HEADER_SIZE + startHeader.nextHeaderOffset);
+        if (verifyCrc) {
+            final long position = channel.position();
+            CheckedInputStream cis = new CheckedInputStream(Channels.newInputStream(channel), new CRC32());
+            if (cis.skip(nextHeaderSizeInt) != nextHeaderSizeInt) {
+                throw new IOException("Problem computing NextHeader CRC-32");
+            }
+            if (startHeader.nextHeaderCrc != cis.getChecksum().getValue()) {
+                throw new IOException("NextHeader CRC-32 mismatch");
+            }
+            channel.position(position);
+        }
+        Archive archive = new Archive();
         ByteBuffer buf = ByteBuffer.allocate(nextHeaderSizeInt).order(ByteOrder.LITTLE_ENDIAN);
         readFully(buf);
-        if (verifyCrc) {
-            final CRC32 crc = new CRC32();
-            crc.update(buf.array());
-            if (startHeader.nextHeaderCrc != crc.getValue()) {
-                throw new IOException("NextHeader CRC mismatch");
-            }
-        }
-
-        Archive archive = new Archive();
         int nid = getUnsignedByte(buf);
         if (nid == NID.kEncodedHeader) {
             buf = readEncodedHeader(buf, archive, password);
