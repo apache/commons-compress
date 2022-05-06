@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 import org.apache.commons.compress.harmony.unpack200.SegmentUtils;
 
@@ -44,11 +45,8 @@ public class CPNameAndType extends ConstantPoolEntry {
      */
     public CPNameAndType(final CPUTF8 name, final CPUTF8 descriptor, final int globalIndex) {
         super(ConstantPoolEntry.CP_NameAndType, globalIndex);
-        this.name = name;
-        this.descriptor = descriptor;
-        if (name == null || descriptor == null) {
-            throw new NullPointerException("Null arguments are not allowed");
-        }
+        this.name = Objects.requireNonNull(name, "name");
+        this.descriptor = Objects.requireNonNull(descriptor, "descriptor");
     }
 
     @Override

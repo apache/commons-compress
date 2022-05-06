@@ -16,6 +16,8 @@
  */
 package org.apache.commons.compress.harmony.unpack200.bytecode.forms;
 
+import java.util.Objects;
+
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
@@ -40,9 +42,7 @@ public abstract class ReferenceForm extends ByteCodeForm {
         final SegmentConstantPool globalPool = operandManager.globalConstantPool();
         ClassFileEntry[] nested = null;
         nested = new ClassFileEntry[] {globalPool.getConstantPoolEntry(getPoolID(), offset)};
-        if (nested[0] == null) {
-            throw new NullPointerException("Null nested entries are not allowed");
-        }
+        Objects.requireNonNull(nested[0], "Null nested entries are not allowed");
         byteCode.setNested(nested);
         byteCode.setNestedPositions(new int[][] {{0, 2}});
     }

@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * UTF8 constant pool entry, used for storing long Strings.
@@ -35,10 +36,7 @@ public class CPUTF8 extends ConstantPoolEntry {
      */
     public CPUTF8(final String utf8, final int globalIndex) {
         super(ConstantPoolEntry.CP_UTF8, globalIndex);
-        this.utf8 = utf8;
-        if (utf8 == null) {
-            throw new NullPointerException("Null arguments are not allowed");
-        }
+        this.utf8 = Objects.requireNonNull(utf8, "utf8");
     }
 
     public CPUTF8(final String string) {

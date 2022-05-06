@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Constant pool entry for a class
@@ -39,10 +40,7 @@ public class CPClass extends ConstantPoolEntry {
      */
     public CPClass(final CPUTF8 name, final int globalIndex) {
         super(ConstantPoolEntry.CP_Class, globalIndex);
-        if (name == null) {
-            throw new NullPointerException("Null arguments are not allowed");
-        }
-        this.name = name.underlyingString();
+        this.name = Objects.requireNonNull(name, "name").underlyingString();
         this.utf8 = name;
     }
 

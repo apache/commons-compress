@@ -20,6 +20,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Superclass for member constant pool entries, such as fields or methods.
@@ -43,13 +44,10 @@ public class CPMember extends ClassFileEntry {
      * @throws NullPointerException if name or descriptor is null
      */
     public CPMember(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List attributes) {
-        this.name = name;
-        this.descriptor = descriptor;
+        this.name = Objects.requireNonNull(name, "name");
+        this.descriptor = Objects.requireNonNull(descriptor, "descriptor");
         this.flags = (short) flags;
         this.attributes = attributes == null ? Collections.EMPTY_LIST : attributes;
-        if (name == null || descriptor == null) {
-            throw new NullPointerException("Null arguments are not allowed");
-        }
     }
 
     @Override
