@@ -51,9 +51,9 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
              BlockLZ4CompressorOutputStream los = new BlockLZ4CompressorOutputStream(os, params)) {
             IOUtils.copy(is, los);
         }
-        System.err.println("Configuration: " + config);
-        System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-            + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        // System.err.println("Configuration: " + config);
+        // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
+        //    + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
         try (InputStream is = Files.newInputStream(input.toPath());
              BlockLZ4CompressorInputStream sis = new BlockLZ4CompressorInputStream(Files.newInputStream(outputSz.toPath()))) {
@@ -61,7 +61,7 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
             final byte[] actual = IOUtils.toByteArray(sis);
             Assert.assertArrayEquals(expected, actual);
         }
-        System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
+        // System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
     // should yield decent compression
