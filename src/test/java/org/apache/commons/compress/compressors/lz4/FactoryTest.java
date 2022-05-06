@@ -50,8 +50,8 @@ public class FactoryTest extends AbstractTestCase {
              OutputStream los = new CompressorStreamFactory().createCompressorOutputStream(format, os)) {
             IOUtils.copy(is, los);
         }
-        System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-            + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
+        //    + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
         try (InputStream is = Files.newInputStream(input.toPath());
              InputStream sis = new CompressorStreamFactory()
@@ -60,6 +60,6 @@ public class FactoryTest extends AbstractTestCase {
             final byte[] actual = IOUtils.toByteArray(sis);
             Assert.assertArrayEquals(expected, actual);
         }
-        System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
+        // System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 }
