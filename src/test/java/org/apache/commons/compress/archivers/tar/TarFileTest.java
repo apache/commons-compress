@@ -266,7 +266,7 @@ public class TarFileTest extends AbstractTestCase {
             File tarF = new File(rootPath + "/tar" + i + ".tar");
             try (OutputStream dest = Files.newOutputStream(tarF.toPath());
                  TarArchiveOutputStream out = new TarArchiveOutputStream(new BufferedOutputStream(dest))) {
-                out.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR);
+                out.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
                 out.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
 
                 File file = new File(rootPath, fileName);
