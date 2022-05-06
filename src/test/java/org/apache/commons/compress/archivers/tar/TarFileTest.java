@@ -81,10 +81,9 @@ public class TarFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void testCompress197() {
+    public void testCompress197() throws IOException {
         try (final TarFile tarFile = new TarFile(getPath("COMPRESS-197.tar"))) {
-        } catch (final IOException e) {
-            fail("COMPRESS-197: " + e.getMessage());
+            // noop
         }
     }
 
