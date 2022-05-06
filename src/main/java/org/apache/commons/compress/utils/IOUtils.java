@@ -215,15 +215,15 @@ public final class IOUtils {
      * is detected, or an exception is thrown.</p>
      *
      * @param channel the channel to read from
-     * @param b the buffer into which the data is read.
+     * @param byteBuffer the buffer into which the data is read.
      * @throws IOException - if an I/O error occurs.
      * @throws EOFException - if the channel reaches the end before reading all the bytes.
      */
-    public static void readFully(final ReadableByteChannel channel, final ByteBuffer b) throws IOException {
-        final int expectedLength = b.remaining();
+    public static void readFully(final ReadableByteChannel channel, final ByteBuffer byteBuffer) throws IOException {
+        final int expectedLength = byteBuffer.remaining();
         int read = 0;
         while (read < expectedLength) {
-            final int readNow = channel.read(b);
+            final int readNow = channel.read(byteBuffer);
             if (readNow <= 0) {
                 break;
             }
