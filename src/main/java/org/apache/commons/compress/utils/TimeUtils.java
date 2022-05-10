@@ -105,6 +105,17 @@ public final class TimeUtils {
     }
 
     /**
+     * Truncates a FileTime to 100-nanosecond precision.
+     *
+     * @param fileTime the FileTime to be truncated
+     * @return the truncated FileTime
+     */
+    public static FileTime truncateToHundredNanos(final FileTime fileTime) {
+        final Instant instant = fileTime.toInstant();
+        return FileTime.from(Instant.ofEpochSecond(instant.getEpochSecond(), (instant.getNano() / 100) * 100));
+    }
+
+    /**
      * Converts {@link Date} to a {@link FileTime}.
      * If the provided Date is {@code null}, the returned FileTime is also {@code null}.
      *

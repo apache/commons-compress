@@ -23,6 +23,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.apache.commons.compress.utils.TimeUtils;
+import org.junit.jupiter.api.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +43,6 @@ import java.util.Iterator;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
-import org.junit.jupiter.api.Test;
 import org.tukaani.xz.LZMA2Options;
 
 public class SevenZOutputFileTest extends AbstractTestCase {
@@ -247,9 +249,12 @@ public class SevenZOutputFileTest extends AbstractTestCase {
 
     private FileTime getHundredNanosFileTime() {
         final Instant now = Instant.now();
-        // By default, Java's instant has a precision of milliseconds.
+        // In some platforms, Java's Instant has a precision of milliseconds.
         // Add some nanos at the end to test 100ns intervals.
-        return FileTime.from(Instant.ofEpochSecond(now.getEpochSecond(), now.getNano() + 999900));
+        final FileTime fileTime = FileTime.from(Instant.ofEpochSecond(now.getEpochSecond(), now.getNano() + 999900));
+        // However, in some platforms, Java's Instant has a precision of nanoseconds.
+        // Truncate the resulting FileTime to 100ns intervals.
+        return TimeUtils.truncateToHundredNanos(fileTime);
     }
 
     @Test

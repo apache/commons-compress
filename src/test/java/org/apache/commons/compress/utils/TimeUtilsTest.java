@@ -126,4 +126,49 @@ public class TimeUtilsTest {
         final Date parsedDate = Date.from(parsedInstant);
         assertEquals(parsedDate, fileTimeToDate(parsedFileTime));
     }
+
+    public static Stream<Arguments> truncateFileTimeProvider() {
+        return Stream.of(
+                Arguments.of(
+                        "2022-05-10T18:25:33.123456789Z",
+                        "2022-05-10T18:25:33.1234567Z"
+                ),
+                Arguments.of(
+                        "1970-01-01T00:00:00.000000001Z",
+                        "1970-01-01T00:00:00.0000000Z"
+                ),
+                Arguments.of(
+                        "1970-01-01T00:00:00.000000010Z",
+                        "1970-01-01T00:00:00.0000000Z"
+                ),
+                Arguments.of(
+                        "1970-01-01T00:00:00.000000199Z",
+                        "1970-01-01T00:00:00.0000001Z"
+                ),
+                Arguments.of(
+                        "1969-12-31T23:59:59.999999999Z",
+                        "1969-12-31T23:59:59.9999999Z"
+                ),
+                Arguments.of(
+                        "1969-12-31T23:59:59.000000001Z",
+                        "1969-12-31T23:59:59.0000000Z"
+                ),
+                Arguments.of(
+                        "1969-12-31T23:59:59.000000010Z",
+                        "1969-12-31T23:59:59.0000000Z"
+                ),
+                Arguments.of(
+                        "1969-12-31T23:59:59.000000199Z",
+                        "1969-12-31T23:59:59.0000001Z"
+                )
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("truncateFileTimeProvider")
+    public void shouldTruncateFileTimeToHundredNanos(final String original, final String truncated) {
+        final FileTime originalTime = FileTime.from(Instant.parse(original));
+        final FileTime truncatedTime = FileTime.from(Instant.parse(truncated));
+        assertEquals(truncatedTime, TimeUtils.truncateToHundredNanos(originalTime));
+    }
 }
