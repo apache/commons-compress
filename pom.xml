@@ -188,7 +188,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.framework</artifactId>
-      <version>7.0.3</version>
+      <version>7.0.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
