@@ -24,10 +24,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Locale;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -46,8 +45,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.compress.utils.Lists;
-import org.apache.commons.compress.utils.ServiceLoaderIterator;
 import org.apache.commons.compress.utils.Sets;
 
 /**
@@ -204,10 +201,6 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     private SortedMap<String, ArchiveStreamProvider> archiveOutputStreamProviders;
 
-    private static ArrayList<ArchiveStreamProvider> findArchiveStreamProviders() {
-        return Lists.newArrayList(serviceLoaderIterator());
-    }
-
     static void putAll(final Set<String> names, final ArchiveStreamProvider provider,
             final TreeMap<String, ArchiveStreamProvider> map) {
         for (final String name : names) {
@@ -215,10 +208,10 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         }
     }
 
-    private static Iterator<ArchiveStreamProvider> serviceLoaderIterator() {
-        return new ServiceLoaderIterator<>(ArchiveStreamProvider.class);
+    private static Iterable<ArchiveStreamProvider> archiveStreamProviderIterable() {
+        return ServiceLoader.load(ArchiveStreamProvider.class, ClassLoader.getSystemClassLoader());
     }
-
+    
     private static String toKey(final String name) {
         return name.toUpperCase(Locale.ROOT);
     }
@@ -254,7 +247,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         return AccessController.doPrivileged((PrivilegedAction<SortedMap<String, ArchiveStreamProvider>>) () -> {
             final TreeMap<String, ArchiveStreamProvider> map = new TreeMap<>();
             putAll(DEFAULT.getInputStreamArchiveNames(), DEFAULT, map);
-            for (final ArchiveStreamProvider provider : findArchiveStreamProviders()) {
+            for (final ArchiveStreamProvider provider : archiveStreamProviderIterable()) {
                 putAll(provider.getInputStreamArchiveNames(), provider, map);
             }
             return map;
@@ -292,7 +285,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         return AccessController.doPrivileged((PrivilegedAction<SortedMap<String, ArchiveStreamProvider>>) () -> {
             final TreeMap<String, ArchiveStreamProvider> map = new TreeMap<>();
             putAll(DEFAULT.getOutputStreamArchiveNames(), DEFAULT, map);
-            for (final ArchiveStreamProvider provider : findArchiveStreamProviders()) {
+            for (final ArchiveStreamProvider provider : archiveStreamProviderIterable()) {
                 putAll(provider.getOutputStreamArchiveNames(), provider, map);
             }
             return map;

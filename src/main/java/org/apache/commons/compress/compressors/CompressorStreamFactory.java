@@ -23,10 +23,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Locale;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -60,8 +59,6 @@ import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStre
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorOutputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdUtils;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.compress.utils.Lists;
-import org.apache.commons.compress.utils.ServiceLoaderIterator;
 import org.apache.commons.compress.utils.Sets;
 
 /**
@@ -248,7 +245,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         return AccessController.doPrivileged((PrivilegedAction<SortedMap<String, CompressorStreamProvider>>) () -> {
             final TreeMap<String, CompressorStreamProvider> map = new TreeMap<>();
             putAll(SINGLETON.getInputStreamCompressorNames(), SINGLETON, map);
-            for (final CompressorStreamProvider provider : findCompressorStreamProviders()) {
+            for (final CompressorStreamProvider provider : archiveStreamProviderIterable()) {
                 putAll(provider.getInputStreamCompressorNames(), provider, map);
             }
             return map;
@@ -286,14 +283,11 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         return AccessController.doPrivileged((PrivilegedAction<SortedMap<String, CompressorStreamProvider>>) () -> {
             final TreeMap<String, CompressorStreamProvider> map = new TreeMap<>();
             putAll(SINGLETON.getOutputStreamCompressorNames(), SINGLETON, map);
-            for (final CompressorStreamProvider provider : findCompressorStreamProviders()) {
+            for (final CompressorStreamProvider provider : archiveStreamProviderIterable()) {
                 putAll(provider.getOutputStreamCompressorNames(), provider, map);
             }
             return map;
         });
-    }
-    private static ArrayList<CompressorStreamProvider> findCompressorStreamProviders() {
-        return Lists.newArrayList(serviceLoaderIterator());
     }
 
     public static String getBrotli() {
@@ -367,8 +361,8 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         }
     }
 
-    private static Iterator<CompressorStreamProvider> serviceLoaderIterator() {
-        return new ServiceLoaderIterator<>(CompressorStreamProvider.class);
+    private static Iterable<CompressorStreamProvider> archiveStreamProviderIterable() {
+        return ServiceLoader.load(CompressorStreamProvider.class, ClassLoader.getSystemClassLoader());
     }
 
     private static String toKey(final String name) {
