@@ -1960,7 +1960,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     public void setSize(final long size) {
         if (size < 0){
-            throw new IllegalArgumentException("Size is out of range: "+size);
+            throw new IllegalArgumentException("Size is out of range: " + size);
         }
         this.size = size;
     }
