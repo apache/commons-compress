@@ -188,10 +188,8 @@ public abstract class BandSet {
         int[] lo;
         if (hiCodec != null) {
             hi = decodeBandInt(name, in, hiCodec, sum);
-            lo = decodeBandInt(name, in, loCodec, sum);
-        } else {
-            lo = decodeBandInt(name, in, loCodec, sum);
         }
+        lo = decodeBandInt(name, in, loCodec, sum);
 
         int index = 0;
         for (int i = 0; i < result.length; i++) {
