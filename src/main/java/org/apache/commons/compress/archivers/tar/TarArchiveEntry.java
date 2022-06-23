@@ -903,7 +903,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     @Deprecated
     public int getGroupId() {
-        return (int) (groupId & 0xffffffff);
+        return (int) (groupId);
     }
 
     /**
@@ -1119,7 +1119,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     @Deprecated
     public int getUserId() {
-        return (int) (userId & 0xffffffff);
+        return (int) (userId);
     }
 
     /**
