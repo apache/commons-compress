@@ -184,8 +184,7 @@ public class CpBands extends BandSet {
         PackingUtils.log("Writing " + cp_Int.size() + " Integer entries...");
         final int[] cpInt = new int[cp_Int.size()];
         int i = 0;
-        for (final Iterator<CPInt> iterator = cp_Int.iterator(); iterator.hasNext();) {
-            final CPInt integer = iterator.next();
+        for (final CPInt integer : cp_Int) {
             cpInt[i] = integer.getInt();
             i++;
         }
@@ -198,8 +197,7 @@ public class CpBands extends BandSet {
         PackingUtils.log("Writing " + cp_Float.size() + " Float entries...");
         final int[] cpFloat = new int[cp_Float.size()];
         int i = 0;
-        for (final Iterator<CPFloat> iterator = cp_Float.iterator(); iterator.hasNext();) {
-            final CPFloat fl = iterator.next();
+        for (final CPFloat fl : cp_Float) {
             cpFloat[i] = Float.floatToIntBits(fl.getFloat());
             i++;
         }
@@ -213,8 +211,7 @@ public class CpBands extends BandSet {
         final int[] highBits = new int[cp_Long.size()];
         final int[] loBits = new int[cp_Long.size()];
         int i = 0;
-        for (final Iterator<CPLong> iterator = cp_Long.iterator(); iterator.hasNext();) {
-            final CPLong lng = iterator.next();
+        for (final CPLong lng : cp_Long) {
             final long l = lng.getLong();
             highBits[i] = (int) (l >> 32);
             loBits[i] = (int) l;
@@ -234,8 +231,7 @@ public class CpBands extends BandSet {
         final int[] highBits = new int[cp_Double.size()];
         final int[] loBits = new int[cp_Double.size()];
         int i = 0;
-        for (final Iterator<CPDouble> iterator = cp_Double.iterator(); iterator.hasNext();) {
-            final CPDouble dbl = iterator.next();
+        for (final CPDouble dbl : cp_Double) {
             final long l = Double.doubleToLongBits(dbl.getDouble());
             highBits[i] = (int) (l >> 32);
             loBits[i] = (int) l;
@@ -254,8 +250,7 @@ public class CpBands extends BandSet {
         PackingUtils.log("Writing " + cp_String.size() + " String entries...");
         final int[] cpString = new int[cp_String.size()];
         int i = 0;
-        for (final Iterator<CPString> iterator = cp_String.iterator(); iterator.hasNext();) {
-            final CPString cpStr = iterator.next();
+        for (final CPString cpStr : cp_String) {
             cpString[i] = cpStr.getIndexInCpUtf8();
             i++;
         }
@@ -268,8 +263,7 @@ public class CpBands extends BandSet {
         PackingUtils.log("Writing " + cp_Class.size() + " Class entries...");
         final int[] cpClass = new int[cp_Class.size()];
         int i = 0;
-        for (final Iterator<CPClass> iterator = cp_Class.iterator(); iterator.hasNext();) {
-            final CPClass cpCl = iterator.next();
+        for (final CPClass cpCl : cp_Class) {
             cpClass[i] = cpCl.getIndexInCpUtf8();
             i++;
         }
@@ -283,8 +277,7 @@ public class CpBands extends BandSet {
         final int[] cpSignatureForm = new int[cp_Signature.size()];
         final List classes = new ArrayList();
         int i = 0;
-        for (final Iterator<CPSignature> iterator = cp_Signature.iterator(); iterator.hasNext();) {
-            final CPSignature cpS = iterator.next();
+        for (final CPSignature cpS : cp_Signature) {
             classes.addAll(cpS.getClasses());
             cpSignatureForm[i] = cpS.getIndexInCpUtf8();
             i++;
@@ -309,8 +302,7 @@ public class CpBands extends BandSet {
         final int[] cpDescrName = new int[cp_Descr.size()];
         final int[] cpDescrType = new int[cp_Descr.size()];
         int i = 0;
-        for (final Iterator<CPNameAndType> iterator = cp_Descr.iterator(); iterator.hasNext();) {
-            final CPNameAndType nameAndType = iterator.next();
+        for (final CPNameAndType nameAndType : cp_Descr) {
             cpDescrName[i] = nameAndType.getNameIndex();
             cpDescrType[i] = nameAndType.getTypeIndex();
             i++;
@@ -331,8 +323,7 @@ public class CpBands extends BandSet {
         final int[] cp_methodOrField_class = new int[cp.size()];
         final int[] cp_methodOrField_desc = new int[cp.size()];
         int i = 0;
-        for (final Iterator<CPMethodOrField> iterator = cp.iterator(); iterator.hasNext();) {
-            final CPMethodOrField mOrF = iterator.next();
+        for (final CPMethodOrField mOrF : cp) {
             cp_methodOrField_class[i] = mOrF.getClassIndex();
             cp_methodOrField_desc[i] = mOrF.getDescIndex();
             i++;
@@ -371,8 +362,7 @@ public class CpBands extends BandSet {
     }
 
     private void removeSignaturesFromCpUTF8() {
-        for (final Iterator<CPSignature> iterator = cp_Signature.iterator(); iterator.hasNext();) {
-            final CPSignature signature = iterator.next();
+        for (final CPSignature signature : cp_Signature) {
             final String sigStr = signature.getUnderlyingString();
             final CPUTF8 utf8 = signature.getSignatureForm();
             final String form = utf8.getUnderlyingString();
@@ -387,15 +377,13 @@ public class CpBands extends BandSet {
             cp_Field, cp_Method, cp_Imethod};
         for (int i = 0; i < sets.length; i++) {
             int j = 0;
-            for (final Iterator<ConstantPoolEntry> iterator = sets[i].iterator(); iterator.hasNext();) {
-                final ConstantPoolEntry entry = iterator.next();
+            for (final ConstantPoolEntry entry : (Iterable<ConstantPoolEntry>) sets[i]) {
                 entry.setIndex(j);
                 j++;
             }
         }
         final Map classNameToIndex = new HashMap();
-        for (final Iterator<CPMethodOrField> iterator = cp_Field.iterator(); iterator.hasNext();) {
-            final CPMethodOrField mOrF = iterator.next();
+        for (final CPMethodOrField mOrF : cp_Field) {
             final CPClass className = mOrF.getClassName();
             final Integer index = (Integer) classNameToIndex.get(className);
             if (index == null) {
@@ -409,8 +397,7 @@ public class CpBands extends BandSet {
         }
         classNameToIndex.clear();
         final Map classNameToConstructorIndex = new HashMap();
-        for (final Iterator<CPMethodOrField> iterator = cp_Method.iterator(); iterator.hasNext();) {
-            final CPMethodOrField mOrF = iterator.next();
+        for (final CPMethodOrField mOrF : cp_Method) {
             final CPClass className = mOrF.getClassName();
             final Integer index = (Integer) classNameToIndex.get(className);
             if (index == null) {
