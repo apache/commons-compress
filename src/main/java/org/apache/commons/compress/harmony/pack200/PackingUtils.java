@@ -143,7 +143,7 @@ public class PackingUtils {
 
     public static List getPackingFileListFromJar(final JarInputStream jarInputStream, final boolean keepFileOrder)
         throws IOException {
-        final List packingFileList = new ArrayList();
+        final List<PackingFile> packingFileList = new ArrayList<>();
 
         // add manifest file
         final Manifest manifest = jarInputStream.getManifest();
@@ -170,7 +170,7 @@ public class PackingUtils {
 
     public static List getPackingFileListFromJar(final JarFile jarFile, final boolean keepFileOrder)
         throws IOException {
-        final List packingFileList = new ArrayList();
+        final List<PackingFile> packingFileList = new ArrayList<>();
         final Enumeration jarEntries = jarFile.entries();
         JarEntry jarEntry;
         byte[] bytes;
@@ -203,11 +203,10 @@ public class PackingUtils {
         return bytes;
     }
 
-    private static void reorderPackingFiles(final List packingFileList) {
-        final Iterator iterator = packingFileList.iterator();
-        PackingFile packingFile;
+    private static void reorderPackingFiles(final List<PackingFile> packingFileList) {
+        final Iterator<PackingFile> iterator = packingFileList.iterator();
         while (iterator.hasNext()) {
-            packingFile = (PackingFile) iterator.next();
+            final PackingFile packingFile = iterator.next();
             if (packingFile.isDirectory()) {
                 // remove directory entries
                 iterator.remove();
