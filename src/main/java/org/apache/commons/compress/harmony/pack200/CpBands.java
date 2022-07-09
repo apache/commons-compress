@@ -469,7 +469,7 @@ public class CpBands extends BandSet {
             final List cpClasses = new ArrayList();
             CPUTF8 signatureUTF8;
             if (signature.length() > 1 && signature.indexOf('L') != -1) {
-                final List classes = new ArrayList();
+                final List<String> classes = new ArrayList();
                 final char[] chars = signature.toCharArray();
                 final StringBuilder signatureString = new StringBuilder();
                 for (int i = 0; i < chars.length; i++) {
@@ -489,8 +489,7 @@ public class CpBands extends BandSet {
                     }
                 }
                 removeCpUtf8(signature);
-                for (final Iterator iterator2 = classes.iterator(); iterator2.hasNext();) {
-                    String className = (String) iterator2.next();
+                for (String className : classes) {
                     CPClass cpClass = null;
                     if (className != null) {
                         className = className.replace('.', '/');

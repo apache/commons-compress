@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -849,9 +848,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
         final List<TarArchiveEntry> entries = new ArrayList<>();
         try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(file)) {
-            final Iterator<Path> iterator = dirStream.iterator();
-            while (iterator.hasNext()) {
-                final Path p = iterator.next();
+            for (Path p : dirStream) {
                 entries.add(new TarArchiveEntry(p));
             }
         } catch (final IOException e) {
