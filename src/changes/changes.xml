@@ -174,7 +174,7 @@ The <action> type attribute can be add,update,fix,remove.
         Bump commons.japicmp.version from 0.15.3 to 0.15.7.
       </action>
       <action type="update" dev="ggregory" due-to="Dependabot">
-        Bump maven-bundle-plugin from 5.1.2 to 5.1.6 #234, #239, #290, #292.
+        Bump maven-bundle-plugin from 5.1.2 to 5.1.7 #234, #239, #290, #292, #301.
       </action>
       <action type="update" dev="ggregory" due-to="Dependabot">
         Bump org.apache.felix.framework from 7.0.1 to 7.0.5 #232, #295.
