@@ -379,8 +379,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
                     if (path != null) {
                         e.getValue().setName(path);
-                        e.getValue()
-                         .setSimpleName(names.get(e.getKey()).getName());
+                        e.getValue().setSimpleName(names.get(e.getKey()).getName());
                         queue.add(e.getValue());
                     }
                 }
