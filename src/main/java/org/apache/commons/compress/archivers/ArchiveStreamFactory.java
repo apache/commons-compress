@@ -201,11 +201,8 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     private SortedMap<String, ArchiveStreamProvider> archiveOutputStreamProviders;
 
-    static void putAll(final Set<String> names, final ArchiveStreamProvider provider,
-            final TreeMap<String, ArchiveStreamProvider> map) {
-        for (final String name : names) {
-            map.put(toKey(name), provider);
-        }
+    static void putAll(final Set<String> names, final ArchiveStreamProvider provider, final TreeMap<String, ArchiveStreamProvider> map) {
+        names.forEach(name -> map.put(toKey(name), provider));
     }
 
     private static Iterable<ArchiveStreamProvider> archiveStreamProviderIterable() {
@@ -247,9 +244,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         return AccessController.doPrivileged((PrivilegedAction<SortedMap<String, ArchiveStreamProvider>>) () -> {
             final TreeMap<String, ArchiveStreamProvider> map = new TreeMap<>();
             putAll(DEFAULT.getInputStreamArchiveNames(), DEFAULT, map);
-            for (final ArchiveStreamProvider provider : archiveStreamProviderIterable()) {
-                putAll(provider.getInputStreamArchiveNames(), provider, map);
-            }
+            archiveStreamProviderIterable().forEach(provider -> putAll(provider.getInputStreamArchiveNames(), provider, map));
             return map;
         });
     }
@@ -285,9 +280,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         return AccessController.doPrivileged((PrivilegedAction<SortedMap<String, ArchiveStreamProvider>>) () -> {
             final TreeMap<String, ArchiveStreamProvider> map = new TreeMap<>();
             putAll(DEFAULT.getOutputStreamArchiveNames(), DEFAULT, map);
-            for (final ArchiveStreamProvider provider : archiveStreamProviderIterable()) {
-                putAll(provider.getOutputStreamArchiveNames(), provider, map);
-            }
+            archiveStreamProviderIterable().forEach(provider -> putAll(provider.getOutputStreamArchiveNames(), provider, map));
             return map;
         });
     }

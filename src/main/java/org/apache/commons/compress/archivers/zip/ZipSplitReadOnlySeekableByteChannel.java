@@ -142,9 +142,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
         Objects.requireNonNull(lastSegmentChannel, "lastSegmentChannel");
 
         final List<SeekableByteChannel> channelsList = new ArrayList<>();
-        for (final SeekableByteChannel channel : channels) {
-            channelsList.add(channel);
-        }
+        channels.forEach(channelsList::add);
         channelsList.add(lastSegmentChannel);
 
         return forOrderedSeekableByteChannels(channelsList.toArray(new SeekableByteChannel[0]));
@@ -254,9 +252,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
         Objects.requireNonNull(lastSegmentFile, "lastSegmentFile");
 
         final List<Path> filesList = new ArrayList<>();
-        for (final File f : files) {
-            filesList.add(f.toPath());
-        }
+        files.forEach(f -> filesList.add(f.toPath()));
 
         return forPaths(lastSegmentFile.toPath(), filesList);
     }
@@ -277,9 +273,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
         Objects.requireNonNull(lastSegmentPath, "lastSegmentPath");
 
         final List<Path> filesList = new ArrayList<>();
-        for (final Path f : paths) {
-            filesList.add(f);
-        }
+        paths.forEach(filesList::add);
         filesList.add(lastSegmentPath);
 
         return forPaths(filesList.toArray(EMPTY_PATH_ARRAY));

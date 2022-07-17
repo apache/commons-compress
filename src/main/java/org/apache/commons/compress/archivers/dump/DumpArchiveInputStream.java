@@ -374,21 +374,19 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                 names.put(ino, d);
 
                 // check whether this allows us to fill anything in the pending list.
-                for (final Map.Entry<Integer, DumpArchiveEntry> e : pending.entrySet()) {
-                    final String path = getPath(e.getValue());
+                pending.forEach((k, v) -> {
+                    final String path = getPath(v);
 
                     if (path != null) {
-                        e.getValue().setName(path);
-                        e.getValue().setSimpleName(names.get(e.getKey()).getName());
-                        queue.add(e.getValue());
+                        v.setName(path);
+                        v.setSimpleName(names.get(k).getName());
+                        queue.add(v);
                     }
-                }
+                });
 
                 // remove anything that we found. (We can't do it earlier
                 // because of concurrent modification exceptions.)
-                for (final DumpArchiveEntry e : queue) {
-                    pending.remove(e.getIno());
-                }
+                queue.forEach(e -> pending.remove(e.getIno()));
             }
 
             final byte[] peekBytes = raw.peek();

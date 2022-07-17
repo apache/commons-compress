@@ -548,13 +548,7 @@ public class SevenZOutputFile implements Closeable {
     }
 
     private void writeFileEmptyStreams(final DataOutput header) throws IOException {
-        boolean hasEmptyStreams = false;
-        for (final SevenZArchiveEntry entry : files) {
-            if (!entry.hasStream()) {
-                hasEmptyStreams = true;
-                break;
-            }
-        }
+        final boolean hasEmptyStreams = files.stream().anyMatch(entry -> !entry.hasStream());
         if (hasEmptyStreams) {
             header.write(NID.kEmptyStream);
             final BitSet emptyStreams = new BitSet(files.size());

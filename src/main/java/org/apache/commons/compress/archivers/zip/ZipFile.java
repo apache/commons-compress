@@ -1400,13 +1400,13 @@ public class ZipFile implements Closeable {
     }
 
     private void fillNameMap() {
-        for (final ZipArchiveEntry ze : entries) {
+        entries.forEach(ze -> {
             // entries is filled in populateFromCentralDirectory and
             // never modified
             final String name = ze.getName();
             LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.computeIfAbsent(name, k -> new LinkedList<>());
             entriesOfThatName.addLast(ze);
-        }
+        });
     }
 
     private int[] setDataOffset(final ZipArchiveEntry ze) throws IOException {

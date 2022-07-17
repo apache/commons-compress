@@ -17,6 +17,8 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import static java.nio.charset.StandardCharsets.UTF_16LE;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
@@ -41,6 +43,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 
@@ -50,8 +54,6 @@ import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
-
-import static java.nio.charset.StandardCharsets.*;
 
 /**
  * Reads a 7z file, using SeekableByteChannel under
@@ -1509,13 +1511,7 @@ public class SevenZFile implements Closeable {
                 ++emptyFileCounter;
             }
         }
-        final List<SevenZArchiveEntry> entries = new ArrayList<>();
-        for (final SevenZArchiveEntry e : fileMap.values()) {
-            if (e != null) {
-                entries.add(e);
-            }
-        }
-        archive.files = entries.toArray(SevenZArchiveEntry.EMPTY_SEVEN_Z_ARCHIVE_ENTRY_ARRAY);
+        archive.files = fileMap.values().stream().filter(Objects::nonNull).toArray(SevenZArchiveEntry[]::new);
         calculateStreamMap(archive);
     }
 

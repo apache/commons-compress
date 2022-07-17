@@ -70,19 +70,11 @@ public abstract class ZipEncodingHelper {
      * @param charsetName If the given name is null, then check the platform's default encoding.
      */
     static boolean isUTF8(String charsetName) {
-        if (charsetName == null) {
-            // check platform's default encoding
-            charsetName = Charset.defaultCharset().name();
-        }
-        if (UTF_8.name().equalsIgnoreCase(charsetName)) {
+        final String actual = charsetName != null ? charsetName : Charset.defaultCharset().name();
+        if (UTF_8.name().equalsIgnoreCase(actual)) {
             return true;
         }
-        for (final String alias : UTF_8.aliases()) {
-            if (alias.equalsIgnoreCase(charsetName)) {
-                return true;
-            }
-        }
-        return false;
+        return UTF_8.aliases().stream().anyMatch(alias -> alias.equalsIgnoreCase(actual));
     }
 
     static ByteBuffer growBufferBy(final ByteBuffer buffer, final int increment) {

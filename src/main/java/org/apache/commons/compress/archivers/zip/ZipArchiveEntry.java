@@ -568,21 +568,11 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     }
 
     private ZipExtraField findUnparseable(final List<ZipExtraField> fs) {
-        for (final ZipExtraField f : fs) {
-            if (f instanceof UnparseableExtraFieldData) {
-                return f;
-            }
-        }
-        return null;
+        return fs.stream().filter(UnparseableExtraFieldData.class::isInstance).findFirst().orElse(null);
     }
 
     private ZipExtraField findMatching(final ZipShort headerId, final List<ZipExtraField> fs) {
-        for (final ZipExtraField f : fs) {
-            if (headerId.equals(f.getHeaderId())) {
-                return f;
-            }
-        }
-        return null;
+        return fs.stream().filter(f -> headerId.equals(f.getHeaderId())).findFirst().orElse(null);
     }
 
     /**

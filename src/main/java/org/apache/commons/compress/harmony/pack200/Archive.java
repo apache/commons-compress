@@ -213,30 +213,21 @@ public class Archive {
 
     static class SegmentUnit {
 
-        private final List classList;
+        private final List<Pack200ClassReader> classList;
 
-        private final List fileList;
+        private final List<PackingFile> fileList;
 
-        private int byteAmount = 0;
+        private int byteAmount;
 
-        private int packedByteAmount = 0;
+        private int packedByteAmount;
 
         public SegmentUnit(final List classes, final List files) {
             classList = classes;
             fileList = files;
-
+            byteAmount = 0;
             // Calculate the amount of bytes in classes and files before packing
-            Pack200ClassReader classReader;
-            for (Object element : classList) {
-                classReader = (Pack200ClassReader) element;
-                byteAmount += classReader.b.length;
-            }
-
-            PackingFile file;
-            for (Object element : fileList) {
-                file = (PackingFile) element;
-                byteAmount += file.contents.length;
-            }
+            byteAmount += classList.stream().mapToInt(element -> element.b.length).sum();
+            byteAmount += fileList.stream().mapToInt(element -> element.contents.length).sum();
         }
 
         public List getClassList() {

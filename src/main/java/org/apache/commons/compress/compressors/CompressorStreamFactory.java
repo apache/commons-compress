@@ -245,9 +245,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         return AccessController.doPrivileged((PrivilegedAction<SortedMap<String, CompressorStreamProvider>>) () -> {
             final TreeMap<String, CompressorStreamProvider> map = new TreeMap<>();
             putAll(SINGLETON.getInputStreamCompressorNames(), SINGLETON, map);
-            for (final CompressorStreamProvider provider : archiveStreamProviderIterable()) {
-                putAll(provider.getInputStreamCompressorNames(), provider, map);
-            }
+            archiveStreamProviderIterable().forEach(provider -> putAll(provider.getInputStreamCompressorNames(), provider, map));
             return map;
         });
     }
@@ -283,9 +281,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         return AccessController.doPrivileged((PrivilegedAction<SortedMap<String, CompressorStreamProvider>>) () -> {
             final TreeMap<String, CompressorStreamProvider> map = new TreeMap<>();
             putAll(SINGLETON.getOutputStreamCompressorNames(), SINGLETON, map);
-            for (final CompressorStreamProvider provider : archiveStreamProviderIterable()) {
-                putAll(provider.getOutputStreamCompressorNames(), provider, map);
-            }
+            archiveStreamProviderIterable().forEach(provider -> putAll(provider.getOutputStreamCompressorNames(), provider, map));
             return map;
         });
     }
@@ -354,11 +350,8 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         return ZSTANDARD;
     }
 
-    static void putAll(final Set<String> names, final CompressorStreamProvider provider,
-            final TreeMap<String, CompressorStreamProvider> map) {
-        for (final String name : names) {
-            map.put(toKey(name), provider);
-        }
+    static void putAll(final Set<String> names, final CompressorStreamProvider provider, final TreeMap<String, CompressorStreamProvider> map) {
+        names.forEach(name -> map.put(toKey(name), provider));
     }
 
     private static Iterable<CompressorStreamProvider> archiveStreamProviderIterable() {

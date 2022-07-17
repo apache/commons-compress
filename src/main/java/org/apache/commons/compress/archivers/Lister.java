@@ -126,9 +126,7 @@ public final class Lister {
     private static void listZipUsingTarFile(final File f) throws IOException {
         try (TarFile t = new TarFile(f)) {
             System.out.println("Created " + t);
-            for (TarArchiveEntry en : t.getEntries()) {
-                System.out.println(en.getName());
-            }
+            t.getEntries().forEach(en -> System.out.println(en.getName()));
         }
     }
 

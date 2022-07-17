@@ -111,12 +111,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
 
     @Override
     public boolean isOpen() {
-        for (final SeekableByteChannel ch : channels) {
-            if (!ch.isOpen()) {
-                return false;
-            }
-        }
-        return true;
+        return channels.stream().allMatch(SeekableByteChannel::isOpen);
     }
 
     /**

@@ -351,16 +351,14 @@ public abstract class BandSet {
     private void encodeWithPopulationCodec(final String name, final int[] band, final BHSDCodec defaultCodec,
         final BandData bandData, final BandAnalysisResults results) throws Pack200Exception {
         results.numCodecsTried += 3; // quite a bit more effort to try this codec
-        final Map distinctValues = bandData.distinctValues;
+        final Map<Integer, Integer> distinctValues = bandData.distinctValues;
 
         final List favoured = new ArrayList();
-        for (Object element : distinctValues.keySet()) {
-            final Integer value = (Integer) element;
-            final Integer count = (Integer) distinctValues.get(value);
-            if (count.intValue() > 2 || distinctValues.size() < 256) { // TODO: tweak
-                favoured.add(value);
+        distinctValues.forEach((k, v) -> {
+            if (v.intValue() > 2 || distinctValues.size() < 256) { // TODO: tweak
+                favoured.add(k);
             }
-        }
+        });
 
         // Sort the favoured list with the most commonly occurring first
         if (distinctValues.size() > 255) {

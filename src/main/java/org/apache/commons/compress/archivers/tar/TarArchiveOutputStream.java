@@ -494,13 +494,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
     private byte[] encodeExtendedPaxHeadersContents(final Map<String, String> headers) {
         final StringWriter w = new StringWriter();
-        for (final Map.Entry<String, String> h : headers.entrySet()) {
-            final String key = h.getKey();
-            final String value = h.getValue();
-            int len = key.length() + value.length()
+        headers.forEach((k, v) -> {
+            int len = k.length() + v.length()
                 + 3 /* blank, equals and newline */
                 + 2 /* guess 9 < actual length < 100 */;
-            String line = len + " " + key + "=" + value + "\n";
+            String line = len + " " + k + "=" + v + "\n";
             int actualLength = line.getBytes(UTF_8).length;
             while (len != actualLength) {
                 // Adjust for cases where length < 10 or > 100
@@ -509,11 +507,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 // Must be in loop as size may go from 99 to 100 in
                 // first pass so we'd need a second.
                 len = actualLength;
-                line = len + " " + key + "=" + value + "\n";
+                line = len + " " + k + "=" + v + "\n";
                 actualLength = line.getBytes(UTF_8).length;
             }
             w.write(line);
-        }
+        });
         return w.toString().getBytes(UTF_8);
     }
 
