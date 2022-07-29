@@ -188,6 +188,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="kinow" due-to="Gary Gregory">
         Bump commons.jacoco.version from 0.8.7 to 0.8.8.
       </action>
+      <action type="update" dev="kinow" due-to="Dependabot">
+        Bump junit.version from 5.8.2 to 5.9.0 #302.
+      </action>
     </release>
     <release version="1.21" date="2021-07-12"
              description="Release 1.21 (Java 8)
