@@ -73,7 +73,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/${project.artifactId}</commons.scmPubUrl>
     <japicmp.skip>false</japicmp.skip>
 
-    <junit.version>5.8.2</junit.version>
+    <junit.version>5.9.0</junit.version>
     <commons.surefire.version>3.0.0-M6</commons.surefire.version>
     <pax.exam.version>4.13.5</pax.exam.version>
     <slf4j.version>1.7.36</slf4j.version>
