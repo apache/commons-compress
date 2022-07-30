@@ -55,7 +55,11 @@ public class ZipFileIgnoringLocalFileHeaderTest {
         try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
             for (final Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements(); ) {
                 final ZipArchiveEntry entry = e.nextElement();
-                try (final OutputStream out = Files.newOutputStream(new File(dir, entry.getName()).toPath())) {
+                final File zipEntryFile = new File(dir, entry.getName());
+                if (!zipEntryFile.toPath().normalize().startsWith(dir.toPath().normalize())) {
+                    throw new RuntimeException("Bad zip entry");
+                }
+                try (final OutputStream out = Files.newOutputStream(zipEntryFile.toPath())) {
                     IOUtils.copy(zf.getInputStream(entry), out);
                 }
             }

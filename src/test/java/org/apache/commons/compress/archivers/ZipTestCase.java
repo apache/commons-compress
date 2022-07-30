@@ -99,7 +99,10 @@ public final class ZipTestCase extends AbstractTestCase {
                 fileInputStream)) {
                 ZipArchiveEntry entry = null;
                 while ((entry = (ZipArchiveEntry) archiveInputStream.getNextEntry()) != null) {
-                    final File outfile = new File(resultDir.getCanonicalPath() + "/result/" + entry.getName());
+                    final File outfile = new File(resultDir.getCanonicalPath() + "/result/", entry.getName());
+                    if (!outfile.toPath().normalize().startsWith(resultDir.getCanonicalPath() + "/result/")) {
+                        throw new RuntimeException("Bad zip entry");
+                    }
                     outfile.getParentFile().mkdirs();
                     try (OutputStream o = Files.newOutputStream(outfile.toPath())) {
                         IOUtils.copy(archiveInputStream, o);
@@ -168,7 +171,11 @@ public final class ZipTestCase extends AbstractTestCase {
         try (final InputStream is = Files.newInputStream(input.toPath());
                 final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", is)) {
             final ZipArchiveEntry entry = (ZipArchiveEntry) in.getNextEntry();
-            try (final OutputStream out = Files.newOutputStream(new File(dir, entry.getName()).toPath())) {
+            final File zipEntryFile = new File(dir, entry.getName());
+            if (!zipEntryFile.toPath().normalize().startsWith(dir.toPath().normalize())) {
+                throw new RuntimeException("Bad zip entry");
+            }
+            try (final OutputStream out = Files.newOutputStream(zipEntryFile.toPath())) {
                 IOUtils.copy(in, out);
             }
         }
@@ -828,7 +835,11 @@ public final class ZipTestCase extends AbstractTestCase {
                 if (!outputFile.getParentFile().exists()) {
                     outputFile.getParentFile().mkdirs();
                 }
-                outputFile = new File(dir, zipEntry.getName());
+                final File zipEntryFile = new File(dir, zipEntry.getName());
+                if (!zipEntryFile.toPath().normalize().startsWith(dir.toPath().normalize())) {
+                    throw new RuntimeException("Bad zip entry");
+                }
+                outputFile =zipEntryFile;
 
                 try (InputStream inputStream = zipFile.getInputStream(zipEntry);
                     OutputStream outputStream = Files.newOutputStream(outputFile.toPath())) {

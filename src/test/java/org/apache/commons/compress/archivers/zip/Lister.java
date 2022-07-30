@@ -91,6 +91,9 @@ public final class Lister {
     private static void extract(final String dir, final ZipArchiveEntry entry,
                                 final InputStream is) throws IOException {
         final File f = new File(dir, entry.getName());
+        if (!f.toPath().normalize().startsWith(dir)) {
+            throw new RuntimeException("Bad zip entry");
+        }
         if (!f.getParentFile().exists()) {
             f.getParentFile().mkdirs();
         }

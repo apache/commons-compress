@@ -61,6 +61,9 @@ public final class JarTestCase extends AbstractTestCase {
 
         ZipArchiveEntry entry = (ZipArchiveEntry)in.getNextEntry();
         File o = new File(dir, entry.getName());
+        if (!o.toPath().normalize().startsWith(dir.toPath().normalize())) {
+            throw new RuntimeException("Bad zip entry");
+        }
         o.getParentFile().mkdirs();
         OutputStream out = Files.newOutputStream(o.toPath());
         IOUtils.copy(in, out);
