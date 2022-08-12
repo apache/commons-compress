@@ -296,7 +296,7 @@ public class ZipFile implements Closeable {
                    final boolean ignoreLocalFileHeader)
         throws IOException {
         this(Files.newByteChannel(f.toPath(), EnumSet.of(StandardOpenOption.READ)),
-            f.getAbsolutePath(), encoding, useUnicodeExtraFields, true, ignoreLocalFileHeader);
+             f.getAbsolutePath(), encoding, useUnicodeExtraFields, true, ignoreLocalFileHeader);
     }
 
     /**
