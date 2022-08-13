@@ -25,20 +25,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
-import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.Inflater;
@@ -104,12 +103,14 @@ public class ZipFile implements Closeable {
      * List of entries in the order they appear inside the central
      * directory.
      */
-    private final List<ZipArchiveEntry> entries = new ArrayList<>();
+    private final List<ZipArchiveEntry> entries =
+        new LinkedList<>();
 
     /**
-     * Maps identical names of ZipArchiveEntries to a list of their actual entries.
+     * Maps String to list of ZipArchiveEntrys, name -> actual entries.
      */
-    private final Map<String, List<ZipArchiveEntry>> nameMap = new HashMap<>(HASH_SIZE);
+    private final Map<String, LinkedList<ZipArchiveEntry>> nameMap =
+        new HashMap<>(HASH_SIZE);
 
     /**
      * The encoding to use for file names and the file comment.
@@ -524,8 +525,8 @@ public class ZipFile implements Closeable {
      * {@code null} if not present.
      */
     public ZipArchiveEntry getEntry(final String name) {
-        final List<ZipArchiveEntry> entryList = nameMap.get(name);
-        return entryList == null ? null : entryList.get(0);
+        final LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
+        return entriesOfThatName != null ? entriesOfThatName.getFirst() : null;
     }
 
     /**
@@ -538,12 +539,9 @@ public class ZipFile implements Closeable {
      * @since 1.6
      */
     public Iterable<ZipArchiveEntry> getEntries(final String name) {
-        List<ZipArchiveEntry> entryList = nameMap.get(name);
-        if (entryList == null) {
-            return Collections.emptyList();
-        } else {
-            return entryList;
-        }
+        final List<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
+        return entriesOfThatName != null ? entriesOfThatName
+            : Collections.emptyList();
     }
 
     /**
@@ -556,19 +554,12 @@ public class ZipFile implements Closeable {
      * @since 1.6
      */
     public Iterable<ZipArchiveEntry> getEntriesInPhysicalOrder(final String name) {
-        List<ZipArchiveEntry> entryList = nameMap.get(name);
-        if (entryList != null) {
-            // In a vast majority of cases the ZIP will have a single unique element.
-            if (entryList.size() <= 1) {
-                return entryList;
-            } else {
-                ArrayList<ZipArchiveEntry> entriesOfThatName = new ArrayList<>(entryList);
-                entriesOfThatName.sort(offsetComparator);
-                return entriesOfThatName;
-            }
-        } else {
-            return Collections.emptyList();
+        ZipArchiveEntry[] entriesOfThatName = ZipArchiveEntry.EMPTY_ZIP_ARCHIVE_ENTRY_ARRAY;
+        if (nameMap.containsKey(name)) {
+            entriesOfThatName = nameMap.get(name).toArray(entriesOfThatName);
+            Arrays.sort(entriesOfThatName, offsetComparator);
         }
+        return Arrays.asList(entriesOfThatName);
     }
 
     /**
@@ -593,21 +584,18 @@ public class ZipFile implements Closeable {
      * @param ze The entry to get the stream for
      * @return The raw input stream containing (possibly) compressed data.
      * @since 1.11
+     * @throws IOException if there is a problem reading data offset (added in version 1.22).
      */
-    public InputStream getRawInputStream(final ZipArchiveEntry ze) {
+    public InputStream getRawInputStream(final ZipArchiveEntry ze) throws IOException {
         if (!(ze instanceof Entry)) {
             return null;
         }
 
-        try {
-            final long start = getDataOffset(ze);
-            if (start == EntryStreamOffsets.OFFSET_UNKNOWN) {
-                return null;
-            }
-            return createBoundedInputStream(start, ze.getCompressedSize());
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+        final long start = getDataOffset(ze);
+        if (start == EntryStreamOffsets.OFFSET_UNKNOWN) {
+            return null;
         }
+        return createBoundedInputStream(start, ze.getCompressedSize());
     }
 
 
@@ -1410,9 +1398,8 @@ public class ZipFile implements Closeable {
             // entries is filled in populateFromCentralDirectory and
             // never modified
             final String name = ze.getName();
-            // keep the initial list tiny, it's not a common case.
-            List<ZipArchiveEntry> entryList = nameMap.computeIfAbsent(name, (key) -> new ArrayList<>(2));
-            entryList.add(ze);
+            LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.computeIfAbsent(name, k -> new LinkedList<>());
+            entriesOfThatName.addLast(ze);
         });
     }
 
