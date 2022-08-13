@@ -581,6 +581,11 @@ public class ZipFile implements Closeable {
      * <p>This method does not relate to how/if we understand the payload in the
      * stream, since we really only intend to move it on to somewhere else.</p>
      *
+     * <p>Since version 1.22, this method will make an attempt to read the entry's data
+     * stream offset, even if the {@code ignoreLocalFileHeader} parameter was {@code true}
+     * in the constructor. An IOException can also be thrown from the body of the method
+     * if this lookup fails for some reason.</p>
+     *
      * @param ze The entry to get the stream for
      * @return The raw input stream containing (possibly) compressed data.
      * @since 1.11
