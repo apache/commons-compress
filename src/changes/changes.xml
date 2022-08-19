@@ -165,7 +165,7 @@ The <action> type attribute can be add,update,fix,remove.
         Bump asm from 9.2 to 9.3 ##279.
       </action>
       <action type="update" dev="ggregory" due-to="Dependabot">
-        Bump maven-javadoc-plugin from 3.3.0 to 3.4.0 #221, #249, #288.
+        Bump maven-javadoc-plugin from 3.3.0 to 3.4.1 #221, #249, #288, #308.
       </action>
       <action type="update" dev="ggregory" due-to="Gary Gregory, Dependabot">
         Bump maven-pmd-plugin from 3.14.0 to 3.17.0 #296.
