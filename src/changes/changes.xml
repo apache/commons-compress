@@ -191,6 +191,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="kinow" due-to="Dependabot">
         Bump junit.version from 5.8.2 to 5.9.0 #302.
       </action>
+      <action type="update" dev="kinow" due-to="Dependabot">
+        Bump mockito.version from 4.6.1 to 4.7.0 #307.
+      </action>
     </release>
     <release version="1.21" date="2021-07-12"
              description="Release 1.21 (Java 8)
