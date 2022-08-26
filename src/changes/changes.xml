@@ -168,7 +168,7 @@ The <action> type attribute can be add,update,fix,remove.
         Bump maven-javadoc-plugin from 3.3.0 to 3.4.1 #221, #249, #288, #308.
       </action>
       <action type="update" dev="ggregory" due-to="Gary Gregory, Dependabot">
-        Bump maven-pmd-plugin from 3.14.0 to 3.17.0 #296.
+        Bump maven-pmd-plugin from 3.14.0 to 3.18.0 #296, #309.
       </action>
       <action type="update" dev="kinow" due-to="Gary Gregory">
         Bump commons.japicmp.version from 0.15.3 to 0.15.7.
@@ -180,7 +180,7 @@ The <action> type attribute can be add,update,fix,remove.
         Bump org.apache.felix.framework from 7.0.1 to 7.0.5 #232, #295.
       </action>
       <action type="update" dev="kinow" due-to="Dependabot">
-        Bump slf4j-api from 1.7.30 to 1.7.36 #213, #241, #258.
+        Bump slf4j-api from 1.7.30 to 2.0.0 #213, #241, #258, #310.
       </action>
       <action type="update" dev="kinow" due-to="Dependabot">
         Bump commons-parent from 52 to 53 #280.
