@@ -968,7 +968,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     }
 
     /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
+     * @see Object#equals(Object)
      */
     @Override
     public boolean equals(final Object obj) {

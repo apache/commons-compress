@@ -563,7 +563,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     /**
      * Creates a new ArchiveEntry. The entryName must be an ASCII encoded string.
      *
-     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, java.lang.String)
+     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, String)
      */
     @Override
     public ArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
@@ -577,7 +577,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     /**
      * Creates a new ArchiveEntry. The entryName must be an ASCII encoded string.
      *
-     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, java.lang.String)
+     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, String)
      */
     @Override
     public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options)

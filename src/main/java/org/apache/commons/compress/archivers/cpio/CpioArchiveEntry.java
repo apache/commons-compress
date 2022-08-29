@@ -975,7 +975,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
+     * @see Object#hashCode()
      */
     @Override
     public int hashCode() {
@@ -983,7 +983,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
+     * @see Object#equals(Object)
      */
     @Override
     public boolean equals(final Object obj) {

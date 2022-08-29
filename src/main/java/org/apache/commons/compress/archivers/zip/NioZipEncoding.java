@@ -62,7 +62,7 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
     }
 
     /**
-     * @see  ZipEncoding#canEncode(java.lang.String)
+     * @see  ZipEncoding#canEncode(String)
      */
     @Override
     public boolean canEncode(final String name) {
@@ -72,7 +72,7 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
     }
 
     /**
-     * @see ZipEncoding#encode(java.lang.String)
+     * @see ZipEncoding#encode(String)
      */
     @Override
     public ByteBuffer encode(final String name) {
