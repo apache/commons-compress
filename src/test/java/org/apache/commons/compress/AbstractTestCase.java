@@ -123,8 +123,9 @@ public abstract class AbstractTestCase {
      * Others possible. If the delete does not work, call System.gc(),
      * wait a little and try again.
      *
+     * Copied from FileUtils in Ant 1.8.0.
+     *
      * @return whether deletion was successful
-     * @since Stolen from FileUtils in Ant 1.8.0
      */
     public static boolean tryHardToDelete(final File f) {
         if (f != null && f.exists() && !f.delete()) {
