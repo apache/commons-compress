@@ -1,10 +1,3 @@
-package org.apache.commons.compress.archivers;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import org.junit.jupiter.api.Test;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -23,6 +16,14 @@ import org.junit.jupiter.api.Test;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+package org.apache.commons.compress.archivers;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import org.junit.jupiter.api.Test;
+
 public class ExceptionMessageTest {
 
     private static final String ARCHIVER_NULL_MESSAGE = "Archivername must not be null.";
