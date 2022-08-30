@@ -44,7 +44,7 @@ Apache Commons Compress
 ===================
 
 [![Build Status](https://travis-ci.org/apache/commons-compress.svg)](https://travis-ci.org/apache/commons-compress)
-[![Coverage Status](https://coveralls.io/repos/apache/commons-compress/badge.svg)](https://coveralls.io/r/apache/commons-compress)
+[![Coverage Status](https://codecov.io/gh/apache/commons-compress/branch/master/graph/badge.svg)](https://app.codecov.io/gh/apache/commons-compress/branch/master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/)
 [![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-compress/1.21.svg)](https://javadoc.io/doc/org.apache.commons/commons-compress/1.21)
 [![Fuzzing Status](https://oss-fuzz-build-logs.storage.googleapis.com/badges/apache-commons.svg)](https://bugs.chromium.org/p/oss-fuzz/issues/list?sort=-opened&can=1&q=proj:apache-commons)
