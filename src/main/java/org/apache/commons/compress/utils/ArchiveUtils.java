@@ -253,7 +253,7 @@ public class ArchiveUtils {
      *
      * @param s the string to sanitize
      * @return a sanitized version of the argument
-     * @since Compress 1.12
+     * @since 1.12
      */
     public static String sanitize(final String s) {
         final char[] cs = s.toCharArray();

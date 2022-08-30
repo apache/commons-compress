@@ -1854,7 +1854,7 @@ public class SevenZFile implements Closeable {
      * @param entry the entry to get the stream for.
      * @return a stream to read the entry from.
      * @throws IOException if unable to create an input stream from the zipentry
-     * @since Compress 1.20
+     * @since 1.20
      */
     public InputStream getInputStream(final SevenZArchiveEntry entry) throws IOException {
         int entryIndex = -1;

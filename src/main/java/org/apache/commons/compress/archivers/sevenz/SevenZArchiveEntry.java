@@ -354,7 +354,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Gets the CRC.
-     * @since Compress 1.7
+     * @since 1.7
      * @return the CRC
      */
     public long getCrcValue() {
@@ -363,7 +363,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets the CRC.
-     * @since Compress 1.7
+     * @since 1.7
      * @param crc the CRC
      */
     public void setCrcValue(final long crc) {
@@ -392,7 +392,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Gets the compressed CRC.
-     * @since Compress 1.7
+     * @since 1.7
      * @return the CRC
      */
     long getCompressedCrcValue() {
@@ -401,7 +401,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets the compressed CRC.
-     * @since Compress 1.7
+     * @since 1.7
      * @param crc the CRC
      */
     void setCompressedCrcValue(final long crc) {
