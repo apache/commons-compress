@@ -29,7 +29,6 @@ import org.apache.commons.compress.utils.IOUtils;
 /**
  * Binary tree of positive values.
  *
- * @author Emmanuel Bourg
  * @since 1.7
  */
 class BinaryTree {

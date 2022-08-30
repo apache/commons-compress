@@ -22,7 +22,6 @@ package org.apache.commons.compress.archivers.zip;
 /**
  * Circular byte buffer.
  *
- * @author Emmanuel Bourg
  * @since 1.7
  */
 class CircularBuffer {

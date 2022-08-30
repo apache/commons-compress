@@ -36,7 +36,6 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  *
  * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">ZIP File Format Specification</a>
  *
- * @author Emmanuel Bourg
  * @since 1.7
  */
 class ExplodingInputStream extends InputStream implements InputStreamStatistics {
