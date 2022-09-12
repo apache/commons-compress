@@ -109,6 +109,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Matt Juntunen">
         Fix TarFileTest #289.
       </action>
+      <action issue="COMPRESS-625" type="fix" dev="ggregory" due-to="MrBump, Gary Gregory">
+        Update Wikipedia link in TarUtils.java:627.
+      </action>
       <!-- ADD -->
       <action issue="COMPRESS-602" type="add" dev="ggregory" due-to="Postelnicu George, Gary Gregory">
         Migrate zip package to use NIO #236.
