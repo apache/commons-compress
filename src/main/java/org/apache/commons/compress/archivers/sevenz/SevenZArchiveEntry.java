@@ -577,13 +577,12 @@ public class SevenZArchiveEntry implements ArchiveEntry {
         if (c2 == null) {
             return false;
         }
-        final Iterator<? extends SevenZMethodConfiguration> i1 = c1.iterator();
         final Iterator<? extends SevenZMethodConfiguration> i2 = c2.iterator();
-        while (i1.hasNext()) {
+        for (SevenZMethodConfiguration element : c1) {
             if (!i2.hasNext()) {
                 return false;
             }
-            if (!i1.next().equals(i2.next())) {
+            if (!element.equals(i2.next())) {
                 return false;
             }
         }

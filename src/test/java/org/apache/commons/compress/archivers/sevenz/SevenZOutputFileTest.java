@@ -595,11 +595,9 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     private static void assertContentMethodsEquals(final Iterable<? extends SevenZMethodConfiguration> expected,
                                                    final Iterable<? extends SevenZMethodConfiguration> actual) {
         assertNotNull(actual);
-        final Iterator<? extends SevenZMethodConfiguration> expectedIter = expected.iterator();
         final Iterator<? extends SevenZMethodConfiguration> actualIter = actual.iterator();
-        while (expectedIter.hasNext()) {
+        for (SevenZMethodConfiguration expConfig : expected) {
             assertTrue(actualIter.hasNext());
-            final SevenZMethodConfiguration expConfig = expectedIter.next();
             final SevenZMethodConfiguration actConfig = actualIter.next();
             assertEquals(expConfig.getMethod(), actConfig.getMethod());
         }
