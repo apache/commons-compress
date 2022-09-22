@@ -192,7 +192,7 @@ The <action> type attribute can be add,update,fix,remove.
         Bump commons.jacoco.version from 0.8.7 to 0.8.8.
       </action>
       <action type="update" dev="kinow" due-to="Dependabot">
-        Bump junit.version from 5.8.2 to 5.9.0 #302.
+        Bump junit.version from 5.8.2 to 5.9.1 #302, #317.
       </action>
       <action type="update" dev="kinow" due-to="Dependabot">
         Bump mockito.version from 4.6.1 to 4.8.0 #307, #312.
