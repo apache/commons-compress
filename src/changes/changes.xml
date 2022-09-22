@@ -183,7 +183,7 @@ The <action> type attribute can be add,update,fix,remove.
         Bump org.apache.felix.framework from 7.0.1 to 7.0.5 #232, #295.
       </action>
       <action type="update" dev="kinow" due-to="Dependabot">
-        Bump slf4j-api from 1.7.30 to 2.0.1 #213, #241, #258, #310, #314.
+        Bump slf4j-api from 1.7.30 to 2.0.2 #213, #241, #258, #310, #314, #315.
       </action>
       <action type="update" dev="kinow" due-to="Dependabot">
         Bump commons-parent from 52 to 53 #280.
