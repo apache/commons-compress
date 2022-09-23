@@ -383,6 +383,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
               <exclude>.pmd</exclude>
               <exclude>.projectile</exclude>
               <exclude>.mvn/**</exclude>
+              <exclude>.gitattributes</exclude>
             </excludes>
           </configuration>
         </plugin>
