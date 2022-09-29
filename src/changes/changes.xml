@@ -191,7 +191,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="kinow" due-to="Dependabot">
         Bump commons-parent from 52 to 53 #280.
       </action>
-      <action type="update" dev="kinow" due-to="Gary Gregory">
+      <action type="update" dev="ggregory" due-to="Gary Gregory">
         Bump commons.jacoco.version from 0.8.7 to 0.8.8.
       </action>
       <action type="update" dev="kinow" due-to="Dependabot">
@@ -199,6 +199,9 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action type="update" dev="kinow" due-to="Dependabot">
         Bump mockito.version from 4.6.1 to 4.8.0 #307, #312.
+      </action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">
+        Bump maven-surefire-plugin from 3.0.0-M6 to 3.0.0-M7.
       </action>
     </release>
     <release version="1.21" date="2021-07-12"
