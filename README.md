@@ -43,7 +43,7 @@
 Apache Commons Compress
 ===================
 
-[![Build Status](https://travis-ci.org/apache/commons-compress.svg)](https://travis-ci.org/apache/commons-compress)
+[![GitHub Actions Status](https://github.com/apache/commons-compress/workflows/Java%20CI/badge.svg)](https://github.com/apache/commons-compress/actions)
 [![Coverage Status](https://codecov.io/gh/apache/commons-compress/branch/master/graph/badge.svg)](https://app.codecov.io/gh/apache/commons-compress/branch/master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/badge.svg?gav=true)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/?gav=true)
 [![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-compress/1.21.svg)](https://javadoc.io/doc/org.apache.commons/commons-compress/1.21)
