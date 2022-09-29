@@ -188,8 +188,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="kinow" due-to="Dependabot">
         Bump slf4j-api from 1.7.30 to 2.0.2 #213, #241, #258, #310, #314, #315.
       </action>
-      <action type="update" dev="kinow" due-to="Dependabot">
-        Bump commons-parent from 52 to 53 #280.
+      <action type="update" dev="kinow" due-to="Dependabot, Gary Gregory">
+        Bump commons-parent from 52 to 54 #280.
       </action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">
         Bump commons.jacoco.version from 0.8.7 to 0.8.8.
