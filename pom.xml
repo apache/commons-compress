@@ -52,7 +52,9 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <!-- old version used by japicmp -->
     <commons.bc.version>1.21</commons.bc.version>
     <mockito.version>4.8.0</mockito.version>
-    <commons.pmd-plugin.version>3.19.0</commons.pmd-plugin.version>
+    <commons.pmd.version>3.19.0</commons.pmd.version>
+    <commons.pmd-impl.version>6.49.0</commons.pmd-impl.version>
+
 
     <commons.manifestlocation>${project.build.outputDirectory}/META-INF</commons.manifestlocation>
     <commons.manifestfile>${commons.manifestlocation}/MANIFEST.MF</commons.manifestfile>
@@ -459,7 +461,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>${commons.pmd-plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -498,7 +499,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <!-- generate the PMD reports -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>${commons.pmd-plugin.version}</version>
         <configuration>
           <minimumTokens>200</minimumTokens>
           <targetJdk>${maven.compiler.source}</targetJdk>

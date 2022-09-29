@@ -173,6 +173,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="Gary Gregory, Dependabot">
         Bump maven-pmd-plugin from 3.14.0 to 3.19.0 #296, #309, #311.
       </action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">
+        Bump pmd from 6.44.0 to 6.49.0.
+      </action>
       <action type="update" dev="kinow" due-to="Gary Gregory">
         Bump commons.japicmp.version from 0.15.3 to 0.16.0.
       </action>
