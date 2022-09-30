@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -41,8 +43,6 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CountingOutputStream;
 import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.FixedLengthBlockOutputStream;
-
-import static java.nio.charset.StandardCharsets.*;
 
 /**
  * The TarOutputStream writes a UNIX tar archive as an OutputStream. Methods are provided to put

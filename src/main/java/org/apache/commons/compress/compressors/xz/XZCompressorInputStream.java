@@ -21,15 +21,14 @@ package org.apache.commons.compress.compressors.xz;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.tukaani.xz.XZ;
-import org.tukaani.xz.SingleXZInputStream;
-import org.tukaani.xz.XZInputStream;
-
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.tukaani.xz.SingleXZInputStream;
+import org.tukaani.xz.XZ;
+import org.tukaani.xz.XZInputStream;
 
 /**
  * XZ decompressor.

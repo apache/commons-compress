@@ -19,14 +19,15 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;

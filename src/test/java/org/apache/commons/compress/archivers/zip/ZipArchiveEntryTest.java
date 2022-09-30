@@ -32,9 +32,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.utils.ByteUtils;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 
 /**
  * JUnit testcases for org.apache.commons.compress.archivers.zip.ZipEntry.

@@ -22,8 +22,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.compress.MemoryLimitException;
-import org.tukaani.xz.FinishableWrapperOutputStream;
 import org.tukaani.xz.FinishableOutputStream;
+import org.tukaani.xz.FinishableWrapperOutputStream;
 import org.tukaani.xz.LZMA2InputStream;
 import org.tukaani.xz.LZMA2Options;
 

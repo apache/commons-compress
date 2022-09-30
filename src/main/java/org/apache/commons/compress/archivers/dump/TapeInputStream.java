@@ -21,7 +21,6 @@ package org.apache.commons.compress.archivers.dump;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;

@@ -19,6 +19,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;

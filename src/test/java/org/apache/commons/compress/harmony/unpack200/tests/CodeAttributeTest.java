@@ -19,8 +19,6 @@ package org.apache.commons.compress.harmony.unpack200.tests;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.harmony.unpack200.CpBands;
 import org.apache.commons.compress.harmony.unpack200.Segment;
 import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
@@ -32,6 +30,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute;
 import org.apache.commons.compress.harmony.unpack200.bytecode.LocalVariableTableAttribute;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
+
+import junit.framework.TestCase;
 
 /**
  * Tests for CodeAttribute

@@ -17,12 +17,12 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import org.junit.jupiter.api.Test;
 
 public class X000A_NTFSTest {
 

@@ -18,17 +18,17 @@
  */
 package org.apache.commons.compress.compressors.lz77support;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-
-import static java.nio.charset.StandardCharsets.*;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
 
 public class LZ77CompressorTest {
 

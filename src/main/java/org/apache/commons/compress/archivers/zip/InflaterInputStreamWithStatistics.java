@@ -18,12 +18,12 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.utils.InputStreamStatistics;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
+
+import org.apache.commons.compress.utils.InputStreamStatistics;
 
 /**
  * Helper class to provide statistics

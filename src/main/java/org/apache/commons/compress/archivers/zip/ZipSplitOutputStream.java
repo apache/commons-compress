@@ -17,8 +17,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.utils.FileNameUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,6 +24,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
+
+import org.apache.commons.compress.utils.FileNameUtils;
 
 /**
  * Used internally by {@link ZipArchiveOutputStream} when creating a split archive.

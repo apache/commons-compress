@@ -27,14 +27,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
-import com.github.luben.zstd.NoPool;
-import com.github.luben.zstd.RecyclingBufferPool;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
+
+import com.github.luben.zstd.NoPool;
+import com.github.luben.zstd.RecyclingBufferPool;
 
 public class ZstdCompressorInputStreamTest extends AbstractTestCase {
 

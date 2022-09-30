@@ -31,11 +31,11 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.harmony.pack200.Archive;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PackingOptions;
+
+import junit.framework.TestCase;
 
 /**
  * Test different options for packing a Jar file

@@ -17,19 +17,19 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.parallel.InputStreamSupplier;
-import org.apache.commons.compress.utils.IOUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import static org.apache.commons.compress.AbstractTestCase.tryHardToDelete;
+import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.zip.ZipEntry;
 
-import static org.apache.commons.compress.AbstractTestCase.tryHardToDelete;
-import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import org.apache.commons.compress.parallel.InputStreamSupplier;
+import org.apache.commons.compress.utils.IOUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 public class ScatterZipOutputStreamTest {
 

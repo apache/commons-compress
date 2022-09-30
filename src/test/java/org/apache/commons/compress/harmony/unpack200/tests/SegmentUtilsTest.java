@@ -16,10 +16,10 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.harmony.unpack200.IMatcher;
 import org.apache.commons.compress.harmony.unpack200.SegmentUtils;
+
+import junit.framework.TestCase;
 
 public class SegmentUtilsTest extends TestCase {
 

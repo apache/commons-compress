@@ -43,9 +43,7 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 
 public class ExpanderTest extends AbstractTestCase {
 

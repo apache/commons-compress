@@ -18,6 +18,10 @@
 
 package org.apache.commons.compress.archivers.tar;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -29,10 +33,6 @@ import java.util.Random;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 public class BigFilesIT extends AbstractTestCase {
 

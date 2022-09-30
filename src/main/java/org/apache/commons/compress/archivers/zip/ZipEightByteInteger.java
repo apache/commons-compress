@@ -17,10 +17,10 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.compress.archivers.zip.ZipConstants.BYTE_MASK;
+
 import java.io.Serializable;
 import java.math.BigInteger;
-
-import static org.apache.commons.compress.archivers.zip.ZipConstants.BYTE_MASK;
 
 /**
  * Utility class that represents an eight byte integer with conversion

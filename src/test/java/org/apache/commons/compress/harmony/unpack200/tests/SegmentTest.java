@@ -26,9 +26,9 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.harmony.unpack200.Segment;
+
+import junit.framework.TestCase;
 
 /**
  * Tests for org.apache.commons.compress.harmony.unpack200.Segment.

@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.dump;
 
 import java.io.IOException;
 import java.util.Arrays;
+
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.utils.ByteUtils;
 

@@ -18,12 +18,12 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.utils.ByteUtils;
-
-import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
 
 /**
  * Holds size and other extended information for entries that use Zip64

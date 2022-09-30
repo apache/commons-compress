@@ -21,8 +21,9 @@ package org.apache.commons.compress.compressors.zstandard;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.github.luben.zstd.ZstdOutputStream;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
+
+import com.github.luben.zstd.ZstdOutputStream;
 
 /**
  * {@link CompressorOutputStream} implementation to create Zstandard encoded stream.

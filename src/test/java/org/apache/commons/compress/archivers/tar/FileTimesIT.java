@@ -18,8 +18,10 @@
 
 package org.apache.commons.compress.archivers.tar;
 
-import org.apache.commons.compress.AbstractTestCase;
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -27,7 +29,8 @@ import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 
-import static org.junit.Assert.*;
+import org.apache.commons.compress.AbstractTestCase;
+import org.junit.jupiter.api.Test;
 
 public class FileTimesIT extends AbstractTestCase {
 

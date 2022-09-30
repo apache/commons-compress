@@ -16,11 +16,11 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.harmony.unpack200.CpBands;
 import org.apache.commons.compress.harmony.unpack200.Segment;
 import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
+
+import junit.framework.TestCase;
 
 /**
  * Tests for org.apache.commons.compress.harmony.unpack200.SegmentConstantPool.

@@ -17,21 +17,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.TimeZone;
-import java.util.zip.ZipException;
-
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.apache.commons.compress.AbstractTestCase.mkdir;
 import static org.apache.commons.compress.AbstractTestCase.rmdir;
@@ -46,6 +31,21 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.TimeZone;
+import java.util.zip.ZipException;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class X5455_ExtendedTimestampTest {
     private final static ZipShort X5455 = new ZipShort(0x5455);

@@ -18,14 +18,14 @@
  */
 package org.apache.commons.compress.compressors.bzip2;
 
-import org.apache.commons.compress.AbstractTestCase;
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-import static org.junit.Assert.assertEquals;
+import org.apache.commons.compress.AbstractTestCase;
+import org.junit.jupiter.api.Test;
 
 public class BZip2NSelectorsOverflowTest extends AbstractTestCase {
 

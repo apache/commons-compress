@@ -17,9 +17,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.parallel.InputStreamSupplier;
-import org.apache.commons.compress.utils.IOUtils;
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -28,7 +26,9 @@ import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 
-import static org.junit.Assert.assertEquals;
+import org.apache.commons.compress.parallel.InputStreamSupplier;
+import org.apache.commons.compress.utils.IOUtils;
+import org.junit.jupiter.api.Test;
 
 public class ScatterSampleTest {
 

@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
+
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.sevenz.Coders.DeflateDecoder;
 import org.apache.commons.compress.archivers.sevenz.Coders.DeflateDecoder.DeflateDecoderInputStream;

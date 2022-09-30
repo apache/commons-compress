@@ -26,11 +26,6 @@ import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
-import org.apache.commons.compress.AbstractTestCase;
-import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assume;
-import org.junit.jupiter.api.Test;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +34,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
+
+import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Assume;
+import org.junit.jupiter.api.Test;
 
 public class SparseFilesTest extends AbstractTestCase {
 

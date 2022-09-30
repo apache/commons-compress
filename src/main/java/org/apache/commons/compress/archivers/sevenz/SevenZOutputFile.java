@@ -17,6 +17,8 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import static java.nio.charset.StandardCharsets.UTF_16LE;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -47,8 +49,6 @@ import java.util.zip.CRC32;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.CountingOutputStream;
-
-import static java.nio.charset.StandardCharsets.*;
 
 /**
  * Writes a 7z file.

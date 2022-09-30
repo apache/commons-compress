@@ -18,8 +18,6 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import org.junit.jupiter.api.Test;
-
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -30,6 +28,8 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+
+import org.junit.jupiter.api.Test;
 
 public class EncryptedArchiveTest {
 

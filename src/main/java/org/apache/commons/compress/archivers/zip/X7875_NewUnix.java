@@ -18,16 +18,16 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.compress.archivers.zip.ZipUtil.reverse;
+import static org.apache.commons.compress.archivers.zip.ZipUtil.signedByteToUnsignedInt;
+import static org.apache.commons.compress.archivers.zip.ZipUtil.unsignedIntToSignedByte;
+
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.utils.ByteUtils;
-
-import static org.apache.commons.compress.archivers.zip.ZipUtil.reverse;
-import static org.apache.commons.compress.archivers.zip.ZipUtil.signedByteToUnsignedInt;
-import static org.apache.commons.compress.archivers.zip.ZipUtil.unsignedIntToSignedByte;
 
 /**
  * An extra field that stores UNIX UID/GID data (owner &amp; group ownership) for a given

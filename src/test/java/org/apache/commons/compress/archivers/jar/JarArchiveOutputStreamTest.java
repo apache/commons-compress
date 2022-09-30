@@ -26,12 +26,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import org.junit.jupiter.api.Test;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.JarMarker;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipExtraField;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.junit.jupiter.api.Test;
 
 public class JarArchiveOutputStreamTest {
 

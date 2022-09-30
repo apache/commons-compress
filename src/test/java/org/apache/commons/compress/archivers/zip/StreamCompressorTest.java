@@ -28,6 +28,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
+
 import org.junit.jupiter.api.Test;
 
 public class StreamCompressorTest {

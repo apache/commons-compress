@@ -18,20 +18,20 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.utils.ByteUtils;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.io.File;
-import java.util.Enumeration;
-import java.util.zip.ZipException;
-
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.util.Enumeration;
+import java.util.zip.ZipException;
+
+import org.apache.commons.compress.utils.ByteUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class X7875_NewUnixTest {
 

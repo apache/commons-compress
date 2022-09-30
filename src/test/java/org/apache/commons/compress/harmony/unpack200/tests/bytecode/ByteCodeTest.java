@@ -16,9 +16,9 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests.bytecode;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
+
+import junit.framework.TestCase;
 
 public class ByteCodeTest extends TestCase {
 

@@ -18,10 +18,10 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.util.zip.CRC32;
 import java.util.zip.ZipException;
-
-import static java.nio.charset.StandardCharsets.*;
 
 /**
  * A common base class for Unicode extra information extra fields.

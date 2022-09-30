@@ -18,11 +18,9 @@
 
 package org.apache.commons.compress.archivers.tar;
 
-import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
-import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.archivers.ArchiveOutputStream;
-import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.junit.jupiter.api.Test;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,9 +32,12 @@ import java.nio.file.Path;
 import java.nio.file.attribute.GroupPrincipal;
 import java.nio.file.attribute.UserPrincipal;
 
-import static java.nio.charset.StandardCharsets.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.junit.jupiter.api.Test;
+
+import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
 
 public class TarMemoryFileSystemTest {
 

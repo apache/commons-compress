@@ -16,7 +16,9 @@
  */
 package org.apache.commons.compress.utils;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -24,9 +26,7 @@ import java.io.IOException;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for class {@link ChecksumCalculatingInputStream org.apache.commons.compress.utils.ChecksumCalculatingInputStream}.

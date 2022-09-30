@@ -17,8 +17,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
-
 import java.io.Closeable;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -29,6 +27,8 @@ import java.nio.channels.SeekableByteChannel;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
+
+import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
 
 /**
  * Encapsulates a {@link Deflater} and crc calculator, handling multiple types of output streams.

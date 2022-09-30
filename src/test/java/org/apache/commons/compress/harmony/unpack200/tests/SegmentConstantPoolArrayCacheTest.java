@@ -19,9 +19,9 @@ package org.apache.commons.compress.harmony.unpack200.tests;
 
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.harmony.unpack200.SegmentConstantPoolArrayCache;
+
+import junit.framework.TestCase;
 
 public class SegmentConstantPoolArrayCacheTest extends TestCase {
 

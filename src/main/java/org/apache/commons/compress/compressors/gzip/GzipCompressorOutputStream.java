@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.compressors.gzip;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -28,8 +30,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
-
-import static java.nio.charset.StandardCharsets.*;
 
 /**
  * Compressed output stream using the gzip format. This implementation improves

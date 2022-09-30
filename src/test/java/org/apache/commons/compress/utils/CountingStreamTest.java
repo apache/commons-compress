@@ -18,13 +18,13 @@
  */
 package org.apache.commons.compress.utils;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+
+import org.junit.jupiter.api.Test;
 
 public class CountingStreamTest {
 

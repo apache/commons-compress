@@ -17,6 +17,12 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC_SHORT;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
@@ -34,8 +40,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.EnumSet;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,12 +57,6 @@ import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
-
-import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC_SHORT;
 
 /**
  * Replacement for {@code java.util.ZipFile}.

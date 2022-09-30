@@ -17,13 +17,13 @@
  */
 package org.apache.commons.compress.compressors.deflate64;
 
+import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
-
-import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
 
 /**
  * Deflate64 decompressor.

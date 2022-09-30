@@ -19,10 +19,9 @@
 package org.apache.commons.compress.compressors.lz4;
 
 import static java.lang.Integer.rotateLeft;
+import static org.apache.commons.compress.utils.ByteUtils.fromLittleEndian;
 
 import java.util.zip.Checksum;
-
-import static org.apache.commons.compress.utils.ByteUtils.fromLittleEndian;
 
 /**
  * Implementation of the xxhash32 hash algorithm.

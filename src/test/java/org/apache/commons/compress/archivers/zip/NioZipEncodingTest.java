@@ -19,13 +19,16 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.nio.charset.StandardCharsets.UTF_16BE;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
-
-import static java.nio.charset.StandardCharsets.*;
 
 public class NioZipEncodingTest {
 

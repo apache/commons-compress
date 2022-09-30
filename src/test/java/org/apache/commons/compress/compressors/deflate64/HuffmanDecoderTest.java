@@ -17,13 +17,13 @@
  */
 package org.apache.commons.compress.compressors.deflate64;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import org.junit.jupiter.api.Test;
 
 public class HuffmanDecoderTest {
     @Test

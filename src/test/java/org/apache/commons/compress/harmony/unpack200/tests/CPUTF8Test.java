@@ -16,9 +16,9 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
+
+import junit.framework.TestCase;
 
 public class CPUTF8Test extends TestCase {
 

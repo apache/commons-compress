@@ -32,9 +32,9 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.harmony.unpack200.Archive;
+
+import junit.framework.TestCase;
 
 /**
  * Tests for org.apache.commons.compress.harmony.unpack200.Archive, which is the main class for

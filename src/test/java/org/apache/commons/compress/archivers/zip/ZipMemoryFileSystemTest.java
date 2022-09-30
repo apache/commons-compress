@@ -18,16 +18,12 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
-import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.archivers.ArchiveOutputStream;
-import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.compress.parallel.InputStreamSupplier;
-import org.apache.commons.compress.utils.IOUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.compress.AbstractTestCase.getPath;
+import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -39,17 +35,28 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.compress.AbstractTestCase.getPath;
-import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertArrayEquals;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.parallel.InputStreamSupplier;
+import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
 
 public class ZipMemoryFileSystemTest {
     

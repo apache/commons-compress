@@ -20,6 +20,7 @@ package org.apache.commons.compress.compressors.xz;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.commons.compress.compressors.FileNameUtil;
 import org.apache.commons.compress.utils.OsgiUtils;
 

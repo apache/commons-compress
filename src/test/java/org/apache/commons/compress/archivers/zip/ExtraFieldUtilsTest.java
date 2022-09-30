@@ -22,10 +22,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.zip.ZipException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.zip.ZipException;
 
 /**
  * JUnit testcases for org.apache.commons.compress.archivers.zip.ExtraFieldUtils.

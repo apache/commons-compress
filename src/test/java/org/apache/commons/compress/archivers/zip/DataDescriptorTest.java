@@ -17,6 +17,13 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.compress.AbstractTestCase.mkdir;
+import static org.apache.commons.compress.AbstractTestCase.rmdir;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -29,13 +36,6 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static java.nio.charset.StandardCharsets.*;
-import static org.apache.commons.compress.AbstractTestCase.mkdir;
-import static org.apache.commons.compress.AbstractTestCase.rmdir;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 public class DataDescriptorTest {
 

@@ -20,12 +20,12 @@ import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.harmony.pack200.BHSDCodec;
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.CodecEncoding;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
+
+import junit.framework.TestCase;
 
 /**
  * Tests for BHSDCodec

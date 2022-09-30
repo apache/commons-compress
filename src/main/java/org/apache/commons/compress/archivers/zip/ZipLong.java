@@ -17,11 +17,11 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.utils.ByteUtils;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
 
 import java.io.Serializable;
 
-import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+import org.apache.commons.compress.utils.ByteUtils;
 
 /**
  * Utility class that represents a four byte integer with conversion

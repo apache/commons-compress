@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers.ar;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,8 +29,6 @@ import java.nio.file.Path;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
-
-import static java.nio.charset.StandardCharsets.*;
 
 /**
  * Implements the "ar" archive format as an output stream.

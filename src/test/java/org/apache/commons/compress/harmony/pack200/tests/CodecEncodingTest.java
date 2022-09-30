@@ -22,14 +22,14 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.harmony.pack200.BHSDCodec;
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.CodecEncoding;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PopulationCodec;
 import org.apache.commons.compress.harmony.pack200.RunCodec;
+
+import junit.framework.TestCase;
 
 /**
  *

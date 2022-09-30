@@ -18,10 +18,10 @@
  */
 package org.apache.commons.compress.compressors.bzip2;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 public class BlockSortTest {
 

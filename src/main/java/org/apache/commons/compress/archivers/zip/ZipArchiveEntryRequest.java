@@ -17,9 +17,9 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.parallel.InputStreamSupplier;
-
 import java.io.InputStream;
+
+import org.apache.commons.compress.parallel.InputStreamSupplier;
 
 /**
  * A Thread-safe representation of a ZipArchiveEntry that is used to add entries to parallel archives.

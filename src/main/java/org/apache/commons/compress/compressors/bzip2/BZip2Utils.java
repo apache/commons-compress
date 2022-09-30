@@ -20,6 +20,7 @@ package org.apache.commons.compress.compressors.bzip2;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import org.apache.commons.compress.compressors.FileNameUtil;
 
 /**

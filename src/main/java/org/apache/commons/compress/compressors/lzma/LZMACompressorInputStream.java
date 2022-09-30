@@ -22,12 +22,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.MemoryLimitException;
-import org.tukaani.xz.LZMAInputStream;
-
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.tukaani.xz.LZMAInputStream;
 
 /**
  * LZMA decompressor.

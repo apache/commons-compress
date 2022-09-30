@@ -18,10 +18,6 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.compress.utils.FileNameUtils;
-import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -38,6 +34,10 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.utils.FileNameUtils;
+import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
 
 /**
  * {@link MultiReadOnlySeekableByteChannel} that knows what a split ZIP archive should look like.

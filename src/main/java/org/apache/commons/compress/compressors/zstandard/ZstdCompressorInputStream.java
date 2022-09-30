@@ -21,12 +21,13 @@ package org.apache.commons.compress.compressors.zstandard;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.github.luben.zstd.BufferPool;
-import com.github.luben.zstd.ZstdInputStream;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+
+import com.github.luben.zstd.BufferPool;
+import com.github.luben.zstd.ZstdInputStream;
 
 /**
  * {@link CompressorInputStream} implementation to decode Zstandard encoded stream.

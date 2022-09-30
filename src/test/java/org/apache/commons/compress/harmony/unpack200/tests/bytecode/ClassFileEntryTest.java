@@ -16,8 +16,6 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests.bytecode;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPDouble;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPFloat;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPInteger;
@@ -26,6 +24,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPMember;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPString;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.harmony.unpack200.bytecode.SourceFileAttribute;
+
+import junit.framework.TestCase;
 
 public class ClassFileEntryTest extends TestCase {
 

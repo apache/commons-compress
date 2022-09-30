@@ -18,22 +18,21 @@
  */
 package org.apache.commons.compress.archivers.dump;
 
-import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.archivers.ArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.ZipEncoding;
-import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
-import org.apache.commons.compress.utils.IOUtils;
-
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
+
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipEncoding;
+import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * The DumpArchiveInputStream reads a UNIX dump archive as an InputStream.

@@ -20,10 +20,10 @@ package org.apache.commons.compress.compressors.lzma;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import org.tukaani.xz.LZMA2Options;
-import org.tukaani.xz.LZMAOutputStream;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
+import org.tukaani.xz.LZMA2Options;
+import org.tukaani.xz.LZMAOutputStream;
 
 /**
  * LZMA compressor.

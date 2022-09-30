@@ -16,10 +16,10 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.SegmentOptions;
+
+import junit.framework.TestCase;
 
 /**
  *

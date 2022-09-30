@@ -18,11 +18,11 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import java.util.zip.CRC32;
-import java.util.zip.ZipException;
-
 import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+
+import java.util.zip.CRC32;
+import java.util.zip.ZipException;
 
 /**
  * Adds Unix file permission and UID/GID fields as well as symbolic

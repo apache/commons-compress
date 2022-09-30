@@ -18,10 +18,10 @@
  */
 package org.apache.commons.compress.compressors.lz77support;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 public class ParametersTest {
 

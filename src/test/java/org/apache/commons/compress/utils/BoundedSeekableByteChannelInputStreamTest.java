@@ -17,13 +17,13 @@
  */
 package org.apache.commons.compress.utils;
 
-import org.junit.jupiter.api.Test;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import static java.nio.charset.StandardCharsets.*;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class BoundedSeekableByteChannelInputStreamTest {
 

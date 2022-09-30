@@ -18,8 +18,8 @@
  */
 package org.apache.commons.compress.compressors.z;
 
-import org.junit.Assert;
-import org.junit.jupiter.api.Test;
+import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.junit.Assert.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,10 +27,10 @@ import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.nio.file.Files;
 import java.util.Collections;
-import org.apache.commons.compress.utils.IOUtils;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.junit.Assert.assertThrows;
+import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Assert;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for class {@link ZCompressorInputStream}.

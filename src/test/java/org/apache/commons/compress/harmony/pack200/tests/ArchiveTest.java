@@ -19,7 +19,6 @@ package org.apache.commons.compress.harmony.pack200.tests;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,12 +31,12 @@ import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.harmony.pack200.Archive;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PackingOptions;
 import org.apache.commons.compress.harmony.unpack200.Segment;
+
+import junit.framework.TestCase;
 
 public class ArchiveTest extends TestCase {
 

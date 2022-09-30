@@ -16,13 +16,13 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests.bytecode;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.harmony.unpack200.Segment;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPClass;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPMember;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ClassConstantPool;
+
+import junit.framework.TestCase;
 
 public class ConstantPoolTest extends TestCase {
 

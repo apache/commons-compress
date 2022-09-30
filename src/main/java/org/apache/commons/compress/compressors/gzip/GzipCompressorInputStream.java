@@ -18,25 +18,25 @@
  */
 package org.apache.commons.compress.compressors.gzip;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.EOFException;
-import java.io.InputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
-import java.io.BufferedInputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.CRC32;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
-import java.util.zip.CRC32;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
-
-import static java.nio.charset.StandardCharsets.*;
 
 /**
  * Input stream that decompresses .gz files.

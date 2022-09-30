@@ -18,10 +18,6 @@
 package org.apache.commons.compress.archivers.zip;
 
 
-import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
-import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
-import org.apache.commons.compress.utils.BoundedInputStream;
-
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,6 +29,10 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.Deflater;
+
+import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
+import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
+import org.apache.commons.compress.utils.BoundedInputStream;
 
 /**
  * A zip output stream that is optimized for multi-threaded scatter/gather construction of zip files.

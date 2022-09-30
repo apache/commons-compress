@@ -20,8 +20,6 @@ package org.apache.commons.compress.compressors.deflate;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.IOException;
-
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 

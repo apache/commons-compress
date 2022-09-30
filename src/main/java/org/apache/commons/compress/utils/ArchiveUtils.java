@@ -18,11 +18,11 @@
 
 package org.apache.commons.compress.utils;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
+
 import java.util.Arrays;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-
-import static java.nio.charset.StandardCharsets.*;
 
 /**
  * Generic Archive utilities

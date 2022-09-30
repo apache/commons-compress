@@ -21,8 +21,9 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.IOException;
 import java.io.InputStream;
-import org.apache.commons.compress.utils.BitInputStream;
 import java.nio.ByteOrder;
+
+import org.apache.commons.compress.utils.BitInputStream;
 
 /**
  * Iterates over the bits of an InputStream. For each byte the bits
