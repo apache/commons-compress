@@ -22,12 +22,12 @@ import java.util.List;
 import org.apache.commons.compress.harmony.unpack200.CpBands;
 import org.apache.commons.compress.harmony.unpack200.Segment;
 import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
-import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPFieldRef;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPMethodRef;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPString;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute;
+import org.apache.commons.compress.harmony.unpack200.bytecode.ExceptionTableEntry;
 import org.apache.commons.compress.harmony.unpack200.bytecode.LocalVariableTableAttribute;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
@@ -38,20 +38,18 @@ import junit.framework.TestCase;
  */
 public class CodeAttributeTest extends TestCase {
 
-    public class MockCodeAttribute extends CodeAttribute {
+	public class MockCodeAttribute extends CodeAttribute {
 
-        public MockCodeAttribute(int maxStack, int maxLocals,
-                byte[] codePacked, Segment segment,
-                OperandManager operandManager, List exceptionTable) {
-            super(maxStack, maxLocals, codePacked, segment, operandManager,
-                    exceptionTable);
-        }
+		public MockCodeAttribute(int maxStack, int maxLocals, byte[] codePacked, Segment segment,
+				OperandManager operandManager, List<ExceptionTableEntry> exceptionTable) {
+			super(maxStack, maxLocals, codePacked, segment, operandManager, exceptionTable);
+		}
 
-        @Override
-        public int getLength() {
-            return super.getLength();
-        }
-    }
+		@Override
+		public int getLength() {
+			return super.getLength();
+		}
+	}
 
     public class MockCpBands extends CpBands {
 
@@ -170,16 +168,16 @@ public class CodeAttributeTest extends TestCase {
                 mixedByteArray, // codePacked
                 segment, // segment
                 operandManager, // operandManager
-                new ArrayList());
+                new ArrayList<>());
         assertEquals(2, attribute.maxLocals);
         assertEquals(3, attribute.maxStack);
-        assertEquals("aload_0_putfield_this", ((ByteCode) attribute.byteCodes
-                .get(4)).toString());
+        assertEquals("aload_0_putfield_this", attribute.byteCodes
+                .get(4).toString());
 
         int expectedLabels[] = new int[] { 0, 1, 4, 5, 8, 9, 10, 13, 14 };
         for (int index = 0; index < expectedLabels.length; index++) {
             assertEquals(expectedLabels[index],
-                    ((Integer) attribute.byteCodeOffsets.get(index)).intValue());
+                    attribute.byteCodeOffsets.get(index).intValue());
         }
     }
 
@@ -193,16 +191,16 @@ public class CodeAttributeTest extends TestCase {
                 singleByteArray, // codePacked
                 segment, // segment
                 operandManager, // operandManager
-                new ArrayList());
+                new ArrayList<>());
         assertEquals(3, attribute.maxLocals);
         assertEquals(4, attribute.maxStack);
-        assertEquals("invokespecial_this", ((ByteCode) attribute.byteCodes
-                .get(3)).toString());
+        assertEquals("invokespecial_this", attribute.byteCodes
+                .get(3).toString());
 
         int expectedLabels[] = new int[] { 0, 1, 2, 4 };
         for (int index = 0; index < expectedLabels.length; index++) {
             assertEquals(expectedLabels[index],
-                    ((Integer) attribute.byteCodeOffsets.get(index)).intValue());
+                    attribute.byteCodeOffsets.get(index).intValue());
         }
     }
 

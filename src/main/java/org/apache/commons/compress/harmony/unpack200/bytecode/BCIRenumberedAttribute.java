@@ -62,14 +62,14 @@ public abstract class BCIRenumberedAttribute extends Attribute {
      * @param byteCodeOffsets List of Integer offsets of the bytecode array
      * @throws Pack200Exception TODO
      */
-    public void renumber(final List byteCodeOffsets) throws Pack200Exception {
+    public void renumber(final List<Integer> byteCodeOffsets) throws Pack200Exception {
         if (renumbered) {
             throw new Error("Trying to renumber a line number table that has already been renumbered");
         }
         renumbered = true;
         final int[] startPCs = getStartPCs();
         for (int index = 0; index < startPCs.length; index++) {
-            startPCs[index] = ((Integer) byteCodeOffsets.get(startPCs[index])).intValue();
+            startPCs[index] = byteCodeOffsets.get(startPCs[index]).intValue();
         }
     }
 

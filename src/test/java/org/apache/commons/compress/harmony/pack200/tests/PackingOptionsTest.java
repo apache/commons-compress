@@ -81,13 +81,13 @@ public class PackingOptionsTest extends TestCase {
         JarFile jarFile2 = new JarFile(compareFile);
 
         // Check that both jars have the same entries in the same order
-        Enumeration entries = jarFile.entries();
-        Enumeration entries2 = jarFile2.entries();
+        Enumeration<JarEntry> entries = jarFile.entries();
+        Enumeration<JarEntry> entries2 = jarFile2.entries();
         while (entries.hasMoreElements()) {
 
-            JarEntry entry = (JarEntry) entries.nextElement();
+            JarEntry entry = entries.nextElement();
             assertNotNull(entry);
-            JarEntry entry2 = (JarEntry) entries2.nextElement();
+            JarEntry entry2 = entries2.nextElement();
             String name = entry.getName();
             String name2 = entry2.getName();
             assertEquals(name, name2);
@@ -128,9 +128,9 @@ public class PackingOptionsTest extends TestCase {
         entries2 = jarFile2.entries();
         boolean inOrder = true;
         while (entries.hasMoreElements()) {
-            JarEntry entry = (JarEntry) entries.nextElement();
+            JarEntry entry = entries.nextElement();
             assertNotNull(entry);
-            JarEntry entry2 = (JarEntry) entries2.nextElement();
+            JarEntry entry2 = entries2.nextElement();
             String name = entry.getName();
             String name2 = entry2.getName();
             if (!name.equals(name2)) {
@@ -198,13 +198,13 @@ public class PackingOptionsTest extends TestCase {
         JarFile jarFile2 = new JarFile(compareFile);
 
         // Check that both jars have the same entries in the same order
-        Enumeration entries = jarFile.entries();
-        Enumeration entries2 = jarFile2.entries();
+        Enumeration<JarEntry> entries = jarFile.entries();
+        Enumeration<JarEntry> entries2 = jarFile2.entries();
         while (entries.hasMoreElements()) {
 
-            JarEntry entry = (JarEntry) entries.nextElement();
+            JarEntry entry = entries.nextElement();
             assertNotNull(entry);
-            JarEntry entry2 = (JarEntry) entries2.nextElement();
+            JarEntry entry2 = entries2.nextElement();
             String name = entry.getName();
             String name2 = entry2.getName();
             assertEquals(name, name2);
@@ -245,9 +245,9 @@ public class PackingOptionsTest extends TestCase {
         long modtime = -1;
         boolean sameAsOriginal = true;
         while (entries.hasMoreElements()) {
-            JarEntry entry = (JarEntry) entries.nextElement();
+            JarEntry entry = entries.nextElement();
             assertNotNull(entry);
-            JarEntry entry2 = (JarEntry) entries2.nextElement();
+            JarEntry entry2 = entries2.nextElement();
             String name = entry.getName();
             if (!name.startsWith("META-INF")) {
                 if (modtime == -1) {
@@ -638,10 +638,10 @@ public class PackingOptionsTest extends TestCase {
     // }
 
     private void compareJarEntries(JarFile jarFile, JarFile jarFile2) {
-        Enumeration entries = jarFile.entries();
+        Enumeration<JarEntry> entries = jarFile.entries();
         while (entries.hasMoreElements()) {
 
-            JarEntry entry = (JarEntry) entries.nextElement();
+            JarEntry entry = entries.nextElement();
             assertNotNull(entry);
 
             String name = entry.getName();
@@ -652,10 +652,10 @@ public class PackingOptionsTest extends TestCase {
 
     private void compareFiles(JarFile jarFile, JarFile jarFile2)
             throws IOException {
-        Enumeration entries = jarFile.entries();
+        Enumeration<JarEntry> entries = jarFile.entries();
         while (entries.hasMoreElements()) {
 
-            JarEntry entry = (JarEntry) entries.nextElement();
+            JarEntry entry = entries.nextElement();
             assertNotNull(entry);
 
             String name = entry.getName();

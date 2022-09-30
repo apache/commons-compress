@@ -67,7 +67,7 @@ public class AnnotationDefaultAttribute extends AnnotationsAttribute {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        final List nested = new ArrayList();
+        final List<Object> nested = new ArrayList<>();
         nested.add(attributeName);
         nested.addAll(element_value.getClassFileEntries());
         final ClassFileEntry[] nestedEntries = new ClassFileEntry[nested.size()];

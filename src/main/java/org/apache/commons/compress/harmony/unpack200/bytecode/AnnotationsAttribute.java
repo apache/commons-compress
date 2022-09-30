@@ -77,8 +77,8 @@ public abstract class AnnotationsAttribute extends Attribute {
             }
         }
 
-        public List getClassFileEntries() {
-            final List entries = new ArrayList();
+        public List<Object> getClassFileEntries() {
+            final List<Object> entries = new ArrayList<>();
             for (int i = 0; i < element_names.length; i++) {
                 entries.add(element_names[i]);
                 entries.addAll(element_values[i].getClassFileEntries());
@@ -101,13 +101,14 @@ public abstract class AnnotationsAttribute extends Attribute {
             this.value = value;
         }
 
-        public List getClassFileEntries() {
-            final List entries = new ArrayList(1);
+        public List<Object> getClassFileEntries() {
+            final List<Object> entries = new ArrayList<>(1);
             if (value instanceof CPNameAndType) {
                 // used to represent enum, so don't include the actual CPNameAndType
                 entries.add(((CPNameAndType) value).name);
                 entries.add(((CPNameAndType) value).descriptor);
             } else if (value instanceof ClassFileEntry) {
+            	// TODO? ClassFileEntry is an Object
                 entries.add(value);
             } else if (value instanceof ElementValue[]) {
                 final ElementValue[] values = (ElementValue[]) value;

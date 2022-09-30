@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class CPMethod extends CPMember {
 
-    public CPMethod(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List attributes) {
+    public CPMethod(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List<Attribute> attributes) {
         super(name, descriptor, flags, attributes);
     }
 

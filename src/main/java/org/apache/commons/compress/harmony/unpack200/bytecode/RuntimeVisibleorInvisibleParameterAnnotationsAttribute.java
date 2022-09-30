@@ -101,8 +101,8 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
             return length;
         }
 
-        public List getClassFileEntries() {
-            final List nested = new ArrayList();
+        public List<Object> getClassFileEntries() {
+            final List<Object> nested = new ArrayList<>();
             for (Annotation annotation : annotations) {
                 nested.addAll(annotation.getClassFileEntries());
             }
@@ -113,7 +113,7 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        final List nested = new ArrayList();
+        final List<Object> nested = new ArrayList<>();
         nested.add(attributeName);
         for (ParameterAnnotation parameter_annotation : parameter_annotations) {
             nested.addAll(parameter_annotation.getClassFileEntries());

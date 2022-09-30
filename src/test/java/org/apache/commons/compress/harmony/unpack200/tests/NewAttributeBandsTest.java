@@ -40,7 +40,7 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
                 new MockSegment(), new AttributeLayout("test",
                         AttributeLayout.CONTEXT_CLASS, "", 25));
-        List layoutElements = newAttributeBands.getLayoutElements();
+        List<?> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(0, layoutElements.size());
     }
 
@@ -249,7 +249,7 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
             super(segment, layout);
         }
 
-        public List getLayoutElements() {
+        public List<?> getLayoutElements() {
             return attributeLayoutElements;
         }
     }

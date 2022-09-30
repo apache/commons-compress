@@ -50,9 +50,9 @@ public class LabelForm extends ByteCodeForm {
         final int originalTarget = byteCode.getByteCodeTargets()[0];
         final int sourceIndex = byteCode.getByteCodeIndex();
         final int absoluteInstructionTargetIndex = sourceIndex + originalTarget;
-        final int targetValue = ((Integer) codeAttribute.byteCodeOffsets.get(absoluteInstructionTargetIndex))
+        final int targetValue = codeAttribute.byteCodeOffsets.get(absoluteInstructionTargetIndex)
             .intValue();
-        final int sourceValue = ((Integer) codeAttribute.byteCodeOffsets.get(sourceIndex)).intValue();
+        final int sourceValue = codeAttribute.byteCodeOffsets.get(sourceIndex).intValue();
         // The operand is the difference between the source instruction
         // and the destination instruction.
         byteCode.setOperandSigned2Bytes(targetValue - sourceValue, 0);

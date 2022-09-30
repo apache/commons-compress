@@ -72,7 +72,7 @@ public class RuntimeVisibleorInvisibleAnnotationsAttribute extends AnnotationsAt
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        final List nested = new ArrayList();
+        final List<Object> nested = new ArrayList<>();
         nested.add(attributeName);
         for (Annotation annotation : annotations) {
             nested.addAll(annotation.getClassFileEntries());

@@ -221,8 +221,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
             }
             ArrayList orderedAttributeList = new ArrayList();
             for (int classIndex = 0; classIndex < totalMethods; classIndex++) {
-                ArrayList currentAttributes = new ArrayList();
-                orderedAttributeList.add(currentAttributes);
+                orderedAttributeList.add(new ArrayList());
             }
             return orderedAttributeList;
         }

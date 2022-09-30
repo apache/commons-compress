@@ -25,18 +25,18 @@ import org.apache.commons.compress.harmony.unpack200.Segment;
 
 public class CodeAttribute extends BCIRenumberedAttribute {
 
-    public List attributes = new ArrayList();
+    public List<Attribute> attributes = new ArrayList<>();
     // instances
-    public List byteCodeOffsets = new ArrayList();
-    public List byteCodes = new ArrayList();
+    public List<Integer> byteCodeOffsets = new ArrayList<>();
+    public List<ByteCode> byteCodes = new ArrayList<>();
     public int codeLength;
-    public List exceptionTable; // of ExceptionTableEntry
+    public List<ExceptionTableEntry> exceptionTable;
     public int maxLocals;
     public int maxStack;
     private static CPUTF8 attributeName;
 
     public CodeAttribute(final int maxStack, final int maxLocals, final byte[] codePacked, final Segment segment,
-        final OperandManager operandManager, final List exceptionTable) {
+        final OperandManager operandManager, final List<ExceptionTableEntry> exceptionTable) {
         super(attributeName);
         this.maxLocals = maxLocals;
         this.maxStack = maxStack;
@@ -53,7 +53,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
             byteCode.extractOperands(operandManager, segment, codeLength);
             byteCodes.add(byteCode);
             codeLength += byteCode.getLength();
-            final int lastBytecodePosition = ((Integer) byteCodeOffsets.get(byteCodeOffsets.size() - 1)).intValue();
+            final int lastBytecodePosition = byteCodeOffsets.get(byteCodeOffsets.size() - 1).intValue();
             // This code assumes all multiple byte bytecodes are
             // replaced by a single-byte bytecode followed by
             // another bytecode.
@@ -78,8 +78,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
         // sizes, fix up the byte code targets
         // At this point, byteCodes may be a different size than
         // codePacked because of wide bytecodes.
-        for (Object byteCode2 : byteCodes) {
-            final ByteCode byteCode = (ByteCode) byteCode2;
+        for (ByteCode byteCode : byteCodes) {
             byteCode.applyByteCodeTargetFixup(this);
         }
     }
@@ -96,13 +95,12 @@ public class CodeAttribute extends BCIRenumberedAttribute {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        final ArrayList nestedEntries = new ArrayList(attributes.size() + byteCodes.size() + 10);
+        final List<ClassFileEntry> nestedEntries = new ArrayList<>(attributes.size() + byteCodes.size() + 10);
         nestedEntries.add(getAttributeName());
         nestedEntries.addAll(byteCodes);
         nestedEntries.addAll(attributes);
         // Don't forget to add the ExceptionTable catch_types
-        for (Object element : exceptionTable) {
-            final ExceptionTableEntry entry = (ExceptionTableEntry) element;
+        for (ExceptionTableEntry entry : exceptionTable) {
             final CPClass catchType = entry.getCatchType();
             // If the catch type is null, this is a finally
             // block. If it's not null, we need to add the
@@ -146,8 +144,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
         dos.writeShort(maxLocals);
 
         dos.writeInt(codeLength);
-        for (Object byteCode2 : byteCodes) {
-            final ByteCode byteCode = (ByteCode) byteCode2;
+        for (ByteCode byteCode : byteCodes) {
             byteCode.write(dos);
         }
 
@@ -181,9 +178,8 @@ public class CodeAttribute extends BCIRenumberedAttribute {
     }
 
     @Override
-    public void renumber(final List byteCodeOffsets) {
-        for (Object element : exceptionTable) {
-            final ExceptionTableEntry entry = (ExceptionTableEntry) element;
+    public void renumber(final List<Integer> byteCodeOffsets) {
+        for (ExceptionTableEntry entry : exceptionTable) {
             entry.renumber(byteCodeOffsets);
         }
     }

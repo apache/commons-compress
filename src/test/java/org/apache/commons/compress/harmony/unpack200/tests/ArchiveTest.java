@@ -87,15 +87,15 @@ public class ArchiveTest extends TestCase {
         assertTrue("Expected jar files to be a similar size, difference was "
                 + differenceInJarSizes + " bytes", differenceInJarSizes < 100);
 
-        Enumeration entries = jarFile.entries();
-        Enumeration entries2 = jarFile2.entries();
+        Enumeration<JarEntry> entries = jarFile.entries();
+        Enumeration<JarEntry> entries2 = jarFile2.entries();
         while(entries.hasMoreElements() && entries2.hasMoreElements()) {
 
-            JarEntry entry = (JarEntry) entries.nextElement();
+            JarEntry entry = entries.nextElement();
             assertNotNull(entry);
             String name = entry.getName();
 
-            JarEntry entry2 = (JarEntry) entries2.nextElement();
+            JarEntry entry2 = entries2.nextElement();
             assertNotNull(entry2);
             String name2 = entry2.getName();
 

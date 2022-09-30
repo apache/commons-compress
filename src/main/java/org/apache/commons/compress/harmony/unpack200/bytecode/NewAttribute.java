@@ -26,8 +26,8 @@ import java.util.List;
  */
 public class NewAttribute extends BCIRenumberedAttribute {
 
-    private final List lengths = new ArrayList(); // List of Integers
-    private final List body = new ArrayList();
+    private final List<Integer> lengths = new ArrayList<>();
+    private final List<Object> body = new ArrayList<>();
     private ClassConstantPool pool;
     private final int layoutIndex;
 
@@ -48,8 +48,8 @@ public class NewAttribute extends BCIRenumberedAttribute {
     @Override
     protected int getLength() {
         int length = 0;
-        for (Object length2 : lengths) {
-            length += ((Integer) length2).intValue();
+        for (Integer len : lengths) {
+            length += len.intValue();
         }
         return length;
     }
@@ -62,7 +62,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
     @Override
     protected void writeBody(final DataOutputStream dos) throws IOException {
         for (int i = 0; i < lengths.size(); i++) {
-            final int length = ((Integer) lengths.get(i)).intValue();
+            final int length = lengths.get(i).intValue();
             final Object obj = body.get(i);
             long value = 0;
             if (obj instanceof Long) {
@@ -202,33 +202,33 @@ public class NewAttribute extends BCIRenumberedAttribute {
     }
 
     @Override
-    public void renumber(final List byteCodeOffsets) {
+    public void renumber(final List<Integer> byteCodeOffsets) {
         if (!renumbered) {
             Object previous = null;
             for (Object obj : body) {
                 if (obj instanceof BCIndex) {
                     final BCIndex bcIndex = (BCIndex) obj;
-                    bcIndex.setActualValue(((Integer) byteCodeOffsets.get(bcIndex.index)).intValue());
+                    bcIndex.setActualValue(byteCodeOffsets.get(bcIndex.index).intValue());
                 } else if (obj instanceof BCOffset) {
                     final BCOffset bcOffset = (BCOffset) obj;
                     if (previous instanceof BCIndex) {
                         final int index = ((BCIndex) previous).index + bcOffset.offset;
                         bcOffset.setIndex(index);
-                        bcOffset.setActualValue(((Integer) byteCodeOffsets.get(index)).intValue());
+                        bcOffset.setActualValue(byteCodeOffsets.get(index).intValue());
                     } else if (previous instanceof BCOffset) {
                         final int index = ((BCOffset) previous).index + bcOffset.offset;
                         bcOffset.setIndex(index);
-                        bcOffset.setActualValue(((Integer) byteCodeOffsets.get(index)).intValue());
+                        bcOffset.setActualValue(byteCodeOffsets.get(index).intValue());
                     } else {
                         // Not sure if this should be able to happen
-                        bcOffset.setActualValue(((Integer) byteCodeOffsets.get(bcOffset.offset)).intValue());
+                        bcOffset.setActualValue(byteCodeOffsets.get(bcOffset.offset).intValue());
                     }
                 } else if (obj instanceof BCLength) {
                     // previous must be a BCIndex
                     final BCLength bcLength = (BCLength) obj;
                     final BCIndex prevIndex = (BCIndex) previous;
                     final int index = prevIndex.index + bcLength.length;
-                    final int actualLength = ((Integer) byteCodeOffsets.get(index)).intValue() - prevIndex.actualValue;
+                    final int actualLength = byteCodeOffsets.get(index).intValue() - prevIndex.actualValue;
                     bcLength.setActualValue(actualLength);
                 }
                 previous = obj;

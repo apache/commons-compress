@@ -60,8 +60,7 @@ public class FileBands extends BandSet {
         final int archiveModtime = segmentHeader.getArchive_modtime();
 
         final Set<String> classNames = new HashSet<>();
-        for (Object element : segmentUnit.getClassList()) {
-            final ClassReader reader = (ClassReader) element;
+        for (ClassReader reader : segmentUnit.getClassList()) {
             classNames.add(reader.getClassName());
         }
         final CPUTF8 emptyString = cpBands.getCPUtf8("");

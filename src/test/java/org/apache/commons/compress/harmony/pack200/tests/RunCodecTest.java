@@ -18,7 +18,6 @@ package org.apache.commons.compress.harmony.pack200.tests;
 
 import java.io.ByteArrayInputStream;
 
-import org.apache.commons.compress.harmony.pack200.BHSDCodec;
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PopulationCodec;
@@ -33,19 +32,19 @@ public class RunCodecTest extends TestCase {
 
     public void testRunCodec() {
         try {
-            new RunCodec(0, BHSDCodec.SIGNED5, BHSDCodec.UDELTA5);
+            new RunCodec(0, Codec.SIGNED5, Codec.UDELTA5);
             fail("Should not allow a k value of 0");
         } catch (Pack200Exception e) {
             // pass
         }
         try {
-            new RunCodec(10, null, BHSDCodec.UDELTA5);
+            new RunCodec(10, null, Codec.UDELTA5);
             fail("Should not allow a null codec");
         } catch (Pack200Exception e) {
             // pass
         }
         try {
-            new RunCodec(10, BHSDCodec.UDELTA5, null);
+            new RunCodec(10, Codec.UDELTA5, null);
             fail("Should not allow a null codec");
         } catch (Pack200Exception e) {
             // pass
@@ -150,13 +149,13 @@ public class RunCodecTest extends TestCase {
 
     public void testEncodeSingleValue() {
         try {
-            new RunCodec(10, BHSDCodec.SIGNED5, BHSDCodec.UDELTA5).encode(5);
+            new RunCodec(10, Codec.SIGNED5, Codec.UDELTA5).encode(5);
             fail("Should not allow a single value to be encoded as we don't know which codec to use");
         } catch (Pack200Exception e) {
             // pass
         }
         try {
-            new RunCodec(10, BHSDCodec.SIGNED5, BHSDCodec.UDELTA5).encode(5, 8);
+            new RunCodec(10, Codec.SIGNED5, Codec.UDELTA5).encode(5, 8);
             fail("Should not allow a single value to be encoded as we don't know which codec to use");
         } catch (Pack200Exception e) {
             // pass

@@ -124,9 +124,8 @@ public class IcBands extends BandSet {
             outerToInner.put(outerName, tuples);
             tuples.add(icTuple);
         } else {
-            for (Object tuple : tuples) {
-                final IcTuple icT = (IcTuple) tuple;
-                if (icTuple.equals(icT)) {
+            for (IcTuple tuple : tuples) {
+                if (icTuple.equals(tuple)) {
                     return;
                 }
             }
@@ -139,7 +138,7 @@ public class IcBands extends BandSet {
         return name.equals(outerName + '$' + innerName) && innerName.indexOf('$') == -1;
     }
 
-    class IcTuple implements Comparable {
+    class IcTuple implements Comparable<IcTuple> {
 
         protected CPClass C; // this class
         protected int F; // flags
@@ -169,8 +168,8 @@ public class IcBands extends BandSet {
         }
 
         @Override
-        public int compareTo(final Object arg0) {
-            return C.compareTo(((IcTuple) arg0).C);
+        public int compareTo(final IcTuple arg0) {
+            return C.compareTo(arg0.C);
         }
 
         public boolean isAnonymous() {
@@ -182,8 +181,7 @@ public class IcBands extends BandSet {
     }
 
     public IcTuple getIcTuple(final CPClass inner) {
-        for (Object element : innerClasses) {
-            final IcTuple icTuple = (IcTuple) element;
+        for (IcTuple icTuple : innerClasses) {
             if (icTuple.C.equals(inner)) {
                 return icTuple;
             }

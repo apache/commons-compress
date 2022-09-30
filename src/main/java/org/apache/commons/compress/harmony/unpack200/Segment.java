@@ -126,10 +126,10 @@ public class Segment {
         // == str
 
         // Get the source file attribute
-        final ArrayList classAttributes = classBands.getClassAttributes()[classNum];
+        final List<Attribute> classAttributes = classBands.getClassAttributes()[classNum];
         SourceFileAttribute sourceFileAttribute = null;
-        for (Object classAttribute : classAttributes) {
-            if (((Attribute) classAttribute).isSourceFileAttribute()) {
+        for (Attribute classAttribute : classAttributes) {
+            if (classAttribute.isSourceFileAttribute()) {
                 sourceFileAttribute = ((SourceFileAttribute) classAttribute);
             }
         }
@@ -166,9 +166,9 @@ public class Segment {
         // that will
         // be written out. Keep SourceFileAttributes out since we just
         // did them above.
-        final ArrayList classAttributesWithoutSourceFileAttribute = new ArrayList(classAttributes.size());
+        final List<Attribute> classAttributesWithoutSourceFileAttribute = new ArrayList<>(classAttributes.size());
         for (int index = 0; index < classAttributes.size(); index++) {
-            final Attribute attrib = (Attribute) classAttributes.get(index);
+            final Attribute attrib = classAttributes.get(index);
             if (!attrib.isSourceFileAttribute()) {
                 classAttributesWithoutSourceFileAttribute.add(attrib);
             }
@@ -178,7 +178,7 @@ public class Segment {
             + classAttributesWithoutSourceFileAttribute.size()];
         System.arraycopy(originalAttributes, 0, classFile.attributes, 0, originalAttributes.length);
         for (int index = 0; index < classAttributesWithoutSourceFileAttribute.size(); index++) {
-            final Attribute attrib = ((Attribute) classAttributesWithoutSourceFileAttribute.get(index));
+            final Attribute attrib = (classAttributesWithoutSourceFileAttribute.get(index));
             cp.add(attrib);
             classFile.attributes[originalAttributes.length + index] = attrib;
         }
@@ -223,9 +223,8 @@ public class Segment {
         final boolean ic_local_sent = ic_local != null;
         final InnerClassesAttribute innerClassesAttribute = new InnerClassesAttribute("InnerClasses");
         final IcTuple[] ic_relevant = getIcBands().getRelevantIcTuples(fullName, cp);
-        final List ic_stored = computeIcStored(ic_local, ic_relevant);
-        for (Object element : ic_stored) {
-            final IcTuple icStored = (IcTuple) element;
+        final List<IcTuple> ic_stored = computeIcStored(ic_local, ic_relevant);
+        for (IcTuple icStored : ic_stored) {
             final int innerClassIndex = icStored.thisClassIndex();
             final int outerClassIndex = icStored.outerClassIndex();
             final int simpleClassNameIndex = icStored.simpleClassNameIndex();
@@ -300,10 +299,10 @@ public class Segment {
      * @return List of tuples to be stored. If ic_local is null or empty, the values returned may not be correct. The
      *         caller will have to determine if this is the case.
      */
-    private List computeIcStored(final IcTuple[] ic_local, final IcTuple[] ic_relevant) {
-        final List result = new ArrayList(ic_relevant.length);
-        final List duplicates = new ArrayList(ic_relevant.length);
-        final Set isInResult = new HashSet(ic_relevant.length);
+    private List<IcTuple> computeIcStored(final IcTuple[] ic_local, final IcTuple[] ic_relevant) {
+        final List<IcTuple> result = new ArrayList<>(ic_relevant.length);
+        final List<IcTuple> duplicates = new ArrayList<>(ic_relevant.length);
+        final Set<IcTuple> isInResult = new HashSet<>(ic_relevant.length);
 
         // need to compute:
         // result = ic_local XOR ic_relevant
@@ -328,7 +327,7 @@ public class Segment {
 
         // eliminate "duplicates"
         for (int index = 0; index < duplicates.size(); index++) {
-            final IcTuple tuple = (IcTuple) duplicates.get(index);
+            final IcTuple tuple = duplicates.get(index);
             result.remove(tuple);
         }
 

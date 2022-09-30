@@ -88,8 +88,8 @@ public class InnerClassesAttribute extends Attribute {
 
     }
 
-    private final List innerClasses = new ArrayList();
-    private final List nestedClassFileEntries = new ArrayList();
+    private final List<InnerClassesEntry> innerClasses = new ArrayList<>();
+    private final List<ConstantPoolEntry> nestedClassFileEntries = new ArrayList<>();
 
     public InnerClassesAttribute(final String name) {
         super(attributeName);
@@ -127,7 +127,7 @@ public class InnerClassesAttribute extends Attribute {
     protected ClassFileEntry[] getNestedClassFileEntries() {
         final ClassFileEntry[] result = new ClassFileEntry[nestedClassFileEntries.size()];
         for (int index = 0; index < result.length; index++) {
-            result[index] = (ClassFileEntry) nestedClassFileEntries.get(index);
+            result[index] = nestedClassFileEntries.get(index);
         }
         return result;
     }
@@ -143,8 +143,7 @@ public class InnerClassesAttribute extends Attribute {
     @Override
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
-        for (Object element : innerClasses) {
-            final InnerClassesEntry entry = (InnerClassesEntry) element;
+        for (InnerClassesEntry entry : innerClasses) {
             entry.resolve(pool);
         }
     }
@@ -164,8 +163,7 @@ public class InnerClassesAttribute extends Attribute {
     protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(innerClasses.size());
 
-        for (Object element : innerClasses) {
-            final InnerClassesEntry entry = (InnerClassesEntry) element;
+        for (InnerClassesEntry entry : innerClasses) {
             entry.write(dos);
         }
     }

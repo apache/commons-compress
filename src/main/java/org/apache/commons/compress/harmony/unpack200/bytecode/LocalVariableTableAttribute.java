@@ -77,7 +77,7 @@ public class LocalVariableTableAttribute extends BCIRenumberedAttribute {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        final ArrayList nestedEntries = new ArrayList();
+        final List<CPUTF8> nestedEntries = new ArrayList<>();
         nestedEntries.add(getAttributeName());
         for (int i = 0; i < local_variable_table_length; i++) {
             nestedEntries.add(names[i]);
@@ -117,7 +117,7 @@ public class LocalVariableTableAttribute extends BCIRenumberedAttribute {
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.BCIRenumberedAttribute#renumber(java.util.List)
      */
     @Override
-    public void renumber(final List byteCodeOffsets) throws Pack200Exception {
+    public void renumber(final List<Integer> byteCodeOffsets) throws Pack200Exception {
         // Remember the unrenumbered start_pcs, since that's used later
         // to calculate end position.
         final int[] unrenumbered_start_pcs = new int[start_pcs.length];
@@ -159,7 +159,7 @@ public class LocalVariableTableAttribute extends BCIRenumberedAttribute {
                 revisedLength = maxSize - start_pc;
             } else {
                 // We're indexed into the byte code array
-                final int stopValue = ((Integer) byteCodeOffsets.get(stopIndex)).intValue();
+                final int stopValue = byteCodeOffsets.get(stopIndex).intValue();
                 revisedLength = stopValue - start_pc;
             }
             lengths[index] = revisedLength;

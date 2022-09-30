@@ -120,17 +120,17 @@ public class AttributeLayoutMap {
             new AttributeLayout(AttributeLayout.ATTRIBUTE_ANNOTATION_DEFAULT, AttributeLayout.CONTEXT_METHOD, "*", 25)};
     }
 
-    private final Map classLayouts = new HashMap();
-    private final Map fieldLayouts = new HashMap();
-    private final Map methodLayouts = new HashMap();
-    private final Map codeLayouts = new HashMap();
+    private final Map<Integer, AttributeLayout> classLayouts = new HashMap<>();
+    private final Map<Integer, AttributeLayout> fieldLayouts = new HashMap<>();
+    private final Map<Integer, AttributeLayout> methodLayouts = new HashMap<>();
+    private final Map<Integer, AttributeLayout> codeLayouts = new HashMap<>();
 
     // The order of the maps in this array should not be changed as their
     // indices correspond to
     // the value of their context constants (AttributeLayout.CONTEXT_CLASS etc.)
-    private final Map[] layouts = {classLayouts, fieldLayouts, methodLayouts, codeLayouts};
+	private final Map[] layouts = { classLayouts, fieldLayouts, methodLayouts, codeLayouts };
 
-    private final Map layoutsToBands = new HashMap();
+    private final Map<AttributeLayout, NewAttributeBands> layoutsToBands = new HashMap<>();
 
     public AttributeLayoutMap() throws Pack200Exception {
         final AttributeLayout[] defaultAttributeLayouts = getDefaultAttributeLayouts();
@@ -140,28 +140,12 @@ public class AttributeLayoutMap {
     }
 
     public void add(final AttributeLayout layout) {
-        layouts[layout.getContext()].put(Integer.valueOf(layout.getIndex()), layout);
+        getLayout(layout.getContext()).put(Integer.valueOf(layout.getIndex()), layout);
     }
 
     public void add(final AttributeLayout layout, final NewAttributeBands newBands) {
         add(layout);
         layoutsToBands.put(layout, newBands);
-    }
-
-    public AttributeLayout getAttributeLayout(final String name, final int context) {
-        final Map map = layouts[context];
-        for (Object element : map.values()) {
-            final AttributeLayout layout = (AttributeLayout) element;
-            if (layout.getName().equals(name)) {
-                return layout;
-            }
-        }
-        return null;
-    }
-
-    public AttributeLayout getAttributeLayout(final int index, final int context) {
-        final Map map = layouts[context];
-        return (AttributeLayout) map.get(Integer.valueOf(index));
     }
 
     /**
@@ -170,16 +154,16 @@ public class AttributeLayoutMap {
      * @throws Pack200Exception Thrown when the name layout/name combination exists twice for a context.
      */
     public void checkMap() throws Pack200Exception {
-        for (final Map map : layouts) {
-            Collection c = map.values();
+        for (final Map<Integer, AttributeLayout> map : layouts) {
+            Collection<AttributeLayout> c = map.values();
             if (!(c instanceof List)) {
-                c = new ArrayList(c);
+                c = new ArrayList<>(c);
             }
-            final List l = (List) c;
-            for (int j = 0; j < l.size(); j++) {
-                final AttributeLayout layout1 = (AttributeLayout) l.get(j);
-                for (int j2 = j + 1; j2 < l.size(); j2++) {
-                    final AttributeLayout layout2 = (AttributeLayout) l.get(j2);
+            final List<AttributeLayout> layouts = (List<AttributeLayout>) c;
+            for (int j = 0; j < layouts.size(); j++) {
+                final AttributeLayout layout1 = layouts.get(j);
+                for (int j2 = j + 1; j2 < layouts.size(); j2++) {
+                    final AttributeLayout layout2 = layouts.get(j2);
                     if (layout1.getName().equals(layout2.getName())
                         && layout1.getLayout().equals(layout2.getLayout())) {
                         throw new Pack200Exception(
@@ -191,8 +175,27 @@ public class AttributeLayoutMap {
         }
     }
 
-    public NewAttributeBands getAttributeBands(final AttributeLayout layout) {
-        return (NewAttributeBands) layoutsToBands.get(layout);
+	public NewAttributeBands getAttributeBands(final AttributeLayout layout) {
+        return layoutsToBands.get(layout);
     }
+
+    public AttributeLayout getAttributeLayout(final int index, final int context) {
+        final Map<Integer, AttributeLayout> map = getLayout(context);
+        return map.get(Integer.valueOf(index));
+    }
+
+    public AttributeLayout getAttributeLayout(final String name, final int context) {
+        final Map<Integer, AttributeLayout> map = getLayout(context);
+        for (AttributeLayout layout : map.values()) {
+            if (layout.getName().equals(name)) {
+                return layout;
+            }
+        }
+        return null;
+    }
+
+    private Map<Integer, AttributeLayout> getLayout(final int context) {
+		return layouts[context];
+	}
 
 }

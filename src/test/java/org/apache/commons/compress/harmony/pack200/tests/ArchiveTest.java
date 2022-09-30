@@ -297,10 +297,10 @@ public class ArchiveTest extends TestCase {
     }
 
     private void compareJarEntries(JarFile jarFile, JarFile jarFile2) {
-        Enumeration entries = jarFile.entries();
+        Enumeration<JarEntry> entries = jarFile.entries();
         while (entries.hasMoreElements()) {
 
-            JarEntry entry = (JarEntry) entries.nextElement();
+            JarEntry entry = entries.nextElement();
             assertNotNull(entry);
 
             String name = entry.getName();
@@ -311,10 +311,10 @@ public class ArchiveTest extends TestCase {
 
     private void compareFiles(JarFile jarFile, JarFile jarFile2)
             throws IOException {
-        Enumeration entries = jarFile.entries();
+        Enumeration<JarEntry> entries = jarFile.entries();
         while (entries.hasMoreElements()) {
 
-            JarEntry entry = (JarEntry) entries.nextElement();
+            JarEntry entry = entries.nextElement();
             assertNotNull(entry);
 
             String name = entry.getName();

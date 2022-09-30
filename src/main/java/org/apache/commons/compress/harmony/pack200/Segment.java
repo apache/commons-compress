@@ -415,7 +415,7 @@ public class Segment extends ClassVisitor {
         }
 
         @Override
-        public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label[] labels) {
+        public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label... labels) {
             bcBands.visitTableSwitchInsn(min, max, dflt, labels);
         }
 
@@ -445,13 +445,13 @@ public class Segment extends ClassVisitor {
         private String desc;
         private boolean visible;
 
-        private final List nameRU = new ArrayList();
-        private final List T = new ArrayList(); // tags
-        private final List values = new ArrayList();
-        private final List caseArrayN = new ArrayList();
-        private final List nestTypeRS = new ArrayList();
-        private final List nestNameRU = new ArrayList();
-        private final List nestPairN = new ArrayList();
+        private final List<String> nameRU = new ArrayList<>();
+        private final List<String> tags = new ArrayList<>(); // tags
+        private final List<Object> values = new ArrayList<>();
+        private final List<Integer> caseArrayN = new ArrayList<>();
+        private final List<String> nestTypeRS = new ArrayList<>();
+        private final List<String> nestNameRU = new ArrayList<>();
+        private final List<Integer> nestPairN = new ArrayList<>();
 
         public SegmentAnnotationVisitor(final int context, final String desc, final boolean visible) {
             super(ASM_API);
@@ -480,12 +480,12 @@ public class Segment extends ClassVisitor {
                 name = "";
             }
             nameRU.add(name);
-            addValueAndTag(value, T, values);
+            addValueAndTag(value, tags, values);
         }
 
         @Override
         public AnnotationVisitor visitAnnotation(String name, final String desc) {
-            T.add("@");
+            tags.add("@");
             if (name == null) {
                 name = "";
             }
@@ -495,10 +495,10 @@ public class Segment extends ClassVisitor {
             return new AnnotationVisitor(context, av) {
                 @Override
                 public void visit(final String name, final Object value) {
-                    final Integer numPairs = (Integer) nestPairN.remove(nestPairN.size() - 1);
+                    final Integer numPairs = nestPairN.remove(nestPairN.size() - 1);
                     nestPairN.add(Integer.valueOf(numPairs.intValue() + 1));
                     nestNameRU.add(name);
-                    addValueAndTag(value, T, values);
+                    addValueAndTag(value, tags, values);
                 }
 
                 @Override
@@ -519,9 +519,9 @@ public class Segment extends ClassVisitor {
 
                 @Override
                 public void visitEnum(final String name, final String desc, final String value) {
-                    final Integer numPairs = (Integer) nestPairN.remove(nestPairN.size() - 1);
+                    final Integer numPairs = nestPairN.remove(nestPairN.size() - 1);
                     nestPairN.add(Integer.valueOf(numPairs.intValue() + 1));
-                    T.add("e");
+                    tags.add("e");
                     nestNameRU.add(name);
                     values.add(desc);
                     values.add(value);
@@ -531,32 +531,32 @@ public class Segment extends ClassVisitor {
 
         @Override
         public AnnotationVisitor visitArray(String name) {
-            T.add("[");
+            tags.add("[");
             if (name == null) {
                 name = "";
             }
             nameRU.add(name);
             caseArrayN.add(Integer.valueOf(0));
-            return new ArrayVisitor(caseArrayN, T, nameRU, values);
+            return new ArrayVisitor(caseArrayN, tags, nameRU, values);
         }
 
         @Override
         public void visitEnd() {
             if (desc == null) {
-                Segment.this.classBands.addAnnotationDefault(nameRU, T, values, caseArrayN, nestTypeRS, nestNameRU,
+                Segment.this.classBands.addAnnotationDefault(nameRU, tags, values, caseArrayN, nestTypeRS, nestNameRU,
                     nestPairN);
             } else if (parameter != -1) {
-                Segment.this.classBands.addParameterAnnotation(parameter, desc, visible, nameRU, T, values, caseArrayN,
+                Segment.this.classBands.addParameterAnnotation(parameter, desc, visible, nameRU, tags, values, caseArrayN,
                     nestTypeRS, nestNameRU, nestPairN);
             } else {
-                Segment.this.classBands.addAnnotation(context, desc, visible, nameRU, T, values, caseArrayN, nestTypeRS,
+                Segment.this.classBands.addAnnotation(context, desc, visible, nameRU, tags, values, caseArrayN, nestTypeRS,
                     nestNameRU, nestPairN);
             }
         }
 
         @Override
         public void visitEnum(String name, final String desc, final String value) {
-            T.add("e");
+            tags.add("e");
             if (name == null) {
                 name = "";
             }
@@ -569,16 +569,16 @@ public class Segment extends ClassVisitor {
     public class ArrayVisitor extends AnnotationVisitor {
 
         private final int indexInCaseArrayN;
-        private final List caseArrayN;
-        private final List values;
-        private final List nameRU;
-        private final List T;
+        private final List<Integer> caseArrayN;
+        private final List<Object> values;
+        private final List<String> nameRU;
+        private final List<String> tags;
 
-        public ArrayVisitor(final List caseArrayN, final List T, final List nameRU, final List values) {
+        public ArrayVisitor(final List<Integer> caseArrayN, final List<String> tags, final List<String> nameRU, final List<Object> values) {
             super(ASM_API);
 
             this.caseArrayN = caseArrayN;
-            this.T = T;
+            this.tags = tags;
             this.nameRU = nameRU;
             this.values = values;
             this.indexInCaseArrayN = caseArrayN.size() - 1;
@@ -586,12 +586,12 @@ public class Segment extends ClassVisitor {
 
         @Override
         public void visit(String name, final Object value) {
-            final Integer numCases = (Integer) caseArrayN.remove(indexInCaseArrayN);
+            final Integer numCases = caseArrayN.remove(indexInCaseArrayN);
             caseArrayN.add(indexInCaseArrayN, Integer.valueOf(numCases.intValue() + 1));
             if (name == null) {
                 name = "";
             }
-            addValueAndTag(value, T, values);
+            addValueAndTag(value, tags, values);
         }
 
         @Override
@@ -601,13 +601,13 @@ public class Segment extends ClassVisitor {
 
         @Override
         public AnnotationVisitor visitArray(String name) {
-            T.add("[");
+            tags.add("[");
             if (name == null) {
                 name = "";
             }
             nameRU.add(name);
             caseArrayN.add(Integer.valueOf(0));
-            return new ArrayVisitor(caseArrayN, T, nameRU, values);
+            return new ArrayVisitor(caseArrayN, tags, nameRU, values);
         }
 
         @Override
@@ -616,9 +616,9 @@ public class Segment extends ClassVisitor {
 
         @Override
         public void visitEnum(final String name, final String desc, final String value) {
-            final Integer numCases = (Integer) caseArrayN.remove(caseArrayN.size() - 1);
+            final Integer numCases = caseArrayN.remove(caseArrayN.size() - 1);
             caseArrayN.add(Integer.valueOf(numCases.intValue() + 1));
-            T.add("e");
+            tags.add("e");
             values.add(desc);
             values.add(value);
         }
@@ -670,36 +670,36 @@ public class Segment extends ClassVisitor {
     }
 
     // helper method for annotation visitors
-    private void addValueAndTag(final Object value, final List T, final List values) {
+    private void addValueAndTag(final Object value, final List<String> tags, final List<Object> values) {
         if (value instanceof Integer) {
-            T.add("I");
+            tags.add("I");
             values.add(value);
         } else if (value instanceof Double) {
-            T.add("D");
+            tags.add("D");
             values.add(value);
         } else if (value instanceof Float) {
-            T.add("F");
+            tags.add("F");
             values.add(value);
         } else if (value instanceof Long) {
-            T.add("J");
+            tags.add("J");
             values.add(value);
         } else if (value instanceof Byte) {
-            T.add("B");
+            tags.add("B");
             values.add(Integer.valueOf(((Byte) value).intValue()));
         } else if (value instanceof Character) {
-            T.add("C");
+            tags.add("C");
             values.add(Integer.valueOf(((Character) value).charValue()));
         } else if (value instanceof Short) {
-            T.add("S");
+            tags.add("S");
             values.add(Integer.valueOf(((Short) value).intValue()));
         } else if (value instanceof Boolean) {
-            T.add("Z");
+            tags.add("Z");
             values.add(Integer.valueOf(((Boolean) value).booleanValue() ? 1 : 0));
         } else if (value instanceof String) {
-            T.add("s");
+            tags.add("s");
             values.add(value);
         } else if (value instanceof Type) {
-            T.add("c");
+            tags.add("c");
             values.add(((Type) value).toString());
         }
     }
@@ -737,6 +737,8 @@ public class Segment extends ClassVisitor {
      * default the class file needs to be passed through as-is in the file_bands rather than being packed with pack200.
      */
     public static class PassException extends RuntimeException {
+
+		private static final long serialVersionUID = 1L;
 
     }
 }

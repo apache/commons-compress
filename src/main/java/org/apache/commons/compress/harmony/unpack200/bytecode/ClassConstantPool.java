@@ -33,15 +33,15 @@ import org.apache.commons.compress.harmony.unpack200.Segment;
  */
 public class ClassConstantPool {
 
-    protected HashSet entriesContainsSet = new HashSet();
-    protected HashSet othersContainsSet = new HashSet();
+    protected HashSet<ClassFileEntry> entriesContainsSet = new HashSet<>();
+    protected HashSet<ClassFileEntry> othersContainsSet = new HashSet<>();
 
-    private final HashSet mustStartClassPool = new HashSet();
+    private final HashSet<ClassFileEntry> mustStartClassPool = new HashSet<>();
 
-    protected Map indexCache;
+    protected Map<ClassFileEntry, Integer> indexCache;
 
-    private final List others = new ArrayList(500);
-    private final List entries = new ArrayList(500);
+    private final List<ClassFileEntry> others = new ArrayList<>(500);
+    private final List<ClassFileEntry> entries = new ArrayList<>(500);
 
     private boolean resolved;
 
@@ -64,8 +64,8 @@ public class ClassConstantPool {
         boolean added = true;
 
         // initial assignment
-        final ArrayList parents = new ArrayList(512);
-        final ArrayList children = new ArrayList(512);
+        final List<ClassFileEntry> parents = new ArrayList<>(512);
+        final List<ClassFileEntry> children = new ArrayList<>(512);
 
         // adding old entries
         parents.addAll(entries);
@@ -83,7 +83,7 @@ public class ClassConstantPool {
             // get the parents' children and add them to buffer
             // concurrently add parents to target storage
             for (int indexParents = 0; indexParents < parents.size(); indexParents++) {
-                final ClassFileEntry entry = (ClassFileEntry) parents.get(indexParents);
+                final ClassFileEntry entry = parents.get(indexParents);
 
                 // traverse children
                 final ClassFileEntry[] entryChildren = entry.getNestedClassFileEntries();
@@ -115,7 +115,7 @@ public class ClassConstantPool {
         if (null == indexCache) {
             throw new IllegalStateException("Index cache is not initialized!");
         }
-        final Integer entryIndex = ((Integer) indexCache.get(entry));
+        final Integer entryIndex = (indexCache.get(entry));
         // If the entry isn't found, answer -1. Otherwise answer the entry.
         if (entryIndex != null) {
             return entryIndex.intValue() + 1;
@@ -131,7 +131,7 @@ public class ClassConstantPool {
         if (!resolved) {
             throw new IllegalStateException("Constant pool is not yet resolved; this does not make any sense");
         }
-        return (ClassFileEntry) entries.get(--i);
+        return entries.get(--i);
     }
 
     public void resolve(final Segment segment) {
@@ -140,27 +140,25 @@ public class ClassConstantPool {
 
         resolved = true;
 
-        for (Object entry2 : entries) {
-            final ClassFileEntry entry = (ClassFileEntry) entry2;
+        for (ClassFileEntry entry : entries) {
             entry.resolve(this);
         }
 
-        for (Object other : others) {
-            final ClassFileEntry entry = (ClassFileEntry) other;
-            entry.resolve(this);
+        for (ClassFileEntry other : others) {
+            other.resolve(this);
         }
 
     }
 
     private void initialSort() {
-        final TreeSet inCpAll = new TreeSet(
+        final TreeSet<ClassFileEntry> inCpAll = new TreeSet<>(
                 Comparator.comparingInt(arg0 -> ((ConstantPoolEntry) arg0).getGlobalIndex()));
-        final TreeSet cpUtf8sNotInCpAll = new TreeSet(
+        final TreeSet<ClassFileEntry> cpUtf8sNotInCpAll = new TreeSet<>(
                 Comparator.comparing(arg0 -> ((CPUTF8) arg0).underlyingString()));
-        final TreeSet cpClassesNotInCpAll = new TreeSet(
+        final TreeSet<ClassFileEntry> cpClassesNotInCpAll = new TreeSet<>(
                 Comparator.comparing(arg0 -> ((CPClass) arg0).getName()));
 
-        for (Object entry2 : entries) {
+        for (ClassFileEntry entry2 : entries) {
             final ConstantPoolEntry entry = (ConstantPoolEntry) entry2;
             if (entry.getGlobalIndex() == -1) {
                 if (entry instanceof CPUTF8) {
@@ -180,7 +178,7 @@ public class ClassConstantPool {
         entries.addAll(cpClassesNotInCpAll);
     }
 
-    public List entries() {
+    public List<ClassFileEntry> entries() {
         return Collections.unmodifiableList(entries);
     }
 
@@ -190,21 +188,20 @@ public class ClassConstantPool {
         // references to objects which need to be at the
         // start of the class pool
 
-        final ArrayList startOfPool = new ArrayList(entries.size());
-        final ArrayList finalSort = new ArrayList(entries.size());
+        final List<ClassFileEntry> startOfPool = new ArrayList<>(entries.size());
+        final List<ClassFileEntry> finalSort = new ArrayList<>(entries.size());
 
-        for (Object entry : entries) {
-            final ClassFileEntry nextEntry = (ClassFileEntry) entry;
-            if (mustStartClassPool.contains(nextEntry)) {
-                startOfPool.add(nextEntry);
+        for (ClassFileEntry entry : entries) {
+            if (mustStartClassPool.contains(entry)) {
+                startOfPool.add(entry);
             } else {
-                finalSort.add(nextEntry);
+                finalSort.add(entry);
             }
         }
 
         // copy over and rebuild the cache
         //
-        indexCache = new HashMap(entries.size());
+        indexCache = new HashMap<>(entries.size());
         int index = 0;
 
         entries.clear();

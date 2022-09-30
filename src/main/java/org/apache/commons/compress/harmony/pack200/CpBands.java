@@ -58,7 +58,7 @@ public class CpBands extends BandSet {
     private final Map<String, CPMethodOrField> stringsToCpField = new HashMap<>();
     private final Map<String, CPMethodOrField> stringsToCpIMethod = new HashMap<>();
 
-    private final Map<Object, CPConstant> objectsToCPConstant = new HashMap<>();
+    private final Map<Object, CPConstant<?>> objectsToCPConstant = new HashMap<>();
 
     private final Segment segment;
 
@@ -546,8 +546,8 @@ public class CpBands extends BandSet {
         return cpF;
     }
 
-    public CPConstant getConstant(final Object value) {
-        CPConstant constant = objectsToCPConstant.get(value);
+    public CPConstant<?> getConstant(final Object value) {
+        CPConstant<?> constant = objectsToCPConstant.get(value);
         if (constant == null) {
             if (value instanceof Integer) {
                 constant = new CPInt(((Integer) value).intValue());

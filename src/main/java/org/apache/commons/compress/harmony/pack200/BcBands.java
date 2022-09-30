@@ -48,20 +48,20 @@ public class BcBands extends BandSet {
     
     // Integers and/or Labels?
     private final List bcLabel = new ArrayList();
-    private final List bcIntref = new ArrayList();
-    private final List bcFloatRef = new ArrayList();
-    private final List bcLongRef = new ArrayList();
-    private final List bcDoubleRef = new ArrayList();
-    private final List bcStringRef = new ArrayList();
-    private final List bcClassRef = new ArrayList();
-    private final List bcFieldRef = new ArrayList();
-    private final List bcMethodRef = new ArrayList();
-    private final List bcIMethodRef = new ArrayList();
-    private List bcThisField = new ArrayList();
-    private final List bcSuperField = new ArrayList();
-    private List bcThisMethod = new ArrayList();
-    private List bcSuperMethod = new ArrayList();
-    private List bcInitRef = new ArrayList();
+    private final List<CPInt> bcIntref = new ArrayList<>();
+    private final List<CPFloat> bcFloatRef = new ArrayList<>();
+    private final List<CPLong> bcLongRef = new ArrayList<>();
+    private final List<CPDouble> bcDoubleRef = new ArrayList<>();
+    private final List<CPString> bcStringRef = new ArrayList<>();
+    private final List<CPClass> bcClassRef = new ArrayList<>();
+    private final List<CPMethodOrField> bcFieldRef = new ArrayList<>();
+    private final List<CPMethodOrField> bcMethodRef = new ArrayList<>();
+    private final List<CPMethodOrField> bcIMethodRef = new ArrayList<>();
+    private List bcThisField = new ArrayList<>();
+    private final List bcSuperField = new ArrayList<>();
+    private List bcThisMethod = new ArrayList<>();
+    private List bcSuperMethod = new ArrayList<>();
+    private List bcInitRef = new ArrayList<>();
 
     private String currentClass;
     private String superClass;
@@ -194,20 +194,18 @@ public class BcBands extends BandSet {
         // out.write(encodeBandInt(integerListToArray(bcEscByte), Codec.BYTE1));
     }
 
-    private List getIndexInClass(final List cPMethodOrFieldList) {
-        final List indices = new ArrayList(cPMethodOrFieldList.size());
+    private List<Integer> getIndexInClass(final List<CPMethodOrField> cPMethodOrFieldList) {
+        final List<Integer> indices = new ArrayList<>(cPMethodOrFieldList.size());
         for (int i = 0; i < cPMethodOrFieldList.size(); i++) {
-            final CPMethodOrField cpMF = (CPMethodOrField) cPMethodOrFieldList.get(i);
-            indices.add(Integer.valueOf(cpMF.getIndexInClass()));
+            indices.add(Integer.valueOf(cPMethodOrFieldList.get(i).getIndexInClass()));
         }
         return indices;
     }
 
-    private List getIndexInClassForConstructor(final List cPMethodList) {
-        final List indices = new ArrayList(cPMethodList.size());
+    private List<Integer> getIndexInClassForConstructor(final List<CPMethodOrField> cPMethodList) {
+        final List<Integer> indices = new ArrayList<>(cPMethodList.size());
         for (int i = 0; i < cPMethodList.size(); i++) {
-            final CPMethodOrField cpMF = (CPMethodOrField) cPMethodList.get(i);
-            indices.add(Integer.valueOf(cpMF.getIndexInClassForConstructor()));
+            indices.add(Integer.valueOf(cPMethodList.get(i).getIndexInClassForConstructor()));
         }
         return indices;
     }
@@ -341,27 +339,27 @@ public class BcBands extends BandSet {
     }
 
     public void visitLdcInsn(final Object cst) {
-        final CPConstant constant = cpBands.getConstant(cst);
+        final CPConstant<?> constant = cpBands.getConstant(cst);
         if (segment.lastConstantHadWideIndex() || constant instanceof CPLong || constant instanceof CPDouble) {
             byteCodeOffset += 3;
             if (constant instanceof CPInt) {
                 bcCodes.add(237); // ildc_w
-                bcIntref.add(constant);
+                bcIntref.add((CPInt) constant);
             } else if (constant instanceof CPFloat) {
                 bcCodes.add(238); // fldc
-                bcFloatRef.add(constant);
+                bcFloatRef.add((CPFloat) constant);
             } else if (constant instanceof CPLong) {
                 bcCodes.add(20); // lldc2_w
-                bcLongRef.add(constant);
+                bcLongRef.add((CPLong) constant);
             } else if (constant instanceof CPDouble) {
                 bcCodes.add(239); // dldc2_w
-                bcDoubleRef.add(constant);
+                bcDoubleRef.add((CPDouble) constant);
             } else if (constant instanceof CPString) {
                 bcCodes.add(19); // aldc
-                bcStringRef.add(constant);
+                bcStringRef.add((CPString) constant);
             } else if (constant instanceof CPClass) {
                 bcCodes.add(236); // cldc
-                bcClassRef.add(constant);
+                bcClassRef.add((CPClass) constant);
             } else {
                 throw new IllegalArgumentException("Constant should not be null");
             }
@@ -369,16 +367,16 @@ public class BcBands extends BandSet {
             byteCodeOffset += 2;
             if (constant instanceof CPInt) {
                 bcCodes.add(234); // ildc
-                bcIntref.add(constant);
+                bcIntref.add((CPInt) constant);
             } else if (constant instanceof CPFloat) {
                 bcCodes.add(235); // fldc
-                bcFloatRef.add(constant);
+                bcFloatRef.add((CPFloat) constant);
             } else if (constant instanceof CPString) {
                 bcCodes.add(18); // aldc
-                bcStringRef.add(constant);
+                bcStringRef.add((CPString) constant);
             } else if (constant instanceof CPClass) {
                 bcCodes.add(233); // cldc
-                bcClassRef.add(constant);
+                bcClassRef.add((CPClass) constant);
             }
         }
         updateRenumbering();
@@ -465,7 +463,7 @@ public class BcBands extends BandSet {
         bcByte.add(dimensions & 0xFF);
     }
 
-    public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label[] labels) {
+    public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label... labels) {
         bcCodes.add(TABLESWITCH);
         bcLabel.add(dflt);
         bcLabelRelativeOffsets.add(byteCodeOffset);

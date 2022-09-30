@@ -70,7 +70,7 @@ public class BcBands extends BandSet {
     private int[] bcEscSize;
     private int[][] bcEscByte;
 
-    private List wideByteCodes;
+    private List<Integer> wideByteCodes;
 
     /**
      * @param segment TODO
@@ -121,8 +121,8 @@ public class BcBands extends BandSet {
         methodByteCodePacked = new byte[classCount][][];
         int bcParsed = 0;
 
-        final List switchIsTableSwitch = new ArrayList();
-        wideByteCodes = new ArrayList();
+        final List<Boolean> switchIsTableSwitch = new ArrayList<>();
+        wideByteCodes = new ArrayList<>();
         for (int c = 0; c < classCount; c++) {
             final int numberOfMethods = methodFlags[c].length;
             methodByteCodePacked[c] = new byte[numberOfMethods][];
@@ -293,7 +293,7 @@ public class BcBands extends BandSet {
         bcCaseCount = decodeBandInt("bc_case_count", in, Codec.UNSIGNED5, bcCaseCountCount);
         int bcCaseValueCount = 0;
         for (int i = 0; i < bcCaseCount.length; i++) {
-            final boolean isTableSwitch = ((Boolean) switchIsTableSwitch.get(i)).booleanValue();
+            final boolean isTableSwitch = switchIsTableSwitch.get(i).booleanValue();
             if (isTableSwitch) {
                 bcCaseValueCount += 1;
             } else {
@@ -337,7 +337,7 @@ public class BcBands extends BandSet {
         final long[][] methodFlags = segment.getClassBands().getMethodFlags();
         final int[] codeMaxNALocals = segment.getClassBands().getCodeMaxNALocals();
         final int[] codeMaxStack = segment.getClassBands().getCodeMaxStack();
-        final ArrayList[][] methodAttributes = segment.getClassBands().getMethodAttributes();
+        final ArrayList<Attribute>[][] methodAttributes = segment.getClassBands().getMethodAttributes();
         final String[][] methodDescr = segment.getClassBands().getMethodDescr();
 
         final AttributeLayoutMap attributeDefinitionMap = segment.getAttrDefinitionBands().getAttributeDefinitionMap();
@@ -351,7 +351,7 @@ public class BcBands extends BandSet {
 
         final int[] wideByteCodeArray = new int[wideByteCodes.size()];
         for (int index = 0; index < wideByteCodeArray.length; index++) {
-            wideByteCodeArray[index] = ((Integer) wideByteCodes.get(index)).intValue();
+            wideByteCodeArray[index] = wideByteCodes.get(index).intValue();
         }
         final OperandManager operandManager = new OperandManager(bcCaseCount, bcCaseValue, bcByte, bcShort, bcLocal,
             bcLabel, bcIntRef, bcFloatRef, bcLongRef, bcDoubleRef, bcStringRef, bcClassRef, bcFieldRef, bcMethodRef,
@@ -359,7 +359,7 @@ public class BcBands extends BandSet {
         operandManager.setSegment(segment);
 
         int i = 0;
-        final ArrayList orderedCodeAttributes = segment.getClassBands().getOrderedCodeAttributes();
+        final ArrayList<List<Attribute>> orderedCodeAttributes = segment.getClassBands().getOrderedCodeAttributes();
         int codeAttributeIndex = 0;
 
         // Exception table fields
@@ -387,7 +387,7 @@ public class BcBands extends BandSet {
                     final String[] cpClass = segment.getCpBands().getCpClass();
                     operandManager.setCurrentClass(cpClass[segment.getClassBands().getClassThisInts()[c]]);
                     operandManager.setSuperClass(cpClass[segment.getClassBands().getClassSuperInts()[c]]);
-                    final List exceptionTable = new ArrayList();
+                    final List<ExceptionTableEntry> exceptionTable = new ArrayList<>();
                     if (handlerCount != null) {
                         for (int j = 0; j < handlerCount[i]; j++) {
                             final int handlerClass = handlerClassTypes[i][j] - 1;
@@ -405,11 +405,10 @@ public class BcBands extends BandSet {
                     }
                     final CodeAttribute codeAttr = new CodeAttribute(maxStack, maxLocal, methodByteCodePacked[c][m],
                         segment, operandManager, exceptionTable);
-                    final ArrayList methodAttributesList = methodAttributes[c][m];
+                    final List<Attribute> methodAttributesList = methodAttributes[c][m];
                     // Make sure we add the code attribute in the right place
                     int indexForCodeAttr = 0;
-                    for (Object element : methodAttributesList) {
-                        final Attribute attribute = (Attribute) element;
+                    for (Attribute attribute : methodAttributesList) {
                         if (!(attribute instanceof NewAttribute)
                             || (((NewAttribute) attribute).getLayoutIndex() >= 15)) {
                             break;
@@ -418,11 +417,11 @@ public class BcBands extends BandSet {
                     }
                     methodAttributesList.add(indexForCodeAttr, codeAttr);
                     codeAttr.renumber(codeAttr.byteCodeOffsets);
-                    List currentAttributes;
+                    List<Attribute> currentAttributes;
                     if (allCodeHasFlags) {
-                        currentAttributes = (List) orderedCodeAttributes.get(i);
+                        currentAttributes = orderedCodeAttributes.get(i);
                     } else if (codeHasFlags[i]) {
-                        currentAttributes = (List) orderedCodeAttributes.get(codeAttributeIndex);
+                        currentAttributes = orderedCodeAttributes.get(codeAttributeIndex);
                         codeAttributeIndex++;
                     } else {
                         currentAttributes = Collections.EMPTY_LIST;

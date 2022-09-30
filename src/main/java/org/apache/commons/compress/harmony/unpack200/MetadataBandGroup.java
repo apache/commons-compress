@@ -68,7 +68,7 @@ public class MetadataBandGroup {
         this.cpBands = cpBands;
     }
 
-    private List attributes;
+    private List<Attribute> attributes;
 
     public int[] param_NB;
     public int[] anno_N;
@@ -113,18 +113,18 @@ public class MetadataBandGroup {
 
     private int nestpair_N_Index;
 
-    private Iterator nestname_RU_Iterator;
+    private Iterator<CPUTF8> nestname_RU_Iterator;
 
     private int anno_N_Index;
 
     private int pair_N_Index;
 
-    public List getAttributes() {
+    public List<Attribute> getAttributes() {
         // TODO: Optimize iterators!
         if (attributes == null) {
-            attributes = new ArrayList();
+            attributes = new ArrayList<>();
             if (name_RU != null) {
-                final Iterator name_RU_Iterator = Arrays.asList(name_RU).iterator();
+                final Iterator<CPUTF8> name_RU_Iterator = Arrays.asList(name_RU).iterator();
                 if (!type.equals("AD")) {
                     T_index = 0;
                 }
@@ -161,7 +161,7 @@ public class MetadataBandGroup {
     }
 
     private Attribute getAttribute(final int numAnnotations, final CPUTF8[] types, final int[] pairCounts,
-        final Iterator namesIterator) {
+        final Iterator<CPUTF8> namesIterator) {
         final Annotation[] annotations = new Annotation[numAnnotations];
         for (int i = 0; i < numAnnotations; i++) {
             annotations[i] = getAnnotation(types[i], pairCounts[i], namesIterator);
@@ -169,7 +169,7 @@ public class MetadataBandGroup {
         return new RuntimeVisibleorInvisibleAnnotationsAttribute(type.equals("RVA") ? rvaUTF8 : riaUTF8, annotations);
     }
 
-    private Attribute getParameterAttribute(final int numParameters, final Iterator namesIterator) {
+    private Attribute getParameterAttribute(final int numParameters, final Iterator<CPUTF8> namesIterator) {
         final ParameterAnnotation[] parameter_annotations = new ParameterAnnotation[numParameters];
         for (int i = 0; i < numParameters; i++) {
             final int numAnnotations = anno_N[anno_N_Index++];
@@ -184,11 +184,11 @@ public class MetadataBandGroup {
             parameter_annotations);
     }
 
-    private Annotation getAnnotation(final CPUTF8 type, final int pairCount, final Iterator namesIterator) {
+    private Annotation getAnnotation(final CPUTF8 type, final int pairCount, final Iterator<CPUTF8> namesIterator) {
         final CPUTF8[] elementNames = new CPUTF8[pairCount];
         final ElementValue[] elementValues = new ElementValue[pairCount];
         for (int j = 0; j < elementNames.length; j++) {
-            elementNames[j] = (CPUTF8) namesIterator.next();
+            elementNames[j] = namesIterator.next();
             final int t = T[T_index++];
             elementValues[j] = new ElementValue(t, getNextValue(t));
         }

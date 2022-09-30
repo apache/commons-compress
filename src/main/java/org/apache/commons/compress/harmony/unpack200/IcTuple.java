@@ -17,6 +17,7 @@
 package org.apache.commons.compress.harmony.unpack200;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An IcTuple is the set of information that describes an inner class.
@@ -107,7 +108,7 @@ public class IcTuple {
      * @return TODO
      */
     public String[] innerBreakAtDollar(final String className) {
-        final ArrayList resultList = new ArrayList();
+        final List<String> resultList = new ArrayList<>();
         int start = 0;
         int index = 0;
         while (index < className.length()) {
@@ -123,7 +124,7 @@ public class IcTuple {
         }
         final String[] result = new String[resultList.size()];
         for (int i = 0; i < resultList.size(); i++) {
-            result[i] = (String) resultList.get(i);
+            result[i] = resultList.get(i);
         }
         return result;
     }

@@ -61,12 +61,12 @@ public class ExceptionTableEntry {
         dos.writeShort(catchTypeIndex);
     }
 
-    public void renumber(final List byteCodeOffsets) {
-        startPcRenumbered = ((Integer) byteCodeOffsets.get(startPC)).intValue();
+    public void renumber(final List<Integer> byteCodeOffsets) {
+        startPcRenumbered = byteCodeOffsets.get(startPC).intValue();
         final int endPcIndex = startPC + endPC;
-        endPcRenumbered = ((Integer) byteCodeOffsets.get(endPcIndex)).intValue();
+        endPcRenumbered = byteCodeOffsets.get(endPcIndex).intValue();
         final int handlerPcIndex = endPcIndex + handlerPC;
-        handlerPcRenumbered = ((Integer) byteCodeOffsets.get(handlerPcIndex)).intValue();
+        handlerPcRenumbered = byteCodeOffsets.get(handlerPcIndex).intValue();
     }
 
     public CPClass getCatchType() {

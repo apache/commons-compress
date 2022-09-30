@@ -27,7 +27,7 @@ import java.util.Objects;
  */
 public class CPMember extends ClassFileEntry {
 
-    List attributes;
+    List<Attribute> attributes;
     short flags;
     CPUTF8 name;
     transient int nameIndex;
@@ -43,7 +43,7 @@ public class CPMember extends ClassFileEntry {
      * @param attributes TODO
      * @throws NullPointerException if name or descriptor is null
      */
-    public CPMember(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List attributes) {
+    public CPMember(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List<Attribute> attributes) {
         this.name = Objects.requireNonNull(name, "name");
         this.descriptor = Objects.requireNonNull(descriptor, "descriptor");
         this.flags = (short) flags;
@@ -57,7 +57,7 @@ public class CPMember extends ClassFileEntry {
         entries[0] = name;
         entries[1] = descriptor;
         for (int i = 0; i < attributeCount; i++) {
-            entries[i + 2] = (Attribute) attributes.get(i);
+            entries[i + 2] = attributes.get(i);
         }
         return entries;
     }
@@ -124,7 +124,7 @@ public class CPMember extends ClassFileEntry {
         final int attributeCount = attributes.size();
         dos.writeShort(attributeCount);
         for (int i = 0; i < attributeCount; i++) {
-            final Attribute attribute = (Attribute) attributes.get(i);
+            final Attribute attribute = attributes.get(i);
             attribute.doWrite(dos);
         }
     }

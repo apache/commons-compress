@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 /**
  * Abstract superclass for a set of bands
@@ -124,10 +125,7 @@ public abstract class BandSet {
                     return band;
                 }
                 if (betterCodec instanceof PopulationCodec) {
-                    final int[] extraSpecifierInfo = results.extraMetadata;
-                    for (int element : extraSpecifierInfo) {
-                        segmentHeader.appendBandCodingSpecifier(element);
-                    }
+                    IntStream.of(results.extraMetadata).forEach(segmentHeader::appendBandCodingSpecifier);
                     return encodedBand;
                 }
                 if (betterCodec instanceof RunCodec) {
@@ -465,22 +463,13 @@ public abstract class BandSet {
         int specifier = 141 + (favouredCodec == null ? 1 : 0) + (4 * tdefL) + (unfavouredCodec == null ? 2 : 0);
         final IntList extraBandMetadata = new IntList(3);
         if (favouredCodec != null) {
-            final int[] specifiers = CodecEncoding.getSpecifier(favouredCodec, null);
-            for (int specifier2 : specifiers) {
-                extraBandMetadata.add(specifier2);
-            }
+            IntStream.of(CodecEncoding.getSpecifier(favouredCodec, null)).forEach(extraBandMetadata::add);
         }
         if (tdefL == 0) {
-            final int[] specifiers = CodecEncoding.getSpecifier(tokenCodec, null);
-            for (int specifier2 : specifiers) {
-                extraBandMetadata.add(specifier2);
-            }
+            IntStream.of(CodecEncoding.getSpecifier(tokenCodec, null)).forEach(extraBandMetadata::add);
         }
         if (unfavouredCodec != null) {
-            final int[] specifiers = CodecEncoding.getSpecifier(unfavouredCodec, null);
-            for (int specifier2 : specifiers) {
-                extraBandMetadata.add(specifier2);
-            }
+            IntStream.of(CodecEncoding.getSpecifier(unfavouredCodec, null)).forEach(extraBandMetadata::add);
         }
         final int[] extraMetadata = extraBandMetadata.toArray();
         final byte[] extraMetadataEncoded = Codec.UNSIGNED5.encode(extraMetadata);
@@ -581,7 +570,7 @@ public abstract class BandSet {
      * @param list conversion source.
      * @return conversion result.
      */
-    protected int[] cpEntryListToArray(final List<ConstantPoolEntry> list) {
+    protected int[] cpEntryListToArray(final List<? extends ConstantPoolEntry> list) {
         final int[] array = new int[list.size()];
         for (int i = 0; i < array.length; i++) {
             array[i] = list.get(i).getIndex();
@@ -595,13 +584,13 @@ public abstract class BandSet {
     /**
      * Converts a list of ConstantPoolEntrys or nulls to an int[] array of their indices +1 (or 0 for nulls)
      *
-     * @param theList conversion source.
+     * @param list conversion source.
      * @return conversion result.
      */
-    protected int[] cpEntryOrNullListToArray(final List<ConstantPoolEntry> theList) {
-        final int[] array = new int[theList.size()];
+    protected int[] cpEntryOrNullListToArray(final List<? extends ConstantPoolEntry> list) {
+        final int[] array = new int[list.size()];
         for (int j = 0; j < array.length; j++) {
-            final ConstantPoolEntry cpEntry = theList.get(j);
+            final ConstantPoolEntry cpEntry = list.get(j);
             array[j] = cpEntry == null ? 0 : cpEntry.getIndex() + 1;
             if (cpEntry != null && cpEntry.getIndex() < 0) {
                 throw new IllegalArgumentException("Index should be > 0");

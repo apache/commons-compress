@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.compress.harmony.pack200.BHSDCodec;
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PopulationCodec;
@@ -67,13 +66,13 @@ public class PopulationCodecTest extends TestCase {
 
     public void testEncodeSingleValue() {
         try {
-            new PopulationCodec(BHSDCodec.SIGNED5, BHSDCodec.SIGNED5, BHSDCodec.UDELTA5).encode(5);
+            new PopulationCodec(Codec.SIGNED5, Codec.SIGNED5, Codec.UDELTA5).encode(5);
             fail("Should not allow a single value to be encoded as we don't know which codec to use");
         } catch (Pack200Exception e) {
             // pass
         }
         try {
-            new PopulationCodec(BHSDCodec.SIGNED5, BHSDCodec.SIGNED5, BHSDCodec.UDELTA5).encode(5, 8);
+            new PopulationCodec(Codec.SIGNED5, Codec.SIGNED5, Codec.UDELTA5).encode(5, 8);
             fail("Should not allow a single value to be encoded as we don't know which codec to use");
         } catch (Pack200Exception e) {
             // pass

@@ -34,9 +34,9 @@ import java.util.List;
  */
 public class SegmentConstantPoolArrayCache {
 
-    protected IdentityHashMap knownArrays = new IdentityHashMap(1000);
+    protected IdentityHashMap<String[], CachedArray> knownArrays = new IdentityHashMap<>(1000);
 
-    protected List lastIndexes;
+    protected List<Integer> lastIndexes;
     protected String[] lastArray;
     protected String lastKey;
 
@@ -47,7 +47,7 @@ public class SegmentConstantPoolArrayCache {
      * @param key String value for which to search
      * @return List collection of index positions in the array
      */
-    public List indexesForArrayKey(final String[] array, final String key) {
+    public List<Integer> indexesForArrayKey(final String[] array, final String key) {
         if (!arrayIsCached(array)) {
             cacheArray(array);
         }
@@ -65,7 +65,7 @@ public class SegmentConstantPoolArrayCache {
         // Remember the last thing we found.
         lastArray = array;
         lastKey = key;
-        lastIndexes = ((CachedArray) knownArrays.get(array)).indexesForKey(key);
+        lastIndexes = knownArrays.get(array).indexesForKey(key);
 
         return lastIndexes;
     }
@@ -81,7 +81,7 @@ public class SegmentConstantPoolArrayCache {
         if (!knownArrays.containsKey(array)) {
             return false;
         }
-        final CachedArray cachedArray = (CachedArray) knownArrays.get(array);
+        final CachedArray cachedArray = knownArrays.get(array);
         if (cachedArray.lastKnownSize() != array.length) {
             return false;
         }
@@ -109,13 +109,13 @@ public class SegmentConstantPoolArrayCache {
     protected class CachedArray {
         String[] primaryArray;
         int lastKnownSize;
-        HashMap primaryTable;
+        HashMap<String, List<Integer>> primaryTable;
 
         public CachedArray(final String[] array) {
             super();
             this.primaryArray = array;
             this.lastKnownSize = array.length;
-            this.primaryTable = new HashMap(lastKnownSize);
+            this.primaryTable = new HashMap<>(lastKnownSize);
             cacheIndexes();
         }
 
@@ -137,11 +137,11 @@ public class SegmentConstantPoolArrayCache {
          * @param key String element of the array
          * @return List of indexes containing that key in the array.
          */
-        public List indexesForKey(final String key) {
+        public List<Integer> indexesForKey(final String key) {
             if (!primaryTable.containsKey(key)) {
                 return Collections.EMPTY_LIST;
             }
-            return (List) primaryTable.get(key);
+            return primaryTable.get(key);
         }
 
         /**
@@ -153,9 +153,9 @@ public class SegmentConstantPoolArrayCache {
             for (int index = 0; index < primaryArray.length; index++) {
                 final String key = primaryArray[index];
                 if (!primaryTable.containsKey(key)) {
-                    primaryTable.put(key, new ArrayList());
+                    primaryTable.put(key, new ArrayList<>());
                 }
-                ((ArrayList) primaryTable.get(key)).add(Integer.valueOf(index));
+                primaryTable.get(key).add(Integer.valueOf(index));
             }
         }
     }

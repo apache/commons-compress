@@ -204,7 +204,7 @@ public class SegmentConstantPool {
     protected int matchSpecificPoolEntryIndex(final String[] primaryArray, final String[] secondaryArray,
         final String primaryCompareString, final String secondaryCompareRegex, final int desiredIndex) {
         int instanceCount = -1;
-        final List indexList = arrayCache.indexesForArrayKey(primaryArray, primaryCompareString);
+        final List<Integer> indexList = arrayCache.indexesForArrayKey(primaryArray, primaryCompareString);
         if (indexList.isEmpty()) {
             // Primary key not found, no chance of finding secondary
             return -1;
