@@ -149,6 +149,7 @@ class Coders {
                 new ByteArrayInputStream(ONE_ZERO_BYTE)), inflater);
             return new DeflateDecoderInputStream(inflaterInputStream, inflater);
         }
+
         @Override
         OutputStream encode(final OutputStream out, final Object options) {
             final int level = numberOptionOrDefault(options, 9);
