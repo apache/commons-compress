@@ -221,7 +221,7 @@ public class BcBands extends BandSet {
         }
         if (renumberedOffset != 0) {
             if (renumberedOffset + 1 != bciRenumbering.size()) {
-                throw new RuntimeException("Mistake made with renumbering");
+                throw new IllegalStateException("Mistake made with renumbering");
             }
             for (int i = bcLabel.size() - 1; i >= 0; i--) {
                 final Object label = bcLabel.get(i);
@@ -309,7 +309,7 @@ public class BcBands extends BandSet {
 
     public void visitInsn(final int opcode) {
         if (opcode >= 202) {
-            throw new RuntimeException("Non-standard bytecode instructions not supported");
+            throw new IllegalArgumentException("Non-standard bytecode instructions not supported");
         }
         bcCodes.add(opcode);
         byteCodeOffset++;
@@ -363,7 +363,7 @@ public class BcBands extends BandSet {
                 bcCodes.add(236); // cldc
                 bcClassRef.add(constant);
             } else {
-                throw new RuntimeException("Constant should not be null");
+                throw new IllegalArgumentException("Constant should not be null");
             }
         } else {
             byteCodeOffset += 2;

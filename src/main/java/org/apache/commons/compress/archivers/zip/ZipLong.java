@@ -205,7 +205,7 @@ public final class ZipLong implements Cloneable, Serializable {
             return super.clone();
         } catch (final CloneNotSupportedException cnfe) {
             // impossible
-            throw new RuntimeException(cnfe); //NOSONAR
+            throw new IllegalStateException(cnfe); //NOSONAR
         }
     }
 

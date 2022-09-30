@@ -696,16 +696,15 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * @throws RuntimeException on error
      */
     @Override
-    public void setExtra(final byte[] extra) throws RuntimeException {
-        try {
-            final ZipExtraField[] local = ExtraFieldUtils.parse(extra, true, ExtraFieldParsingMode.BEST_EFFORT);
-            mergeExtraFields(local, true);
-        } catch (final ZipException e) {
-            // actually this is not possible as of Commons Compress 1.1
-            throw new RuntimeException("Error parsing extra fields for entry: " //NOSONAR
-                                       + getName() + " - " + e.getMessage(), e);
-        }
-    }
+	public void setExtra(final byte[] extra) throws RuntimeException {
+		try {
+			mergeExtraFields(ExtraFieldUtils.parse(extra, true, ExtraFieldParsingMode.BEST_EFFORT), true);
+		} catch (final ZipException e) {
+			// actually this is not possible as of Commons Compress 1.1
+			throw new IllegalArgumentException("Error parsing extra fields for entry: " // NOSONAR
+					+ getName() + " - " + e.getMessage(), e);
+		}
+	}
 
     /**
      * Unfortunately {@link java.util.zip.ZipOutputStream
@@ -721,15 +720,14 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
      * Sets the central directory part of extra fields.
      * @param b an array of bytes to be parsed into extra fields
      */
-    public void setCentralDirectoryExtra(final byte[] b) {
-        try {
-            final ZipExtraField[] central = ExtraFieldUtils.parse(b, false, ExtraFieldParsingMode.BEST_EFFORT);
-            mergeExtraFields(central, false);
-        } catch (final ZipException e) {
-            // actually this is not possible as of Commons Compress 1.19
-            throw new RuntimeException(e.getMessage(), e); //NOSONAR
-        }
-    }
+	public void setCentralDirectoryExtra(final byte[] b) {
+		try {
+			mergeExtraFields(ExtraFieldUtils.parse(b, false, ExtraFieldParsingMode.BEST_EFFORT), false);
+		} catch (final ZipException e) {
+			// actually this is not possible as of Commons Compress 1.19
+			throw new IllegalArgumentException(e.getMessage(), e); // NOSONAR
+		}
+	}
 
     /**
      * Retrieves the extra data for the local file data.

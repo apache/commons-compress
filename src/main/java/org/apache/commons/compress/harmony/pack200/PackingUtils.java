@@ -191,14 +191,14 @@ public class PackingUtils {
         long size = jarEntry.getSize();
         if (size > Integer.MAX_VALUE) {
             // TODO: Should probably allow this
-            throw new RuntimeException("Large Class!");
+            throw new IllegalArgumentException("Large Class!");
         }
         if (size < 0) {
             size = 0;
         }
         final byte[] bytes = new byte[(int) size];
         if (inputStream.read(bytes) != size) {
-            throw new RuntimeException("Error reading from stream");
+            throw new IllegalArgumentException("Error reading from stream");
         }
         return bytes;
     }

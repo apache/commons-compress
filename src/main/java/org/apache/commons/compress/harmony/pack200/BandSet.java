@@ -586,7 +586,7 @@ public abstract class BandSet {
         for (int i = 0; i < array.length; i++) {
             array[i] = list.get(i).getIndex();
             if (array[i] < 0) {
-                throw new RuntimeException("Index should be > 0");
+                throw new IllegalArgumentException("Index should be > 0");
             }
         }
         return array;
@@ -604,7 +604,7 @@ public abstract class BandSet {
             final ConstantPoolEntry cpEntry = theList.get(j);
             array[j] = cpEntry == null ? 0 : cpEntry.getIndex() + 1;
             if (cpEntry != null && cpEntry.getIndex() < 0) {
-                throw new RuntimeException("Index should be > 0");
+                throw new IllegalArgumentException("Index should be > 0");
             }
         }
         return array;

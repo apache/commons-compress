@@ -229,7 +229,7 @@ public class Segment extends ClassVisitor {
             }
             classBands.addClassAttribute(newAttribute);
         } else {
-            throw new RuntimeException("Unexpected attribute encountered: " + attribute.type);
+            throw new IllegalArgumentException("Unexpected attribute encountered: " + attribute.type);
         }
     }
 
@@ -311,7 +311,7 @@ public class Segment extends ClassVisitor {
                     classBands.addMethodAttribute(newAttribute);
                 }
             } else {
-                throw new RuntimeException("Unexpected attribute encountered: " + attribute.type);
+                throw new IllegalArgumentException("Unexpected attribute encountered: " + attribute.type);
             }
         }
 
@@ -503,13 +503,13 @@ public class Segment extends ClassVisitor {
 
                 @Override
                 public AnnotationVisitor visitAnnotation(final String arg0, final String arg1) {
-                    throw new RuntimeException("Not yet supported");
+                    throw new UnsupportedOperationException("Not yet supported");
 //                    return null;
                 }
 
                 @Override
                 public AnnotationVisitor visitArray(final String arg0) {
-                    throw new RuntimeException("Not yet supported");
+                    throw new UnsupportedOperationException("Not yet supported");
 //                    return null;
                 }
 
@@ -596,7 +596,7 @@ public class Segment extends ClassVisitor {
 
         @Override
         public AnnotationVisitor visitAnnotation(final String arg0, final String arg1) {
-            throw new RuntimeException("Not yet supported");
+            throw new UnsupportedOperationException("Not yet supported");
         }
 
         @Override
@@ -660,7 +660,7 @@ public class Segment extends ClassVisitor {
                 }
                 classBands.addFieldAttribute(newAttribute);
             } else {
-                throw new RuntimeException("Unexpected attribute encountered: " + attribute.type);
+                throw new IllegalArgumentException("Unexpected attribute encountered: " + attribute.type);
             }
         }
 

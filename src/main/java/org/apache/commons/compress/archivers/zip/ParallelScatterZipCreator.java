@@ -17,12 +17,10 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
-import org.apache.commons.compress.parallel.InputStreamSupplier;
-import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
-import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
+import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Deque;
@@ -36,7 +34,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.Deflater;
 
-import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
+import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
+import org.apache.commons.compress.parallel.InputStreamSupplier;
+import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
+import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
 
 /**
  * Creates a zip in parallel by using multiple threadlocal {@link ScatterZipOutputStream} instances.
@@ -88,7 +89,7 @@ public class ParallelScatterZipCreator {
                 streams.add(scatterStream);
                 return scatterStream;
             } catch (final IOException e) {
-                throw new RuntimeException(e); //NOSONAR
+                throw new UncheckedIOException(e); //NOSONAR
             }
         }
     };

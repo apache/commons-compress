@@ -1012,7 +1012,7 @@ public class ClassBands extends BandSet {
                 return;
             }
         }
-        throw new RuntimeException("No suitable definition for " + attributeName);
+        throw new IllegalArgumentException("No suitable definition for " + attributeName);
     }
 
     public void addFieldAttribute(final NewAttribute attribute) {
@@ -1027,7 +1027,7 @@ public class ClassBands extends BandSet {
                 return;
             }
         }
-        throw new RuntimeException("No suitable definition for " + attributeName);
+        throw new IllegalArgumentException("No suitable definition for " + attributeName);
     }
 
     public void addMethodAttribute(final NewAttribute attribute) {
@@ -1042,7 +1042,7 @@ public class ClassBands extends BandSet {
                 return;
             }
         }
-        throw new RuntimeException("No suitable definition for " + attributeName);
+        throw new IllegalArgumentException("No suitable definition for " + attributeName);
     }
 
     public void addCodeAttribute(final NewAttribute attribute) {
@@ -1057,7 +1057,7 @@ public class ClassBands extends BandSet {
                 return;
             }
         }
-        throw new RuntimeException("No suitable definition for " + attributeName);
+        throw new IllegalArgumentException("No suitable definition for " + attributeName);
     }
 
     public void addMaxStack(final int maxStack, int maxLocals) {

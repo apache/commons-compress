@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -808,7 +809,7 @@ public class NewAttributeBands extends BandSet {
             try {
                 result = result << 8 | stream.read();
             } catch (final IOException e) {
-                throw new RuntimeException("Error reading unknown attribute");
+                throw new UncheckedIOException("Error reading unknown attribute", e);
             }
         }
         // use casting to preserve sign

@@ -284,7 +284,7 @@ public class PackingOptions {
     public void setUnknownAttributeAction(final String unknownAttributeAction) {
         this.unknownAttributeAction = unknownAttributeAction;
         if (!PASS.equals(unknownAttributeAction) && !ERROR.equals(unknownAttributeAction) && !STRIP.equals(unknownAttributeAction)) {
-            throw new RuntimeException("Incorrect option for -U, " + unknownAttributeAction);
+            throw new IllegalArgumentException("Incorrect option for -U, " + unknownAttributeAction);
         }
     }
 

@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -54,7 +55,7 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
             throw ex;
         } catch (final IOException ex) {
             // must convert exception to stay backwards compatible with Compress 1.10 to 1.13
-            throw new RuntimeException(ex); // NOSONAR
+            throw new UncheckedIOException(ex); // NOSONAR
         }
     }
 

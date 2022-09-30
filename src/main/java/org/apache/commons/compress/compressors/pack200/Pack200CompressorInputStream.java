@@ -22,11 +22,12 @@ package org.apache.commons.compress.compressors.pack200;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.Map;
 import java.util.jar.JarOutputStream;
-import org.apache.commons.compress.java.util.jar.Pack200;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.java.util.jar.Pack200;
 import org.apache.commons.compress.utils.CloseShieldFilterInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
@@ -223,7 +224,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
         try {
             streamBridge.getInput().mark(limit);
         } catch (final IOException ex) {
-            throw new RuntimeException(ex); //NOSONAR
+            throw new UncheckedIOException(ex); //NOSONAR
         }
     }
 

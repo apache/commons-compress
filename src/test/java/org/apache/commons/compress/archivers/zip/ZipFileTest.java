@@ -854,57 +854,51 @@ public class ZipFileTest {
         }
     }
 
-    private void assertAllReadMethods(final byte[] expected, final ZipFile zipFile, final ZipArchiveEntry entry) {
-        // simple IOUtil read
-        try (InputStream stream = zf.getInputStream(entry)) {
-            final byte[] full = IOUtils.toByteArray(stream);
-            assertArrayEquals(expected, full);
-        }
-        catch (final IOException ex) {
-            throw new RuntimeException(ex);
-        }
+	private void assertAllReadMethods(final byte[] expected, final ZipFile zipFile, final ZipArchiveEntry entry) {
+		// simple IOUtil read
+		try (InputStream stream = zf.getInputStream(entry)) {
+			final byte[] full = IOUtils.toByteArray(stream);
+			assertArrayEquals(expected, full);
+		} catch (final IOException ex) {
+			throw new AssertionError(ex);
+		}
 
-        // big buffer at the beginning and then chunks by IOUtils read
-        try (InputStream stream = zf.getInputStream(entry)) {
-            byte[] full;
-            final byte[] bytes = new byte[0x40000];
-            final int read = stream.read(bytes);
-            if (read < 0) {
-                full = ByteUtils.EMPTY_BYTE_ARRAY;
-            }
-            else {
-                full = readStreamRest(bytes, read, stream);
-            }
-            assertArrayEquals(expected, full);
-        }
-        catch (final IOException ex) {
-            throw new RuntimeException(ex);
-        }
+		// big buffer at the beginning and then chunks by IOUtils read
+		try (InputStream stream = zf.getInputStream(entry)) {
+			byte[] full;
+			final byte[] bytes = new byte[0x40000];
+			final int read = stream.read(bytes);
+			if (read < 0) {
+				full = ByteUtils.EMPTY_BYTE_ARRAY;
+			} else {
+				full = readStreamRest(bytes, read, stream);
+			}
+			assertArrayEquals(expected, full);
+		} catch (final IOException ex) {
+			throw new AssertionError(ex);
+		}
 
-        // small chunk / single byte and big buffer then
-        try (InputStream stream = zf.getInputStream(entry)) {
-            byte[] full;
-            final int single = stream.read();
-            if (single < 0) {
-                full = ByteUtils.EMPTY_BYTE_ARRAY;
-            }
-            else {
-                final byte[] big = new byte[0x40000];
-                big[0] = (byte)single;
-                final int read = stream.read(big, 1, big.length-1);
-                if (read < 0) {
-                    full = new byte[]{ (byte)single };
-                }
-                else {
-                    full = readStreamRest(big, read+1, stream);
-                }
-            }
-            assertArrayEquals(expected, full);
-        }
-        catch (final IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
+		// small chunk / single byte and big buffer then
+		try (InputStream stream = zf.getInputStream(entry)) {
+			byte[] full;
+			final int single = stream.read();
+			if (single < 0) {
+				full = ByteUtils.EMPTY_BYTE_ARRAY;
+			} else {
+				final byte[] big = new byte[0x40000];
+				big[0] = (byte) single;
+				final int read = stream.read(big, 1, big.length - 1);
+				if (read < 0) {
+					full = new byte[] { (byte) single };
+				} else {
+					full = readStreamRest(big, read + 1, stream);
+				}
+			}
+			assertArrayEquals(expected, full);
+		} catch (final IOException ex) {
+			throw new AssertionError(ex);
+		}
+	}
 
     /**
      * Utility to append the rest of the stream to already read data.

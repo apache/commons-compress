@@ -239,7 +239,7 @@ public final class GeneralPurposeBit implements Cloneable {
             return super.clone();
         } catch (final CloneNotSupportedException ex) {
             // impossible
-            throw new RuntimeException("GeneralPurposeBit is not Cloneable?", ex); //NOSONAR
+            throw new IllegalStateException("GeneralPurposeBit is not Cloneable?", ex); //NOSONAR
         }
     }
 }
