@@ -19,7 +19,7 @@ package org.apache.commons.compress.harmony.pack200;
 /**
  * Constant pool entry for a double.
  */
-public class CPDouble extends CPConstant {
+public class CPDouble extends CPConstant<CPDouble> {
 
     private final double theDouble;
 
@@ -28,8 +28,8 @@ public class CPDouble extends CPConstant {
     }
 
     @Override
-    public int compareTo(final Object obj) {
-        return Double.compare(theDouble, ((CPDouble) obj).theDouble);
+    public int compareTo(final CPDouble obj) {
+        return Double.compare(theDouble, obj.theDouble);
     }
 
     public double getDouble() {

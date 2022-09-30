@@ -19,7 +19,7 @@ package org.apache.commons.compress.harmony.pack200;
 /**
  * Constant pool entry for a class
  */
-public class CPClass extends CPConstant implements Comparable {
+public class CPClass extends CPConstant<CPClass> {
 
     private final String className;
     private final CPUTF8 utf8;
@@ -39,8 +39,8 @@ public class CPClass extends CPConstant implements Comparable {
     }
 
     @Override
-    public int compareTo(final Object arg0) {
-        return className.compareTo(((CPClass) arg0).className);
+    public int compareTo(final CPClass arg0) {
+        return className.compareTo(arg0.className);
     }
 
     @Override

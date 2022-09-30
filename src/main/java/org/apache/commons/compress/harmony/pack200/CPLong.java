@@ -19,7 +19,7 @@ package org.apache.commons.compress.harmony.pack200;
 /**
  * Constant pool entry for a long.
  */
-public class CPLong extends CPConstant {
+public class CPLong extends CPConstant<CPLong> {
 
     private final long theLong;
 
@@ -28,8 +28,8 @@ public class CPLong extends CPConstant {
     }
 
     @Override
-    public int compareTo(final Object obj) {
-        return Long.compare(theLong, ((CPLong) obj).theLong);
+    public int compareTo(final CPLong obj) {
+        return Long.compare(theLong, obj.theLong);
     }
 
     public long getLong() {

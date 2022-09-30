@@ -19,6 +19,6 @@ package org.apache.commons.compress.harmony.pack200;
 /**
  * Abstract superclass for constant pool constant entries such as numbers or Strings
  */
-public abstract class CPConstant extends ConstantPoolEntry implements Comparable {
+public abstract class CPConstant<T extends CPConstant<T>> extends ConstantPoolEntry implements Comparable<T> {
 
 }

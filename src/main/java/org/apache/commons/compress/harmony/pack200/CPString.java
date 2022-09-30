@@ -19,7 +19,7 @@ package org.apache.commons.compress.harmony.pack200;
 /**
  * Constant pool entry for a String.
  */
-public class CPString extends CPConstant {
+public class CPString extends CPConstant<CPString> {
 
     private final String string;
     private final CPUTF8 utf8;
@@ -30,8 +30,8 @@ public class CPString extends CPConstant {
     }
 
     @Override
-    public int compareTo(final Object arg0) {
-        return string.compareTo(((CPString) arg0).string);
+    public int compareTo(final CPString arg0) {
+        return string.compareTo(arg0.string);
     }
 
     @Override
