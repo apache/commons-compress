@@ -119,27 +119,26 @@ public class PackingUtils {
      * @param outputStream the jar output stream
      * @throws IOException If an I/O error occurs.
      */
-    public static void copyThroughJar(final JarFile jarFile, final OutputStream outputStream) throws IOException {
-        final JarOutputStream jarOutputStream = new JarOutputStream(outputStream);
-        jarOutputStream.setComment("PACK200");
-        final byte[] bytes = new byte[16384];
-        final Enumeration entries = jarFile.entries();
-        InputStream inputStream;
-        JarEntry jarEntry;
-        int bytesRead;
-        while (entries.hasMoreElements()) {
-            jarEntry = (JarEntry) entries.nextElement();
-            jarOutputStream.putNextEntry(jarEntry);
-            inputStream = jarFile.getInputStream(jarEntry);
-            while ((bytesRead = inputStream.read(bytes)) != -1) {
-                jarOutputStream.write(bytes, 0, bytesRead);
-            }
-            jarOutputStream.closeEntry();
-            log("Packed " + jarEntry.getName());
-        }
-        jarFile.close();
-        jarOutputStream.close();
-    }
+	public static void copyThroughJar(final JarFile jarFile, final OutputStream outputStream) throws IOException {
+		final JarOutputStream jarOutputStream = new JarOutputStream(outputStream);
+		jarOutputStream.setComment("PACK200");
+		final byte[] bytes = new byte[16384];
+		final Enumeration<JarEntry> entries = jarFile.entries();
+		while (entries.hasMoreElements()) {
+			JarEntry jarEntry = entries.nextElement();
+			jarOutputStream.putNextEntry(jarEntry);
+			try (InputStream inputStream = jarFile.getInputStream(jarEntry)) {
+				int bytesRead;
+				while ((bytesRead = inputStream.read(bytes)) != -1) {
+					jarOutputStream.write(bytes, 0, bytesRead);
+				}
+				jarOutputStream.closeEntry();
+				log("Packed " + jarEntry.getName());
+			}
+		}
+		jarFile.close();
+		jarOutputStream.close();
+	}
 
     public static List<PackingFile> getPackingFileListFromJar(final JarInputStream jarInputStream, final boolean keepFileOrder)
         throws IOException {
@@ -169,23 +168,23 @@ public class PackingUtils {
     }
 
     public static List<PackingFile> getPackingFileListFromJar(final JarFile jarFile, final boolean keepFileOrder)
-        throws IOException {
-        final List<PackingFile> packingFileList = new ArrayList<>();
-        final Enumeration<JarEntry> jarEntries = jarFile.entries();
-        JarEntry jarEntry;
-        byte[] bytes;
-        while (jarEntries.hasMoreElements()) {
-            jarEntry = jarEntries.nextElement();
-            bytes = readJarEntry(jarEntry, new BufferedInputStream(jarFile.getInputStream(jarEntry)));
-            packingFileList.add(new PackingFile(bytes, jarEntry));
-        }
+			throws IOException {
+		final List<PackingFile> packingFileList = new ArrayList<>();
+		final Enumeration<JarEntry> jarEntries = jarFile.entries();
+		while (jarEntries.hasMoreElements()) {
+			final JarEntry jarEntry = jarEntries.nextElement();
+			try (InputStream inputStream = jarFile.getInputStream(jarEntry)) {
+				final byte[] bytes = readJarEntry(jarEntry, new BufferedInputStream(inputStream));
+				packingFileList.add(new PackingFile(bytes, jarEntry));
+			}
+		}
 
-        // check whether it need reorder packing file list
-        if (!keepFileOrder) {
-            reorderPackingFiles(packingFileList);
-        }
-        return packingFileList;
-    }
+		// check whether it need reorder packing file list
+		if (!keepFileOrder) {
+			reorderPackingFiles(packingFileList);
+		}
+		return packingFileList;
+	}
 
     private static byte[] readJarEntry(final JarEntry jarEntry, final InputStream inputStream) throws IOException {
         long size = jarEntry.getSize();
@@ -217,8 +216,8 @@ public class PackingUtils {
         // position
         packingFileList.sort((arg0, arg1) -> {
             if (arg0 instanceof PackingFile && arg1 instanceof PackingFile) {
-                final String fileName0 = ((PackingFile) arg0).getName();
-                final String fileName1 = ((PackingFile) arg1).getName();
+                final String fileName0 = arg0.getName();
+                final String fileName1 = arg1.getName();
                 if (fileName0.equals(fileName1)) {
                     return 0;
                 }

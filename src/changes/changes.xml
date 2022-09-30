@@ -115,6 +115,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action issue="COMPRESS-626" type="fix" dev="ggregory" due-to="Andrii Hudz, Gary Gregory">
         OutOfMemoryError on malformed pack200 attributes.
       </action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">
+        Some input streams are not closed in org.apache.commons.compress.harmony.pack200.PackingUtils.
+      </action>
       <!-- ADD -->
       <action issue="COMPRESS-602" type="add" dev="ggregory" due-to="Postelnicu George, Gary Gregory">
         Migrate zip package to use NIO #236.
