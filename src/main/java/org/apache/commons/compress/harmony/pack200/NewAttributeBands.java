@@ -108,8 +108,7 @@ public class NewAttributeBands extends BandSet {
             if (element instanceof Callable) {
                 final Callable callable = (Callable) element;
                 final List<LayoutElement> body = callable.body; // Look for calls in the body
-                for (LayoutElement element2 : body) {
-                    final LayoutElement layoutElement = element2;
+                for (LayoutElement layoutElement : body) {
                     // Set the callable for each call
                     resolveCallsForElement(i, callable, layoutElement);
                 }
@@ -533,8 +532,8 @@ public class NewAttributeBands extends BandSet {
                 }
             }
             if (defaultCase) {
-                for (LayoutElement element2 : defaultCaseBody) {
-                    element2.addAttributeToBand(attribute, inputStream);
+                for (LayoutElement layoutElement : defaultCaseBody) {
+                    layoutElement.addAttributeToBand(attribute, inputStream);
                 }
             }
         }

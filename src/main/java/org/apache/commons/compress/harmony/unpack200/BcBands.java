@@ -426,8 +426,7 @@ public class BcBands extends BandSet {
                     } else {
                         currentAttributes = Collections.EMPTY_LIST;
                     }
-                    for (Object currentAttribute2 : currentAttributes) {
-                        final Attribute currentAttribute = (Attribute) currentAttribute2;
+                    for (Attribute currentAttribute : currentAttributes) {
                         codeAttr.addAttribute(currentAttribute);
                         // Fix up the line numbers if needed
                         if (currentAttribute.hasBCIRenumbering()) {

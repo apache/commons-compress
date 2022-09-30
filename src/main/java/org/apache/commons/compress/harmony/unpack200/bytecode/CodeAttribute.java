@@ -86,8 +86,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
     @Override
     protected int getLength() {
         int attributesSize = 0;
-        for (Object attribute2 : attributes) {
-            final Attribute attribute = (Attribute) attribute2;
+        for (Attribute attribute : attributes) {
             attributesSize += attribute.getLengthIncludingHeader();
         }
         return 2 + 2 + 4 + codeLength + 2 + exceptionTable.size() * (2 + 2 + 2 + 2) + 2 + attributesSize;
@@ -117,20 +116,9 @@ public class CodeAttribute extends BCIRenumberedAttribute {
     @Override
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
-        for (Object attribute2 : attributes) {
-            final Attribute attribute = (Attribute) attribute2;
-            attribute.resolve(pool);
-        }
-
-        for (Object byteCode2 : byteCodes) {
-            final ByteCode byteCode = (ByteCode) byteCode2;
-            byteCode.resolve(pool);
-        }
-
-        for (Object element : exceptionTable) {
-            final ExceptionTableEntry entry = (ExceptionTableEntry) element;
-            entry.resolve(pool);
-        }
+        attributes.forEach(attribute -> attribute.resolve(pool));
+        byteCodes.forEach(byteCode -> byteCode.resolve(pool));
+        exceptionTable.forEach(byteCode -> byteCode.resolve(pool));
     }
 
     @Override
@@ -149,14 +137,12 @@ public class CodeAttribute extends BCIRenumberedAttribute {
         }
 
         dos.writeShort(exceptionTable.size());
-        for (Object element : exceptionTable) {
-            final ExceptionTableEntry entry = (ExceptionTableEntry) element;
+        for (ExceptionTableEntry entry : exceptionTable) {
             entry.write(dos);
         }
 
         dos.writeShort(attributes.size());
-        for (Object attribute2 : attributes) {
-            final Attribute attribute = (Attribute) attribute2;
+        for (Attribute attribute : attributes) {
             attribute.write(dos);
         }
     }
@@ -179,9 +165,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
 
     @Override
     public void renumber(final List<Integer> byteCodeOffsets) {
-        for (ExceptionTableEntry entry : exceptionTable) {
-            entry.renumber(byteCodeOffsets);
-        }
+        exceptionTable.forEach(entry -> entry.renumber(byteCodeOffsets));
     }
 
     public static void setAttributeName(final CPUTF8 attributeName) {

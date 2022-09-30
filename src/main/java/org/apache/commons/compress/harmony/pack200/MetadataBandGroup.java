@@ -266,21 +266,18 @@ public class MetadataBandGroup extends BandSet {
 			}
 			// do nothing here for [ or @ (handled below)
 		}
-		for (Object element : caseArrayN) {
-			final int arraySize = ((Integer) element).intValue();
+		for (Integer element : caseArrayN) {
+			final int arraySize = element.intValue();
 			casearray_N.add(arraySize);
 			numBackwardsCalls += arraySize;
 		}
-		for (Object element : nestTypeRS) {
-			final String type = (String) element;
+		for (String type : nestTypeRS) {
 			nesttype_RS.add(cpBands.getCPSignature(type));
 		}
-		for (Object element : nestNameRU) {
-			final String name = (String) element;
+		for (String name : nestNameRU) {
 			nestname_RU.add(cpBands.getCPUtf8(name));
 		}
-		for (Object element : nestPairN) {
-			final Integer numPairs = (Integer) element;
+		for (Integer numPairs : nestPairN) {
 			nestpair_N.add(numPairs.intValue());
 			numBackwardsCalls += numPairs.intValue();
 		}
@@ -337,21 +334,21 @@ public class MetadataBandGroup extends BandSet {
 			}
 			// do nothing here for [ or @ (handled below)
 		}
-		for (Object element : caseArrayN) {
-			final int arraySize = ((Integer) element).intValue();
+		for (Integer element : caseArrayN) {
+			final int arraySize = element.intValue();
 			casearray_N.add(arraySize);
 			numBackwardsCalls += arraySize;
 		}
-		for (Object element : nestTypeRS) {
-			final String type = (String) element;
+		for (String element : nestTypeRS) {
+			final String type = element;
 			nesttype_RS.add(cpBands.getCPSignature(type));
 		}
-		for (Object element : nestNameRU) {
-			final String name = (String) element;
+		for (String element : nestNameRU) {
+			final String name = element;
 			nestname_RU.add(cpBands.getCPUtf8(name));
 		}
-		for (Object element : nestPairN) {
-			final Integer numPairs = (Integer) element;
+		for (Integer element : nestPairN) {
+			final Integer numPairs = element;
 			nestpair_N.add(numPairs.intValue());
 			numBackwardsCalls += numPairs.intValue();
 		}

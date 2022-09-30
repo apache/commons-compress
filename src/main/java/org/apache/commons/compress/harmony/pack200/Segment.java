@@ -150,8 +150,7 @@ public class Segment extends ClassVisitor {
 
     private void processClasses(final SegmentUnit segmentUnit, final Attribute[] attributes) throws Pack200Exception {
         segmentHeader.setClass_count(segmentUnit.classListSize());
-        for (Object element : segmentUnit.getClassList()) {
-            final Pack200ClassReader classReader = (Pack200ClassReader) element;
+        for (Pack200ClassReader classReader : segmentUnit.getClassList()) {
             currentClassReader = classReader;
             int flags = 0;
             if (stripDebug) {
@@ -167,8 +166,7 @@ public class Segment extends ClassVisitor {
                 options.addPassFile(name);
                 cpBands.addCPUtf8(name);
                 boolean found = false;
-                for (Object element2 : segmentUnit.getFileList()) {
-                    final PackingFile file = (PackingFile) element2;
+                for (PackingFile file : segmentUnit.getFileList()) {
                     if (file.getName().equals(name)) {
                         found = true;
                         file.setContents(classReader.b);

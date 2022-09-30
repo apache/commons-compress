@@ -140,14 +140,8 @@ public class ClassConstantPool {
 
         resolved = true;
 
-        for (ClassFileEntry entry : entries) {
-            entry.resolve(this);
-        }
-
-        for (ClassFileEntry other : others) {
-            other.resolve(this);
-        }
-
+        entries.forEach(entry -> entry.resolve(this));
+        others.forEach(entry -> entry.resolve(this));
     }
 
     private void initialSort() {
@@ -206,8 +200,7 @@ public class ClassConstantPool {
 
         entries.clear();
 
-        for (Object element : startOfPool) {
-            final ClassFileEntry entry = (ClassFileEntry) element;
+        for (ClassFileEntry entry : startOfPool) {
             indexCache.put(entry, Integer.valueOf(index));
 
             if (entry instanceof CPLong || entry instanceof CPDouble) {
@@ -220,8 +213,7 @@ public class ClassConstantPool {
             }
         }
 
-        for (Object element : finalSort) {
-            final ClassFileEntry entry = (ClassFileEntry) element;
+        for (ClassFileEntry entry : finalSort) {
             indexCache.put(entry, Integer.valueOf(index));
 
             if (entry instanceof CPLong || entry instanceof CPDouble) {
@@ -238,8 +230,7 @@ public class ClassConstantPool {
 
     public ClassFileEntry addWithNestedEntries(final ClassFileEntry entry) {
         add(entry);
-        final ClassFileEntry[] nestedEntries = entry.getNestedClassFileEntries();
-        for (ClassFileEntry nestedEntry : nestedEntries) {
+        for (ClassFileEntry nestedEntry : entry.getNestedClassFileEntries()) {
             addWithNestedEntries(nestedEntry);
         }
         return entry;

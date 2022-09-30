@@ -456,9 +456,8 @@ public class NewAttributeBands extends BandSet {
             for (int i = 0; i < count; i++) {
                 arrayCount += countElement.getValue(i);
             }
-            for (Object layoutElement : layoutElements) {
-                final LayoutElement element = (LayoutElement) layoutElement;
-                element.readBands(in, arrayCount);
+            for (LayoutElement layoutElement : layoutElements) {
+                layoutElement.readBands(in, arrayCount);
             }
         }
 
@@ -474,9 +473,8 @@ public class NewAttributeBands extends BandSet {
             }
             final long numElements = countElement.getValue(index);
             for (int i = offset; i < offset + numElements; i++) {
-                for (Object layoutElement : layoutElements) {
-                    final LayoutElement element = (LayoutElement) layoutElement;
-                    element.addToAttribute(i, attribute);
+                for (LayoutElement layoutElement : layoutElements) {
+                    layoutElement.addToAttribute(i, attribute);
                 }
             }
         }
@@ -525,8 +523,7 @@ public class NewAttributeBands extends BandSet {
             // Count number of default cases then read the default bands
             for (int value : values) {
                 boolean found = false;
-                for (Object element : unionCases) {
-                    final UnionCase unionCase = (UnionCase) element;
+                for (UnionCase unionCase : unionCases) {
                     if (unionCase.hasTag(value)) {
                         found = true;
                     }
@@ -549,16 +546,15 @@ public class NewAttributeBands extends BandSet {
             final int[] tagBand = unionTag.band;
             final int tag = unionTag.getValue(n);
             boolean defaultCase = true;
-            for (Object element2 : unionCases) {
-                final UnionCase element = (UnionCase) element2;
-                if (element.hasTag(tag)) {
+            for (UnionCase unionCase : unionCases) {
+                if (unionCase.hasTag(tag)) {
                     defaultCase = false;
                     for (int j = 0; j < n; j++) {
-                        if (element.hasTag(tagBand[j])) {
+                        if (unionCase.hasTag(tagBand[j])) {
                             offset++;
                         }
                     }
-                    element.addToAttribute(offset, attribute);
+                    unionCase.addToAttribute(offset, attribute);
                 }
             }
             if (defaultCase) {
@@ -566,9 +562,8 @@ public class NewAttributeBands extends BandSet {
                 int defaultOffset = 0;
                 for (int j = 0; j < n; j++) {
                     boolean found = false;
-                    for (Object element2 : unionCases) {
-                        final UnionCase element = (UnionCase) element2;
-                        if (element.hasTag(tagBand[j])) {
+                    for (UnionCase unionCase : unionCases) {
+                        if (unionCase.hasTag(tagBand[j])) {
                             found = true;
                         }
                     }
@@ -994,8 +989,7 @@ public class NewAttributeBands extends BandSet {
     public void setBackwardsCalls(final int[] backwardsCalls) throws IOException {
         int index = 0;
         parseLayout();
-        for (Object attributeLayoutElement : attributeLayoutElements) {
-            final AttributeLayoutElement element = (AttributeLayoutElement) attributeLayoutElement;
+        for (AttributeLayoutElement element : attributeLayoutElements) {
             if (element instanceof Callable && ((Callable) element).isBackwardsCallable()) {
                 ((Callable) element).addCount(backwardsCalls[index]);
                 index++;

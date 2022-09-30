@@ -362,14 +362,14 @@ public class CpBands extends BandSet {
     }
 
     private void removeSignaturesFromCpUTF8() {
-        for (final CPSignature signature : cp_Signature) {
+        cp_Signature.forEach(signature -> {
             final String sigStr = signature.getUnderlyingString();
             final CPUTF8 utf8 = signature.getSignatureForm();
             final String form = utf8.getUnderlyingString();
             if (!sigStr.equals(form)) {
                 removeCpUtf8(sigStr);
             }
-        }
+        });
     }
 
 	private void addIndices() {
@@ -382,7 +382,7 @@ public class CpBands extends BandSet {
 			}
 		}
 		final Map<CPClass, Integer> classNameToIndex = new HashMap<>();
-		for (final CPMethodOrField mOrF : cp_Field) {
+		cp_Field.forEach(mOrF -> {
 			final CPClass cpClassName = mOrF.getClassName();
 			final Integer index = classNameToIndex.get(cpClassName);
 			if (index == null) {
@@ -393,10 +393,10 @@ public class CpBands extends BandSet {
 				mOrF.setIndexInClass(theIndex);
 				classNameToIndex.put(cpClassName, Integer.valueOf(theIndex + 1));
 			}
-		}
+		});
 		classNameToIndex.clear();
 		final Map<CPClass, Integer> classNameToConstructorIndex = new HashMap<>();
-		for (final CPMethodOrField mOrF : cp_Method) {
+		cp_Method.forEach(mOrF -> {
 			final CPClass cpClassName = mOrF.getClassName();
 			final Integer index = classNameToIndex.get(cpClassName);
 			if (index == null) {
@@ -418,7 +418,7 @@ public class CpBands extends BandSet {
 					classNameToConstructorIndex.put(cpClassName, Integer.valueOf(theIndex + 1));
 				}
 			}
-		}
+		});
 	}
 
     private void removeCpUtf8(final String string) {

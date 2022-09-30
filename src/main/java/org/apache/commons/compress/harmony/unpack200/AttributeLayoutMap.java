@@ -133,8 +133,7 @@ public class AttributeLayoutMap {
     private final Map<AttributeLayout, NewAttributeBands> layoutsToBands = new HashMap<>();
 
     public AttributeLayoutMap() throws Pack200Exception {
-        final AttributeLayout[] defaultAttributeLayouts = getDefaultAttributeLayouts();
-        for (AttributeLayout defaultAttributeLayout : defaultAttributeLayouts) {
+        for (AttributeLayout defaultAttributeLayout : getDefaultAttributeLayouts()) {
             add(defaultAttributeLayout);
         }
     }
