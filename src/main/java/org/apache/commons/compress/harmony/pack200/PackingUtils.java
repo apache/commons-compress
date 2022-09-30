@@ -214,23 +214,20 @@ public class PackingUtils {
 
         // Sort files by name, "META-INF/MANIFEST.MF" should be put in the 1st
         // position
-        packingFileList.sort((arg0, arg1) -> {
-            if (arg0 instanceof PackingFile && arg1 instanceof PackingFile) {
-                final String fileName0 = arg0.getName();
-                final String fileName1 = arg1.getName();
-                if (fileName0.equals(fileName1)) {
-                    return 0;
-                }
-                if (JarFile.MANIFEST_NAME.equals(fileName0)) {
-                    return -1;
-                }
-                if (JarFile.MANIFEST_NAME.equals(fileName1)) {
-                    return 1;
-                }
-                return fileName0.compareTo(fileName1);
-            }
-            throw new IllegalArgumentException();
-        });
+		packingFileList.sort((arg0, arg1) -> {
+			final String fileName0 = arg0.getName();
+			final String fileName1 = arg1.getName();
+			if (fileName0.equals(fileName1)) {
+				return 0;
+			}
+			if (JarFile.MANIFEST_NAME.equals(fileName0)) {
+				return -1;
+			}
+			if (JarFile.MANIFEST_NAME.equals(fileName1)) {
+				return 1;
+			}
+			return fileName0.compareTo(fileName1);
+		});
     }
 
 }

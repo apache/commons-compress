@@ -19,6 +19,7 @@ package org.apache.commons.compress.harmony.pack200;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +35,7 @@ import org.objectweb.asm.Type;
 public class CpBands extends BandSet {
 
     // Don't need to include default attribute names in the constant pool bands
-    private final Set defaultAttributeNames = new HashSet();
+    private final Set<String> defaultAttributeNames = new HashSet<>();
 
     private final Set<CPUTF8> cp_Utf8 = new TreeSet<>();
     private final Set<CPInt> cp_Int = new TreeSet<>();
@@ -49,15 +50,15 @@ public class CpBands extends BandSet {
     private final Set<CPMethodOrField> cp_Method = new TreeSet<>();
     private final Set<CPMethodOrField> cp_Imethod = new TreeSet<>();
 
-    private final Map stringsToCpUtf8 = new HashMap();
-    private final Map stringsToCpNameAndType = new HashMap();
-    private final Map stringsToCpClass = new HashMap();
-    private final Map stringsToCpSignature = new HashMap();
-    private final Map stringsToCpMethod = new HashMap();
-    private final Map stringsToCpField = new HashMap();
-    private final Map stringsToCpIMethod = new HashMap();
+    private final Map<String, CPUTF8> stringsToCpUtf8 = new HashMap<>();
+    private final Map<String, CPNameAndType> stringsToCpNameAndType = new HashMap<>();
+    private final Map<String, CPClass> stringsToCpClass = new HashMap<>();
+    private final Map<String, CPSignature> stringsToCpSignature = new HashMap<>();
+    private final Map<String, CPMethodOrField> stringsToCpMethod = new HashMap<>();
+    private final Map<String, CPMethodOrField> stringsToCpField = new HashMap<>();
+    private final Map<String, CPMethodOrField> stringsToCpIMethod = new HashMap<>();
 
-    private final Map objectsToCPConstant = new HashMap();
+    private final Map<Object, CPConstant> objectsToCPConstant = new HashMap<>();
 
     private final Segment segment;
 
@@ -103,9 +104,9 @@ public class CpBands extends BandSet {
         PackingUtils.log("Writing " + cp_Utf8.size() + " UTF8 entries...");
         final int[] cpUtf8Prefix = new int[cp_Utf8.size() - 2];
         final int[] cpUtf8Suffix = new int[cp_Utf8.size() - 1];
-        final List chars = new ArrayList();
-        final List bigSuffix = new ArrayList();
-        final List bigChars = new ArrayList();
+        final List<Character> chars = new ArrayList<>();
+        final List<Integer> bigSuffix = new ArrayList<>();
+        final List<Character> bigChars = new ArrayList<>();
         final Object[] cpUtf8Array = cp_Utf8.toArray();
         final String first = ((CPUTF8) cpUtf8Array[1]).getUnderlyingString();
         cpUtf8Suffix[0] = first.length();
@@ -138,14 +139,14 @@ public class CpBands extends BandSet {
         final int[] cpUtf8BigSuffix = new int[bigSuffix.size()];
         final int[][] cpUtf8BigChars = new int[bigSuffix.size()][];
         for (int i = 0; i < cpUtf8Chars.length; i++) {
-            cpUtf8Chars[i] = ((Character) chars.get(i)).charValue();
+            cpUtf8Chars[i] = chars.get(i).charValue();
         }
         for (int i = 0; i < cpUtf8BigSuffix.length; i++) {
-            final int numBigChars = ((Integer) bigSuffix.get(i)).intValue();
+            final int numBigChars = bigSuffix.get(i).intValue();
             cpUtf8BigSuffix[i] = numBigChars;
             cpUtf8BigChars[i] = new int[numBigChars];
             for (int j = 0; j < numBigChars; j++) {
-                cpUtf8BigChars[i][j] = ((Character) bigChars.remove(0)).charValue();
+                cpUtf8BigChars[i][j] = bigChars.remove(0).charValue();
             }
         }
 
@@ -173,7 +174,7 @@ public class CpBands extends BandSet {
         }
     }
 
-    private void addCharacters(final List chars, final char[] charArray) {
+    private void addCharacters(final List<Character> chars, final char[] charArray) {
         for (char element : charArray) {
             chars.add(Character.valueOf(element));
         }
@@ -274,7 +275,7 @@ public class CpBands extends BandSet {
     private void writeCpSignature(final OutputStream out) throws IOException, Pack200Exception {
         PackingUtils.log("Writing " + cp_Signature.size() + " Signature entries...");
         final int[] cpSignatureForm = new int[cp_Signature.size()];
-        final List classes = new ArrayList();
+        final List<CPClass> classes = new ArrayList<>();
         int i = 0;
         for (final CPSignature cpS : cp_Signature) {
             classes.addAll(cpS.getClasses());
@@ -283,7 +284,7 @@ public class CpBands extends BandSet {
         }
         final int[] cpSignatureClasses = new int[classes.size()];
         for (int j = 0; j < cpSignatureClasses.length; j++) {
-            cpSignatureClasses[j] = ((CPClass) classes.get(j)).getIndex();
+            cpSignatureClasses[j] = classes.get(j).getIndex();
         }
 
         byte[] encodedBand = encodeBandInt("cpSignatureForm", cpSignatureForm, Codec.DELTA5);
@@ -371,58 +372,57 @@ public class CpBands extends BandSet {
         }
     }
 
-    private void addIndices() {
-        final Set[] sets = {cp_Utf8, cp_Int, cp_Float, cp_Long, cp_Double, cp_String, cp_Class, cp_Signature, cp_Descr,
-            cp_Field, cp_Method, cp_Imethod};
-        for (Set set : sets) {
-            int j = 0;
-            for (final ConstantPoolEntry entry : (Iterable<ConstantPoolEntry>) set) {
-                entry.setIndex(j);
-                j++;
-            }
-        }
-        final Map classNameToIndex = new HashMap();
-        for (final CPMethodOrField mOrF : cp_Field) {
-            final CPClass className = mOrF.getClassName();
-            final Integer index = (Integer) classNameToIndex.get(className);
-            if (index == null) {
-                classNameToIndex.put(className, Integer.valueOf(1));
-                mOrF.setIndexInClass(0);
-            } else {
-                final int theIndex = index.intValue();
-                mOrF.setIndexInClass(theIndex);
-                classNameToIndex.put(className, Integer.valueOf(theIndex + 1));
-            }
-        }
-        classNameToIndex.clear();
-        final Map classNameToConstructorIndex = new HashMap();
-        for (final CPMethodOrField mOrF : cp_Method) {
-            final CPClass className = mOrF.getClassName();
-            final Integer index = (Integer) classNameToIndex.get(className);
-            if (index == null) {
-                classNameToIndex.put(className, Integer.valueOf(1));
-                mOrF.setIndexInClass(0);
-            } else {
-                final int theIndex = index.intValue();
-                mOrF.setIndexInClass(theIndex);
-                classNameToIndex.put(className, Integer.valueOf(theIndex + 1));
-            }
-            if (mOrF.getDesc().getName().equals("<init>")) {
-                final Integer constructorIndex = (Integer) classNameToConstructorIndex.get(className);
-                if (constructorIndex == null) {
-                    classNameToConstructorIndex.put(className, Integer.valueOf(1));
-                    mOrF.setIndexInClassForConstructor(0);
-                } else {
-                    final int theIndex = constructorIndex.intValue();
-                    mOrF.setIndexInClassForConstructor(theIndex);
-                    classNameToConstructorIndex.put(className, Integer.valueOf(theIndex + 1));
-                }
-            }
-        }
-    }
+	private void addIndices() {
+		for (Set<? extends ConstantPoolEntry> set : Arrays.asList(cp_Utf8, cp_Int, cp_Float, cp_Long, cp_Double,
+				cp_String, cp_Class, cp_Signature, cp_Descr, cp_Field, cp_Method, cp_Imethod)) {
+			int j = 0;
+			for (final ConstantPoolEntry entry : set) {
+				entry.setIndex(j);
+				j++;
+			}
+		}
+		final Map<CPClass, Integer> classNameToIndex = new HashMap<>();
+		for (final CPMethodOrField mOrF : cp_Field) {
+			final CPClass cpClassName = mOrF.getClassName();
+			final Integer index = classNameToIndex.get(cpClassName);
+			if (index == null) {
+				classNameToIndex.put(cpClassName, Integer.valueOf(1));
+				mOrF.setIndexInClass(0);
+			} else {
+				final int theIndex = index.intValue();
+				mOrF.setIndexInClass(theIndex);
+				classNameToIndex.put(cpClassName, Integer.valueOf(theIndex + 1));
+			}
+		}
+		classNameToIndex.clear();
+		final Map<CPClass, Integer> classNameToConstructorIndex = new HashMap<>();
+		for (final CPMethodOrField mOrF : cp_Method) {
+			final CPClass cpClassName = mOrF.getClassName();
+			final Integer index = classNameToIndex.get(cpClassName);
+			if (index == null) {
+				classNameToIndex.put(cpClassName, Integer.valueOf(1));
+				mOrF.setIndexInClass(0);
+			} else {
+				final int theIndex = index.intValue();
+				mOrF.setIndexInClass(theIndex);
+				classNameToIndex.put(cpClassName, Integer.valueOf(theIndex + 1));
+			}
+			if (mOrF.getDesc().getName().equals("<init>")) {
+				final Integer constructorIndex = classNameToConstructorIndex.get(cpClassName);
+				if (constructorIndex == null) {
+					classNameToConstructorIndex.put(cpClassName, Integer.valueOf(1));
+					mOrF.setIndexInClassForConstructor(0);
+				} else {
+					final int theIndex = constructorIndex.intValue();
+					mOrF.setIndexInClassForConstructor(theIndex);
+					classNameToConstructorIndex.put(cpClassName, Integer.valueOf(theIndex + 1));
+				}
+			}
+		}
+	}
 
     private void removeCpUtf8(final String string) {
-        final CPUTF8 utf8 = (CPUTF8) stringsToCpUtf8.get(string);
+        final CPUTF8 utf8 = stringsToCpUtf8.get(string);
         if ((utf8 != null) && (stringsToCpClass.get(string) == null)) { // don't remove if strings are also in cpclass
             stringsToCpUtf8.remove(string);
             cp_Utf8.remove(utf8);
@@ -437,7 +437,7 @@ public class CpBands extends BandSet {
         if (utf8 == null) {
             return null;
         }
-        CPUTF8 cpUtf8 = (CPUTF8) stringsToCpUtf8.get(utf8);
+        CPUTF8 cpUtf8 = stringsToCpUtf8.get(utf8);
         if (cpUtf8 == null) {
             cpUtf8 = new CPUTF8(utf8);
             cp_Utf8.add(cpUtf8);
@@ -450,12 +450,12 @@ public class CpBands extends BandSet {
         if (signature == null) {
             return null;
         }
-        CPSignature cpS = (CPSignature) stringsToCpSignature.get(signature);
+        CPSignature cpS = stringsToCpSignature.get(signature);
         if (cpS == null) {
-            final List cpClasses = new ArrayList();
+            final List<CPClass> cpClasses = new ArrayList<>();
             CPUTF8 signatureUTF8;
             if (signature.length() > 1 && signature.indexOf('L') != -1) {
-                final List<String> classes = new ArrayList();
+                final List<String> classes = new ArrayList<>();
                 final char[] chars = signature.toCharArray();
                 final StringBuilder signatureString = new StringBuilder();
                 for (int i = 0; i < chars.length; i++) {
@@ -479,7 +479,7 @@ public class CpBands extends BandSet {
                     CPClass cpClass = null;
                     if (className != null) {
                         className = className.replace('.', '/');
-                        cpClass = (CPClass) stringsToCpClass.get(className);
+                        cpClass = stringsToCpClass.get(className);
                         if (cpClass == null) {
                             final CPUTF8 cpUtf8 = getCPUtf8(className);
                             cpClass = new CPClass(cpUtf8);
@@ -506,7 +506,7 @@ public class CpBands extends BandSet {
             return null;
         }
         className = className.replace('.', '/');
-        CPClass cpClass = (CPClass) stringsToCpClass.get(className);
+        CPClass cpClass = stringsToCpClass.get(className);
         if (cpClass == null) {
             final CPUTF8 cpUtf8 = getCPUtf8(className);
             cpClass = new CPClass(cpUtf8);
@@ -525,7 +525,7 @@ public class CpBands extends BandSet {
 
     public CPNameAndType getCPNameAndType(final String name, final String signature) {
         final String descr = name + ":" + signature;
-        CPNameAndType nameAndType = (CPNameAndType) stringsToCpNameAndType.get(descr);
+        CPNameAndType nameAndType = stringsToCpNameAndType.get(descr);
         if (nameAndType == null) {
             nameAndType = new CPNameAndType(getCPUtf8(name), getCPSignature(signature));
             stringsToCpNameAndType.put(descr, nameAndType);
@@ -536,7 +536,7 @@ public class CpBands extends BandSet {
 
     public CPMethodOrField getCPField(final CPClass cpClass, final String name, final String desc) {
         final String key = cpClass.toString() + ":" + name + ":" + desc;
-        CPMethodOrField cpF = (CPMethodOrField) stringsToCpField.get(key);
+        CPMethodOrField cpF = stringsToCpField.get(key);
         if (cpF == null) {
             final CPNameAndType nAndT = getCPNameAndType(name, desc);
             cpF = new CPMethodOrField(cpClass, nAndT);
@@ -547,7 +547,7 @@ public class CpBands extends BandSet {
     }
 
     public CPConstant getConstant(final Object value) {
-        CPConstant constant = (CPConstant) objectsToCPConstant.get(value);
+        CPConstant constant = objectsToCPConstant.get(value);
         if (constant == null) {
             if (value instanceof Integer) {
                 constant = new CPInt(((Integer) value).intValue());
@@ -582,7 +582,7 @@ public class CpBands extends BandSet {
 
     public CPMethodOrField getCPMethod(final CPClass cpClass, final String name, final String desc) {
         final String key = cpClass.toString() + ":" + name + ":" + desc;
-        CPMethodOrField cpM = (CPMethodOrField) stringsToCpMethod.get(key);
+        CPMethodOrField cpM = stringsToCpMethod.get(key);
         if (cpM == null) {
             final CPNameAndType nAndT = getCPNameAndType(name, desc);
             cpM = new CPMethodOrField(cpClass, nAndT);
@@ -594,7 +594,7 @@ public class CpBands extends BandSet {
 
     public CPMethodOrField getCPIMethod(final CPClass cpClass, final String name, final String desc) {
         final String key = cpClass.toString() + ":" + name + ":" + desc;
-        CPMethodOrField cpIM = (CPMethodOrField) stringsToCpIMethod.get(key);
+        CPMethodOrField cpIM = stringsToCpIMethod.get(key);
         if (cpIM == null) {
             final CPNameAndType nAndT = getCPNameAndType(name, desc);
             cpIM = new CPMethodOrField(cpClass, nAndT);
@@ -617,7 +617,7 @@ public class CpBands extends BandSet {
     }
 
     public boolean existsCpClass(final String className) {
-        final CPClass cpClass = (CPClass) stringsToCpClass.get(className);
+        final CPClass cpClass = stringsToCpClass.get(className);
         return cpClass != null;
     }
 

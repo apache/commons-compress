@@ -108,49 +108,49 @@ public class Archive {
         }
     }
 
-    private void doNormalPack() throws IOException, Pack200Exception {
-        PackingUtils.log("Start to perform a normal packing");
-        List packingFileList;
-        if (jarInputStream != null) {
-            packingFileList = PackingUtils.getPackingFileListFromJar(jarInputStream, options.isKeepFileOrder());
-        } else {
-            packingFileList = PackingUtils.getPackingFileListFromJar(jarFile, options.isKeepFileOrder());
-        }
+	private void doNormalPack() throws IOException, Pack200Exception {
+		PackingUtils.log("Start to perform a normal packing");
+		List<PackingFile> packingFileList;
+		if (jarInputStream != null) {
+			packingFileList = PackingUtils.getPackingFileListFromJar(jarInputStream, options.isKeepFileOrder());
+		} else {
+			packingFileList = PackingUtils.getPackingFileListFromJar(jarFile, options.isKeepFileOrder());
+		}
 
-        final List<SegmentUnit> segmentUnitList = splitIntoSegments(packingFileList);
-        int previousByteAmount = 0;
-        int packedByteAmount = 0;
+		final List<SegmentUnit> segmentUnitList = splitIntoSegments(packingFileList);
+		int previousByteAmount = 0;
+		int packedByteAmount = 0;
 
-        final int segmentSize = segmentUnitList.size();
-        SegmentUnit segmentUnit;
-        for (int index = 0; index < segmentSize; index++) {
-            segmentUnit = segmentUnitList.get(index);
-            new Segment().pack(segmentUnit, outputStream, options);
-            previousByteAmount += segmentUnit.getByteAmount();
-            packedByteAmount += segmentUnit.getPackedByteAmount();
-        }
+		final int segmentSize = segmentUnitList.size();
+		SegmentUnit segmentUnit;
+		for (int index = 0; index < segmentSize; index++) {
+			segmentUnit = segmentUnitList.get(index);
+			new Segment().pack(segmentUnit, outputStream, options);
+			previousByteAmount += segmentUnit.getByteAmount();
+			packedByteAmount += segmentUnit.getPackedByteAmount();
+		}
 
-        PackingUtils.log("Total: Packed " + previousByteAmount + " input bytes of " + packingFileList.size()
-            + " files into " + packedByteAmount + " bytes in " + segmentSize + " segments");
+		PackingUtils.log("Total: Packed " + previousByteAmount + " input bytes of " + packingFileList.size()
+				+ " files into " + packedByteAmount + " bytes in " + segmentSize + " segments");
 
-        outputStream.close();
-    }
+		outputStream.close();
+	}
 
-    private List<SegmentUnit> splitIntoSegments(final List packingFileList) {
+    private List<SegmentUnit> splitIntoSegments(final List<PackingFile> packingFileList) {
         final List<SegmentUnit> segmentUnitList = new ArrayList<>();
-        List classes = new ArrayList();
-        List files = new ArrayList();
+        List<Pack200ClassReader> classes = new ArrayList<>();
+        List<PackingFile> files = new ArrayList<>();
         final long segmentLimit = options.getSegmentLimit();
 
         final int size = packingFileList.size();
         PackingFile packingFile;
         for (int index = 0; index < size; index++) {
-            packingFile = (PackingFile) packingFileList.get(index);
+            packingFile = packingFileList.get(index);
             if (!addJarEntry(packingFile, classes, files)) {
                 // not added because segment has reached maximum size
                 segmentUnitList.add(new SegmentUnit(classes, files));
-                classes = new ArrayList();
-                files = new ArrayList();
+                classes = new ArrayList<>();
+                files = new ArrayList<>();
                 currentSegmentSize = 0;
                 // add the jar to a new segment
                 addJarEntry(packingFile, classes, files);
@@ -159,8 +159,8 @@ public class Archive {
             } else if (segmentLimit == 0 && estimateSize(packingFile) > 0) {
                 // create a new segment for each class unless size is 0
                 segmentUnitList.add(new SegmentUnit(classes, files));
-                classes = new ArrayList();
-                files = new ArrayList();
+                classes = new ArrayList<>();
+                files = new ArrayList<>();
             }
         }
         // Change for Apache Commons Compress based on Apache Harmony.
@@ -171,7 +171,7 @@ public class Archive {
         return segmentUnitList;
     }
 
-    private boolean addJarEntry(final PackingFile packingFile, final List javaClasses, final List files) {
+    private boolean addJarEntry(final PackingFile packingFile, final List<Pack200ClassReader> javaClasses, final List<PackingFile> files) {
         final long segmentLimit = options.getSegmentLimit();
         if (segmentLimit != -1 && segmentLimit != 0) {
             // -1 is a special case where only one segment is created and
@@ -221,7 +221,7 @@ public class Archive {
 
         private int packedByteAmount;
 
-        public SegmentUnit(final List classes, final List files) {
+        public SegmentUnit(final List<Pack200ClassReader> classes, final List<PackingFile> files) {
             classList = classes;
             fileList = files;
             byteAmount = 0;
@@ -230,7 +230,7 @@ public class Archive {
             byteAmount += fileList.stream().mapToInt(element -> element.contents.length).sum();
         }
 
-        public List getClassList() {
+        public List<Pack200ClassReader> getClassList() {
             return classList;
         }
 
@@ -242,7 +242,7 @@ public class Archive {
             return fileList.size();
         }
 
-        public List getFileList() {
+        public List<PackingFile> getFileList() {
             return fileList;
         }
 

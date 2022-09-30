@@ -40,7 +40,7 @@ public class FileBands extends BandSet {
     private final long[] file_size;
     private final int[] file_options;
     private final byte[][] file_bits;
-    private final List fileList;
+    private final List<PackingFile> fileList;
     private final PackingOptions options;
     private final CpBands cpBands;
 
@@ -59,7 +59,7 @@ public class FileBands extends BandSet {
         file_bits = new byte[size][];
         final int archiveModtime = segmentHeader.getArchive_modtime();
 
-        final Set classNames = new HashSet();
+        final Set<String> classNames = new HashSet<>();
         for (Object element : segmentUnit.getClassList()) {
             final ClassReader reader = (ClassReader) element;
             classNames.add(reader.getClassName());
@@ -69,7 +69,7 @@ public class FileBands extends BandSet {
         int latestModtime = Integer.MIN_VALUE;
         final boolean isLatest = !PackingOptions.KEEP.equals(options.getModificationTime());
         for (int i = 0; i < size; i++) {
-            final PackingFile packingFile = (PackingFile) fileList.get(i);
+            final PackingFile packingFile = fileList.get(i);
             final String name = packingFile.getName();
             if (name.endsWith(".class") && !options.isPassFile(name)) {
                 file_options[i] |= (1 << 1);
@@ -114,7 +114,7 @@ public class FileBands extends BandSet {
         file_name = new int[fileName.length];
         for (int i = 0; i < file_name.length; i++) {
             if (fileName[i].equals(cpBands.getCPUtf8(""))) {
-                final PackingFile packingFile = (PackingFile) fileList.get(i);
+                final PackingFile packingFile = fileList.get(i);
                 final String name = packingFile.getName();
                 if (options.isPassFile(name)) {
                     fileName[i] = cpBands.getCPUtf8(name);

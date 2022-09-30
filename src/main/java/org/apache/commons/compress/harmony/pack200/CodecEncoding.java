@@ -65,7 +65,7 @@ public class CodecEncoding {
         new BHSDCodec(4, 224, 0, 1), new BHSDCodec(4, 224, 1, 1), new BHSDCodec(4, 240, 0, 1),
         new BHSDCodec(4, 240, 1, 1), new BHSDCodec(4, 248, 0, 1), new BHSDCodec(4, 248, 1, 1)};
 
-    private static Map canonicalCodecsToSpecifiers;
+    private static Map<BHSDCodec, Integer> canonicalCodecsToSpecifiers;
 
     /**
      * Returns the codec specified by the given value byte and optional byte header. If the value is &gt;= 116, then
@@ -180,16 +180,16 @@ public class CodecEncoding {
     public static int[] getSpecifier(final Codec codec, final Codec defaultForBand) {
         // lazy initialization
         if (canonicalCodecsToSpecifiers == null) {
-            final HashMap reverseMap = new HashMap(canonicalCodec.length);
+            final HashMap<BHSDCodec, Integer> reverseMap = new HashMap<>(canonicalCodec.length);
             for (int i = 0; i < canonicalCodec.length; i++) {
                 reverseMap.put(canonicalCodec[i], Integer.valueOf(i));
             }
             canonicalCodecsToSpecifiers = reverseMap;
         }
 
-        if (canonicalCodecsToSpecifiers.containsKey(codec)) {
-            return new int[] {((Integer) canonicalCodecsToSpecifiers.get(codec)).intValue()};
-        }
+		if (canonicalCodecsToSpecifiers.containsKey(codec)) {
+			return new int[] { canonicalCodecsToSpecifiers.get(codec).intValue() };
+		}
         if (codec instanceof BHSDCodec) {
             // Cache these?
             final BHSDCodec bhsdCodec = (BHSDCodec) codec;
@@ -255,7 +255,6 @@ public class CodecEncoding {
             int tDefL = 0;
             final int[] favoured = populationCodec.getFavoured();
             if (favoured != null) {
-                final int k = favoured.length;
                 if (tokenCodec == Codec.BYTE1) {
                     tDefL = 1;
                 } else if (tokenCodec instanceof BHSDCodec) {

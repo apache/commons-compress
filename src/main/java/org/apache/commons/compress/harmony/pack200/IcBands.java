@@ -31,11 +31,10 @@ import java.util.TreeSet;
  */
 public class IcBands extends BandSet {
 
-    private final Set innerClasses = new TreeSet();
+    private final Set<IcTuple> innerClasses = new TreeSet<>();
     private final CpBands cpBands;
     private int bit16Count = 0;
-
-    private final Map outerToInner = new HashMap();
+    private final Map<String, List<IcTuple>> outerToInner = new HashMap<>();
 
     public IcBands(final SegmentHeader segmentHeader, final CpBands cpBands, final int effort) {
         super(effort, segmentHeader);
@@ -51,7 +50,7 @@ public class IcBands extends BandSet {
     }
 
     @Override
-    public void pack(final OutputStream out) throws IOException, Pack200Exception {
+    public void pack(final OutputStream outputStream) throws IOException, Pack200Exception {
         PackingUtils.log("Writing internal class bands...");
         final int[] ic_this_class = new int[innerClasses.size()];
         final int[] ic_flags = new int[innerClasses.size()];
@@ -59,9 +58,9 @@ public class IcBands extends BandSet {
         final int[] ic_name = new int[bit16Count];
 
         int index2 = 0;
-        final List innerClassesList = new ArrayList(innerClasses);
+        final List<IcTuple> innerClassesList = new ArrayList<>(innerClasses);
         for (int i = 0; i < ic_this_class.length; i++) {
-            final IcTuple icTuple = (IcTuple) innerClassesList.get(i);
+            final IcTuple icTuple = innerClassesList.get(i);
             ic_this_class[i] = icTuple.C.getIndex();
             ic_flags[i] = icTuple.F;
             if ((icTuple.F & (1 << 16)) != 0) {
@@ -71,19 +70,19 @@ public class IcBands extends BandSet {
             }
         }
         byte[] encodedBand = encodeBandInt("ic_this_class", ic_this_class, Codec.UDELTA5);
-        out.write(encodedBand);
+        outputStream.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length + " bytes from ic_this_class[" + ic_this_class.length + "]");
 
         encodedBand = encodeBandInt("ic_flags", ic_flags, Codec.UNSIGNED5);
-        out.write(encodedBand);
+        outputStream.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length + " bytes from ic_flags[" + ic_flags.length + "]");
 
         encodedBand = encodeBandInt("ic_outer_class", ic_outer_class, Codec.DELTA5);
-        out.write(encodedBand);
+        outputStream.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length + " bytes from ic_outer_class[" + ic_outer_class.length + "]");
 
         encodedBand = encodeBandInt("ic_name", ic_name, Codec.DELTA5);
-        out.write(encodedBand);
+        outputStream.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length + " bytes from ic_name[" + ic_name.length + "]");
     }
 
@@ -110,8 +109,8 @@ public class IcBands extends BandSet {
         }
     }
 
-    public List getInnerClassesForOuter(final String outerClassName) {
-        return (List) outerToInner.get(outerClassName);
+    public List<IcTuple> getInnerClassesForOuter(final String outerClassName) {
+        return outerToInner.get(outerClassName);
     }
 
     private String getOuter(final String name) {
@@ -119,9 +118,9 @@ public class IcBands extends BandSet {
     }
 
     private void addToMap(final String outerName, final IcTuple icTuple) {
-        List tuples = (List) outerToInner.get(outerName);
+        List<IcTuple> tuples = outerToInner.get(outerName);
         if (tuples == null) {
-            tuples = new ArrayList();
+            tuples = new ArrayList<>();
             outerToInner.put(outerName, tuples);
             tuples.add(icTuple);
         } else {
