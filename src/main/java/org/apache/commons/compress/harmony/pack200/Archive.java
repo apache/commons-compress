@@ -117,14 +117,14 @@ public class Archive {
             packingFileList = PackingUtils.getPackingFileListFromJar(jarFile, options.isKeepFileOrder());
         }
 
-        final List segmentUnitList = splitIntoSegments(packingFileList);
+        final List<SegmentUnit> segmentUnitList = splitIntoSegments(packingFileList);
         int previousByteAmount = 0;
         int packedByteAmount = 0;
 
         final int segmentSize = segmentUnitList.size();
         SegmentUnit segmentUnit;
         for (int index = 0; index < segmentSize; index++) {
-            segmentUnit = (SegmentUnit) segmentUnitList.get(index);
+            segmentUnit = segmentUnitList.get(index);
             new Segment().pack(segmentUnit, outputStream, options);
             previousByteAmount += segmentUnit.getByteAmount();
             packedByteAmount += segmentUnit.getPackedByteAmount();
@@ -136,8 +136,8 @@ public class Archive {
         outputStream.close();
     }
 
-    private List splitIntoSegments(final List packingFileList) {
-        final List segmentUnitList = new ArrayList();
+    private List<SegmentUnit> splitIntoSegments(final List packingFileList) {
+        final List<SegmentUnit> segmentUnitList = new ArrayList<>();
         List classes = new ArrayList();
         List files = new ArrayList();
         final long segmentLimit = options.getSegmentLimit();

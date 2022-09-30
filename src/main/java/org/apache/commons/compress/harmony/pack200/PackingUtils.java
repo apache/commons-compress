@@ -141,7 +141,7 @@ public class PackingUtils {
         jarOutputStream.close();
     }
 
-    public static List getPackingFileListFromJar(final JarInputStream jarInputStream, final boolean keepFileOrder)
+    public static List<PackingFile> getPackingFileListFromJar(final JarInputStream jarInputStream, final boolean keepFileOrder)
         throws IOException {
         final List<PackingFile> packingFileList = new ArrayList<>();
 
@@ -168,14 +168,14 @@ public class PackingUtils {
         return packingFileList;
     }
 
-    public static List getPackingFileListFromJar(final JarFile jarFile, final boolean keepFileOrder)
+    public static List<PackingFile> getPackingFileListFromJar(final JarFile jarFile, final boolean keepFileOrder)
         throws IOException {
         final List<PackingFile> packingFileList = new ArrayList<>();
-        final Enumeration jarEntries = jarFile.entries();
+        final Enumeration<JarEntry> jarEntries = jarFile.entries();
         JarEntry jarEntry;
         byte[] bytes;
         while (jarEntries.hasMoreElements()) {
-            jarEntry = (JarEntry) jarEntries.nextElement();
+            jarEntry = jarEntries.nextElement();
             bytes = readJarEntry(jarEntry, new BufferedInputStream(jarFile.getInputStream(jarEntry)));
             packingFileList.add(new PackingFile(bytes, jarEntry));
         }
