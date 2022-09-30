@@ -789,7 +789,11 @@ public class NewAttributeBands extends BandSet {
         final StringBuilder sb = new StringBuilder();
         int foundBracket = -1;
         while (foundBracket != 0) {
-            final char c = (char) reader.read();
+            int read = reader.read();
+            if (read == -1) {
+            	break;
+            }
+			final char c = (char) read;
             if (c == ']') {
                 foundBracket++;
             }
