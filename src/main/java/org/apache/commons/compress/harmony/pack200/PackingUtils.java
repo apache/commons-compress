@@ -92,25 +92,25 @@ public class PackingUtils {
      * @throws IOException If an I/O error occurs.
      */
     public static void copyThroughJar(final JarInputStream jarInputStream, final OutputStream outputStream)
-        throws IOException {
-        final Manifest manifest = jarInputStream.getManifest();
-        final JarOutputStream jarOutputStream = new JarOutputStream(outputStream, manifest);
-        jarOutputStream.setComment("PACK200");
-        log("Packed " + JarFile.MANIFEST_NAME);
+			throws IOException {
+		final Manifest manifest = jarInputStream.getManifest();
+		try (final JarOutputStream jarOutputStream = new JarOutputStream(outputStream, manifest)) {
+			jarOutputStream.setComment("PACK200");
+			log("Packed " + JarFile.MANIFEST_NAME);
 
-        final byte[] bytes = new byte[16384];
-        JarEntry jarEntry;
-        int bytesRead;
-        while ((jarEntry = jarInputStream.getNextJarEntry()) != null) {
-            jarOutputStream.putNextEntry(jarEntry);
-            while ((bytesRead = jarInputStream.read(bytes)) != -1) {
-                jarOutputStream.write(bytes, 0, bytesRead);
-            }
-            log("Packed " + jarEntry.getName());
-        }
-        jarInputStream.close();
-        jarOutputStream.close();
-    }
+			final byte[] bytes = new byte[16384];
+			JarEntry jarEntry;
+			int bytesRead;
+			while ((jarEntry = jarInputStream.getNextJarEntry()) != null) {
+				jarOutputStream.putNextEntry(jarEntry);
+				while ((bytesRead = jarInputStream.read(bytes)) != -1) {
+					jarOutputStream.write(bytes, 0, bytesRead);
+				}
+				log("Packed " + jarEntry.getName());
+			}
+			jarInputStream.close();
+		}
+	}
 
     /**
      * When effort is 0, the packer copys through the original jar file without compression
@@ -120,24 +120,24 @@ public class PackingUtils {
      * @throws IOException If an I/O error occurs.
      */
 	public static void copyThroughJar(final JarFile jarFile, final OutputStream outputStream) throws IOException {
-		final JarOutputStream jarOutputStream = new JarOutputStream(outputStream);
-		jarOutputStream.setComment("PACK200");
-		final byte[] bytes = new byte[16384];
-		final Enumeration<JarEntry> entries = jarFile.entries();
-		while (entries.hasMoreElements()) {
-			JarEntry jarEntry = entries.nextElement();
-			jarOutputStream.putNextEntry(jarEntry);
-			try (InputStream inputStream = jarFile.getInputStream(jarEntry)) {
-				int bytesRead;
-				while ((bytesRead = inputStream.read(bytes)) != -1) {
-					jarOutputStream.write(bytes, 0, bytesRead);
+		try (final JarOutputStream jarOutputStream = new JarOutputStream(outputStream)) {
+			jarOutputStream.setComment("PACK200");
+			final byte[] bytes = new byte[16384];
+			final Enumeration<JarEntry> entries = jarFile.entries();
+			while (entries.hasMoreElements()) {
+				JarEntry jarEntry = entries.nextElement();
+				jarOutputStream.putNextEntry(jarEntry);
+				try (InputStream inputStream = jarFile.getInputStream(jarEntry)) {
+					int bytesRead;
+					while ((bytesRead = inputStream.read(bytes)) != -1) {
+						jarOutputStream.write(bytes, 0, bytesRead);
+					}
+					jarOutputStream.closeEntry();
+					log("Packed " + jarEntry.getName());
 				}
-				jarOutputStream.closeEntry();
-				log("Packed " + jarEntry.getName());
 			}
+			jarFile.close();
 		}
-		jarFile.close();
-		jarOutputStream.close();
 	}
 
     public static List<PackingFile> getPackingFileListFromJar(final JarInputStream jarInputStream, final boolean keepFileOrder)
