@@ -293,7 +293,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                 skipRemainderOfArchive();
                 return null;
             }
-            throw new ZipException(String.format("Unexpected record signature: 0X%X", sig.getValue()));
+            throw new ZipException(String.format("Unexpected record signature: 0x%x", sig.getValue()));
         }
 
         int off = WORD;
