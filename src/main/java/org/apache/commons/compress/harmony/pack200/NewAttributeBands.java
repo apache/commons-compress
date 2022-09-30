@@ -781,15 +781,15 @@ public class NewAttributeBands extends BandSet {
      * Utility method to get the contents of the given stream, up to the next ']', (ignoring pairs of brackets '[' and
      * ']')
      *
-     * @param stream
+     * @param reader
      * @return
      * @throws IOException If an I/O error occurs.
      */
-    private StringReader getStreamUpToMatchingBracket(final StringReader stream) throws IOException {
+    private StringReader getStreamUpToMatchingBracket(final StringReader reader) throws IOException {
         final StringBuilder sb = new StringBuilder();
         int foundBracket = -1;
         while (foundBracket != 0) {
-            final char c = (char) stream.read();
+            final char c = (char) reader.read();
             if (c == ']') {
                 foundBracket++;
             }
@@ -803,11 +803,11 @@ public class NewAttributeBands extends BandSet {
         return new StringReader(sb.toString());
     }
 
-    private int readInteger(final int i, final InputStream stream) {
+    private int readInteger(final int i, final InputStream inputStream) {
         int result = 0;
         for (int j = 0; j < i; j++) {
             try {
-                result = result << 8 | stream.read();
+                result = result << 8 | inputStream.read();
             } catch (final IOException e) {
                 throw new UncheckedIOException("Error reading unknown attribute", e);
             }
@@ -848,15 +848,15 @@ public class NewAttributeBands extends BandSet {
      * Utility method to get the contents of the given stream, up to the next ']', (ignoring pairs of brackets '[' and
      * ']')
      *
-     * @param stream
+     * @param reader
      * @return
      * @throws IOException If an I/O error occurs.
      */
-    private String readUpToMatchingBracket(final StringReader stream) throws IOException {
+    private String readUpToMatchingBracket(final StringReader reader) throws IOException {
         final StringBuilder sb = new StringBuilder();
         int foundBracket = -1;
         while (foundBracket != 0) {
-            final char c = (char) stream.read();
+            final char c = (char) reader.read();
             if (c == ']') {
                 foundBracket++;
             }
