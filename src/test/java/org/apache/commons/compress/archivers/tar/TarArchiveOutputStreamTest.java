@@ -706,46 +706,48 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         }
         return bos.toByteArray();
     }
-    @Test public void testPutGlobalPaxHeaderEntry() throws IOException {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
-        final int pid = 73;
-        final int globCount = 1;
-        final byte lfPaxGlobalExtendedHeader = TarConstants.LF_PAX_GLOBAL_EXTENDED_HEADER;
-        final TarArchiveEntry globalHeader = new TarArchiveEntry("/tmp/GlobalHead." + pid + "." + globCount,
-            lfPaxGlobalExtendedHeader);
-        globalHeader.addPaxHeader("SCHILLY.xattr.user.org.apache.weasels","global-weasels");
-        tos.putArchiveEntry(globalHeader);
-        TarArchiveEntry entry = new TarArchiveEntry("message");
-        final String x = "If at first you don't succeed, give up";
-        entry.setSize(x.length());
-        tos.putArchiveEntry(entry);
-        tos.write(x.getBytes());
-        tos.closeArchiveEntry();
-        entry = new TarArchiveEntry("counter-message");
-        final String y = "Nothing succeeds like excess";
-        entry.setSize(y.length());
-        entry.addPaxHeader("SCHILLY.xattr.user.org.apache.weasels.species","unknown");
-        tos.putArchiveEntry(entry);
-        tos.write(y.getBytes());
-        tos.closeArchiveEntry();
-        tos.close();
-        final TarArchiveInputStream in = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()));
-        TarArchiveEntry entryIn = in.getNextTarEntry();
-        assertNotNull(entryIn);
-        assertEquals("message",entryIn.getName());
-        assertEquals("global-weasels",entryIn.getExtraPaxHeader("SCHILLY.xattr.user.org.apache.weasels"));
-        final Reader reader = new InputStreamReader(in);
-        for(int i=0;i<x.length();i++) {
-            assertEquals(x.charAt(i),reader.read());
-        }
-        assertEquals(-1,reader.read());
-        entryIn = in.getNextTarEntry();
-        assertEquals("counter-message",entryIn.getName());
-        assertEquals("global-weasels",entryIn.getExtraPaxHeader("SCHILLY.xattr.user.org.apache.weasels"));
-        assertEquals("unknown",entryIn.getExtraPaxHeader("SCHILLY.xattr.user.org.apache.weasels.species"));
-        assertNull(in.getNextTarEntry());
-    }
+
+	@Test
+	public void testPutGlobalPaxHeaderEntry() throws IOException {
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
+		final int pid = 73;
+		final int globCount = 1;
+		final byte lfPaxGlobalExtendedHeader = TarConstants.LF_PAX_GLOBAL_EXTENDED_HEADER;
+		final TarArchiveEntry globalHeader = new TarArchiveEntry("/tmp/GlobalHead." + pid + "." + globCount,
+				lfPaxGlobalExtendedHeader);
+		globalHeader.addPaxHeader("SCHILLY.xattr.user.org.apache.weasels", "global-weasels");
+		tos.putArchiveEntry(globalHeader);
+		TarArchiveEntry entry = new TarArchiveEntry("message");
+		final String x = "If at first you don't succeed, give up";
+		entry.setSize(x.length());
+		tos.putArchiveEntry(entry);
+		tos.write(x.getBytes());
+		tos.closeArchiveEntry();
+		entry = new TarArchiveEntry("counter-message");
+		final String y = "Nothing succeeds like excess";
+		entry.setSize(y.length());
+		entry.addPaxHeader("SCHILLY.xattr.user.org.apache.weasels.species", "unknown");
+		tos.putArchiveEntry(entry);
+		tos.write(y.getBytes());
+		tos.closeArchiveEntry();
+		tos.close();
+		final TarArchiveInputStream in = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()));
+		TarArchiveEntry entryIn = in.getNextTarEntry();
+		assertNotNull(entryIn);
+		assertEquals("message", entryIn.getName());
+		assertEquals("global-weasels", entryIn.getExtraPaxHeader("SCHILLY.xattr.user.org.apache.weasels"));
+		final Reader reader = new InputStreamReader(in);
+		for (int i = 0; i < x.length(); i++) {
+			assertEquals(x.charAt(i), reader.read());
+		}
+		assertEquals(-1, reader.read());
+		entryIn = in.getNextTarEntry();
+		assertEquals("counter-message", entryIn.getName());
+		assertEquals("global-weasels", entryIn.getExtraPaxHeader("SCHILLY.xattr.user.org.apache.weasels"));
+		assertEquals("unknown", entryIn.getExtraPaxHeader("SCHILLY.xattr.user.org.apache.weasels.species"));
+		assertNull(in.getNextTarEntry());
+	}
 
     /**
      * When using long file names the longLinkEntry included the current timestamp as the Entry
