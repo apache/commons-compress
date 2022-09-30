@@ -32,7 +32,7 @@ import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-//@Disabled @Ignore
+@Disabled @Ignore
 public class Compress626Test {
 
 	@Test
