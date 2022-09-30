@@ -62,9 +62,9 @@ public class NewAttributeBands extends BandSet {
     }
 
     @Override
-    public void pack(final OutputStream out) throws IOException, Pack200Exception {
+    public void pack(final OutputStream outputStream) throws IOException, Pack200Exception {
         for (AttributeLayoutElement attributeLayoutElement : attributeLayoutElements) {
-            attributeLayoutElement.pack(out);
+            attributeLayoutElement.pack(outputStream);
         }
     }
 
@@ -166,17 +166,17 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
-    private AttributeLayoutElement readNextAttributeElement(final StringReader stream) throws IOException {
-        stream.mark(1);
-        final int nextChar = stream.read();
+    private AttributeLayoutElement readNextAttributeElement(final StringReader reader) throws IOException {
+        reader.mark(1);
+        final int nextChar = reader.read();
         if (nextChar == -1) {
             return null;
         }
         if (nextChar == '[') {
-            return new Callable(readBody(getStreamUpToMatchingBracket(stream)));
+            return new Callable(readBody(getStreamUpToMatchingBracket(reader)));
         }
-        stream.reset();
-        return readNextLayoutElement(stream);
+        reader.reset();
+        return readNextLayoutElement(reader);
     }
 
     private LayoutElement readNextLayoutElement(final StringReader reader) throws IOException {
