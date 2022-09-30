@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.tar;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -1467,7 +1468,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 parseTarHeader(header, TarUtils.DEFAULT_ENCODING, true, false);
             } catch (final IOException ex2) {
                 // not really possible
-                throw new RuntimeException(ex2); //NOSONAR
+                throw new UncheckedIOException(ex2); //NOSONAR
             }
         }
     }
@@ -2035,7 +2036,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 writeEntryHeader(outbuf, TarUtils.FALLBACK_ENCODING, false);
             } catch (final IOException ex2) {
                 // impossible
-                throw new RuntimeException(ex2); //NOSONAR
+                throw new UncheckedIOException(ex2); //NOSONAR
             }
         }
     }
