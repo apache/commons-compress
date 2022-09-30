@@ -192,11 +192,11 @@ public class NewAttributeBands extends BandSet {
 
     private AttributeLayoutElement readNextAttributeElement(final StringReader stream) throws IOException {
         stream.mark(1);
-        final int nextChar = stream.read();
-        if (nextChar == -1) {
+        final int next = stream.read();
+        if (next == -1) {
             return null;
         }
-        if (nextChar == '[') {
+        if (next == '[') {
             return new Callable(readBody(getStreamUpToMatchingBracket(stream)));
         }
         stream.reset();
@@ -293,7 +293,7 @@ public class NewAttributeBands extends BandSet {
         stream.mark(2);
         stream.read(); // '('
         char next = (char) stream.read();
-        if (next == ')') {
+        if (next == ')'|| next == -1) {
             stream.reset();
             return null;
         }
@@ -865,7 +865,11 @@ public class NewAttributeBands extends BandSet {
         final StringBuilder sb = new StringBuilder();
         int foundBracket = -1;
         while (foundBracket != 0) {
-            final char c = (char) stream.read();
+            int read = stream.read();
+            if (read == -1) {
+            	break;
+            }
+			final char c = (char) read;
             if (c == ']') {
                 foundBracket++;
             }
@@ -913,7 +917,11 @@ public class NewAttributeBands extends BandSet {
         final StringBuilder sb = new StringBuilder();
         int foundBracket = -1;
         while (foundBracket != 0) {
-            final char c = (char) stream.read();
+            int read = stream.read();
+            if (read == -1) {
+            	break;
+            }
+			final char c = (char) read;
             if (c == ']') {
                 foundBracket++;
             }

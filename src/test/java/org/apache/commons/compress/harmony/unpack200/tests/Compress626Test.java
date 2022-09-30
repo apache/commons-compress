@@ -17,6 +17,8 @@
 
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -28,21 +30,18 @@ import org.apache.commons.compress.harmony.pack200.CPUTF8;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands;
 import org.apache.commons.compress.java.util.jar.Pack200;
 import org.apache.commons.io.output.NullOutputStream;
-import org.junit.Ignore;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled @Ignore
 public class Compress626Test {
 
 	@Test
-    public void test() throws Exception {
-		CPUTF8 name = new CPUTF8("");
-		CPUTF8 layout = new CPUTF8("[");
-        new NewAttributeBands(1, null, null,
-                new AttributeDefinitionBands.AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout)
-        );
-    }
+	public void test() throws Exception {
+		final CPUTF8 name = new CPUTF8("");
+		final CPUTF8 layout = new CPUTF8("[");
+		assertDoesNotThrow(
+				() -> new NewAttributeBands(1, null, null, new AttributeDefinitionBands.AttributeDefinition(35,
+						AttributeDefinitionBands.CONTEXT_CLASS, name, layout)));
+	}
 
 	@Test
 	public void testJar() throws IOException {
