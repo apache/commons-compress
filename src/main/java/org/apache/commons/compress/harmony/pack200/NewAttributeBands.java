@@ -88,9 +88,9 @@ public class NewAttributeBands extends BandSet {
         final String layout = def.layout.getUnderlyingString();
         if (attributeLayoutElements == null) {
             attributeLayoutElements = new ArrayList<>();
-            final StringReader stream = new StringReader(layout);
+            final StringReader reader = new StringReader(layout);
             AttributeLayoutElement e;
-            while ((e = readNextAttributeElement(stream)) != null) {
+            while ((e = readNextAttributeElement(reader)) != null) {
                 attributeLayoutElements.add(e);
             }
             resolveCalls();
@@ -179,8 +179,8 @@ public class NewAttributeBands extends BandSet {
         return readNextLayoutElement(stream);
     }
 
-    private LayoutElement readNextLayoutElement(final StringReader stream) throws IOException {
-        final int nextChar = stream.read();
+    private LayoutElement readNextLayoutElement(final StringReader reader) throws IOException {
+        final int nextChar = reader.read();
         if (nextChar == -1) {
             return null;
         }
@@ -194,67 +194,67 @@ public class NewAttributeBands extends BandSet {
             return new Integral(new String(new char[] {(char) nextChar}));
         case 'S':
         case 'F':
-            return new Integral(new String(new char[] {(char) nextChar, (char) stream.read()}));
+            return new Integral(new String(new char[] {(char) nextChar, (char) reader.read()}));
         case 'P':
-            stream.mark(1);
-            if (stream.read() != 'O') {
-                stream.reset();
-                lastPIntegral = new Integral("P" + (char) stream.read());
+            reader.mark(1);
+            if (reader.read() != 'O') {
+                reader.reset();
+                lastPIntegral = new Integral("P" + (char) reader.read());
                 return lastPIntegral;
             }
-            lastPIntegral = new Integral("PO" + (char) stream.read(), lastPIntegral);
+            lastPIntegral = new Integral("PO" + (char) reader.read(), lastPIntegral);
             return lastPIntegral;
         case 'O':
-            stream.mark(1);
-            if (stream.read() != 'S') {
-                stream.reset();
-                return new Integral("O" + (char) stream.read(), lastPIntegral);
+            reader.mark(1);
+            if (reader.read() != 'S') {
+                reader.reset();
+                return new Integral("O" + (char) reader.read(), lastPIntegral);
             }
-            return new Integral("OS" + (char) stream.read(), lastPIntegral);
+            return new Integral("OS" + (char) reader.read(), lastPIntegral);
 
             // Replication
         case 'N':
-            final char uint_type = (char) stream.read();
-            stream.read(); // '['
-            final String str = readUpToMatchingBracket(stream);
+            final char uint_type = (char) reader.read();
+            reader.read(); // '['
+            final String str = readUpToMatchingBracket(reader);
             return new Replication("" + uint_type, str);
 
         // Union
         case 'T':
-            String int_type = "" + (char) stream.read();
+            String int_type = "" + (char) reader.read();
             if (int_type.equals("S")) {
-                int_type += (char) stream.read();
+                int_type += (char) reader.read();
             }
             final List<UnionCase> unionCases = new ArrayList<>();
             UnionCase c;
-            while ((c = readNextUnionCase(stream)) != null) {
+            while ((c = readNextUnionCase(reader)) != null) {
                 unionCases.add(c);
             }
-            stream.read(); // '('
-            stream.read(); // ')'
-            stream.read(); // '['
+            reader.read(); // '('
+            reader.read(); // ')'
+            reader.read(); // '['
             List<LayoutElement> body = null;
-            stream.mark(1);
-            final char next = (char) stream.read();
+            reader.mark(1);
+            final char next = (char) reader.read();
             if (next != ']') {
-                stream.reset();
-                body = readBody(getStreamUpToMatchingBracket(stream));
+                reader.reset();
+                body = readBody(getStreamUpToMatchingBracket(reader));
             }
             return new Union(int_type, unionCases, body);
 
         // Call
         case '(':
-            final int number = readNumber(stream).intValue();
-            stream.read(); // ')'
+            final int number = readNumber(reader).intValue();
+            reader.read(); // ')'
             return new Call(number);
         // Reference
         case 'K':
         case 'R':
-            final StringBuilder string = new StringBuilder("").append((char) nextChar).append((char) stream.read());
-            final char nxt = (char) stream.read();
+            final StringBuilder string = new StringBuilder("").append((char) nextChar).append((char) reader.read());
+            final char nxt = (char) reader.read();
             string.append(nxt);
             if (nxt == 'N') {
-                string.append((char) stream.read());
+                string.append((char) reader.read());
             }
             return new Reference(string.toString());
         }
@@ -264,37 +264,37 @@ public class NewAttributeBands extends BandSet {
     /**
      * Read a UnionCase from the stream
      *
-     * @param stream
+     * @param reader
      * @return
      * @throws IOException If an I/O error occurs.
      */
-    private UnionCase readNextUnionCase(final StringReader stream) throws IOException {
-        stream.mark(2);
-        stream.read(); // '('
-        char next = (char) stream.read();
+    private UnionCase readNextUnionCase(final StringReader reader) throws IOException {
+        reader.mark(2);
+        reader.read(); // '('
+        char next = (char) reader.read();
         if (next == ')') {
-            stream.reset();
+            reader.reset();
             return null;
         }
-        stream.reset();
-        stream.read(); // '('
+        reader.reset();
+        reader.read(); // '('
         final List<Integer> tags = new ArrayList<>();
         Integer nextTag;
         do {
-            nextTag = readNumber(stream);
+            nextTag = readNumber(reader);
             if (nextTag != null) {
                 tags.add(nextTag);
-                stream.read(); // ',' or ')'
+                reader.read(); // ',' or ')'
             }
         } while (nextTag != null);
-        stream.read(); // '['
-        stream.mark(1);
-        next = (char) stream.read();
+        reader.read(); // '['
+        reader.mark(1);
+        next = (char) reader.read();
         if (next == ']') {
             return new UnionCase(tags);
         }
-        stream.reset();
-        return new UnionCase(tags, readBody(getStreamUpToMatchingBracket(stream)));
+        reader.reset();
+        return new UnionCase(tags, readBody(getStreamUpToMatchingBracket(reader)));
     }
 
     /**
@@ -303,9 +303,9 @@ public class NewAttributeBands extends BandSet {
      */
     public interface AttributeLayoutElement {
 
-        void addAttributeToBand(NewAttribute attribute, InputStream stream);
+        void addAttributeToBand(NewAttribute attribute, InputStream inputStream);
 
-        void pack(OutputStream out) throws IOException, Pack200Exception;
+        void pack(OutputStream ouputStream) throws IOException, Pack200Exception;
 
         void renumberBci(IntList bciRenumbering, Map<Label, Integer> labelsToOffsets);
 
@@ -360,40 +360,40 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public void addAttributeToBand(final NewAttribute attribute, final InputStream stream) {
+        public void addAttributeToBand(final NewAttribute attribute, final InputStream inputStream) {
             Object val = null;
             int value = 0;
             if (tag.equals("B") || tag.equals("FB")) {
-                value = readInteger(1, stream) & 0xFF; // unsigned byte
+                value = readInteger(1, inputStream) & 0xFF; // unsigned byte
             } else if (tag.equals("SB")) {
-                value = readInteger(1, stream);
+                value = readInteger(1, inputStream);
             } else if (tag.equals("H") || tag.equals("FH")) {
-                value = readInteger(2, stream) & 0xFFFF; // unsigned short
+                value = readInteger(2, inputStream) & 0xFFFF; // unsigned short
             } else if (tag.equals("SH")) {
-                value = readInteger(2, stream);
+                value = readInteger(2, inputStream);
             } else if (tag.equals("I") || tag.equals("FI")) {
-                value = readInteger(4, stream);
+                value = readInteger(4, inputStream);
             } else if (tag.equals("SI")) {
-                value = readInteger(4, stream);
+                value = readInteger(4, inputStream);
             } else if (tag.equals("V") || tag.equals("FV") || tag.equals("SV")) {
                 // Not currently supported
             } else if (tag.startsWith("PO") || tag.startsWith("OS")) {
                 final char uint_type = tag.substring(2).toCharArray()[0];
                 final int length = getLength(uint_type);
-                value = readInteger(length, stream);
+                value = readInteger(length, inputStream);
                 value += previousIntegral.previousPValue;
                 val = attribute.getLabel(value);
                 previousPValue = value;
             } else if (tag.startsWith("P")) {
                 final char uint_type = tag.substring(1).toCharArray()[0];
                 final int length = getLength(uint_type);
-                value = readInteger(length, stream);
+                value = readInteger(length, inputStream);
                 val = attribute.getLabel(value);
                 previousPValue = value;
             } else if (tag.startsWith("O")) {
                 final char uint_type = tag.substring(1).toCharArray()[0];
                 final int length = getLength(uint_type);
-                value = readInteger(length, stream);
+                value = readInteger(length, inputStream);
                 value += previousIntegral.previousPValue;
                 val = attribute.getLabel(value);
                 previousPValue = value;
@@ -405,10 +405,10 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public void pack(final OutputStream out) throws IOException, Pack200Exception {
+        public void pack(final OutputStream outputStream) throws IOException, Pack200Exception {
             PackingUtils.log("Writing new attribute bands...");
             final byte[] encodedBand = encodeBandInt(tag, integerListToArray(band), defaultCodec);
-            out.write(encodedBand);
+            outputStream.write(encodedBand);
             PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + tag + "[" + band.size() + "]");
         }
 
@@ -480,12 +480,12 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public void addAttributeToBand(final NewAttribute attribute, final InputStream stream) {
-            countElement.addAttributeToBand(attribute, stream);
+        public void addAttributeToBand(final NewAttribute attribute, final InputStream inputStream) {
+            countElement.addAttributeToBand(attribute, inputStream);
             final int count = countElement.latestValue();
             for (int i = 0; i < count; i++) {
                 for (AttributeLayoutElement layoutElement : layoutElements) {
-                    layoutElement.addAttributeToBand(attribute, stream);
+                    layoutElement.addAttributeToBand(attribute, inputStream);
                 }
             }
         }
@@ -522,31 +522,31 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public void addAttributeToBand(final NewAttribute attribute, final InputStream stream) {
-            unionTag.addAttributeToBand(attribute, stream);
+        public void addAttributeToBand(final NewAttribute attribute, final InputStream inputStream) {
+            unionTag.addAttributeToBand(attribute, inputStream);
             final long tag = unionTag.latestValue();
             boolean defaultCase = true;
             for (UnionCase unionCase : unionCases) {
                 if (unionCase.hasTag(tag)) {
                     defaultCase = false;
-                    unionCase.addAttributeToBand(attribute, stream);
+                    unionCase.addAttributeToBand(attribute, inputStream);
                 }
             }
             if (defaultCase) {
                 for (LayoutElement element2 : defaultCaseBody) {
-                    element2.addAttributeToBand(attribute, stream);
+                    element2.addAttributeToBand(attribute, inputStream);
                 }
             }
         }
 
         @Override
-        public void pack(final OutputStream out) throws IOException, Pack200Exception {
-            unionTag.pack(out);
+        public void pack(final OutputStream outputStream) throws IOException, Pack200Exception {
+            unionTag.pack(outputStream);
             for (UnionCase unionCase : unionCases) {
-                unionCase.pack(out);
+                unionCase.pack(outputStream);
             }
             for (LayoutElement element : defaultCaseBody) {
-                element.pack(out);
+                element.pack(outputStream);
             }
         }
 
@@ -590,15 +590,15 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public void addAttributeToBand(final NewAttribute attribute, final InputStream stream) {
-            callable.addAttributeToBand(attribute, stream);
+        public void addAttributeToBand(final NewAttribute attribute, final InputStream inputStream) {
+            callable.addAttributeToBand(attribute, inputStream);
             if (callableIndex < 1) {
                 callable.addBackwardsCall();
             }
         }
 
         @Override
-        public void pack(final OutputStream out) {
+        public void pack(final OutputStream outputStream) {
             // do nothing here as pack will be called on the callable at another time
         }
 
@@ -633,8 +633,8 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public void addAttributeToBand(final NewAttribute attribute, final InputStream stream) {
-            final int index = readInteger(4, stream);
+        public void addAttributeToBand(final NewAttribute attribute, final InputStream inputStream) {
+            final int index = readInteger(4, inputStream);
             if (tag.startsWith("RC")) { // Class
                 band.add(cpBands.getCPClass(attribute.readClass(index)));
             } else if (tag.startsWith("RU")) { // UTF8 String
@@ -652,7 +652,7 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public void pack(final OutputStream out) throws IOException, Pack200Exception {
+        public void pack(final OutputStream outputStream) throws IOException, Pack200Exception {
             int[] ints;
             if (nullsAllowed) {
                 ints = cpEntryOrNullListToArray(band);
@@ -660,7 +660,7 @@ public class NewAttributeBands extends BandSet {
                 ints = cpEntryListToArray(band);
             }
             final byte[] encodedBand = encodeBandInt(tag, ints, Codec.UNSIGNED5);
-            out.write(encodedBand);
+            outputStream.write(encodedBand);
             PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + tag + "[" + ints.length + "]");
         }
 
@@ -703,9 +703,9 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public void addAttributeToBand(final NewAttribute attribute, final InputStream stream) {
+        public void addAttributeToBand(final NewAttribute attribute, final InputStream inputStream) {
             for (AttributeLayoutElement element : body) {
-                element.addAttributeToBand(attribute, stream);
+                element.addAttributeToBand(attribute, inputStream);
             }
         }
 
@@ -752,16 +752,16 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public void addAttributeToBand(final NewAttribute attribute, final InputStream stream) {
+        public void addAttributeToBand(final NewAttribute attribute, final InputStream inputStream) {
             for (LayoutElement element : body) {
-                element.addAttributeToBand(attribute, stream);
+                element.addAttributeToBand(attribute, inputStream);
             }
         }
 
         @Override
-        public void pack(final OutputStream out) throws IOException, Pack200Exception {
+        public void pack(final OutputStream outputStream) throws IOException, Pack200Exception {
             for (LayoutElement element : body) {
-                element.pack(out);
+                element.pack(outputStream);
             }
         }
 
