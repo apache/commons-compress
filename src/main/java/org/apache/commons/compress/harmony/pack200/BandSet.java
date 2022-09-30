@@ -211,7 +211,7 @@ public abstract class BandSet {
             }
         }
 
-        final List codecFamiliesToTry = new ArrayList();
+        final List<BHSDCodec[]> codecFamiliesToTry = new ArrayList<>();
 
         // See if the deltas are mainly small increments
         if (bandData.mainlyPositiveDeltas() && bandData.mainlySmallDeltas()) {
@@ -261,8 +261,7 @@ public abstract class BandSet {
             System.out.print("");
         }
 
-        for (Object element : codecFamiliesToTry) {
-            final BHSDCodec[] family = (BHSDCodec[]) element;
+        for (BHSDCodec[] family : codecFamiliesToTry) {
             tryCodecs(name, band, defaultCodec, bandData, results, encoded, family);
             if (timeToStop(results)) {
                 break;
@@ -353,7 +352,7 @@ public abstract class BandSet {
         results.numCodecsTried += 3; // quite a bit more effort to try this codec
         final Map<Integer, Integer> distinctValues = bandData.distinctValues;
 
-        final List favoured = new ArrayList();
+        final List<Integer> favoured = new ArrayList<>();
         distinctValues.forEach((k, v) -> {
             if (v.intValue() > 2 || distinctValues.size() < 256) { // TODO: tweak
                 favoured.add(k);
@@ -362,19 +361,19 @@ public abstract class BandSet {
 
         // Sort the favoured list with the most commonly occurring first
         if (distinctValues.size() > 255) {
-            favoured.sort((arg0, arg1) -> ((Integer) distinctValues.get(arg1)).compareTo((Integer) distinctValues.get(arg0)));
+            favoured.sort((arg0, arg1) -> distinctValues.get(arg1).compareTo(distinctValues.get(arg0)));
         }
 
         final IntList unfavoured = new IntList();
-        final Map favouredToIndex = new HashMap();
+        final Map<Integer, Integer> favouredToIndex = new HashMap<>();
         for (int i = 0; i < favoured.size(); i++) {
-            final Integer value = (Integer) favoured.get(i);
+            final Integer value = favoured.get(i);
             favouredToIndex.put(value, Integer.valueOf(i));
         }
 
         final int[] tokens = new int[band.length];
         for (int i = 0; i < band.length; i++) {
-            final Integer favouredIndex = (Integer) favouredToIndex.get(Integer.valueOf(band[i]));
+            final Integer favouredIndex = favouredToIndex.get(Integer.valueOf(band[i]));
             if (favouredIndex == null) {
                 tokens[i] = 0;
                 unfavoured.add(band[i]);
@@ -554,10 +553,10 @@ public abstract class BandSet {
      * @param integerList conversion source.
      * @return conversion result.
      */
-    protected int[] integerListToArray(final List integerList) {
+    protected int[] integerListToArray(final List<Integer> integerList) {
         final int[] array = new int[integerList.size()];
         for (int i = 0; i < array.length; i++) {
-            array[i] = ((Integer) integerList.get(i)).intValue();
+            array[i] = integerList.get(i).intValue();
         }
         return array;
     }
@@ -568,10 +567,10 @@ public abstract class BandSet {
      * @param longList conversion source.
      * @return conversion result.
      */
-    protected long[] longListToArray(final List longList) {
+    protected long[] longListToArray(final List<Long> longList) {
         final long[] array = new long[longList.size()];
         for (int i = 0; i < array.length; i++) {
-            array[i] = ((Long) longList.get(i)).longValue();
+            array[i] = longList.get(i).longValue();
         }
         return array;
     }
@@ -582,10 +581,10 @@ public abstract class BandSet {
      * @param list conversion source.
      * @return conversion result.
      */
-    protected int[] cpEntryListToArray(final List list) {
+    protected int[] cpEntryListToArray(final List<ConstantPoolEntry> list) {
         final int[] array = new int[list.size()];
         for (int i = 0; i < array.length; i++) {
-            array[i] = ((ConstantPoolEntry) list.get(i)).getIndex();
+            array[i] = list.get(i).getIndex();
             if (array[i] < 0) {
                 throw new RuntimeException("Index should be > 0");
             }
@@ -599,10 +598,10 @@ public abstract class BandSet {
      * @param theList conversion source.
      * @return conversion result.
      */
-    protected int[] cpEntryOrNullListToArray(final List theList) {
+    protected int[] cpEntryOrNullListToArray(final List<ConstantPoolEntry> theList) {
         final int[] array = new int[theList.size()];
         for (int j = 0; j < array.length; j++) {
-            final ConstantPoolEntry cpEntry = (ConstantPoolEntry) theList.get(j);
+            final ConstantPoolEntry cpEntry = theList.get(j);
             array[j] = cpEntry == null ? 0 : cpEntry.getIndex() + 1;
             if (cpEntry != null && cpEntry.getIndex() < 0) {
                 throw new RuntimeException("Index should be > 0");
@@ -653,7 +652,7 @@ public abstract class BandSet {
         private double averageAbsoluteDelta = 0;
         private double averageAbsoluteValue = 0;
 
-        private Map distinctValues;
+        private Map<Integer, Integer> distinctValues;
 
         /**
          * Create a new instance of BandData. The band is then analysed.
@@ -692,10 +691,10 @@ public abstract class BandSet {
                 averageAbsoluteValue += (double) Math.abs(band[i]) / (double) band.length;
                 if (effort > 3) { // do calculations needed to consider population codec
                     if (distinctValues == null) {
-                        distinctValues = new HashMap();
+                        distinctValues = new HashMap<>();
                     }
                     final Integer value = Integer.valueOf(band[i]);
-                    Integer count = (Integer) distinctValues.get(value);
+                    Integer count = distinctValues.get(value);
                     if (count == null) {
                         count = one;
                     } else {

@@ -45,6 +45,8 @@ public class BcBands extends BandSet {
     private final IntList bcByte = new IntList();
     private final IntList bcShort = new IntList();
     private final IntList bcLocal = new IntList();
+    
+    // Integers and/or Labels?
     private final List bcLabel = new ArrayList();
     private final List bcIntref = new ArrayList();
     private final List bcFloatRef = new ArrayList();
@@ -75,7 +77,7 @@ public class BcBands extends BandSet {
     private static final int endMarker = 255;
 
     private final IntList bciRenumbering = new IntList();
-    private final Map labelsToOffsets = new HashMap();
+    private final Map<Label, Integer> labelsToOffsets = new HashMap<>();
     private int byteCodeOffset;
     private int renumberedOffset;
     private final IntList bcLabelRelativeOffsets = new IntList();
@@ -228,7 +230,7 @@ public class BcBands extends BandSet {
                 }
                 if (label instanceof Label) {
                     bcLabel.remove(i);
-                    final Integer offset = (Integer) labelsToOffsets.get(label);
+                    final Integer offset = labelsToOffsets.get(label);
                     final int relativeOffset = bcLabelRelativeOffsets.get(i);
                     bcLabel.add(i,
                         Integer.valueOf(bciRenumbering.get(offset.intValue()) - bciRenumbering.get(relativeOffset)));

@@ -21,8 +21,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.compress.harmony.pack200.AttributeDefinitionBands;
 import org.apache.commons.compress.harmony.pack200.AttributeDefinitionBands.AttributeDefinition;
 import org.apache.commons.compress.harmony.pack200.CPUTF8;
@@ -30,15 +28,19 @@ import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.CpBands;
 import org.apache.commons.compress.harmony.pack200.NewAttribute;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands;
+import org.apache.commons.compress.harmony.pack200.NewAttributeBands.AttributeLayoutElement;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.Call;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.Callable;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.Integral;
+import org.apache.commons.compress.harmony.pack200.NewAttributeBands.LayoutElement;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.Reference;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.Replication;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.Union;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.UnionCase;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.SegmentHeader;
+
+import junit.framework.TestCase;
 
 /**
  * Tests for pack200 support for non-predefined attributes
@@ -51,7 +53,7 @@ public class NewAttributeBandsTest extends TestCase {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
                 null, null, new AttributeDefinition(35,
                         AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        List layoutElements = newAttributeBands.getLayoutElements();
+        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(0, layoutElements.size());
     }
 
@@ -85,7 +87,7 @@ public class NewAttributeBandsTest extends TestCase {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
                 null, null, new AttributeDefinition(35,
                         AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        List layoutElements = newAttributeBands.getLayoutElements();
+        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         Integral element = (Integral) layoutElements.get(0);
         assertEquals(layoutStr, element.getTag());
@@ -97,12 +99,12 @@ public class NewAttributeBandsTest extends TestCase {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
                 null, null, new AttributeDefinition(35,
                         AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        List layoutElements = newAttributeBands.getLayoutElements();
+        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         Replication element = (Replication) layoutElements.get(0);
         Integral countElement = element.getCountElement();
         assertEquals("H", countElement.getTag());
-        List replicatedElements = element.getLayoutElements();
+        List<LayoutElement> replicatedElements = element.getLayoutElements();
         assertEquals(5, replicatedElements.size());
         Integral firstElement = (Integral) replicatedElements.get(0);
         assertEquals("PH", firstElement.getTag());
@@ -143,7 +145,7 @@ public class NewAttributeBandsTest extends TestCase {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
                 null, null, new AttributeDefinition(35,
                         AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        List layoutElements = newAttributeBands.getLayoutElements();
+        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         Reference element = (Reference) layoutElements.get(0);
         assertEquals(layoutStr, element.getTag());
@@ -155,26 +157,26 @@ public class NewAttributeBandsTest extends TestCase {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
                 null, null, new AttributeDefinition(35,
                         AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        List layoutElements = newAttributeBands.getLayoutElements();
+        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         Union element = (Union) layoutElements.get(0);
         Integral tag = element.getUnionTag();
         assertEquals("B", tag.getTag());
-        List unionCases = element.getUnionCases();
+        List<UnionCase> unionCases = element.getUnionCases();
         assertEquals(2, unionCases.size());
-        UnionCase firstCase = (UnionCase) unionCases.get(0);
+        UnionCase firstCase = unionCases.get(0);
         assertTrue(firstCase.hasTag(55));
         assertFalse(firstCase.hasTag(23));
-        List body = firstCase.getBody();
+        List<LayoutElement> body = firstCase.getBody();
         assertEquals(1, body.size());
         Integral bodyElement = (Integral) body.get(0);
         assertEquals("FH", bodyElement.getTag());
-        UnionCase secondCase = (UnionCase) unionCases.get(1);
+        UnionCase secondCase = unionCases.get(1);
         assertTrue(secondCase.hasTag(23));
         assertFalse(secondCase.hasTag(55));
         body = secondCase.getBody();
         assertEquals(0, body.size());
-        List defaultBody = element.getDefaultCaseBody();
+        List<LayoutElement> defaultBody = element.getDefaultCaseBody();
         assertEquals(1, defaultBody.size());
         Reference ref = (Reference) defaultBody.get(0);
         assertEquals("RSH", ref.getTag());
@@ -187,15 +189,15 @@ public class NewAttributeBandsTest extends TestCase {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
                 null, null, new AttributeDefinition(35,
                         AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        List layoutElements = newAttributeBands.getLayoutElements();
+        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(3, layoutElements.size());
         Callable firstCallable = (Callable) layoutElements.get(0);
         Callable secondCallable = (Callable) layoutElements.get(1);
         Callable thirdCallable = (Callable) layoutElements.get(2);
-        List firstBody = firstCallable.getBody();
+        List<LayoutElement> firstBody = firstCallable.getBody();
         assertEquals(1, firstBody.size());
         Replication rep = (Replication) firstBody.get(0);
-        List repBody = rep.getLayoutElements();
+        List<LayoutElement> repBody = rep.getLayoutElements();
         assertEquals(1, repBody.size());
         Call call = (Call) repBody.get(0);
         assertEquals(1, call.getCallableIndex());
@@ -211,12 +213,12 @@ public class NewAttributeBandsTest extends TestCase {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
                 null, null, new AttributeDefinition(35,
                         AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        List layoutElements = newAttributeBands.getLayoutElements();
+        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(3, layoutElements.size());
         Callable firstCallable = (Callable) layoutElements.get(0);
         Callable secondCallable = (Callable) layoutElements.get(1);
         Callable thirdCallable = (Callable) layoutElements.get(2);
-        List thirdBody = thirdCallable.getBody();
+        List<LayoutElement> thirdBody = thirdCallable.getBody();
         assertEquals(1, thirdBody.size());
         Call call = (Call) thirdBody.get(0);
         assertEquals(secondCallable, call.getCallable());
@@ -322,7 +324,7 @@ public class NewAttributeBandsTest extends TestCase {
             super(effort, cpBands, header, def);
         }
 
-        public List getLayoutElements() {
+        public List<AttributeLayoutElement> getLayoutElements() {
             return attributeLayoutElements;
         }
     }

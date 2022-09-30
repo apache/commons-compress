@@ -35,12 +35,12 @@ public class AttributeDefinitionBands extends BandSet {
     public static final int CONTEXT_FIELD = 1;
     public static final int CONTEXT_METHOD = 2;
 
-    private final List classAttributeLayouts = new ArrayList();
-    private final List methodAttributeLayouts = new ArrayList();
-    private final List fieldAttributeLayouts = new ArrayList();
-    private final List codeAttributeLayouts = new ArrayList();
+    private final List<AttributeDefinition> classAttributeLayouts = new ArrayList<>();
+    private final List<AttributeDefinition> methodAttributeLayouts = new ArrayList<>();
+    private final List<AttributeDefinition> fieldAttributeLayouts = new ArrayList<>();
+    private final List<AttributeDefinition> codeAttributeLayouts = new ArrayList<>();
 
-    private final List attributeDefinitions = new ArrayList();
+    private final List<AttributeDefinition> attributeDefinitions = new ArrayList<>();
 
     private final CpBands cpBands;
     private final Segment segment;
@@ -49,10 +49,10 @@ public class AttributeDefinitionBands extends BandSet {
         super(effort, segment.getSegmentHeader());
         this.cpBands = segment.getCpBands();
         this.segment = segment;
-        final Map classLayouts = new HashMap();
-        final Map methodLayouts = new HashMap();
-        final Map fieldLayouts = new HashMap();
-        final Map codeLayouts = new HashMap();
+        final Map<String, String> classLayouts = new HashMap<>();
+        final Map<String, String> methodLayouts = new HashMap<>();
+        final Map<String, String> fieldLayouts = new HashMap<>();
+        final Map<String, String> codeLayouts = new HashMap<>();
 
         for (Attribute attributePrototype : attributePrototypes) {
             final NewAttribute newAttribute = (NewAttribute) attributePrototype;
@@ -123,7 +123,7 @@ public class AttributeDefinitionBands extends BandSet {
         final int[] attributeDefinitionName = new int[attributeDefinitions.size()];
         final int[] attributeDefinitionLayout = new int[attributeDefinitions.size()];
         for (int i = 0; i < attributeDefinitionLayout.length; i++) {
-            final AttributeDefinition def = (AttributeDefinition) attributeDefinitions.get(i);
+            final AttributeDefinition def = attributeDefinitions.get(i);
             attributeDefinitionHeader[i] = def.contextType | (def.index + 1 << 2);
             attributeDefinitionName[i] = def.name.getIndex();
             attributeDefinitionLayout[i] = def.layout.getIndex();
@@ -175,11 +175,10 @@ public class AttributeDefinitionBands extends BandSet {
         return temp;
     }
 
-    private void addAttributeDefinitions(final Map layouts, final int[] availableIndices, final int contextType) {
+    private void addAttributeDefinitions(final Map<String, String> layouts, final int[] availableIndices, final int contextType) {
         final int i = 0;
-        for (Object element : layouts.keySet()) {
-            final String name = (String) element;
-            final String layout = (String) layouts.get(name);
+        for (String name : layouts.keySet()) {
+            final String layout = layouts.get(name);
             final int index = availableIndices[i];
             final AttributeDefinition definition = new AttributeDefinition(index, contextType, cpBands.getCPUtf8(name),
                 cpBands.getCPUtf8(layout));
@@ -200,19 +199,19 @@ public class AttributeDefinitionBands extends BandSet {
         }
     }
 
-    public List getClassAttributeLayouts() {
+    public List<AttributeDefinition> getClassAttributeLayouts() {
         return classAttributeLayouts;
     }
 
-    public List getMethodAttributeLayouts() {
+    public List<AttributeDefinition> getMethodAttributeLayouts() {
         return methodAttributeLayouts;
     }
 
-    public List getFieldAttributeLayouts() {
+    public List<AttributeDefinition> getFieldAttributeLayouts() {
         return fieldAttributeLayouts;
     }
 
-    public List getCodeAttributeLayouts() {
+    public List<AttributeDefinition> getCodeAttributeLayouts() {
         return codeAttributeLayouts;
     }
 
