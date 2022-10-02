@@ -1312,7 +1312,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         }
 
         final String comm = ze.getComment();
-        if (comm != null && !"".equals(comm)) {
+        if (comm != null && !comm.isEmpty()) {
 
             final boolean commentEncodable = zipEncoding.canEncode(comm);
 
