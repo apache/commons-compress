@@ -18,6 +18,7 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import java.io.Serializable;
 import java.util.zip.ZipException;
 
 /**
@@ -92,7 +93,7 @@ public class UnsupportedZipFeatureException extends ZipException {
      * ZIP Features that may or may not be supported.
      * @since 1.1
      */
-    public static class Feature implements java.io.Serializable {
+    public static class Feature implements Serializable {
 
         private static final long serialVersionUID = 4112582948775420359L;
         /**
