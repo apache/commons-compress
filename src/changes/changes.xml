@@ -113,7 +113,10 @@ The <action> type attribute can be add,update,fix,remove.
         Update Wikipedia link in TarUtils.java:627.
       </action>
       <action issue="COMPRESS-626" type="fix" dev="ggregory" due-to="Andrii Hudz, Gary Gregory">
-        OutOfMemoryError on malformed pack200 attributes.
+        OutOfMemoryError on malformed pack200 input (attributes).
+      </action>
+      <action issue="COMPRESS-628" type="fix" dev="ggregory" due-to="Andrii Hudz, Gary Gregory">
+        OutOfMemoryError on malformed pack200 input (NewAttributeBands.readNextUnionCase).
       </action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">
         Some input streams are not closed in org.apache.commons.compress.harmony.pack200.PackingUtils.

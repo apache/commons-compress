@@ -220,7 +220,7 @@ public class NewAttributeBands extends BandSet {
 
         // Union
         case 'T':
-            String int_type = "" + (char) reader.read();
+            String int_type = String.valueOf((char) reader.read());
             if (int_type.equals("S")) {
                 int_type += (char) reader.read();
             }
@@ -270,8 +270,9 @@ public class NewAttributeBands extends BandSet {
     private UnionCase readNextUnionCase(final StringReader reader) throws IOException {
         reader.mark(2);
         reader.read(); // '('
-        char next = (char) reader.read();
-        if (next == ')' || next == -1) {
+        final int next = reader.read();
+        char ch = (char) next;
+        if (ch == ')' || next == -1) {
             reader.reset();
             return null;
         }
@@ -288,8 +289,8 @@ public class NewAttributeBands extends BandSet {
         } while (nextTag != null);
         reader.read(); // '['
         reader.mark(1);
-        next = (char) reader.read();
-        if (next == ']') {
+        ch = (char) reader.read();
+        if (ch == ']') {
             return new UnionCase(tags);
         }
         reader.reset();
