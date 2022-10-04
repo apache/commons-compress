@@ -121,6 +121,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">
         Some input streams are not closed in org.apache.commons.compress.harmony.pack200.PackingUtils.
       </action>
+      <action issue="COMPRESS-627" type="fix" dev="ggregory" due-to="anatawa12, Gary Gregory">
+        Pack200 causes a 'archive.3E' error if it’s not in the system class loader.
+      </action>
       <!-- ADD -->
       <action issue="COMPRESS-602" type="add" dev="ggregory" due-to="Postelnicu George, Gary Gregory">
         Migrate zip package to use NIO #236.

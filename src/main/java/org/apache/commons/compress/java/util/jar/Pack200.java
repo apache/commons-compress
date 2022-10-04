@@ -35,68 +35,6 @@ import org.apache.commons.compress.harmony.archive.internal.nls.Messages;
  */
 public abstract class Pack200 {
 
-    private static final String SYSTEM_PROPERTY_PACKER = "java.util.jar.Pack200.Packer"; //$NON-NLS-1$
-
-    private static final String SYSTEM_PROPERTY_UNPACKER = "java.util.jar.Pack200.Unpacker"; //$NON-NLS-1$
-
-    /**
-     * Prevent this class from being instantiated.
-     */
-    private Pack200() {
-        // do nothing
-    }
-
-    /**
-     * Returns a new instance of a packer engine.
-     * <p>
-     * The implementation of the packer engine is defined by the system property
-     * {@code 'java.util.jar.Pack200.Packer'}. If this system property is
-     * defined an instance of the specified class is returned, otherwise the
-     * system's default implementation is returned.
-     *
-     * @return an instance of {@code Packer}
-     */
-    public static Pack200.Packer newPacker() {
-        return (Packer) AccessController
-                .doPrivileged((PrivilegedAction<Object>) () -> {
-                    String className = System
-                            .getProperty(SYSTEM_PROPERTY_PACKER,
-                                    "org.apache.commons.compress.harmony.pack200.Pack200PackerAdapter"); //$NON-NLS-1$
-                    try {
-                        // TODO Not sure if this will cause problems with
-                        // loading the packer
-                        return ClassLoader.getSystemClassLoader().loadClass(className).newInstance();
-                    } catch (Exception e) {
-                        throw new Error(Messages.getString("archive.3E", className), e); //$NON-NLS-1$
-                    }
-                });
-
-    }
-
-    /**
-     * Returns a new instance of a unpacker engine.
-     * <p>
-     * The implementation of the unpacker engine is defined by the system
-     * property {@code 'java.util.jar.Pack200.Unpacker'}. If this system
-     * property is defined an instance of the specified class is returned,
-     * otherwise the system's default implementation is returned.
-     *
-     * @return a instance of {@code Unpacker}.
-     */
-    public static Pack200.Unpacker newUnpacker() {
-        return (Unpacker) AccessController
-                .doPrivileged((PrivilegedAction<Object>) () -> {
-                    String className = System
-                            .getProperty(SYSTEM_PROPERTY_UNPACKER,
-                                    "org.apache.commons.compress.harmony.unpack200.Pack200UnpackerAdapter");//$NON-NLS-1$
-                    try {
-                        return ClassLoader.getSystemClassLoader().loadClass(className).newInstance();
-                    } catch (Exception e) {
-                        throw new Error(Messages.getString("archive.3E", className), e); //$NON-NLS-1$
-                    }
-                });
-    }
-
     /**
      * The interface defining the API for converting a JAR file to an output
      * stream in the Pack200 format.
@@ -200,11 +138,12 @@ public abstract class Pack200 {
         String UNKNOWN_ATTRIBUTE = "pack.unknown.attribute";//$NON-NLS-1$
 
         /**
-         * Returns a sorted map of the properties of this packer.
+         * add a listener for PropertyChange events
          *
-         * @return the properties of the packer.
+         * @param listener
+         *            the listener to listen if PropertyChange events occurs
          */
-        SortedMap<String, String> properties();
+        void addPropertyChangeListener(PropertyChangeListener listener);
 
         /**
          * Pack the specified JAR file to the specified output stream.
@@ -232,12 +171,11 @@ public abstract class Pack200 {
         void pack(JarInputStream in, OutputStream out) throws IOException;
 
         /**
-         * add a listener for PropertyChange events
+         * Returns a sorted map of the properties of this packer.
          *
-         * @param listener
-         *            the listener to listen if PropertyChange events occurs
+         * @return the properties of the packer.
          */
-        void addPropertyChangeListener(PropertyChangeListener listener);
+        SortedMap<String, String> properties();
 
         /**
          * remove a listener
@@ -281,6 +219,15 @@ public abstract class Pack200 {
         String TRUE = "true";//$NON-NLS-1$
 
         /**
+         * add a listener for {@code PropertyChange} events.
+         *
+         * @param listener
+         *            the listener to listen if {@code PropertyChange} events
+         *            occurs.
+         */
+        void addPropertyChangeListener(PropertyChangeListener listener);
+
+        /**
          * Returns a sorted map of the properties of this unpacker.
          *
          * @return the properties of unpacker.
@@ -288,16 +235,12 @@ public abstract class Pack200 {
         SortedMap<String, String> properties();
 
         /**
-         * Unpack the specified stream to the specified JAR output stream.
+         * remove a listener.
          *
-         * @param in
-         *            stream to uncompressed.
-         * @param out
-         *            JAR output stream of uncompressed data.
-         * @throws IOException
-         *             if I/O exception occurs.
+         * @param listener
+         *            listener to remove.
          */
-        void unpack(InputStream in, JarOutputStream out) throws IOException;
+        void removePropertyChangeListener(PropertyChangeListener listener);
 
         /**
          * Unpack the contents of the specified {@code File} to the specified
@@ -313,21 +256,67 @@ public abstract class Pack200 {
         void unpack(File in, JarOutputStream out) throws IOException;
 
         /**
-         * add a listener for {@code PropertyChange} events.
+         * Unpack the specified stream to the specified JAR output stream.
          *
-         * @param listener
-         *            the listener to listen if {@code PropertyChange} events
-         *            occurs.
+         * @param in
+         *            stream to uncompressed.
+         * @param out
+         *            JAR output stream of uncompressed data.
+         * @throws IOException
+         *             if I/O exception occurs.
          */
-        void addPropertyChangeListener(PropertyChangeListener listener);
+        void unpack(InputStream in, JarOutputStream out) throws IOException;
+    }
 
-        /**
-         * remove a listener.
-         *
-         * @param listener
-         *            listener to remove.
-         */
-        void removePropertyChangeListener(PropertyChangeListener listener);
+    private static final String SYSTEM_PROPERTY_PACKER = "java.util.jar.Pack200.Packer"; //$NON-NLS-1$
+
+    private static final String SYSTEM_PROPERTY_UNPACKER = "java.util.jar.Pack200.Unpacker"; //$NON-NLS-1$
+
+    static Object newInstance(final String systemProperty, final String defaultClassName) {
+        return AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+            String className = System.getProperty(systemProperty, defaultClassName);
+            try {
+                // TODO Not sure if this will cause problems loading the class
+                return Pack200.class.getClassLoader().loadClass(className).newInstance();
+            } catch (Exception e) {
+                throw new Error(Messages.getString("archive.3E", className), e); //$NON-NLS-1$
+            }
+        });
+    }
+
+    /**
+     * Returns a new instance of a packer engine.
+     * <p>
+     * The implementation of the packer engine is defined by the system property
+     * {@code 'java.util.jar.Pack200.Packer'}. If this system property is
+     * defined an instance of the specified class is returned, otherwise the
+     * system's default implementation is returned.
+     *
+     * @return an instance of {@code Packer}
+     */
+    public static Pack200.Packer newPacker() {
+        return (Packer) newInstance(SYSTEM_PROPERTY_PACKER, "org.apache.commons.compress.harmony.pack200.Pack200PackerAdapter"); //$NON-NLS-1$
+    }
+
+    /**
+     * Returns a new instance of a unpacker engine.
+     * <p>
+     * The implementation of the unpacker engine is defined by the system
+     * property {@code 'java.util.jar.Pack200.Unpacker'}. If this system
+     * property is defined an instance of the specified class is returned,
+     * otherwise the system's default implementation is returned.
+     *
+     * @return a instance of {@code Unpacker}.
+     */
+    public static Pack200.Unpacker newUnpacker() {
+        return (Unpacker) newInstance(SYSTEM_PROPERTY_UNPACKER, "org.apache.commons.compress.harmony.unpack200.Pack200UnpackerAdapter"); //$NON-NLS-1$
+    }
+
+    /**
+     * Prevent this class from being instantiated.
+     */
+    private Pack200() {
+        // do nothing
     }
 
 }
