@@ -15,7 +15,7 @@
  *  limitations under the License.
  */
 
-package org.apache.commons.compress.harmony.unpack200.tests;
+package org.apache.commons.compress.harmony.pack200.tests;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 

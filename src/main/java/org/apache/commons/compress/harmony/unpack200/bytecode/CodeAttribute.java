@@ -108,9 +108,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
                 nestedEntries.add(catchType);
             }
         }
-        final ClassFileEntry[] nestedEntryArray = new ClassFileEntry[nestedEntries.size()];
-        nestedEntries.toArray(nestedEntryArray);
-        return nestedEntryArray;
+        return nestedEntries.toArray(ClassFileEntry.NONE);
     }
 
     @Override

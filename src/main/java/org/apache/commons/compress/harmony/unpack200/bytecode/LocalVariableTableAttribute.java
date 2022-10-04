@@ -83,9 +83,7 @@ public class LocalVariableTableAttribute extends BCIRenumberedAttribute {
             nestedEntries.add(names[i]);
             nestedEntries.add(descriptors[i]);
         }
-        final ClassFileEntry[] nestedEntryArray = new ClassFileEntry[nestedEntries.size()];
-        nestedEntries.toArray(nestedEntryArray);
-        return nestedEntryArray;
+        return nestedEntries.toArray(ClassFileEntry.NONE);
     }
 
     @Override
