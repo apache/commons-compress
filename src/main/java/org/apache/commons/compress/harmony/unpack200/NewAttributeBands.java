@@ -288,8 +288,9 @@ public class NewAttributeBands extends BandSet {
     private UnionCase readNextUnionCase(final StringReader stream) throws IOException {
         stream.mark(2);
         stream.read(); // '('
-        char next = (char) stream.read();
-        if (next == ')'|| next == -1) {
+        final int next = stream.read();
+        char ch = (char) next;
+        if (ch == ')'|| next == -1) {
             stream.reset();
             return null;
         }
@@ -306,8 +307,8 @@ public class NewAttributeBands extends BandSet {
         } while (nextTag != null);
         stream.read(); // '['
         stream.mark(1);
-        next = (char) stream.read();
-        if (next == ']') {
+        ch = (char) stream.read();
+        if (ch == ']') {
             return new UnionCase(tags);
         }
         stream.reset();

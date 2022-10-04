@@ -116,7 +116,10 @@ The <action> type attribute can be add,update,fix,remove.
         OutOfMemoryError on malformed pack200 input (attributes).
       </action>
       <action issue="COMPRESS-628" type="fix" dev="ggregory" due-to="Andrii Hudz, Gary Gregory">
-        OutOfMemoryError on malformed pack200 input (NewAttributeBands.readNextUnionCase).
+        OutOfMemoryError on malformed pack200 input (org.apache.commons.compress.harmony.pack200.NewAttributeBands.readNextUnionCase).
+      </action>
+      <action issue="COMPRESS-628" type="fix" dev="ggregory" due-to="Gary Gregory">
+        OutOfMemoryError on malformed unpack200 input (org.apache.commons.compress.harmony.unpack200.NewAttributeBands.readNextUnionCase).
       </action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">
         Some input streams are not closed in org.apache.commons.compress.harmony.pack200.PackingUtils.
