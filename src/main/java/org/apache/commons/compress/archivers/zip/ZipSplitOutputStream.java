@@ -232,7 +232,8 @@ class ZipSplitOutputStream extends OutputStream {
             extension += newZipSplitSegmentSuffixIndex;
         }
 
-        String dir = Objects.nonNull(zipFile.getParent()) ? zipFile.getParent().toAbsolutePath().toString() : ".";
+        final Path parent = zipFile.getParent();
+        final String dir = Objects.nonNull(parent) ? parent.toAbsolutePath().toString() : ".";
         final Path newFile = zipFile.getFileSystem().getPath(dir, baseName + extension);
 
         if (Files.exists(newFile)) {

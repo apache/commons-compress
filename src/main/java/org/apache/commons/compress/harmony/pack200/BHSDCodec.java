@@ -20,6 +20,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.compress.utils.ExactMath;
@@ -167,9 +168,7 @@ public final class BHSDCodec extends Codec {
         largest = calculateLargest();
 
         powers = new long[b];
-        for (int c = 0; c < b; c++) {
-            powers[c] = (long) Math.pow(h, c);
-        }
+        Arrays.setAll(powers, c -> (long) Math.pow(h, c));
     }
 
     /**

@@ -16,6 +16,8 @@
  */
 package org.apache.commons.compress.harmony.unpack200.bytecode.forms;
 
+import java.util.Arrays;
+
 import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
@@ -39,13 +41,9 @@ public class LookupSwitchForm extends SwitchForm {
         final int case_count = operandManager.nextCaseCount();
         final int default_pc = operandManager.nextLabel();
         final int[] case_values = new int[case_count];
-        for (int index = 0; index < case_count; index++) {
-            case_values[index] = operandManager.nextCaseValues();
-        }
+        Arrays.setAll(case_values, i -> operandManager.nextCaseValues());
         final int[] case_pcs = new int[case_count];
-        for (int index = 0; index < case_count; index++) {
-            case_pcs[index] = operandManager.nextLabel();
-        }
+        Arrays.setAll(case_pcs, i -> operandManager.nextLabel());
 
         final int[] labelsArray = new int[case_count + 1];
         labelsArray[0] = default_pc;

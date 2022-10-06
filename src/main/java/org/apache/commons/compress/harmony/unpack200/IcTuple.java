@@ -29,6 +29,7 @@ import java.util.List;
  */
 public class IcTuple {
 
+    private static final String[] EMPTY_STRING_ARRAY = new String[] {};
     private final int cIndex;
     private final int c2Index;
     private final int nIndex;
@@ -65,6 +66,8 @@ public class IcTuple {
     }
 
     public static final int NESTED_CLASS_FLAG = 0x00010000;
+    static final IcTuple[] EMPTY_ARRAY = {};
+
     protected String C; // this class
     protected int F; // flags
     protected String C2; // outer class
@@ -122,11 +125,7 @@ public class IcTuple {
                 resultList.add(className.substring(start));
             }
         }
-        final String[] result = new String[resultList.size()];
-        for (int i = 0; i < resultList.size(); i++) {
-            result[i] = resultList.get(i);
-        }
-        return result;
+        return resultList.toArray(EMPTY_STRING_ARRAY);
     }
 
     /**

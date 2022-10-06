@@ -298,8 +298,7 @@ public abstract class BandSet {
         final int[] indices = decodeBandInt(name, in, codec, count);
         final CPDouble[] result = new CPDouble[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            final int index = indices[i1];
-            result[i1] = segment.getCpBands().cpDoubleValue(index);
+            result[i1] = segment.getCpBands().cpDoubleValue(indices[i1]);
         }
         return result;
     }
@@ -309,8 +308,7 @@ public abstract class BandSet {
         final int[] indices = decodeBandInt(name, in, codec, count);
         final CPFloat[] result = new CPFloat[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            final int index = indices[i1];
-            result[i1] = segment.getCpBands().cpFloatValue(index);
+            result[i1] = segment.getCpBands().cpFloatValue(indices[i1]);
         }
         return result;
     }
@@ -371,8 +369,7 @@ public abstract class BandSet {
         final int[] indices = decodeBandInt(name, in, codec, count);
         final CPString[] result = new CPString[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            final int index = indices[i1];
-            result[i1] = segment.getCpBands().cpStringValue(index);
+            result[i1] = segment.getCpBands().cpStringValue(indices[i1]);
         }
         return result;
     }
@@ -383,8 +380,7 @@ public abstract class BandSet {
         final int[] indices = decodeBandInt(name, in, codec, count);
         final CPInterfaceMethodRef[] result = new CPInterfaceMethodRef[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            final int index = indices[i1];
-            result[i1] = cpBands.cpIMethodValue(index);
+            result[i1] = cpBands.cpIMethodValue(indices[i1]);
         }
         return result;
     }
@@ -395,8 +391,7 @@ public abstract class BandSet {
         final int[] indices = decodeBandInt(name, in, codec, count);
         final CPMethodRef[] result = new CPMethodRef[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            final int index = indices[i1];
-            result[i1] = cpBands.cpMethodValue(index);
+            result[i1] = cpBands.cpMethodValue(indices[i1]);
         }
         return result;
     }
@@ -430,8 +425,7 @@ public abstract class BandSet {
         final int[] indices = decodeBandInt(name, in, codec, count);
         final CPUTF8[] result = new CPUTF8[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            final int index = indices[i1];
-            result[i1] = segment.getCpBands().cpSignatureValue(index);
+            result[i1] = segment.getCpBands().cpSignatureValue(indices[i1]);
         }
         return result;
     }
@@ -447,8 +441,7 @@ public abstract class BandSet {
         final CPUTF8[] result1 = new CPUTF8[sum];
         final int[] indices = decodeBandInt(name, in, codec, sum);
         for (int i1 = 0; i1 < sum; i1++) {
-            final int index = indices[i1];
-            result1[i1] = segment.getCpBands().cpSignatureValue(index);
+            result1[i1] = segment.getCpBands().cpSignatureValue(indices[i1]);
         }
         int pos = 0;
         for (int i = 0; i < counts.length; i++) {
@@ -465,17 +458,14 @@ public abstract class BandSet {
         final int[] indices = decodeBandInt(name, in, codec, count);
         final CPClass[] result = new CPClass[indices.length];
         for (int i1 = 0; i1 < count; i1++) {
-            final int index = indices[i1];
-            result[i1] = segment.getCpBands().cpClassValue(index);
+            result[i1] = segment.getCpBands().cpClassValue(indices[i1]);
         }
         return result;
     }
 
     protected String[] getReferences(final int[] ints, final String[] reference) {
         final String[] result = new String[ints.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = reference[ints[i]];
-        }
+        Arrays.setAll(result, i -> reference[ints[i]]);
         return result;
     }
 
@@ -485,7 +475,6 @@ public abstract class BandSet {
             result[i] = new String[ints[i].length];
             for (int j = 0; j < result[i].length; j++) {
                 result[i][j] = reference[ints[i][j]];
-
             }
         }
         return result;

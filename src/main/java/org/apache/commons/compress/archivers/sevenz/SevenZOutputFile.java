@@ -37,6 +37,7 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Date;
@@ -216,9 +217,7 @@ public class SevenZOutputFile implements Closeable {
             entry.setHasCrc(true);
             if (additionalCountingStreams != null) {
                 final long[] sizes = new long[additionalCountingStreams.length];
-                for (int i = 0; i < additionalCountingStreams.length; i++) {
-                    sizes[i] = additionalCountingStreams[i].getBytesWritten();
-                }
+                Arrays.setAll(sizes, i -> additionalCountingStreams[i].getBytesWritten());
                 additionalSizes.put(entry, sizes);
             }
         } else {

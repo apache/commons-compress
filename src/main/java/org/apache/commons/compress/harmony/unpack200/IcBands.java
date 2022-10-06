@@ -224,12 +224,7 @@ public class IcBands extends BandSet {
             return index1.compareTo(index2);
         });
 
-        final IcTuple[] relevantTuplesArray = new IcTuple[relevantTuples.size()];
-        for (int i = 0; i < relevantTuplesArray.length; i++) {
-            relevantTuplesArray[i] = relevantTuples.get(i);
-        }
-
-        return relevantTuplesArray;
+        return relevantTuples.toArray(IcTuple.EMPTY_ARRAY);
     }
 
 }

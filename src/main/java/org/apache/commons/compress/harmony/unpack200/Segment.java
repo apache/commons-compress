@@ -23,7 +23,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -326,10 +328,7 @@ public class Segment {
         }
 
         // eliminate "duplicates"
-        for (int index = 0; index < duplicates.size(); index++) {
-            final IcTuple tuple = duplicates.get(index);
-            result.remove(tuple);
-        }
+        duplicates.forEach(result::remove);
 
         return result;
     }
@@ -566,7 +565,7 @@ public class Segment {
     }
 
     public void setLogStream(final OutputStream logStream) {
-        this.logStream = new PrintWriter(logStream);
+        this.logStream = new PrintWriter(new OutputStreamWriter(logStream, Charset.defaultCharset()), false);
     }
 
     public void log(final int logLevel, final String message) {

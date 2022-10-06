@@ -163,9 +163,7 @@ public class MetadataBandGroup {
     private Attribute getAttribute(final int numAnnotations, final CPUTF8[] types, final int[] pairCounts,
         final Iterator<CPUTF8> namesIterator) {
         final Annotation[] annotations = new Annotation[numAnnotations];
-        for (int i = 0; i < numAnnotations; i++) {
-            annotations[i] = getAnnotation(types[i], pairCounts[i], namesIterator);
-        }
+        Arrays.setAll(annotations, i -> getAnnotation(types[i], pairCounts[i], namesIterator));
         return new RuntimeVisibleorInvisibleAnnotationsAttribute(type.equals("RVA") ? rvaUTF8 : riaUTF8, annotations);
     }
 
@@ -175,9 +173,7 @@ public class MetadataBandGroup {
             final int numAnnotations = anno_N[anno_N_Index++];
             final int[] pairCounts = pair_N[pair_N_Index++];
             final Annotation[] annotations = new Annotation[numAnnotations];
-            for (int j = 0; j < annotations.length; j++) {
-                annotations[j] = getAnnotation(type_RS[anno_N_Index - 1][j], pairCounts[j], namesIterator);
-            }
+            Arrays.setAll(annotations, j -> getAnnotation(type_RS[anno_N_Index - 1][j], pairCounts[j], namesIterator));
             parameter_annotations[i] = new ParameterAnnotation(annotations);
         }
         return new RuntimeVisibleorInvisibleParameterAnnotationsAttribute(type.equals("RVPA") ? rvpaUTF8 : ripaUTF8,

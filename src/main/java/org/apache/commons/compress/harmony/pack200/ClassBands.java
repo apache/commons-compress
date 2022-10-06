@@ -19,6 +19,7 @@ package org.apache.commons.compress.harmony.pack200;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -200,9 +201,7 @@ public class ClassBands extends BandSet {
 		class_super[index] = cpBands.getCPClass(superName);
 		class_interface_count[index] = interfaces.length;
 		class_interface[index] = new CPClass[interfaces.length];
-		for (int i = 0; i < interfaces.length; i++) {
-			class_interface[index][i] = cpBands.getCPClass(interfaces[i]);
-		}
+        Arrays.setAll(class_interface[index], i -> cpBands.getCPClass(interfaces[i]));
 		major_versions[index] = major;
 		class_flags[index] = flags;
 		if (!anySyntheticClasses && ((flags & (1 << 12)) != 0)

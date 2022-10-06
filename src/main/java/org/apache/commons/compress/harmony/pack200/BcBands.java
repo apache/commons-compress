@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.objectweb.asm.Label;
 
@@ -195,19 +196,11 @@ public class BcBands extends BandSet {
     }
 
     private List<Integer> getIndexInClass(final List<CPMethodOrField> cPMethodOrFieldList) {
-        final List<Integer> indices = new ArrayList<>(cPMethodOrFieldList.size());
-        for (int i = 0; i < cPMethodOrFieldList.size(); i++) {
-            indices.add(Integer.valueOf(cPMethodOrFieldList.get(i).getIndexInClass()));
-        }
-        return indices;
+        return cPMethodOrFieldList.stream().collect(Collectors.mapping(CPMethodOrField::getIndexInClass, Collectors.toList()));
     }
 
     private List<Integer> getIndexInClassForConstructor(final List<CPMethodOrField> cPMethodList) {
-        final List<Integer> indices = new ArrayList<>(cPMethodList.size());
-        for (int i = 0; i < cPMethodList.size(); i++) {
-            indices.add(Integer.valueOf(cPMethodList.get(i).getIndexInClassForConstructor()));
-        }
-        return indices;
+        return cPMethodList.stream().collect(Collectors.mapping(CPMethodOrField::getIndexInClassForConstructor, Collectors.toList()));
     }
 
     public void visitEnd() {

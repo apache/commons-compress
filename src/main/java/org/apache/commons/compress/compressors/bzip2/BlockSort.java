@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.compressors.bzip2;
 
+import java.util.Arrays;
 import java.util.BitSet;
 
 /**
@@ -107,6 +108,8 @@ class BlockSort {
      * I've also removed the now unused randomization code.
      */
 
+    private static final int FTAB_LENGTH = 65537; // 262148 byte
+
     /*
      * LBZ2: If you are ever unlucky/improbable enough to get a stack
      * overflow whilst sorting, increase the following constant and
@@ -136,7 +139,7 @@ class BlockSort {
     private final int[] mainSort_copy = new int[256]; // 1024 byte
     private final boolean[] mainSort_bigDone = new boolean[256]; // 256 byte
 
-    private final int[] ftab = new int[65537]; // 262148 byte
+    private final int[] ftab = new int[FTAB_LENGTH]; // 262148 byte
 
     /**
      * Array instance identical to Data's sfmap, both are used only
@@ -916,9 +919,7 @@ class BlockSort {
         final boolean firstAttemptShadow = this.firstAttempt;
 
         // LBZ2: Set up the 2-byte frequency table
-        for (int i = 65537; --i >= 0;) {
-            ftab[i] = 0;
-        }
+        Arrays.fill(ftab, 0);
 
         /*
          * In the various block-sized structures, live data runs from 0 to

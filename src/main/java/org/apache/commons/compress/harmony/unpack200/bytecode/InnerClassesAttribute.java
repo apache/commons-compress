@@ -125,11 +125,7 @@ public class InnerClassesAttribute extends Attribute {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        final ClassFileEntry[] result = new ClassFileEntry[nestedClassFileEntries.size()];
-        for (int index = 0; index < result.length; index++) {
-            result[index] = nestedClassFileEntries.get(index);
-        }
-        return result;
+        return nestedClassFileEntries.toArray(ClassFileEntry.NONE);
     }
 
     @Override

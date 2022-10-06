@@ -259,9 +259,7 @@ public class ArchiveUtils {
         final char[] cs = s.toCharArray();
         final char[] chars = cs.length <= MAX_SANITIZED_NAME_LENGTH ? cs : Arrays.copyOf(cs, MAX_SANITIZED_NAME_LENGTH);
         if (cs.length > MAX_SANITIZED_NAME_LENGTH) {
-            for (int i = MAX_SANITIZED_NAME_LENGTH - 3; i < MAX_SANITIZED_NAME_LENGTH; i++) {
-                chars[i] = '.';
-            }
+            Arrays.fill(chars, MAX_SANITIZED_NAME_LENGTH - 3, MAX_SANITIZED_NAME_LENGTH, '.');
         }
         final StringBuilder sb = new StringBuilder();
         for (final char c : chars) {

@@ -200,11 +200,7 @@ public class MetadataBandGroup extends BandSet {
     }
 
     private int[] tagListToArray(final List<String> list) {
-        final int[] ints = new int[list.size()];
-        for (int i = 0; i < ints.length; i++) {
-            ints[i] = list.get(i).charAt(0);
-        }
-        return ints;
+        return list.stream().mapToInt(s -> s.charAt(0)).toArray();
     }
 
     /**

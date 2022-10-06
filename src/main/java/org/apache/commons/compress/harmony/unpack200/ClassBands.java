@@ -19,6 +19,7 @@ package org.apache.commons.compress.harmony.unpack200;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.compress.harmony.pack200.Codec;
@@ -427,9 +428,7 @@ public class ClassBands extends BandSet {
 
         // Prepare empty attribute lists
         classAttributes = new ArrayList[classCount];
-        for (int i = 0; i < classCount; i++) {
-            classAttributes[i] = new ArrayList<>();
-        }
+        Arrays.setAll(classAttributes, i -> new ArrayList<>());
 
         classFlags = parseFlags("class_flags", in, classCount, Codec.UNSIGNED5, options.hasClassFlagsHi());
         final int classAttrCount = SegmentUtils.countBit16(classFlags);
@@ -701,9 +700,7 @@ public class ClassBands extends BandSet {
         final int codeFlagsCount = allCodeHasFlags ? codeCount : codeSpecialHeader;
 
         codeAttributes = new List[codeFlagsCount];
-        for (int i = 0; i < codeAttributes.length; i++) {
-            codeAttributes[i] = new ArrayList<>();
-        }
+        Arrays.setAll(codeAttributes, i -> new ArrayList<>());
         parseCodeAttrBands(in, codeFlagsCount);
     }
 
@@ -988,9 +985,7 @@ public class ClassBands extends BandSet {
             AttributeLayout.CONTEXT_METHOD);
         final AttributeLayout[] rxaLayouts = {rvaLayout, riaLayout, rvpaLayout, ripaLayout, adLayout};
 
-        for (int i = 0; i < rxaLayouts.length; i++) {
-            rxaCounts[i] = SegmentUtils.countMatches(methodFlags, rxaLayouts[i]);
-        }
+        Arrays.setAll(rxaCounts, i -> SegmentUtils.countMatches(methodFlags, rxaLayouts[i]));
         final int[] backwardsCalls = new int[5];
         int methodAttrIndex = 0;
         for (int i = 0; i < backwardsCalls.length; i++) {

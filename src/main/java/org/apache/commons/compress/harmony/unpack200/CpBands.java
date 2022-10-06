@@ -19,6 +19,7 @@ package org.apache.commons.compress.harmony.unpack200;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -186,9 +187,7 @@ public class CpBands extends BandSet {
         final int cpDoubleCount = header.getCpDoubleCount();
         final long[] band = parseFlags("cp_Double", in, cpDoubleCount, Codec.UDELTA5, Codec.DELTA5);
         cpDouble = new double[band.length];
-        for (int i = 0; i < band.length; i++) {
-            cpDouble[i] = Double.longBitsToDouble(band[i]);
-        }
+        Arrays.setAll(cpDouble, i -> Double.longBitsToDouble(band[i]));
     }
 
     /**
@@ -339,9 +338,7 @@ public class CpBands extends BandSet {
         final int cpStringCount = header.getCpStringCount();
         cpStringInts = decodeBandInt("cp_String", in, Codec.UDELTA5, cpStringCount);
         cpString = new String[cpStringCount];
-        for (int i = 0; i < cpStringCount; i++) {
-            cpString[i] = cpUTF8[cpStringInts[i]];
-        }
+        Arrays.setAll(cpString, i -> cpUTF8[cpStringInts[i]]);
     }
 
     private void parseCpUtf8(final InputStream in) throws IOException, Pack200Exception {

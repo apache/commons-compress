@@ -19,9 +19,12 @@ package org.apache.commons.compress.harmony.pack200;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -350,28 +353,27 @@ public abstract class BandSet {
         results.numCodecsTried += 3; // quite a bit more effort to try this codec
         final Map<Integer, Integer> distinctValues = bandData.distinctValues;
 
-        final List<Integer> favoured = new ArrayList<>();
+        final List<Integer> favored = new ArrayList<>();
         distinctValues.forEach((k, v) -> {
             if (v.intValue() > 2 || distinctValues.size() < 256) { // TODO: tweak
-                favoured.add(k);
+                favored.add(k);
             }
         });
 
-        // Sort the favoured list with the most commonly occurring first
+        // Sort the favored list with the most commonly occurring first
         if (distinctValues.size() > 255) {
-            favoured.sort((arg0, arg1) -> distinctValues.get(arg1).compareTo(distinctValues.get(arg0)));
+            favored.sort((arg0, arg1) -> distinctValues.get(arg1).compareTo(distinctValues.get(arg0)));
+        }
+
+        final Map<Integer, Integer> favoredToIndex = new HashMap<>();
+        for (int i = 0; i < favored.size(); i++) {
+            favoredToIndex.put(favored.get(i), Integer.valueOf(i));
         }
 
         final IntList unfavoured = new IntList();
-        final Map<Integer, Integer> favouredToIndex = new HashMap<>();
-        for (int i = 0; i < favoured.size(); i++) {
-            final Integer value = favoured.get(i);
-            favouredToIndex.put(value, Integer.valueOf(i));
-        }
-
         final int[] tokens = new int[band.length];
         for (int i = 0; i < band.length; i++) {
-            final Integer favouredIndex = favouredToIndex.get(Integer.valueOf(band[i]));
+            final Integer favouredIndex = favoredToIndex.get(Integer.valueOf(band[i]));
             if (favouredIndex == null) {
                 tokens[i] = 0;
                 unfavoured.add(band[i]);
@@ -379,8 +381,8 @@ public abstract class BandSet {
                 tokens[i] = favouredIndex.intValue() + 1;
             }
         }
-        favoured.add(favoured.get(favoured.size() - 1)); // repeat last value
-        final int[] favouredBand = integerListToArray(favoured);
+        favored.add(favored.get(favored.size() - 1)); // repeat last value
+        final int[] favouredBand = integerListToArray(favored);
         final int[] unfavouredBand = unfavoured.toArray();
 
         // Analyse the three bands to get the best codec
@@ -391,7 +393,7 @@ public abstract class BandSet {
         int l = 0;
         Codec tokenCodec = null;
         byte[] tokensEncoded;
-        final int k = favoured.size() - 1;
+        final int k = favored.size() - 1;
         if (k < 256) {
             tdefL = 1;
             tokensEncoded = Codec.BYTE1.encode(tokens);
@@ -516,9 +518,7 @@ public abstract class BandSet {
         final BHSDCodec hiCodec, final boolean haveHiFlags) throws Pack200Exception {
         if (!haveHiFlags) {
             final int[] loBits = new int[flags.length];
-            for (int i = 0; i < flags.length; i++) {
-                loBits[i] = (int) flags[i];
-            }
+            Arrays.setAll(loBits, i -> (int) flags[i]);
             return encodeBandInt(name, loBits, loCodec);
         }
         final int[] hiBits = new int[flags.length];
@@ -543,11 +543,7 @@ public abstract class BandSet {
      * @return conversion result.
      */
     protected int[] integerListToArray(final List<Integer> integerList) {
-        final int[] array = new int[integerList.size()];
-        for (int i = 0; i < array.length; i++) {
-            array[i] = integerList.get(i).intValue();
-        }
-        return array;
+        return integerList.stream().mapToInt(Integer::intValue).toArray();
     }
 
     /**
@@ -557,11 +553,7 @@ public abstract class BandSet {
      * @return conversion result.
      */
     protected long[] longListToArray(final List<Long> longList) {
-        final long[] array = new long[longList.size()];
-        for (int i = 0; i < array.length; i++) {
-            array[i] = longList.get(i).longValue();
-        }
-        return array;
+        return longList.stream().mapToLong(Long::longValue).toArray();
     }
 
     /**

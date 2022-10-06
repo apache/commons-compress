@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
@@ -68,9 +69,7 @@ public abstract class BCIRenumberedAttribute extends Attribute {
         }
         renumbered = true;
         final int[] startPCs = getStartPCs();
-        for (int index = 0; index < startPCs.length; index++) {
-            startPCs[index] = byteCodeOffsets.get(startPCs[index]).intValue();
-        }
+        Arrays.setAll(startPCs, i -> byteCodeOffsets.get(startPCs[i]).intValue());
     }
 
 }

@@ -118,11 +118,7 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
         for (ParameterAnnotation parameter_annotation : parameter_annotations) {
             nested.addAll(parameter_annotation.getClassFileEntries());
         }
-        final ClassFileEntry[] nestedEntries = new ClassFileEntry[nested.size()];
-        for (int i = 0; i < nestedEntries.length; i++) {
-            nestedEntries[i] = (ClassFileEntry) nested.get(i);
-        }
-        return nestedEntries;
+        return nested.toArray(ClassFileEntry.NONE);
     }
 
 }

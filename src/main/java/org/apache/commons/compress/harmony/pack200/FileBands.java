@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.pack200;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -99,9 +100,7 @@ public class FileBands extends BandSet {
         }
 
         if (isLatest) {
-            for (int index = 0; index < size; index++) {
-                file_modtime[index] = latestModtime;
-            }
+            Arrays.fill(file_modtime, latestModtime);
         }
     }
 

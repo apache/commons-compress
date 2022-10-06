@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -116,12 +117,12 @@ public class TarUtils {
      * @throws IllegalArgumentException if the trailing space/NUL is missing or if a invalid byte is detected.
      */
     public static long parseOctal(final byte[] buffer, final int offset, final int length) {
-        long    result = 0;
-        int     end = offset + length;
-        int     start = offset;
+        long result = 0;
+        int end = offset + length;
+        int start = offset;
 
-        if (length < 2){
-            throw new IllegalArgumentException("Length "+length+" must be at least 2");
+        if (length < 2) {
+            throw new IllegalArgumentException("Length " + length + " must be at least 2");
         }
 
         if (buffer[start] == 0) {
@@ -129,7 +130,7 @@ public class TarUtils {
         }
 
         // Skip leading spaces
-        while (start < end){
+        while (start < end) {
             if (buffer[start] != ' ') {
                 break;
             }
@@ -146,12 +147,11 @@ public class TarUtils {
             trailer = buffer[end - 1];
         }
 
-        for ( ;start < end; start++) {
+        for (; start < end; start++) {
             final byte currentByte = buffer[start];
             // CheckStyle:MagicNumber OFF
-            if (currentByte < '0' || currentByte > '7'){
-                throw new IllegalArgumentException(
-                        exceptionMessage(buffer, offset, length, start, currentByte));
+            if (currentByte < '0' || currentByte > '7') {
+                throw new IllegalArgumentException(exceptionMessage(buffer, offset, length, start, currentByte));
             }
             result = (result << 3) + (currentByte - '0'); // convert from ASCII
             // CheckStyle:MagicNumber ON
@@ -255,10 +255,10 @@ public class TarUtils {
         // archive (deprecating the existing public methods, of
         // course) and dealing with the fact that ZipEncoding#decode
         // can throw an IOException which parseOctal* doesn't declare
-        String string = new String(buffer, offset, length);
+        String string = new String(buffer, offset, length, Charset.defaultCharset());
 
-        string=string.replace("\0", "{NUL}"); // Replace NULs to allow string to be printed
-        return "Invalid byte "+currentByte+" at offset "+(current-offset)+" in '"+string+"' len="+length;
+        string = string.replace("\0", "{NUL}"); // Replace NULs to allow string to be printed
+        return "Invalid byte " + currentByte + " at offset " + (current - offset) + " in '" + string + "' len=" + length;
     }
 
     /**

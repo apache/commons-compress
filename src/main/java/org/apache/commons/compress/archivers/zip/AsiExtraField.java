@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.zip;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
 import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
 
+import java.nio.charset.Charset;
 import java.util.zip.CRC32;
 import java.util.zip.ZipException;
 
@@ -104,13 +105,15 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      */
     @Override
     public ZipShort getLocalFileDataLength() {
-        return new ZipShort(WORD         // CRC
+        // @formatter:off
+        return new ZipShort(WORD      // CRC
                           + 2         // Mode
-                          + WORD         // SizDev
+                          + WORD      // SizDev
                           + 2         // UID
                           + 2         // GID
-                          + getLinkedFile().getBytes().length);
+                          + getLinkedFile().getBytes(Charset.defaultCharset()).length);
                           // Uses default charset - see class Javadoc
+        // @formatter:on
     }
 
     /**
@@ -133,15 +136,12 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
         final byte[] data = new byte[getLocalFileDataLength().getValue() - WORD];
         System.arraycopy(ZipShort.getBytes(getMode()), 0, data, 0, 2);
 
-        final byte[] linkArray = getLinkedFile().getBytes(); // Uses default charset - see class Javadoc
+        final byte[] linkArray = getLinkedFile().getBytes(Charset.defaultCharset()); // Uses default charset - see class Javadoc
         // CheckStyle:MagicNumber OFF
-        System.arraycopy(ZipLong.getBytes(linkArray.length),
-                         0, data, 2, WORD);
+        System.arraycopy(ZipLong.getBytes(linkArray.length), 0, data, 2, WORD);
 
-        System.arraycopy(ZipShort.getBytes(getUserId()),
-                         0, data, 6, 2);
-        System.arraycopy(ZipShort.getBytes(getGroupId()),
-                         0, data, 8, 2);
+        System.arraycopy(ZipShort.getBytes(getUserId()), 0, data, 6, 2);
+        System.arraycopy(ZipShort.getBytes(getGroupId()), 0, data, 8, 2);
 
         System.arraycopy(linkArray, 0, data, 10, linkArray.length);
         // CheckStyle:MagicNumber ON
@@ -301,7 +301,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
         } else {
             final byte[] linkArray = new byte[linkArrayLength];
             System.arraycopy(tmp, 10, linkArray, 0, linkArrayLength);
-            link = new String(linkArray); // Uses default charset - see class Javadoc
+            link = new String(linkArray, Charset.defaultCharset()); // Uses default charset - see class Javadoc
         }
         // CheckStyle:MagicNumber ON
         setDirectory((newMode & DIR_FLAG) != 0);

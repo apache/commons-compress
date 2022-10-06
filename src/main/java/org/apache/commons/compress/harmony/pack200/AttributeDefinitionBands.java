@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -175,13 +176,11 @@ public class AttributeDefinitionBands extends BandSet {
         return temp;
     }
 
-    private void addAttributeDefinitions(final Map<String, String> layouts, final int[] availableIndices, final int contextType) {
+    private void addAttributeDefinitions(final Map<String, String> layoutMap, final int[] availableIndices, final int contextType) {
         final int i = 0;
-        for (String name : layouts.keySet()) {
-            final String layout = layouts.get(name);
+        layoutMap.forEach((name, layout) -> {
             final int index = availableIndices[i];
-            final AttributeDefinition definition = new AttributeDefinition(index, contextType, cpBands.getCPUtf8(name),
-                cpBands.getCPUtf8(layout));
+            final AttributeDefinition definition = new AttributeDefinition(index, contextType, cpBands.getCPUtf8(name), cpBands.getCPUtf8(layout));
             attributeDefinitions.add(definition);
             switch (contextType) {
             case CONTEXT_CLASS:
@@ -196,7 +195,7 @@ public class AttributeDefinitionBands extends BandSet {
             case CONTEXT_CODE:
                 codeAttributeLayouts.add(definition);
             }
-        }
+        });
     }
 
     public List<AttributeDefinition> getClassAttributeLayouts() {

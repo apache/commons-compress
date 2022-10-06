@@ -25,8 +25,10 @@ package org.apache.commons.compress.harmony.archive.internal.nls;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 //import org.apache.commons.compress.harmony.kernel.vm.VM;
@@ -145,13 +147,7 @@ public class Messages {
     public static String format(final String format, final Object[] args) {
         final StringBuilder answer = new StringBuilder(format.length() + (args.length * 20));
         final String[] argStrings = new String[args.length];
-        for (int i = 0; i < args.length; ++i) {
-            if (args[i] == null) {
-                argStrings[i] = "<null>"; //$NON-NLS-1$
-            } else {
-                argStrings[i] = args[i].toString();
-            }
-        }
+        Arrays.setAll(argStrings, i -> Objects.toString(args[i], "<null>")); //$NON-NLS-1$
         int lastI = 0;
         for (int i = format.indexOf('{', 0); i >= 0; i = format.indexOf('{', lastI)) {
             if (i != 0 && format.charAt(i - 1) == '\\') {

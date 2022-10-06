@@ -138,16 +138,12 @@ public class CpBands extends BandSet {
         final int[] cpUtf8Chars = new int[chars.size()];
         final int[] cpUtf8BigSuffix = new int[bigSuffix.size()];
         final int[][] cpUtf8BigChars = new int[bigSuffix.size()][];
-        for (int i = 0; i < cpUtf8Chars.length; i++) {
-            cpUtf8Chars[i] = chars.get(i).charValue();
-        }
+        Arrays.setAll(cpUtf8Chars, i -> chars.get(i).charValue());
         for (int i = 0; i < cpUtf8BigSuffix.length; i++) {
             final int numBigChars = bigSuffix.get(i).intValue();
             cpUtf8BigSuffix[i] = numBigChars;
             cpUtf8BigChars[i] = new int[numBigChars];
-            for (int j = 0; j < numBigChars; j++) {
-                cpUtf8BigChars[i][j] = bigChars.remove(0).charValue();
-            }
+            Arrays.setAll(cpUtf8BigChars[i], j -> bigChars.remove(0).charValue());
         }
 
         byte[] encodedBand = encodeBandInt("cpUtf8Prefix", cpUtf8Prefix, Codec.DELTA5);
@@ -283,9 +279,7 @@ public class CpBands extends BandSet {
             i++;
         }
         final int[] cpSignatureClasses = new int[classes.size()];
-        for (int j = 0; j < cpSignatureClasses.length; j++) {
-            cpSignatureClasses[j] = classes.get(j).getIndex();
-        }
+        Arrays.setAll(cpSignatureClasses, j -> classes.get(j).getIndex());
 
         byte[] encodedBand = encodeBandInt("cpSignatureForm", cpSignatureForm, Codec.DELTA5);
         out.write(encodedBand);

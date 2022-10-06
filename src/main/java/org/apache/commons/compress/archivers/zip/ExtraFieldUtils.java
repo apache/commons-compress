@@ -36,10 +36,10 @@ public class ExtraFieldUtils {
     /**
      * Static registry of known extra fields.
      */
-    private static final Map<ZipShort, Class<?>> implementations;
+    private static final Map<ZipShort, Class<?>> IMPLEMENTATIONS;
 
     static {
-        implementations = new ConcurrentHashMap<>();
+        IMPLEMENTATIONS = new ConcurrentHashMap<>();
         register(AsiExtraField.class);
         register(X5455_ExtendedTimestamp.class);
         register(X7875_NewUnix.class);
@@ -66,7 +66,7 @@ public class ExtraFieldUtils {
     public static void register(final Class<?> c) {
         try {
             final ZipExtraField ze = (ZipExtraField) c.newInstance();
-            implementations.put(ze.getHeaderId(), c);
+            IMPLEMENTATIONS.put(ze.getHeaderId(), c);
         } catch (final ClassCastException cc) { // NOSONAR
             throw new IllegalArgumentException(c + " doesn't implement ZipExtraField"); //NOSONAR
         } catch (final InstantiationException ie) { // NOSONAR
@@ -106,7 +106,7 @@ public class ExtraFieldUtils {
      */
     public static ZipExtraField createExtraFieldNoDefault(final ZipShort headerId)
         throws InstantiationException, IllegalAccessException {
-        final Class<?> c = implementations.get(headerId);
+        final Class<?> c = IMPLEMENTATIONS.get(headerId);
         if (c != null) {
             return (ZipExtraField) c.newInstance();
         }

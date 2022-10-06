@@ -31,6 +31,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
+import org.apache.commons.compress.utils.Charsets;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
@@ -115,11 +116,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
             while ((nextByte = dataIn.readUnsignedByte()) != 0) {
                 buffer.write(nextByte);
             }
-            if (charsetName != null) {
-                return buffer.toString(charsetName);
-            }
-            // intentionally using the default encoding as that's the contract for a null charsetName
-            return buffer.toString();
+            return buffer.toString(Charsets.toCharset(charsetName).name());
         }
     }
 

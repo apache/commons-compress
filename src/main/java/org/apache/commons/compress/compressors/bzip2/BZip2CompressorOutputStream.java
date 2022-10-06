@@ -20,6 +20,7 @@ package org.apache.commons.compress.compressors.bzip2;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 
@@ -1191,14 +1192,12 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
         final int eob = nInUseShadow + 1;
 
-        for (int i = eob; i >= 0; i--) {
-            mtfFreq[i] = 0;
-        }
+        Arrays.fill(mtfFreq, 0, eob + 1, 0);
 
         for (int i = nInUseShadow; --i >= 0;) {
             yy[i] = (byte) i;
         }
-
+        
         int wr = 0;
         int zPend = 0;
 
