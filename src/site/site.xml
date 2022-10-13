@@ -33,7 +33,7 @@
       <item name="Conventions"    href="/conventions.html"/>
       <item name="Issue Tracking" href="/issue-tracking.html"/>
       <item name="Download"    href="/download_compress.cgi"/>
-      <item name="Security"    href="/security-reports.html"/>
+      <item name="Security"    href="/security.html"/>
       <item name="Wiki" href="https://wiki.apache.org/commons/Compress"/>
     </menu>
     <menu name="API Docs">
