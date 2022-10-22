@@ -17,6 +17,7 @@
  */
 package org.apache.commons.compress.utils;
 
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -74,7 +75,10 @@ public class TimeUtilsTest {
     @ParameterizedTest
     @MethodSource("dateToNtfsProvider")
     public void shouldConvertNtfsTimeToDate(final String instant, final long ntfsTime) {
-        assertEquals(Instant.parse(instant), ntfsTimeToDate(ntfsTime).toInstant());
+        final Date converted = ntfsTimeToDate(ntfsTime);
+        assertEquals(Instant.parse(instant), converted.toInstant());
+        // ensuring the deprecated method still works
+        assertEquals(converted, SevenZArchiveEntry.ntfsTimeToJavaTime(ntfsTime));
     }
 
     @ParameterizedTest
@@ -82,7 +86,10 @@ public class TimeUtilsTest {
     public void shouldConvertDateToNtfsTime(final String instant, final long ntfsTime) {
         final long ntfsMillis = Math.floorDiv(ntfsTime, HUNDRED_NANOS_PER_MILLISECOND) * HUNDRED_NANOS_PER_MILLISECOND;
         final Date parsed = Date.from(Instant.parse(instant));
-        assertEquals(ntfsMillis, dateToNtfsTime(parsed));
+        final long converted = dateToNtfsTime(parsed);
+        assertEquals(ntfsMillis, converted);
+        // ensuring the deprecated method still works
+        assertEquals(converted, SevenZArchiveEntry.javaTimeToNtfsTime(parsed));
     }
 
     @ParameterizedTest
