@@ -55,6 +55,10 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.pmd.version>3.19.0</commons.pmd.version>
     <commons.pmd-impl.version>6.50.0</commons.pmd-impl.version>
 
+    <commons.release.isDistModule>true</commons.release.isDistModule>
+    <commons.distSvnStagingUrl>scm:svn:https://dist.apache.org/repos/dist/dev/commons/${commons.componentid}</commons.distSvnStagingUrl>
+    <commons.releaseManagerName>Matt Sicker</commons.releaseManagerName>
+    <commons.releaseManagerKey>0x031EE010CA15D1EE</commons.releaseManagerKey>
 
     <commons.manifestlocation>${project.build.outputDirectory}/META-INF</commons.manifestlocation>
     <commons.manifestfile>${commons.manifestlocation}/MANIFEST.MF</commons.manifestfile>

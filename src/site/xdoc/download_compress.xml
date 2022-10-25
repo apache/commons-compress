@@ -113,32 +113,32 @@ limitations under the License.
       </p>
     </subsection>
     </section>
-    <section name="Apache Commons Compress 1.21 ">
+    <section name="Apache Commons Compress 1.22 ">
       <subsection name="Binaries">
         <table>
           <tr>
-              <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.21-bin.tar.gz">commons-compress-1.21-bin.tar.gz</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.21-bin.tar.gz.sha512">sha512</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.21-bin.tar.gz.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.22-bin.tar.gz">commons-compress-1.22-bin.tar.gz</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.22-bin.tar.gz.sha512">sha512</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.22-bin.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
-              <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.21-bin.zip">commons-compress-1.21-bin.zip</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.21-bin.zip.sha512">sha512</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.21-bin.zip.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/compress/binaries/commons-compress-1.22-bin.zip">commons-compress-1.22-bin.zip</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.22-bin.zip.sha512">sha512</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/binaries/commons-compress-1.22-bin.zip.asc">pgp</a></td>
           </tr>
         </table>
       </subsection>
       <subsection name="Source">
         <table>
           <tr>
-              <td><a href="[preferred]/commons/compress/source/commons-compress-1.21-src.tar.gz">commons-compress-1.21-src.tar.gz</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.21-src.tar.gz.sha512">sha512</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.21-src.tar.gz.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/compress/source/commons-compress-1.22-src.tar.gz">commons-compress-1.22-src.tar.gz</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.22-src.tar.gz.sha512">sha512</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.22-src.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
-              <td><a href="[preferred]/commons/compress/source/commons-compress-1.21-src.zip">commons-compress-1.21-src.zip</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.21-src.zip.sha512">sha512</a></td>
-              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.21-src.zip.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/compress/source/commons-compress-1.22-src.zip">commons-compress-1.22-src.zip</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.22-src.zip.sha512">sha512</a></td>
+              <td><a href="https://www.apache.org/dist/commons/compress/source/commons-compress-1.22-src.zip.asc">pgp</a></td>
           </tr>
         </table>
       </subsection>
