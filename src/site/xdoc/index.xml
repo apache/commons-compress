@@ -55,12 +55,25 @@
         </section>
 
         <section name="Status">
-          <p>The current release is 1.21 and requires Java 8.</p>
+          <p>The current release is 1.22 and requires Java 8.</p>
 
           <p>Below we highlight some new features, for a full list
           of changes see the <a href="changes-report.html">Changes
           Report</a>.</p>
 
+          <subsection name="What's new in 1.22?">
+            <ul>
+              <li>The zip package now uses NIO.</li>
+              <li>Support for APK files (JAR format) has been added
+                to <code>ArchiveStreamFactory</code>.</li>
+              <li>Improved TAR support for file times.</li>
+              <li>Added <code>SevenZArchiveEntry::setContentMethods</code></li>
+              <li>Fixed <code>Expander</code> error when extracting archive
+                entries with names beginning with <code>./</code></li>
+              <li>Fixed various fuzz testing and static analysis issues
+                discovered in pack200.</li>
+            </ul>
+          </subsection>
           <subsection name="What's new in 1.21?">
             <ul>
               <li>A new class <code>TarFile</code> provides random
