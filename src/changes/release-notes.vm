@@ -161,6 +161,1050 @@ see the ${project.name} website:
 Old Release Notes
 =================
 
+Release 1.21
+------------
+
+Compress 1.21 is the first release to require Java 8 to build and run.
+
+SevenZFileOptions has a new setting that needs to be enabled
+explicitly if SevenZFile should try to recover broken archives - a
+feature introduced with Commons Compress 1.19. This is a breaking
+change if you relied on the recovery attempt. The change was made to
+detect broken archives sooner, and to mitigate the OOM exploit.
+
+Several formats now throw IOExceptions when reading broken archives or
+streams that would have caused arbitrary RuntimeExceptions in earlier
+versions of Compress.
+
+New features:
+o Add writePreamble to ZipArchiveInputStream. This method could
+  write raw data to zip archive before any entry was written to
+  the zip archive.
+  For most of the time, this is used to create self-extracting
+  zip.
+  Github Pull Request #127.
+  Issue: COMPRESS-550.
+  Thanks to Scott Frederick.
+o Added support for random access to the TAR packages.
+  Github Pull Request #113.
+  Issue: COMPRESS-540.
+  Thanks to Robin Schimpf.
+o Added support for BufferPool in ZstdCompressorInputStream.
+  Github Pull Request #165.
+  Issue: COMPRESS-565.
+  Thanks to Michael L Heuer.
+o Commons Compress cannot be built with JDK14 due to Pack200 removal.
+  Add Pack200 implementation from Apache Harmony.
+  Issue: COMPRESS-507.
+  Thanks to Gary Gregory, Apache Harmony.
+o Add a new AlwaysWithCompatibility in Zip64Mode, this is a
+  compromise for some libraries including 7z and Expand-Archive
+  Powershell utility(and likely Excel).
+
+  And we will encode both the LFH offset and Disk Number Start
+  in the ZIP64 Extended Information Extra Field - even if only
+  the disk number needs to be encoded.
+
+  Github Pull Request #169.
+  Issue: COMPRESS-565.
+  Thanks to Evgenii Bovykin.
+o gzip deflate buffer size is now configurable.
+  Issue: COMPRESS-566.
+  Thanks to Brett Okken.
+
+Fixed Bugs:
+o Fix bugs in random access of 7z. Problems may happen
+  in a mixture use of random access and sequential access
+  of 7z.
+  Github Pull Request #95.
+  Issue: COMPRESS-505.
+o Fix bugs in random access of 7z. Exceptions are thrown
+  when reading the first entry multiple times by random
+  access.
+  Issue: COMPRESS-510.
+o Add '/' to directories with long name in tar. This is to
+  resolve the ambiguous behavior of the TarArchiveEntry.getName()
+  method between directory with short name and long name.
+  Issue: COMPRESS-509.
+  Thanks to Petr Vasak.
+o Removed the PowerMock dependency.
+  Issue: COMPRESS-520.
+  Thanks to Robin Schimpf.
+o Added improved checks to detect corrupted bzip2 streams and
+  throw the expected IOException rather than obscure
+  RuntimeExceptions.
+  See also COMPRESS-519.
+  Issue: COMPRESS-516.
+o Improved parsing of X5455_ExtendedTimestamp ZIP extra field.
+  Issue: COMPRESS-517.
+o ZipArchiveInputStream and ZipFile will now throw an
+  IOException rather than a RuntimeException if the zip64 extra
+  field of an entry could not be parsed.
+  Issue: COMPRESS-518.
+o Improved detection of corrupt ZIP archives in ZipArchiveInputStream.
+  Issue: COMPRESS-523.
+o Added improved checks to detect corrupted deflate64 streams and
+  throw the expected IOException rather than obscure
+  RuntimeExceptions.
+  Issues: COMPRESS-521, COMPRESS-522, COMPRESS-525, COMPRESS-526, and COMPRESS-527.
+o Add the archive name in the exception in the constructor of
+  ZipFile to make it a more specific exception.
+  Github Pull Request #102.
+  Issue: COMPRESS-515.
+  Thanks to ian-lavallee.
+o Throw IOException when it encounters a non-number while parsing pax
+  header.
+  Issue: COMPRESS-530.
+o Throw IOException when a a tar archive contains a PAX header
+  without any normal entry following it.
+  Issue: COMPRESS-531.
+o Added improved checks to detect corrupted IMPLODED streams and
+  throw the expected IOException rather than obscure
+  RuntimeExceptions.
+  Issue: COMPRESS-532.
+o Throw expected IOException instead of NumberFormatException if
+  it encounters non-numbers when parsing pax headers for tarball.
+
+  Throw IllegalArgumentException instead of RuntimeExceptions if
+  the file name is longer than 100 bytes with the longFileMode
+  of LONGFILE_ERROR, and address this in java docs.
+
+  Throw IllegalArgumentException instead of RuntimeExceptions if
+  the any of the numeric values of an entry exceeds the limits
+  of a traditional tar header while bigNumberMode is
+  BIGNUMBER_ERROR, and address this in java docs.
+  Issue: COMPRESS-529.
+o Fix for test fails on Windows. The tests are failing because the
+  default charset is not UTF-8.
+  Issue: COMPRESS-543.
+  Thanks to wulf2333.
+o TarArchiveInputStream can not detect a truncated tar in skip()
+  and skipRecordPadding().
+  Issue: COMPRESS-544.
+  Thanks to Aditya Prasad.
+o Make the memory allocation in SevenZFile.readFilesInfo a lazy
+  allocation to avoid OOM when dealing some giant 7z archives.
+  Github Pull Request #120.
+
+  Also added sanity checks before even trying to parse an
+  archive and made SevenZFileOptions' maxMemorySizeInKb apply to
+  the stored metadata for an archive.
+
+  And further added an option that needs to be enabled in order
+  to make SevenZFile try to recover a broken archive. This is a
+  backwards incompatible change.
+  Issue: COMPRESS-542.
+  Thanks to theobisproject.
+o ZipArchiveInputStream should throw an exception if a corrputed
+  zip64 extra field is met.
+  Issue: COMPRESS-546.
+  Thanks to Maksim Zuev.
+o Add a new maven profile in pom.xml for JDK14+ to ignore the
+  failing tests about Pack200.
+
+  This has later been superseeded by adding the Apache Harmony
+  classes for Pack200 support.
+o Throw an IOException when reading the zip extra field if the
+  length is too short.
+  Issue: COMPRESS-548.
+  Thanks to Maksim Zuev.
+o Throw an declared IOException if a null entry is met when
+  reading a global pax header instead of a runtime NPE.
+  Issue: COMPRESS-554.
+  Thanks to Maksim Zuev.
+o ZIP extraction could lead to ArrayIndexOutOfBoundsExceptions
+  rather than the expected IOException.
+  Issue: COMPRESS-545.
+  Thanks to Maksim Zuev.
+o Add asserts for Arrays.copyOf in X0017_StrongEncryptionHeader.
+  Issue: COMPRESS-547.
+  Thanks to Maksim Zuev.
+o Fix for the CFH signature detect in ZipArchiveInputStream.
+  The problem could be reproduced by a zip archive with Data
+  Descriptor and STORED, and without the Data Descriptor
+  signature.
+o The length validation in TarArchiveInputStream.parsePaxHeaders
+  should also consider the headers with length smaller than 1
+  and ignore these headers.
+  Issue: COMPRESS-553.
+  Thanks to Maksim Zuev.
+o Fix accidentally added '/' to file names.
+  This problem is caused by the incomplete fix of COMPRESS-509.
+  Github Pull Request #151.
+  Issue: COMPRESS-558.
+  Thanks to Robin Schimpf.
+o As sparse entries can be successfully parsed now,
+  TarArchiveInputStream.canReadEntryData should return
+  true if the entry is a sparse entry.
+  Github Pull Request #153.
+  Issue: COMPRESS-560.
+  Thanks to Robin Schimpf.
+o SparseFilesTest#testExtractPaxGNU should be skipped
+  if the version of GNU tar binary is 1.28.
+  Github Pull Request #152.
+  Issue: COMPRESS-559.
+  Thanks to Robin Schimpf.
+o Removed an empty loop that was just warming the planet for
+  certain ZIP archives.
+  Github Pull Request #172.
+  Thanks to Fabian Meumertzheim.
+o Made some of the stream classes used internally throw
+  IOExceptions on illegal arguments rather than
+  RuntimeExceptions to make it more likely that corrupt archives
+  cause expected checked exceptions rather than RuntimException
+  for various formats.
+
+  Fixes a specific case for ZIP but affects other formats as
+  well.
+  Issue: COMPRESS-567.
+o Simplify Assertions #205.
+  Thanks to Arturo Bernal.
+o Checked the sizes read for archive entries and reject archives
+  as broken with negative entry sizes.
+
+  Fixes an infinite loop in the new TarFile class but affects
+  several formats.
+  Issue: COMPRESS-569.
+o OSGi detection was broken and so we always cached whether
+  xz/brotli/zstd/lzma have been available even in OSGi
+  environments.
+  Issue: COMPRESS-552.
+o SevenZFile.getEntries now return a copy of entries.
+  Issue: COMPRESS-571.
+o Handling of sparse tar entries has been hardened to ensure bad
+  inputs cause expected IOExceptions rather than RuntimeExceptions.
+  Issue: COMPRESS-575.
+o The parser for GNU sparse tar headers could throw a
+  NullPointerExcpetion rather than an IOException if the archive
+  ended while more sparse headers were expected.
+
+Changes:
+o Made sure ZstdCompressorOutputStream no longer used
+  deprecated ZstOutputStream constructors.
+  Github Pull Request #94.
+  Thanks to Peter Alfred Lee.
+o Make compression level of ParallelScatterZipCreator
+  configurable via a new constructor.
+  Issue: COMPRESS-504.
+o Made an inner class static
+  Github Pull Request #107.
+  Issue: COMPRESS-536.
+  Thanks to Jin Xu.
+o added an early exit to a loop in BZip2CompressorOutputStream
+  Github Pull Request #106.
+  Issue: COMPRESS-535.
+  Thanks to Jin Xu.
+o Update the class of variable file in TarArchiveEntry from
+  java.io.File to java.nio.file.Path. Corresponding constructors
+  and methods are also modified/added.
+
+  NOTE: The userName, groupName, userID and groupID will also be
+  set if they are available. The userName and groupName was not
+  set previously, and the previous value of UserID:GroupID was
+  0:0 by default.
+  Please note this may cause a reproducibility problem.
+
+  Github Pull Request #97.
+  Issue: COMPRESS-404.
+  Thanks to theobisproject.
+o Reuse the record buffer in TarArchiveInputStream.
+  Issue: COMPRESS-539.
+  Thanks to Robin Schimpf.
+o Add SevenZOutputFile.write(InputStream).
+  Thanks to Gary Gregory.
+o Add SevenZOutputFile.write(Path, OpenOption...).
+  Thanks to Gary Gregory.
+o Add SevenZOutputFile.createArchiveEntry(Path, String, LinkOption...).
+  Thanks to Gary Gregory.
+o Add ArArchiveOutputStream.createArchiveEntry(Path, String, LinkOption...).
+  Thanks to Gary Gregory.
+o Add ArArchiveEntry(Path, String, LinkOption...).
+  Thanks to Gary Gregory.
+o Add ctor CpioArchiveEntry(Path, String, LinkOption...).
+  Thanks to Gary Gregory.
+o Add ctor CpioArchiveEntry(short, Path, String, LinkOption...).
+  Thanks to Gary Gregory.
+o Add CpioArchiveEntry.setTime(FileTime).
+  Thanks to Gary Gregory.
+o Add TarArchiveOutputStream.createArchiveEntry(Path, String, LinkOption...).
+  Thanks to Gary Gregory.
+o Add ctor TarArchiveEntry(Path, String, LinkOption...).
+  Thanks to Gary Gregory.
+o Add IOUtils.EMPTY_LINK_OPTIONS.
+  Thanks to Gary Gregory.
+o Add Path support to ZipArchiveOutputStream #123.
+  Thanks to Gary Gregory.
+o Some minor improvements.
+  Github Pull Request #157.
+  Issue: COMPRESS-561.
+  Thanks to Arturo Bernal.
+o Update from Java 7 to 8.
+o Update GitHub actions/checkout from v1 to v2.3.4, #114, #124, #139, #150.
+  Thanks to Dependabot.
+o Update actions/setup-java from v1.4.0 to v2, #125, #133, #141.
+  Thanks to Dependabot, Gary Gregory.
+o Update com.github.luben:zstd-jni from 1.4.4-7 to 1.5.0-2, #118, #159, #173, #174, #203.
+  Thanks to Dependabot, Gary Gregory.
+o Update tests slf4j-api from 1.7.26 to 1.7.30 #117.
+  Thanks to Dependabot.
+o Update maven-pmd-plugin from 3.12.0 to 3.14.0, #115, #154.
+  Thanks to Dependabot.
+o Update maven-bundle-plugin from 3.5.1 to 5.1.2 #116, #180.
+  Thanks to Dependabot.
+o Bump memoryfilesystem from 1.3.0 to 2.1.0 #131.
+  Thanks to Dependabot.
+o Bump actions/cache from v2 to v2.1.6, #164, #200.
+  Thanks to Dependabot.
+o Bump junit from 4.13 to 4.13.2, #143, #167.
+  Thanks to Dependabot.
+o Bump mockito-core from 1.10.19 to 3.11.1, #161, #170, #204.
+  Thanks to Dependabot.
+o Bump commons.jacoco.version from 0.8.5 to 0.8.7 (Java 16 builds).
+  Thanks to Gary Gregory.
+o Bump org.apache.felix:org.apache.felix.framework from 6.0.3 to 7.0.0 (Java 16 builds).
+  Thanks to Gary Gregory.
+o Bump commons.japicmp.version from 0.14.3 to 0.15.3 (Java 16 builds).
+  Thanks to Gary Gregory.
+o Bump commons.javadoc.version from 3.2.0 to 3.3.0.
+  Thanks to Gary Gregory.
+o Update com.github.luben:zstd-jni from 1.4.8-7 to 1.4.9-1 #176.
+  Thanks to Dependabot.
+o Update org.tukaani:xz from 1.8 to 1.9
+o Some minor improvements.
+  Github Pull Request #193.
+  Issue: COMPRESS-577.
+  Thanks to Arturo Bernal.
+o Java8 improvements.
+  Github Pull Request #194.
+  Issue: COMPRESS-578.
+  Thanks to Arturo Bernal.
+o Remove redundant local variable.
+  Github Pull Request #195.
+  Issue: COMPRESS-579.
+  Thanks to Arturo Bernal.
+o Remove redundant operation
+  Github Pull Request #196.
+  Issue: COMPRESS-580.
+  Thanks to Arturo Bernal.
+
+Release 1.20
+------------
+
+Commons Compress 1.20 like any version of Commons Compress since 1.3
+can not be built from sources using Java 14 as Java 14 removes
+support for the Pack200 format. We will address this issue with the
+next release.
+
+Fixed Bugs:
+o SevenZFile could throw NullPointerException rather than
+  IOException for certain archives. In addition it now handles
+  certain empty archives more gracefully.
+  Issue: COMPRESS-492.
+o Deflate64CompressorInputStream.read would return 0 for some
+  inputs in violation of the InputStream.read contract.
+  Issue: COMPRESS-491.
+o SeekableInMemoryByteChannel's truncate didn't set position
+  according to the spec in an edge case.
+  Issue: COMPRESS-499.
+o BZip2CompressorInputStream now incorporates a similar patch as
+  the one that fixed CVE-2019-12900 in libbzip2.
+
+  Commons Compress has not been vulnerable to this CVE as it
+  would have rejected a file with too many selectors. With this
+  patch Commons Compress will be able to read certain archives
+  that would have caused errors in Compress 1.19. Thanks to Joseph Allemandou.
+
+Changes:
+o Update optional library com.github.luben:zstd-jni from
+  1.4.0-1 to 1.4.4-7.
+  Issue: COMPRESS-493.
+o Update tests from org.apache.felix:org.apache.felix.framework
+  6.0.2 to 6.0.3.
+o SevenZFile can now recover from a certain corruption that
+  seems to happen occasionally when split archives are created.
+  Issue: COMPRESS-497.
+  Thanks to Stefan Schlott.
+o Added random access support to SevenZFile.
+  Issue: COMPRESS-342.
+  Thanks to Peter Alfred Lee.
+o Added support for split ZIP archives.
+  Issue: COMPRESS-477.
+  Thanks to Peter Alfred Lee.
+o Added support for reading sparse entries to the TAR package.
+  Issue: COMPRESS-124.
+  Thanks to Peter Alfred Lee.
+o Update JUnit from 4.12 to 4.13.
+
+Removed:
+o Removed the extraction code from the example CLI class inside
+  of the SevenZ package. Not only is it superseeded by the
+  examples package, its implementation was vulnerable to the
+  ZipSlip attack.
+  Issue: COMPRESS-495.
+
+Release 1.19
+------------
+
+ZipArchiveInputStream and ZipFile will no longer throw an exception if
+an extra field generally understood by Commons Compress is malformed
+but rather turn them into UnrecognizedExtraField instances.  You can
+influence the way extra fields are parsed in more detail by using the
+new getExtraFields(ExtraFieldParsingBehavior) method of
+ZipArchiveEntry now.
+
+Some of the ZIP extra fields related to strong encryption will now
+throw ZipExceptions rather than ArrayIndexOutOfBoundsExceptions in
+certain cases when used directly. There is no practical difference
+when they are read via ZipArchiveInputStream or ZipFile.
+
+New features:
+o It is now possible to skip parsing of local file headers when
+  using ZipFile which may speed up reading the archive at the
+  cost of potentially missing important information. See the
+  javadocs of the ZipFile class for details.
+  Issue: COMPRESS-466.
+o TarArchiveInputStream has a new constructor-arg lenient that
+  can be used to accept certain broken archives.
+  Issue: COMPRESS-469.
+o ArjArchiveEntry and SevenZArchiveEntry now implement hashCode
+  and equals.
+  Issue: COMPRESS-475.
+o Added a MultiReadOnlySeekableByteChannel class
+  that can be used to concatenate the parts of a multi volume 7z
+  archive so that SevenZFile can read them.
+  Issue: COMPRESS-231.
+  Thanks to Tim Underwood.
+
+Fixed Bugs:
+o ZipArchiveInputStream could forget the compression level has
+  changed under certain circumstances.
+o Fixed another potential resource leak in
+  ParallelScatterZipCreator#writeTo.
+  Issue: COMPRESS-470.
+o ArArchiveInputStream could think it had hit EOF prematurely.
+  Github Pull Request #74.
+  Thanks to Alex Bertram.
+o Throw IOException rather than RuntimeExceptions for certain
+  malformed LZ4 or Snappy inputs.
+  Issue: COMPRESS-490.
+o ZipArchiveInputStream failed to read stored entries with a
+  data descriptor if the data descriptor didn't use the
+  signature invented by InfoZIP.
+  Issue: COMPRESS-482.
+
+Changes:
+o SevenZFile now provides a way to cap memory consumption for
+  LZMA(2) compressed content.
+  Github Pull Request #76.
+  Issue: COMPRESS-481.
+  Thanks to Robin Schimpf.
+o The ARJ package has been updated to contain constants for more
+  recent specifications.
+  Issue: COMPRESS-464.
+  Thanks to Rostislav Krasny.
+o Update optional library zstd-jni from 1.3.3-3 to 1.4.0-1.
+  Issue: COMPRESS-484.
+o ParallelScatterZipCreator now writes the entries to the
+  gathered output in the same order they have been added.
+  Github Pull Requests #78 and #79.
+  Issue: COMPRESS-485.
+  Thanks to Hervé Boutemy, Tibor Digana.
+o The Expander and Archive example classes can leak resources
+  they have wrapped around passed in streams or channels. The
+  methods consuming streams and channels have been adapted to
+  give the calling code a chance to deal with those wrapper
+  resources.
+  Issue: COMPRESS-486.
+o ZipArchiveInputStream and ZipFile no longer assume Commons
+  Compress would understand extra fields better than the writer
+  of the archive and silently turn extra fields that Commons
+  Compress should understand into UnrecognizedExtraFields if
+  parsing said fields fails.
+  It is now possible to take more control over the extra field
+  parsing process with a new overload of
+  ZipArchiveEntry#getExtraFields.
+  Issue: COMPRESS-479.
+o ZipArchiveInputStream will now throw an exception if reading a
+  stored entry with a data descriptor and the data descriptor
+  doesn't match what it has actually read.
+
+  The most common case for a situation like this is a stored ZIP
+  archive inside of the archive ZipArchiveInputStream currently
+  reads. In such a case ZipArchiveInputStream would happily
+  extract the contained archive and stop once the central
+  directory of the inner archive has been hit. This is a case
+  where ZipArchiveInputStream simply can not be used and only
+  ZipFile is able to read the archive.
+
+  The only other explanation is a broken archive. So the
+  exception prevents users from thinking they had successfully
+  read the contents of the archive.
+  Issue: COMPRESS-483.
+o The 7zip tools provide a default name for archive entries
+  without name; SevenZFile returns a null name for such
+  entries. A new method getDefaultName has been added to derive
+  the same name the 7zip tools would use and an option has been
+  added that sets SevenZArchiveEntry's name to the default name
+  if it is not contained inside the archive.
+  Issue: COMPRESS-478.
+
+Release 1.18
+------------
+
+This release changes the OSGi Manifest entry Bundle-SymbolicName from
+org.apache.commons.compress to org.apache.commons.commons-compress.
+
+New features:
+o It is now possible to specify the arguments of zstd-jni's
+  ZstdOutputStream constructors via Commons Compress as well.
+  Issue: COMPRESS-460.
+  Thanks to Carmi Grushko.
+
+Fixed Bugs:
+o The example Expander class has been vulnerable to a path
+  traversal in the edge case that happens when the target
+  directory has a sibling directory and the name of the target
+  directory is a prefix of the sibling directory's name.
+  Thanks to Didier Loiseau.
+o Changed the OSGi Import-Package to also optionally import
+  javax.crypto so encrypted archives can be read.
+  Issue: COMPRESS-456.
+o Changed various implementations of the close method to better
+  ensure all held resources get closed even if exceptions are
+  thrown during the closing the stream.
+  Issue: COMPRESS-457.
+o ZipArchiveInputStream can now detect the APK Signing Block
+  used in signed Android APK files and treats it as an "end of
+  archive" marker.
+  Issue: COMPRESS-455.
+o The cpio streams didn't handle archives using a multi-byte
+  encoding properly.
+  Issue: COMPRESS-459.
+  Thanks to Jens Reimann.
+o ZipArchiveInputStream#read would silently return -1 on a
+  corrupted stored entry and even return > 0 after hitting the
+  end of the archive.
+  Issue: COMPRESS-463.
+o ArArchiveInputStream#read would allow to read from the stream
+  without opening an entry at all.
+  Issue: COMPRESS-462.
+
+Release 1.17
+------------
+
+New features:
+o Added a unit test that is supposed to fail if we break the
+  OSGi manifest entries again.
+  Issue: COMPRESS-443.
+o Add a new SkipShieldingInputStream class that can be used with
+  streams that throw an IOException when skip is invoked.
+  Issue: COMPRESS-449.
+o New constructors have been added to SevenZFile that accept
+  char[]s rather than byte[]s in order to avoid a common error
+  of using the wrong encoding when creating the byte[].  This
+  change may break source compatibility for client code that
+  uses one of the constructors expecting a password and passes
+  in null as password. We recommend to change the code to use a
+  constructor without password argument.
+  Issue: COMPRESS-452.
+
+Fixed Bugs:
+o Removed the objenesis dependency from the pom as it is not
+  needed at all.
+o Fixed resource leak in ParallelScatterZipCreator#writeTo.
+  Issue: COMPRESS-446.
+o Certain errors when parsing ZIP extra fields in corrupt
+  archives are now turned into ZipException, they used to
+  manifest as ArrayIndexOutOfBoundsException before.
+  Issue: COMPRESS-447.
+o IOUtils.copy now verifies the buffer size is bigger than 0.
+  Issue: COMPRESS-451.
+o ZipArchiveInputStream failed to read some files with stored
+  entries using a data descriptor.
+  Issue: COMPRESS-454.
+
+Changes:
+o Fixed some code examples.
+  Github Pull Request #63.
+  Thanks to Marchenko Sergey.
+o The streams returned by ZipFile and most other decompressing
+  streams now provide information about the number of compressed
+  and uncompressed bytes read so far. This may be used to detect
+  a ZipBomb if the compression ratio exceeds a certain
+  threshold, for example.
+  For SevenZFile a new method returns the statistics for the
+  current entry.
+  Issue: COMPRESS-445.
+  Thanks to Andreas Beeker.
+o Added a workaround for a bug in AdoptOpenJDK for S/390 to
+  BZip2CompressorInputStream.
+  Issue: COMPRESS-453.
+
+Release 1.16.1
+--------------
+
+Fixed Bug:
+o Fixed the OSGi manifest entry for imports that has been broken
+  in 1.16.
+  Issue: COMPRESS-442.
+
+Release 1.16
+------------
+
+New features:
+o Add read-only support for Zstandard compression based on the
+  Zstd-jni project.
+  Issue: COMPRESS-423. Thanks to Andre F de Miranda.
+o Added auto-detection for Zstandard compressed streams.
+  Issue: COMPRESS-425.
+o Added write-support for Zstandard compression.
+  Issue: COMPRESS-426.
+o Added read-only DEFLATE64 support to ZIP archives and as
+  stand-alone CompressorInputStream.
+  Issue: COMPRESS-380. Thanks to Christian Marquez Grabia.
+o Added read-only DEFLATE64 support to 7z archives.
+  Issue: COMPRESS-437.
+
+Fixed Bugs:
+o Synchronized iteration over a synchronizedList in
+  ParallelScatterZipCreator.
+  Issue: COMPRESS-430. Thanks to Bruno P. Kinoshita.
+o ZipFile could get stuck in an infinite loop when parsing ZIP
+  archives with certain strong encryption headers.
+  Issue: COMPRESS-432.
+o Added improved checks to detect corrupted bzip2 streams and
+  throw the expected IOException rather than obscure
+  RuntimeExceptions.
+  Issue: COMPRESS-424.
+
+Changes:
+o Replaces instanceof checks with a type marker in LZ77 support code.
+  Issue: COMPRESS-435. Thanks to BELUGA BEHR.
+o Updated XZ for Java dependency to 1.8 in order to pick up bug fix
+  to LZMA2InputStream's available method.
+o ZipArchiveEntry now exposes how the name or comment have been
+  determined when the entry was read.
+  Issue: COMPRESS-429. Thanks to Damiano Albani.
+o ZipFile.getInputStream will now always buffer the stream
+  internally in order to improve read performance.
+  Issue: COMPRESS-438.
+o Speed improvement for DEFLATE64 decompression.
+  Issue: COMPRESS-440. Thanks to Dawid Weiss.
+o Added a few extra sanity checks for the rarer compression
+  methods used in ZIP archives.
+  Issue: COMPRESS-436.
+o Simplified the special handling for the dummy byte required by
+  zlib when using java.util.zip.Inflater.
+  Issue: COMPRESS-441.
+o Various code cleanups.
+  Github Pull Request #61. Thanks to Shahab Kondri.
+o TarArchiveEntry's preserveLeadingSlashes constructor argument
+  has been renamed and can now also be used to preserve the
+  drive letter on Windows.
+
+Release 1.15
+------------
+
+New features:
+o Added magic MANIFEST entry Automatic-Module-Name so the module
+  name will be org.apache.commons.compress when the jar is used
+  as an automatic module in Java9.
+  Issue: COMPRESS-397.
+o Added a new utility class FixedLengthBlockOutputStream that
+  can be used to ensure writing always happens in blocks of a
+  given size.
+  Issue: COMPRESS-405. Thanks to Simon Spero.
+o It is now possible to specify/read custom PAX headers when
+  writing/reading tar archives.
+  Issue: COMPRESS-400. Thanks to Simon Spero.
+
+Fixed Bugs:
+o Make sure "version needed to extract" in local file header and
+  central directory of a ZIP archive agree with each other.
+  Also ensure the version is set to 2.0 if DEFLATE is used.
+  Issue: COMPRESS-394.
+o Don't use a data descriptor in ZIP archives when copying a raw
+  entry that already knows its size and CRC information.
+  Issue: COMPRESS-395.
+o Travis build redundantly repeats compilation and tests redundantly
+  GitHub Pull Request #43. Thanks to Simon Spero.
+  Issue: COMPRESS-413
+o The MANIFEST of 1.14 lacks an OSGi Import-Package for XZ for
+  Java.
+  Issue: COMPRESS-396.
+o BUILDING.md now passes the RAT check.
+  Issue: COMPRESS-406. Thanks to Simon Spero.
+o Made sure ChecksumCalculatingInputStream receives valid
+  checksum and input stream instances via the constructor.
+  Issue: COMPRESS-412. Thanks to Michael Hausegger.
+o TarArchiveOutputStream now verifies the block and record sizes
+  specified at construction time are compatible with the tar
+  specification. In particular 512 is the only record size
+  accepted and the block size must be a multiple of 512.
+  Issue: COMPRESS-407. Thanks to Simon Spero.
+o Fixed class names of CpioArchiveEntry and
+  CpioArchiveInputStream in various Javadocs.
+  Issue: COMPRESS-415.
+o The code of the extended timestamp zip extra field incorrectly
+  assumed the time was stored as unsigned 32-bit int and thus
+  created incorrect results for years after 2037.
+  Issue: COMPRESS-416. Thanks to Simon Spero.
+o Removed ZipEncoding code that became obsolete when we started
+  to require Java 5 as baseline long ago.
+  Issue: COMPRESS-410. Thanks to Simon Spero.
+o The tar package will no longer try to parse the major and
+  minor device numbers unless the entry represents a character
+  or block special file.
+  Issue: COMPRESS-417.
+o When reading tar headers with name fields containing embedded
+  NULs, the name will now be terminated at the first NUL byte.
+  Issue: COMPRESS-421. Thanks to Roel Spilker.
+o Simplified TarArchiveOutputStream by replacing the internal
+  buffering with new class FixedLengthBlockOutputStream.
+  Issue: COMPRESS-409.
+
+Release 1.14
+------------
+
+New features:
+o Added write support for Snappy.
+  Issue: COMPRESS-246.
+o Added support for LZ4 (block and frame format).
+  Issue: COMPRESS-271.
+o Add static detect(InputStream in) to CompressorStreamFactory
+  and ArchiveStreamFactory
+  Issue: COMPRESS-385.
+o Added a way to limit amount of memory ZCompressorStream may
+  use.
+  Issue: COMPRESS-382. Thanks to Tim Allison.
+o Added a way to limit amount of memory ZCompressorStream may
+  use.
+  Issue: COMPRESS-386. Thanks to Tim Allison.
+o Added a way to limit amount of memory LZMACompressorStream and
+  XZCompressorInputStream may use.
+  Issue: COMPRESS-382. Thanks to Tim Allison.
+o Add Brotli decoder based on the Google Brotli library.
+  Issue: COMPRESS-392. Thanks to Philippe Mouawad.
+o ZipEntry now exposes its data offset.
+  Issue: COMPRESS-390. Thanks to Zbynek Vyskovsky.
+o Using ZipArchiveEntry's setAlignment it is now possible to
+  ensure the data offset of an entry starts at a file position
+  that at word or page boundaries.
+  A new extra field has been added for this purpose.
+  Issue: COMPRESS-391. Thanks to Zbynek Vyskovsky.
+
+Fixed Bugs:
+o SnappyCompressorInputStream slides the window too early
+  leading to ArrayIndexOutOfBoundsExceptions for some streams.
+  Issue: COMPRESS-378.
+o ZipArchiveEntry#isUnixSymlink now only returns true if the
+  corresponding link flag is the only file-type flag set.
+  Issue: COMPRESS-379. Thanks to Guillaume Boué.
+o Fixed an integer overflow in CPIO's CRC calculation.
+  Pull Request #17. Thanks to Daniel Collin.
+o Make unit tests work on Windows paths with spaces in their names.
+  Issue: COMPRESS-387.
+o Internal location pointer in ZipFile could get incremented
+  even if nothing had been read.
+  Issue: COMPRESS-389.
+o LZMACompressorOutputStream#flush would throw an exception
+  rather than be the NOP it promised to be.
+  Issue: COMPRESS-393.
+
+Changes:
+o The blocksize for FramedSnappyCompressorInputStream can now be
+  configured as some IWA files seem to be using blocks larger
+  than the default 32k.
+  Issue: COMPRESS-358.
+o BZip2CompressorInputstream now uses BitInputStream internally.
+  Pull Request #13. Thanks to Thomas Meyer.
+o Improved performance for concurrent reads from ZipFile when
+  reading from a file.
+  Issue: COMPRESS-388. Thanks to Zbynek Vyskovsky.
+
+Release 1.13
+------------
+
+Commons Compress 1.13 is the first version to require Java 7 at
+runtime.
+
+Changes in this version include:
+
+New features:
+o SevenZFile, SevenZOutputFile, ZipFile and
+  ZipArchiveOutputStream can now work on non-file resources if
+  they can be accessed via SeekableByteChannel.
+  Issue: COMPRESS-327.
+o Allow compressor extensions through a standard JRE ServiceLoader.
+  Issue: COMPRESS-368.
+o Allow archive extensions through a standard JRE ServiceLoader.
+  Issue: COMPRESS-369.
+o Add write support for the legacy LZMA format, this requires XZ
+  for Java 1.6.
+  Issue: COMPRESS-373.
+o Add write support for the legacy LZMA stream to 7z, this
+  requires XZ for Java 1.6.
+  Issue: COMPRESS-374.
+o Allow the clients of ParallelScatterZipCreator to provide
+  ZipArchiveEntryRequestSupplier.
+  Issue: COMPRESS-375. Thanks to Plamen Totev.
+o Add a version-independent link to the API docs of the latest
+  release.
+  Issue: COMPRESS-372.
+
+Fixed Bugs:
+o BitInputStream could return bad results when overflowing
+  internally - if two consecutive reads tried to read more than
+  64 bits.
+  Issue: COMPRESS-363.
+o ZipArchiveInputStream.closeEntry does not properly advance to
+  next entry if there are junk bytes at end of data section.
+  Issue: COMPRESS-364. Thanks to Mike Mole.
+o ZipArchiveInputStream now throws an Exception if it encounters
+  a broken ZIP archive rather than signaling end-of-archive.
+  Issue: COMPRESS-367. Thanks to Mike Mole.
+o ScatterZipOutputStream didn't close the StreamCompressor
+  causing a potential resource leak.
+  Issue: COMPRESS-377.
+
+Changes:
+o Update Java requirement from 6 to 7.
+  Issue: COMPRESS-360.
+o Clarified which TarArchiveEntry methods are useless for
+  entries read from an archive.
+  Issue: COMPRESS-366.
+
+Release 1.12
+------------
+
+Commons Compress 1.12 is the first version to require Java 6 at
+runtime.
+
+Release 1.12 changes the behavior of BZip2CompressorOutputStream's
+finalize method so that it no longer invokes finish. This is going to
+break code that relied on the finalizer to clean up an unfinished
+stream. The code will need to be changed to call finish or close
+itself. Note that a finalizer is not guaranteed to run, so the feature
+was not 100% effective in any case.
+
+New features:
+
+o FramedSnappyCompressorInputStream now supports the dialect of
+  Snappy used by the IWA files contained within the zip archives
+  used in Apple's iWork 13 files.
+  Issue: COMPRESS-352.
+
+Fixed Bugs:
+
+o SevenZFile.read() throws an IllegalStateException for empty entries.
+  Issue: COMPRESS-348.
+o TarArchiveInputStream failed to parse PAX headers that included
+  blank lines.
+  Issue: COMPRESS-355. Thanks to Jeremy Gustie.
+o TarArchiveInputStream failed to parse PAX headers whose tar entry
+  name ended with a slash.
+  Issue: COMPRESS-356. Thanks to Jeremy Gustie.
+
+Changes:
+o Update requirement from Java 5 to 6.
+  Issue: COMPRESS-349.
+o TarArchiveEntry wastefully allocates empty arrays.
+  Issue: COMPRESS-350.
+o Javadoc for BZip2CompressorInputStream(InputStream, boolean) should
+  refer to IOEx, not NPE.
+  Issue: COMPRESS-353.
+o PureJavaCrc32C in the snappy package is now final so it is now safe
+  to call a virtual method inside the constructor.
+  Issue: COMPRESS-354.
+
+o ZipArchiveInputStream and CpioArchiveInputStream could throw
+  exceptions who's messages contained potentially corrupt entry names
+  read from a broken archive. They will now sanitize the names by
+  replacing unprintable characters and restricting the length to 255
+  characters.
+  Issue: COMPRESS-351.
+o BZip2CompressorOutputStream no longer tries to finish the output
+  stream in finalize. This is a breaking change for code that relied
+  on the finalizer.
+  Issue: COMPRESS-357.
+
+
+Release 1.11
+------------
+
+New features:
+o TarArchiveInputStream now supports reading global PAX headers.
+  Issue: COMPRESS-347.
+o The PAX headers for sparse entries written by star are now
+  applied.
+  Issue: COMPRESS-346.
+o GNU sparse files using one of the PAX formats are now
+  detected, but cannot be extracted.
+  Issue: COMPRESS-345.
+o New method SevenZFile.getEntries can be used to list the
+  contents of a 7z archive.
+  Issue: COMPRESS-341.
+o When using Zip64Mode.Always also use ZIP64 extensions inside
+  the central directory.
+  GitHub Pull Request #10 Thanks to Matt Hovey.
+o ZipFile.getRawInputStream() is now part of the public API
+  Issue: COMPRESS-323.
+o Allow byte-for-byte replication of Zip entries.
+  GitHub Pull Request #6. Thanks to Jason van Zyl.
+o TarArchiveEntry's preserveLeadingSlashes is now a property and used
+  on later calls to setName, too.
+  This behavior is a breaking change.
+  Issue: COMPRESS-328.
+o Added read-only support for bzip2 compression used inside of
+  ZIP archives.
+  GitHub Pull Request #4. Thanks to Sören Glimm.
+
+Fixed Bugs:
+o ArArchiveInputStream can now read GNU extended names that are
+  terminated with a NUL byte rather than a linefeed.
+  Issue: COMPRESS-344.
+o Native Memory Leak in Sevenz-DeflateDecoder.
+  Issue: COMPRESS-343. Thanks to Rene Preissel.
+o SevenZFile will now only try to drain an entry's content when
+  moving on to the next entry if data is read from the next
+  entry. This should improve performance for applications that
+  try to skip over entries.
+  Issue: COMPRESS-340. Thanks to Dawid Weiss.
+o file names of tar archives using the xstar format are now
+  parsed properly.
+  Issue: COMPRESS-336.
+o checksums of tars that pad the checksum field to the left are
+  now calculated properly.
+  Issue: COMPRESS-335.
+o ArArchiveInputStream failed to read past the first entry when
+  BSD long names have been used.
+  Issue: COMPRESS-334. Thanks to Jeremy Gustie.
+o Added buffering for random access which speeds up 7Z support.
+  Issue: COMPRESS-333. Thanks to Dawid Weiss.
+o The checksum validation of TararchiveEntry is now as strict as
+  the validation of GNU tar, which eliminates a few cases of
+  false positives of ArchiveStreamFactory.
+  This behavior is a breaking change since the check has become
+  more strict but any archive that fails the checksum test now
+  would also fail it when extracted with other tools and must be
+  considered an invalid archive.
+  Issue: COMPRESS-331.
+o SnappyCompressorInputStream and
+  FramedSnappyCompressorInputStream returned 0 at the end of the
+  stream under certain circumstances.
+  Issue: COMPRESS-332.
+o Adjusted unit test to updates in Java8 and later that change
+  the logic of ZipEntry#getTime.
+  Issue: COMPRESS-326.
+o TarArchiveOutputStream will now recognize GNU long name and
+  link entries even if the special entry has a different name
+  than GNU tar uses itself.  This seems to be the case for
+  archives created by star.
+  Issue: COMPRESS-324.
+o ArrayIndexOutOfBoundsException when InfoZIP type 7875 extra
+  fields are read from the central directory.
+  Issue: COMPRESS-321.
+
+Release 1.10
+------------
+
+Release 1.10 moves the former
+org.apache.commons.compress.compressors.z._internal_ package which
+breaks backwards compatibility for code which used the old package.
+
+This also changes the superclass of ZCompressorInputStream which makes
+this class binary incompatible with the one of Compress 1.9.  Code
+that extends ZCompressorInputStream will need to be recompiled in
+order to work with Compress 1.10.
+
+New features:
+o CompressorStreamFactory can now auto-detect DEFLATE streams
+  with ZLIB header.
+  Issue: COMPRESS-316. Thanks to Nick Burch.
+o CompressorStreamFactory can now auto-detect LZMA streams.
+  Issue: COMPRESS-313.
+o Added support for parallel compression. This low-level API allows
+  a client to build a zip/jar file by using the class
+  org.apache.commons.compress.archivers.zip.ParallelScatterZipCreator.
+
+  Zip documentation updated with further notes about parallel features.
+
+  Please note that some aspects of jar creation need to be
+  handled by client code and is not part of commons-compress for this
+  release.
+  Issue: COMPRESS-296. Thanks to Kristian Rosenvold.
+o Cut overall object instantiation in half by changing file
+  header generation algorithm, for a 10-15 percent performance
+  improvement.
+
+  Also extracted two private methods createLocalFileHeader
+  and createCentralFileHeader in ZipArchiveOutputStream.
+  These may have some interesting additional usages in the
+  near future. Thanks to Kristian Rosenvold.
+o New methods in ZipArchiveOutputStream and ZipFile allows
+  entries to be copied from one archive to another without
+  having to re-compress them.
+  Issue: COMPRESS-295. Thanks to Kristian Rosenvold.
+
+Fixed Bugs:
+o TarArchiveInputStream can now read entries with group or
+  user ids > 0x80000000.
+  Issue: COMPRESS-314.
+o TarArchiveOutputStream can now write entries with group or
+  user ids > 0x80000000.
+  Issue: COMPRESS-315.
+o TarArchiveEntry's constructor with a File and a String arg
+  didn't normalize the name.
+  Issue: COMPRESS-312.
+o ZipEncodingHelper no longer reads system properties directly
+  to determine the default charset.
+  Issue: COMPRESS-308.
+o BZip2CompressorInputStream#read would return -1 when asked to
+  read 0 bytes.
+  Issue: COMPRESS-309.
+o ArchiveStreamFactory fails to pass on the encoding when creating
+  some streams.
+    * ArjArchiveInputStream
+    * CpioArchiveInputStream
+    * DumpArchiveInputStream
+    * JarArchiveInputStream
+    * TarArchiveInputStream
+    * JarArchiveOutputStream
+  Issue: COMPRESS-306.
+o Restore immutability/thread-safety to ArchiveStreamFactory.
+  The class is now immutable provided that the method setEntryEncoding
+  is not used. The class is thread-safe.
+  Issue: COMPRESS-302.
+o Restore immutability/thread-safety to CompressorStreamFactory.
+  The class is now immutable provided that the method
+  setDecompressConcatenated is not used.  The class is thread-safe.
+  Issue: COMPRESS-303.
+o ZipFile logs a warning in its finalizer when its constructor
+  has thrown an exception reading the file - for example if the
+  file doesn't exist.
+  Issue: COMPRESS-297.
+o Improved error message when tar encounters a groupId that is
+  too big to write without using the STAR or POSIX format.
+  Issue: COMPRESS-290. Thanks to Kristian Rosenvold.
+o SevenZFile now throws the specific PasswordRequiredException
+  when it encounters an encrypted stream but no password has
+  been specified.
+  Issue: COMPRESS-298.
+
+Changes:
+o Moved the package
+  org.apache.commons.compress.compressors.z._internal_ to
+  org.apache.commons.compress.compressors.lzw and made it part
+  of the API that is officially supported.  This will break
+  existing code that uses the old package. Thanks to Damjan Jovanovic.
+
+For complete information on Apache Commons Compress, including instructions
+on how to submit bug reports, patches, or suggestions for improvement,
+see the Apache Commons Compress website:
+
+https://commons.apache.org/compress/
+
+
 Release 1.9
 -----------
 
