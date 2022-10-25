@@ -24,7 +24,7 @@
   </parent>
 
   <artifactId>commons-compress</artifactId>
-  <version>1.22</version>
+  <version>1.23-SNAPSHOT</version>
   <name>Apache Commons Compress</name>
   <url>https://commons.apache.org/proper/commons-compress/</url>
   <inceptionYear>2002</inceptionYear> <!-- from NOTICE file -->
@@ -330,7 +330,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <connection>scm:git:https://gitbox.apache.org/repos/asf/commons-compress.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/commons-compress.git</developerConnection>
     <url>https://gitbox.apache.org/repos/asf?p=commons-compress.git</url>
-    <tag>commons-compress-1.22</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <build>
