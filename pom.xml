@@ -24,7 +24,7 @@
   </parent>
 
   <artifactId>commons-compress</artifactId>
-  <version>1.22-SNAPSHOT</version>
+  <version>1.22</version>
   <name>Apache Commons Compress</name>
   <url>https://commons.apache.org/proper/commons-compress/</url>
   <inceptionYear>2002</inceptionYear> <!-- from NOTICE file -->
@@ -330,6 +330,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <connection>scm:git:https://gitbox.apache.org/repos/asf/commons-compress.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/commons-compress.git</developerConnection>
     <url>https://gitbox.apache.org/repos/asf?p=commons-compress.git</url>
+    <tag>commons-compress-1.22</tag>
   </scm>
 
   <build>
@@ -466,9 +467,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
             <phase>process-test-resources</phase>
             <configuration>
               <target>
-                <untar src="${basedir}/src/test/resources/zstd-tests.tar"
-                       dest="${project.build.testOutputDirectory}"
-                       />
+                <untar src="${basedir}/src/test/resources/zstd-tests.tar" dest="${project.build.testOutputDirectory}" />
               </target>
             </configuration>
             <goals>
@@ -563,9 +562,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
                 <phase>process-test-resources</phase>
                 <configuration>
                   <target>
-                    <untar src="${basedir}/src/test/resources/zip64support.tar.bz2"
-                           dest="${project.build.testOutputDirectory}"
-                           compression="bzip2"/>
+                    <untar src="${basedir}/src/test/resources/zip64support.tar.bz2" dest="${project.build.testOutputDirectory}" compression="bzip2" />
                   </target>
                 </configuration>
                 <goals>
