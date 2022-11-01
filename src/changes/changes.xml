@@ -42,7 +42,12 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Compress Release Notes</title>
   </properties>
   <body>
-    <release version="1.22" date="not released, yet (Java 8)">
+    <release version="1.23" date="not released">
+      <!-- FIX -->
+      <!-- ADD -->
+      <!-- UPDATE -->
+    </release>
+    <release version="1.22" date="2022-11-01">
       <!-- FIX -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory">
         Fix some compiler warnings in pack200 packages.
