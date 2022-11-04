@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.dump;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Objects;
 
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 
@@ -287,46 +288,21 @@ public class DumpArchiveSummary {
 
     @Override
     public int hashCode() {
-        int hash = 17;
-
-        if (label != null) {
-            hash = label.hashCode();
-        }
-
-        hash += 31 * dumpDate;
-
-        if (hostname != null) {
-            hash = (31 * hostname.hashCode()) + 17;
-        }
-
-        if (devname != null) {
-            hash = (31 * devname.hashCode()) + 17;
-        }
-
-        return hash;
+        return Objects.hash(devname, dumpDate, hostname);
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-
-        if (o == null || !o.getClass().equals(getClass())) {
+        if (obj == null) {
             return false;
         }
-
-        final DumpArchiveSummary rhs = (DumpArchiveSummary) o;
-
-        if (dumpDate != rhs.dumpDate) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
-
-        if ((getHostname() == null) ||
-                !getHostname().equals(rhs.getHostname())) {
-            return false;
-        }
-
-        return (getDevname() != null) && getDevname().equals(rhs.getDevname());
+        DumpArchiveSummary other = (DumpArchiveSummary) obj;
+        return Objects.equals(devname, other.devname) && dumpDate == other.dumpDate && Objects.equals(hostname, other.hostname);
     }
 }
