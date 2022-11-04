@@ -841,12 +841,12 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
                     for (int i = gs; i <= ge; i++) {
                         final int icv = sfmap[i];
-                        cost0 += len_0[icv] & mask;
-                        cost1 += len_1[icv] & mask;
-                        cost2 += len_2[icv] & mask;
-                        cost3 += len_3[icv] & mask;
-                        cost4 += len_4[icv] & mask;
-                        cost5 += len_5[icv] & mask;
+                        cost0 += (short) (len_0[icv] & mask);
+                        cost1 += (short) (len_1[icv] & mask);
+                        cost2 += (short) (len_2[icv] & mask);
+                        cost3 += (short) (len_3[icv] & mask);
+                        cost4 += (short) (len_4[icv] & mask);
+                        cost5 += (short) (len_5[icv] & mask);
                     }
 
                     cost[0] = cost0;
@@ -864,7 +864,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                     for (int i = gs; i <= ge; i++) {
                         final int icv = sfmap[i];
                         for (int t = nGroups; --t >= 0;) {
-                            cost[t] += len[t][icv] & mask;
+                            cost[t] += (short) (len[t][icv] & mask);
                         }
                     }
                 }
