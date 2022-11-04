@@ -28,10 +28,12 @@ import org.apache.commons.compress.archivers.zip.ZipEncoding;
  * This class represents identifying information about a Dump archive volume.
  * It consists the archive's dump date, label, hostname, device name and possibly
  * last mount point plus the volume's volume id andfirst record number.
- *
+ * <p>
  * For the corresponding C structure see the header of {@link DumpArchiveEntry}.
+ * </p>
  */
 public class DumpArchiveSummary {
+
     private long dumpDate;
     private long previousDumpDate;
     private int volume;
