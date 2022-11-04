@@ -828,6 +828,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
                 final int ge = Math.min(gs + G_SIZE - 1, nMTFShadow - 1);
 
+                final byte mask = (byte) 0xff;
                 if (nGroups == N_GROUPS) {
                     // unrolled version of the else-block
 
@@ -840,12 +841,12 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
                     for (int i = gs; i <= ge; i++) {
                         final int icv = sfmap[i];
-                        cost0 += len_0[icv] & 0xff;
-                        cost1 += len_1[icv] & 0xff;
-                        cost2 += len_2[icv] & 0xff;
-                        cost3 += len_3[icv] & 0xff;
-                        cost4 += len_4[icv] & 0xff;
-                        cost5 += len_5[icv] & 0xff;
+                        cost0 += len_0[icv] & mask;
+                        cost1 += len_1[icv] & mask;
+                        cost2 += len_2[icv] & mask;
+                        cost3 += len_3[icv] & mask;
+                        cost4 += len_4[icv] & mask;
+                        cost5 += len_5[icv] & mask;
                     }
 
                     cost[0] = cost0;
@@ -863,7 +864,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                     for (int i = gs; i <= ge; i++) {
                         final int icv = sfmap[i];
                         for (int t = nGroups; --t >= 0;) {
-                            cost[t] += len[t][icv] & 0xff;
+                            cost[t] += len[t][icv] & mask;
                         }
                     }
                 }
