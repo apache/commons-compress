@@ -47,8 +47,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="CodeQL, Gary Gregory">Implicit narrowing conversion in compound assignment.</action>
       <!-- ADD -->
       <!-- UPDATE -->
-      <action type="update" dev="ggregory" due-to="Dependabot">Bump mockito.version from 4.8.0 to 4.8.1 #328.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot">Bump mockito.version from 4.8.0 to 4.9.0 #328, #331.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump pmd from 6.50.0 to 6.51.0.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot">Bump memoryfilesystem from 2.3.0 to 2.4.0 #330.</action>
     </release>
     <release version="1.22" date="2022-11-01">
       <!-- FIX -->
