@@ -42,6 +42,11 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Compress Release Notes</title>
   </properties>
   <body>
+    <release version="1.23" date="YYYY-MM-DD" description="Minor release (Java 8)">
+      <action type="update" dev="ggregory" due-to="Gary Gregory">
+        Bump pmd from 6.50.0 to 6.52.0.
+      </action>
+    </release>
     <release version="1.22" date="2022-11-25" description="Minor release (Java 8)">
       <!-- FIX -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory">

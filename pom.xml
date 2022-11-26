@@ -24,7 +24,7 @@
   </parent>
 
   <artifactId>commons-compress</artifactId>
-  <version>1.22</version>
+  <version>1.23-SNAPSHOT</version>
   <name>Apache Commons Compress</name>
   <url>https://commons.apache.org/proper/commons-compress/</url>
   <inceptionYear>2002</inceptionYear> <!-- from NOTICE file -->
@@ -53,7 +53,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.bc.version>1.21</commons.bc.version>
     <mockito.version>4.8.0</mockito.version>
     <commons.pmd.version>3.19.0</commons.pmd.version>
-    <commons.pmd-impl.version>6.50.0</commons.pmd-impl.version>
+    <commons.pmd-impl.version>6.52.0</commons.pmd-impl.version>
 
     <commons.release.isDistModule>true</commons.release.isDistModule>
     <commons.distSvnStagingUrl>scm:svn:https://dist.apache.org/repos/dist/dev/commons/${commons.componentid}</commons.distSvnStagingUrl>
