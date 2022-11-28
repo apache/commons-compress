@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.PasswordRequiredException;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.tukaani.xz.LZMA2Options;
@@ -485,6 +486,27 @@ public class SevenZOutputFileTest extends AbstractTestCase {
                     verifyFile(archive, 0, Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2))));
             assertEquals(Boolean.TRUE,
                     verifyFile(archive, 1, Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.BZIP2))));
+        }
+    }
+
+    @Test 
+    public void testEncrypt() throws Exception {
+        output = new File(dir, "encrypted.7z");
+        try (SevenZOutputFile outArchive = new SevenZOutputFile(output, "foo".toCharArray())) {
+            addFile(outArchive, 0, true);
+            addFile(outArchive, 1, true);
+        }
+
+        try (SevenZFile archive = new SevenZFile(output)) {
+            verifyFile(archive, 0);
+            fail("A password should be needed");
+        } catch (PasswordRequiredException e) {
+            // nice !
+        } 
+
+        try (SevenZFile archive = new SevenZFile(output, "foo".toCharArray())) {
+            assertEquals(Boolean.TRUE, verifyFile(archive, 0));
+            assertEquals(Boolean.TRUE, verifyFile(archive, 1));
         }
     }
 
