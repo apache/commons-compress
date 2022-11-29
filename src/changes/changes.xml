@@ -43,6 +43,12 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.23" date="YYYY-MM-DD" description="Minor release (Java 8)">
+      <!-- FIX -->
+      <action type="update" dev="ggregory" due-to="Gary Gregory">
+        Make org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel.position(long) obey the contract for
+        java.nio.channels.SeekableByteChannel.position(long) and throw IllegalArgumentException on negative newPosition input.
+      </action>
+      <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Gary Gregory">
         Bump pmd from 6.50.0 to 6.52.0.
       </action>

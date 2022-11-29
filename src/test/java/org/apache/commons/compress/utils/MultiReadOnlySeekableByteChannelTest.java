@@ -132,7 +132,7 @@ public class MultiReadOnlySeekableByteChannelTest {
     @Test
     public void cantPositionToANegativePosition() throws IOException {
         final SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty());
-        assertThrows(IOException.class, () -> s.position(-1));
+        assertThrows(IllegalArgumentException.class, () -> s.position(-1));
     }
 
     private SeekableByteChannel makeEmpty() {
@@ -368,7 +368,7 @@ public class MultiReadOnlySeekableByteChannelTest {
     @Test
     public void throwsIOExceptionWhenPositionIsSetToANegativeValue() throws Exception {
         try (SeekableByteChannel c = testChannel()) {
-            assertThrows(IOException.class, () -> c.position(-1));
+            assertThrows(IllegalArgumentException.class, () -> c.position(-1));
         }
     }
 
