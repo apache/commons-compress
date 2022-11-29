@@ -195,7 +195,7 @@ public class ClassBands extends BandSet {
 		}
 	}
 
-	public void addClass(final int major, int flags, final String className, final String signature,
+	public void addClass(final int major, final int flags, final String className, final String signature,
 			final String superName, final String[] interfaces) {
 		class_this[index] = cpBands.getCPClass(className);
 		class_super[index] = cpBands.getCPClass(superName);
@@ -209,10 +209,10 @@ public class ClassBands extends BandSet {
 			cpBands.addCPUtf8("Synthetic");
 			anySyntheticClasses = true;
 		}
-		if ((flags & Opcodes.ACC_DEPRECATED) != 0) { // ASM uses (1<<17) flag for deprecated
-			flags = flags & ~Opcodes.ACC_DEPRECATED;
-			flags = flags | (1 << 20);
-		}
+//		if ((flags & Opcodes.ACC_DEPRECATED) != 0) { // ASM uses (1<<17) flag for deprecated
+//			flags = flags & ~Opcodes.ACC_DEPRECATED;
+//			flags = flags | (1 << 20);
+//		}
 		if (signature != null) {
 			class_flags[index] |= (1 << 19);
 			classSignature.add(cpBands.getCPSignature(signature));
