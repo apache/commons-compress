@@ -46,7 +46,7 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory">
         Make org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel.position(long) obey the contract for
-        java.nio.channels.SeekableByteChannel.position(long) and throw IllegalArgumentException on negative newPosition input.
+        java.nio.channels.SeekableByteChannel.position(long) and throw IllegalArgumentException on negative newPosition input
       </action>
       <action issue="COMPRESS-623" type="fix" dev="ggregory" due-to="Dawid Weiss, Gary Gregory">
         Make ZipFile's getRawInputStream usable when local headers are not read #306.
@@ -57,6 +57,12 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">
         Bump com.github.marschall:memoryfilesystem from 2.3.0 to 2.4.0.
+      </action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">
+        Bump org.mockito:mockito-core from 4.8.0 to 4.9.0.
+      </action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">
+        Bump org.mockito:mockito-junit-jupiter from 4.8.0 to 4.9.0.
       </action>
     </release>
     <release version="1.22" date="2022-11-25" description="Minor release (Java 8)">
