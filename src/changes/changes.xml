@@ -44,9 +44,12 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.23" date="YYYY-MM-DD" description="Minor release (Java 8)">
       <!-- FIX -->
-      <action type="update" dev="ggregory" due-to="Gary Gregory">
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">
         Make org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel.position(long) obey the contract for
         java.nio.channels.SeekableByteChannel.position(long) and throw IllegalArgumentException on negative newPosition input.
+      </action>
+      <action issue="COMPRESS-623" type="fix" dev="ggregory" due-to="Dawid Weiss, Gary Gregory">
+        Make ZipFile's getRawInputStream usable when local headers are not read #306.
       </action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Gary Gregory">
