@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -117,53 +118,75 @@ class AES256SHA256Decoder extends CoderBase {
 
     @Override
     OutputStream encode(OutputStream out, Object options) throws IOException {
+        AES256Options opts = (AES256Options) options;
+        final byte[] aesKeyBytes = sha256Password(opts.password, opts.numCyclesPower, opts.salt);
+        final SecretKey aesKey = new SecretKeySpec(aesKeyBytes, "AES");
+
+        final Cipher cipher;
+        try {
+            cipher = Cipher.getInstance("AES/CBC/NoPadding");
+            cipher.init(Cipher.ENCRYPT_MODE, aesKey, new IvParameterSpec(opts.iv));
+        } catch (final GeneralSecurityException generalSecurityException) {
+            throw new IOException(
+                "Encryption error " + "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
+                generalSecurityException
+            );
+        }
         return new OutputStream() {
-            private boolean isInitialized;
-            private CipherOutputStream cipherOutputStream;
+            final CipherOutputStream cipherOutputStream = new CipherOutputStream(out, cipher);
 
-            private CipherOutputStream init() throws IOException {
-                if (isInitialized) {
-                    return cipherOutputStream;
-                }
-
-                AES256Options opts = (AES256Options) options;
-                final byte[] aesKeyBytes = sha256Password(opts.password, opts.numCyclesPower, opts.salt);
-
-                final SecretKey aesKey = new SecretKeySpec(aesKeyBytes, "AES");
-                try {
-                    final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding"); // padding required for very small files (< 16 bytes)
-                    cipher.init(Cipher.ENCRYPT_MODE, aesKey, new IvParameterSpec(opts.iv));
-                    cipherOutputStream = new CipherOutputStream(out, cipher);
-                    isInitialized = true;
-                    return cipherOutputStream;
-                } catch (final GeneralSecurityException generalSecurityException) {
-                    throw new IOException(
-                        "Encryption error " + "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
-                        generalSecurityException
-                    );
-                }
-            }
+            // Ensures that data are encrypt in respect of cipher block size and pad with '0' if smaller
+            // NOTE: As "AES/CBC/PKCS5Padding" is weak and should not be used, we use "AES/CBC/NoPadding" with this 
+            // manual implementation for padding possible thanks to the size of the file stored separately
+            final int cipherBlockSize = cipher.getBlockSize();
+            final byte[]  cipherBlockBuffer = new byte[cipherBlockSize];
+            private int count = 0;
 
             @Override
             public void write(int b) throws IOException {
-                init().write(b);
-            }
-
-            @Override
-            public void write(byte[] b) throws IOException {
-                init().write(b);
+                cipherBlockBuffer[count++] = (byte) b;
+                if (count == cipherBlockSize) {
+                    flushBuffer();
+                } 
             }
 
             @Override
             public void write(byte[] b, int off, int len) throws IOException {
-                init().write(b, off, len);
+                int gap = len + count > cipherBlockSize ? cipherBlockSize - count : len;
+                System.arraycopy(b, off, cipherBlockBuffer, count, gap);
+                count += gap;
+
+                if (count == cipherBlockSize) {
+                    flushBuffer();
+
+                    if (len - gap >= cipherBlockSize) {
+                        // skip buffer to encrypt data chunks big enought to fit cipher block size
+                        int multipleCipherBlockSizeLen = (len - gap) / cipherBlockSize * cipherBlockSize;
+                        cipherOutputStream.write(b, off + gap, multipleCipherBlockSizeLen);
+                        gap += multipleCipherBlockSizeLen;
+                    }
+                    System.arraycopy(b, off + gap, cipherBlockBuffer, 0, len - gap);
+                    count = len - gap;
+                }
+            }
+
+            private void flushBuffer() throws IOException {
+                cipherOutputStream.write(cipherBlockBuffer);
+                count = 0;
+                Arrays.fill(cipherBlockBuffer, (byte) 0);
+            }
+
+            @Override
+            public void flush() throws IOException {
+                cipherOutputStream.flush();
             }
 
             @Override
             public void close() throws IOException {
-                if (cipherOutputStream != null) {
-                    cipherOutputStream.close();
+                if (count > 0) {
+                    cipherOutputStream.write(cipherBlockBuffer);
                 }
+                cipherOutputStream.close();
             }
         };
     }
