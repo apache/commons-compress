@@ -163,7 +163,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      *
      * @throws UnsupportedOperationException if the entry hasn't got a creation time.
      * @return the creation time
-     * @since 1.22
+     * @since 1.23
      */
     public FileTime getCreationTime() {
         if (hasCreationDate) {
@@ -196,7 +196,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Sets the creation time.
      *
      * @param time the new creation time
-     * @since 1.22
+     * @since 1.23
      */
     public void setCreationTime(final FileTime time) {
         hasCreationDate = time != null;
@@ -240,7 +240,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      *
      * @throws UnsupportedOperationException if the entry hasn't got a last modified time.
      * @return the last modified time
-     * @since 1.22
+     * @since 1.23
      */
     public FileTime getLastModifiedTime() {
         if (hasLastModifiedDate) {
@@ -273,7 +273,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Sets the last modified time.
      *
      * @param time the new last modified time
-     * @since 1.22
+     * @since 1.23
      */
     public void setLastModifiedTime(final FileTime time) {
         hasLastModifiedDate = time != null;
@@ -315,7 +315,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      *
      * @throws UnsupportedOperationException if the entry hasn't got an access time.
      * @return the access time
-     * @since 1.22
+     * @since 1.23
      */
     public FileTime getAccessTime() {
         if (hasAccessDate) {
@@ -348,7 +348,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Sets the access time.
      *
      * @param time the new access time
-     * @since 1.22
+     * @since 1.23
      */
     public void setAccessTime(final FileTime time) {
         hasAccessDate = time != null;
@@ -621,7 +621,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * to Java time.
      * @param ntfsTime the NTFS time in 100 nanosecond units
      * @return the Java time
-     * @deprecated since 1.22. Use {@link TimeUtils#ntfsTimeToDate(long)} instead.
+     * @deprecated Use {@link TimeUtils#ntfsTimeToDate(long)} instead.
      * @see TimeUtils#ntfsTimeToDate(long)
      */
     @Deprecated
@@ -633,7 +633,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Converts Java time to NTFS time.
      * @param date the Java time
      * @return the NTFS time
-     * @deprecated since 1.22. Use {@link TimeUtils#dateToNtfsTime(Date)} instead.
+     * @deprecated Use {@link TimeUtils#dateToNtfsTime(Date)} instead.
      * @see TimeUtils#dateToNtfsTime(Date)
      */
     @Deprecated
