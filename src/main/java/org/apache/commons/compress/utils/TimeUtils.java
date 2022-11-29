@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Utility class for handling time-related types and conversions.
  *
- * @since 1.22
+ * @since 1.23
  */
 public final class TimeUtils {
 
