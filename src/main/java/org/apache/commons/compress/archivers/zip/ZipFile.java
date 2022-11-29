@@ -280,9 +280,7 @@ public class ZipFile implements Closeable {
      * can be set to {@code true} which restricts parsing to the central directory. Unfortunately the local file header
      * may contain information not present inside of the central directory which will not be available when the argument
      * is set to {@code true}. This includes the content of the Unicode extra field, so setting {@code
-     * ignoreLocalFileHeader} to {@code true} means {@code useUnicodeExtraFields} will be ignored effectively. Also
-     * {@link #getRawInputStream} is always going to return {@code null} if {@code ignoreLocalFileHeader} is {@code
-     * true}.</p>
+     * ignoreLocalFileHeader} to {@code true} means {@code useUnicodeExtraFields} will be ignored effectively.</p>
      *
      * @param f the archive.
      * @param encoding the encoding to use for file names, use null
@@ -310,9 +308,7 @@ public class ZipFile implements Closeable {
      * can be set to {@code true} which restricts parsing to the central directory. Unfortunately the local file header
      * may contain information not present inside of the central directory which will not be available when the argument
      * is set to {@code true}. This includes the content of the Unicode extra field, so setting {@code
-     * ignoreLocalFileHeader} to {@code true} means {@code useUnicodeExtraFields} will be ignored effectively. Also
-     * {@link #getRawInputStream} is always going to return {@code null} if {@code ignoreLocalFileHeader} is {@code
-     * true}.</p>
+     * ignoreLocalFileHeader} to {@code true} means {@code useUnicodeExtraFields} will be ignored effectively.</p>
      * @param path path to the archive.
      * @param encoding the encoding to use for file names, use null
      * for the platform's default encoding
@@ -405,9 +401,7 @@ public class ZipFile implements Closeable {
      * can be set to {@code true} which restricts parsing to the central directory. Unfortunately the local file header
      * may contain information not present inside of the central directory which will not be available when the argument
      * is set to {@code true}. This includes the content of the Unicode extra field, so setting {@code
-     * ignoreLocalFileHeader} to {@code true} means {@code useUnicodeExtraFields} will be ignored effectively. Also
-     * {@link #getRawInputStream} is always going to return {@code null} if {@code ignoreLocalFileHeader} is {@code
-     * true}.</p>
+     * ignoreLocalFileHeader} to {@code true} means {@code useUnicodeExtraFields} will be ignored effectively.</p>
      *
      * @param channel the archive.
      * @param archiveName name of the archive, used for error messages only.
@@ -587,15 +581,22 @@ public class ZipFile implements Closeable {
      * <p>This method does not relate to how/if we understand the payload in the
      * stream, since we really only intend to move it on to somewhere else.</p>
      *
+     * <p>Since version 1.22, this method will make an attempt to read the entry's data
+     * stream offset, even if the {@code ignoreLocalFileHeader} parameter was {@code true}
+     * in the constructor. An IOException can also be thrown from the body of the method
+     * if this lookup fails for some reason.</p>
+     *
      * @param ze The entry to get the stream for
      * @return The raw input stream containing (possibly) compressed data.
      * @since 1.11
+     * @throws IOException if there is a problem reading data offset (added in version 1.22).
      */
-    public InputStream getRawInputStream(final ZipArchiveEntry ze) {
+    public InputStream getRawInputStream(final ZipArchiveEntry ze) throws IOException {
         if (!(ze instanceof Entry)) {
             return null;
         }
-        final long start = ze.getDataOffset();
+
+        final long start = getDataOffset(ze);
         if (start == EntryStreamOffsets.OFFSET_UNKNOWN) {
             return null;
         }
@@ -638,13 +639,11 @@ public class ZipFile implements Closeable {
         }
         // cast validity is checked just above
         ZipUtil.checkRequestedFeatures(ze);
-        final long start = getDataOffset(ze);
 
         // doesn't get closed if the method is not supported - which
         // should never happen because of the checkRequestedFeatures
         // call above
-        final InputStream is =
-            new BufferedInputStream(createBoundedInputStream(start, ze.getCompressedSize())); //NOSONAR
+        final InputStream is = new BufferedInputStream(getRawInputStream(ze)); //NOSONAR
         switch (ZipMethod.getMethodByCode(ze.getMethod())) {
             case STORED:
                 return new StoredStatisticsStream(is);

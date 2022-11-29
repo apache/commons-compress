@@ -82,10 +82,10 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     }
 
     @Test
-    public void getRawInputStreamReturnsNull() throws IOException {
+    public void getRawInputStreamReturnsNotNull() throws IOException {
         try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
             final ZipArchiveEntry ze = zf.getEntry("test1.xml");
-            Assert.assertNull(zf.getRawInputStream(ze));
+            Assert.assertNotNull(zf.getRawInputStream(ze));
         }
     }
 
