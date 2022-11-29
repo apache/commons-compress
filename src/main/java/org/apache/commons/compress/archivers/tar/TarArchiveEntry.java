@@ -212,7 +212,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Convert millis to seconds
-     * @deprecated since 1.22, this is not used anymore, and it may be removed in a future release.
+     * @deprecated Unused.
      */
     @Deprecated
     public static final int MILLIS_PER_SECOND = 1000;
