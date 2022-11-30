@@ -21,9 +21,11 @@ package org.apache.commons.compress.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.Test;
 
 public class FileNameUtilsTest {
@@ -38,6 +40,14 @@ public class FileNameUtilsTest {
     public void getBaseNamePathBaseCases() {
         assertEquals("bar", FileNameUtils.getBaseName(Paths.get("a/b/c/bar.foo")));
         assertEquals("foo", FileNameUtils.getBaseName(Paths.get("foo")));
+        assertEquals("", FileNameUtils.getBaseName(Paths.get("")));
+        assertEquals("", FileNameUtils.getBaseName(Paths.get(".")));
+        for (File f : File.listRoots()) {
+            assertEquals(null, FileNameUtils.getBaseName(f.toPath()));
+        }
+        if (SystemUtils.IS_OS_WINDOWS) {
+            assertEquals(null, FileNameUtils.getBaseName(Paths.get("C:\\")));
+        }
     }
 
     @Test

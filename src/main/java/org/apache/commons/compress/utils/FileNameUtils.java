@@ -51,7 +51,8 @@ public class FileNameUtils {
         if (path == null) {
             return null;
         }
-        return fileNameToBaseName(path.getFileName().toString());
+        final Path fileName = path.getFileName();
+        return fileName != null ? fileNameToBaseName(fileName.toString()) : null;
     }
 
     /**
