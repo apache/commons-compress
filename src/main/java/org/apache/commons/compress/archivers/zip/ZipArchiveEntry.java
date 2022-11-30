@@ -55,9 +55,9 @@ import org.apache.commons.compress.utils.ByteUtils;
  *
  * @NotThreadSafe
  */
-public class ZipArchiveEntry extends java.util.zip.ZipEntry
-    implements ArchiveEntry, EntryStreamOffsets
-{
+public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEntry, EntryStreamOffsets {
+
+    static final ZipArchiveEntry[] EMPTY_ARRAY = {};
 
     public static final int PLATFORM_UNIX = 3;
     public static final int PLATFORM_FAT  = 0;
@@ -149,7 +149,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry
     private NameSource nameSource = NameSource.NAME;
     private CommentSource commentSource = CommentSource.COMMENT;
     private long diskNumberStart;
-    static final ZipArchiveEntry[] EMPTY_ZIP_ARCHIVE_ENTRY_ARRAY = {};
 
     /**
      * Creates a new zip entry with the specified name.

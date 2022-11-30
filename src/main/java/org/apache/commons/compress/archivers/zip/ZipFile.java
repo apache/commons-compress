@@ -507,7 +507,7 @@ public class ZipFile implements Closeable {
      * @since 1.1
      */
     public Enumeration<ZipArchiveEntry> getEntriesInPhysicalOrder() {
-        final ZipArchiveEntry[] allEntries = entries.toArray(ZipArchiveEntry.EMPTY_ZIP_ARCHIVE_ENTRY_ARRAY);
+        final ZipArchiveEntry[] allEntries = entries.toArray(ZipArchiveEntry.EMPTY_ARRAY);
         Arrays.sort(allEntries, offsetComparator);
         return Collections.enumeration(Arrays.asList(allEntries));
     }
@@ -554,9 +554,10 @@ public class ZipFile implements Closeable {
      * @since 1.6
      */
     public Iterable<ZipArchiveEntry> getEntriesInPhysicalOrder(final String name) {
-        ZipArchiveEntry[] entriesOfThatName = ZipArchiveEntry.EMPTY_ZIP_ARCHIVE_ENTRY_ARRAY;
-        if (nameMap.containsKey(name)) {
-            entriesOfThatName = nameMap.get(name).toArray(entriesOfThatName);
+        ZipArchiveEntry[] entriesOfThatName = ZipArchiveEntry.EMPTY_ARRAY;
+        final LinkedList<ZipArchiveEntry> linkedList = nameMap.get(name);
+        if (linkedList != null) {
+            entriesOfThatName = linkedList.toArray(entriesOfThatName);
             Arrays.sort(entriesOfThatName, offsetComparator);
         }
         return Arrays.asList(entriesOfThatName);
