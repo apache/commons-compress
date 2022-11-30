@@ -332,8 +332,15 @@ public interface TarConstants {
      * The magic tag representing a GNU tar archive.
      */
     String MAGIC_GNU = "ustar ";
-    // Appear to be two possible GNU versions
+    
+    /**
+     * One of two two possible GNU versions
+     */
     String VERSION_GNU_SPACE = " \0";
+
+    /**
+     * One of two two possible GNU versions
+     */
     String VERSION_GNU_ZERO  = "0\0";
 
     /**
