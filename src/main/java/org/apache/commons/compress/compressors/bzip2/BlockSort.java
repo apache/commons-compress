@@ -586,7 +586,7 @@ class BlockSort {
      *
      * <p>
      * This is the version using unrolled loops. Normally I never use such ones
-     * in Java code. The unrolling has shown a noticable performance improvement
+     * in Java code. The unrolling has shown a noticeable performance improvement
      * on JRE 1.4.2 (Linux i586 / HotSpot Client). Of course it depends on the
      * JIT compiler of the vm.
      * </p>
