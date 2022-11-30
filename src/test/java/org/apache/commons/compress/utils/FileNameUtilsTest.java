@@ -74,6 +74,14 @@ public class FileNameUtilsTest {
     public void getExtensionPathBaseCases() {
         assertEquals("foo", FileNameUtils.getExtension(Paths.get("a/b/c/bar.foo")));
         assertEquals("", FileNameUtils.getExtension(Paths.get("foo")));
+        assertEquals("", FileNameUtils.getExtension(Paths.get("")));
+        assertEquals("", FileNameUtils.getExtension(Paths.get(".")));
+        for (File f : File.listRoots()) {
+            assertEquals(null, FileNameUtils.getExtension(f.toPath()));
+        }
+        if (SystemUtils.IS_OS_WINDOWS) {
+            assertEquals(null, FileNameUtils.getExtension(Paths.get("C:\\")));
+        }
     }
 
     @Test

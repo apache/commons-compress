@@ -87,7 +87,8 @@ public class FileNameUtils {
         if (path == null) {
             return null;
         }
-        return fileNameToExtension(path.getFileName().toString());
+        final Path fileName = path.getFileName();
+        return fileName != null ? fileNameToExtension(fileName.toString()) : null;
     }
 
     /**
