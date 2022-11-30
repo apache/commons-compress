@@ -78,14 +78,8 @@ public class SegmentConstantPoolArrayCache {
      * @return boolean true if up-to-date cache, otherwise false.
      */
     protected boolean arrayIsCached(final String[] array) {
-        if (!knownArrays.containsKey(array)) {
-            return false;
-        }
         final CachedArray cachedArray = knownArrays.get(array);
-        if (cachedArray.lastKnownSize() != array.length) {
-            return false;
-        }
-        return true;
+        return !(cachedArray == null || cachedArray.lastKnownSize() != array.length);
     }
 
     /**
