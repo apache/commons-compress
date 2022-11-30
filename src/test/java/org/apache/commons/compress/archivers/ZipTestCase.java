@@ -797,16 +797,11 @@ public final class ZipTestCase extends AbstractTestCase {
         }
 
         final String name = entry.getName();
-        final List<List<Long>> l;
-        if (map.containsKey(name)) {
-            l = map.get(name);
-        } else {
-            map.put(name, l = new ArrayList<>());
-        }
+        final List<List<Long>> list = map.computeIfAbsent(name, k -> new ArrayList<>());
 
         final long t = stats.getUncompressedCount();
         final long b = stats.getCompressedCount();
-        l.add(Arrays.asList(t, b));
+        list.add(Arrays.asList(t, b));
     }
 
     private File getFilesToZip() throws IOException {
