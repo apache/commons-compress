@@ -152,9 +152,7 @@ public class SegmentConstantPoolArrayCache {
         protected void cacheIndexes() {
             for (int index = 0; index < primaryArray.length; index++) {
                 final String key = primaryArray[index];
-                if (!primaryTable.containsKey(key)) {
-                    primaryTable.put(key, new ArrayList<>());
-                }
+                primaryTable.computeIfAbsent(key, k -> new ArrayList<>());
                 primaryTable.get(key).add(Integer.valueOf(index));
             }
         }
