@@ -24,9 +24,10 @@ import java.io.IOException;
  */
 public class ClassFile {
 
+    private static final int MAGIC = 0xCAFEBABE;
+
     public int major;
     public int minor;
-    private final int magic = 0xCAFEBABE;
     public ClassConstantPool pool = new ClassConstantPool();
     public int accessFlags;
     public int thisClass;
@@ -37,7 +38,7 @@ public class ClassFile {
     public Attribute[] attributes;
 
     public void write(final DataOutputStream dos) throws IOException {
-        dos.writeInt(magic);
+        dos.writeInt(MAGIC);
         dos.writeShort(minor);
         dos.writeShort(major);
         dos.writeShort(pool.size() + 1);
