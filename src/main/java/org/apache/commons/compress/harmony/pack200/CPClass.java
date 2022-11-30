@@ -17,7 +17,7 @@
 package org.apache.commons.compress.harmony.pack200;
 
 /**
- * Constant pool entry for a class
+ * Constant pool entry for a class.
  */
 public class CPClass extends CPConstant<CPClass> {
 
