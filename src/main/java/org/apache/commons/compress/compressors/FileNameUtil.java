@@ -105,9 +105,7 @@ public class FileNameUtil {
             final String u = ent.getValue();
             final int ul = u.length();
             if (ul > 0) {
-                if (!compressSuffix.containsKey(u)) {
-                    compressSuffix.put(u, ent.getKey());
-                }
+                compressSuffix.computeIfAbsent(u, k -> ent.getKey());
                 if (ul > lu) {
                     lu = ul;
                 }
