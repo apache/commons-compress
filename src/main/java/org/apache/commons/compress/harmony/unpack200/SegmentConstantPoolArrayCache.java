@@ -132,10 +132,8 @@ public class SegmentConstantPoolArrayCache {
          * @return List of indexes containing that key in the array.
          */
         public List<Integer> indexesForKey(final String key) {
-            if (!primaryTable.containsKey(key)) {
-                return Collections.EMPTY_LIST;
-            }
-            return primaryTable.get(key);
+            final List<Integer> list = primaryTable.get(key);
+            return list != null ? list : Collections.emptyList();
         }
 
         /**
