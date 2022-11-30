@@ -125,10 +125,11 @@ public class AttributeLayoutMap {
     private final Map<Integer, AttributeLayout> methodLayouts = new HashMap<>();
     private final Map<Integer, AttributeLayout> codeLayouts = new HashMap<>();
 
-    // The order of the maps in this array should not be changed as their
-    // indices correspond to
-    // the value of their context constants (AttributeLayout.CONTEXT_CLASS etc.)
-	private final Map[] layouts = { classLayouts, fieldLayouts, methodLayouts, codeLayouts };
+    /**
+     * The order of the maps in this array should not be changed as their indices correspond to the value of their context constants
+     * (AttributeLayout.CONTEXT_CLASS etc.)
+     */
+    private final Map[] layouts = { classLayouts, fieldLayouts, methodLayouts, codeLayouts };
 
     private final Map<AttributeLayout, NewAttributeBands> layoutsToBands = new HashMap<>();
 
