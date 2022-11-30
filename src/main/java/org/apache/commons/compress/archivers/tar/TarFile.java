@@ -430,8 +430,8 @@ public class TarFile implements Closeable {
         }
 
         // for 0.1 PAX Headers
-        if (headers.containsKey("GNU.sparse.map")) {
-            sparseHeaders = new ArrayList<>(TarUtils.parseFromPAX01SparseHeaders(headers.get("GNU.sparse.map")));
+        if (headers.containsKey(TarGnuSparseKeys.MAP)) {
+            sparseHeaders = new ArrayList<>(TarUtils.parseFromPAX01SparseHeaders(headers.get(TarGnuSparseKeys.MAP)));
         }
         getNextTarEntry(); // Get the actual file entry
         if (currEntry == null) {

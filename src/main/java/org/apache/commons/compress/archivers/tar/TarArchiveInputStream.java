@@ -605,8 +605,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
         final Map<String, String> headers = TarUtils.parsePaxHeaders(this, sparseHeaders, globalPaxHeaders, entrySize);
 
         // for 0.1 PAX Headers
-        if (headers.containsKey("GNU.sparse.map")) {
-            sparseHeaders = new ArrayList<>(TarUtils.parseFromPAX01SparseHeaders(headers.get("GNU.sparse.map")));
+        if (headers.containsKey(TarGnuSparseKeys.MAP)) {
+            sparseHeaders = new ArrayList<>(TarUtils.parseFromPAX01SparseHeaders(headers.get(TarGnuSparseKeys.MAP)));
         }
         getNextEntry(); // Get the actual file entry
         if (currEntry == null) {

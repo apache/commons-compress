@@ -191,6 +191,7 @@ import org.apache.commons.compress.utils.IOUtils;
  * @NotThreadSafe
  */
 public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamOffsets {
+
     private static final TarArchiveEntry[] EMPTY_TAR_ARCHIVE_ENTRY_ARRAY = new TarArchiveEntry[0];
 
     /**
@@ -759,22 +760,22 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     void fillGNUSparse0xData(final Map<String, String> headers) {
         paxGNUSparse = true;
-        realSize = Integer.parseInt(headers.get("GNU.sparse.size"));
-        if (headers.containsKey("GNU.sparse.name")) {
+        realSize = Integer.parseInt(headers.get(TarGnuSparseKeys.SIZE));
+        if (headers.containsKey(TarGnuSparseKeys.NAME)) {
             // version 0.1
-            name = headers.get("GNU.sparse.name");
+            name = headers.get(TarGnuSparseKeys.NAME);
         }
     }
 
     void fillGNUSparse1xData(final Map<String, String> headers) throws IOException {
         paxGNUSparse = true;
         paxGNU1XSparse = true;
-        if (headers.containsKey("GNU.sparse.name")) {
-            name = headers.get("GNU.sparse.name");
+        if (headers.containsKey(TarGnuSparseKeys.NAME)) {
+            name = headers.get(TarGnuSparseKeys.NAME);
         }
-        if (headers.containsKey("GNU.sparse.realsize")) {
+        if (headers.containsKey(TarGnuSparseKeys.REALSIZE)) {
             try {
-                realSize = Integer.parseInt(headers.get("GNU.sparse.realsize"));
+                realSize = Integer.parseInt(headers.get(TarGnuSparseKeys.REALSIZE));
             } catch (NumberFormatException ex) {
                 throw new IOException("Corrupted TAR archive. GNU.sparse.realsize header for "
                     + name + " contains non-numeric value");
@@ -1699,10 +1700,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 }
                 setDevMajor(devMajor);
                 break;
-            case "GNU.sparse.size":
+            case TarGnuSparseKeys.SIZE:
                 fillGNUSparse0xData(headers);
                 break;
-            case "GNU.sparse.realsize":
+            case TarGnuSparseKeys.REALSIZE:
                 fillGNUSparse1xData(headers);
                 break;
             case "SCHILY.filetype":
