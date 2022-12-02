@@ -25,7 +25,7 @@ package org.apache.commons.compress.archivers.sevenz;
  */
 public class SevenZFileOptions {
     private static final int DEFAUL_MEMORY_LIMIT_IN_KB = Integer.MAX_VALUE;
-    private static final boolean DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES= false;
+    private static final boolean DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES = false;
     private static final boolean DEFAULT_TRY_TO_RECOVER_BROKEN_ARCHIVES = false;
 
     private final int maxMemoryLimitInKb;
