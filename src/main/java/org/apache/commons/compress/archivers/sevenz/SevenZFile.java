@@ -63,6 +63,7 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  * encryption types, but at the moment only
  * only Copy, LZMA, LZMA2, BZIP2, Deflate and AES-256 + SHA-256
  * are supported.
+ * </p>
  * <p>
  * The format is very Windows/Intel specific,
  * so it uses little-endian byte order,
@@ -73,13 +74,14 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  * using it for backup purposes on *nix, and
  * recommend .tar.7z or .tar.lzma or .tar.xz
  * instead.
+ * </p>
  * <p>
  * Both the header and file contents may be
  * compressed and/or encrypted. With both
  * encrypted, neither file names nor file
  * contents can be read, but the use of
  * encryption isn't plausibly deniable.
- *
+ * </p>
  * <p>Multi volume archives can be read by concatenating the parts in
  * correct order - either manually or by using {link
  * org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel}
@@ -107,7 +109,7 @@ public class SevenZFile implements Closeable {
 
     private final ArrayList<InputStream> deferredBlockStreams = new ArrayList<>();
 
-    // shared with SevenZOutputFile and tests, neither mutates it
+    /** Shared with SevenZOutputFile and tests, neither mutates it. */
     static final byte[] sevenZSignature = { //NOSONAR
         (byte)'7', (byte)'z', (byte)0xBC, (byte)0xAF, (byte)0x27, (byte)0x1C
     };
