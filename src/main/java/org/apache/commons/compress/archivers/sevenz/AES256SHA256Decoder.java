@@ -91,8 +91,8 @@ class AES256SHA256Decoder extends CoderBase {
                     isInitialized = true;
                     return cipherInputStream;
                 } catch (final GeneralSecurityException generalSecurityException) {
-                    throw new IOException("Decryption error " +
-                        "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
+                    throw new IllegalStateException(
+                        "Decryption error (do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
                         generalSecurityException);
                     }
             }
@@ -118,28 +118,16 @@ class AES256SHA256Decoder extends CoderBase {
 
     @Override
     OutputStream encode(OutputStream out, Object options) throws IOException {
-        AES256Options opts = (AES256Options) options;
-        final byte[] aesKeyBytes = sha256Password(opts.password, opts.numCyclesPower, opts.salt);
-        final SecretKey aesKey = new SecretKeySpec(aesKeyBytes, "AES");
+        final AES256Options opts = (AES256Options) options;
 
-        final Cipher cipher;
-        try {
-            cipher = Cipher.getInstance("AES/CBC/NoPadding");
-            cipher.init(Cipher.ENCRYPT_MODE, aesKey, new IvParameterSpec(opts.iv));
-        } catch (final GeneralSecurityException generalSecurityException) {
-            throw new IOException(
-                "Encryption error " + "(do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
-                generalSecurityException
-            );
-        }
         return new OutputStream() {
-            final CipherOutputStream cipherOutputStream = new CipherOutputStream(out, cipher);
+            private final CipherOutputStream cipherOutputStream = new CipherOutputStream(out, opts.getCipher());
 
             // Ensures that data are encrypt in respect of cipher block size and pad with '0' if smaller
-            // NOTE: As "AES/CBC/PKCS5Padding" is weak and should not be used, we use "AES/CBC/NoPadding" with this 
+            // NOTE: As "AES/CBC/PKCS5Padding" is weak and should not be used, we use "AES/CBC/NoPadding" with this
             // manual implementation for padding possible thanks to the size of the file stored separately
-            final int cipherBlockSize = cipher.getBlockSize();
-            final byte[]  cipherBlockBuffer = new byte[cipherBlockSize];
+            private final int cipherBlockSize = opts.getCipher().getBlockSize();
+            private final byte[] cipherBlockBuffer = new byte[cipherBlockSize];
             private int count = 0;
 
             @Override
@@ -147,7 +135,7 @@ class AES256SHA256Decoder extends CoderBase {
                 cipherBlockBuffer[count++] = (byte) b;
                 if (count == cipherBlockSize) {
                     flushBuffer();
-                } 
+                }
             }
 
             @Override
@@ -191,12 +179,12 @@ class AES256SHA256Decoder extends CoderBase {
         };
     }
 
-    private byte[] sha256Password(final byte[] password, final int numCyclesPower, final byte[] salt) throws IOException {
+    static byte[] sha256Password(final byte[] password, final int numCyclesPower, final byte[] salt) {
         final MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-256");
         } catch (final NoSuchAlgorithmException noSuchAlgorithmException) {
-            throw new IOException("SHA-256 is unsupported by your Java implementation", noSuchAlgorithmException);
+            throw new IllegalStateException("SHA-256 is unsupported by your Java implementation", noSuchAlgorithmException);
         }
         final byte[] extra = new byte[8];
         for (long j = 0; j < (1L << numCyclesPower); j++) {
@@ -216,18 +204,18 @@ class AES256SHA256Decoder extends CoderBase {
     @Override
     byte[] getOptionsAsProperties(Object options) throws IOException {
         AES256Options opts = (AES256Options) options;
-        byte[] props = new byte[2 + opts.salt.length + opts.iv.length];
+        byte[] props = new byte[2 + opts.getSalt().length + opts.getIv().length];
 
         // First byte : control (numCyclesPower + flags of salt or iv presence)
-        props[0] = (byte) (opts.numCyclesPower | (opts.salt.length == 0 ? 0 : (1 << 7)) | (opts.iv.length == 0 ? 0 : (1 << 6)));
+        props[0] = (byte) (opts.getNumCyclesPower() | (opts.getSalt().length == 0 ? 0 : (1 << 7)) | (opts.getIv().length == 0 ? 0 : (1 << 6)));
 
-        if (opts.salt.length != 0 || opts.iv.length != 0) {
+        if (opts.getSalt().length != 0 || opts.getIv().length != 0) {
             // second byte : size of salt/iv data
-            props[1] = (byte) (((opts.salt.length == 0 ? 0 : opts.salt.length - 1) << 4) | (opts.iv.length == 0 ? 0 : opts.iv.length - 1));
+            props[1] = (byte) (((opts.getSalt().length == 0 ? 0 : opts.getSalt().length - 1) << 4) | (opts.getIv().length == 0 ? 0 : opts.getIv().length - 1));
 
             // remain bytes : salt/iv data
-            System.arraycopy(opts.salt, 0, props, 2, opts.salt.length);
-            System.arraycopy(opts.iv, 0, props, 2 + opts.salt.length, opts.iv.length);
+            System.arraycopy(opts.getSalt(), 0, props, 2, opts.getSalt().length);
+            System.arraycopy(opts.getIv(), 0, props, 2 + opts.getSalt().length, opts.getIv().length);
         }
 
         return props;

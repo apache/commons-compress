@@ -271,6 +271,13 @@ public final class ByteUtils {
         }
     }
 
+    /**
+     * Convenience method that encodes Unicode characters into bytes in UTF-16 (ittle-endian byte order) charset
+
+     * @param chars characters to encode
+     * @return encoded characters
+     * @since 1.23
+     */
     public static byte[] utf16Decode(final char[] chars) {
         if (chars == null) {
             return null;

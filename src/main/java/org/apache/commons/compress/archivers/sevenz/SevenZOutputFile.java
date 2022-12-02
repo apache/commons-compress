@@ -48,7 +48,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Spliterator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -74,13 +73,12 @@ public class SevenZOutputFile implements Closeable {
     private Iterable<? extends SevenZMethodConfiguration> contentMethods =
             Collections.singletonList(new SevenZMethodConfiguration(SevenZMethod.LZMA2));
     private final Map<SevenZArchiveEntry, long[]> additionalSizes = new HashMap<>();
-    private byte[] password;
+    private AES256Options aes256Options;
 
     /**
      * Opens file to write a 7z archive to.
      *
      * @param fileName the file to write to
-     * @param password optional password if the archive have to be encrypted
      * @throws IOException if opening the file fails
      */
     public SevenZOutputFile(final File fileName) throws IOException {
@@ -91,8 +89,9 @@ public class SevenZOutputFile implements Closeable {
      * Opens file to write a 7z archive to.
      *
      * @param fileName the file to write to
-     * @param password optional password if the archive have to be encrypted
+     * @param password optional password if the archive has to be encrypted
      * @throws IOException if opening the file fails
+     * @since 1.23
      */
     public SevenZOutputFile(final File fileName, char[] password) throws IOException {
         this(
@@ -127,15 +126,15 @@ public class SevenZOutputFile implements Closeable {
      * allows you to write to an in-memory archive.</p>
      *
      * @param channel the channel to write to
-     * @param password optional password if the archive have to be encrypted
+     * @param password optional password if the archive has to be encrypted
      * @throws IOException if the channel cannot be positioned properly
-     * @since 1.13
+     * @since 1.23
      */
     public SevenZOutputFile(final SeekableByteChannel channel, char[] password) throws IOException {
         this.channel = channel;
         channel.position(SevenZFile.SIGNATURE_HEADER_SIZE);
         if (password != null) {
-            this.password = utf16Decode(password);
+            this.aes256Options = new AES256Options(utf16Decode(password));
         }
     }
 
@@ -455,12 +454,12 @@ public class SevenZOutputFile implements Closeable {
         final Iterable<? extends SevenZMethodConfiguration> ms = entry.getContentMethods();
         Iterable<? extends SevenZMethodConfiguration> iter = ms == null ? contentMethods : ms;
 
-        if (password != null) {
+        if (aes256Options != null) {
             // prepend encryption 
             iter =
                 Stream
                     .concat(
-                        Stream.of(new SevenZMethodConfiguration(SevenZMethod.AES256SHA256, new AES256Options(this.password))),
+                        Stream.of(new SevenZMethodConfiguration(SevenZMethod.AES256SHA256, aes256Options)),
                         StreamSupport.stream(iter.spliterator(), false)
                     )
                     .collect(Collectors.toList());

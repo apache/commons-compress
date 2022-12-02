@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.sevenz;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -45,7 +46,6 @@ import java.util.Iterator;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.PasswordRequiredException;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.tukaani.xz.LZMA2Options;
 
@@ -493,10 +493,12 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     }
 
     /**
-     * Test password-baed encryption
+     * Test password-based encryption
      * 
+     * <p>
      * As AES/CBC Cipher requires a minimum of 16 bytes file data to be encrypted, some padding logic have been implemented.
      * This test checks different file sizes (1, 16..) to ensure code coverage
+     * </p>
      */
     @Test 
     public void testEncrypt() throws Exception {
@@ -511,10 +513,10 @@ public class SevenZOutputFileTest extends AbstractTestCase {
 
         // Is archive really password-based encrypted ?
         try (SevenZFile archive = new SevenZFile(output)) {
-            verifyFile(archive, 0);
-            fail("A password should be needed");
-        } catch (PasswordRequiredException e) {
-            // nice !
+            assertThrows(
+                "A password should be needed", 
+                PasswordRequiredException.class, 
+                () -> verifyFile(archive, 0));
         } 
 
         try (SevenZFile archive = new SevenZFile(output, "foo".toCharArray())) {
@@ -626,7 +628,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         
         byte[] actual = new byte[size];
         int count = 0;
-        while(count < size) {
+        while (count < size) {
             int read = archive.read(actual, count, actual.length - count);
             assertNotEquals(-1, read, "EOF reached before reading all expected data");
             count += read;
