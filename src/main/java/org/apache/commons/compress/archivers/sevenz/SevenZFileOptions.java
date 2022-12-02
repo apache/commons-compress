@@ -132,11 +132,12 @@ public class SevenZFileOptions {
         /**
          * Sets whether {@link SevenZFile} will try to revover broken archives where the CRC of the file's metadata is
          * 0.
-         *
-         * <p>This special kind of broken archive is encountered when mutli volume archives are closed prematurely. If
+         * <p>
+         * This special kind of broken archive is encountered when mutli volume archives are closed prematurely. If
          * you enable this option SevenZFile will trust data that looks as if it could contain metadata of an archive
          * and allocate big amounts of memory. It is strongly recommended to not enable this option without setting
          * {@link #withMaxMemoryLimitInKb} at the same time.
+         * </p>
          *
          * @param tryToRecoverBrokenArchives if true SevenZFile will try to recover archives that are broken in the
          * specific way
@@ -149,7 +150,7 @@ public class SevenZFileOptions {
         }
 
         /**
-         * Create the {@link SevenZFileOptions}.
+         * Builds the {@link SevenZFileOptions}.
          *
          * @return configured {@link SevenZFileOptions}.
          */
