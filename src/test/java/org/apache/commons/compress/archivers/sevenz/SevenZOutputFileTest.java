@@ -496,7 +496,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
      * Test password-based encryption
      * 
      * <p>
-     * As AES/CBC Cipher requires a minimum of 16 bytes file data to be encrypted, some padding logic have been implemented.
+     * As AES/CBC Cipher requires a minimum of 16 bytes file data to be encrypted, some padding logic has been implemented.
      * This test checks different file sizes (1, 16..) to ensure code coverage
      * </p>
      */
