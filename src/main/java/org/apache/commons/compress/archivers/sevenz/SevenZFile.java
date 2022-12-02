@@ -533,7 +533,7 @@ public class SevenZFile implements Closeable {
         channel.position(SIGNATURE_HEADER_SIZE + startHeader.nextHeaderOffset);
         if (verifyCrc) {
             final long position = channel.position();
-            CheckedInputStream cis = new CheckedInputStream(Channels.newInputStream(channel), new CRC32());
+            final CheckedInputStream cis = new CheckedInputStream(Channels.newInputStream(channel), new CRC32());
             if (cis.skip(nextHeaderSizeInt) != nextHeaderSizeInt) {
                 throw new IOException("Problem computing NextHeader CRC-32");
             }
