@@ -776,7 +776,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
 
-        private void test7zUnarchive(final File f, final SevenZMethod m, final byte[] password) throws Exception {
+    private void test7zUnarchive(final File f, final SevenZMethod m, final byte[] password) throws Exception {
         try (SevenZFile sevenZFile = new SevenZFile(f, password)) {
             test7zUnarchive(sevenZFile, m);
         }
