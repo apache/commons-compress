@@ -17,9 +17,13 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
+import static java.nio.charset.StandardCharsets.UTF_16LE;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -179,6 +183,30 @@ class AES256SHA256Decoder extends CoderBase {
         };
     }
 
+    @Override
+    byte[] getOptionsAsProperties(Object options) throws IOException {
+        final AES256Options opts = (AES256Options) options;
+        final byte[] props = new byte[2 + opts.getSalt().length + opts.getIv().length];
+
+        // First byte : control (numCyclesPower + flags of salt or iv presence)
+        props[0] = (byte) (opts.getNumCyclesPower() | (opts.getSalt().length == 0 ? 0 : (1 << 7)) | (opts.getIv().length == 0 ? 0 : (1 << 6)));
+
+        if (opts.getSalt().length != 0 || opts.getIv().length != 0) {
+            // second byte : size of salt/iv data
+            props[1] = (byte) (((opts.getSalt().length == 0 ? 0 : opts.getSalt().length - 1) << 4) | (opts.getIv().length == 0 ? 0 : opts.getIv().length - 1));
+
+            // remain bytes : salt/iv data
+            System.arraycopy(opts.getSalt(), 0, props, 2, opts.getSalt().length);
+            System.arraycopy(opts.getIv(), 0, props, 2 + opts.getSalt().length, opts.getIv().length);
+        }
+
+        return props;
+    }
+
+    static byte[] sha256Password(final char[] password, final int numCyclesPower, final byte[] salt) {
+        return sha256Password(utf16Decode(password), numCyclesPower, salt);
+    }
+
     static byte[] sha256Password(final byte[] password, final int numCyclesPower, final byte[] salt) {
         final MessageDigest digest;
         try {
@@ -201,23 +229,23 @@ class AES256SHA256Decoder extends CoderBase {
         return digest.digest();
     }
 
-    @Override
-    byte[] getOptionsAsProperties(Object options) throws IOException {
-        AES256Options opts = (AES256Options) options;
-        byte[] props = new byte[2 + opts.getSalt().length + opts.getIv().length];
-
-        // First byte : control (numCyclesPower + flags of salt or iv presence)
-        props[0] = (byte) (opts.getNumCyclesPower() | (opts.getSalt().length == 0 ? 0 : (1 << 7)) | (opts.getIv().length == 0 ? 0 : (1 << 6)));
-
-        if (opts.getSalt().length != 0 || opts.getIv().length != 0) {
-            // second byte : size of salt/iv data
-            props[1] = (byte) (((opts.getSalt().length == 0 ? 0 : opts.getSalt().length - 1) << 4) | (opts.getIv().length == 0 ? 0 : opts.getIv().length - 1));
-
-            // remain bytes : salt/iv data
-            System.arraycopy(opts.getSalt(), 0, props, 2, opts.getSalt().length);
-            System.arraycopy(opts.getIv(), 0, props, 2 + opts.getSalt().length, opts.getIv().length);
+    /**
+     * Convenience method that encodes Unicode characters into bytes in UTF-16 (ittle-endian byte order) charset
+     *
+     * @param chars characters to encode
+     * @return encoded characters
+     * @since 1.23
+     */
+    static byte[] utf16Decode(final char[] chars) {
+        if (chars == null) {
+            return null;
         }
-
-        return props;
+        final ByteBuffer encoded = UTF_16LE.encode(CharBuffer.wrap(chars));
+        if (encoded.hasArray()) {
+            return encoded.array();
+        }
+        final byte[] e = new byte[encoded.remaining()];
+        encoded.get(e);
+        return e;
     }
 }

@@ -18,7 +18,6 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import static java.nio.charset.StandardCharsets.UTF_16LE;
-import static org.apache.commons.compress.utils.ByteUtils.utf16Decode;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -137,7 +136,7 @@ public class SevenZFile implements Closeable {
      */
     public SevenZFile(final File fileName, final char[] password, final SevenZFileOptions options) throws IOException {
         this(Files.newByteChannel(fileName.toPath(), EnumSet.of(StandardOpenOption.READ)), // NOSONAR
-                fileName.getAbsolutePath(), utf16Decode(password), true, options);
+                fileName.getAbsolutePath(), AES256SHA256Decoder.utf16Decode(password), true, options);
     }
 
     /**
@@ -256,7 +255,7 @@ public class SevenZFile implements Closeable {
      */
     public SevenZFile(final SeekableByteChannel channel, final String fileName, final char[] password,
             final SevenZFileOptions options) throws IOException {
-        this(channel, fileName, utf16Decode(password), false, options);
+        this(channel, fileName, AES256SHA256Decoder.utf16Decode(password), false, options);
     }
 
     /**

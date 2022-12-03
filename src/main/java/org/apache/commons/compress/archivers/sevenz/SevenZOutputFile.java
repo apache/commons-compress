@@ -18,7 +18,6 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import static java.nio.charset.StandardCharsets.UTF_16LE;
-import static org.apache.commons.compress.utils.ByteUtils.utf16Decode;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -134,7 +133,7 @@ public class SevenZOutputFile implements Closeable {
         this.channel = channel;
         channel.position(SevenZFile.SIGNATURE_HEADER_SIZE);
         if (password != null) {
-            this.aes256Options = new AES256Options(utf16Decode(password));
+            this.aes256Options = new AES256Options(password);
         }
     }
 

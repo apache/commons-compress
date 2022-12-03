@@ -41,7 +41,7 @@ public class AES256Options {
     /**
      * @param password password used for encryption
      */
-    public AES256Options(byte[] password) {
+    public AES256Options(char[] password) {
         this(password, new byte[0], randomBytes(16), 19);
     }
 
@@ -52,7 +52,7 @@ public class AES256Options {
      * @param numCyclesPower another password security enforcer parameter that controls the cycles of password hashing. More the
      *                       this number is hight, more security you'll have but also high CPU usage
      */
-    public AES256Options(byte[] password, byte[] salt, byte[] iv, int numCyclesPower) {
+    public AES256Options(char[] password, byte[] salt, byte[] iv, int numCyclesPower) {
         this.salt = salt;
         this.iv = iv;
         this.numCyclesPower = numCyclesPower;

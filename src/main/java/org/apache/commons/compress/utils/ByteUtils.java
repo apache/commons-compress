@@ -18,15 +18,11 @@
 
 package org.apache.commons.compress.utils;
 
-import static java.nio.charset.StandardCharsets.UTF_16LE;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 
 /**
  * Utility methods for reading and writing bytes.
@@ -269,25 +265,5 @@ public final class ByteUtils {
         if (length > 8) {
             throw new IllegalArgumentException("Can't read more than eight bytes into a long value");
         }
-    }
-
-    /**
-     * Convenience method that encodes Unicode characters into bytes in UTF-16 (ittle-endian byte order) charset
-
-     * @param chars characters to encode
-     * @return encoded characters
-     * @since 1.23
-     */
-    public static byte[] utf16Decode(final char[] chars) {
-        if (chars == null) {
-            return null;
-        }
-        final ByteBuffer encoded = UTF_16LE.encode(CharBuffer.wrap(chars));
-        if (encoded.hasArray()) {
-            return encoded.array();
-        }
-        final byte[] e = new byte[encoded.remaining()];
-        encoded.get(e);
-        return e;
     }
 }
