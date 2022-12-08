@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class IcTuple {
 
-    private static final String[] EMPTY_STRING_ARRAY = new String[] {};
+    private static final String[] EMPTY_STRING_ARRAY = {};
     private final int cIndex;
     private final int c2Index;
     private final int nIndex;
