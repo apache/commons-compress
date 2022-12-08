@@ -208,7 +208,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     private static Iterable<ArchiveStreamProvider> archiveStreamProviderIterable() {
         return ServiceLoader.load(ArchiveStreamProvider.class, ClassLoader.getSystemClassLoader());
     }
-    
+
     private static String toKey(final String name) {
         return name.toUpperCase(Locale.ROOT);
     }
