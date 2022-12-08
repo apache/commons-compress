@@ -35,6 +35,30 @@ import org.apache.commons.compress.utils.TimeUtils;
  * @since 1.6
  */
 public class SevenZArchiveEntry implements ArchiveEntry {
+    static final SevenZArchiveEntry[] EMPTY_SEVEN_Z_ARCHIVE_ENTRY_ARRAY = new SevenZArchiveEntry[0];
+    /**
+     * Converts Java time to NTFS time.
+     * @param date the Java time
+     * @return the NTFS time
+     * @deprecated Use {@link TimeUtils#toNtfsTime(Date)} instead.
+     * @see TimeUtils#toNtfsTime(Date)
+     */
+    @Deprecated
+    public static long javaTimeToNtfsTime(final Date date) {
+        return TimeUtils.toNtfsTime(date);
+    }
+    /**
+     * Converts NTFS time (100 nanosecond units since 1 January 1601)
+     * to Java time.
+     * @param ntfsTime the NTFS time in 100 nanosecond units
+     * @return the Java time
+     * @deprecated Use {@link TimeUtils#ntfsTimeToDate(long)} instead.
+     * @see TimeUtils#ntfsTimeToDate(long)
+     */
+    @Deprecated
+    public static Date ntfsTimeToJavaTime(final long ntfsTime) {
+        return TimeUtils.ntfsTimeToDate(ntfsTime);
+    }
     private String name;
     private boolean hasStream;
     private boolean isDirectory;
@@ -49,101 +73,154 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     private int windowsAttributes;
     private boolean hasCrc;
     private long crc, compressedCrc;
+
     private long size, compressedSize;
+
     private Iterable<? extends SevenZMethodConfiguration> contentMethods;
-    static final SevenZArchiveEntry[] EMPTY_SEVEN_Z_ARCHIVE_ENTRY_ARRAY = new SevenZArchiveEntry[0];
 
     public SevenZArchiveEntry() {
     }
 
-    /**
-     * Get this entry's name.
-     *
-     * <p>This method returns the raw name as it is stored inside of the archive.</p>
-     *
-     * @return This entry's name.
-     */
     @Override
-    public String getName() {
-        return name;
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final SevenZArchiveEntry other = (SevenZArchiveEntry) obj;
+        return
+            Objects.equals(name, other.name) &&
+            hasStream == other.hasStream &&
+            isDirectory == other.isDirectory &&
+            isAntiItem == other.isAntiItem &&
+            hasCreationDate == other.hasCreationDate &&
+            hasLastModifiedDate == other.hasLastModifiedDate &&
+            hasAccessDate == other.hasAccessDate &&
+            Objects.equals(creationDate, other.creationDate) &&
+            Objects.equals(lastModifiedDate, other.lastModifiedDate) &&
+            Objects.equals(accessDate, other.accessDate) &&
+            hasWindowsAttributes == other.hasWindowsAttributes &&
+            windowsAttributes == other.windowsAttributes &&
+            hasCrc == other.hasCrc &&
+            crc == other.crc &&
+            compressedCrc == other.compressedCrc &&
+            size == other.size &&
+            compressedSize == other.compressedSize &&
+            equalSevenZMethods(contentMethods, other.contentMethods);
+    }
+
+    private boolean equalSevenZMethods(final Iterable<? extends SevenZMethodConfiguration> c1,
+        final Iterable<? extends SevenZMethodConfiguration> c2) {
+        if (c1 == null) {
+            return c2 == null;
+        }
+        if (c2 == null) {
+            return false;
+        }
+        final Iterator<? extends SevenZMethodConfiguration> i2 = c2.iterator();
+        for (SevenZMethodConfiguration element : c1) {
+            if (!i2.hasNext()) {
+                return false;
+            }
+            if (!element.equals(i2.next())) {
+                return false;
+            }
+        }
+        return !i2.hasNext();
     }
 
     /**
-     * Set this entry's name.
+     * Gets the access date.
+     * This is equivalent to {@link SevenZArchiveEntry#getAccessTime()}, but precision is truncated to milliseconds.
      *
-     * @param name This entry's new name.
+     * @throws UnsupportedOperationException if the entry hasn't got an access date.
+     * @return the access date
+     * @see SevenZArchiveEntry#getAccessTime()
      */
-    public void setName(final String name) {
-        this.name = name;
+    public Date getAccessDate() {
+        return TimeUtils.toDate(getAccessTime());
     }
 
     /**
-     * Whether there is any content associated with this entry.
-     * @return whether there is any content associated with this entry.
-     */
-    public boolean hasStream() {
-        return hasStream;
-    }
-
-    /**
-     * Sets whether there is any content associated with this entry.
-     * @param hasStream whether there is any content associated with this entry.
-     */
-    public void setHasStream(final boolean hasStream) {
-        this.hasStream = hasStream;
-    }
-
-    /**
-     * Return whether or not this entry represents a directory.
+     * Gets the access time.
      *
-     * @return True if this entry is a directory.
+     * @throws UnsupportedOperationException if the entry hasn't got an access time.
+     * @return the access time
+     * @since 1.23
      */
-    @Override
-    public boolean isDirectory() {
-        return isDirectory;
+    public FileTime getAccessTime() {
+        if (hasAccessDate) {
+            return accessDate;
+        }
+        throw new UnsupportedOperationException(
+                "The entry doesn't have this timestamp");
     }
 
     /**
-     * Sets whether or not this entry represents a directory.
+     * Gets the compressed CRC.
+     * @deprecated use getCompressedCrcValue instead.
+     * @return the compressed CRC
+     */
+    @Deprecated
+    int getCompressedCrc() {
+        return (int) compressedCrc;
+    }
+
+    /**
+     * Gets the compressed CRC.
+     * @since 1.7
+     * @return the CRC
+     */
+    long getCompressedCrcValue() {
+        return compressedCrc;
+    }
+
+    /**
+     * Get this entry's compressed file size.
      *
-     * @param isDirectory True if this entry is a directory.
+     * @return This entry's compressed file size.
      */
-    public void setDirectory(final boolean isDirectory) {
-        this.isDirectory = isDirectory;
+    long getCompressedSize() {
+        return compressedSize;
     }
 
     /**
-     * Indicates whether this is an "anti-item" used in differential backups,
-     * meaning it should delete the same file from a previous backup.
-     * @return true if it is an anti-item, false otherwise
+     * Gets the (compression) methods to use for entry's content - the
+     * default is LZMA2.
+     *
+     * <p>Currently only {@link SevenZMethod#COPY}, {@link
+     * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
+     * SevenZMethod#DEFLATE} are supported when writing archives.</p>
+     *
+     * <p>The methods will be consulted in iteration order to create
+     * the final output.</p>
+     *
+     * @since 1.8
+     * @return the methods to use for the content
      */
-    public boolean isAntiItem() {
-        return isAntiItem;
+    public Iterable<? extends SevenZMethodConfiguration> getContentMethods() {
+        return contentMethods;
     }
 
     /**
-     * Sets whether this is an "anti-item" used in differential backups,
-     * meaning it should delete the same file from a previous backup.
-     * @param isAntiItem true if it is an anti-item, false otherwise
+     * Gets the CRC.
+     * @deprecated use getCrcValue instead.
+     * @return the CRC
      */
-    public void setAntiItem(final boolean isAntiItem) {
-        this.isAntiItem = isAntiItem;
+    @Deprecated
+    public int getCrc() {
+        return (int) crc;
     }
 
     /**
-     * Returns whether this entry has got a creation date at all.
-     * @return whether the entry has got a creation date
+     * Gets the CRC.
+     * @since 1.7
+     * @return the CRC
      */
-    public boolean getHasCreationDate() {
-        return hasCreationDate;
-    }
-
-    /**
-     * Sets whether this entry has got a creation date at all.
-     * @param hasCreationDate whether the entry has got a creation date
-     */
-    public void setHasCreationDate(final boolean hasCreationDate) {
-        this.hasCreationDate = hasCreationDate;
+    public long getCrcValue() {
+        return crc;
     }
 
     /**
@@ -174,35 +251,29 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Sets the creation date using NTFS time (100 nanosecond units
-     * since 1 January 1601)
-     * @param ntfsCreationDate the creation date
+     * Returns whether this entry has got an access date at all.
+     * @return whether this entry has got an access date at all.
      */
-    public void setCreationDate(final long ntfsCreationDate) {
-        this.creationDate = TimeUtils.ntfsTimeToFileTime(ntfsCreationDate);
+    public boolean getHasAccessDate() {
+        return hasAccessDate;
     }
 
     /**
-     * Sets the creation date.
+     * Returns whether this entry has got a crc.
      *
-     * @param creationDate the new creation date
-     * @see SevenZArchiveEntry#setCreationTime(FileTime)
+     * <p>In general entries without streams don't have a CRC either.</p>
+     * @return whether this entry has got a crc.
      */
-    public void setCreationDate(final Date creationDate) {
-        setCreationTime(TimeUtils.toFileTime(creationDate));
+    public boolean getHasCrc() {
+        return hasCrc;
     }
 
     /**
-     * Sets the creation time.
-     *
-     * @param time the new creation time
-     * @since 1.23
+     * Returns whether this entry has got a creation date at all.
+     * @return whether the entry has got a creation date
      */
-    public void setCreationTime(final FileTime time) {
-        hasCreationDate = time != null;
-        if (hasCreationDate) {
-            this.creationDate = time;
-        }
+    public boolean getHasCreationDate() {
+        return hasCreationDate;
     }
 
     /**
@@ -214,12 +285,11 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Sets whether this entry has got a last modified date at all.
-     * @param hasLastModifiedDate whether this entry has got a last
-     * modified date at all
+     * Returns whether this entry has windows attributes.
+     * @return whether this entry has windows attributes.
      */
-    public void setHasLastModifiedDate(final boolean hasLastModifiedDate) {
-        this.hasLastModifiedDate = hasLastModifiedDate;
+    public boolean getHasWindowsAttributes() {
+        return hasWindowsAttributes;
     }
 
     /**
@@ -251,87 +321,66 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Sets the last modified date using NTFS time (100 nanosecond
-     * units since 1 January 1601)
-     * @param ntfsLastModifiedDate the last modified date
-     */
-    public void setLastModifiedDate(final long ntfsLastModifiedDate) {
-        this.lastModifiedDate = TimeUtils.ntfsTimeToFileTime(ntfsLastModifiedDate);
-    }
-
-    /**
-     * Sets the last modified date.
+     * Get this entry's name.
      *
-     * @param lastModifiedDate the new last modified date
-     * @see SevenZArchiveEntry#setLastModifiedTime(FileTime)
-     */
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        setLastModifiedTime(TimeUtils.toFileTime(lastModifiedDate));
-    }
-
-    /**
-     * Sets the last modified time.
+     * <p>This method returns the raw name as it is stored inside of the archive.</p>
      *
-     * @param time the new last modified time
-     * @since 1.23
+     * @return This entry's name.
      */
-    public void setLastModifiedTime(final FileTime time) {
-        hasLastModifiedDate = time != null;
-        if (hasLastModifiedDate) {
-            this.lastModifiedDate = time;
-        }
+    @Override
+    public String getName() {
+        return name;
     }
 
     /**
-     * Returns whether this entry has got an access date at all.
-     * @return whether this entry has got an access date at all.
-     */
-    public boolean getHasAccessDate() {
-        return hasAccessDate;
-    }
-
-    /**
-     * Sets whether this entry has got an access date at all.
-     * @param hasAcessDate whether this entry has got an access date at all.
-     */
-    public void setHasAccessDate(final boolean hasAcessDate) {
-        this.hasAccessDate = hasAcessDate;
-    }
-
-    /**
-     * Gets the access date.
-     * This is equivalent to {@link SevenZArchiveEntry#getAccessTime()}, but precision is truncated to milliseconds.
+     * Get this entry's file size.
      *
-     * @throws UnsupportedOperationException if the entry hasn't got an access date.
-     * @return the access date
-     * @see SevenZArchiveEntry#getAccessTime()
+     * @return This entry's file size.
      */
-    public Date getAccessDate() {
-        return TimeUtils.toDate(getAccessTime());
+    @Override
+    public long getSize() {
+        return size;
     }
 
     /**
-     * Gets the access time.
+     * Gets the windows attributes.
+     * @return the windows attributes
+     */
+    public int getWindowsAttributes() {
+        return windowsAttributes;
+    }
+
+    @Override
+    public int hashCode() {
+        final String n = getName();
+        return n == null ? 0 : n.hashCode();
+    }
+
+    /**
+     * Whether there is any content associated with this entry.
+     * @return whether there is any content associated with this entry.
+     */
+    public boolean hasStream() {
+        return hasStream;
+    }
+
+    /**
+     * Indicates whether this is an "anti-item" used in differential backups,
+     * meaning it should delete the same file from a previous backup.
+     * @return true if it is an anti-item, false otherwise
+     */
+    public boolean isAntiItem() {
+        return isAntiItem;
+    }
+
+    /**
+     * Return whether or not this entry represents a directory.
      *
-     * @throws UnsupportedOperationException if the entry hasn't got an access time.
-     * @return the access time
-     * @since 1.23
+     * @return True if this entry is a directory.
      */
-    public FileTime getAccessTime() {
-        if (hasAccessDate) {
-            return accessDate;
-        }
-        throw new UnsupportedOperationException(
-                "The entry doesn't have this timestamp");
-    }
-
-    /**
-     * Sets the access date using NTFS time (100 nanosecond units
-     * since 1 January 1601)
-     * @param ntfsAccessDate the access date
-     */
-    public void setAccessDate(final long ntfsAccessDate) {
-        this.accessDate = TimeUtils.ntfsTimeToFileTime(ntfsAccessDate);
+    @Override
+    public boolean isDirectory() {
+        return isDirectory;
     }
 
     /**
@@ -342,6 +391,15 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      */
     public void setAccessDate(final Date accessDate) {
         setAccessTime(TimeUtils.toFileTime(accessDate));
+    }
+
+    /**
+     * Sets the access date using NTFS time (100 nanosecond units
+     * since 1 January 1601)
+     * @param ntfsAccessDate the access date
+     */
+    public void setAccessDate(final long ntfsAccessDate) {
+        this.accessDate = TimeUtils.ntfsTimeToFileTime(ntfsAccessDate);
     }
 
     /**
@@ -358,101 +416,12 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Returns whether this entry has windows attributes.
-     * @return whether this entry has windows attributes.
+     * Sets whether this is an "anti-item" used in differential backups,
+     * meaning it should delete the same file from a previous backup.
+     * @param isAntiItem true if it is an anti-item, false otherwise
      */
-    public boolean getHasWindowsAttributes() {
-        return hasWindowsAttributes;
-    }
-
-    /**
-     * Sets whether this entry has windows attributes.
-     * @param hasWindowsAttributes whether this entry has windows attributes.
-     */
-    public void setHasWindowsAttributes(final boolean hasWindowsAttributes) {
-        this.hasWindowsAttributes = hasWindowsAttributes;
-    }
-
-    /**
-     * Gets the windows attributes.
-     * @return the windows attributes
-     */
-    public int getWindowsAttributes() {
-        return windowsAttributes;
-    }
-
-    /**
-     * Sets the windows attributes.
-     * @param windowsAttributes the windows attributes
-     */
-    public void setWindowsAttributes(final int windowsAttributes) {
-        this.windowsAttributes = windowsAttributes;
-    }
-
-    /**
-     * Returns whether this entry has got a crc.
-     *
-     * <p>In general entries without streams don't have a CRC either.</p>
-     * @return whether this entry has got a crc.
-     */
-    public boolean getHasCrc() {
-        return hasCrc;
-    }
-
-    /**
-     * Sets whether this entry has got a crc.
-     * @param hasCrc whether this entry has got a crc.
-     */
-    public void setHasCrc(final boolean hasCrc) {
-        this.hasCrc = hasCrc;
-    }
-
-    /**
-     * Gets the CRC.
-     * @deprecated use getCrcValue instead.
-     * @return the CRC
-     */
-    @Deprecated
-    public int getCrc() {
-        return (int) crc;
-    }
-
-    /**
-     * Sets the CRC.
-     * @deprecated use setCrcValue instead.
-     * @param crc the CRC
-     */
-    @Deprecated
-    public void setCrc(final int crc) {
-        this.crc = crc;
-    }
-
-    /**
-     * Gets the CRC.
-     * @since 1.7
-     * @return the CRC
-     */
-    public long getCrcValue() {
-        return crc;
-    }
-
-    /**
-     * Sets the CRC.
-     * @since 1.7
-     * @param crc the CRC
-     */
-    public void setCrcValue(final long crc) {
-        this.crc = crc;
-    }
-
-    /**
-     * Gets the compressed CRC.
-     * @deprecated use getCompressedCrcValue instead.
-     * @return the compressed CRC
-     */
-    @Deprecated
-    int getCompressedCrc() {
-        return (int) compressedCrc;
+    public void setAntiItem(final boolean isAntiItem) {
+        this.isAntiItem = isAntiItem;
     }
 
     /**
@@ -466,49 +435,12 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Gets the compressed CRC.
-     * @since 1.7
-     * @return the CRC
-     */
-    long getCompressedCrcValue() {
-        return compressedCrc;
-    }
-
-    /**
      * Sets the compressed CRC.
      * @since 1.7
      * @param crc the CRC
      */
     void setCompressedCrcValue(final long crc) {
         this.compressedCrc = crc;
-    }
-
-    /**
-     * Get this entry's file size.
-     *
-     * @return This entry's file size.
-     */
-    @Override
-    public long getSize() {
-        return size;
-    }
-
-    /**
-     * Set this entry's file size.
-     *
-     * @param size This entry's new file size.
-     */
-    public void setSize(final long size) {
-        this.size = size;
-    }
-
-    /**
-     * Get this entry's compressed file size.
-     *
-     * @return This entry's compressed file size.
-     */
-    long getCompressedSize() {
-        return compressedSize;
     }
 
     /**
@@ -563,101 +495,169 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Gets the (compression) methods to use for entry's content - the
-     * default is LZMA2.
-     *
-     * <p>Currently only {@link SevenZMethod#COPY}, {@link
-     * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
-     * SevenZMethod#DEFLATE} are supported when writing archives.</p>
-     *
-     * <p>The methods will be consulted in iteration order to create
-     * the final output.</p>
-     *
-     * @since 1.8
-     * @return the methods to use for the content
+     * Sets the CRC.
+     * @deprecated use setCrcValue instead.
+     * @param crc the CRC
      */
-    public Iterable<? extends SevenZMethodConfiguration> getContentMethods() {
-        return contentMethods;
-    }
-
-    @Override
-    public int hashCode() {
-        final String n = getName();
-        return n == null ? 0 : n.hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        final SevenZArchiveEntry other = (SevenZArchiveEntry) obj;
-        return
-            Objects.equals(name, other.name) &&
-            hasStream == other.hasStream &&
-            isDirectory == other.isDirectory &&
-            isAntiItem == other.isAntiItem &&
-            hasCreationDate == other.hasCreationDate &&
-            hasLastModifiedDate == other.hasLastModifiedDate &&
-            hasAccessDate == other.hasAccessDate &&
-            Objects.equals(creationDate, other.creationDate) &&
-            Objects.equals(lastModifiedDate, other.lastModifiedDate) &&
-            Objects.equals(accessDate, other.accessDate) &&
-            hasWindowsAttributes == other.hasWindowsAttributes &&
-            windowsAttributes == other.windowsAttributes &&
-            hasCrc == other.hasCrc &&
-            crc == other.crc &&
-            compressedCrc == other.compressedCrc &&
-            size == other.size &&
-            compressedSize == other.compressedSize &&
-            equalSevenZMethods(contentMethods, other.contentMethods);
+    @Deprecated
+    public void setCrc(final int crc) {
+        this.crc = crc;
     }
 
     /**
-     * Converts NTFS time (100 nanosecond units since 1 January 1601)
-     * to Java time.
-     * @param ntfsTime the NTFS time in 100 nanosecond units
-     * @return the Java time
-     * @deprecated Use {@link TimeUtils#ntfsTimeToDate(long)} instead.
-     * @see TimeUtils#ntfsTimeToDate(long)
+     * Sets the CRC.
+     * @since 1.7
+     * @param crc the CRC
      */
-    @Deprecated
-    public static Date ntfsTimeToJavaTime(final long ntfsTime) {
-        return TimeUtils.ntfsTimeToDate(ntfsTime);
+    public void setCrcValue(final long crc) {
+        this.crc = crc;
     }
 
     /**
-     * Converts Java time to NTFS time.
-     * @param date the Java time
-     * @return the NTFS time
-     * @deprecated Use {@link TimeUtils#toNtfsTime(Date)} instead.
-     * @see TimeUtils#toNtfsTime(Date)
+     * Sets the creation date.
+     *
+     * @param creationDate the new creation date
+     * @see SevenZArchiveEntry#setCreationTime(FileTime)
      */
-    @Deprecated
-    public static long javaTimeToNtfsTime(final Date date) {
-        return TimeUtils.toNtfsTime(date);
+    public void setCreationDate(final Date creationDate) {
+        setCreationTime(TimeUtils.toFileTime(creationDate));
     }
 
-    private boolean equalSevenZMethods(final Iterable<? extends SevenZMethodConfiguration> c1,
-        final Iterable<? extends SevenZMethodConfiguration> c2) {
-        if (c1 == null) {
-            return c2 == null;
+    /**
+     * Sets the creation date using NTFS time (100 nanosecond units
+     * since 1 January 1601)
+     * @param ntfsCreationDate the creation date
+     */
+    public void setCreationDate(final long ntfsCreationDate) {
+        this.creationDate = TimeUtils.ntfsTimeToFileTime(ntfsCreationDate);
+    }
+
+    /**
+     * Sets the creation time.
+     *
+     * @param time the new creation time
+     * @since 1.23
+     */
+    public void setCreationTime(final FileTime time) {
+        hasCreationDate = time != null;
+        if (hasCreationDate) {
+            this.creationDate = time;
         }
-        if (c2 == null) {
-            return false;
+    }
+
+    /**
+     * Sets whether or not this entry represents a directory.
+     *
+     * @param isDirectory True if this entry is a directory.
+     */
+    public void setDirectory(final boolean isDirectory) {
+        this.isDirectory = isDirectory;
+    }
+
+    /**
+     * Sets whether this entry has got an access date at all.
+     * @param hasAcessDate whether this entry has got an access date at all.
+     */
+    public void setHasAccessDate(final boolean hasAcessDate) {
+        this.hasAccessDate = hasAcessDate;
+    }
+
+    /**
+     * Sets whether this entry has got a crc.
+     * @param hasCrc whether this entry has got a crc.
+     */
+    public void setHasCrc(final boolean hasCrc) {
+        this.hasCrc = hasCrc;
+    }
+
+    /**
+     * Sets whether this entry has got a creation date at all.
+     * @param hasCreationDate whether the entry has got a creation date
+     */
+    public void setHasCreationDate(final boolean hasCreationDate) {
+        this.hasCreationDate = hasCreationDate;
+    }
+
+    /**
+     * Sets whether this entry has got a last modified date at all.
+     * @param hasLastModifiedDate whether this entry has got a last
+     * modified date at all
+     */
+    public void setHasLastModifiedDate(final boolean hasLastModifiedDate) {
+        this.hasLastModifiedDate = hasLastModifiedDate;
+    }
+
+    /**
+     * Sets whether there is any content associated with this entry.
+     * @param hasStream whether there is any content associated with this entry.
+     */
+    public void setHasStream(final boolean hasStream) {
+        this.hasStream = hasStream;
+    }
+
+    /**
+     * Sets whether this entry has windows attributes.
+     * @param hasWindowsAttributes whether this entry has windows attributes.
+     */
+    public void setHasWindowsAttributes(final boolean hasWindowsAttributes) {
+        this.hasWindowsAttributes = hasWindowsAttributes;
+    }
+
+    /**
+     * Sets the last modified date.
+     *
+     * @param lastModifiedDate the new last modified date
+     * @see SevenZArchiveEntry#setLastModifiedTime(FileTime)
+     */
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        setLastModifiedTime(TimeUtils.toFileTime(lastModifiedDate));
+    }
+
+    /**
+     * Sets the last modified date using NTFS time (100 nanosecond
+     * units since 1 January 1601)
+     * @param ntfsLastModifiedDate the last modified date
+     */
+    public void setLastModifiedDate(final long ntfsLastModifiedDate) {
+        this.lastModifiedDate = TimeUtils.ntfsTimeToFileTime(ntfsLastModifiedDate);
+    }
+
+    /**
+     * Sets the last modified time.
+     *
+     * @param time the new last modified time
+     * @since 1.23
+     */
+    public void setLastModifiedTime(final FileTime time) {
+        hasLastModifiedDate = time != null;
+        if (hasLastModifiedDate) {
+            this.lastModifiedDate = time;
         }
-        final Iterator<? extends SevenZMethodConfiguration> i2 = c2.iterator();
-        for (SevenZMethodConfiguration element : c1) {
-            if (!i2.hasNext()) {
-                return false;
-            }
-            if (!element.equals(i2.next())) {
-                return false;
-            }
-        }
-        return !i2.hasNext();
+    }
+
+    /**
+     * Set this entry's name.
+     *
+     * @param name This entry's new name.
+     */
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    /**
+     * Set this entry's file size.
+     *
+     * @param size This entry's new file size.
+     */
+    public void setSize(final long size) {
+        this.size = size;
+    }
+
+    /**
+     * Sets the windows attributes.
+     * @param windowsAttributes the windows attributes
+     */
+    public void setWindowsAttributes(final int windowsAttributes) {
+        this.windowsAttributes = windowsAttributes;
     }
 }
