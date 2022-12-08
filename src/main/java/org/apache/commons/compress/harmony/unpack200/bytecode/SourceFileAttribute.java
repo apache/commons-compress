@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Source file class file attribute
@@ -49,11 +50,7 @@ public class SourceFileAttribute extends Attribute {
             return false;
         }
         final SourceFileAttribute other = (SourceFileAttribute) obj;
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
+        if (!Objects.equals(name, other.name)) {
             return false;
         }
         return true;
