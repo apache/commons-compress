@@ -35,7 +35,7 @@ import org.apache.commons.compress.utils.TimeUtils;
  * @since 1.6
  */
 public class SevenZArchiveEntry implements ArchiveEntry {
-    static final SevenZArchiveEntry[] EMPTY_SEVEN_Z_ARCHIVE_ENTRY_ARRAY = new SevenZArchiveEntry[0];
+    static final SevenZArchiveEntry[] EMPTY_SEVEN_Z_ARCHIVE_ENTRY_ARRAY = {};
     /**
      * Converts Java time to NTFS time.
      * @param date the Java time
@@ -493,7 +493,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @param methods the methods to use for the content
      * @since 1.22
      */
-    public void setContentMethods(SevenZMethodConfiguration... methods) {
+    public void setContentMethods(final SevenZMethodConfiguration... methods) {
         setContentMethods(Arrays.asList(methods));
     }
 
