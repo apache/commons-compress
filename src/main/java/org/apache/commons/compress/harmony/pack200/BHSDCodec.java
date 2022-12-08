@@ -381,13 +381,17 @@ public final class BHSDCodec extends Codec {
             final BHSDCodec bh0 = new BHSDCodec(b, h);
             return bh0.largest();
         }
-        if (s == 0) {
+        switch (s) {
+        case 0:
             result = cardinality() - 1;
-        } else if (s == 1) {
+            break;
+        case 1:
             result = cardinality() / 2 - 1;
-        } else if (s == 2) {
+            break;
+        case 2:
             result = (3L * cardinality()) / 4 - 1;
-        } else {
+            break;
+        default:
             throw new Error("Unknown s value");
         }
         return Math.min((s == 0 ? ((long) Integer.MAX_VALUE) << 1 : Integer.MAX_VALUE) - 1, result);
