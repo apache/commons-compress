@@ -73,14 +73,21 @@ public class NewAttribute extends BCIRenumberedAttribute {
                 value = ((BCValue) obj).actualValue;
             }
             // Write
-            if (length == 1) {
+            switch (length) {
+            case 1:
                 dos.writeByte((int) value);
-            } else if (length == 2) {
+                break;
+            case 2:
                 dos.writeShort((int) value);
-            } else if (length == 4) {
+                break;
+            case 4:
                 dos.writeInt((int) value);
-            } else if (length == 8) {
+                break;
+            case 8:
                 dos.writeLong(value);
+                break;
+            default:
+                break;
             }
         }
     }
