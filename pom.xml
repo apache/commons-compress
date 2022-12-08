@@ -458,6 +458,13 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
+        <configuration>
+          <minimumTokens>200</minimumTokens>
+          <targetJdk>${maven.compiler.source}</targetJdk>
+          <rulesets>
+            <ruleset>${basedir}/pmd-ruleset.xml</ruleset>
+          </rulesets>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
