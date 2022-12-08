@@ -417,5 +417,5 @@ public class ExtraFieldUtils {
 
     }
 
-    static final ZipExtraField[] EMPTY_ZIP_EXTRA_FIELD_ARRAY = new ZipExtraField[0];
+    static final ZipExtraField[] EMPTY_ZIP_EXTRA_FIELD_ARRAY = {};
 }
