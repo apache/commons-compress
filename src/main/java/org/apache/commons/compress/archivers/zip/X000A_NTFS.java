@@ -444,14 +444,14 @@ public class X000A_NTFS implements ZipExtraField {
         if (d == null) {
             return null;
         }
-        return new ZipEightByteInteger(TimeUtils.dateToNtfsTime(d));
+        return new ZipEightByteInteger(TimeUtils.toNtfsTime(d));
     }
 
     private static ZipEightByteInteger fileTimeToZip(final FileTime time) {
         if (time == null) {
             return null;
         }
-        return new ZipEightByteInteger(TimeUtils.fileTimeToNtfsTime(time));
+        return new ZipEightByteInteger(TimeUtils.toNtfsTime(time));
     }
 
     private static Date zipToDate(final ZipEightByteInteger z) {

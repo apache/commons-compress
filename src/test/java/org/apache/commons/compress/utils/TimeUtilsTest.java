@@ -86,7 +86,7 @@ public class TimeUtilsTest {
     public void shouldConvertDateToNtfsTime(final String instant, final long ntfsTime) {
         final long ntfsMillis = Math.floorDiv(ntfsTime, HUNDRED_NANOS_PER_MILLISECOND) * HUNDRED_NANOS_PER_MILLISECOND;
         final Date parsed = Date.from(Instant.parse(instant));
-        final long converted = dateToNtfsTime(parsed);
+        final long converted = toNtfsTime(parsed);
         assertEquals(ntfsMillis, converted);
         // ensuring the deprecated method still works
         assertEquals(converted, SevenZArchiveEntry.javaTimeToNtfsTime(parsed));
@@ -96,7 +96,7 @@ public class TimeUtilsTest {
     @MethodSource("fileTimeToNtfsProvider")
     public void shouldConvertFileTimeToNtfsTime(final String instant, final long ntfsTime) {
         final FileTime parsed = FileTime.from(Instant.parse(instant));
-        assertEquals(ntfsTime, fileTimeToNtfsTime(parsed));
+        assertEquals(ntfsTime, toNtfsTime(parsed));
     }
 
     @ParameterizedTest
@@ -108,12 +108,12 @@ public class TimeUtilsTest {
 
     @Test
     public void shouldConvertNullDateToNullFileTime() {
-        assertNull(dateToFileTime(null));
+        assertNull(toFileTime(null));
     }
 
     @Test
     public void shouldConvertNullFileTimeToNullDate() {
-        assertNull(fileTimeToDate(null));
+        assertNull(toDate(null));
     }
 
     @ParameterizedTest
@@ -122,7 +122,7 @@ public class TimeUtilsTest {
         final Instant parsedInstant = Instant.parse(instant);
         final FileTime parsedFileTime = FileTime.from(parsedInstant);
         final Date parsedDate = Date.from(parsedInstant);
-        assertEquals(parsedFileTime, dateToFileTime(parsedDate));
+        assertEquals(parsedFileTime, toFileTime(parsedDate));
     }
 
     @ParameterizedTest
@@ -131,7 +131,7 @@ public class TimeUtilsTest {
         final Instant parsedInstant = Instant.parse(instant);
         final FileTime parsedFileTime = FileTime.from(parsedInstant);
         final Date parsedDate = Date.from(parsedInstant);
-        assertEquals(parsedDate, fileTimeToDate(parsedFileTime));
+        assertEquals(parsedDate, toDate(parsedFileTime));
     }
 
     public static Stream<Arguments> truncateFileTimeProvider() {

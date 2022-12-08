@@ -997,7 +997,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @see TarArchiveEntry#getLastModifiedTime()
      */
     public Date getModTime() {
-        return TimeUtils.fileTimeToDate(mTime);
+        return TimeUtils.toDate(mTime);
     }
 
     /**
@@ -1911,7 +1911,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @see TarArchiveEntry#setLastModifiedTime(FileTime)
      */
     public void setModTime(final Date time) {
-        setLastModifiedTime(TimeUtils.dateToFileTime(time));
+        setLastModifiedTime(TimeUtils.toFileTime(time));
     }
 
     /**

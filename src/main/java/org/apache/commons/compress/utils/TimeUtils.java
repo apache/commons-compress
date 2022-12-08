@@ -29,9 +29,11 @@ import java.util.concurrent.TimeUnit;
  */
 public final class TimeUtils {
 
-    /** Private constructor to prevent instantiation of this utility class. */
-    private TimeUtils(){
-    }
+    /** The amount of 100-nanosecond intervals in one millisecond. */
+    static final long HUNDRED_NANOS_PER_MILLISECOND = TimeUnit.MILLISECONDS.toNanos(1) / 100;
+
+    /** The amount of 100-nanosecond intervals in one second. */
+    static final long HUNDRED_NANOS_PER_SECOND = TimeUnit.SECONDS.toNanos(1) / 100;
 
     /**
      * <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms724290%28v=vs.85%29.aspx">Windows File Times</a>
@@ -42,13 +44,7 @@ public final class TimeUtils {
      * This is the offset of Windows time 0 to Unix epoch in 100-nanosecond intervals.
      * </p>
      */
-    private static final long WINDOWS_EPOCH_OFFSET = -116444736000000000L;
-
-    /** The amount of 100-nanosecond intervals in one second. */
-    private static final long HUNDRED_NANOS_PER_SECOND = TimeUnit.SECONDS.toNanos(1) / 100;
-
-    /** The amount of 100-nanosecond intervals in one millisecond. */
-    private static final long HUNDRED_NANOS_PER_MILLISECOND = TimeUnit.MILLISECONDS.toNanos(1) / 100;
+    static final long WINDOWS_EPOCH_OFFSET = -116444736000000000L;
 
     /**
      * Converts NTFS time (100 nanosecond units since 1 January 1601) to Java time.
@@ -63,12 +59,52 @@ public final class TimeUtils {
     }
 
     /**
+     * Converts NTFS time (100-nanosecond units since 1 January 1601) to a FileTime.
+     *
+     * @param ntfsTime the NTFS time in 100-nanosecond units
+     * @return the FileTime
+     *
+     * @see TimeUtils#WINDOWS_EPOCH_OFFSET
+     * @see TimeUtils#toNtfsTime(FileTime)
+     */
+    public static FileTime ntfsTimeToFileTime(final long ntfsTime) {
+        final long javaHundredsNanos = Math.addExact(ntfsTime, WINDOWS_EPOCH_OFFSET);
+        final long javaSeconds = Math.floorDiv(javaHundredsNanos, HUNDRED_NANOS_PER_SECOND);
+        final long javaNanos = Math.floorMod(javaHundredsNanos, HUNDRED_NANOS_PER_SECOND) * 100;
+        return FileTime.from(Instant.ofEpochSecond(javaSeconds, javaNanos));
+    }
+
+    /**
+     * Converts {@link FileTime} to a {@link Date}.
+     * If the provided FileTime is {@code null}, the returned Date is also {@code null}.
+     *
+     * @param time the file time to be converted.
+     * @return a {@link Date} which corresponds to the supplied time, or {@code null} if the time is {@code null}.
+     * @see TimeUtils#toFileTime(Date)
+     */
+    public static Date toDate(final FileTime time) {
+        return time != null ? new Date(time.toMillis()) : null;
+    }
+
+    /**
+     * Converts {@link Date} to a {@link FileTime}.
+     * If the provided Date is {@code null}, the returned FileTime is also {@code null}.
+     *
+     * @param date the date to be converted.
+     * @return a {@link FileTime} which corresponds to the supplied date, or {@code null} if the date is {@code null}.
+     * @see TimeUtils#toDate(FileTime)
+     */
+    public static FileTime toFileTime(final Date date) {
+        return date != null ? FileTime.fromMillis(date.getTime()) : null;
+    }
+
+    /**
      * Converts a {@link Date} to NTFS time.
      *
      * @param date the Date
      * @return the NTFS time
      */
-    public static long dateToNtfsTime(final Date date) {
+    public static long toNtfsTime(final Date date) {
         final long javaHundredNanos = date.getTime() * HUNDRED_NANOS_PER_MILLISECOND;
         return Math.subtractExact(javaHundredNanos, WINDOWS_EPOCH_OFFSET);
     }
@@ -82,26 +118,10 @@ public final class TimeUtils {
      * @see TimeUtils#WINDOWS_EPOCH_OFFSET
      * @see TimeUtils#ntfsTimeToFileTime(long)
      */
-    public static long fileTimeToNtfsTime(final FileTime time) {
+    public static long toNtfsTime(final FileTime time) {
         final Instant instant = time.toInstant();
         final long javaHundredNanos = (instant.getEpochSecond() * HUNDRED_NANOS_PER_SECOND) + (instant.getNano() / 100);
         return Math.subtractExact(javaHundredNanos, WINDOWS_EPOCH_OFFSET);
-    }
-
-    /**
-     * Converts NTFS time (100-nanosecond units since 1 January 1601) to a FileTime.
-     *
-     * @param ntfsTime the NTFS time in 100-nanosecond units
-     * @return the FileTime
-     *
-     * @see TimeUtils#WINDOWS_EPOCH_OFFSET
-     * @see TimeUtils#fileTimeToNtfsTime(FileTime)
-     */
-    public static FileTime ntfsTimeToFileTime(final long ntfsTime) {
-        final long javaHundredsNanos = Math.addExact(ntfsTime, WINDOWS_EPOCH_OFFSET);
-        final long javaSeconds = Math.floorDiv(javaHundredsNanos, HUNDRED_NANOS_PER_SECOND);
-        final long javaNanos = Math.floorMod(javaHundredsNanos, HUNDRED_NANOS_PER_SECOND) * 100;
-        return FileTime.from(Instant.ofEpochSecond(javaSeconds, javaNanos));
     }
 
     /**
@@ -115,27 +135,7 @@ public final class TimeUtils {
         return FileTime.from(Instant.ofEpochSecond(instant.getEpochSecond(), (instant.getNano() / 100) * 100));
     }
 
-    /**
-     * Converts {@link Date} to a {@link FileTime}.
-     * If the provided Date is {@code null}, the returned FileTime is also {@code null}.
-     *
-     * @param date the date to be converted.
-     * @return a {@link FileTime} which corresponds to the supplied date, or {@code null} if the date is {@code null}.
-     * @see TimeUtils#fileTimeToDate(FileTime)
-     */
-    public static FileTime dateToFileTime(final Date date) {
-        return date != null ? FileTime.fromMillis(date.getTime()) : null;
-    }
-
-    /**
-     * Converts {@link FileTime} to a {@link Date}.
-     * If the provided FileTime is {@code null}, the returned Date is also {@code null}.
-     *
-     * @param time the file time to be converted.
-     * @return a {@link Date} which corresponds to the supplied time, or {@code null} if the time is {@code null}.
-     * @see TimeUtils#dateToFileTime(Date)
-     */
-    public static Date fileTimeToDate(final FileTime time) {
-        return time != null ? new Date(time.toMillis()) : null;
+    /** Private constructor to prevent instantiation of this utility class. */
+    private TimeUtils(){
     }
 }

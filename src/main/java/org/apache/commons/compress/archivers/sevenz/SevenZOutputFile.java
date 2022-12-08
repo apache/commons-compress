@@ -665,7 +665,7 @@ public class SevenZOutputFile implements Closeable {
             out.write(0);
             for (final SevenZArchiveEntry entry : files) {
                 if (entry.getHasCreationDate()) {
-                    final long ntfsTime = TimeUtils.fileTimeToNtfsTime(entry.getCreationTime());
+                    final long ntfsTime = TimeUtils.toNtfsTime(entry.getCreationTime());
                     out.writeLong(Long.reverseBytes(ntfsTime));
                 }
             }
@@ -701,7 +701,7 @@ public class SevenZOutputFile implements Closeable {
             out.write(0);
             for (final SevenZArchiveEntry entry : files) {
                 if (entry.getHasAccessDate()) {
-                    final long ntfsTime = TimeUtils.fileTimeToNtfsTime(entry.getAccessTime());
+                    final long ntfsTime = TimeUtils.toNtfsTime(entry.getAccessTime());
                     out.writeLong(Long.reverseBytes(ntfsTime));
                 }
             }
@@ -737,7 +737,7 @@ public class SevenZOutputFile implements Closeable {
             out.write(0);
             for (final SevenZArchiveEntry entry : files) {
                 if (entry.getHasLastModifiedDate()) {
-                    final long ntfsTime = TimeUtils.fileTimeToNtfsTime(entry.getLastModifiedTime());
+                    final long ntfsTime = TimeUtils.toNtfsTime(entry.getLastModifiedTime());
                     out.writeLong(Long.reverseBytes(ntfsTime));
                 }
             }

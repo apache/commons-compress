@@ -155,7 +155,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @see SevenZArchiveEntry#getCreationTime()
      */
     public Date getCreationDate() {
-        return TimeUtils.fileTimeToDate(getCreationTime());
+        return TimeUtils.toDate(getCreationTime());
     }
 
     /**
@@ -189,7 +189,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @see SevenZArchiveEntry#setCreationTime(FileTime)
      */
     public void setCreationDate(final Date creationDate) {
-        setCreationTime(TimeUtils.dateToFileTime(creationDate));
+        setCreationTime(TimeUtils.toFileTime(creationDate));
     }
 
     /**
@@ -232,7 +232,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      */
     @Override
     public Date getLastModifiedDate() {
-        return TimeUtils.fileTimeToDate(getLastModifiedTime());
+        return TimeUtils.toDate(getLastModifiedTime());
     }
 
     /**
@@ -266,7 +266,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @see SevenZArchiveEntry#setLastModifiedTime(FileTime)
      */
     public void setLastModifiedDate(final Date lastModifiedDate) {
-        setLastModifiedTime(TimeUtils.dateToFileTime(lastModifiedDate));
+        setLastModifiedTime(TimeUtils.toFileTime(lastModifiedDate));
     }
 
     /**
@@ -307,7 +307,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @see SevenZArchiveEntry#getAccessTime()
      */
     public Date getAccessDate() {
-        return TimeUtils.fileTimeToDate(getAccessTime());
+        return TimeUtils.toDate(getAccessTime());
     }
 
     /**
@@ -341,7 +341,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * @see SevenZArchiveEntry#setAccessTime(FileTime)
      */
     public void setAccessDate(final Date accessDate) {
-        setAccessTime(TimeUtils.dateToFileTime(accessDate));
+        setAccessTime(TimeUtils.toFileTime(accessDate));
     }
 
     /**
@@ -633,12 +633,12 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * Converts Java time to NTFS time.
      * @param date the Java time
      * @return the NTFS time
-     * @deprecated Use {@link TimeUtils#dateToNtfsTime(Date)} instead.
-     * @see TimeUtils#dateToNtfsTime(Date)
+     * @deprecated Use {@link TimeUtils#toNtfsTime(Date)} instead.
+     * @see TimeUtils#toNtfsTime(Date)
      */
     @Deprecated
     public static long javaTimeToNtfsTime(final Date date) {
-        return TimeUtils.dateToNtfsTime(date);
+        return TimeUtils.toNtfsTime(date);
     }
 
     private boolean equalSevenZMethods(final Iterable<? extends SevenZMethodConfiguration> c1,
