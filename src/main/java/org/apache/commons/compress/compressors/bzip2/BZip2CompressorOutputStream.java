@@ -1198,7 +1198,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         for (int i = nInUseShadow; --i >= 0;) {
             yy[i] = (byte) i;
         }
-        
+
         int wr = 0;
         int zPend = 0;
 
