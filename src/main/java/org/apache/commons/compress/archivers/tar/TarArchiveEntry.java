@@ -130,7 +130,7 @@ import org.apache.commons.compress.utils.TimeUtils;
  *   char unused_pad[17];   // TarConstants.PAD3LEN_GNU       - offset 495
  * };
  * </pre>
- * <p> 
+ * <p>
  * Whereas, "struct sparse" is:
  * </p>
  * <pre>
@@ -193,7 +193,7 @@ import org.apache.commons.compress.utils.TimeUtils;
  */
 public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamOffsets {
 
-    private static final TarArchiveEntry[] EMPTY_TAR_ARCHIVE_ENTRY_ARRAY = new TarArchiveEntry[0];
+    private static final TarArchiveEntry[] EMPTY_TAR_ARCHIVE_ENTRY_ARRAY = {};
 
     /**
      * Value used to indicate unknown mode, user/groupids, device numbers and modTime when parsing a file in lenient
@@ -218,7 +218,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     @Deprecated
     public static final int MILLIS_PER_SECOND = 1000;
 
-    private static FileTime fileTimeFromOptionalSeconds(long seconds) {
+    private static FileTime fileTimeFromOptionalSeconds(final long seconds) {
         if (seconds <= 0) {
             return null;
         }
@@ -2123,7 +2123,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                                                      length);
     }
 
-    private int writeEntryHeaderOptionalTimeField(FileTime time, int offset, byte[] outbuf, int fieldLength) {
+    private int writeEntryHeaderOptionalTimeField(final FileTime time, int offset, final byte[] outbuf, final int fieldLength) {
         if (time != null) {
             offset = writeEntryHeaderField(time.to(TimeUnit.SECONDS), outbuf, offset, fieldLength, true);
         } else {
