@@ -22,7 +22,7 @@ package org.apache.commons.compress.archivers.cpio;
  * All constants needed by CPIO.
  *
  * based on code from the jRPM project (jrpm.sourceforge.net)
- * 
+ *
  * http://www.opengroup.org/onlinepubs/9699919799/basedefs/cpio.h.html has a list of the C_xxx constants.
  *
  */
