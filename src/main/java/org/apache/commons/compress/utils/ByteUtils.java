@@ -35,7 +35,7 @@ public final class ByteUtils {
      *
      * @since 1.21
      */
-    public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+    public static final byte[] EMPTY_BYTE_ARRAY = {};
 
     private ByteUtils() { /* no instances */ }
 
