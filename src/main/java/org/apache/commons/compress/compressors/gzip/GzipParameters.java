@@ -138,7 +138,7 @@ public class GzipParameters {
      * @param bufferSize the bufferSize to set. Must be a positive value.
      * @since 1.21
      */
-    public void setBufferSize(int bufferSize) {
+    public void setBufferSize(final int bufferSize) {
         if (bufferSize <= 0) {
             throw new IllegalArgumentException("invalid buffer size: " + bufferSize);
         }
