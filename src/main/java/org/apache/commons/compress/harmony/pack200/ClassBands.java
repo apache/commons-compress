@@ -294,22 +294,31 @@ public class ClassBands extends BandSet {
 			final int numHandlers = codeHandlerCount.get(i - removed);
 			final int maxLocals = codeMaxLocals.get(i - removed);
 			final int maxStack = codeMaxStack.get(i - removed);
-			if (numHandlers == 0) {
-				final int header = maxLocals * 12 + maxStack + 1;
-				if (header < 145 && maxStack < 12) {
+			switch (numHandlers) {
+            case 0: {
+                final int header = maxLocals * 12 + maxStack + 1;
+                if (header < 145 && maxStack < 12) {
 					codeHeaders[i] = header;
 				}
-			} else if (numHandlers == 1) {
-				final int header = maxLocals * 8 + maxStack + 145;
-				if (header < 209 && maxStack < 8) {
+                break;
+            }
+            case 1: {
+                final int header = maxLocals * 8 + maxStack + 145;
+                if (header < 209 && maxStack < 8) {
 					codeHeaders[i] = header;
 				}
-			} else if (numHandlers == 2) {
-				final int header = maxLocals * 7 + maxStack + 209;
-				if (header < 256 && maxStack < 7) {
+                break;
+            }
+            case 2: {
+                final int header = maxLocals * 7 + maxStack + 209;
+                if (header < 256 && maxStack < 7) {
 					codeHeaders[i] = header;
 				}
-			}
+                break;
+            }
+            default:
+                break;
+            }
 			if (codeHeaders[i] != 0) { // Remove the redundant values from
 										// codeHandlerCount, codeMaxLocals and
 										// codeMaxStack
