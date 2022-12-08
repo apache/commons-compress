@@ -55,7 +55,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
     private static final int MAX_SKIPPABLE_TYPE = 0xfd;
 
     // used by FramedSnappyCompressorOutputStream as well
-    static final byte[] SZ_SIGNATURE = new byte[] { //NOSONAR
+    static final byte[] SZ_SIGNATURE = { //NOSONAR
         (byte) STREAM_IDENTIFIER_TYPE, // tag
         6, 0, 0, // length
         's', 'N', 'a', 'P', 'p', 'Y'
