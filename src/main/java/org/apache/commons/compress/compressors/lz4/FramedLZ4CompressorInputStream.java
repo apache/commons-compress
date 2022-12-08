@@ -43,10 +43,10 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
     implements InputStreamStatistics {
 
     // used by FramedLZ4CompressorOutputStream as well
-    static final byte[] LZ4_SIGNATURE = new byte[] { //NOSONAR
+    static final byte[] LZ4_SIGNATURE = { //NOSONAR
         4, 0x22, 0x4d, 0x18
     };
-    private static final byte[] SKIPPABLE_FRAME_TRAILER = new byte[] {
+    private static final byte[] SKIPPABLE_FRAME_TRAILER = {
         0x2a, 0x4d, 0x18
     };
     private static final byte SKIPPABLE_FRAME_PREFIX_BYTE_MASK = 0x50;
