@@ -341,7 +341,7 @@ public class NewAttributeBands extends BandSet {
 
     }
 
-    private abstract class LayoutElement implements AttributeLayoutElement {
+    private abstract static class LayoutElement implements AttributeLayoutElement {
 
         protected int getLength(final char uint_type) {
             int length = 0;
@@ -407,12 +407,18 @@ public class NewAttributeBands extends BandSet {
             } else if (tag.startsWith("OS")) {
                 final char uint_type = tag.substring(2).toCharArray()[0];
                 final int length = getLength(uint_type);
-                if (length == 1) {
+                switch (length) {
+                case 1:
                     value = (byte) value;
-                } else if (length == 2) {
+                    break;
+                case 2:
                     value = (short) value;
-                } else if (length == 4) {
+                    break;
+                case 4:
                     value = value;
+                    break;
+                default:
+                    break;
                 }
                 attribute.addBCLength(length, value);
             } else if (tag.startsWith("O")) {
