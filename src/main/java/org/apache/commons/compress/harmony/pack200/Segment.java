@@ -40,7 +40,8 @@ import org.objectweb.asm.Type;
  */
 public class Segment extends ClassVisitor {
 
-    public static int ASM_API = Opcodes.ASM4; /* see https://asm.ow2.io/javadoc/org/objectweb/asm/Opcodes.html#ASM4 */
+    /** See https://asm.ow2.io/javadoc/org/objectweb/asm/Opcodes.html#ASM4 */
+    public static int ASM_API = Opcodes.ASM4;
 
     public Segment() {
         super(ASM_API);
