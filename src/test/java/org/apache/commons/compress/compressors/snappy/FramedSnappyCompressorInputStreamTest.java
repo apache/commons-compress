@@ -130,7 +130,7 @@ public final class FramedSnappyCompressorInputStreamTest
 
     @Test
     public void testUnskippableChunk() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             (byte) 0xff, 6, 0, 0, 's', 'N', 'a', 'P', 'p', 'Y',
             2, 2, 0, 0, 1, 1
         };

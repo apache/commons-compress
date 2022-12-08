@@ -61,7 +61,7 @@ public class SevenZNativeHeapTest extends AbstractTestCase {
         assertTrue(delegatingInflater.isEnded.get());
     }
 
-    private class DelegatingInflater extends Inflater {
+    private static class DelegatingInflater extends Inflater {
 
         private final Inflater inflater;
 
@@ -158,7 +158,7 @@ public class SevenZNativeHeapTest extends AbstractTestCase {
 
     }
 
-    private class DelegatingDeflater extends Deflater {
+    private static class DelegatingDeflater extends Deflater {
 
         private final Deflater deflater;
 

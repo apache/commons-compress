@@ -32,12 +32,12 @@ import org.junit.jupiter.api.Test;
 public class AbstractLZ77CompressorInputStreamTest {
 
     private static class TestStream extends AbstractLZ77CompressorInputStream {
-        
+
         private boolean literal;
         TestStream(final InputStream in) throws IOException {
             super(in, 1024);
         }
-        
+
         @Override
         public int read(final byte[] b, final int off, final int len) throws IOException {
             if (literal) {
@@ -45,7 +45,7 @@ public class AbstractLZ77CompressorInputStreamTest {
             }
             return readBackReference(b, off, len);
         }
-        
+
         void literal(final int len) {
             startLiteral(len);
             literal = true;
@@ -54,7 +54,7 @@ public class AbstractLZ77CompressorInputStreamTest {
 
     @Test
     public void cantPrefillAfterDataHasBeenRead() throws IOException {
-        final byte[] data = new byte[] {1, 2, 3, 4};
+        final byte[] data = {1, 2, 3, 4};
         try (TestStream s = new TestStream(new ByteArrayInputStream(data))) {
             s.literal(3);
             assertEquals(1, s.read());
@@ -64,7 +64,7 @@ public class AbstractLZ77CompressorInputStreamTest {
 
     @Test
     public void prefillCanBeUsedForBackReferences() throws IOException {
-        final byte[] data = new byte[] { 1, 2, 3, 4 };
+        final byte[] data = { 1, 2, 3, 4 };
         try (TestStream s = new TestStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
             s.prefill(data);
             s.startBackReference(2, 4);

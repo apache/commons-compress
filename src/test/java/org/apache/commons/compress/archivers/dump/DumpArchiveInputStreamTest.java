@@ -64,7 +64,7 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
         while (dump.getNextDumpEntry() != null) {
             // just consume the archive
         }
-        final byte[] expected = new byte[] {
+        final byte[] expected = {
             'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n'
         };
         final byte[] actual = new byte[expected.length];

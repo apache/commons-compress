@@ -296,7 +296,7 @@ public class ArchiveTest extends TestCase {
 		}
     }
 
-    private void compareJarEntries(JarFile jarFile, JarFile jarFile2) {
+    private void compareJarEntries(final JarFile jarFile, final JarFile jarFile2) {
         Enumeration<JarEntry> entries = jarFile.entries();
         while (entries.hasMoreElements()) {
 
@@ -309,7 +309,7 @@ public class ArchiveTest extends TestCase {
         }
     }
 
-    private void compareFiles(JarFile jarFile, JarFile jarFile2)
+    private void compareFiles(final JarFile jarFile, final JarFile jarFile2)
             throws IOException {
         Enumeration<JarEntry> entries = jarFile.entries();
         while (entries.hasMoreElements()) {

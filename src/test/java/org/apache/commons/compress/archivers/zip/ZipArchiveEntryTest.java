@@ -359,7 +359,7 @@ public class ZipArchiveEntryTest {
         u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
         u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
         final UnparseableExtraFieldData x = new UnparseableExtraFieldData();
-        final byte[] unparseable = new byte[] {
+        final byte[] unparseable = {
             0, 0, (byte) 0xff, (byte) 0xff, 0, 0, 0
         };
         x.parseFromLocalFileData(unparseable, 0, unparseable.length);

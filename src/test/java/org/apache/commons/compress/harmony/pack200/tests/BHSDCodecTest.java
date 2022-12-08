@@ -73,7 +73,7 @@ public class BHSDCodecTest extends TestCase {
 
     public void testDeltaEncodings() throws IOException, Pack200Exception {
         Codec c = Codec.UDELTA5;
-        int[] sequence = new int[] {0, 2, 4, 2, 2, 4};
+        int[] sequence = {0, 2, 4, 2, 2, 4};
         byte[] encoded = c.encode(sequence);
         int[] decoded = c.decodeInts(6, new ByteArrayInputStream(encoded));
         for (int i = 0; i < decoded.length; i++) {

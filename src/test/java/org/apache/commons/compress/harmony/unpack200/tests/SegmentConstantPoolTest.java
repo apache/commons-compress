@@ -34,23 +34,23 @@ public class SegmentConstantPoolTest extends TestCase {
         }
 
         @Override
-        public int matchSpecificPoolEntryIndex(String[] classNameArray,
-                String desiredClassName, int desiredIndex) {
+        public int matchSpecificPoolEntryIndex(final String[] classNameArray,
+                final String desiredClassName, final int desiredIndex) {
             return super.matchSpecificPoolEntryIndex(classNameArray,
                     desiredClassName, desiredIndex);
         }
 
         @Override
-        public int matchSpecificPoolEntryIndex(String[] classNameArray,
-                String[] methodNameArray, String desiredClassName,
-                String desiredMethodRegex, int desiredIndex) {
+        public int matchSpecificPoolEntryIndex(final String[] classNameArray,
+                final String[] methodNameArray, final String desiredClassName,
+                final String desiredMethodRegex, final int desiredIndex) {
             return super.matchSpecificPoolEntryIndex(classNameArray,
                     methodNameArray, desiredClassName, desiredMethodRegex,
                     desiredIndex);
         }
 
-        public boolean regexMatchesVisible(String regexString,
-                String compareString) {
+        public boolean regexMatchesVisible(final String regexString,
+                final String compareString) {
             return SegmentConstantPool.regexMatches(regexString, compareString);
         }
     }

@@ -218,7 +218,7 @@ public class CodecTest extends TestCase {
         checkAscendingCardinalities(CanonicalCodecFamilies.deltaDoubleSignedCodecs1);
     }
 
-    private void checkAscendingCardinalities(BHSDCodec[] family) {
+    private void checkAscendingCardinalities(final BHSDCodec[] family) {
         for (int i = 1; i < family.length; i++) {
             BHSDCodec previous = family[i-1];
             BHSDCodec codec = family[i];

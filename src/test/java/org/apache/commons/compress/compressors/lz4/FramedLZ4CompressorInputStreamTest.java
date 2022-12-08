@@ -158,7 +158,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void rejectsFileWithoutFrameDescriptor() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18 // signature
         };
         try {
@@ -172,7 +172,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void rejectsFileWithoutBlockSizeByte() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
         };
@@ -187,7 +187,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void rejectsFileWithWrongVersion() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x24, // flag - Version 00, block independent, no block checksum, no content size, with content checksum
         };
@@ -202,7 +202,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void rejectsFileWithInsufficientContentSize() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x6C, // flag - Version 01, block independent, no block checksum, with content size, with content checksum
             0x70, // block size 4MB
@@ -218,7 +218,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void rejectsFileWithoutHeaderChecksum() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
             0x70, // block size 4MB
@@ -234,7 +234,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void rejectsFileWithBadHeaderChecksum() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
             0x70, // block size 4MB
@@ -251,7 +251,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void readsUncompressedBlocks() throws IOException {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
             0x70, // block size 4MB
@@ -270,7 +270,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void readsUncompressedBlocksUsingSingleByteRead() throws IOException {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
             0x70, // block size 4MB
@@ -287,7 +287,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void rejectsBlocksWithoutChecksum() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x70, // flag - Version 01, block independent, with block checksum, no content size, no content checksum
             0x70, // block size 4MB
@@ -307,7 +307,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void rejectsStreamsWithoutContentChecksum() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
             0x70, // block size 4MB
@@ -328,7 +328,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void rejectsStreamsWithBadContentChecksum() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
             0x70, // block size 4MB
@@ -350,7 +350,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void skipsOverSkippableFrames() throws IOException {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
             0x70, // block size 4MB
@@ -379,7 +379,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void skipsOverTrailingSkippableFrames() throws IOException {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
             0x70, // block size 4MB
@@ -401,7 +401,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void rejectsSkippableFrameFollowedByJunk() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
             0x70, // block size 4MB
@@ -426,7 +426,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void rejectsSkippableFrameFollowedByTooFewBytes() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
             0x70, // block size 4MB
@@ -451,7 +451,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void rejectsSkippableFrameWithPrematureEnd() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
             0x70, // block size 4MB
@@ -475,7 +475,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void rejectsSkippableFrameWithPrematureEndInLengthBytes() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
             0x70, // block size 4MB
@@ -498,7 +498,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void rejectsSkippableFrameWithBadSignatureTrailer() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
             0x70, // block size 4MB
@@ -520,7 +520,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void rejectsSkippableFrameWithBadSignaturePrefix() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
             0x70, // block size 4MB
@@ -542,7 +542,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     @Test
     public void rejectsTrailingBytesAfterValidFrame() {
-        final byte[] input = new byte[] {
+        final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
             0x70, // block size 4MB

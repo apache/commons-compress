@@ -661,11 +661,11 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         testPadding(-2, fileName, contents);    // don't specify a block size -> use minimum length
 
         // don't specify a block size -> use minimum length
-        assertThrows(IllegalArgumentException.class, () -> testPadding(511, fileName, contents));    
-            
+        assertThrows(IllegalArgumentException.class, () -> testPadding(511, fileName, contents));
+
         // don't specify a block size -> use minimum length
-        assertThrows(IllegalArgumentException.class, () -> testPadding(0, fileName, contents));    
-        
+        assertThrows(IllegalArgumentException.class, () -> testPadding(0, fileName, contents));
+
         // test with "content" that is an exact multiple of record length
         byte[] contents2 = new byte[2048];
         java.util.Arrays.fill(contents2, (byte) 42);

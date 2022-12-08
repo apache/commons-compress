@@ -42,7 +42,7 @@ public class BandSetTest extends TestCase {
     private final BandSet bandSet = new BandSet(new MockSegment()) {
 
         @Override
-        public void read(InputStream inputStream) throws IOException,
+        public void read(final InputStream inputStream) throws IOException,
                 Pack200Exception {
         }
 
@@ -54,7 +54,7 @@ public class BandSetTest extends TestCase {
 
     public void testDecodeBandInt() throws IOException, Pack200Exception {
         BHSDCodec codec = Codec.BYTE1;
-        byte[] bytes = new byte[] { (byte) 3, (byte) 56, (byte) 122, (byte) 78 };
+        byte[] bytes = { (byte) 3, (byte) 56, (byte) 122, (byte) 78 };
         InputStream in = new ByteArrayInputStream(bytes);
         int[] ints = bandSet.decodeBandInt("Test Band", in, codec, 4);
         for (int i = 0; i < ints.length; i++) {

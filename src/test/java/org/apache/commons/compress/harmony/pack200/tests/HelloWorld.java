@@ -26,11 +26,11 @@ public class HelloWorld {
     long l = 299792458;
     double d = 4.0d;
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         System.out.println("Hello world");
     }
 
-    public HelloWorld[][] method(int a, int b, int c) {
+    public HelloWorld[][] method(final int a, final int b, final int c) {
         return null;
     }
 }

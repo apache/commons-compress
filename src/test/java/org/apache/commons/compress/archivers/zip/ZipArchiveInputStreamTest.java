@@ -98,7 +98,7 @@ public class ZipArchiveInputStreamTest {
             .getResourceAsStream("/archive_with_trailer.zip");
         final ZipArchiveInputStream zip = new ZipArchiveInputStream(is);
         getAllZipEntries(zip);
-        final byte[] expected = new byte[] {
+        final byte[] expected = {
             'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n'
         };
         final byte[] actual = new byte[expected.length];
@@ -228,7 +228,7 @@ public class ZipArchiveInputStreamTest {
             assertEquals(-1, e.getSize());
             assertEquals(ZipMethod.ENHANCED_DEFLATED.getCode(), e.getMethod());
             final byte[] fromZip = IOUtils.toByteArray(zin);
-            final byte[] expected = new byte[] {
+            final byte[] expected = {
                 'M', 'a', 'n', 'i', 'f', 'e', 's', 't', '-', 'V', 'e', 'r', 's', 'i', 'o', 'n', ':', ' ', '1', '.', '0',
                 '\r', '\n', '\r', '\n'
             };
@@ -657,7 +657,7 @@ public class ZipArchiveInputStreamTest {
      */
     @Test
     public void throwsIfZip64ExtraCouldNotBeUnderstood() {
-        assertThrows(IOException.class, () -> 
+        assertThrows(IOException.class, () ->
         fuzzingTest(new int[] {
             0x50, 0x4b, 0x03, 0x04, 0x2e, 0x00, 0x00, 0x00, 0x0c, 0x00,
             0x84, 0xb6, 0xba, 0x46, 0x72, 0xb6, 0xfe, 0x77, 0x63, 0x00,
@@ -689,7 +689,7 @@ public class ZipArchiveInputStreamTest {
         }
     }
 
-    private void getAllZipEntries(ZipArchiveInputStream zipInputStream) throws IOException {
+    private void getAllZipEntries(final ZipArchiveInputStream zipInputStream) throws IOException {
         while (zipInputStream.getNextZipEntry() != null) {
             // noop
         }

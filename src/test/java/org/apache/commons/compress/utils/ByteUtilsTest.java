@@ -42,13 +42,13 @@ public class ByteUtilsTest {
 
     @Test
     public void fromLittleEndianFromArrayOneArg() {
-        final byte[] b = new byte[] { 2, 3, 4 };
+        final byte[] b = { 2, 3, 4 };
         assertEquals(2 + 3 * 256 + 4 * 256 * 256, fromLittleEndian(b));
     }
 
     @Test
     public void fromLittleEndianFromArrayOneArgUnsignedInt32() {
-        final byte[] b = new byte[] { 2, 3, 4, (byte) 128 };
+        final byte[] b = { 2, 3, 4, (byte) 128 };
         assertEquals(2 + 3 * 256 + 4 * 256 * 256 + 128L * 256 * 256 * 256, fromLittleEndian(b));
     }
 
@@ -59,13 +59,13 @@ public class ByteUtilsTest {
 
     @Test
     public void fromLittleEndianFromArray() {
-        final byte[] b = new byte[] { 1, 2, 3, 4, 5 };
+        final byte[] b = { 1, 2, 3, 4, 5 };
         assertEquals(2 + 3 * 256 + 4 * 256 * 256, fromLittleEndian(b, 1, 3));
     }
 
     @Test
     public void fromLittleEndianFromArrayUnsignedInt32() {
-        final byte[] b = new byte[] { 1, 2, 3, 4, (byte) 128 };
+        final byte[] b = { 1, 2, 3, 4, (byte) 128 };
         assertEquals(2 + 3 * 256 + 4 * 256 * 256 + 128L * 256 * 256 * 256, fromLittleEndian(b, 1, 4));
     }
 

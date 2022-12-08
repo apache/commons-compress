@@ -40,8 +40,8 @@ public class CodeAttributeTest extends TestCase {
 
 	public class MockCodeAttribute extends CodeAttribute {
 
-		public MockCodeAttribute(int maxStack, int maxLocals, byte[] codePacked, Segment segment,
-				OperandManager operandManager, List<ExceptionTableEntry> exceptionTable) {
+		public MockCodeAttribute(final int maxStack, final int maxLocals, final byte[] codePacked, final Segment segment,
+				final OperandManager operandManager, final List<ExceptionTableEntry> exceptionTable) {
 			super(maxStack, maxLocals, codePacked, segment, operandManager, exceptionTable);
 		}
 
@@ -53,22 +53,22 @@ public class CodeAttributeTest extends TestCase {
 
     public class MockCpBands extends CpBands {
 
-        public MockCpBands(Segment segment) {
+        public MockCpBands(final Segment segment) {
             super(segment);
         }
 
         @Override
-        public CPFieldRef cpFieldValue(int index) {
+        public CPFieldRef cpFieldValue(final int index) {
             return null;
         }
 
         @Override
-        public CPString cpStringValue(int index) {
+        public CPString cpStringValue(final int index) {
             return new CPString(new CPUTF8("Hello"), -1);
         }
 
         @Override
-        public CPMethodRef cpMethodValue(int index) {
+        public CPMethodRef cpMethodValue(final int index) {
             return null;
         }
 
@@ -111,13 +111,13 @@ public class CodeAttributeTest extends TestCase {
 
     public class MockSegmentConstantPool extends SegmentConstantPool {
 
-        public MockSegmentConstantPool(CpBands bands) {
+        public MockSegmentConstantPool(final CpBands bands) {
             super(bands);
         }
 
         @Override
-        protected int matchSpecificPoolEntryIndex(String[] nameArray,
-                String compareString, int desiredIndex) {
+        protected int matchSpecificPoolEntryIndex(final String[] nameArray,
+                final String compareString, final int desiredIndex) {
             return 1;
         }
     }
@@ -174,7 +174,7 @@ public class CodeAttributeTest extends TestCase {
         assertEquals("aload_0_putfield_this", attribute.byteCodes
                 .get(4).toString());
 
-        int expectedLabels[] = new int[] { 0, 1, 4, 5, 8, 9, 10, 13, 14 };
+        int expectedLabels[] = { 0, 1, 4, 5, 8, 9, 10, 13, 14 };
         for (int index = 0; index < expectedLabels.length; index++) {
             assertEquals(expectedLabels[index],
                     attribute.byteCodeOffsets.get(index).intValue());
@@ -197,7 +197,7 @@ public class CodeAttributeTest extends TestCase {
         assertEquals("invokespecial_this", attribute.byteCodes
                 .get(3).toString());
 
-        int expectedLabels[] = new int[] { 0, 1, 2, 4 };
+        int expectedLabels[] = { 0, 1, 2, 4 };
         for (int index = 0; index < expectedLabels.length; index++) {
             assertEquals(expectedLabels[index],
                     attribute.byteCodeOffsets.get(index).intValue());

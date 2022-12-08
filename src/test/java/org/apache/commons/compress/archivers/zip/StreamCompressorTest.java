@@ -56,7 +56,7 @@ public class StreamCompressorTest {
         assertEquals(3299542, sc.getCrc32());
 
         final byte[] actuals = baos.toByteArray();
-        final byte[] expected = new byte[]{115,116,4,1,39,48,0,0};
+        final byte[] expected = {115,116,4,1,39,48,0,0};
         // Note that this test really asserts stuff about the java Deflater, which might be a little bit brittle
         assertArrayEquals(expected, actuals);
     }

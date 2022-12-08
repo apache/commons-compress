@@ -81,7 +81,7 @@ public class NewAttributeBandsTest extends TestCase {
         tryIntegral("POI");
     }
 
-    private void tryIntegral(String layoutStr) throws IOException {
+    private void tryIntegral(final String layoutStr) throws IOException {
         CPUTF8 name = new CPUTF8("TestAttribute");
         CPUTF8 layout = new CPUTF8(layoutStr);
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
@@ -139,7 +139,7 @@ public class NewAttributeBandsTest extends TestCase {
         tryReference("RQNI");
     }
 
-    private void tryReference(String layoutStr) throws IOException {
+    private void tryReference(final String layoutStr) throws IOException {
         CPUTF8 name = new CPUTF8("TestAttribute");
         CPUTF8 layout = new CPUTF8(layoutStr);
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
@@ -318,8 +318,8 @@ public class NewAttributeBandsTest extends TestCase {
 
     private class MockNewAttributeBands extends NewAttributeBands {
 
-        public MockNewAttributeBands(int effort, CpBands cpBands,
-                SegmentHeader header, AttributeDefinition def)
+        public MockNewAttributeBands(final int effort, final CpBands cpBands,
+                final SegmentHeader header, final AttributeDefinition def)
                 throws IOException {
             super(effort, cpBands, header, def);
         }

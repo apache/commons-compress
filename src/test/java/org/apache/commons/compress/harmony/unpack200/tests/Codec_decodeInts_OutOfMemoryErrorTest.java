@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests https://issues.apache.org/jira/browse/COMPRESS-599.
- * 
+ *
  * <pre>{@code
  * java.lang.OutOfMemoryError: Java heap space
   at org.apache.commons.compress.harmony.unpack200.CpBands.parseCpUtf8(CpBands.java:365)

@@ -39,7 +39,7 @@ public class ExpandApkTest {
             .forEach(path -> new Expander().expand(ArchiveStreamFactory.APK, println(path), null));
     }
 
-    private <T> T println(T object) {
+    private <T> T println(final T object) {
         // System.out.println(object);
         return object;
     }

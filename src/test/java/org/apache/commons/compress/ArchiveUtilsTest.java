@@ -33,7 +33,7 @@ public class ArchiveUtilsTest extends AbstractTestCase {
 
     private static final int bytesToTest = 50;
     private static final byte[] byteTest = new byte[bytesToTest];
-    
+
     static {
         for (int i = 0; i < byteTest.length;) {
             byteTest[i] = (byte) i;

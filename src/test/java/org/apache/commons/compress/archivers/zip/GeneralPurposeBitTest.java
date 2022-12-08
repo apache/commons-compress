@@ -65,7 +65,7 @@ public class GeneralPurposeBitTest {
 
     @Test
     public void testDataDescriptor() {
-        final byte[] flags = new byte[] {(byte) 8, (byte) 0};
+        final byte[] flags = {(byte) 8, (byte) 0};
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesDataDescriptor());
         final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useDataDescriptor(true);
@@ -74,7 +74,7 @@ public class GeneralPurposeBitTest {
 
     @Test
     public void testLanguageEncodingFlag() {
-        final byte[] flags = new byte[] {(byte) 0, (byte) 8};
+        final byte[] flags = {(byte) 0, (byte) 8};
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesUTF8ForNames());
         final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useUTF8ForNames(true);
@@ -83,7 +83,7 @@ public class GeneralPurposeBitTest {
 
     @Test
     public void testEncryption() {
-        final byte[] flags = new byte[] {(byte) 1, (byte) 0};
+        final byte[] flags = {(byte) 1, (byte) 0};
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesEncryption());
         final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useEncryption(true);
@@ -92,7 +92,7 @@ public class GeneralPurposeBitTest {
 
     @Test
     public void testStrongEncryption() {
-        byte[] flags = new byte[] {(byte) 65, (byte) 0};
+        byte[] flags = {(byte) 65, (byte) 0};
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesStrongEncryption());
         final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useStrongEncryption(true);

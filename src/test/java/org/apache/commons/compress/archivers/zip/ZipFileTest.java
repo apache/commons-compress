@@ -778,7 +778,7 @@ public class ZipFileTest {
         final File extractedFile = new File(testZip.getParentFile(), testEntryName);
         extractedFile.deleteOnExit();
 
-        final byte[] testData = new byte[]{1, 2, 3, 4};
+        final byte[] testData = {1, 2, 3, 4};
         final byte[] buffer = new byte[512];
         int bytesRead;
         try (InputStream unzipsfxInputStream = Files.newInputStream(unzipsfx.toPath())) {

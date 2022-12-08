@@ -243,7 +243,7 @@ public class TarUtilsTest {
 
     @Test
     public void testReadNegativeBinary8Byte() {
-        final byte[] b = new byte[] {
+        final byte[] b = {
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
             (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
         };
@@ -252,7 +252,7 @@ public class TarUtilsTest {
 
     @Test
     public void testReadNegativeBinary12Byte() {
-        final byte[] b = new byte[] {
+        final byte[] b = {
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
             (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
@@ -263,7 +263,7 @@ public class TarUtilsTest {
 
     @Test
     public void testWriteNegativeBinary8Byte() {
-        final byte[] b = new byte[] {
+        final byte[] b = {
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
             (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
         };
@@ -379,7 +379,7 @@ public class TarUtilsTest {
     @Test
     public void testParseOctalCompress330() {
         final long expected = 0100000;
-        final byte [] buffer = new byte[] {
+        final byte [] buffer = {
             32, 32, 32, 32, 32, 49, 48, 48, 48, 48, 48, 32
         };
         assertEquals(expected, TarUtils.parseOctalOrBinary(buffer, 0, buffer.length));
@@ -399,7 +399,7 @@ public class TarUtilsTest {
     public void testParseSparse() {
         final long expectedOffset = 0100000;
         final long expectedNumbytes = 0111000;
-        final byte [] buffer = new byte[] {
+        final byte [] buffer = {
                 ' ', ' ', ' ', ' ', ' ', '0', '1', '0', '0', '0', '0', '0', // sparseOffset
                 ' ', ' ', ' ', ' ', ' ', '0', '1', '1', '1', '0', '0', '0'};
         final TarArchiveStructSparse sparse = TarUtils.parseSparse(buffer, 0);
@@ -454,7 +454,7 @@ public class TarUtilsTest {
 
     @Test
     public void testParseTarWithSpecialPaxHeaders() throws IOException {
-        try (InputStream in = Files.newInputStream(getFile("COMPRESS-530.tar").toPath()); 
+        try (InputStream in = Files.newInputStream(getFile("COMPRESS-530.tar").toPath());
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             assertThrows(IOException.class, () -> archive.getNextEntry());
             // IOUtils.toByteArray(archive);

@@ -32,7 +32,7 @@ public class AttributeLayoutTest extends TestCase {
 
         @Override
         public SegmentConstantPool getConstantPool() {
-            final ClassFileEntry[][] data = new ClassFileEntry[][] {
+            final ClassFileEntry[][] data = {
                     {}, // ALL
                     { entry("Zero"), entry("One"), entry("Two"),
                             entry("Three"), entry("Four"), entry("Five"),
@@ -51,7 +51,7 @@ public class AttributeLayoutTest extends TestCase {
             return new SegmentConstantPool(null) {
 
                 @Override
-                public ClassFileEntry getValue(int cp, long index) {
+                public ClassFileEntry getValue(final int cp, final long index) {
                     if (index == -1) {
                         return null;
                     }
@@ -61,7 +61,7 @@ public class AttributeLayoutTest extends TestCase {
             };
         }
 
-        private ClassFileEntry entry(String string) {
+        private ClassFileEntry entry(final String string) {
             return new CPUTF8(string);
         }
     }
@@ -134,7 +134,7 @@ public class AttributeLayoutTest extends TestCase {
         assertEquals(Codec.BYTE1, layout.getCodec());
     }
 
-    public boolean throwsException(String name, int context, String layout) {
+    public boolean throwsException(final String name, final int context, final String layout) {
         try {
             new AttributeLayout(name, context, layout, -1);
             return false;

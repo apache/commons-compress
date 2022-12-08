@@ -134,7 +134,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         while (tar.getNextTarEntry() != null) {
             // just consume the archive
         }
-        final byte[] expected = new byte[] {
+        final byte[] expected = {
             'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n'
         };
         final byte[] actual = new byte[expected.length];
@@ -165,8 +165,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void shouldThrowAnExceptionOnTruncatedEntries() throws Exception {
         final File dir = mkdir("COMPRESS-279");
-        final TarArchiveInputStream is = getTestStream("/COMPRESS-279.tar");
-        try {
+        try (TarArchiveInputStream is = getTestStream("/COMPRESS-279.tar")) {
             assertThrows(IOException.class, () -> {
                 TarArchiveEntry entry = is.getNextTarEntry();
                 int count = 0;
@@ -179,7 +178,6 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
                 }
             });
         } finally {
-            is.close();
             rmdir(dir);
         }
     }
@@ -375,7 +373,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
-    private void getNextEntryUntilIOException(TarArchiveInputStream archive) {
+    private void getNextEntryUntilIOException(final TarArchiveInputStream archive) {
         assertThrows(IOException.class, () -> {
             while (archive.getNextTarEntry() != null) {
                 // noop

@@ -81,7 +81,7 @@ public class BlockLZ4CompressorOutputStreamTest {
     public void pairAccumulatesLengths() {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
         p.setBackReference(new LZ77Compressor.BackReference(1, 4));
-        final byte[] b = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        final byte[] b = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         p.addLiteral(new LZ77Compressor.LiteralBlock(b, 1, 4));
         p.addLiteral(new LZ77Compressor.LiteralBlock(b, 2, 5));
         Assert.assertEquals(13, p.length());
@@ -126,7 +126,7 @@ public class BlockLZ4CompressorOutputStreamTest {
     @Test
     public void canWritePairWithoutBackReference() throws IOException {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
-        final byte[] b = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        final byte[] b = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         p.addLiteral(new LZ77Compressor.LiteralBlock(b, 1, 4));
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         p.writeTo(bos);
@@ -136,7 +136,7 @@ public class BlockLZ4CompressorOutputStreamTest {
     @Test
     public void writesCorrectSizeFor15ByteLengthLiteral() throws IOException {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
-        final byte[] b = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        final byte[] b = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         p.addLiteral(new LZ77Compressor.LiteralBlock(b, 0, 9));
         p.addLiteral(new LZ77Compressor.LiteralBlock(b, 0, 6));
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -148,7 +148,7 @@ public class BlockLZ4CompressorOutputStreamTest {
     @Test
     public void writesCorrectSizeFor269ByteLengthLiteral() throws IOException {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
-        final byte[] b = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        final byte[] b = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         for (int i = 0; i < 26; i++) {
             p.addLiteral(new LZ77Compressor.LiteralBlock(b, 0, 10));
         }
@@ -162,7 +162,7 @@ public class BlockLZ4CompressorOutputStreamTest {
     @Test
     public void writesCorrectSizeFor270ByteLengthLiteral() throws IOException {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
-        final byte[] b = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        final byte[] b = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         for (int i = 0; i < 27; i++) {
             p.addLiteral(new LZ77Compressor.LiteralBlock(b, 0, 10));
         }
@@ -175,7 +175,7 @@ public class BlockLZ4CompressorOutputStreamTest {
     @Test
     public void writesCompletePair() throws IOException {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
-        final byte[] b = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        final byte[] b = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         p.addLiteral(new LZ77Compressor.LiteralBlock(b, 1, 4));
         b[2] = 19;
         p.setBackReference(new LZ77Compressor.BackReference(1, 5));

@@ -59,11 +59,11 @@ import org.junit.jupiter.api.Test;
 import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
 
 public class ZipMemoryFileSystemTest {
-    
-    static void println(String x) {
+
+    static void println(final String x) {
         // System.out.println(x);
     }
-    
+
     private Path dir;
 
     @BeforeEach

@@ -35,7 +35,7 @@ public abstract class AbstractBandsTestCase extends TestCase {
 
     public class MockSegmentHeader extends SegmentHeader {
 
-        public MockSegmentHeader(Segment segment) {
+        public MockSegmentHeader(final Segment segment) {
             super(segment);
         }
 
@@ -56,7 +56,7 @@ public abstract class AbstractBandsTestCase extends TestCase {
 
     public class MockAttributeDefinitionBands extends AttrDefinitionBands {
 
-        public MockAttributeDefinitionBands(Segment segment) {
+        public MockAttributeDefinitionBands(final Segment segment) {
             super(segment);
         }
 

@@ -75,7 +75,7 @@ public class RunCodecTest extends TestCase {
     }
 
     public void testDecodeInts() throws Exception {
-        int[] band = new int[] { 1, -2, -3, 1000, 55, 5, 10, 20 };
+        int[] band = { 1, -2, -3, 1000, 55, 5, 10, 20 };
         // first 5 of band to be encoded with DELTA5
         byte[] bytes1 = Codec.DELTA5.encode(new int[] { 1, -2, -3, 1000, 55 });
         // rest of band to be encoded with UNSIGNED5
@@ -93,7 +93,7 @@ public class RunCodecTest extends TestCase {
     }
 
     public void testNestedPopulationCodec() throws Exception {
-        int[] band = new int[] { 11, 12, 33, 4000, -555, 5, 10, 20, 10, 3, 20,
+        int[] band = { 11, 12, 33, 4000, -555, 5, 10, 20, 10, 3, 20,
                 20, 20, 10, 10, 999, 20, 789, 10, 10, 355, 12345 };
         // first 5 of band to be encoded with DELTA5
         byte[] bytes1 = Codec.DELTA5
@@ -118,7 +118,7 @@ public class RunCodecTest extends TestCase {
     }
 
     public void testNestedRunCodec() throws Exception {
-        int[] band = new int[] { 1, 2, 3, 10, 20, 30, 100, 200, 300 };
+        int[] band = { 1, 2, 3, 10, 20, 30, 100, 200, 300 };
         // first 3 of band to be encoded with UDELTA5
         byte[] bytes1 = Codec.UDELTA5.encode(new int[] { 1, 2, 3 });
         // rest of band to be encoded with a RunCodec

@@ -461,7 +461,7 @@ public class X5455_ExtendedTimestampTest {
 
     @Test
     public void resetsFlagsWhenLocalFileArrayIsTooShort() throws Exception {
-        final byte[] local = new byte[] {
+        final byte[] local = {
             7
         }; // claims all three time values would be present, but they are not
         xf.parseFromLocalFileData(local, 0, 1);

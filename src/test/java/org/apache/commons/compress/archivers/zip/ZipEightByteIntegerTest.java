@@ -54,7 +54,7 @@ public class ZipEightByteIntegerTest {
      */
     @Test
     public void testLongFromBytes() {
-        final byte[] val = new byte[] {0x78, 0x56, 0x34, 0x12, (byte) 0xAB, 0x00, 0x00, 0x00};
+        final byte[] val = {0x78, 0x56, 0x34, 0x12, (byte) 0xAB, 0x00, 0x00, 0x00};
         final ZipEightByteInteger zl = new ZipEightByteInteger(val);
         assertEquals("longValue from bytes", 0xAB12345678L, zl.getLongValue());
     }
@@ -84,7 +84,7 @@ public class ZipEightByteIntegerTest {
      */
     @Test
     public void testBIFromBytes() {
-        final byte[] val = new byte[] {(byte) 0xFE, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+        final byte[] val = {(byte) 0xFE, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
         final ZipEightByteInteger zl = new ZipEightByteInteger(val);
         assertEquals("value from bytes",
                      BigInteger.valueOf(Long.MAX_VALUE).shiftLeft(1),
@@ -108,7 +108,7 @@ public class ZipEightByteIntegerTest {
         assertEquals("symmetric", zl2, zl);
 
         assertNotEquals("null handling", null, zl);
-        assertNotEquals("non ZipEightByteInteger handling", zl, new Integer(0x1234));
+        assertNotEquals("non ZipEightByteInteger handling", zl, Integer.valueOf(0x1234));
     }
 
     /**

@@ -62,7 +62,7 @@ public class ZipLongTest {
      */
     @Test
     public void testFromBytes() {
-        final byte[] val = new byte[] {0x78, 0x56, 0x34, 0x12};
+        final byte[] val = {0x78, 0x56, 0x34, 0x12};
         final ZipLong zl = new ZipLong(val);
         assertEquals("value from bytes", 0x12345678, zl.getValue());
     }
@@ -84,7 +84,7 @@ public class ZipLongTest {
         assertEquals("symmetric", zl2, zl);
 
         assertNotEquals("null handling", null, zl);
-        assertNotEquals("non ZipLong handling", zl, new Integer(0x1234));
+        assertNotEquals("non ZipLong handling", zl, Integer.valueOf(0x1234));
     }
 
     /**

@@ -27,12 +27,12 @@ public class SegmentUtilsTest extends TestCase {
 
         private final int divisor;
 
-        public MultipleMatches(int divisor) {
+        public MultipleMatches(final int divisor) {
             this.divisor = divisor;
         }
 
         @Override
-        public boolean matches(long value) {
+        public boolean matches(final long value) {
             return value % divisor == 0;
         }
 
@@ -68,7 +68,7 @@ public class SegmentUtilsTest extends TestCase {
     }
 
     public void testMatches() {
-        long[] oneToTen = new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        long[] oneToTen = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         assertEquals(6, SegmentUtils.countMatches(new long[][] { oneToTen,
                 new long[] { 5, 6, 7 } }, even));
         assertEquals(5, SegmentUtils.countMatches(new long[][] { oneToTen },

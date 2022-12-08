@@ -60,7 +60,7 @@ public class ZipShortTest {
      */
     @Test
     public void testFromBytes() {
-        final byte[] val = new byte[] {0x34, 0x12};
+        final byte[] val = {0x34, 0x12};
         final ZipShort zs = new ZipShort(val);
         assertEquals("value from bytes", 0x1234, zs.getValue());
     }
@@ -82,7 +82,7 @@ public class ZipShortTest {
         assertEquals("symmetric", zs2, zs);
 
         assertNotEquals("null handling", null, zs);
-        assertNotEquals("non ZipShort handling", zs, new Integer(0x1234));
+        assertNotEquals("non ZipShort handling", zs, Integer.valueOf(0x1234));
     }
 
     /**

@@ -401,16 +401,15 @@ public class ClassBands extends BandSet {
     private int getCallCount(final int[][] methodAttrIndexes, final long[][] flags, final int context) {
         int callCount = 0;
         for (int[] element : methodAttrIndexes) {
-            for (int j = 0; j < element.length; j++) {
-                final int index = element[j];
+            for (final int index : element) {
                 final AttributeLayout layout = attrMap.getAttributeLayout(index, context);
                 callCount += layout.numBackwardsCallables();
             }
         }
         int layoutsUsed = 0;
         for (long[] flag : flags) {
-            for (int j = 0; j < flag.length; j++) {
-                layoutsUsed |= flag[j];
+            for (long element : flag) {
+                layoutsUsed |= element;
             }
         }
         for (int i = 0; i < 26; i++) {
@@ -470,8 +469,8 @@ public class ClassBands extends BandSet {
             classInnerClassesN);
         int flagsCount = 0;
         for (int[] element : classInnerClassesF) {
-            for (int j = 0; j < element.length; j++) {
-                if (element[j] != 0) {
+            for (int element2 : element) {
+                if (element2 != 0) {
                     flagsCount++;
                 }
             }
@@ -713,8 +712,7 @@ public class ClassBands extends BandSet {
         final int[][] codeAttrIndexes = decodeBandInt("code_attr_indexes", in, Codec.UNSIGNED5, codeAttrCounts);
         int callCount = 0;
         for (int[] element : codeAttrIndexes) {
-            for (int j = 0; j < element.length; j++) {
-                final int index = element[j];
+            for (final int index : element) {
                 final AttributeLayout layout = attrMap.getAttributeLayout(index, AttributeLayout.CONTEXT_CODE);
                 callCount += layout.numBackwardsCallables();
             }
@@ -889,8 +887,8 @@ public class ClassBands extends BandSet {
                     mbg[i].anno_N);
                 mbg[i].pair_N = decodeBandInt(contextName + "_" + rxa + "_pair_N", in, Codec.UNSIGNED5, mbg[i].anno_N);
                 for (int[] element : mbg[i].pair_N) {
-                    for (int k = 0; k < element.length; k++) {
-                        pairCount += element[k];
+                    for (int element2 : element) {
+                        pairCount += element2;
                     }
                 }
 
@@ -1161,9 +1159,7 @@ public class ClassBands extends BandSet {
         final ArrayList<List<Attribute>> orderedAttributeList = new ArrayList<>(codeAttributes.length);
         for (List<Attribute> codeAttribute : codeAttributes) {
             final List<Attribute> currentAttributes = new ArrayList<>(codeAttribute.size());
-            for (int attributeIndex = 0; attributeIndex < codeAttribute.size(); attributeIndex++) {
-                currentAttributes.add(codeAttribute.get(attributeIndex));
-            }
+            currentAttributes.addAll(codeAttribute);
             orderedAttributeList.add(currentAttributes);
         }
         return orderedAttributeList;

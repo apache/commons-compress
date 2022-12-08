@@ -38,7 +38,7 @@ public class ClassBandsTest extends AbstractBandsTestCase {
 
     public class MockCpBands extends CpBands {
 
-        public MockCpBands(Segment segment) {
+        public MockCpBands(final Segment segment) {
             super(segment);
         }
 
@@ -104,7 +104,7 @@ public class ClassBandsTest extends AbstractBandsTestCase {
         byte[] classFieldCount = Codec.DELTA5.encode(0, 0);
         byte[] classMethodCount = Codec.DELTA5.encode(0, 0);
         byte[] classFlags = Codec.UNSIGNED5.encode(0, 0);
-        byte[][] allArrays = new byte[][] { classThis, classSuper,
+        byte[][] allArrays = { classThis, classSuper,
                 classInterfaceCount, classInterfaceRef1, classFieldCount,
                 classMethodCount, classFlags };
         int total = classThis.length + classSuper.length
@@ -144,7 +144,7 @@ public class ClassBandsTest extends AbstractBandsTestCase {
         byte[] methodFlagsLo = encodeBandInt(
                 new int[] { 0, 0, 0 }, Codec.UNSIGNED5);
         byte[] classFlags = Codec.UNSIGNED5.encode(0, 0);
-        byte[][] allArrays = new byte[][] { classThis, classSuper,
+        byte[][] allArrays = { classThis, classSuper,
                 classInterfaceCount, classFieldCount, classMethodCount,
                 methodDescr, methodFlagsLo, classFlags, };
         int total = 0;
@@ -173,7 +173,7 @@ public class ClassBandsTest extends AbstractBandsTestCase {
         cpDescriptor = null;
     }
 
-    public byte[] encodeBandInt(int[] data, BHSDCodec codec)
+    public byte[] encodeBandInt(final int[] data, final BHSDCodec codec)
             throws IOException, Pack200Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (int i = 0; i < data.length; i++) {

@@ -51,7 +51,7 @@ public class PopulationCodecTest extends TestCase {
                 2, 1, 4, 1 }, Codec.BYTE1);
     }
 
-    private void checkDecode(byte[] data, long[] expectedResult, Codec codec)
+    private void checkDecode(final byte[] data, final long[] expectedResult, final Codec codec)
             throws IOException, Pack200Exception {
         InputStream in = new ByteArrayInputStream(data);
 

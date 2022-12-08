@@ -19,8 +19,6 @@ package org.apache.commons.compress.archivers.arj;
 
 import java.io.File;
 import java.util.Date;
-import java.util.regex.Matcher;
-
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipUtil;
 

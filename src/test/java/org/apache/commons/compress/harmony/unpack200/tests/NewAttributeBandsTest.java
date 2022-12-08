@@ -68,7 +68,7 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
         tryIntegral("POI");
     }
 
-    public void tryIntegral(String layout) throws IOException, Pack200Exception {
+    public void tryIntegral(final String layout) throws IOException, Pack200Exception {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
                 new MockSegment(), new AttributeLayout("test",
                         AttributeLayout.CONTEXT_CLASS, layout, 25));
@@ -122,7 +122,7 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
         tryReference("RQNI");
     }
 
-    private void tryReference(String layout) throws IOException,
+    private void tryReference(final String layout) throws IOException,
             Pack200Exception {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
                 new MockSegment(), new AttributeLayout("test",
@@ -244,7 +244,7 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
 
     private class MockNewAttributeBands extends NewAttributeBands {
 
-        public MockNewAttributeBands(Segment segment, AttributeLayout layout)
+        public MockNewAttributeBands(final Segment segment, final AttributeLayout layout)
                 throws IOException {
             super(segment, layout);
         }

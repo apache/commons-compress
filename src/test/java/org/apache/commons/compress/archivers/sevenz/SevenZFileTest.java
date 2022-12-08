@@ -40,8 +40,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Supplier;
-
 import javax.crypto.Cipher;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -174,7 +172,7 @@ public class SevenZFileTest extends AbstractTestCase {
         test7zUnarchive(f, m, false);
     }
 
-    private void test7zUnarchive(final File f, final SevenZMethod m, boolean tryToRecoverBrokenArchives)
+    private void test7zUnarchive(final File f, final SevenZMethod m, final boolean tryToRecoverBrokenArchives)
         throws Exception {
         test7zUnarchive(f, m, (char[]) null, tryToRecoverBrokenArchives);
     }
@@ -862,7 +860,7 @@ public class SevenZFileTest extends AbstractTestCase {
         return Cipher.getMaxAllowedKeyLength("AES/ECB/PKCS5Padding") >= 256;
     }
 
-    private void assertDates(SevenZArchiveEntry entry, String modified, String access, String creation) {
+    private void assertDates(final SevenZArchiveEntry entry, final String modified, final String access, final String creation) {
         assertDate(entry, modified, SevenZArchiveEntry::getHasLastModifiedDate,
             SevenZArchiveEntry::getLastModifiedTime, SevenZArchiveEntry::getLastModifiedDate);
         assertDate(entry, access, SevenZArchiveEntry::getHasAccessDate,
@@ -871,8 +869,8 @@ public class SevenZFileTest extends AbstractTestCase {
             SevenZArchiveEntry::getCreationTime, SevenZArchiveEntry::getCreationDate);
     }
 
-    private void assertDate(SevenZArchiveEntry entry, String value, Function<SevenZArchiveEntry, Boolean> hasValue,
-        Function<SevenZArchiveEntry, FileTime> timeFunction, Function<SevenZArchiveEntry, Date> dateFunction) {
+    private void assertDate(final SevenZArchiveEntry entry, final String value, final Function<SevenZArchiveEntry, Boolean> hasValue,
+        final Function<SevenZArchiveEntry, FileTime> timeFunction, final Function<SevenZArchiveEntry, Date> dateFunction) {
         if (value != null) {
             assertTrue(hasValue.apply(entry));
             final Instant parsedInstant = Instant.parse(value);
