@@ -45,7 +45,7 @@ public class BoundedSeekableByteChannelInputStream extends BoundedArchiveInputSt
     }
 
     @Override
-    protected int read(long pos, ByteBuffer buf) throws IOException {
+    protected int read(final long pos, final ByteBuffer buf) throws IOException {
         int read;
         synchronized (channel) {
             channel.position(pos);
