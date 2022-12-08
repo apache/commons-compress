@@ -106,7 +106,6 @@ public class SegmentConstantPoolArrayCache {
         HashMap<String, List<Integer>> primaryTable;
 
         public CachedArray(final String[] array) {
-            super();
             this.primaryArray = array;
             this.lastKnownSize = array.length;
             this.primaryTable = new HashMap<>(lastKnownSize);
