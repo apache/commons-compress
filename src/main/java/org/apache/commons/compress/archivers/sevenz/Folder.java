@@ -46,7 +46,7 @@ class Folder {
     /// output streams and the number of non-empty files in this
     /// folder.
     int numUnpackSubStreams;
-    static final Folder[] EMPTY_FOLDER_ARRAY = new Folder[0];
+    static final Folder[] EMPTY_FOLDER_ARRAY = {};
 
     /**
      * Sorts Coders using bind pairs.
