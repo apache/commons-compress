@@ -69,7 +69,7 @@ public abstract class ZipEncodingHelper {
      *
      * @param charsetName If the given name is null, then check the platform's default encoding.
      */
-    static boolean isUTF8(String charsetName) {
+    static boolean isUTF8(final String charsetName) {
         final String actual = charsetName != null ? charsetName : Charset.defaultCharset().name();
         if (UTF_8.name().equalsIgnoreCase(actual)) {
             return true;
