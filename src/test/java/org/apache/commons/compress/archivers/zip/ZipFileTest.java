@@ -827,6 +827,30 @@ public class ZipFileTest {
         }
     }
 
+    /**
+     * Test case for
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-621"
+     * >COMPRESS-621</a>.
+     */
+    @Test
+    public void testReadingOfExtraDataBeforeZip() throws IOException {
+        final byte[] fileHeader = "Before Zip file".getBytes(UTF_8);
+        final String entryName = "COMPRESS-621.txt";
+        final byte[] entryContent = "https://issues.apache.org/jira/browse/COMPRESS-621".getBytes(UTF_8);
+        try (ZipFile archive = new ZipFile(getFile("COMPRESS-621.zip"))) {
+            assertEquals(fileHeader.length, archive.getFirstLocalFileHeaderOffset());
+            try (InputStream input = archive.getContentBeforeFirstLocalFileHeader()) {
+                assertArrayEquals(fileHeader, IOUtils.toByteArray(input));
+            }
+
+            ZipArchiveEntry e = archive.getEntry(entryName);
+            assertEquals(entryContent.length, e.getSize());
+            try (InputStream input = archive.getInputStream(e)) {
+                assertArrayEquals(entryContent, IOUtils.toByteArray(input));
+            }
+        }
+    }
+
     private void multiByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
         final byte[] buf = new byte[2];
         try (ZipFile archive = new ZipFile(file)) {
