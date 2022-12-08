@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Field reference constant pool entry.
@@ -90,18 +91,10 @@ public class CPFieldRef extends ConstantPoolEntry {
             return false;
         }
         final CPFieldRef other = (CPFieldRef) obj;
-        if (className == null) {
-            if (other.className != null) {
-                return false;
-            }
-        } else if (!className.equals(other.className)) {
+        if (!Objects.equals(className, other.className)) {
             return false;
         }
-        if (nameAndType == null) {
-            if (other.nameAndType != null) {
-                return false;
-            }
-        } else if (!nameAndType.equals(other.nameAndType)) {
+        if (!Objects.equals(nameAndType, other.nameAndType)) {
             return false;
         }
         return true;
