@@ -51,8 +51,8 @@ public class ArjArchiveEntry implements ArchiveEntry {
     @Override
     public String getName() {
         if ((localFileHeader.arjFlags & LocalFileHeader.Flags.PATHSYM) != 0) {
-            return localFileHeader.name.replaceAll("/",
-                    Matcher.quoteReplacement(File.separator));
+            return localFileHeader.name.replace("/",
+                    File.separator);
         }
         return localFileHeader.name;
     }

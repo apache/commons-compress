@@ -66,7 +66,7 @@ public abstract class BoundedArchiveInputStream extends InputStream {
     }
 
     @Override
-    public synchronized int read(final byte[] b, final int off, int len) throws IOException {
+    public synchronized int read(final byte[] b, final int off, final int len) throws IOException {
         if (loc >= end) {
             return -1;
         }
