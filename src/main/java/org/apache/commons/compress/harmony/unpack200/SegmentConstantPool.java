@@ -65,32 +65,27 @@ public class SegmentConstantPool {
         if (index < 0) {
             throw new Pack200Exception("Cannot have a negative range");
         }
-        if (cp == UTF_8) {
+        switch (cp) {
+        case UTF_8:
             return bands.cpUTF8Value(index);
-        }
-        if (cp == CP_INT) {
+        case CP_INT:
             return bands.cpIntegerValue(index);
-        }
-        if (cp == CP_FLOAT) {
+        case CP_FLOAT:
             return bands.cpFloatValue(index);
-        }
-        if (cp == CP_LONG) {
+        case CP_LONG:
             return bands.cpLongValue(index);
-        }
-        if (cp == CP_DOUBLE) {
+        case CP_DOUBLE:
             return bands.cpDoubleValue(index);
-        }
-        if (cp == CP_STRING) {
+        case CP_STRING:
             return bands.cpStringValue(index);
-        }
-        if (cp == CP_CLASS) {
+        case CP_CLASS:
             return bands.cpClassValue(index);
-        }
-        if (cp == SIGNATURE) {
+        case SIGNATURE:
             return bands.cpSignatureValue(index);
-        }
-        if (cp == CP_DESCR) {
+        case CP_DESCR:
             return bands.cpNameAndTypeValue(index);
+        default:
+            break;
         }
         throw new Error("Tried to get a value I don't know about: " + cp);
     }
@@ -110,13 +105,17 @@ public class SegmentConstantPool {
         final int index = (int) desiredIndex;
         int realIndex = -1;
         String[] array = null;
-        if (cp == CP_FIELD) {
+        switch (cp) {
+        case CP_FIELD:
             array = bands.getCpFieldClass();
-        } else if (cp == CP_METHOD) {
+            break;
+        case CP_METHOD:
             array = bands.getCpMethodClass();
-        } else if (cp == CP_IMETHOD) {
+            break;
+        case CP_IMETHOD:
             array = bands.getCpIMethodClass();
-        } else {
+            break;
+        default:
             throw new Error("Don't know how to handle " + cp);
         }
         realIndex = matchSpecificPoolEntryIndex(array, desiredClassName, index);
@@ -255,44 +254,36 @@ public class SegmentConstantPool {
         if (index < 0) {
             throw new Pack200Exception("Cannot have a negative range");
         }
-        if (cp == UTF_8) {
+        switch (cp) {
+        case UTF_8:
             return bands.cpUTF8Value(index);
-        }
-        if (cp == CP_INT) {
+        case CP_INT:
             return bands.cpIntegerValue(index);
-        }
-        if (cp == CP_FLOAT) {
+        case CP_FLOAT:
             return bands.cpFloatValue(index);
-        }
-        if (cp == CP_LONG) {
+        case CP_LONG:
             return bands.cpLongValue(index);
-        }
-        if (cp == CP_DOUBLE) {
+        case CP_DOUBLE:
             return bands.cpDoubleValue(index);
-        }
-        if (cp == CP_STRING) {
+        case CP_STRING:
             return bands.cpStringValue(index);
-        }
-        if (cp == CP_CLASS) {
+        case CP_CLASS:
             return bands.cpClassValue(index);
-        }
-        if (cp == SIGNATURE) {
+        case SIGNATURE:
             throw new Error("I don't know what to do with signatures yet");
             // return null /* new CPSignature(bands.getCpSignature()[index]) */;
-        }
-        if (cp == CP_DESCR) {
+        case CP_DESCR:
             throw new Error("I don't know what to do with descriptors yet");
             // return null /* new CPDescriptor(bands.getCpDescriptor()[index])
             // */;
-        }
-        if (cp == CP_FIELD) {
+        case CP_FIELD:
             return bands.cpFieldValue(index);
-        }
-        if (cp == CP_METHOD) {
+        case CP_METHOD:
             return bands.cpMethodValue(index);
-        }
-        if (cp == CP_IMETHOD) {
+        case CP_IMETHOD:
             return bands.cpIMethodValue(index);
+        default:
+            break;
         }
         // etc
         throw new Error("Get value incomplete");
