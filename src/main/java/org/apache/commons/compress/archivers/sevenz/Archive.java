@@ -23,7 +23,7 @@ class Archive {
     /// Offset from beginning of file + SIGNATURE_HEADER_SIZE to packed streams.
     long packPos;
     /// Size of each packed stream.
-    long[] packSizes = new long[0];
+    long[] packSizes = {};
     /// Whether each particular packed streams has a CRC.
     BitSet packCrcsDefined;
     /// CRCs for each packed stream, valid only if that packed stream has one.
