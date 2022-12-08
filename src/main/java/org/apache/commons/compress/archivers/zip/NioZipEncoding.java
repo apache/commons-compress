@@ -41,7 +41,7 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
     private static final char REPLACEMENT = '?';
     private static final byte[] REPLACEMENT_BYTES = { (byte) REPLACEMENT };
     private static final String REPLACEMENT_STRING = String.valueOf(REPLACEMENT);
-    private static final char[] HEX_CHARS = new char[] {
+    private static final char[] HEX_CHARS = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
 

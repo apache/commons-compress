@@ -249,7 +249,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
         }
     }
 
-    private static final byte[] CAFE_DOOD = new byte[] {
+    private static final byte[] CAFE_DOOD = {
         (byte) 0xCA, (byte) 0xFE, (byte) 0xD0, (byte) 0x0D
     };
     private static final int SIG_LENGTH = CAFE_DOOD.length;

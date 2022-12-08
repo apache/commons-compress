@@ -28,7 +28,7 @@ import org.objectweb.asm.Attribute;
  */
 public class PackingOptions {
 
-    private static final Attribute[] EMPTY_ATTRIBUTE_ARRAY = new Attribute[0];
+    private static final Attribute[] EMPTY_ATTRIBUTE_ARRAY = {};
     public static final long SEGMENT_LIMIT = 1_000_000L;
     public static final String STRIP = "strip";
     public static final String ERROR = "error";
