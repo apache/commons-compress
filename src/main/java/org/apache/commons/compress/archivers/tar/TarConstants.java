@@ -80,7 +80,7 @@ public interface TarConstants {
 
     /**
      * Offset of the checksum field within header record.
-     * 
+     *
      * @since 1.5
      */
     int CHKSUM_OFFSET = 148;
@@ -185,28 +185,28 @@ public interface TarConstants {
 
     /**
      * The length of offset in struct sparse
-     * 
+     *
      * @since 1.20
      */
     int SPARSE_OFFSET_LEN = 12;
 
     /**
      * The length of numbytes in struct sparse
-     * 
+     *
      * @since 1.20
      */
     int SPARSE_NUMBYTES_LEN = 12;
 
     /**
      * The number of sparse headers in an old GNU header
-     * 
+     *
      * @since 1.20
      */
     int SPARSE_HEADERS_IN_OLDGNU_HEADER = 4;
 
     /**
      * The number of sparse headers in an extension header
-     * 
+     *
      * @since 1.20
      */
     int SPARSE_HEADERS_IN_EXTENSION_HEADER = 21;
@@ -332,7 +332,7 @@ public interface TarConstants {
      * The magic tag representing a GNU tar archive.
      */
     String MAGIC_GNU = "ustar ";
-    
+
     /**
      * One of two two possible GNU versions
      */
