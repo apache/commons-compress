@@ -400,17 +400,17 @@ public class ClassBands extends BandSet {
 
     private int getCallCount(final int[][] methodAttrIndexes, final long[][] flags, final int context) {
         int callCount = 0;
-        for (int i = 0; i < methodAttrIndexes.length; i++) {
-            for (int j = 0; j < methodAttrIndexes[i].length; j++) {
-                final int index = methodAttrIndexes[i][j];
+        for (int[] element : methodAttrIndexes) {
+            for (int j = 0; j < element.length; j++) {
+                final int index = element[j];
                 final AttributeLayout layout = attrMap.getAttributeLayout(index, context);
                 callCount += layout.numBackwardsCallables();
             }
         }
         int layoutsUsed = 0;
-        for (int i = 0; i < flags.length; i++) {
-            for (int j = 0; j < flags[i].length; j++) {
-                layoutsUsed |= flags[i][j];
+        for (long[] flag : flags) {
+            for (int j = 0; j < flag.length; j++) {
+                layoutsUsed |= flag[j];
             }
         }
         for (int i = 0; i < 26; i++) {
@@ -469,9 +469,9 @@ public class ClassBands extends BandSet {
         final int[][] classInnerClassesF = decodeBandInt("class_InnerClasses_F", in, Codec.UNSIGNED5,
             classInnerClassesN);
         int flagsCount = 0;
-        for (int i = 0; i < classInnerClassesF.length; i++) {
-            for (int j = 0; j < classInnerClassesF[i].length; j++) {
-                if (classInnerClassesF[i][j] != 0) {
+        for (int[] element : classInnerClassesF) {
+            for (int j = 0; j < element.length; j++) {
+                if (element[j] != 0) {
                     flagsCount++;
                 }
             }
@@ -600,11 +600,11 @@ public class ClassBands extends BandSet {
                         // Get from icBands
                         final IcBands icBands = segment.getIcBands();
                         final IcTuple[] icAll = icBands.getIcTuples();
-                        for (int k = 0; k < icAll.length; k++) {
-                            if (icAll[k].getC().equals(icTupleC)) {
-                                icTupleF = icAll[k].getF();
-                                icTupleC2 = icAll[k].getC2();
-                                icTupleN = icAll[k].getN();
+                        for (IcTuple element : icAll) {
+                            if (element.getC().equals(icTupleC)) {
+                                icTupleF = element.getF();
+                                icTupleC2 = element.getC2();
+                                icTupleN = element.getN();
                                 break;
                             }
                         }
@@ -712,9 +712,9 @@ public class ClassBands extends BandSet {
         final int[] codeAttrCounts = decodeBandInt("code_attr_count", in, Codec.UNSIGNED5, codeAttrCount);
         final int[][] codeAttrIndexes = decodeBandInt("code_attr_indexes", in, Codec.UNSIGNED5, codeAttrCounts);
         int callCount = 0;
-        for (int i = 0; i < codeAttrIndexes.length; i++) {
-            for (int j = 0; j < codeAttrIndexes[i].length; j++) {
-                final int index = codeAttrIndexes[i][j];
+        for (int[] element : codeAttrIndexes) {
+            for (int j = 0; j < element.length; j++) {
+                final int index = element[j];
                 final AttributeLayout layout = attrMap.getAttributeLayout(index, AttributeLayout.CONTEXT_CODE);
                 callCount += layout.numBackwardsCallables();
             }
@@ -888,9 +888,9 @@ public class ClassBands extends BandSet {
                 mbg[i].type_RS = parseCPSignatureReferences(contextName + "_" + rxa + "_type_RS", in, Codec.UNSIGNED5,
                     mbg[i].anno_N);
                 mbg[i].pair_N = decodeBandInt(contextName + "_" + rxa + "_pair_N", in, Codec.UNSIGNED5, mbg[i].anno_N);
-                for (int j = 0; j < mbg[i].pair_N.length; j++) {
-                    for (int k = 0; k < mbg[i].pair_N[j].length; k++) {
-                        pairCount += mbg[i].pair_N[j][k];
+                for (int[] element : mbg[i].pair_N) {
+                    for (int k = 0; k < element.length; k++) {
+                        pairCount += element[k];
                     }
                 }
 
@@ -903,8 +903,8 @@ public class ClassBands extends BandSet {
                 pairCount + backwardsCallCounts[i]);
             int ICount = 0, DCount = 0, FCount = 0, JCount = 0, cCount = 0, eCount = 0, sCount = 0, arrayCount = 0,
                 atCount = 0;
-            for (int j = 0; j < mbg[i].T.length; j++) {
-                final char c = (char) mbg[i].T[j];
+            for (int element : mbg[i].T) {
+                final char c = (char) element;
                 switch (c) {
                 case 'B':
                 case 'C':
@@ -958,8 +958,8 @@ public class ClassBands extends BandSet {
                 atCount);
             mbg[i].nestpair_N = decodeBandInt(contextName + "_" + rxa + "_nestpair_N", in, Codec.UNSIGNED5, atCount);
             int nestPairCount = 0;
-            for (int j = 0; j < mbg[i].nestpair_N.length; j++) {
-                nestPairCount += mbg[i].nestpair_N[j];
+            for (int element : mbg[i].nestpair_N) {
+                nestPairCount += element;
             }
             mbg[i].nestname_RU = parseCPUTF8References(contextName + "_" + rxa + "_nestname_RU", in, Codec.UNSIGNED5,
                 nestPairCount);
@@ -1159,10 +1159,10 @@ public class ClassBands extends BandSet {
      */
     public ArrayList<List<Attribute>> getOrderedCodeAttributes() {
         final ArrayList<List<Attribute>> orderedAttributeList = new ArrayList<>(codeAttributes.length);
-        for (int classIndex = 0; classIndex < codeAttributes.length; classIndex++) {
-            final List<Attribute> currentAttributes = new ArrayList<>(codeAttributes[classIndex].size());
-            for (int attributeIndex = 0; attributeIndex < codeAttributes[classIndex].size(); attributeIndex++) {
-                currentAttributes.add(codeAttributes[classIndex].get(attributeIndex));
+        for (List<Attribute> codeAttribute : codeAttributes) {
+            final List<Attribute> currentAttributes = new ArrayList<>(codeAttribute.size());
+            for (int attributeIndex = 0; attributeIndex < codeAttribute.size(); attributeIndex++) {
+                currentAttributes.add(codeAttribute.get(attributeIndex));
             }
             orderedAttributeList.add(currentAttributes);
         }
