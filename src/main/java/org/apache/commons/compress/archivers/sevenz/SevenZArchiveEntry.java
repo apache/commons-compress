@@ -160,6 +160,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Gets the compressed CRC.
+     *
      * @deprecated use getCompressedCrcValue instead.
      * @return the compressed CRC
      */
@@ -170,6 +171,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Gets the compressed CRC.
+     *
      * @since 1.7
      * @return the CRC
      */
@@ -178,7 +180,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Get this entry's compressed file size.
+     * Gets this entry's compressed file size.
      *
      * @return This entry's compressed file size.
      */
@@ -216,6 +218,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Gets the CRC.
+     *
      * @since 1.7
      * @return the CRC
      */
@@ -251,7 +254,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Returns whether this entry has got an access date at all.
+     * Gets whether this entry has got an access date at all.
      * @return whether this entry has got an access date at all.
      */
     public boolean getHasAccessDate() {
@@ -259,7 +262,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Returns whether this entry has got a crc.
+     * Gets whether this entry has got a crc.
      *
      * <p>In general entries without streams don't have a CRC either.</p>
      * @return whether this entry has got a crc.
@@ -269,7 +272,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Returns whether this entry has got a creation date at all.
+     * Gets whether this entry has got a creation date at all.
      * @return whether the entry has got a creation date
      */
     public boolean getHasCreationDate() {
@@ -277,7 +280,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Returns whether this entry has got a last modified date at all.
+     * Gets whether this entry has got a last modified date at all.
      * @return whether this entry has got a last modified date at all
      */
     public boolean getHasLastModifiedDate() {
@@ -285,7 +288,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Returns whether this entry has windows attributes.
+     * Gets whether this entry has windows attributes.
      * @return whether this entry has windows attributes.
      */
     public boolean getHasWindowsAttributes() {
@@ -321,7 +324,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Get this entry's name.
+     * Gets this entry's name.
      *
      * <p>This method returns the raw name as it is stored inside of the archive.</p>
      *
@@ -333,7 +336,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Get this entry's file size.
+     * Gets this entry's file size.
      *
      * @return This entry's file size.
      */
