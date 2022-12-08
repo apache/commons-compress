@@ -127,7 +127,6 @@ public class AttributeLayout implements IMatcher {
 
     public AttributeLayout(final String name, final int context, final String layout, final int index,
         final boolean isDefault) throws Pack200Exception {
-        super();
         this.index = index;
         this.context = context;
         if (index >= 0) {
