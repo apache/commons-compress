@@ -557,8 +557,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         if (method == ZipArchiveOutputStream.DEFLATED) {
             return getBytesInflated();
         }
-        if (method == ZipMethod.UNSHRINKING.getCode() 
-            || method == ZipMethod.IMPLODING.getCode() 
+        if (method == ZipMethod.UNSHRINKING.getCode()
+            || method == ZipMethod.IMPLODING.getCode()
             || method == ZipMethod.ENHANCED_DEFLATED.getCode()
             || method == ZipMethod.BZIP2.getCode()) {
             return ((InputStreamStatistics) current.checkInputStream()).getCompressedCount();
@@ -876,7 +876,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         }
     }
 
-    private byte[] readRange(int len) throws IOException {
+    private byte[] readRange(final int len) throws IOException {
         final byte[] ret = IOUtils.readRange(inputStream, len);
         count(ret.length);
         if (ret.length < len) {
@@ -1216,7 +1216,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         return b == ZipArchiveOutputStream.EOCD_SIG[0];
     }
 
-    private static final byte[] APK_SIGNING_BLOCK_MAGIC = new byte[] {
+    private static final byte[] APK_SIGNING_BLOCK_MAGIC = {
         'A', 'P', 'K', ' ', 'S', 'i', 'g', ' ', 'B', 'l', 'o', 'c', 'k', ' ', '4', '2',
     };
     private static final BigInteger LONG_MAX = BigInteger.valueOf(Long.MAX_VALUE);
@@ -1317,7 +1317,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
          * The input stream decompressing the data for shrunk and imploded entries.
          */
         private InputStream inputStream;
-        
+
         @SuppressWarnings("unchecked") // Caller beware
         private <T extends InputStream> T checkInputStream() {
             return (T) Objects.requireNonNull(inputStream, "inputStream");
