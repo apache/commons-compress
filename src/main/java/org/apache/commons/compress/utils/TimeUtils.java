@@ -42,13 +42,13 @@ public final class TimeUtils {
      * This is the offset of Windows time 0 to Unix epoch in 100-nanosecond intervals.
      * </p>
      */
-    public static final long WINDOWS_EPOCH_OFFSET = -116444736000000000L;
+    private static final long WINDOWS_EPOCH_OFFSET = -116444736000000000L;
 
     /** The amount of 100-nanosecond intervals in one second. */
-    public static final long HUNDRED_NANOS_PER_SECOND = TimeUnit.SECONDS.toNanos(1) / 100;
+    private static final long HUNDRED_NANOS_PER_SECOND = TimeUnit.SECONDS.toNanos(1) / 100;
 
     /** The amount of 100-nanosecond intervals in one millisecond. */
-    public static final long HUNDRED_NANOS_PER_MILLISECOND = TimeUnit.MILLISECONDS.toNanos(1) / 100;
+    private static final long HUNDRED_NANOS_PER_MILLISECOND = TimeUnit.MILLISECONDS.toNanos(1) / 100;
 
     /**
      * Converts NTFS time (100 nanosecond units since 1 January 1601) to Java time.
