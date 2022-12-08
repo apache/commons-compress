@@ -46,7 +46,7 @@ public class BcBands extends BandSet {
     private final IntList bcByte = new IntList();
     private final IntList bcShort = new IntList();
     private final IntList bcLocal = new IntList();
-    
+
     // Integers and/or Labels?
     private final List bcLabel = new ArrayList();
     private final List<CPInt> bcIntref = new ArrayList<>();
