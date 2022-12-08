@@ -851,7 +851,7 @@ public class TarUtils {
      * @deprecated use #parseFromPAX01SparseHeaders instead
      */
     @Deprecated
-    protected static List<TarArchiveStructSparse> parsePAX01SparseHeaders(String sparseMap) {
+    protected static List<TarArchiveStructSparse> parsePAX01SparseHeaders(final String sparseMap) {
         try {
             return parseFromPAX01SparseHeaders(sparseMap);
         } catch (IOException ex) {
@@ -869,7 +869,7 @@ public class TarUtils {
      * @throws IOException Corrupted TAR archive.
      * @since 1.21
      */
-    protected static List<TarArchiveStructSparse> parseFromPAX01SparseHeaders(String sparseMap)
+    protected static List<TarArchiveStructSparse> parseFromPAX01SparseHeaders(final String sparseMap)
         throws IOException {
         List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         String[] sparseHeaderStrings = sparseMap.split(",");
