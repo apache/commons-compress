@@ -50,7 +50,7 @@ public final class Lister {
      * <p>
      * The optional second argument defines the archive type, in case the format is not recognized.
      * </p>
-     * 
+     *
      * @param args name of the archive and optional argument archive type.
      * @throws ArchiveException Archiver related Exception.
      * @throws IOException an I/O exception.
