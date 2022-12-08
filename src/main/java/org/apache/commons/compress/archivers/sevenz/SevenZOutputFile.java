@@ -36,6 +36,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -50,6 +51,7 @@ import java.util.zip.CRC32;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.CountingOutputStream;
+import org.apache.commons.compress.utils.TimeUtils;
 
 /**
  * Writes a 7z file.
@@ -159,7 +161,11 @@ public class SevenZOutputFile implements Closeable {
         final SevenZArchiveEntry entry = new SevenZArchiveEntry();
         entry.setDirectory(inputFile.isDirectory());
         entry.setName(entryName);
-        entry.setLastModifiedDate(new Date(inputFile.lastModified()));
+        try {
+            fillDates(inputFile.toPath(), entry);
+        } catch (IOException e) { // NOSONAR
+            entry.setLastModifiedDate(new Date(inputFile.lastModified()));
+        }
         return entry;
     }
 
@@ -179,8 +185,16 @@ public class SevenZOutputFile implements Closeable {
         final SevenZArchiveEntry entry = new SevenZArchiveEntry();
         entry.setDirectory(Files.isDirectory(inputPath, options));
         entry.setName(entryName);
-        entry.setLastModifiedDate(new Date(Files.getLastModifiedTime(inputPath, options).toMillis()));
+        fillDates(inputPath, entry, options);
         return entry;
+    }
+
+    private void fillDates(final Path inputPath, final SevenZArchiveEntry entry,
+        final LinkOption... options) throws IOException {
+        BasicFileAttributes attributes = Files.readAttributes(inputPath, BasicFileAttributes.class, options);
+        entry.setLastModifiedTime(attributes.lastModifiedTime());
+        entry.setCreationTime(attributes.creationTime());
+        entry.setAccessTime(attributes.lastAccessTime());
     }
 
     /**
@@ -651,8 +665,8 @@ public class SevenZOutputFile implements Closeable {
             out.write(0);
             for (final SevenZArchiveEntry entry : files) {
                 if (entry.getHasCreationDate()) {
-                    out.writeLong(Long.reverseBytes(
-                            SevenZArchiveEntry.javaTimeToNtfsTime(entry.getCreationDate())));
+                    final long ntfsTime = TimeUtils.fileTimeToNtfsTime(entry.getCreationTime());
+                    out.writeLong(Long.reverseBytes(ntfsTime));
                 }
             }
             out.flush();
@@ -687,8 +701,8 @@ public class SevenZOutputFile implements Closeable {
             out.write(0);
             for (final SevenZArchiveEntry entry : files) {
                 if (entry.getHasAccessDate()) {
-                    out.writeLong(Long.reverseBytes(
-                            SevenZArchiveEntry.javaTimeToNtfsTime(entry.getAccessDate())));
+                    final long ntfsTime = TimeUtils.fileTimeToNtfsTime(entry.getAccessTime());
+                    out.writeLong(Long.reverseBytes(ntfsTime));
                 }
             }
             out.flush();
@@ -723,8 +737,8 @@ public class SevenZOutputFile implements Closeable {
             out.write(0);
             for (final SevenZArchiveEntry entry : files) {
                 if (entry.getHasLastModifiedDate()) {
-                    out.writeLong(Long.reverseBytes(
-                            SevenZArchiveEntry.javaTimeToNtfsTime(entry.getLastModifiedDate())));
+                    final long ntfsTime = TimeUtils.fileTimeToNtfsTime(entry.getLastModifiedTime());
+                    out.writeLong(Long.reverseBytes(ntfsTime));
                 }
             }
             out.flush();

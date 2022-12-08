@@ -17,12 +17,11 @@
  */
 package org.apache.commons.compress.archivers;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Cipher;
@@ -32,9 +31,12 @@ import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.sevenz.SevenZMethod;
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
+import org.apache.commons.compress.utils.TimeUtils;
 import org.junit.Assume;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.Assert.*;
 
 public class SevenZTestCase extends AbstractTestCase {
 
@@ -84,14 +86,22 @@ public class SevenZTestCase extends AbstractTestCase {
             SevenZArchiveEntry entry;
 
             entry = archive.getNextEntry();
-            assert (entry != null);
-            assertEquals(entry.getName(), file1.getName());
+            assertNotNull(entry);
+            assertEquals(file1.getName(),entry.getName());
+            BasicFileAttributes attributes = Files.readAttributes(file1.toPath(), BasicFileAttributes.class);
+            assertEquals(TimeUtils.truncateToHundredNanos(attributes.lastModifiedTime()), entry.getLastModifiedTime());
+            assertEquals(TimeUtils.truncateToHundredNanos(attributes.creationTime()), entry.getCreationTime());
+            assertNotNull(entry.getAccessTime());
 
             entry = archive.getNextEntry();
-            assert (entry != null);
-            assertEquals(entry.getName(), file2.getName());
+            assertNotNull(entry);
+            assertEquals(file2.getName(), entry.getName());
+            attributes = Files.readAttributes(file2.toPath(), BasicFileAttributes.class);
+            assertEquals(TimeUtils.truncateToHundredNanos(attributes.lastModifiedTime()), entry.getLastModifiedTime());
+            assertEquals(TimeUtils.truncateToHundredNanos(attributes.creationTime()), entry.getCreationTime());
+            assertNotNull(entry.getAccessTime());
 
-            assert (archive.getNextEntry() == null);
+            assertNull(archive.getNextEntry());
         }
     }
 

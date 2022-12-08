@@ -17,6 +17,9 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import org.apache.commons.compress.utils.TimeUtils;
+
+import java.nio.file.attribute.FileTime;
 import java.util.Date;
 import java.util.Objects;
 import java.util.zip.ZipException;
@@ -245,6 +248,39 @@ public class X000A_NTFS implements ZipExtraField {
     }
 
     /**
+     * Gets the modify time as as a {@link FileTime}
+     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     *
+     * @return modify time as a {@link FileTime} or null.
+     * @since 1.23
+     */
+    public FileTime getModifyFileTime() {
+        return zipToFileTime(modifyTime);
+    }
+
+    /**
+     * Gets the access time as a {@link FileTime}
+     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     *
+     * @return access time as a {@link FileTime} or null.
+     * @since 1.23
+     */
+    public FileTime getAccessFileTime() {
+        return zipToFileTime(accessTime);
+    }
+
+    /**
+     * Gets the create time as a {@link FileTime}
+     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     *
+     * @return create time as a {@link FileTime} or null.
+     * @since 1.23
+     */
+    public FileTime getCreateFileTime() {
+        return zipToFileTime(createTime);
+    }
+
+    /**
      * Sets the File last modification time of this zip entry using a
      * ZipEightByteInteger object.
      *
@@ -305,6 +341,36 @@ public class X000A_NTFS implements ZipExtraField {
     public void setCreateJavaTime(final Date d) { setCreateTime(dateToZip(d)); }
 
     /**
+     * Sets the modify time.
+     *
+     * @param time modify time as a {@link FileTime}
+     * @since 1.23
+     */
+    public void setModifyFileTime(final FileTime time) {
+        setModifyTime(fileTimeToZip(time));
+    }
+
+    /**
+     * Sets the access time.
+     *
+     * @param time access time as a {@link FileTime}
+     * @since 1.23
+     */
+    public void setAccessFileTime(final FileTime time) {
+        setAccessTime(fileTimeToZip(time));
+    }
+
+    /**
+     * Sets the create time.
+     *
+     * @param time create time as a {@link FileTime}
+     * @since 1.23
+     */
+    public void setCreateFileTime(final FileTime time) {
+        setCreateTime(fileTimeToZip(time));
+    }
+
+    /**
      * Returns a String representation of this class useful for
      * debugging purposes.
      *
@@ -315,9 +381,9 @@ public class X000A_NTFS implements ZipExtraField {
     public String toString() {
         final StringBuilder buf = new StringBuilder();
         buf.append("0x000A Zip Extra Field:")
-            .append(" Modify:[").append(getModifyJavaTime()).append("] ")
-            .append(" Access:[").append(getAccessJavaTime()).append("] ")
-            .append(" Create:[").append(getCreateJavaTime()).append("] ");
+            .append(" Modify:[").append(getModifyFileTime()).append("] ")
+            .append(" Access:[").append(getAccessFileTime()).append("] ")
+            .append(" Create:[").append(getCreateFileTime()).append("] ");
         return buf.toString();
     }
 
@@ -374,22 +440,31 @@ public class X000A_NTFS implements ZipExtraField {
         }
     }
 
-    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724290%28v=vs.85%29.aspx
-    // A file time is a 64-bit value that represents the number of
-    // 100-nanosecond intervals that have elapsed since 12:00
-    // A.M. January 1, 1601 Coordinated Universal Time (UTC).
-    // this is the offset of Windows time 0 to Unix epoch in 100-nanosecond intervals
-    private static final long EPOCH_OFFSET = -116444736000000000L;
-
     private static ZipEightByteInteger dateToZip(final Date d) {
-        if (d == null) { return null; }
-        return new ZipEightByteInteger((d.getTime() * 10000L) - EPOCH_OFFSET);
+        if (d == null) {
+            return null;
+        }
+        return new ZipEightByteInteger(TimeUtils.dateToNtfsTime(d));
+    }
+
+    private static ZipEightByteInteger fileTimeToZip(final FileTime time) {
+        if (time == null) {
+            return null;
+        }
+        return new ZipEightByteInteger(TimeUtils.fileTimeToNtfsTime(time));
     }
 
     private static Date zipToDate(final ZipEightByteInteger z) {
-        if (z == null || ZipEightByteInteger.ZERO.equals(z)) { return null; }
-        final long l = (z.getLongValue() + EPOCH_OFFSET) / 10000L;
-        return new Date(l);
+        if (z == null || ZipEightByteInteger.ZERO.equals(z)) {
+            return null;
+        }
+        return TimeUtils.ntfsTimeToDate(z.getLongValue());
     }
 
+    private static FileTime zipToFileTime(final ZipEightByteInteger z) {
+        if (z == null || ZipEightByteInteger.ZERO.equals(z)) {
+            return null;
+        }
+        return TimeUtils.ntfsTimeToFileTime(z.getLongValue());
+    }
 }

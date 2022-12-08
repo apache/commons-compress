@@ -49,6 +49,7 @@ import org.apache.commons.compress.archivers.EntryStreamOffsets;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.TimeUtils;
 
 /**
  * This class represents an entry in a Tar archive. It consists
@@ -210,7 +211,11 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /** Default permissions bits for files */
     public static final int DEFAULT_FILE_MODE = 0100644;
 
-    /** Convert millis to seconds */
+    /**
+     * Convert millis to seconds
+     * @deprecated Unused.
+     */
+    @Deprecated
     public static final int MILLIS_PER_SECOND = 1000;
 
     private static FileTime fileTimeFromOptionalSeconds(long seconds) {
@@ -992,7 +997,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @see TarArchiveEntry#getLastModifiedTime()
      */
     public Date getModTime() {
-        return new Date(mTime.toMillis());
+        return TimeUtils.fileTimeToDate(mTime);
     }
 
     /**
@@ -1906,7 +1911,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @see TarArchiveEntry#setLastModifiedTime(FileTime)
      */
     public void setModTime(final Date time) {
-        setLastModifiedTime(FileTime.fromMillis(time.getTime()));
+        setLastModifiedTime(TimeUtils.dateToFileTime(time));
     }
 
     /**

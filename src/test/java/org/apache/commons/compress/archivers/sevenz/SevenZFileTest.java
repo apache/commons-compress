@@ -35,15 +35,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.time.Instant;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.crypto.Cipher;
 
@@ -124,7 +121,11 @@ public class SevenZFileTest extends AbstractTestCase {
     @Test
     public void testAllEmptyFilesArchive() throws Exception {
         try (SevenZFile archive = new SevenZFile(getFile("7z-empty-mhc-off.7z"))) {
-            assertNotNull(archive.getNextEntry());
+            SevenZArchiveEntry e = archive.getNextEntry();
+            assertNotNull(e);
+            assertEquals("empty", e.getName());
+            assertDates(e, "2013-05-14T17:50:19Z", null, null);
+            assertNull(archive.getNextEntry());
         }
     }
 
@@ -775,6 +776,32 @@ public class SevenZFileTest extends AbstractTestCase {
         }
     }
 
+    @Test
+    public void readTimesFromFile() throws IOException {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("times.7z"))) {
+            SevenZArchiveEntry entry = sevenZFile.getNextEntry();
+            assertNotNull(entry);
+            assertEquals("test", entry.getName());
+            assertTrue(entry.isDirectory());
+            assertDates(entry, "2022-03-21T14:50:46.2099751Z", "2022-03-21T14:50:46.2099751Z", "2022-03-16T10:19:24.1051115Z");
+
+            entry = sevenZFile.getNextEntry();
+            assertNotNull(entry);
+            assertEquals("test/test-times.txt", entry.getName());
+            assertFalse(entry.isDirectory());
+            assertDates(entry, "2022-03-18T10:00:15Z", "2022-03-18T10:14:37.8130002Z", "2022-03-18T10:14:37.8110032Z");
+
+            entry = sevenZFile.getNextEntry();
+            assertNotNull(entry);
+            assertEquals("test/test-times2.txt", entry.getName());
+            assertFalse(entry.isDirectory());
+            assertDates(entry, "2022-03-18T10:00:19Z", "2022-03-18T10:14:37.8170038Z", "2022-03-18T10:14:37.8140004Z");
+
+            entry = sevenZFile.getNextEntry();
+            assertNull(entry);
+        }
+    }
+
 
     private void test7zUnarchive(final File f, final SevenZMethod m, final byte[] password) throws Exception {
         try (SevenZFile sevenZFile = new SevenZFile(f, password)) {
@@ -797,9 +824,11 @@ public class SevenZFileTest extends AbstractTestCase {
     private void test7zUnarchive(final SevenZFile sevenZFile, final SevenZMethod m) throws Exception {
         SevenZArchiveEntry entry = sevenZFile.getNextEntry();
         assertEquals("test1.xml", entry.getName());
+        assertDates(entry, "2007-11-14T10:19:02Z", null, null);
         assertEquals(m, entry.getContentMethods().iterator().next().getMethod());
         entry = sevenZFile.getNextEntry();
         assertEquals("test2.xml", entry.getName());
+        assertDates(entry, "2007-11-14T10:19:02Z", null, null);
         assertEquals(m, entry.getContentMethods().iterator().next().getMethod());
         final byte[] contents = new byte[(int) entry.getSize()];
         int off = 0;
@@ -816,6 +845,7 @@ public class SevenZFileTest extends AbstractTestCase {
         try (SevenZFile sevenZFile = new SevenZFile(getFile(filename))) {
             final SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             assertEquals("Hello world.txt", entry.getName());
+            assertDates(entry, "2013-05-07T19:40:48Z", null, null);
             final byte[] contents = new byte[(int) entry.getSize()];
             int off = 0;
             while ((off < contents.length)) {
@@ -830,5 +860,29 @@ public class SevenZFileTest extends AbstractTestCase {
 
     private static boolean isStrongCryptoAvailable() throws NoSuchAlgorithmException {
         return Cipher.getMaxAllowedKeyLength("AES/ECB/PKCS5Padding") >= 256;
+    }
+
+    private void assertDates(SevenZArchiveEntry entry, String modified, String access, String creation) {
+        assertDate(entry, modified, SevenZArchiveEntry::getHasLastModifiedDate,
+            SevenZArchiveEntry::getLastModifiedTime, SevenZArchiveEntry::getLastModifiedDate);
+        assertDate(entry, access, SevenZArchiveEntry::getHasAccessDate,
+            SevenZArchiveEntry::getAccessTime, SevenZArchiveEntry::getAccessDate);
+        assertDate(entry, creation, SevenZArchiveEntry::getHasCreationDate,
+            SevenZArchiveEntry::getCreationTime, SevenZArchiveEntry::getCreationDate);
+    }
+
+    private void assertDate(SevenZArchiveEntry entry, String value, Function<SevenZArchiveEntry, Boolean> hasValue,
+        Function<SevenZArchiveEntry, FileTime> timeFunction, Function<SevenZArchiveEntry, Date> dateFunction) {
+        if (value != null) {
+            assertTrue(hasValue.apply(entry));
+            final Instant parsedInstant = Instant.parse(value);
+            final FileTime parsedFileTime = FileTime.from(parsedInstant);
+            assertEquals(parsedFileTime, timeFunction.apply(entry));
+            assertEquals(Date.from(parsedInstant), dateFunction.apply(entry));
+        } else {
+            assertFalse(hasValue.apply(entry));
+            assertThrows(UnsupportedOperationException.class, () -> timeFunction.apply(entry));
+            assertThrows(UnsupportedOperationException.class, () -> dateFunction.apply(entry));
+        }
     }
 }
