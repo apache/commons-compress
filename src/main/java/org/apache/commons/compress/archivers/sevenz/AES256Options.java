@@ -48,7 +48,7 @@ public class AES256Options {
     /**
      * @param password password used for encryption
      * @param salt for password hash salting (enforce password security)
-     * @param iv Initialisatin Vector (IV) used by cipher algorithm
+     * @param iv Initialization Vector (IV) used by cipher algorithm
      * @param numCyclesPower another password security enforcer parameter that controls the cycles of password hashing. More the
      *                       this number is hight, more security you'll have but also high CPU usage
      */
