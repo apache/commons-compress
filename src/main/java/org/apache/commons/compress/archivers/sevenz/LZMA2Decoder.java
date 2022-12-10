@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.compress.MemoryLimitException;
-import org.tukaani.xz.FinishableOutputStream;
 import org.tukaani.xz.FinishableWrapperOutputStream;
 import org.tukaani.xz.LZMA2InputStream;
 import org.tukaani.xz.LZMA2Options;
@@ -48,11 +47,10 @@ class LZMA2Decoder extends AbstractCoder {
         }
     }
 
+    @SuppressWarnings("resource") // Caller closes result.
     @Override
     OutputStream encode(final OutputStream out, final Object opts) throws IOException {
-        final LZMA2Options options = getOptions(opts);
-        final FinishableOutputStream wrapped = new FinishableWrapperOutputStream(out);
-        return options.getOutputStream(wrapped);
+        return getOptions(opts).getOutputStream(new FinishableWrapperOutputStream(out));
     }
 
     @Override
