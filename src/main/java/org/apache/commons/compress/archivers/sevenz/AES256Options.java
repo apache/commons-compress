@@ -50,7 +50,7 @@ class AES256Options {
      * @param salt for password hash salting (enforce password security)
      * @param iv Initialization Vector (IV) used by cipher algorithm
      * @param numCyclesPower another password security enforcer parameter that controls the cycles of password hashing. More the
-     *                       this number is hight, more security you'll have but also high CPU usage
+     *                       this number is high, more security you'll have but also high CPU usage
      */
     public AES256Options(char[] password, byte[] salt, byte[] iv, int numCyclesPower) {
         this.salt = salt;
