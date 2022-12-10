@@ -211,7 +211,7 @@ public class MetadataBandGroup extends BandSet {
      * @param pairN TODO
      * @param typeRS TODO
      * @param nameRU TODO
-     * @param t TODO
+     * @param tags TODO
      * @param values TODO
      * @param caseArrayN TODO
      * @param nestTypeRS TODO
@@ -219,7 +219,7 @@ public class MetadataBandGroup extends BandSet {
      * @param nestPairN TODO
      */
 	public void addParameterAnnotation(final int numParams, final int[] annoN, final IntList pairN,
-			final List<String> typeRS, final List<String> nameRU, final List<String> t, final List<Object> values,
+			final List<String> typeRS, final List<String> nameRU, final List<String> tags, final List<Object> values,
 			final List<Integer> caseArrayN, final List<String> nestTypeRS, final List<String> nestNameRU,
 			final List<Integer> nestPairN) {
 		param_NB.add(numParams);
@@ -227,14 +227,10 @@ public class MetadataBandGroup extends BandSet {
 			anno_N.add(element);
 		}
 		pair_N.addAll(pairN);
-		for (String desc : typeRS) {
-			type_RS.add(cpBands.getCPSignature(desc));
-		}
-		for (String name : nameRU) {
-			name_RU.add(cpBands.getCPUtf8(name));
-		}
+        typeRS.forEach(desc -> type_RS.add(cpBands.getCPSignature(desc)));
+        nameRU.forEach(name -> name_RU.add(cpBands.getCPUtf8(name)));
 		final Iterator<Object> valuesIterator = values.iterator();
-		for (String tag : t) {
+		for (String tag : tags) {
 			T.add(tag);
             switch (tag) {
                 case "B":
@@ -278,12 +274,8 @@ public class MetadataBandGroup extends BandSet {
 			casearray_N.add(arraySize);
 			numBackwardsCalls += arraySize;
 		}
-		for (String type : nestTypeRS) {
-			nesttype_RS.add(cpBands.getCPSignature(type));
-		}
-		for (String name : nestNameRU) {
-			nestname_RU.add(cpBands.getCPUtf8(name));
-		}
+		nestTypeRS.forEach(type -> nesttype_RS.add(cpBands.getCPSignature(type)));
+		nestNameRU.forEach(name -> nestname_RU.add(cpBands.getCPUtf8(name)));
 		for (Integer numPairs : nestPairN) {
 			nestpair_N.add(numPairs.intValue());
 			numBackwardsCalls += numPairs.intValue();
@@ -311,10 +303,7 @@ public class MetadataBandGroup extends BandSet {
 			final List<String> nestNameRU, final List<Integer> nestPairN) {
 		type_RS.add(cpBands.getCPSignature(desc));
 		pair_N.add(nameRU.size());
-
-		for (String name : nameRU) {
-			name_RU.add(cpBands.getCPUtf8(name));
-		}
+		nameRU.forEach(name -> name_RU.add(cpBands.getCPUtf8(name)));
 
 		final Iterator<Object> valuesIterator = values.iterator();
 		for (String tag : tags) {
@@ -361,14 +350,8 @@ public class MetadataBandGroup extends BandSet {
 			casearray_N.add(arraySize);
 			numBackwardsCalls += arraySize;
 		}
-		for (String element : nestTypeRS) {
-			final String type = element;
-			nesttype_RS.add(cpBands.getCPSignature(type));
-		}
-		for (String element : nestNameRU) {
-			final String name = element;
-			nestname_RU.add(cpBands.getCPUtf8(name));
-		}
+		nestTypeRS.forEach(element -> nesttype_RS.add(cpBands.getCPSignature(element)));
+		nestNameRU.forEach(element -> nestname_RU.add(cpBands.getCPUtf8(element)));
 		for (Integer element : nestPairN) {
 			final Integer numPairs = element;
 			nestpair_N.add(numPairs.intValue());
