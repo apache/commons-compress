@@ -47,8 +47,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import java.util.zip.CRC32;
-
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.CountingOutputStream;
 import org.apache.commons.compress.utils.TimeUtils;
@@ -70,6 +72,7 @@ public class SevenZOutputFile implements Closeable {
     private Iterable<? extends SevenZMethodConfiguration> contentMethods =
             Collections.singletonList(new SevenZMethodConfiguration(SevenZMethod.LZMA2));
     private final Map<SevenZArchiveEntry, long[]> additionalSizes = new HashMap<>();
+    private AES256Options aes256Options;
 
     /**
      * Opens file to write a 7z archive to.
@@ -78,9 +81,25 @@ public class SevenZOutputFile implements Closeable {
      * @throws IOException if opening the file fails
      */
     public SevenZOutputFile(final File fileName) throws IOException {
-        this(Files.newByteChannel(fileName.toPath(),
-            EnumSet.of(StandardOpenOption.CREATE, StandardOpenOption.WRITE,
-                       StandardOpenOption.TRUNCATE_EXISTING)));
+        this(fileName, null);
+    }
+
+    /**
+     * Opens file to write a 7z archive to.
+     *
+     * @param fileName the file to write to
+     * @param password optional password if the archive has to be encrypted
+     * @throws IOException if opening the file fails
+     * @since 1.23
+     */
+    public SevenZOutputFile(final File fileName, char[] password) throws IOException {
+        this(
+            Files.newByteChannel(
+                fileName.toPath(),
+                EnumSet.of(StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)
+            ),
+            password
+        );
     }
 
     /**
@@ -95,8 +114,27 @@ public class SevenZOutputFile implements Closeable {
      * @since 1.13
      */
     public SevenZOutputFile(final SeekableByteChannel channel) throws IOException {
+        this(channel, null);
+    }
+
+    /**
+     * Prepares channel to write a 7z archive to.
+     *
+     * <p>{@link
+     * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
+     * allows you to write to an in-memory archive.</p>
+     *
+     * @param channel the channel to write to
+     * @param password optional password if the archive has to be encrypted
+     * @throws IOException if the channel cannot be positioned properly
+     * @since 1.23
+     */
+    public SevenZOutputFile(final SeekableByteChannel channel, char[] password) throws IOException {
         this.channel = channel;
         channel.position(SevenZFile.SIGNATURE_HEADER_SIZE);
+        if (password != null) {
+            this.aes256Options = new AES256Options(password);
+        }
     }
 
     /**
@@ -413,7 +451,19 @@ public class SevenZOutputFile implements Closeable {
 
     private Iterable<? extends SevenZMethodConfiguration> getContentMethods(final SevenZArchiveEntry entry) {
         final Iterable<? extends SevenZMethodConfiguration> ms = entry.getContentMethods();
-        return ms == null ? contentMethods : ms;
+        Iterable<? extends SevenZMethodConfiguration> iter = ms == null ? contentMethods : ms;
+
+        if (aes256Options != null) {
+            // prepend encryption 
+            iter =
+                Stream
+                    .concat(
+                        Stream.of(new SevenZMethodConfiguration(SevenZMethod.AES256SHA256, aes256Options)),
+                        StreamSupport.stream(iter.spliterator(), false)
+                    )
+                    .collect(Collectors.toList());
+        }
+        return iter;
     }
 
     private void writeHeader(final DataOutput header) throws IOException {
@@ -532,15 +582,15 @@ public class SevenZOutputFile implements Closeable {
 
     private void writeSubStreamsInfo(final DataOutput header) throws IOException {
         header.write(NID.kSubStreamsInfo);
-//
-//        header.write(NID.kCRC);
-//        header.write(1);
-//        for (final SevenZArchiveEntry entry : files) {
-//            if (entry.getHasCrc()) {
-//                header.writeInt(Integer.reverseBytes(entry.getCrc()));
-//            }
-//        }
-//
+        //
+        //        header.write(NID.kCRC);
+        //        header.write(1);
+        //        for (final SevenZArchiveEntry entry : files) {
+        //            if (entry.getHasCrc()) {
+        //                header.writeInt(Integer.reverseBytes(entry.getCrc()));
+        //            }
+        //        }
+        //
         header.write(NID.kEnd);
     }
 

@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.CharBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
@@ -137,7 +136,7 @@ public class SevenZFile implements Closeable {
      */
     public SevenZFile(final File fileName, final char[] password, final SevenZFileOptions options) throws IOException {
         this(Files.newByteChannel(fileName.toPath(), EnumSet.of(StandardOpenOption.READ)), // NOSONAR
-                fileName.getAbsolutePath(), utf16Decode(password), true, options);
+                fileName.getAbsolutePath(), AES256SHA256Decoder.utf16Decode(password), true, options);
     }
 
     /**
@@ -256,7 +255,7 @@ public class SevenZFile implements Closeable {
      */
     public SevenZFile(final SeekableByteChannel channel, final String fileName, final char[] password,
             final SevenZFileOptions options) throws IOException {
-        this(channel, fileName, utf16Decode(password), false, options);
+        this(channel, fileName, AES256SHA256Decoder.utf16Decode(password), false, options);
     }
 
     /**
@@ -2054,19 +2053,6 @@ public class SevenZFile implements Closeable {
             return lastSegment.substring(0, dotPos);
         }
         return lastSegment + "~";
-    }
-
-    private static byte[] utf16Decode(final char[] chars) {
-        if (chars == null) {
-            return null;
-        }
-        final ByteBuffer encoded = UTF_16LE.encode(CharBuffer.wrap(chars));
-        if (encoded.hasArray()) {
-            return encoded.array();
-        }
-        final byte[] e = new byte[encoded.remaining()];
-        encoded.get(e);
-        return e;
     }
 
     private static int assertFitsIntoNonNegativeInt(final String what, final long value) throws IOException {
