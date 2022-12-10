@@ -115,25 +115,21 @@ public final class ArTestCase extends AbstractTestCase {
             out.close();
         }
 
-        assertEquals(8
-                     + 60 + file1.length() + (file1.length() % 2)
-                     + 60 + file2.length() + (file2.length() % 2),
-                     output.length());
+        assertEquals(8 + 60 + file1.length() + (file1.length() % 2) + 60 + file2.length() + (file2.length() % 2), output.length());
 
         final File output2 = new File(dir, "bla2.ar");
 
         int copied = 0;
         int deleted = 0;
 
-        {
-            // remove all but one file
+        // remove all but one file
 
-            final InputStream is = Files.newInputStream(output.toPath());
-            final OutputStream os = Files.newOutputStream(output2.toPath());
-            final ArchiveOutputStream aos = new ArchiveStreamFactory().createArchiveOutputStream("ar", os);
-            final ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is));
-            while(true) {
-                final ArArchiveEntry entry = (ArArchiveEntry)ais.getNextEntry();
+        try (OutputStream os = Files.newOutputStream(output2.toPath());
+                InputStream is = Files.newInputStream(output.toPath());
+                ArchiveOutputStream aos = new ArchiveStreamFactory().createArchiveOutputStream("ar", os);
+                ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is))) {
+            while (true) {
+                final ArArchiveEntry entry = (ArArchiveEntry) ais.getNextEntry();
                 if (entry == null) {
                     break;
                 }
@@ -149,17 +145,11 @@ public final class ArTestCase extends AbstractTestCase {
                 }
 
             }
-            ais.close();
-            aos.close();
-            is.close();
-            os.close();
         }
 
         assertEquals(1, copied);
         assertEquals(1, deleted);
-        assertEquals(8
-                     + 60 + file1.length() + (file1.length() % 2),
-                     output2.length());
+        assertEquals(8 + 60 + file1.length() + (file1.length() % 2), output2.length());
 
         long files = 0;
         long sum = 0;
@@ -167,15 +157,15 @@ public final class ArTestCase extends AbstractTestCase {
         {
             final InputStream is = Files.newInputStream(output2.toPath());
             final ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is));
-            while(true) {
-                final ArArchiveEntry entry = (ArArchiveEntry)ais.getNextEntry();
+            while (true) {
+                final ArArchiveEntry entry = (ArArchiveEntry) ais.getNextEntry();
                 if (entry == null) {
                     break;
                 }
 
                 IOUtils.copy(ais, new ByteArrayOutputStream());
 
-                sum +=  entry.getLength();
+                sum += entry.getLength();
                 files++;
             }
             ais.close();
