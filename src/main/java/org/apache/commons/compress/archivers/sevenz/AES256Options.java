@@ -31,7 +31,7 @@ import javax.crypto.spec.SecretKeySpec;
  * @since 1.23
  * @see AES256SHA256Decoder
  */
-public class AES256Options {
+class AES256Options {
 
     private final byte[] salt;
     private final byte[] iv;
