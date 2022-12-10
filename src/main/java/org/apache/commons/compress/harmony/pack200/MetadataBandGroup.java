@@ -236,30 +236,49 @@ public class MetadataBandGroup extends BandSet {
 		final Iterator<Object> valuesIterator = values.iterator();
 		for (String tag : t) {
 			T.add(tag);
-			if (tag.equals("B") || tag.equals("C") || tag.equals("I") || tag.equals("S") || tag.equals("Z")) {
-				final Integer value = (Integer) valuesIterator.next();
-				caseI_KI.add(cpBands.getConstant(value));
-			} else if (tag.equals("D")) {
-				final Double value = (Double) valuesIterator.next();
-				caseD_KD.add(cpBands.getConstant(value));
-			} else if (tag.equals("F")) {
-				final Float value = (Float) valuesIterator.next();
-				caseF_KF.add(cpBands.getConstant(value));
-			} else if (tag.equals("J")) {
-				final Long value = (Long) valuesIterator.next();
-				caseJ_KJ.add(cpBands.getConstant(value));
-			} else if (tag.equals("c")) {
-				final String value = (String) valuesIterator.next();
-				casec_RS.add(cpBands.getCPSignature(value));
-			} else if (tag.equals("e")) {
-				final String value = (String) valuesIterator.next();
-				final String value2 = (String) valuesIterator.next();
-				caseet_RS.add(cpBands.getCPSignature(value));
-				caseec_RU.add(cpBands.getCPUtf8(value2));
-			} else if (tag.equals("s")) {
-				final String value = (String) valuesIterator.next();
-				cases_RU.add(cpBands.getCPUtf8(value));
-			}
+            switch (tag) {
+                case "B":
+                case "C":
+                case "I":
+                case "S":
+                case "Z": {
+                    final Integer value = (Integer) valuesIterator.next();
+                    caseI_KI.add(cpBands.getConstant(value));
+                    break;
+                }
+                case "D": {
+                    final Double value = (Double) valuesIterator.next();
+                    caseD_KD.add(cpBands.getConstant(value));
+                    break;
+                }
+                case "F": {
+                    final Float value = (Float) valuesIterator.next();
+                    caseF_KF.add(cpBands.getConstant(value));
+                    break;
+                }
+                case "J": {
+                    final Long value = (Long) valuesIterator.next();
+                    caseJ_KJ.add(cpBands.getConstant(value));
+                    break;
+                }
+                case "c": {
+                    final String value = (String) valuesIterator.next();
+                    casec_RS.add(cpBands.getCPSignature(value));
+                    break;
+                }
+                case "e": {
+                    final String value = (String) valuesIterator.next();
+                    final String value2 = (String) valuesIterator.next();
+                    caseet_RS.add(cpBands.getCPSignature(value));
+                    caseec_RU.add(cpBands.getCPUtf8(value2));
+                    break;
+                }
+                case "s": {
+                    final String value = (String) valuesIterator.next();
+                    cases_RU.add(cpBands.getCPUtf8(value));
+                    break;
+                }
+            }
 			// do nothing here for [ or @ (handled below)
 		}
 		for (Integer element : caseArrayN) {
@@ -304,30 +323,49 @@ public class MetadataBandGroup extends BandSet {
 		final Iterator<Object> valuesIterator = values.iterator();
 		for (String tag : tags) {
 			T.add(tag);
-			if (tag.equals("B") || tag.equals("C") || tag.equals("I") || tag.equals("S") || tag.equals("Z")) {
-				final Integer value = (Integer) valuesIterator.next();
-				caseI_KI.add(cpBands.getConstant(value));
-			} else if (tag.equals("D")) {
-				final Double value = (Double) valuesIterator.next();
-				caseD_KD.add(cpBands.getConstant(value));
-			} else if (tag.equals("F")) {
-				final Float value = (Float) valuesIterator.next();
-				caseF_KF.add(cpBands.getConstant(value));
-			} else if (tag.equals("J")) {
-				final Long value = (Long) valuesIterator.next();
-				caseJ_KJ.add(cpBands.getConstant(value));
-			} else if (tag.equals("c")) {
-				final String value = (String) valuesIterator.next();
-				casec_RS.add(cpBands.getCPSignature(value));
-			} else if (tag.equals("e")) {
-				final String value = (String) valuesIterator.next();
-				final String value2 = (String) valuesIterator.next();
-				caseet_RS.add(cpBands.getCPSignature(value));
-				caseec_RU.add(cpBands.getCPUtf8(value2));
-			} else if (tag.equals("s")) {
-				final String value = (String) valuesIterator.next();
-				cases_RU.add(cpBands.getCPUtf8(value));
-			}
+            switch (tag) {
+                case "B":
+                case "C":
+                case "I":
+                case "S":
+                case "Z": {
+                    final Integer value = (Integer) valuesIterator.next();
+                    caseI_KI.add(cpBands.getConstant(value));
+                    break;
+                }
+                case "D": {
+                    final Double value = (Double) valuesIterator.next();
+                    caseD_KD.add(cpBands.getConstant(value));
+                    break;
+                }
+                case "F": {
+                    final Float value = (Float) valuesIterator.next();
+                    caseF_KF.add(cpBands.getConstant(value));
+                    break;
+                }
+                case "J": {
+                    final Long value = (Long) valuesIterator.next();
+                    caseJ_KJ.add(cpBands.getConstant(value));
+                    break;
+                }
+                case "c": {
+                    final String value = (String) valuesIterator.next();
+                    casec_RS.add(cpBands.getCPSignature(value));
+                    break;
+                }
+                case "e": {
+                    final String value = (String) valuesIterator.next();
+                    final String value2 = (String) valuesIterator.next();
+                    caseet_RS.add(cpBands.getCPSignature(value));
+                    caseec_RU.add(cpBands.getCPUtf8(value2));
+                    break;
+                }
+                case "s": {
+                    final String value = (String) valuesIterator.next();
+                    cases_RU.add(cpBands.getCPUtf8(value));
+                    break;
+                }
+            }
 			// do nothing here for [ or @ (handled below)
 		}
 		for (Integer element : caseArrayN) {
@@ -390,34 +428,45 @@ public class MetadataBandGroup extends BandSet {
      */
     private void removeOnePair() {
         final String tag = T.remove(T.size() - 1);
-        if (tag.equals("B") || tag.equals("C") || tag.equals("I") || tag.equals("S") || tag.equals("Z")) {
-            caseI_KI.remove(caseI_KI.size() - 1);
-        } else if (tag.equals("D")) {
-            caseD_KD.remove(caseD_KD.size() - 1);
-        } else if (tag.equals("F")) {
-            caseF_KF.remove(caseF_KF.size() - 1);
-        } else if (tag.equals("J")) {
-            caseJ_KJ.remove(caseJ_KJ.size() - 1);
-        } else if (tag.equals("C")) {
-            casec_RS.remove(casec_RS.size() - 1);
-        } else if (tag.equals("e")) {
-            caseet_RS.remove(caseet_RS.size() - 1);
-            caseec_RU.remove(caseet_RS.size() - 1);
-        } else if (tag.equals("s")) {
-            cases_RU.remove(cases_RU.size() - 1);
-        } else if (tag.equals("[")) {
-            final int arraySize = casearray_N.remove(casearray_N.size() - 1);
-            numBackwardsCalls -= arraySize;
-            for (int k = 0; k < arraySize; k++) {
-                removeOnePair();
-            }
-        } else if (tag.equals("@")) {
-            nesttype_RS.remove(nesttype_RS.size() - 1);
-            final int numPairs = nestpair_N.remove(nestpair_N.size() - 1);
-            numBackwardsCalls -= numPairs;
-            for (int i = 0; i < numPairs; i++) {
-                removeOnePair();
-            }
+        switch (tag) {
+            case "B":
+            case "C":
+            case "I":
+            case "S":
+            case "Z":
+                caseI_KI.remove(caseI_KI.size() - 1);
+                break;
+            case "D":
+                caseD_KD.remove(caseD_KD.size() - 1);
+                break;
+            case "F":
+                caseF_KF.remove(caseF_KF.size() - 1);
+                break;
+            case "J":
+                caseJ_KJ.remove(caseJ_KJ.size() - 1);
+                break;
+            case "e":
+                caseet_RS.remove(caseet_RS.size() - 1);
+                caseec_RU.remove(caseet_RS.size() - 1);
+                break;
+            case "s":
+                cases_RU.remove(cases_RU.size() - 1);
+                break;
+            case "[":
+                final int arraySize = casearray_N.remove(casearray_N.size() - 1);
+                numBackwardsCalls -= arraySize;
+                for (int k = 0; k < arraySize; k++) {
+                    removeOnePair();
+                }
+                break;
+            case "@":
+                nesttype_RS.remove(nesttype_RS.size() - 1);
+                final int numPairs = nestpair_N.remove(nestpair_N.size() - 1);
+                numBackwardsCalls -= numPairs;
+                for (int i = 0; i < numPairs; i++) {
+                    removeOnePair();
+                }
+                break;
         }
     }
 
