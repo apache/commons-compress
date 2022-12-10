@@ -690,12 +690,12 @@ public final class ZipTestCase extends AbstractTestCase {
     }
 
     @Test
-    public void buildSplitZipWithTooSmallSizeThrowsException() throws IOException {
+    public void buildSplitZipWithTooSmallSizeThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> new ZipArchiveOutputStream(File.createTempFile("temp", "zip"), 64 * 1024 - 1));
     }
 
     @Test
-    public void buildSplitZipWithTooLargeSizeThrowsException() throws IOException {
+    public void buildSplitZipWithTooLargeSizeThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> new ZipArchiveOutputStream(File.createTempFile("temp", "zip"), 4294967295L + 1));
     }
 

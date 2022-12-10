@@ -316,7 +316,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void limitExtractionMemory() throws IOException {
+    public void limitExtractionMemory() {
         assertThrows(MemoryLimitException.class, () -> {
             try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"), SevenZFileOptions.builder().withMaxMemoryLimitInKb(1).build())) {
                 // Do nothing. Exception should be thrown

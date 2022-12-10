@@ -64,7 +64,7 @@ public class ExpanderTest extends AbstractTestCase {
     }
 
     @Test
-    public void sevenZInputStreamVersion() throws IOException, ArchiveException {
+    public void sevenZInputStreamVersion() throws IOException {
         setup7z();
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
             assertThrows(StreamingNotSupportedException.class, () -> new Expander().expand("7z", i, resultDir));
@@ -72,7 +72,7 @@ public class ExpanderTest extends AbstractTestCase {
     }
 
     @Test
-    public void sevenZInputStreamVersionWithAutoDetection() throws IOException, ArchiveException {
+    public void sevenZInputStreamVersionWithAutoDetection() throws IOException {
         setup7z();
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
             assertThrows(StreamingNotSupportedException.class, () -> new Expander().expand(i, resultDir));
@@ -89,7 +89,7 @@ public class ExpanderTest extends AbstractTestCase {
     }
 
     @Test
-    public void sevenZFileVersion() throws IOException, ArchiveException {
+    public void sevenZFileVersion() throws IOException {
         setup7z();
         try (SevenZFile f = new SevenZFile(archive)) {
             new Expander().expand(f, resultDir);

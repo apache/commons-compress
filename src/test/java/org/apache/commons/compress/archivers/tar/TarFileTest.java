@@ -288,12 +288,12 @@ public class TarFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void testParseTarWithSpecialPaxHeaders() throws IOException {
+    public void testParseTarWithSpecialPaxHeaders() {
         assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-530.tar")));
     }
 
     @Test
-    public void testParseTarWithNonNumberPaxHeaders() throws IOException {
+    public void testParseTarWithNonNumberPaxHeaders() {
         assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-529.tar")));
     }
 
@@ -308,12 +308,12 @@ public class TarFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void testThrowExceptionWithNullEntry() throws IOException {
+    public void testThrowExceptionWithNullEntry() {
         assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-554.tar")));
     }
 
     @Test
-    public void testThrowException() throws IOException {
+    public void testThrowException() {
         assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-553.tar")));
     }
 

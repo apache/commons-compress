@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 public class ZipSplitReadOnlySeekableByteChannelTest {
 
     @Test
-    public void constructorThrowsOnNullArg() throws IOException {
+    public void constructorThrowsOnNullArg() {
         assertThrows(NullPointerException.class, () -> new ZipSplitReadOnlySeekableByteChannel(null));
     }
 
@@ -61,12 +61,12 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void forOrderedSeekableByteChannelsThrowsOnNullArg() throws IOException {
+    public void forOrderedSeekableByteChannelsThrowsOnNullArg() {
         assertThrows(NullPointerException.class, () -> ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(null));
     }
 
     @Test
-    public void forOrderedSeekableByteChannelsOfTwoParametersThrowsOnNullArg() throws IOException {
+    public void forOrderedSeekableByteChannelsOfTwoParametersThrowsOnNullArg() {
         assertThrows(NullPointerException.class, () -> ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(null, null));
     }
 
@@ -100,12 +100,12 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void forFilesThrowsOnNullArg() throws IOException {
+    public void forFilesThrowsOnNullArg() {
         assertThrows(NullPointerException.class, () -> ZipSplitReadOnlySeekableByteChannel.forFiles(null));
     }
 
     @Test
-    public void forFilesOfTwoParametersThrowsOnNullArg() throws IOException {
+    public void forFilesOfTwoParametersThrowsOnNullArg() {
         assertThrows(NullPointerException.class, () -> ZipSplitReadOnlySeekableByteChannel.forFiles(null, null));
     }
 
@@ -172,12 +172,12 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void forPathsThrowsOnNullArg() throws IOException {
+    public void forPathsThrowsOnNullArg() {
         assertThrows(NullPointerException.class, () -> ZipSplitReadOnlySeekableByteChannel.forPaths(null));
     }
 
     @Test
-    public void forPathsOfTwoParametersThrowsOnNullArg() throws IOException {
+    public void forPathsOfTwoParametersThrowsOnNullArg() {
         assertThrows(NullPointerException.class, () -> ZipSplitReadOnlySeekableByteChannel.forPaths(null, null));
     }
 

@@ -87,12 +87,12 @@ public class ByteUtilsTest {
     }
 
     @Test
-    public void fromLittleEndianFromStreamThrowsForLengthTooBig() throws IOException {
+    public void fromLittleEndianFromStreamThrowsForLengthTooBig() {
         assertThrows(IllegalArgumentException.class, () -> fromLittleEndian(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 9));
     }
 
     @Test
-    public void fromLittleEndianFromStreamThrowsForPrematureEnd() throws IOException {
+    public void fromLittleEndianFromStreamThrowsForPrematureEnd() {
         final ByteArrayInputStream bin = new ByteArrayInputStream(new byte[] { 2, 3 });
         assertThrows(IOException.class, () -> fromLittleEndian(bin, 3));
     }
@@ -111,12 +111,12 @@ public class ByteUtilsTest {
     }
 
     @Test
-    public void fromLittleEndianFromSupplierThrowsForLengthTooBig() throws IOException {
+    public void fromLittleEndianFromSupplierThrowsForLengthTooBig() {
         assertThrows(IllegalArgumentException.class, () -> fromLittleEndian(new InputStreamByteSupplier(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)), 9));
     }
 
     @Test
-    public void fromLittleEndianFromSupplierThrowsForPrematureEnd() throws IOException {
+    public void fromLittleEndianFromSupplierThrowsForPrematureEnd() {
         final ByteArrayInputStream bin = new ByteArrayInputStream(new byte[] { 2, 3 });
         assertThrows(IOException.class, () -> fromLittleEndian(new InputStreamByteSupplier(bin), 3));
     }
@@ -134,13 +134,13 @@ public class ByteUtilsTest {
     }
 
     @Test
-    public void fromLittleEndianFromDataInputThrowsForLengthTooBig() throws IOException {
+    public void fromLittleEndianFromDataInputThrowsForLengthTooBig() {
         final DataInput din = new DataInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
         assertThrows(IllegalArgumentException.class, () -> fromLittleEndian(din, 9));
     }
 
     @Test
-    public void fromLittleEndianFromDataInputThrowsForPrematureEnd() throws IOException {
+    public void fromLittleEndianFromDataInputThrowsForPrematureEnd() {
         final DataInput din = new DataInputStream(new ByteArrayInputStream(new byte[] { 2, 3 }));
         assertThrows(EOFException.class, () -> fromLittleEndian(din, 3));
     }

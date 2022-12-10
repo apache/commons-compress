@@ -32,12 +32,12 @@ import org.junit.jupiter.api.Test;
 public class ZipSplitOutputStreamTest extends AbstractTestCase {
 
     @Test
-    public void throwsExceptionIfSplitSizeIsTooSmall() throws IOException {
+    public void throwsExceptionIfSplitSizeIsTooSmall() {
         assertThrows(IllegalArgumentException.class, () -> new ZipSplitOutputStream(File.createTempFile("temp", "zip"), (64 * 1024 - 1)));
     }
 
     @Test
-    public void throwsExceptionIfSplitSizeIsTooLarge() throws IOException {
+    public void throwsExceptionIfSplitSizeIsTooLarge() {
         assertThrows(IllegalArgumentException.class, () -> new ZipSplitOutputStream(File.createTempFile("temp", "zip"), (4 * 1024 * 1024 * 1024L)));
     }
 

@@ -42,7 +42,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
     final ClassLoader classLoader = getClass().getClassLoader();
 
     @Test
-    public void testDetectionNotArchive() throws IOException {
+    public void testDetectionNotArchive() {
         assertThrows(ArchiveException.class, () -> getStreamFor("test.txt"));
     }
 

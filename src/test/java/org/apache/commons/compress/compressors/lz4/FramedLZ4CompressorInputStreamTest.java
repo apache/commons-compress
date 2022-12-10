@@ -152,7 +152,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsNonLZ4Stream() throws IOException {
+    public void rejectsNonLZ4Stream() {
         assertThrows(IOException.class, () -> new FramedLZ4CompressorInputStream(Files.newInputStream(getFile("bla.tar").toPath())));
     }
 
@@ -590,17 +590,17 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void backreferenceOfSize0CausesIOException() throws IOException {
+    public void backreferenceOfSize0CausesIOException() {
         expectIOException("COMPRESS-490/ArithmeticException.lz4");
     }
 
     @Test
-    public void backreferenceAtStartCausesIOException() throws IOException {
+    public void backreferenceAtStartCausesIOException() {
         expectIOException("COMPRESS-490/ArrayIndexOutOfBoundsException1.lz4");
     }
 
     @Test
-    public void backreferenceWithOffsetTooBigCausesIOException() throws IOException {
+    public void backreferenceWithOffsetTooBigCausesIOException() {
         expectIOException("COMPRESS-490/ArrayIndexOutOfBoundsException2.lz4");
     }
 

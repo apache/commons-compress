@@ -34,7 +34,8 @@ public class AbstractLZ77CompressorInputStreamTest {
     private static class TestStream extends AbstractLZ77CompressorInputStream {
 
         private boolean literal;
-        TestStream(final InputStream in) throws IOException {
+
+        TestStream(final InputStream in) {
             super(in, 1024);
         }
 

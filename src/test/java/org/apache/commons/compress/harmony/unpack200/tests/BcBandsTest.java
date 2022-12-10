@@ -688,11 +688,11 @@ public class BcBandsTest extends AbstractBandsTestCase {
         assertEquals(3, bc_initrefref.length);
     }
 
-    public void testBcEscRefBands() throws IOException, Pack200Exception {
+    public void testBcEscRefBands() {
         // TODO
     }
 
-    public void testBcEscBands() throws IOException, Pack200Exception {
+    public void testBcEscBands() {
         // TODO
     }
 

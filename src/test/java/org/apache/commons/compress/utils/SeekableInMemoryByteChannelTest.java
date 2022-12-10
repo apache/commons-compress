@@ -96,7 +96,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    public void shouldThrowExceptionOnReadingClosedChannel() throws IOException {
+    public void shouldThrowExceptionOnReadingClosedChannel() {
         //given
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
         //when
@@ -137,7 +137,7 @@ public class SeekableInMemoryByteChannelTest {
 
 
     @Test
-    public void shouldThrowExceptionOnWritingToClosedChannel() throws IOException {
+    public void shouldThrowExceptionOnWritingToClosedChannel() {
         //given
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
         //when
@@ -186,7 +186,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenSettingIncorrectPosition() throws IOException {
+    public void shouldThrowExceptionWhenSettingIncorrectPosition() {
         //given
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
         //when

@@ -35,7 +35,7 @@ public class ArchiveServiceLoaderTest {
     }
 
     @Test
-    public void testOutputStream() throws ArchiveException {
+    public void testOutputStream() {
         assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ArchiveTestOutput1", new ByteArrayOutputStream()));
     }
 

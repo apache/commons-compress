@@ -241,7 +241,7 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void negativeOffsetInConstructorNotAllowed() throws IOException {
+    public void negativeOffsetInConstructorNotAllowed() {
         // @formatter:off
         byte[] entryContent = ("test1.xml\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
                 "\u0000" +

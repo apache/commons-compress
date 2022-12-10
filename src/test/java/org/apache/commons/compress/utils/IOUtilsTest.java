@@ -81,7 +81,7 @@ public class IOUtilsTest {
     }
 
     @Test
-    public void readFullyOnChannelThrowsEof() throws IOException {
+    public void readFullyOnChannelThrowsEof() {
         final ByteBuffer b = ByteBuffer.allocate(21);
         final byte[] source = new byte[20];
         for (byte i = 0; i < 20; i++) {
@@ -91,12 +91,12 @@ public class IOUtilsTest {
     }
 
     @Test
-    public void copyThrowsOnZeroBufferSize() throws IOException {
+    public void copyThrowsOnZeroBufferSize() {
         assertThrows(IllegalArgumentException.class, () -> IOUtils.copy(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), new ByteArrayOutputStream(), 0));
     }
 
     @Test
-    public void copyRangeThrowsOnZeroBufferSize() throws IOException {
+    public void copyRangeThrowsOnZeroBufferSize() {
         assertThrows(IllegalArgumentException.class,
             () -> IOUtils.copyRange(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 5, new ByteArrayOutputStream(), 0));
     }

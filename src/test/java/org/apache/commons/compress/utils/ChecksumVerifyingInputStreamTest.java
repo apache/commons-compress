@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 public class ChecksumVerifyingInputStreamTest {
 
     @Test
-    public void testReadTakingByteArrayThrowsIOException() throws IOException {
+    public void testReadTakingByteArrayThrowsIOException() {
         final Adler32 adler32 = new Adler32();
         final byte[] byteArray = new byte[3];
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
@@ -45,7 +45,7 @@ public class ChecksumVerifyingInputStreamTest {
     }
 
     @Test
-    public void testReadTakingNoArgumentsThrowsIOException() throws IOException {
+    public void testReadTakingNoArgumentsThrowsIOException() {
         final CRC32 cRC32_ = new CRC32();
         final byte[] byteArray = new byte[9];
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);

@@ -73,7 +73,7 @@ public class PythonTruncatedBzip2Test {
     }
 
     @Test
-    public void testTruncatedData() throws IOException {
+    public void testTruncatedData() {
         // with BZ2File(self.filename) as f:
         // self.assertRaises(EOFError, f.read)
         System.out.println("Attempt to read the whole thing in, should throw ...");
