@@ -874,7 +874,6 @@ class BlockSort {
                     stack_ll[sp] = lo;
                     stack_hh[sp] = hi;
                     stack_dd[sp] = d1;
-                    sp++;
                 } else {
                     int n = Math.min(ltLo - lo, unLo - ltLo);
                     vswap(fmap, lo, unLo - n, n);
@@ -897,8 +896,8 @@ class BlockSort {
                     stack_ll[sp] = m;
                     stack_hh[sp] = hi;
                     stack_dd[sp] = d;
-                    sp++;
                 }
+                sp++;
             }
         }
     }
