@@ -24,11 +24,26 @@ import java.io.OutputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 
 /**
- * Base Codec class.
+ * Abstracts a base Codec class.
  */
 abstract class CoderBase {
-    private final Class<?>[] acceptableOptions;
+
     /**
+     * If the option represents a number, return its integer value, otherwise return the given default value.
+     *
+     * @param options      A Number.
+     * @param defaultValue A default value if options is not a number.
+     * @return The given number or default value.
+     */
+    protected static int numberOptionOrDefault(final Object options, final int defaultValue) {
+        return options instanceof Number ? ((Number) options).intValue() : defaultValue;
+    }
+
+    private final Class<?>[] acceptableOptions;
+
+    /**
+     * Constructs a new instance.
+     *
      * @param acceptableOptions types that can be used as options for this codec.
      */
     protected CoderBase(final Class<?>... acceptableOptions) {
@@ -36,6 +51,8 @@ abstract class CoderBase {
     }
 
     /**
+     * Tests whether this method can extract options from the given object.
+     *
      * @return whether this method can extract options from the given object.
      */
     boolean canAcceptOptions(final Object opts) {
@@ -48,38 +65,40 @@ abstract class CoderBase {
     }
 
     /**
-     * @return property-bytes to write in a Folder block
-     */
-    byte[] getOptionsAsProperties(final Object options) throws IOException {
-        return ByteUtils.EMPTY_BYTE_ARRAY;
-    }
-
-    /**
-     * @return configuration options that have been used to create the given InputStream from the given Coder
-     */
-    Object getOptionsFromCoder(final Coder coder, final InputStream in) throws IOException {
-        return null;
-    }
-
-    /**
+     * Decodes using stream that reads from in using the configured coder and password.
+     *
      * @return a stream that reads from in using the configured coder and password.
      */
-    abstract InputStream decode(final String archiveName,
-        final InputStream in, long uncompressedLength,
-        final Coder coder, byte[] password, int maxMemoryLimitInKb) throws IOException;
+    abstract InputStream decode(final String archiveName, final InputStream in, long uncompressedLength, final Coder coder, byte[] password,
+            int maxMemoryLimitInKb) throws IOException;
 
     /**
+     * Encodes using a stream that writes to out using the given configuration.
+     *
      * @return a stream that writes to out using the given configuration.
+     * @throws IOException Optionally thrown by subclassses.
      */
     OutputStream encode(final OutputStream out, final Object options) throws IOException {
         throw new UnsupportedOperationException("Method doesn't support writing");
     }
 
     /**
-     * If the option represents a number, return its integer
-     * value, otherwise return the given default value.
+     * Gets property bytes to write in a Folder block.
+     *
+     * @return property bytes to write in a Folder block.
+     * @throws IOException Optionally thrown by subclassses.
      */
-    protected static int numberOptionOrDefault(final Object options, final int defaultValue) {
-        return options instanceof Number ? ((Number) options).intValue() : defaultValue;
+    byte[] getOptionsAsProperties(final Object options) throws IOException {
+        return ByteUtils.EMPTY_BYTE_ARRAY;
+    }
+
+    /**
+     * Gets configuration options that have been used to create the given InputStream from the given Coder.
+     *
+     * @return configuration options that have been used to create the given InputStream from the given Coder
+     * @throws IOException Optionally thrown by subclassses.
+     */
+    Object getOptionsFromCoder(final Coder coder, final InputStream in) throws IOException {
+        return null;
     }
 }
