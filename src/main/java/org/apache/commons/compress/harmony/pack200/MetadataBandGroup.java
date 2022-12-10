@@ -352,8 +352,7 @@ public class MetadataBandGroup extends BandSet {
 		}
 		nestTypeRS.forEach(element -> nesttype_RS.add(cpBands.getCPSignature(element)));
 		nestNameRU.forEach(element -> nestname_RU.add(cpBands.getCPUtf8(element)));
-		for (Integer element : nestPairN) {
-			final Integer numPairs = element;
+		for (Integer numPairs : nestPairN) {
 			nestpair_N.add(numPairs.intValue());
 			numBackwardsCalls += numPairs.intValue();
 		}
