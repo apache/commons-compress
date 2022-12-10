@@ -100,10 +100,7 @@ public class DataDescriptorTest {
             zos.closeArchiveEntry();
         }
 
-        final byte[] data;
-        try (InputStream fis = Files.newInputStream(f.toPath())) {
-            data = IOUtils.toByteArray(fis);
-        }
+        final byte[] data = Files.readAllBytes(f.toPath());
 
         final byte[] versionInLFH = Arrays.copyOfRange(data, 4, 6);
         // still 2.0 because of Deflate

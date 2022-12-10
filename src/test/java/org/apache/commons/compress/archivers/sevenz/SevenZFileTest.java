@@ -278,10 +278,7 @@ public class SevenZFileTest extends AbstractTestCase {
 
     @Test
     public void getEntriesOfUnarchiveInMemoryTest() throws IOException {
-        byte[] data = null;
-        try (InputStream fis = Files.newInputStream(getFile("bla.7z").toPath())) {
-            data = IOUtils.toByteArray(fis);
-        }
+        byte[] data = Files.readAllBytes(getFile("bla.7z").toPath());
         try (SevenZFile sevenZFile = new SevenZFile(new SeekableInMemoryByteChannel(data))) {
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
             final Iterator<SevenZArchiveEntry> iter = entries.iterator();

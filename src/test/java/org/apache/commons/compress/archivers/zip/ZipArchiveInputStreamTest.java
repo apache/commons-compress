@@ -413,10 +413,7 @@ public class ZipArchiveInputStreamTest {
 
     @Test
     public void singleByteReadThrowsAtEofForCorruptedStoredEntry() throws Exception {
-        byte[] content;
-        try (InputStream fs = Files.newInputStream(getFile("COMPRESS-264.zip").toPath())) {
-            content = IOUtils.toByteArray(fs);
-        }
+        byte[] content = Files.readAllBytes(getFile("COMPRESS-264.zip").toPath());
         // make size much bigger than entry's real size
         for (int i = 17; i < 26; i++) {
             content[i] = (byte) 0xff;
@@ -447,10 +444,7 @@ public class ZipArchiveInputStreamTest {
 
     @Test
     public void multiByteReadThrowsAtEofForCorruptedStoredEntry() throws Exception {
-        byte[] content;
-        try (InputStream fs = Files.newInputStream(getFile("COMPRESS-264.zip").toPath())) {
-            content = IOUtils.toByteArray(fs);
-        }
+        byte[] content = Files.readAllBytes(getFile("COMPRESS-264.zip").toPath());
         // make size much bigger than entry's real size
         for (int i = 17; i < 26; i++) {
             content[i] = (byte) 0xff;

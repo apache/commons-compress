@@ -158,29 +158,31 @@ public class ParallelScatterZipCreatorTest {
             final Enumeration<ZipArchiveEntry> entriesInPhysicalOrder = zf.getEntriesInPhysicalOrder();
             while (entriesInPhysicalOrder.hasMoreElements()) {
                 final ZipArchiveEntry zipArchiveEntry = entriesInPhysicalOrder.nextElement();
-                final InputStream inputStream = zf.getInputStream(zipArchiveEntry);
-                final byte[] actual = IOUtils.toByteArray(inputStream);
-                final byte[] expected = entries.remove(zipArchiveEntry.getName());
-                assertArrayEquals("For " + zipArchiveEntry.getName(), expected, actual);
+                try (final InputStream inputStream = zf.getInputStream(zipArchiveEntry)) {
+                    final byte[] actual = IOUtils.toByteArray(inputStream);
+                    final byte[] expected = entries.remove(zipArchiveEntry.getName());
+                    assertArrayEquals("For " + zipArchiveEntry.getName(), expected, actual);
+                }
             }
         }
         assertNotNull(zipCreator.getStatisticsMessage());
     }
 
     private void removeEntriesFoundInZipFile(final File result, final Map<String, byte[]> entries) throws IOException {
-        final ZipFile zf = new ZipFile(result);
-        final Enumeration<ZipArchiveEntry> entriesInPhysicalOrder = zf.getEntriesInPhysicalOrder();
-        int i = 0;
-        while (entriesInPhysicalOrder.hasMoreElements()){
-            final ZipArchiveEntry zipArchiveEntry = entriesInPhysicalOrder.nextElement();
-            final InputStream inputStream = zf.getInputStream(zipArchiveEntry);
-            final byte[] actual = IOUtils.toByteArray(inputStream);
-            final byte[] expected = entries.remove(zipArchiveEntry.getName());
-            assertArrayEquals( "For " + zipArchiveEntry.getName(),  expected, actual);
-            // check order of zip entries vs order of order of addition to the parallel zip creator
-            assertEquals( "For " + zipArchiveEntry.getName(),  "file" + i++, zipArchiveEntry.getName());
+        try (ZipFile zf = new ZipFile(result)) {
+            final Enumeration<ZipArchiveEntry> entriesInPhysicalOrder = zf.getEntriesInPhysicalOrder();
+            int i = 0;
+            while (entriesInPhysicalOrder.hasMoreElements()) {
+                final ZipArchiveEntry zipArchiveEntry = entriesInPhysicalOrder.nextElement();
+                try (InputStream inputStream = zf.getInputStream(zipArchiveEntry)) {
+                    final byte[] actual = IOUtils.toByteArray(inputStream);
+                    final byte[] expected = entries.remove(zipArchiveEntry.getName());
+                    assertArrayEquals("For " + zipArchiveEntry.getName(), expected, actual);
+                }
+                // check order of zip entries vs order of order of addition to the parallel zip creator
+                assertEquals("For " + zipArchiveEntry.getName(), "file" + i++, zipArchiveEntry.getName());
+            }
         }
-        zf.close();
     }
 
     private Map<String, byte[]> writeEntries(final ParallelScatterZipCreator zipCreator) {
@@ -221,8 +223,8 @@ public class ParallelScatterZipCreatorTest {
 
     /**
      * Try to compress the files in src/test/resources with size no bigger than
-     * {@value EXPECTED_FILES_NUMBER} and with a mount of files no bigger than
-     * {@value EXPECTED_FILES_NUMBER}
+     * {@value #EXPECTED_FILES_NUMBER} and with a mount of files no bigger than
+     * {@value #EXPECTED_FILES_NUMBER}
      *
      * @param zipCreator The ParallelScatterZipCreator
      * @param consumer   The parallel consumer
@@ -245,7 +247,7 @@ public class ParallelScatterZipCreatorTest {
                 continue;
             }
 
-            entries.put(file.getName(), IOUtils.toByteArray(Files.newInputStream(file.toPath())));
+            entries.put(file.getName(), Files.readAllBytes(file.toPath()));
 
             final ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(file.getName());
             zipArchiveEntry.setMethod(ZipEntry.DEFLATED);

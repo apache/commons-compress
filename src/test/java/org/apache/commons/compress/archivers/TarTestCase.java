@@ -53,19 +53,21 @@ public final class TarTestCase extends AbstractTestCase {
         final File output = new File(dir, "bla.tar");
         final File file1 = getFile("test1.xml");
         final OutputStream out = Files.newOutputStream(output.toPath());
-        final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("tar", out);
-        final TarArchiveEntry entry = new TarArchiveEntry("testdata/test1.xml");
-        entry.setModTime(0);
-        entry.setSize(file1.length());
-        entry.setUserId(0);
-        entry.setGroupId(0);
-        entry.setUserName("avalon");
-        entry.setGroupName("excalibur");
-        entry.setMode(0100000);
-        os.putArchiveEntry(entry);
-        IOUtils.copy(Files.newInputStream(file1.toPath()), os);
-        os.closeArchiveEntry();
-        os.close();
+        try (ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("tar", out)) {
+            final TarArchiveEntry entry = new TarArchiveEntry("testdata/test1.xml");
+            entry.setModTime(0);
+            entry.setSize(file1.length());
+            entry.setUserId(0);
+            entry.setGroupId(0);
+            entry.setUserName("avalon");
+            entry.setGroupName("excalibur");
+            entry.setMode(0100000);
+            os.putArchiveEntry(entry);
+            try (final InputStream iInputStream = Files.newInputStream(file1.toPath())) {
+                IOUtils.copy(iInputStream, os);
+            }
+            os.closeArchiveEntry();
+        }
     }
 
     @Test
@@ -87,12 +89,12 @@ public final class TarTestCase extends AbstractTestCase {
         entry.setGroupName("excalibur");
         entry.setMode(0100000);
         os.putArchiveEntry(entry);
-        final InputStream in = Files.newInputStream(file1.toPath());
-        IOUtils.copy(in, os);
-        os.closeArchiveEntry();
-        os.close();
-        out.close();
-        in.close();
+        try (final InputStream in = Files.newInputStream(file1.toPath())) {
+            IOUtils.copy(in, os);
+            os.closeArchiveEntry();
+            os.close();
+            out.close();
+        }
 
 
         ArchiveOutputStream os2 = null;
@@ -470,16 +472,15 @@ public final class TarTestCase extends AbstractTestCase {
     @Test
     public void testCOMPRESS178() throws Exception {
         final File input = getFile("COMPRESS-178.tar");
-        final InputStream is = Files.newInputStream(input.toPath());
-        final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("tar", is);
-        try {
-            in.getNextEntry();
-            fail("Expected IOException");
-        } catch (final IOException e) {
-            final Throwable t = e.getCause();
-            assertTrue("Expected cause = IllegalArgumentException", t instanceof IllegalArgumentException);
+        try (InputStream is = Files.newInputStream(input.toPath()); ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("tar", is)) {
+            try {
+                in.getNextEntry();
+                fail("Expected IOException");
+            } catch (final IOException e) {
+                final Throwable t = e.getCause();
+                assertTrue("Expected cause = IllegalArgumentException", t instanceof IllegalArgumentException);
+            }
         }
-        in.close();
     }
 
     @Test
