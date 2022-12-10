@@ -52,7 +52,7 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void forFilesThrowsOnNullArg() throws IOException {
+    public void forFilesThrowsOnNullArg() {
         assertThrows(NullPointerException.class, () -> MultiReadOnlySeekableByteChannel.forFiles(null));
     }
 
@@ -118,19 +118,19 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void cantTruncate() throws IOException {
+    public void cantTruncate() {
         final SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty());
         assertThrows(NonWritableChannelException.class, () -> s.truncate(1));
     }
 
     @Test
-    public void cantWrite() throws IOException {
+    public void cantWrite() {
         final SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty());
         assertThrows(NonWritableChannelException.class, () -> s.write(ByteBuffer.allocate(10)));
     }
 
     @Test
-    public void cantPositionToANegativePosition() throws IOException {
+    public void cantPositionToANegativePosition() {
         final SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty());
         assertThrows(IllegalArgumentException.class, () -> s.position(-1));
     }
