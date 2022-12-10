@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
@@ -1149,20 +1151,14 @@ public class ClassBands extends BandSet {
     }
 
     /**
-     * Answer an ArrayList of ArrayLists which hold the code attributes corresponding to all classes in order.
+     * Gets an ArrayList of ArrayLists which hold the code attributes corresponding to all classes in order.
      *
      * If a class doesn't have any attributes, the corresponding element in this list will be an empty ArrayList.
      *
      * @return ArrayList
      */
     public ArrayList<List<Attribute>> getOrderedCodeAttributes() {
-        final ArrayList<List<Attribute>> orderedAttributeList = new ArrayList<>(codeAttributes.length);
-        for (List<Attribute> codeAttribute : codeAttributes) {
-            final List<Attribute> currentAttributes = new ArrayList<>(codeAttribute.size());
-            currentAttributes.addAll(codeAttribute);
-            orderedAttributeList.add(currentAttributes);
-        }
-        return orderedAttributeList;
+        return Stream.of(codeAttributes).map(ArrayList::new).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public ArrayList<Attribute>[][] getMethodAttributes() {
