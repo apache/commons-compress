@@ -44,7 +44,7 @@ import org.tukaani.xz.SPARCOptions;
 import org.tukaani.xz.X86Options;
 
 class Coders {
-    private static final Map<SevenZMethod, CoderBase> CODER_MAP = new HashMap<SevenZMethod, CoderBase>() {
+    private static final Map<SevenZMethod, AbstractCoder> CODER_MAP = new HashMap<SevenZMethod, AbstractCoder>() {
 
         private static final long serialVersionUID = 1664829131806520867L;
 
@@ -66,13 +66,13 @@ class Coders {
         }
     };
 
-    static CoderBase findByMethod(final SevenZMethod method) {
+    static AbstractCoder findByMethod(final SevenZMethod method) {
         return CODER_MAP.get(method);
     }
 
     static InputStream addDecoder(final String archiveName, final InputStream is, final long uncompressedLength,
             final Coder coder, final byte[] password, final int maxMemoryLimitInKb) throws IOException {
-        final CoderBase cb = findByMethod(SevenZMethod.byId(coder.decompressionMethodId));
+        final AbstractCoder cb = findByMethod(SevenZMethod.byId(coder.decompressionMethodId));
         if (cb == null) {
             throw new IOException("Unsupported compression method " +
                                   Arrays.toString(coder.decompressionMethodId)
@@ -83,14 +83,14 @@ class Coders {
 
     static OutputStream addEncoder(final OutputStream out, final SevenZMethod method,
                                    final Object options) throws IOException {
-        final CoderBase cb = findByMethod(method);
+        final AbstractCoder cb = findByMethod(method);
         if (cb == null) {
             throw new IOException("Unsupported compression method " + method);
         }
         return cb.encode(out, options);
     }
 
-    static class CopyDecoder extends CoderBase {
+    static class CopyDecoder extends AbstractCoder {
         @Override
         InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
                 final Coder coder, final byte[] password, final int maxMemoryLimitInKb) throws IOException {
@@ -102,7 +102,7 @@ class Coders {
         }
     }
 
-    static class BCJDecoder extends CoderBase {
+    static class BCJDecoder extends AbstractCoder {
         private final FilterOptions opts;
         BCJDecoder(final FilterOptions opts) {
             this.opts = opts;
@@ -128,13 +128,12 @@ class Coders {
         }
     }
 
-    static class DeflateDecoder extends CoderBase {
+    static class DeflateDecoder extends AbstractCoder {
         private static final byte[] ONE_ZERO_BYTE = new byte[1];
         DeflateDecoder() {
             super(Number.class);
         }
 
-        @SuppressWarnings("resource") // caller must close the InputStream
         @Override
         InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
                 final Coder coder, final byte[] password, final int maxMemoryLimitInKb)
@@ -152,7 +151,7 @@ class Coders {
 
         @Override
         OutputStream encode(final OutputStream out, final Object options) {
-            final int level = numberOptionOrDefault(options, 9);
+            final int level = toInt(options, 9);
             final Deflater deflater = new Deflater(level, true);
             final DeflaterOutputStream deflaterOutputStream = new DeflaterOutputStream(out, deflater);
             return new DeflateDecoderOutputStream(deflaterOutputStream, deflater);
@@ -231,12 +230,11 @@ class Coders {
         }
     }
 
-    static class Deflate64Decoder extends CoderBase {
+    static class Deflate64Decoder extends AbstractCoder {
         Deflate64Decoder() {
             super(Number.class);
         }
 
-        @SuppressWarnings("resource") // caller must close the InputStream
         @Override
         InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
                 final Coder coder, final byte[] password, final int maxMemoryLimitInKb)
@@ -245,7 +243,7 @@ class Coders {
         }
     }
 
-    static class BZIP2Decoder extends CoderBase {
+    static class BZIP2Decoder extends AbstractCoder {
         BZIP2Decoder() {
             super(Number.class);
         }
@@ -259,7 +257,7 @@ class Coders {
         @Override
         OutputStream encode(final OutputStream out, final Object options)
                 throws IOException {
-            final int blockSize = numberOptionOrDefault(options, BZip2CompressorOutputStream.MAX_BLOCKSIZE);
+            final int blockSize = toInt(options, BZip2CompressorOutputStream.MAX_BLOCKSIZE);
             return new BZip2CompressorOutputStream(out, blockSize);
         }
     }

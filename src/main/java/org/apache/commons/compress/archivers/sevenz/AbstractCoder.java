@@ -20,13 +20,15 @@ package org.apache.commons.compress.archivers.sevenz;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.utils.ByteUtils;
 
 /**
  * Abstracts a base Codec class.
  */
-abstract class CoderBase {
+abstract class AbstractCoder {
 
     /**
      * If the option represents a number, return its integer value, otherwise return the given default value.
@@ -35,33 +37,19 @@ abstract class CoderBase {
      * @param defaultValue A default value if options is not a number.
      * @return The given number or default value.
      */
-    protected static int numberOptionOrDefault(final Object options, final int defaultValue) {
+    protected static int toInt(final Object options, final int defaultValue) {
         return options instanceof Number ? ((Number) options).intValue() : defaultValue;
     }
 
-    private final Class<?>[] acceptableOptions;
+    private final Class<?>[] optionClasses;
 
     /**
      * Constructs a new instance.
      *
-     * @param acceptableOptions types that can be used as options for this codec.
+     * @param optionClasses types that can be used as options for this codec.
      */
-    protected CoderBase(final Class<?>... acceptableOptions) {
-        this.acceptableOptions = acceptableOptions;
-    }
-
-    /**
-     * Tests whether this method can extract options from the given object.
-     *
-     * @return whether this method can extract options from the given object.
-     */
-    boolean canAcceptOptions(final Object opts) {
-        for (final Class<?> c : acceptableOptions) {
-            if (c.isInstance(opts)) {
-                return true;
-            }
-        }
-        return false;
+    protected AbstractCoder(final Class<?>... optionClasses) {
+        this.optionClasses = Objects.requireNonNull(optionClasses, "optionClasses");
     }
 
     /**
@@ -100,5 +88,14 @@ abstract class CoderBase {
      */
     Object getOptionsFromCoder(final Coder coder, final InputStream in) throws IOException {
         return null;
+    }
+
+    /**
+     * Tests whether this method can extract options from the given object.
+     *
+     * @return whether this method can extract options from the given object.
+     */
+    boolean isOptionInstance(final Object opts) {
+        return Stream.of(optionClasses).anyMatch(c -> c.isInstance(opts));
     }
 }
