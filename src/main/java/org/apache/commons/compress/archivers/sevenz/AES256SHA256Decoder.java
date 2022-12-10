@@ -38,7 +38,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.compress.PasswordRequiredException;
 
-class AES256SHA256Decoder extends CoderBase {
+class AES256SHA256Decoder extends AbstractCoder {
     
     AES256SHA256Decoder() {
         super(AES256Options.class);
