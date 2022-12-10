@@ -48,6 +48,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="CodeQL, Gary Gregory">Avoid NPE in FileNameUtils.getBaseName(Path) for paths with zero elements like root paths.</action>
       <action type="update" dev="ggregory" due-to="CodeQL, Gary Gregory">Avoid NPE in FileNameUtils.getExtension(Path) for paths with zero elements like root paths.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">LZMA2Decoder.decode() looses original exception.</action>
+      <action type="update" dev="ggregory" due-to="Arturo Bernal">Extract conditions and avoid duplicate code. #297.</action>
       <!-- ADD -->
       <action type="add" issue="COMPRESS-614" dev="ggregory" due-to="Andre Brait, Gary Gregory">Use FileTime for time fields in SevenZipArchiveEntry #256.</action>
       <action type="add" issue="COMPRESS-621" dev="ggregory" due-to="Glavo">Fix calculation the offset of the first zip central directory entry #334.</action>
