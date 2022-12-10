@@ -61,7 +61,7 @@
           of changes see the <a href="changes-report.html">Changes
           Report</a>.</p>
 
-          <subsection name="What's new in 1.22?">
+          <subsection name="What's new in 1.22">
             <ul>
               <li>The zip package now uses NIO.</li>
               <li>Support for APK files (JAR format) has been added
@@ -74,7 +74,7 @@
                 discovered in pack200.</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.21?">
+          <subsection name="What's new in 1.21">
             <ul>
               <li>A new class <code>TarFile</code> provides random
               access to TAR archives.</li>
@@ -88,7 +88,7 @@
               <code>java.io.File</code> to many classes.</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.20?">
+          <subsection name="What's new in 1.20">
             <ul>
               <li><code>SevenZFile</code> now supports random
               access.</li>
@@ -96,7 +96,7 @@
               <li>The tar package now supports reading sparse entries.</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.19?">
+          <subsection name="What's new in 1.19">
             <ul>
               <li><code>ParallelScatterZipCreator</code> now writes
               entries in the same order they have been added to the
@@ -109,7 +109,7 @@
               archives.</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.18?">
+          <subsection name="What's new in 1.18">
             <ul>
               <li>The CPIO package now properly handles file names
               using a multi-byte encoding.</li>
@@ -119,7 +119,7 @@
               for Zstd output.</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.17?">
+          <subsection name="What's new in 1.17">
             <ul>
               <li>A new <code>InputStreamStatistics</code> interface
               is implemented by many streams and may be used to
@@ -128,12 +128,12 @@
               decompression.</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.16.1?">
+          <subsection name="What's new in 1.16.1">
             <ul>
               <li>Fixed the OSGi manifest that was broken in Compress 1.16.</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.16?">
+          <subsection name="What's new in 1.16">
             <ul>
               <li>Support for Zstandard compression.</li>
               <li>Read-only support for DEFLATE64 compression as
@@ -141,14 +141,14 @@
               ZIP and 7z archives.</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.15?">
+          <subsection name="What's new in 1.15">
             <ul>
               <li>Added <code>Automatic-Module-Name</code> so the module
               name will be org.apache.commons.compress when the jar is used
               as an automatic module in Java9+.</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.14?">
+          <subsection name="What's new in 1.14">
             <ul>
               <li>Added support for writing the Snappy format</li>
               <li>Added support for the LZ4 compression format</li>
@@ -158,7 +158,7 @@
               decoder</a>.</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.13?">
+          <subsection name="What's new in 1.13">
             <ul>
               <li>The 7z package as well as
               <code>ZipArchiveOutputStream</code> and
@@ -176,7 +176,7 @@
               XZ for Java 1.6.</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.12?">
+          <subsection name="What's new in 1.12">
             <ul>
               <li>Added support for the Snappy dialect used in iWork archives.</li>
               <li><code>SevenZFile</code> throws an
@@ -188,7 +188,7 @@
               and zip.</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.11?">
+          <subsection name="What's new in 1.11">
             <ul>
               <li>Added read-only support for BZIP2 compression used
               inside of ZIP archives.</li>
@@ -197,7 +197,7 @@
               and zip.</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.10?">
+          <subsection name="What's new in 1.10">
             <ul>
               <li>The old
               <code>org.apache.commons.compress.compressors.z._internal_</code>
@@ -211,19 +211,19 @@
               <li>Added auto-detection for LZMA.</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.9?">
+          <subsection name="What's new in 1.9">
             <ul>
               <li>support for raw DEFLATE streams</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.8.1?">
+          <subsection name="What's new in 1.8.1">
             <p>Compress 1.8.1 is a bug fix release with fixes for the
             tar, ar and snappy formats as well as the
             <code>IOUtils</code> class.  In addition
             <code>CompressorStreamFactory</code> can now autodetect
             the .Z compress format.</p>
           </subsection>
-          <subsection name="What's new in 1.8?">
+          <subsection name="What's new in 1.8">
             <ul>
               <li>Bug fixes to the tar, zip and 7z packages</li>
               <li>Access to metadata when reading gzip streams</li>
@@ -232,14 +232,14 @@
               important filter methods used in 7z archives.</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.7?">
+          <subsection name="What's new in 1.7">
             <ul>
               <li>Read-only support for the Snappy compression.</li>
               <li>Read-only support for the traditional Unix compress
               format used for <code>.Z</code> files.</li>
             </ul>
           </subsection>
-          <subsection name="What's new in 1.6?">
+          <subsection name="What's new in 1.6">
             <ul>
               <li>Support for the 7z format.</li>
               <li>Read-only support for uncompressed ARJ

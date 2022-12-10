@@ -28,7 +28,7 @@ import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.LZMAInputStream;
 import org.tukaani.xz.LZMAOutputStream;
 
-class LZMADecoder extends CoderBase {
+class LZMADecoder extends AbstractCoder {
     LZMADecoder() {
         super(LZMA2Options.class, Number.class);
     }
@@ -110,6 +110,6 @@ class LZMADecoder extends CoderBase {
     }
 
     private int numberOptionOrDefault(final Object opts) {
-        return numberOptionOrDefault(opts, LZMA2Options.DICT_SIZE_DEFAULT);
+        return toInt(opts, LZMA2Options.DICT_SIZE_DEFAULT);
     }
 }
