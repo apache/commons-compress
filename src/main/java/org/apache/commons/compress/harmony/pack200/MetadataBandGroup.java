@@ -242,40 +242,32 @@ public class MetadataBandGroup extends BandSet {
                 case "I":
                 case "S":
                 case "Z": {
-                    final Integer value = (Integer) valuesIterator.next();
-                    caseI_KI.add(cpBands.getConstant(value));
+                    caseI_KI.add(cpBands.getConstant(valuesIterator.next()));
                     break;
                 }
                 case "D": {
-                    final Double value = (Double) valuesIterator.next();
-                    caseD_KD.add(cpBands.getConstant(value));
+                    caseD_KD.add(cpBands.getConstant(valuesIterator.next()));
                     break;
                 }
                 case "F": {
-                    final Float value = (Float) valuesIterator.next();
-                    caseF_KF.add(cpBands.getConstant(value));
+                    caseF_KF.add(cpBands.getConstant(valuesIterator.next()));
                     break;
                 }
                 case "J": {
-                    final Long value = (Long) valuesIterator.next();
-                    caseJ_KJ.add(cpBands.getConstant(value));
+                    caseJ_KJ.add(cpBands.getConstant(valuesIterator.next()));
                     break;
                 }
                 case "c": {
-                    final String value = (String) valuesIterator.next();
-                    casec_RS.add(cpBands.getCPSignature(value));
+                    casec_RS.add(cpBands.getCPSignature(nextString(valuesIterator)));
                     break;
                 }
                 case "e": {
-                    final String value = (String) valuesIterator.next();
-                    final String value2 = (String) valuesIterator.next();
-                    caseet_RS.add(cpBands.getCPSignature(value));
-                    caseec_RU.add(cpBands.getCPUtf8(value2));
+                    caseet_RS.add(cpBands.getCPSignature(nextString(valuesIterator)));
+                    caseec_RU.add(cpBands.getCPUtf8(nextString(valuesIterator)));
                     break;
                 }
                 case "s": {
-                    final String value = (String) valuesIterator.next();
-                    cases_RU.add(cpBands.getCPUtf8(value));
+                    cases_RU.add(cpBands.getCPUtf8(nextString(valuesIterator)));
                     break;
                 }
             }
@@ -297,6 +289,10 @@ public class MetadataBandGroup extends BandSet {
 			numBackwardsCalls += numPairs.intValue();
 		}
 	}
+
+    private String nextString(final Iterator<Object> valuesIterator) {
+        return (String) valuesIterator.next();
+    }
 
     /**
      * Add an annotation to this set of bands
@@ -329,40 +325,32 @@ public class MetadataBandGroup extends BandSet {
                 case "I":
                 case "S":
                 case "Z": {
-                    final Integer value = (Integer) valuesIterator.next();
-                    caseI_KI.add(cpBands.getConstant(value));
+                    caseI_KI.add(cpBands.getConstant(valuesIterator.next()));
                     break;
                 }
                 case "D": {
-                    final Double value = (Double) valuesIterator.next();
-                    caseD_KD.add(cpBands.getConstant(value));
+                    caseD_KD.add(cpBands.getConstant(valuesIterator.next()));
                     break;
                 }
                 case "F": {
-                    final Float value = (Float) valuesIterator.next();
-                    caseF_KF.add(cpBands.getConstant(value));
+                    caseF_KF.add(cpBands.getConstant(valuesIterator.next()));
                     break;
                 }
                 case "J": {
-                    final Long value = (Long) valuesIterator.next();
-                    caseJ_KJ.add(cpBands.getConstant(value));
+                    caseJ_KJ.add(cpBands.getConstant(valuesIterator.next()));
                     break;
                 }
                 case "c": {
-                    final String value = (String) valuesIterator.next();
-                    casec_RS.add(cpBands.getCPSignature(value));
+                    casec_RS.add(cpBands.getCPSignature(nextString(valuesIterator)));
                     break;
                 }
                 case "e": {
-                    final String value = (String) valuesIterator.next();
-                    final String value2 = (String) valuesIterator.next();
-                    caseet_RS.add(cpBands.getCPSignature(value));
-                    caseec_RU.add(cpBands.getCPUtf8(value2));
+                    caseet_RS.add(cpBands.getCPSignature(nextString(valuesIterator)));
+                    caseec_RU.add(cpBands.getCPUtf8(nextString(valuesIterator)));
                     break;
                 }
                 case "s": {
-                    final String value = (String) valuesIterator.next();
-                    cases_RU.add(cpBands.getCPUtf8(value));
+                    cases_RU.add(cpBands.getCPUtf8(nextString(valuesIterator)));
                     break;
                 }
             }
