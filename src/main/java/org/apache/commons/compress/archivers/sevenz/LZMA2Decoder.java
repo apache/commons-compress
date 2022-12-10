@@ -28,13 +28,14 @@ import org.tukaani.xz.LZMA2InputStream;
 import org.tukaani.xz.LZMA2Options;
 
 class LZMA2Decoder extends AbstractCoder {
+
     LZMA2Decoder() {
         super(LZMA2Options.class, Number.class);
     }
 
     @Override
-    InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-            final Coder coder, final byte[] password, final int maxMemoryLimitInKb) throws IOException {
+    InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength, final Coder coder, final byte[] password,
+            final int maxMemoryLimitInKb) throws IOException {
         try {
             final int dictionarySize = getDictionarySize(coder);
             final int memoryUsageInKb = LZMA2InputStream.getMemoryUsage(dictionarySize);
@@ -42,14 +43,13 @@ class LZMA2Decoder extends AbstractCoder {
                 throw new MemoryLimitException(memoryUsageInKb, maxMemoryLimitInKb);
             }
             return new LZMA2InputStream(in, dictionarySize);
-        } catch (final IllegalArgumentException ex) {  // NOSONAR
-            throw new IOException(ex.getMessage());
+        } catch (final IllegalArgumentException ex) { // NOSONAR
+            throw new IOException(ex);
         }
     }
 
     @Override
-    OutputStream encode(final OutputStream out, final Object opts)
-        throws IOException {
+    OutputStream encode(final OutputStream out, final Object opts) throws IOException {
         final LZMA2Options options = getOptions(opts);
         final FinishableOutputStream wrapped = new FinishableWrapperOutputStream(out);
         return options.getOutputStream(wrapped);
