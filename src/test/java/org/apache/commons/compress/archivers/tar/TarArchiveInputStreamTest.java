@@ -105,22 +105,20 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         final String name = "1234567890123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789"
             + "01234567890\u00e4";
-        final TarArchiveOutputStream tos =
-            new TarArchiveOutputStream(bos, encoding);
-        tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
-        TarArchiveEntry t = new TarArchiveEntry(name);
-        t.setSize(1);
-        tos.putArchiveEntry(t);
-        tos.write(30);
-        tos.closeArchiveEntry();
-        tos.close();
+        try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, encoding)) {
+            tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
+            TarArchiveEntry t = new TarArchiveEntry(name);
+            t.setSize(1);
+            tos.putArchiveEntry(t);
+            tos.write(30);
+            tos.closeArchiveEntry();
+        }
         final byte[] data = bos.toByteArray();
         final ByteArrayInputStream bis = new ByteArrayInputStream(data);
-        final TarArchiveInputStream tis =
-            new TarArchiveInputStream(bis, encoding);
-        t = tis.getNextTarEntry();
-        assertEquals(name, t.getName());
-        tis.close();
+        try (TarArchiveInputStream tis = new TarArchiveInputStream(bis, encoding)) {
+            TarArchiveEntry t = tis.getNextTarEntry();
+            assertEquals(name, t.getName());
+        }
     }
 
     /**
@@ -128,35 +126,31 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
      */
     @Test
     public void shouldConsumeArchiveCompletely() throws Exception {
-        final InputStream is = TarArchiveInputStreamTest.class
-            .getResourceAsStream("/archive_with_trailer.tar");
-        final TarArchiveInputStream tar = new TarArchiveInputStream(is);
-        while (tar.getNextTarEntry() != null) {
-            // just consume the archive
+        try (InputStream is = TarArchiveInputStreamTest.class.getResourceAsStream("/archive_with_trailer.tar");
+             TarArchiveInputStream tar = new TarArchiveInputStream(is)) {
+            while (tar.getNextTarEntry() != null) {
+                // just consume the archive
+            }
+            final byte[] expected = { 'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n' };
+            final byte[] actual = new byte[expected.length];
+            is.read(actual);
+            assertArrayEquals(expected, actual);
         }
-        final byte[] expected = {
-            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n'
-        };
-        final byte[] actual = new byte[expected.length];
-        is.read(actual);
-        assertArrayEquals(expected, actual);
-        tar.close();
     }
 
     @Test
     public void readsArchiveCompletely_COMPRESS245() {
-        try (InputStream is = TarArchiveInputStreamTest.class
-                .getResourceAsStream("/COMPRESS-245.tar.gz")) {
+        try (InputStream is = TarArchiveInputStreamTest.class.getResourceAsStream("/COMPRESS-245.tar.gz")) {
             final InputStream gin = new GZIPInputStream(is);
-            final TarArchiveInputStream tar = new TarArchiveInputStream(gin);
-            int count = 0;
-            TarArchiveEntry entry = tar.getNextTarEntry();
-            while (entry != null) {
-                count++;
-                entry = tar.getNextTarEntry();
+            try (TarArchiveInputStream tar = new TarArchiveInputStream(gin)) {
+                int count = 0;
+                TarArchiveEntry entry = tar.getNextTarEntry();
+                while (entry != null) {
+                    count++;
+                    entry = tar.getNextTarEntry();
+                }
+                assertEquals(31, count);
             }
-            assertEquals(31, count);
-            tar.close();
         } catch (final IOException e) {
             fail("COMPRESS-245: " + e.getMessage());
         }
@@ -185,22 +179,21 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void shouldReadBigGid() throws Exception {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
-        tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
-        TarArchiveEntry t = new TarArchiveEntry("name");
-        t.setGroupId(4294967294L);
-        t.setSize(1);
-        tos.putArchiveEntry(t);
-        tos.write(30);
-        tos.closeArchiveEntry();
-        tos.close();
+        try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
+            tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
+            TarArchiveEntry t = new TarArchiveEntry("name");
+            t.setGroupId(4294967294L);
+            t.setSize(1);
+            tos.putArchiveEntry(t);
+            tos.write(30);
+            tos.closeArchiveEntry();
+        }
         final byte[] data = bos.toByteArray();
         final ByteArrayInputStream bis = new ByteArrayInputStream(data);
-        final TarArchiveInputStream tis =
-            new TarArchiveInputStream(bis);
-        t = tis.getNextTarEntry();
-        assertEquals(4294967294L, t.getLongGroupId());
-        tis.close();
+        try (final TarArchiveInputStream tis = new TarArchiveInputStream(bis)) {
+            TarArchiveEntry t = tis.getNextTarEntry();
+            assertEquals(4294967294L, t.getLongGroupId());
+        }
     }
 
     /**

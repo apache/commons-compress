@@ -43,20 +43,14 @@ public final class TarLister {
         if (!f.isFile()) {
             System.err.println(f + " doesn't exist or is a directory");
         }
-        final InputStream fis = new BufferedInputStream(Files.newInputStream(f.toPath()));
-        final TarArchiveInputStream ais;
-        if (args.length > 1) {
-            ais = new TarArchiveInputStream(fis, args[1]);
-        } else {
-            ais = new TarArchiveInputStream(fis);
+        try (InputStream fis = new BufferedInputStream(Files.newInputStream(f.toPath()));
+                TarArchiveInputStream ais = args.length > 1 ? new TarArchiveInputStream(fis, args[1]) : new TarArchiveInputStream(fis)) {
+            System.out.println("Created " + ais);
+            TarArchiveEntry ae;
+            while ((ae = ais.getNextTarEntry()) != null) {
+                log(ae);
+            }
         }
-        System.out.println("Created " + ais);
-        TarArchiveEntry ae;
-        while((ae=ais.getNextTarEntry()) != null){
-            log(ae);
-        }
-        ais.close();
-        fis.close();
     }
 
     private static void usage() {
