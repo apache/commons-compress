@@ -62,252 +62,6 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     private static final BigInteger ONE_THOUSAND = BigInteger.valueOf(1000);
     private static final long serialVersionUID = 1L;
 
-    private int version = 1; // always '1' according to current info-zip spec.
-
-    // BigInteger helps us with little-endian / big-endian conversions.
-    // (thanks to BigInteger.toByteArray() and a reverse() method we created).
-    // Also, the spec theoretically allows UID/GID up to 255 bytes long!
-    //
-    // NOTE:  equals() and hashCode() currently assume these can never be null.
-    private BigInteger uid;
-    private BigInteger gid;
-
-    /**
-     * Constructor for X7875_NewUnix.
-     */
-    public X7875_NewUnix() {
-        reset();
-    }
-
-    /**
-     * The Header-ID.
-     *
-     * @return the value for the header id for this extrafield
-     */
-    @Override
-    public ZipShort getHeaderId() {
-        return HEADER_ID;
-    }
-
-    /**
-     * Gets the UID as a long.  UID is typically a 32 bit unsigned
-     * value on most UNIX systems, so we return a long to avoid
-     * integer overflow into the negatives in case values above
-     * and including 2^31 are being used.
-     *
-     * @return the UID value.
-     */
-    public long getUID() { return ZipUtil.bigToLong(uid); }
-
-    /**
-     * Gets the GID as a long.  GID is typically a 32 bit unsigned
-     * value on most UNIX systems, so we return a long to avoid
-     * integer overflow into the negatives in case values above
-     * and including 2^31 are being used.
-     *
-     * @return the GID value.
-     */
-    public long getGID() { return ZipUtil.bigToLong(gid); }
-
-    /**
-     * Sets the UID.
-     *
-     * @param l UID value to set on this extra field.
-     */
-    public void setUID(final long l) {
-        this.uid = ZipUtil.longToBig(l);
-    }
-
-    /**
-     * Sets the GID.
-     *
-     * @param l GID value to set on this extra field.
-     */
-    public void setGID(final long l) {
-        this.gid = ZipUtil.longToBig(l);
-    }
-
-    /**
-     * Length of the extra field in the local file data - without
-     * Header-ID or length specifier.
-     *
-     * @return a {@code ZipShort} for the length of the data of this extra field
-     */
-    @Override
-    public ZipShort getLocalFileDataLength() {
-        byte[] b = trimLeadingZeroesForceMinLength(uid.toByteArray());
-        final int uidSize = b == null ? 0 : b.length;
-        b = trimLeadingZeroesForceMinLength(gid.toByteArray());
-        final int gidSize = b == null ? 0 : b.length;
-
-        // The 3 comes from:  version=1 + uidsize=1 + gidsize=1
-        return new ZipShort(3 + uidSize + gidSize);
-    }
-
-    /**
-     * Length of the extra field in the central directory data - without
-     * Header-ID or length specifier.
-     *
-     * @return a {@code ZipShort} for the length of the data of this extra field
-     */
-    @Override
-    public ZipShort getCentralDirectoryLength() {
-        return ZERO;
-    }
-
-    /**
-     * The actual data to put into local file data - without Header-ID
-     * or length specifier.
-     *
-     * @return get the data
-     */
-    @Override
-    public byte[] getLocalFileDataData() {
-        byte[] uidBytes = uid.toByteArray();
-        byte[] gidBytes = gid.toByteArray();
-
-        // BigInteger might prepend a leading-zero to force a positive representation
-        // (e.g., so that the sign-bit is set to zero).  We need to remove that
-        // before sending the number over the wire.
-        uidBytes = trimLeadingZeroesForceMinLength(uidBytes);
-        final int uidBytesLen = uidBytes != null ? uidBytes.length : 0;
-        gidBytes = trimLeadingZeroesForceMinLength(gidBytes);
-        final int gidBytesLen = gidBytes != null ? gidBytes.length : 0;
-
-        // Couldn't bring myself to just call getLocalFileDataLength() when we've
-        // already got the arrays right here.  Yeah, yeah, I know, premature
-        // optimization is the root of all...
-        //
-        // The 3 comes from:  version=1 + uidsize=1 + gidsize=1
-        final byte[] data = new byte[3 + uidBytesLen + gidBytesLen];
-
-        // reverse() switches byte array from big-endian to little-endian.
-        if (uidBytes != null) {
-            reverse(uidBytes);
-        }
-        if (gidBytes != null) {
-            reverse(gidBytes);
-        }
-
-        int pos = 0;
-        data[pos++] = unsignedIntToSignedByte(version);
-        data[pos++] = unsignedIntToSignedByte(uidBytesLen);
-        if (uidBytes != null) {
-            System.arraycopy(uidBytes, 0, data, pos, uidBytesLen);
-        }
-        pos += uidBytesLen;
-        data[pos++] = unsignedIntToSignedByte(gidBytesLen);
-        if (gidBytes != null) {
-            System.arraycopy(gidBytes, 0, data, pos, gidBytesLen);
-        }
-        return data;
-    }
-
-    /**
-     * The actual data to put into central directory data - without Header-ID
-     * or length specifier.
-     *
-     * @return get the data
-     */
-    @Override
-    public byte[] getCentralDirectoryData() {
-        return ByteUtils.EMPTY_BYTE_ARRAY;
-    }
-
-    /**
-     * Populate data from this array as if it was in local file data.
-     *
-     * @param data   an array of bytes
-     * @param offset the start offset
-     * @param length the number of bytes in the array from offset
-     * @throws java.util.zip.ZipException on error
-     */
-    @Override
-    public void parseFromLocalFileData(
-            final byte[] data, int offset, final int length
-    ) throws ZipException {
-        reset();
-        if (length < 3) {
-            throw new ZipException("X7875_NewUnix length is too short, only "
-                + length + " bytes");
-        }
-        this.version = signedByteToUnsignedInt(data[offset++]);
-        final int uidSize = signedByteToUnsignedInt(data[offset++]);
-        if (uidSize + 3 > length) {
-            throw new ZipException("X7875_NewUnix invalid: uidSize " + uidSize
-                + " doesn't fit into " + length + " bytes");
-        }
-        final byte[] uidBytes = Arrays.copyOfRange(data, offset, offset + uidSize);
-        offset += uidSize;
-        this.uid = new BigInteger(1, reverse(uidBytes)); // sign-bit forced positive
-
-        final int gidSize = signedByteToUnsignedInt(data[offset++]);
-        if (uidSize + 3 + gidSize > length) {
-            throw new ZipException("X7875_NewUnix invalid: gidSize " + gidSize
-                + " doesn't fit into " + length + " bytes");
-        }
-        final byte[] gidBytes = Arrays.copyOfRange(data, offset, offset + gidSize);
-        this.gid = new BigInteger(1, reverse(gidBytes)); // sign-bit forced positive
-    }
-
-    /**
-     * Doesn't do anything since this class doesn't store anything
-     * inside the central directory.
-     */
-    @Override
-    public void parseFromCentralDirectoryData(
-            final byte[] buffer, final int offset, final int length
-    ) throws ZipException {
-    }
-
-    /**
-     * Reset state back to newly constructed state.  Helps us make sure
-     * parse() calls always generate clean results.
-     */
-    private void reset() {
-        // Typical UID/GID of the first non-root user created on a unix system.
-        uid = ONE_THOUSAND;
-        gid = ONE_THOUSAND;
-    }
-
-    /**
-     * Returns a String representation of this class useful for
-     * debugging purposes.
-     *
-     * @return A String representation of this class useful for
-     *         debugging purposes.
-     */
-    @Override
-    public String toString() {
-        return "0x7875 Zip Extra Field: UID=" + uid + " GID=" + gid;
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (o instanceof X7875_NewUnix) {
-            final X7875_NewUnix xf = (X7875_NewUnix) o;
-            // We assume uid and gid can never be null.
-            return version == xf.version && uid.equals(xf.uid) && gid.equals(xf.gid);
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        int hc = -1234567 * version;
-        // Since most UID's and GID's are below 65,536, this is (hopefully!)
-        // a nice way to make sure typical UID and GID values impact the hash
-        // as much as possible.
-        hc ^= Integer.rotateLeft(uid.hashCode(), 16);
-        hc ^= gid.hashCode();
-        return hc;
-    }
-
     /**
      * Not really for external usage, but marked "package" visibility
      * to help us JUnit it.   Trims a byte array of leading zeroes while
@@ -373,5 +127,251 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         final int startPos = trimmedArray.length - (array.length - pos);
         System.arraycopy(array, pos, trimmedArray, startPos, trimmedArray.length - startPos);
         return trimmedArray;
+    }
+
+    private int version = 1; // always '1' according to current info-zip spec.
+    // BigInteger helps us with little-endian / big-endian conversions.
+    // (thanks to BigInteger.toByteArray() and a reverse() method we created).
+    // Also, the spec theoretically allows UID/GID up to 255 bytes long!
+    //
+    // NOTE:  equals() and hashCode() currently assume these can never be null.
+    private BigInteger uid;
+
+    private BigInteger gid;
+
+    /**
+     * Constructor for X7875_NewUnix.
+     */
+    public X7875_NewUnix() {
+        reset();
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o instanceof X7875_NewUnix) {
+            final X7875_NewUnix xf = (X7875_NewUnix) o;
+            // We assume uid and gid can never be null.
+            return version == xf.version && uid.equals(xf.uid) && gid.equals(xf.gid);
+        }
+        return false;
+    }
+
+    /**
+     * The actual data to put into central directory data - without Header-ID
+     * or length specifier.
+     *
+     * @return get the data
+     */
+    @Override
+    public byte[] getCentralDirectoryData() {
+        return ByteUtils.EMPTY_BYTE_ARRAY;
+    }
+
+    /**
+     * Length of the extra field in the central directory data - without
+     * Header-ID or length specifier.
+     *
+     * @return a {@code ZipShort} for the length of the data of this extra field
+     */
+    @Override
+    public ZipShort getCentralDirectoryLength() {
+        return ZERO;
+    }
+
+    /**
+     * Gets the GID as a long.  GID is typically a 32 bit unsigned
+     * value on most UNIX systems, so we return a long to avoid
+     * integer overflow into the negatives in case values above
+     * and including 2^31 are being used.
+     *
+     * @return the GID value.
+     */
+    public long getGID() { return ZipUtil.bigToLong(gid); }
+
+    /**
+     * The Header-ID.
+     *
+     * @return the value for the header id for this extrafield
+     */
+    @Override
+    public ZipShort getHeaderId() {
+        return HEADER_ID;
+    }
+
+    /**
+     * The actual data to put into local file data - without Header-ID
+     * or length specifier.
+     *
+     * @return get the data
+     */
+    @Override
+    public byte[] getLocalFileDataData() {
+        byte[] uidBytes = uid.toByteArray();
+        byte[] gidBytes = gid.toByteArray();
+
+        // BigInteger might prepend a leading-zero to force a positive representation
+        // (e.g., so that the sign-bit is set to zero).  We need to remove that
+        // before sending the number over the wire.
+        uidBytes = trimLeadingZeroesForceMinLength(uidBytes);
+        final int uidBytesLen = uidBytes != null ? uidBytes.length : 0;
+        gidBytes = trimLeadingZeroesForceMinLength(gidBytes);
+        final int gidBytesLen = gidBytes != null ? gidBytes.length : 0;
+
+        // Couldn't bring myself to just call getLocalFileDataLength() when we've
+        // already got the arrays right here.  Yeah, yeah, I know, premature
+        // optimization is the root of all...
+        //
+        // The 3 comes from:  version=1 + uidsize=1 + gidsize=1
+        final byte[] data = new byte[3 + uidBytesLen + gidBytesLen];
+
+        // reverse() switches byte array from big-endian to little-endian.
+        if (uidBytes != null) {
+            reverse(uidBytes);
+        }
+        if (gidBytes != null) {
+            reverse(gidBytes);
+        }
+
+        int pos = 0;
+        data[pos++] = unsignedIntToSignedByte(version);
+        data[pos++] = unsignedIntToSignedByte(uidBytesLen);
+        if (uidBytes != null) {
+            System.arraycopy(uidBytes, 0, data, pos, uidBytesLen);
+        }
+        pos += uidBytesLen;
+        data[pos++] = unsignedIntToSignedByte(gidBytesLen);
+        if (gidBytes != null) {
+            System.arraycopy(gidBytes, 0, data, pos, gidBytesLen);
+        }
+        return data;
+    }
+
+    /**
+     * Length of the extra field in the local file data - without
+     * Header-ID or length specifier.
+     *
+     * @return a {@code ZipShort} for the length of the data of this extra field
+     */
+    @Override
+    public ZipShort getLocalFileDataLength() {
+        byte[] b = trimLeadingZeroesForceMinLength(uid.toByteArray());
+        final int uidSize = b == null ? 0 : b.length;
+        b = trimLeadingZeroesForceMinLength(gid.toByteArray());
+        final int gidSize = b == null ? 0 : b.length;
+
+        // The 3 comes from:  version=1 + uidsize=1 + gidsize=1
+        return new ZipShort(3 + uidSize + gidSize);
+    }
+
+    /**
+     * Gets the UID as a long.  UID is typically a 32 bit unsigned
+     * value on most UNIX systems, so we return a long to avoid
+     * integer overflow into the negatives in case values above
+     * and including 2^31 are being used.
+     *
+     * @return the UID value.
+     */
+    public long getUID() { return ZipUtil.bigToLong(uid); }
+
+    @Override
+    public int hashCode() {
+        int hc = -1234567 * version;
+        // Since most UID's and GID's are below 65,536, this is (hopefully!)
+        // a nice way to make sure typical UID and GID values impact the hash
+        // as much as possible.
+        hc ^= Integer.rotateLeft(uid.hashCode(), 16);
+        hc ^= gid.hashCode();
+        return hc;
+    }
+
+    /**
+     * Doesn't do anything since this class doesn't store anything
+     * inside the central directory.
+     */
+    @Override
+    public void parseFromCentralDirectoryData(
+            final byte[] buffer, final int offset, final int length
+    ) throws ZipException {
+    }
+
+    /**
+     * Populate data from this array as if it was in local file data.
+     *
+     * @param data   an array of bytes
+     * @param offset the start offset
+     * @param length the number of bytes in the array from offset
+     * @throws java.util.zip.ZipException on error
+     */
+    @Override
+    public void parseFromLocalFileData(
+            final byte[] data, int offset, final int length
+    ) throws ZipException {
+        reset();
+        if (length < 3) {
+            throw new ZipException("X7875_NewUnix length is too short, only "
+                + length + " bytes");
+        }
+        this.version = signedByteToUnsignedInt(data[offset++]);
+        final int uidSize = signedByteToUnsignedInt(data[offset++]);
+        if (uidSize + 3 > length) {
+            throw new ZipException("X7875_NewUnix invalid: uidSize " + uidSize
+                + " doesn't fit into " + length + " bytes");
+        }
+        final byte[] uidBytes = Arrays.copyOfRange(data, offset, offset + uidSize);
+        offset += uidSize;
+        this.uid = new BigInteger(1, reverse(uidBytes)); // sign-bit forced positive
+
+        final int gidSize = signedByteToUnsignedInt(data[offset++]);
+        if (uidSize + 3 + gidSize > length) {
+            throw new ZipException("X7875_NewUnix invalid: gidSize " + gidSize
+                + " doesn't fit into " + length + " bytes");
+        }
+        final byte[] gidBytes = Arrays.copyOfRange(data, offset, offset + gidSize);
+        this.gid = new BigInteger(1, reverse(gidBytes)); // sign-bit forced positive
+    }
+
+    /**
+     * Reset state back to newly constructed state.  Helps us make sure
+     * parse() calls always generate clean results.
+     */
+    private void reset() {
+        // Typical UID/GID of the first non-root user created on a unix system.
+        uid = ONE_THOUSAND;
+        gid = ONE_THOUSAND;
+    }
+
+    /**
+     * Sets the GID.
+     *
+     * @param l GID value to set on this extra field.
+     */
+    public void setGID(final long l) {
+        this.gid = ZipUtil.longToBig(l);
+    }
+
+    /**
+     * Sets the UID.
+     *
+     * @param l UID value to set on this extra field.
+     */
+    public void setUID(final long l) {
+        this.uid = ZipUtil.longToBig(l);
+    }
+
+    /**
+     * Returns a String representation of this class useful for
+     * debugging purposes.
+     *
+     * @return A String representation of this class useful for
+     *         debugging purposes.
+     */
+    @Override
+    public String toString() {
+        return "0x7875 Zip Extra Field: UID=" + uid + " GID=" + gid;
     }
 }

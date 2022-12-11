@@ -290,10 +290,14 @@ public abstract class ByteCodeForm {
         }
     }
 
+    public static ByteCodeForm get(final int opcode) {
+        return byteCodeArray[opcode];
+    }
     private final int opcode;
     private final String name;
     private final int[] rewrite;
     private int firstOperandIndex;
+
     private int operandLength;
 
     /**
@@ -362,21 +366,27 @@ public abstract class ByteCodeForm {
         operandLength = difference + 1;
     }
 
-    public static ByteCodeForm get(final int opcode) {
-        return byteCodeArray[opcode];
+    public int firstOperandIndex() {
+        return firstOperandIndex;
     }
 
-    @Override
-    public String toString() {
-        return this.getClass().getName() + "(" + getName() + ")";
-    }
-
-    public int getOpcode() {
-        return opcode;
+    /**
+     * The ByteCodeForm knows how to fix up a bytecode if it needs to be fixed up because it holds a Label bytecode.
+     *
+     * @param byteCode a ByteCode to be fixed up
+     * @param codeAttribute a CodeAttribute used to determine how the ByteCode should be fixed up.
+     */
+    public void fixUpByteCodeTargets(final ByteCode byteCode, final CodeAttribute codeAttribute) {
+        // Most ByteCodeForms don't have any fixing up to do.
+        return;
     }
 
     public String getName() {
         return name;
+    }
+
+    public int getOpcode() {
+        return opcode;
     }
 
     public int[] getRewrite() {
@@ -387,18 +397,6 @@ public abstract class ByteCodeForm {
         final int[] result = new int[rewrite.length];
         System.arraycopy(rewrite, 0, result, 0, rewrite.length);
         return result;
-    }
-
-    public int firstOperandIndex() {
-        return firstOperandIndex;
-    }
-
-    public int operandLength() {
-        return operandLength;
-    }
-
-    public boolean hasNoOperand() {
-        return false;
     }
 
     /**
@@ -419,6 +417,18 @@ public abstract class ByteCodeForm {
         return false;
     }
 
+    public boolean hasNoOperand() {
+        return false;
+    }
+
+    public boolean nestedMustStartClassPool() {
+        return false;
+    }
+
+    public int operandLength() {
+        return operandLength;
+    }
+
     /**
      * When passed a byteCode, an OperandTable and a SegmentConstantPool, this method will set the rewrite of the
      * byteCode appropriately.
@@ -430,18 +440,8 @@ public abstract class ByteCodeForm {
      */
     public abstract void setByteCodeOperands(ByteCode byteCode, OperandManager operandManager, int codeLength);
 
-    /**
-     * The ByteCodeForm knows how to fix up a bytecode if it needs to be fixed up because it holds a Label bytecode.
-     *
-     * @param byteCode a ByteCode to be fixed up
-     * @param codeAttribute a CodeAttribute used to determine how the ByteCode should be fixed up.
-     */
-    public void fixUpByteCodeTargets(final ByteCode byteCode, final CodeAttribute codeAttribute) {
-        // Most ByteCodeForms don't have any fixing up to do.
-        return;
-    }
-
-    public boolean nestedMustStartClassPool() {
-        return false;
+    @Override
+    public String toString() {
+        return this.getClass().getName() + "(" + getName() + ")";
     }
 }

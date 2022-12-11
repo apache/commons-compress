@@ -56,12 +56,12 @@ public abstract class CPConstant extends ConstantPoolEntry {
         return true;
     }
 
+    protected Object getValue() {
+        return value;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(value);
-    }
-
-    protected Object getValue() {
-        return value;
     }
 }

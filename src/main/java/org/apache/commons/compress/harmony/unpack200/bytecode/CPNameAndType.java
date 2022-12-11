@@ -35,6 +35,10 @@ public class CPNameAndType extends ConstantPoolEntry {
 
     transient int nameIndex;
 
+    private boolean hashcodeComputed;
+
+    private int cachedHashCode;
+
     /**
      * Create a new CPNameAndType
      *
@@ -49,53 +53,10 @@ public class CPNameAndType extends ConstantPoolEntry {
         this.descriptor = Objects.requireNonNull(descriptor, "descriptor");
     }
 
-    @Override
-    protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] {name, descriptor};
-    }
-
-    @Override
-    protected void resolve(final ClassConstantPool pool) {
-        super.resolve(pool);
-        descriptorIndex = pool.indexOf(descriptor);
-        nameIndex = pool.indexOf(name);
-    }
-
     /*
      * field_info { u2 access_flags; u2 name_index; u2 descriptor_index; u2 attributes_count; attribute_info
      * attributes[attributes_count]; }
      */
-
-    @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeShort(nameIndex);
-        dos.writeShort(descriptorIndex);
-    }
-
-    @Override
-    public String toString() {
-        return "NameAndType: " + name + "(" + descriptor + ")";
-    }
-
-    private boolean hashcodeComputed;
-    private int cachedHashCode;
-
-    private void generateHashCode() {
-        hashcodeComputed = true;
-        final int PRIME = 31;
-        int result = 1;
-        result = PRIME * result + descriptor.hashCode();
-        result = PRIME * result + name.hashCode();
-        cachedHashCode = result;
-    }
-
-    @Override
-    public int hashCode() {
-        if (!hashcodeComputed) {
-            generateHashCode();
-        }
-        return cachedHashCode;
-    }
 
     @Override
     public boolean equals(final Object obj) {
@@ -118,6 +79,27 @@ public class CPNameAndType extends ConstantPoolEntry {
         return true;
     }
 
+    private void generateHashCode() {
+        hashcodeComputed = true;
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + descriptor.hashCode();
+        result = PRIME * result + name.hashCode();
+        cachedHashCode = result;
+    }
+
+    @Override
+    protected ClassFileEntry[] getNestedClassFileEntries() {
+        return new ClassFileEntry[] {name, descriptor};
+    }
+    @Override
+    public int hashCode() {
+        if (!hashcodeComputed) {
+            generateHashCode();
+        }
+        return cachedHashCode;
+    }
+
     /**
      * Answers the invokeinterface count argument when the receiver is treated as an invokeinterface target. This value
      * is not meaningful if the receiver is not an invokeinterface target.
@@ -126,5 +108,23 @@ public class CPNameAndType extends ConstantPoolEntry {
      */
     public int invokeInterfaceCount() {
         return 1 + SegmentUtils.countInvokeInterfaceArgs(descriptor.underlyingString());
+    }
+
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
+        super.resolve(pool);
+        descriptorIndex = pool.indexOf(descriptor);
+        nameIndex = pool.indexOf(name);
+    }
+
+    @Override
+    public String toString() {
+        return "NameAndType: " + name + "(" + descriptor + ")";
+    }
+
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        dos.writeShort(nameIndex);
+        dos.writeShort(descriptorIndex);
     }
 }

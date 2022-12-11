@@ -30,19 +30,35 @@ import org.objectweb.asm.Attribute;
  */
 public class AttributeDefinitionBands extends BandSet {
 
+    public static class AttributeDefinition {
+
+        public int index;
+        public int contextType;
+        public CPUTF8 name;
+        public CPUTF8 layout;
+
+        public AttributeDefinition(final int index, final int contextType, final CPUTF8 name, final CPUTF8 layout) {
+            this.index = index;
+            this.contextType = contextType;
+            this.name = name;
+            this.layout = layout;
+        }
+
+    }
     public static final int CONTEXT_CLASS = 0;
     public static final int CONTEXT_CODE = 3;
     public static final int CONTEXT_FIELD = 1;
-    public static final int CONTEXT_METHOD = 2;
 
+    public static final int CONTEXT_METHOD = 2;
     private final List<AttributeDefinition> classAttributeLayouts = new ArrayList<>();
     private final List<AttributeDefinition> methodAttributeLayouts = new ArrayList<>();
     private final List<AttributeDefinition> fieldAttributeLayouts = new ArrayList<>();
+
     private final List<AttributeDefinition> codeAttributeLayouts = new ArrayList<>();
 
     private final List<AttributeDefinition> attributeDefinitions = new ArrayList<>();
-
     private final CpBands cpBands;
+
     private final Segment segment;
 
     public AttributeDefinitionBands(final Segment segment, final int effort, final Attribute[] attributePrototypes) {
@@ -107,6 +123,58 @@ public class AttributeDefinitionBands extends BandSet {
         addAttributeDefinitions(codeLayouts, availableCodeIndices, CONTEXT_CODE);
     }
 
+    private void addAttributeDefinitions(final Map<String, String> layoutMap, final int[] availableIndices, final int contextType) {
+        final int i = 0;
+        layoutMap.forEach((name, layout) -> {
+            final int index = availableIndices[i];
+            final AttributeDefinition definition = new AttributeDefinition(index, contextType, cpBands.getCPUtf8(name), cpBands.getCPUtf8(layout));
+            attributeDefinitions.add(definition);
+            switch (contextType) {
+            case CONTEXT_CLASS:
+                classAttributeLayouts.add(definition);
+                break;
+            case CONTEXT_METHOD:
+                methodAttributeLayouts.add(definition);
+                break;
+            case CONTEXT_FIELD:
+                fieldAttributeLayouts.add(definition);
+                break;
+            case CONTEXT_CODE:
+                codeAttributeLayouts.add(definition);
+            }
+        });
+    }
+
+    private int[] addHighIndices(final int[] availableIndices) {
+        final int[] temp = new int[availableIndices.length + 32];
+        System.arraycopy(availableIndices, 0, temp, 0, availableIndices.length);
+        int j = 32;
+        for (int i = availableIndices.length; i < temp.length; i++) {
+            temp[i] = j;
+            j++;
+        }
+        return temp;
+    }
+
+    private void addSyntheticDefinitions() {
+        final boolean anySytheticClasses = segment.getClassBands().isAnySyntheticClasses();
+        final boolean anySyntheticMethods = segment.getClassBands().isAnySyntheticMethods();
+        final boolean anySyntheticFields = segment.getClassBands().isAnySyntheticFields();
+        if (anySytheticClasses || anySyntheticMethods || anySyntheticFields) {
+            final CPUTF8 syntheticUTF = cpBands.getCPUtf8("Synthetic");
+            final CPUTF8 emptyUTF = cpBands.getCPUtf8("");
+            if (anySytheticClasses) {
+                attributeDefinitions.add(new AttributeDefinition(12, CONTEXT_CLASS, syntheticUTF, emptyUTF));
+            }
+            if (anySyntheticMethods) {
+                attributeDefinitions.add(new AttributeDefinition(12, CONTEXT_METHOD, syntheticUTF, emptyUTF));
+            }
+            if (anySyntheticFields) {
+                attributeDefinitions.add(new AttributeDefinition(12, CONTEXT_FIELD, syntheticUTF, emptyUTF));
+            }
+        }
+    }
+
     /**
      * All input classes for the segment have now been read in, so this method is called so that this class can
      * calculate/complete anything it could not do while classes were being read.
@@ -114,6 +182,22 @@ public class AttributeDefinitionBands extends BandSet {
     public void finaliseBands() {
         addSyntheticDefinitions();
         segmentHeader.setAttribute_definition_count(attributeDefinitions.size());
+    }
+
+    public List<AttributeDefinition> getClassAttributeLayouts() {
+        return classAttributeLayouts;
+    }
+
+    public List<AttributeDefinition> getCodeAttributeLayouts() {
+        return codeAttributeLayouts;
+    }
+
+    public List<AttributeDefinition> getFieldAttributeLayouts() {
+        return fieldAttributeLayouts;
+    }
+
+    public List<AttributeDefinition> getMethodAttributeLayouts() {
+        return methodAttributeLayouts;
     }
 
     @Override
@@ -143,89 +227,5 @@ public class AttributeDefinitionBands extends BandSet {
         out.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length + " bytes from attributeDefinitionLayout["
             + attributeDefinitionLayout.length + "]");
-    }
-
-    private void addSyntheticDefinitions() {
-        final boolean anySytheticClasses = segment.getClassBands().isAnySyntheticClasses();
-        final boolean anySyntheticMethods = segment.getClassBands().isAnySyntheticMethods();
-        final boolean anySyntheticFields = segment.getClassBands().isAnySyntheticFields();
-        if (anySytheticClasses || anySyntheticMethods || anySyntheticFields) {
-            final CPUTF8 syntheticUTF = cpBands.getCPUtf8("Synthetic");
-            final CPUTF8 emptyUTF = cpBands.getCPUtf8("");
-            if (anySytheticClasses) {
-                attributeDefinitions.add(new AttributeDefinition(12, CONTEXT_CLASS, syntheticUTF, emptyUTF));
-            }
-            if (anySyntheticMethods) {
-                attributeDefinitions.add(new AttributeDefinition(12, CONTEXT_METHOD, syntheticUTF, emptyUTF));
-            }
-            if (anySyntheticFields) {
-                attributeDefinitions.add(new AttributeDefinition(12, CONTEXT_FIELD, syntheticUTF, emptyUTF));
-            }
-        }
-    }
-
-    private int[] addHighIndices(final int[] availableIndices) {
-        final int[] temp = new int[availableIndices.length + 32];
-        System.arraycopy(availableIndices, 0, temp, 0, availableIndices.length);
-        int j = 32;
-        for (int i = availableIndices.length; i < temp.length; i++) {
-            temp[i] = j;
-            j++;
-        }
-        return temp;
-    }
-
-    private void addAttributeDefinitions(final Map<String, String> layoutMap, final int[] availableIndices, final int contextType) {
-        final int i = 0;
-        layoutMap.forEach((name, layout) -> {
-            final int index = availableIndices[i];
-            final AttributeDefinition definition = new AttributeDefinition(index, contextType, cpBands.getCPUtf8(name), cpBands.getCPUtf8(layout));
-            attributeDefinitions.add(definition);
-            switch (contextType) {
-            case CONTEXT_CLASS:
-                classAttributeLayouts.add(definition);
-                break;
-            case CONTEXT_METHOD:
-                methodAttributeLayouts.add(definition);
-                break;
-            case CONTEXT_FIELD:
-                fieldAttributeLayouts.add(definition);
-                break;
-            case CONTEXT_CODE:
-                codeAttributeLayouts.add(definition);
-            }
-        });
-    }
-
-    public List<AttributeDefinition> getClassAttributeLayouts() {
-        return classAttributeLayouts;
-    }
-
-    public List<AttributeDefinition> getMethodAttributeLayouts() {
-        return methodAttributeLayouts;
-    }
-
-    public List<AttributeDefinition> getFieldAttributeLayouts() {
-        return fieldAttributeLayouts;
-    }
-
-    public List<AttributeDefinition> getCodeAttributeLayouts() {
-        return codeAttributeLayouts;
-    }
-
-    public static class AttributeDefinition {
-
-        public int index;
-        public int contextType;
-        public CPUTF8 name;
-        public CPUTF8 layout;
-
-        public AttributeDefinition(final int index, final int contextType, final CPUTF8 name, final CPUTF8 layout) {
-            this.index = index;
-            this.contextType = contextType;
-            this.name = name;
-            this.layout = layout;
-        }
-
     }
 }

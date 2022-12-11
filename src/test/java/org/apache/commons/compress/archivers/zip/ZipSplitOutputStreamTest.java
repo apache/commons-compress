@@ -32,23 +32,6 @@ import org.junit.jupiter.api.Test;
 public class ZipSplitOutputStreamTest extends AbstractTestCase {
 
     @Test
-    public void throwsExceptionIfSplitSizeIsTooSmall() {
-        assertThrows(IllegalArgumentException.class, () -> new ZipSplitOutputStream(File.createTempFile("temp", "zip"), (64 * 1024 - 1)));
-    }
-
-    @Test
-    public void throwsExceptionIfSplitSizeIsTooLarge() {
-        assertThrows(IllegalArgumentException.class, () -> new ZipSplitOutputStream(File.createTempFile("temp", "zip"), (4 * 1024 * 1024 * 1024L)));
-    }
-
-    @Test
-    public void throwsIfUnsplittableSizeLargerThanSplitSize() throws IOException {
-        final long splitSize = 100 * 1024;
-        final ZipSplitOutputStream output = new ZipSplitOutputStream(File.createTempFile("temp", "zip"), splitSize);
-        assertThrows(IllegalArgumentException.class, () -> output.prepareToWriteUnsplittableContent(splitSize + 1));
-    }
-
-    @Test
     public void splitZipBeginsWithZipSplitSignature() throws IOException {
         final File tempFile = File.createTempFile("temp", "zip");
         new ZipSplitOutputStream(tempFile, 100 * 1024L);
@@ -95,5 +78,22 @@ public class ZipSplitOutputStreamTest extends AbstractTestCase {
 
         zipFile = new File(dir.getPath(), "testCreateSplittedFiles.zip");
         Assert.assertEquals(zipFile.length(), (fileToTest.length() + 4 - splitSize * 5));
+    }
+
+    @Test
+    public void throwsExceptionIfSplitSizeIsTooLarge() {
+        assertThrows(IllegalArgumentException.class, () -> new ZipSplitOutputStream(File.createTempFile("temp", "zip"), (4 * 1024 * 1024 * 1024L)));
+    }
+
+    @Test
+    public void throwsExceptionIfSplitSizeIsTooSmall() {
+        assertThrows(IllegalArgumentException.class, () -> new ZipSplitOutputStream(File.createTempFile("temp", "zip"), (64 * 1024 - 1)));
+    }
+
+    @Test
+    public void throwsIfUnsplittableSizeLargerThanSplitSize() throws IOException {
+        final long splitSize = 100 * 1024;
+        final ZipSplitOutputStream output = new ZipSplitOutputStream(File.createTempFile("temp", "zip"), splitSize);
+        assertThrows(IllegalArgumentException.class, () -> output.prepareToWriteUnsplittableContent(splitSize + 1));
     }
 }

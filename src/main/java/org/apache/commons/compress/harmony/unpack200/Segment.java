@@ -333,30 +333,44 @@ public class Segment {
         return result;
     }
 
-    /**
-     * This performs reading the data from the stream into non-static instance of Segment. After the completion of this
-     * method stream can be freed.
-     *
-     * @param in the input stream to read from
-     * @throws IOException if a problem occurs during reading from the underlying stream
-     * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
-     */
-    private void readSegment(final InputStream in) throws IOException, Pack200Exception {
-        log(LOG_LEVEL_VERBOSE, "-------");
-        cpBands = new CpBands(this);
-        cpBands.read(in);
-        attrDefinitionBands = new AttrDefinitionBands(this);
-        attrDefinitionBands.read(in);
-        icBands = new IcBands(this);
-        icBands.read(in);
-        classBands = new ClassBands(this);
-        classBands.read(in);
-        bcBands = new BcBands(this);
-        bcBands.read(in);
-        fileBands = new FileBands(this);
-        fileBands.read(in);
+    protected AttrDefinitionBands getAttrDefinitionBands() {
+        return attrDefinitionBands;
+    }
 
-        fileBands.processFileBits();
+    protected ClassBands getClassBands() {
+        return classBands;
+    }
+
+    public SegmentConstantPool getConstantPool() {
+        return cpBands.getConstantPool();
+    }
+
+    protected CpBands getCpBands() {
+        return cpBands;
+    }
+
+    protected IcBands getIcBands() {
+        return icBands;
+    }
+
+    public SegmentHeader getSegmentHeader() {
+        return header;
+    }
+
+    public void log(final int logLevel, final String message) {
+        if (this.logLevel >= logLevel) {
+            logStream.println(message);
+        }
+    }
+
+    /**
+     * Override the archive's deflate hint with the given boolean
+     *
+     * @param deflateHint - the deflate hint to use
+     */
+    public void overrideDeflateHint(final boolean deflateHint) {
+        this.overrideDeflateHint = true;
+        this.deflateHint = deflateHint;
     }
 
     /**
@@ -421,6 +435,44 @@ public class Segment {
     }
 
     /**
+     * This performs reading the data from the stream into non-static instance of Segment. After the completion of this
+     * method stream can be freed.
+     *
+     * @param in the input stream to read from
+     * @throws IOException if a problem occurs during reading from the underlying stream
+     * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
+     */
+    private void readSegment(final InputStream in) throws IOException, Pack200Exception {
+        log(LOG_LEVEL_VERBOSE, "-------");
+        cpBands = new CpBands(this);
+        cpBands.read(in);
+        attrDefinitionBands = new AttrDefinitionBands(this);
+        attrDefinitionBands.read(in);
+        icBands = new IcBands(this);
+        icBands.read(in);
+        classBands = new ClassBands(this);
+        classBands.read(in);
+        bcBands = new BcBands(this);
+        bcBands.read(in);
+        fileBands = new FileBands(this);
+        fileBands.read(in);
+
+        fileBands.processFileBits();
+    }
+
+    public void setLogLevel(final int logLevel) {
+        this.logLevel = logLevel;
+    }
+
+    public void setLogStream(final OutputStream logStream) {
+        this.logStream = new PrintWriter(new OutputStreamWriter(logStream, Charset.defaultCharset()), false);
+    }
+
+    public void setPreRead(final boolean value) {
+        doPreRead = value;
+    }
+
+    /**
      * Unpacks a packed stream (either .pack. or .pack.gz) into a corresponding JarOuputStream.
      *
      * @param in a packed stream.
@@ -432,6 +484,13 @@ public class Segment {
         unpackRead(in);
         unpackProcess();
         unpackWrite(out);
+    }
+
+    void unpackProcess() throws IOException, Pack200Exception {
+        if (internalBuffer != null) {
+            readSegment(internalBuffer);
+        }
+        parseSegment();
     }
 
     /*
@@ -454,13 +513,6 @@ public class Segment {
         } else {
             readSegment(in);
         }
-    }
-
-    void unpackProcess() throws IOException, Pack200Exception {
-        if (internalBuffer != null) {
-            readSegment(internalBuffer);
-        }
-        parseSegment();
     }
 
     void unpackWrite(final JarOutputStream out) throws IOException {
@@ -530,58 +582,6 @@ public class Segment {
                 out.write(fileBits[i]);
             }
         }
-    }
-
-    public SegmentConstantPool getConstantPool() {
-        return cpBands.getConstantPool();
-    }
-
-    public SegmentHeader getSegmentHeader() {
-        return header;
-    }
-
-    public void setPreRead(final boolean value) {
-        doPreRead = value;
-    }
-
-    protected AttrDefinitionBands getAttrDefinitionBands() {
-        return attrDefinitionBands;
-    }
-
-    protected ClassBands getClassBands() {
-        return classBands;
-    }
-
-    protected CpBands getCpBands() {
-        return cpBands;
-    }
-
-    protected IcBands getIcBands() {
-        return icBands;
-    }
-
-    public void setLogLevel(final int logLevel) {
-        this.logLevel = logLevel;
-    }
-
-    public void setLogStream(final OutputStream logStream) {
-        this.logStream = new PrintWriter(new OutputStreamWriter(logStream, Charset.defaultCharset()), false);
-    }
-
-    public void log(final int logLevel, final String message) {
-        if (this.logLevel >= logLevel) {
-            logStream.println(message);
-        }
-    }
-
-    /**
-     * Override the archive's deflate hint with the given boolean
-     *
-     * @param deflateHint - the deflate hint to use
-     */
-    public void overrideDeflateHint(final boolean deflateHint) {
-        this.overrideDeflateHint = true;
-        this.deflateHint = deflateHint;
     }
 
 }

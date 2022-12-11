@@ -63,13 +63,13 @@ public class CodeAttributeTest extends TestCase {
         }
 
         @Override
-        public CPString cpStringValue(final int index) {
-            return new CPString(new CPUTF8("Hello"), -1);
+        public CPMethodRef cpMethodValue(final int index) {
+            return null;
         }
 
         @Override
-        public CPMethodRef cpMethodValue(final int index) {
-            return null;
+        public CPString cpStringValue(final int index) {
+            return new CPString(new CPUTF8("Hello"), -1);
         }
 
     }

@@ -49,87 +49,14 @@ public class Messages {
     // ResourceBundle holding the system messages.
     static private ResourceBundle bundle = null;
 
-    /**
-     * Retrieves a message which has no arguments.
-     *
-     * @param msg String the key to look up.
-     * @return String the message for that key in the system message bundle.
-     */
-    static public String getString(final String msg) {
-        if (bundle == null) {
-            return msg;
-        }
+    static {
+        // Attempt to load the messages.
         try {
-            return bundle.getString(msg);
-        } catch (final MissingResourceException e) {
-            return "Missing message: " + msg; //$NON-NLS-1$
+            bundle = setLocale(Locale.getDefault(),
+                "org.apache.commons.compress.harmony.archive.internal.nls.messages"); //$NON-NLS-1$
+        } catch (final Throwable e) {
+            e.printStackTrace();
         }
-    }
-
-    /**
-     * Retrieves a message which takes 1 argument.
-     *
-     * @param msg String the key to look up.
-     * @param arg Object the object to insert in the formatted output.
-     * @return String the message for that key in the system message bundle.
-     */
-    static public String getString(final String msg, final Object arg) {
-        return getString(msg, new Object[] {arg});
-    }
-
-    /**
-     * Retrieves a message which takes 1 integer argument.
-     *
-     * @param msg String the key to look up.
-     * @param arg int the integer to insert in the formatted output.
-     * @return String the message for that key in the system message bundle.
-     */
-    static public String getString(final String msg, final int arg) {
-        return getString(msg, new Object[] {Integer.toString(arg)});
-    }
-
-    /**
-     * Retrieves a message which takes 1 character argument.
-     *
-     * @param msg String the key to look up.
-     * @param arg char the character to insert in the formatted output.
-     * @return String the message for that key in the system message bundle.
-     */
-    static public String getString(final String msg, final char arg) {
-        return getString(msg, new Object[] {String.valueOf(arg)});
-    }
-
-    /**
-     * Retrieves a message which takes 2 arguments.
-     *
-     * @param msg String the key to look up.
-     * @param arg1 Object an object to insert in the formatted output.
-     * @param arg2 Object another object to insert in the formatted output.
-     * @return String the message for that key in the system message bundle.
-     */
-    static public String getString(final String msg, final Object arg1, final Object arg2) {
-        return getString(msg, new Object[] {arg1, arg2});
-    }
-
-    /**
-     * Retrieves a message which takes several arguments.
-     *
-     * @param msg String the key to look up.
-     * @param args Object[] the objects to insert in the formatted output.
-     * @return String the message for that key in the system message bundle.
-     */
-    static public String getString(final String msg, final Object[] args) {
-        String format = msg;
-
-        if (bundle != null) {
-            try {
-                format = bundle.getString(msg);
-            } catch (final MissingResourceException e) {
-                // ignore
-            }
-        }
-
-        return format(format, args);
     }
 
     /**
@@ -187,6 +114,89 @@ public class Messages {
     }
 
     /**
+     * Retrieves a message which has no arguments.
+     *
+     * @param msg String the key to look up.
+     * @return String the message for that key in the system message bundle.
+     */
+    static public String getString(final String msg) {
+        if (bundle == null) {
+            return msg;
+        }
+        try {
+            return bundle.getString(msg);
+        } catch (final MissingResourceException e) {
+            return "Missing message: " + msg; //$NON-NLS-1$
+        }
+    }
+
+    /**
+     * Retrieves a message which takes 1 character argument.
+     *
+     * @param msg String the key to look up.
+     * @param arg char the character to insert in the formatted output.
+     * @return String the message for that key in the system message bundle.
+     */
+    static public String getString(final String msg, final char arg) {
+        return getString(msg, new Object[] {String.valueOf(arg)});
+    }
+
+    /**
+     * Retrieves a message which takes 1 integer argument.
+     *
+     * @param msg String the key to look up.
+     * @param arg int the integer to insert in the formatted output.
+     * @return String the message for that key in the system message bundle.
+     */
+    static public String getString(final String msg, final int arg) {
+        return getString(msg, new Object[] {Integer.toString(arg)});
+    }
+
+    /**
+     * Retrieves a message which takes 1 argument.
+     *
+     * @param msg String the key to look up.
+     * @param arg Object the object to insert in the formatted output.
+     * @return String the message for that key in the system message bundle.
+     */
+    static public String getString(final String msg, final Object arg) {
+        return getString(msg, new Object[] {arg});
+    }
+
+    /**
+     * Retrieves a message which takes 2 arguments.
+     *
+     * @param msg String the key to look up.
+     * @param arg1 Object an object to insert in the formatted output.
+     * @param arg2 Object another object to insert in the formatted output.
+     * @return String the message for that key in the system message bundle.
+     */
+    static public String getString(final String msg, final Object arg1, final Object arg2) {
+        return getString(msg, new Object[] {arg1, arg2});
+    }
+
+    /**
+     * Retrieves a message which takes several arguments.
+     *
+     * @param msg String the key to look up.
+     * @param args Object[] the objects to insert in the formatted output.
+     * @return String the message for that key in the system message bundle.
+     */
+    static public String getString(final String msg, final Object[] args) {
+        String format = msg;
+
+        if (bundle != null) {
+            try {
+                format = bundle.getString(msg);
+            } catch (final MissingResourceException e) {
+                // ignore
+            }
+        }
+
+        return format(format, args);
+    }
+
+    /**
      * Changes the locale of the messages.
      *
      * @param locale Locale the locale to change to.
@@ -203,15 +213,5 @@ public class Messages {
             // ignore
         }
         return null;
-    }
-
-    static {
-        // Attempt to load the messages.
-        try {
-            bundle = setLocale(Locale.getDefault(),
-                "org.apache.commons.compress.harmony.archive.internal.nls.messages"); //$NON-NLS-1$
-        } catch (final Throwable e) {
-            e.printStackTrace();
-        }
     }
 }

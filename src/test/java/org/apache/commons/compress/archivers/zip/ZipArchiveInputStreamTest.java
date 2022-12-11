@@ -52,16 +52,255 @@ import org.junit.jupiter.api.Test;
 
 public class ZipArchiveInputStreamTest {
 
+    private static void nameSource(final String archive, final String entry, int entryNo, final ZipArchiveEntry.NameSource expected)
+        throws Exception {
+        try (ZipArchiveInputStream zis = new ZipArchiveInputStream(Files.newInputStream(getFile(archive).toPath()))) {
+            ZipArchiveEntry ze;
+            do {
+                ze = zis.getNextZipEntry();
+            } while (--entryNo > 0);
+            assertEquals(entry, ze.getName());
+            assertEquals(expected, ze.getNameSource());
+        }
+    }
+
+    private static void nameSource(final String archive, final String entry, final ZipArchiveEntry.NameSource expected) throws Exception {
+        nameSource(archive, entry, 1, expected);
+    }
+
+    private static byte[] readEntry(final ZipArchiveInputStream zip, final ZipArchiveEntry zae) throws IOException {
+        final int len = (int)zae.getSize();
+        final byte[] buff = new byte[len];
+        zip.read(buff, 0, len);
+
+        return buff;
+    }
+
+    private void extractZipInputStream(final ZipArchiveInputStream in)
+        throws IOException {
+        ZipArchiveEntry zae = in.getNextZipEntry();
+        while (zae != null) {
+            if (zae.getName().endsWith(".zip")) {
+                extractZipInputStream(new ZipArchiveInputStream(in));
+            }
+            zae = in.getNextZipEntry();
+        }
+    }
+
     /**
-     * @see "https://issues.apache.org/jira/browse/COMPRESS-176"
+     * Forge a zip archive in memory, using STORED and
+     * Data Descriptor, and without signature of Data
+     * Descriptor.
+     *
+     * @return the input stream of the generated zip
+     * @throws IOException there are problems
      */
+    private InputStream forgeZipInputStream() throws IOException {
+        try (final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             final ZipArchiveOutputStream zo = new ZipArchiveOutputStream(byteArrayOutputStream)){
+
+            final ZipArchiveEntry entryA = new ZipArchiveEntry("foo");
+            entryA.setMethod(ZipEntry.STORED);
+            entryA.setSize(4);
+            entryA.setCrc(0xb63cfbcdL);
+            zo.putArchiveEntry(entryA);
+            zo.write(new byte[] { 1, 2, 3, 4 });
+            zo.closeArchiveEntry();
+            zo.close();
+
+            final byte[] zipContent = byteArrayOutputStream.toByteArray();
+            final byte[] old = Arrays.copyOf(zipContent, zipContent.length);
+
+            final byte[] zipContentWithDataDescriptor = new byte[zipContent.length + 12];
+            System.arraycopy(zipContent, 0, zipContentWithDataDescriptor, 0, 37);
+            // modify the general purpose bit flag
+            zipContentWithDataDescriptor[6] = 8;
+
+            // copy the crc-32, compressed size and uncompressed size to the data descriptor
+            System.arraycopy(zipContent, 14, zipContentWithDataDescriptor, 37, 12);
+
+            // and copy the rest of the zip content
+            System.arraycopy(zipContent, 37, zipContentWithDataDescriptor, 49, zipContent.length - 37);
+
+            return new ByteArrayInputStream(zipContentWithDataDescriptor);
+        }
+    }
+
+    private void fuzzingTest(final int[] bytes) throws Exception {
+        final int len = bytes.length;
+        final byte[] input = new byte[len];
+        for (int i = 0; i < len; i++) {
+            input[i] = (byte) bytes[i];
+        }
+        try (ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT
+             .createArchiveInputStream("zip", new ByteArrayInputStream(input))) {
+            ais.getNextEntry();
+            IOUtils.toByteArray(ais);
+        }
+    }
+
+
+    private void getAllZipEntries(final ZipArchiveInputStream zipInputStream) throws IOException {
+        while (zipInputStream.getNextZipEntry() != null) {
+            // noop
+        }
+    }
+
+    private void multiByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
+        final byte[] buf = new byte[2];
+        try (InputStream in = Files.newInputStream(getFile("bla.zip").toPath());
+             ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
+            final ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read(buf));
+            assertEquals(-1, archive.read(buf));
+        }
+    }
+
     @Test
-    public void winzipBackSlashWorkaround() throws Exception {
-        try (ZipArchiveInputStream in = new ZipArchiveInputStream(Files.newInputStream(getFile("test-winzip.zip").toPath()))) {
-            ZipArchiveEntry zae = in.getNextZipEntry();
-            zae = in.getNextZipEntry();
-            zae = in.getNextZipEntry();
-            assertEquals("\u00e4/", zae.getName());
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingBzip2() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("bzip2-zip.zip"));
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("bla.zip"));
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate64() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-380/COMPRESS-380.zip"));
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingExplode() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("imploding-8Kdict-3trees.zip"));
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingStore() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-264.zip"));
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingUnshrink() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("SHRUNK.ZIP"));
+    }
+
+    @Test
+    public void multiByteReadThrowsAtEofForCorruptedStoredEntry() throws Exception {
+        byte[] content = Files.readAllBytes(getFile("COMPRESS-264.zip").toPath());
+        // make size much bigger than entry's real size
+        for (int i = 17; i < 26; i++) {
+            content[i] = (byte) 0xff;
+        }
+        final byte[] buf = new byte[2];
+        try (ByteArrayInputStream in = new ByteArrayInputStream(content);
+             ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
+            final ArchiveEntry e = archive.getNextEntry();
+            try {
+                IOUtils.toByteArray(archive);
+                fail("expected exception");
+            } catch (final IOException ex) {
+                assertEquals("Truncated ZIP file", ex.getMessage());
+            }
+            try {
+                archive.read(buf);
+                fail("expected exception");
+            } catch (final IOException ex) {
+                assertEquals("Truncated ZIP file", ex.getMessage());
+            }
+            try {
+                archive.read(buf);
+                fail("expected exception");
+            } catch (final IOException ex) {
+                assertEquals("Truncated ZIP file", ex.getMessage());
+            }
+        }
+    }
+
+    @Test
+    public void nameSourceDefaultsToName() throws Exception {
+        nameSource("bla.zip", "test1.xml", ZipArchiveEntry.NameSource.NAME);
+    }
+
+    @Test
+    public void nameSourceIsSetToEFS() throws Exception {
+        nameSource("utf8-7zip-test.zip", "\u20AC_for_Dollar.txt", 3,
+                   ZipArchiveEntry.NameSource.NAME_WITH_EFS_FLAG);
+    }
+
+    @Test
+    public void nameSourceIsSetToUnicodeExtraField() throws Exception {
+        nameSource("utf8-winzip-test.zip", "\u20AC_for_Dollar.txt",
+                   ZipArchiveEntry.NameSource.UNICODE_EXTRA_FIELD);
+    }
+
+    @Test
+    public void properlyMarksEntriesAsUnreadableIfUncompressedSizeIsUnknown() throws Exception {
+        // we never read any data
+        try (ZipArchiveInputStream zis = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
+            final ZipArchiveEntry e = new ZipArchiveEntry("test");
+            e.setMethod(ZipMethod.DEFLATED.getCode());
+            assertTrue(zis.canReadEntryData(e));
+            e.setMethod(ZipMethod.ENHANCED_DEFLATED.getCode());
+            assertTrue(zis.canReadEntryData(e));
+            e.setMethod(ZipMethod.BZIP2.getCode());
+            assertFalse(zis.canReadEntryData(e));
+        }
+    }
+
+    @Test
+    public void properlyReadsStoredEntries() throws IOException {
+        try (InputStream fs = Files.newInputStream(getFile("bla-stored.zip").toPath());
+             ZipArchiveInputStream archive = new ZipArchiveInputStream(fs)) {
+            ZipArchiveEntry e = archive.getNextZipEntry();
+            assertNotNull(e);
+            assertEquals("test1.xml", e.getName());
+            assertEquals(610, e.getCompressedSize());
+            assertEquals(610, e.getSize());
+            byte[] data = IOUtils.toByteArray(archive);
+            assertEquals(610, data.length);
+            e = archive.getNextZipEntry();
+            assertNotNull(e);
+            assertEquals("test2.xml", e.getName());
+            assertEquals(82, e.getCompressedSize());
+            assertEquals(82, e.getSize());
+            data = IOUtils.toByteArray(archive);
+            assertEquals(82, data.length);
+            assertNull(archive.getNextEntry());
+        }
+    }
+
+    @Test
+    public void properlyReadsStoredEntryWithDataDescriptorWithoutSignature() throws IOException {
+        try (InputStream fs = Files.newInputStream(getFile("bla-stored-dd-nosig.zip").toPath());
+             ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
+            final ZipArchiveEntry e = archive.getNextZipEntry();
+            assertNotNull(e);
+            assertEquals("test1.xml", e.getName());
+            assertEquals(-1, e.getCompressedSize());
+            assertEquals(-1, e.getSize());
+            final byte[] data = IOUtils.toByteArray(archive);
+            assertEquals(610, data.length);
+            assertEquals(610, e.getCompressedSize());
+            assertEquals(610, e.getSize());
+        }
+    }
+
+    @Test
+    public void properlyReadsStoredEntryWithDataDescriptorWithSignature() throws IOException {
+        try (InputStream fs = Files.newInputStream(getFile("bla-stored-dd.zip").toPath());
+             ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
+            final ZipArchiveEntry e = archive.getNextZipEntry();
+            assertNotNull(e);
+            assertEquals("test1.xml", e.getName());
+            assertEquals(-1, e.getCompressedSize());
+            assertEquals(-1, e.getSize());
+            final byte[] data = IOUtils.toByteArray(archive);
+            assertEquals(610, data.length);
+            assertEquals(610, e.getCompressedSize());
+            assertEquals(610, e.getSize());
         }
     }
 
@@ -89,117 +328,6 @@ public class ZipArchiveInputStreamTest {
             if (in != null) {
                 in.close();
             }
-        }
-    }
-
-    @Test
-    public void shouldConsumeArchiveCompletely() throws Exception {
-        final InputStream is = ZipArchiveInputStreamTest.class
-            .getResourceAsStream("/archive_with_trailer.zip");
-        final ZipArchiveInputStream zip = new ZipArchiveInputStream(is);
-        getAllZipEntries(zip);
-        final byte[] expected = {
-            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n'
-        };
-        final byte[] actual = new byte[expected.length];
-        is.read(actual);
-        assertArrayEquals(expected, actual);
-        zip.close();
-    }
-
-    /**
-     * @see "https://issues.apache.org/jira/browse/COMPRESS-219"
-     */
-    @Test
-    public void shouldReadNestedZip() throws IOException {
-        try (ZipArchiveInputStream in = new ZipArchiveInputStream(Files.newInputStream(getFile("COMPRESS-219.zip").toPath()))) {
-            extractZipInputStream(in);
-        }
-    }
-
-    private void extractZipInputStream(final ZipArchiveInputStream in)
-        throws IOException {
-        ZipArchiveEntry zae = in.getNextZipEntry();
-        while (zae != null) {
-            if (zae.getName().endsWith(".zip")) {
-                extractZipInputStream(new ZipArchiveInputStream(in));
-            }
-            zae = in.getNextZipEntry();
-        }
-    }
-
-    @Test
-    public void testUnshrinkEntry() throws Exception {
-        final ZipArchiveInputStream in = new ZipArchiveInputStream(Files.newInputStream(getFile("SHRUNK.ZIP").toPath()));
-
-        ZipArchiveEntry entry = in.getNextZipEntry();
-        assertEquals("method", ZipMethod.UNSHRINKING.getCode(), entry.getMethod());
-        assertTrue(in.canReadEntryData(entry));
-
-        InputStream original = Files.newInputStream(getFile("test1.xml").toPath());
-        try {
-            assertArrayEquals(IOUtils.toByteArray(original), IOUtils.toByteArray(in));
-        } finally {
-            original.close();
-        }
-
-        entry = in.getNextZipEntry();
-        assertEquals("method", ZipMethod.UNSHRINKING.getCode(), entry.getMethod());
-        assertTrue(in.canReadEntryData(entry));
-
-        original = Files.newInputStream(getFile("test2.xml").toPath());
-        try {
-            assertArrayEquals(IOUtils.toByteArray(original), IOUtils.toByteArray(in));
-        } finally {
-            original.close();
-        }
-    }
-
-
-    /**
-     * Test case for
-     * <a href="https://issues.apache.org/jira/browse/COMPRESS-264"
-     * >COMPRESS-264</a>.
-     */
-    @Test
-    public void testReadingOfFirstStoredEntry() throws Exception {
-
-        try (ZipArchiveInputStream in = new ZipArchiveInputStream(Files.newInputStream(getFile("COMPRESS-264.zip").toPath()))) {
-            final ZipArchiveEntry ze = in.getNextZipEntry();
-            assertEquals(5, ze.getSize());
-            assertArrayEquals(new byte[] { 'd', 'a', 't', 'a', '\n' },
-                    IOUtils.toByteArray(in));
-        }
-    }
-
-    /**
-     * Test case for
-     * <a href="https://issues.apache.org/jira/browse/COMPRESS-351"
-     * >COMPRESS-351</a>.
-     */
-    @Test
-    public void testMessageWithCorruptFileName() throws Exception {
-        try (ZipArchiveInputStream in = new ZipArchiveInputStream(Files.newInputStream(getFile("COMPRESS-351.zip").toPath()))) {
-            ZipArchiveEntry ze = in.getNextZipEntry();
-            while (ze != null) {
-                ze = in.getNextZipEntry();
-            }
-            fail("expected EOFException");
-        } catch (final EOFException ex) {
-            final String m = ex.getMessage();
-            assertTrue(m.startsWith("Truncated ZIP entry: ?2016")); // the first character is not printable
-        }
-    }
-
-    @Test
-    public void testUnzipBZip2CompressedEntry() throws Exception {
-
-        try (ZipArchiveInputStream in = new ZipArchiveInputStream(Files.newInputStream(getFile("bzip2-zip.zip").toPath()))) {
-            final ZipArchiveEntry ze = in.getNextZipEntry();
-            assertEquals(42, ze.getSize());
-            final byte[] expected = new byte[42];
-            Arrays.fill(expected, (byte) 'a');
-            assertArrayEquals(expected, IOUtils.toByteArray(in));
         }
     }
 
@@ -238,126 +366,41 @@ public class ZipArchiveInputStreamTest {
         }
     }
 
-    /**
-     * Test case for
-     * <a href="https://issues.apache.org/jira/browse/COMPRESS-364"
-     * >COMPRESS-364</a>.
-     */
     @Test
-    public void testWithBytesAfterData() throws Exception {
-        final int expectedNumEntries = 2;
+    public void rejectsStoredEntriesWithDataDescriptorByDefault() throws IOException {
+        try (InputStream fs = Files.newInputStream(getFile("bla-stored-dd.zip").toPath()); ZipArchiveInputStream archive = new ZipArchiveInputStream(fs)) {
+            final ZipArchiveEntry e = archive.getNextZipEntry();
+            assertNotNull(e);
+            assertEquals("test1.xml", e.getName());
+            assertEquals(-1, e.getCompressedSize());
+            assertEquals(-1, e.getSize());
+            assertThrows(UnsupportedZipFeatureException.class, () -> IOUtils.toByteArray(archive));
+        }
+    }
+
+    @Test
+    public void shouldConsumeArchiveCompletely() throws Exception {
         final InputStream is = ZipArchiveInputStreamTest.class
-                .getResourceAsStream("/archive_with_bytes_after_data.zip");
-
-        try (final ZipArchiveInputStream zip = new ZipArchiveInputStream(is)) {
-            int actualNumEntries = 0;
-            ZipArchiveEntry zae = zip.getNextZipEntry();
-            while (zae != null) {
-                actualNumEntries++;
-                readEntry(zip, zae);
-                zae = zip.getNextZipEntry();
-            }
-            assertEquals(expectedNumEntries, actualNumEntries);
-        }
+            .getResourceAsStream("/archive_with_trailer.zip");
+        final ZipArchiveInputStream zip = new ZipArchiveInputStream(is);
+        getAllZipEntries(zip);
+        final byte[] expected = {
+            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n'
+        };
+        final byte[] actual = new byte[expected.length];
+        is.read(actual);
+        assertArrayEquals(expected, actual);
+        zip.close();
     }
 
     /**
-     * {@code getNextZipEntry()} should throw a {@code ZipException} rather than return
-     * {@code null} when an unexpected structure is encountered.
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-219"
      */
     @Test
-    public void testThrowOnInvalidEntry() throws Exception {
-        final InputStream is = ZipArchiveInputStreamTest.class
-                .getResourceAsStream("/invalid-zip.zip");
-
-        try (final ZipArchiveInputStream zip = new ZipArchiveInputStream(is)) {
-            zip.getNextZipEntry();
-            fail("IOException expected");
-        } catch (final ZipException expected) {
-            assertTrue(expected.getMessage().contains("Unexpected record signature"));
+    public void shouldReadNestedZip() throws IOException {
+        try (ZipArchiveInputStream in = new ZipArchiveInputStream(Files.newInputStream(getFile("COMPRESS-219.zip").toPath()))) {
+            extractZipInputStream(in);
         }
-    }
-
-    /**
-     * Test correct population of header and data offsets.
-     */
-    @Test
-    public void testOffsets() throws Exception {
-        // mixed.zip contains both inflated and stored files
-        try (InputStream archiveStream = ZipArchiveInputStream.class.getResourceAsStream("/mixed.zip");
-             ZipArchiveInputStream zipStream =  new ZipArchiveInputStream((archiveStream))
-        ) {
-            final ZipArchiveEntry inflatedEntry = zipStream.getNextZipEntry();
-            Assert.assertEquals("inflated.txt", inflatedEntry.getName());
-            Assert.assertEquals(0x0000, inflatedEntry.getLocalHeaderOffset());
-            Assert.assertEquals(0x0046, inflatedEntry.getDataOffset());
-            final ZipArchiveEntry storedEntry = zipStream.getNextZipEntry();
-            Assert.assertEquals("stored.txt", storedEntry.getName());
-            Assert.assertEquals(0x5892, storedEntry.getLocalHeaderOffset());
-            Assert.assertEquals(0x58d6, storedEntry.getDataOffset());
-            Assert.assertNull(zipStream.getNextZipEntry());
-        }
-    }
-
-    @Test
-    public void nameSourceDefaultsToName() throws Exception {
-        nameSource("bla.zip", "test1.xml", ZipArchiveEntry.NameSource.NAME);
-    }
-
-    @Test
-    public void nameSourceIsSetToUnicodeExtraField() throws Exception {
-        nameSource("utf8-winzip-test.zip", "\u20AC_for_Dollar.txt",
-                   ZipArchiveEntry.NameSource.UNICODE_EXTRA_FIELD);
-    }
-
-    @Test
-    public void nameSourceIsSetToEFS() throws Exception {
-        nameSource("utf8-7zip-test.zip", "\u20AC_for_Dollar.txt", 3,
-                   ZipArchiveEntry.NameSource.NAME_WITH_EFS_FLAG);
-    }
-
-    @Test
-    public void properlyMarksEntriesAsUnreadableIfUncompressedSizeIsUnknown() throws Exception {
-        // we never read any data
-        try (ZipArchiveInputStream zis = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
-            final ZipArchiveEntry e = new ZipArchiveEntry("test");
-            e.setMethod(ZipMethod.DEFLATED.getCode());
-            assertTrue(zis.canReadEntryData(e));
-            e.setMethod(ZipMethod.ENHANCED_DEFLATED.getCode());
-            assertTrue(zis.canReadEntryData(e));
-            e.setMethod(ZipMethod.BZIP2.getCode());
-            assertFalse(zis.canReadEntryData(e));
-        }
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("bla.zip"));
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingStore() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-264.zip"));
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingUnshrink() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("SHRUNK.ZIP"));
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingExplode() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("imploding-8Kdict-3trees.zip"));
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate64() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-380/COMPRESS-380.zip"));
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingBzip2() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("bzip2-zip.zip"));
     }
 
     private void singleByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
@@ -371,44 +414,33 @@ public class ZipArchiveInputStreamTest {
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("bla.zip"));
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingBzip2() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("bzip2-zip.zip"));
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingStore() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-264.zip"));
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("bla.zip"));
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingUnshrink() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("SHRUNK.ZIP"));
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate64() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-380/COMPRESS-380.zip"));
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingExplode() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("imploding-8Kdict-3trees.zip"));
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingExplode() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("imploding-8Kdict-3trees.zip"));
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate64() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-380/COMPRESS-380.zip"));
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingStore() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-264.zip"));
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingBzip2() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("bzip2-zip.zip"));
-    }
-
-    private void multiByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
-        final byte[] buf = new byte[2];
-        try (InputStream in = Files.newInputStream(getFile("bla.zip").toPath());
-             ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
-            IOUtils.toByteArray(archive);
-            assertEquals(-1, archive.read(buf));
-            assertEquals(-1, archive.read(buf));
-        }
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingUnshrink() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("SHRUNK.ZIP"));
     }
 
     @Test
@@ -442,127 +474,81 @@ public class ZipArchiveInputStreamTest {
         }
     }
 
+    /**
+     * Test case for
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-351"
+     * >COMPRESS-351</a>.
+     */
     @Test
-    public void multiByteReadThrowsAtEofForCorruptedStoredEntry() throws Exception {
-        byte[] content = Files.readAllBytes(getFile("COMPRESS-264.zip").toPath());
-        // make size much bigger than entry's real size
-        for (int i = 17; i < 26; i++) {
-            content[i] = (byte) 0xff;
-        }
-        final byte[] buf = new byte[2];
-        try (ByteArrayInputStream in = new ByteArrayInputStream(content);
-             ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
-            try {
-                IOUtils.toByteArray(archive);
-                fail("expected exception");
-            } catch (final IOException ex) {
-                assertEquals("Truncated ZIP file", ex.getMessage());
+    public void testMessageWithCorruptFileName() throws Exception {
+        try (ZipArchiveInputStream in = new ZipArchiveInputStream(Files.newInputStream(getFile("COMPRESS-351.zip").toPath()))) {
+            ZipArchiveEntry ze = in.getNextZipEntry();
+            while (ze != null) {
+                ze = in.getNextZipEntry();
             }
-            try {
-                archive.read(buf);
-                fail("expected exception");
-            } catch (final IOException ex) {
-                assertEquals("Truncated ZIP file", ex.getMessage());
+            fail("expected EOFException");
+        } catch (final EOFException ex) {
+            final String m = ex.getMessage();
+            assertTrue(m.startsWith("Truncated ZIP entry: ?2016")); // the first character is not printable
+        }
+    }
+
+    /**
+     * Test correct population of header and data offsets.
+     */
+    @Test
+    public void testOffsets() throws Exception {
+        // mixed.zip contains both inflated and stored files
+        try (InputStream archiveStream = ZipArchiveInputStream.class.getResourceAsStream("/mixed.zip");
+             ZipArchiveInputStream zipStream =  new ZipArchiveInputStream((archiveStream))
+        ) {
+            final ZipArchiveEntry inflatedEntry = zipStream.getNextZipEntry();
+            Assert.assertEquals("inflated.txt", inflatedEntry.getName());
+            Assert.assertEquals(0x0000, inflatedEntry.getLocalHeaderOffset());
+            Assert.assertEquals(0x0046, inflatedEntry.getDataOffset());
+            final ZipArchiveEntry storedEntry = zipStream.getNextZipEntry();
+            Assert.assertEquals("stored.txt", storedEntry.getName());
+            Assert.assertEquals(0x5892, storedEntry.getLocalHeaderOffset());
+            Assert.assertEquals(0x58d6, storedEntry.getDataOffset());
+            Assert.assertNull(zipStream.getNextZipEntry());
+        }
+    }
+
+    /**
+     * Test case for
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-264"
+     * >COMPRESS-264</a>.
+     */
+    @Test
+    public void testReadingOfFirstStoredEntry() throws Exception {
+
+        try (ZipArchiveInputStream in = new ZipArchiveInputStream(Files.newInputStream(getFile("COMPRESS-264.zip").toPath()))) {
+            final ZipArchiveEntry ze = in.getNextZipEntry();
+            assertEquals(5, ze.getSize());
+            assertArrayEquals(new byte[] { 'd', 'a', 't', 'a', '\n' },
+                    IOUtils.toByteArray(in));
+        }
+    }
+
+    @Test
+    public void testSplitZipCreatedByWinrar() throws IOException {
+        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_winrar/split_zip_created_by_winrar.zip");
+        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+             InputStream inputStream = Channels.newInputStream(channel);
+             ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, ZipEncodingHelper.UTF8, true, false, true)) {
+
+            final File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_winrar/zip_to_compare_created_by_winrar.zip");
+            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(Files.newInputStream(fileToCompare.toPath()), ZipEncodingHelper.UTF8, true, false, true)) {
+
+                ArchiveEntry entry;
+                while((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
+                    if(entry.isDirectory()) {
+                        continue;
+                    }
+                    assertArrayEquals(IOUtils.toByteArray(splitInputStream),
+                        IOUtils.toByteArray(inputStreamToCompare));
+                }
             }
-            try {
-                archive.read(buf);
-                fail("expected exception");
-            } catch (final IOException ex) {
-                assertEquals("Truncated ZIP file", ex.getMessage());
-            }
-        }
-    }
-
-    @Test
-    public void properlyReadsStoredEntries() throws IOException {
-        try (InputStream fs = Files.newInputStream(getFile("bla-stored.zip").toPath());
-             ZipArchiveInputStream archive = new ZipArchiveInputStream(fs)) {
-            ZipArchiveEntry e = archive.getNextZipEntry();
-            assertNotNull(e);
-            assertEquals("test1.xml", e.getName());
-            assertEquals(610, e.getCompressedSize());
-            assertEquals(610, e.getSize());
-            byte[] data = IOUtils.toByteArray(archive);
-            assertEquals(610, data.length);
-            e = archive.getNextZipEntry();
-            assertNotNull(e);
-            assertEquals("test2.xml", e.getName());
-            assertEquals(82, e.getCompressedSize());
-            assertEquals(82, e.getSize());
-            data = IOUtils.toByteArray(archive);
-            assertEquals(82, data.length);
-            assertNull(archive.getNextEntry());
-        }
-    }
-
-    @Test
-    public void rejectsStoredEntriesWithDataDescriptorByDefault() throws IOException {
-        try (InputStream fs = Files.newInputStream(getFile("bla-stored-dd.zip").toPath()); ZipArchiveInputStream archive = new ZipArchiveInputStream(fs)) {
-            final ZipArchiveEntry e = archive.getNextZipEntry();
-            assertNotNull(e);
-            assertEquals("test1.xml", e.getName());
-            assertEquals(-1, e.getCompressedSize());
-            assertEquals(-1, e.getSize());
-            assertThrows(UnsupportedZipFeatureException.class, () -> IOUtils.toByteArray(archive));
-        }
-    }
-
-    @Test
-    public void properlyReadsStoredEntryWithDataDescriptorWithSignature() throws IOException {
-        try (InputStream fs = Files.newInputStream(getFile("bla-stored-dd.zip").toPath());
-             ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
-            final ZipArchiveEntry e = archive.getNextZipEntry();
-            assertNotNull(e);
-            assertEquals("test1.xml", e.getName());
-            assertEquals(-1, e.getCompressedSize());
-            assertEquals(-1, e.getSize());
-            final byte[] data = IOUtils.toByteArray(archive);
-            assertEquals(610, data.length);
-            assertEquals(610, e.getCompressedSize());
-            assertEquals(610, e.getSize());
-        }
-    }
-
-    @Test
-    public void properlyReadsStoredEntryWithDataDescriptorWithoutSignature() throws IOException {
-        try (InputStream fs = Files.newInputStream(getFile("bla-stored-dd-nosig.zip").toPath());
-             ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
-            final ZipArchiveEntry e = archive.getNextZipEntry();
-            assertNotNull(e);
-            assertEquals("test1.xml", e.getName());
-            assertEquals(-1, e.getCompressedSize());
-            assertEquals(-1, e.getSize());
-            final byte[] data = IOUtils.toByteArray(archive);
-            assertEquals(610, data.length);
-            assertEquals(610, e.getCompressedSize());
-            assertEquals(610, e.getSize());
-        }
-    }
-
-    @Test
-    public void throwsIfStoredDDIsInconsistent() throws IOException {
-        try (InputStream fs = Files.newInputStream(getFile("bla-stored-dd-sizes-differ.zip").toPath());
-             ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
-            final ZipArchiveEntry e = archive.getNextZipEntry();
-            assertNotNull(e);
-            assertEquals("test1.xml", e.getName());
-            assertEquals(-1, e.getCompressedSize());
-            assertEquals(-1, e.getSize());
-            assertThrows(ZipException.class, () -> IOUtils.toByteArray(archive));
-        }
-    }
-
-    @Test
-    public void throwsIfStoredDDIsDifferentFromLengthRead() throws IOException {
-        try (InputStream fs = Files.newInputStream(getFile("bla-stored-dd-contradicts-actualsize.zip").toPath());
-             ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
-            final ZipArchiveEntry e = archive.getNextZipEntry();
-            assertNotNull(e);
-            assertEquals("test1.xml", e.getName());
-            assertEquals(-1, e.getCompressedSize());
-            assertEquals(-1, e.getSize());
-            assertThrows(ZipException.class, () -> IOUtils.toByteArray(archive));
         }
     }
 
@@ -611,28 +597,6 @@ public class ZipArchiveInputStreamTest {
     }
 
     @Test
-    public void testSplitZipCreatedByWinrar() throws IOException {
-        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_winrar/split_zip_created_by_winrar.zip");
-        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
-             InputStream inputStream = Channels.newInputStream(channel);
-             ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, ZipEncodingHelper.UTF8, true, false, true)) {
-
-            final File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_winrar/zip_to_compare_created_by_winrar.zip");
-            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(Files.newInputStream(fileToCompare.toPath()), ZipEncodingHelper.UTF8, true, false, true)) {
-
-                ArchiveEntry entry;
-                while((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
-                    if(entry.isDirectory()) {
-                        continue;
-                    }
-                    assertArrayEquals(IOUtils.toByteArray(splitInputStream),
-                        IOUtils.toByteArray(inputStreamToCompare));
-                }
-            }
-        }
-    }
-
-    @Test
     public void testSplitZipCreatedByZipThrowsException() throws IOException {
         final File zipSplitFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
         final InputStream fileInputStream = Files.newInputStream(zipSplitFile.toPath());
@@ -644,6 +608,139 @@ public class ZipArchiveInputStreamTest {
                 entry = inputStream.getNextEntry();
             }
         });
+    }
+
+    /**
+     * {@code getNextZipEntry()} should throw a {@code ZipException} rather than return
+     * {@code null} when an unexpected structure is encountered.
+     */
+    @Test
+    public void testThrowOnInvalidEntry() throws Exception {
+        final InputStream is = ZipArchiveInputStreamTest.class
+                .getResourceAsStream("/invalid-zip.zip");
+
+        try (final ZipArchiveInputStream zip = new ZipArchiveInputStream(is)) {
+            zip.getNextZipEntry();
+            fail("IOException expected");
+        } catch (final ZipException expected) {
+            assertTrue(expected.getMessage().contains("Unexpected record signature"));
+        }
+    }
+
+    @Test
+    public void testUnshrinkEntry() throws Exception {
+        final ZipArchiveInputStream in = new ZipArchiveInputStream(Files.newInputStream(getFile("SHRUNK.ZIP").toPath()));
+
+        ZipArchiveEntry entry = in.getNextZipEntry();
+        assertEquals("method", ZipMethod.UNSHRINKING.getCode(), entry.getMethod());
+        assertTrue(in.canReadEntryData(entry));
+
+        InputStream original = Files.newInputStream(getFile("test1.xml").toPath());
+        try {
+            assertArrayEquals(IOUtils.toByteArray(original), IOUtils.toByteArray(in));
+        } finally {
+            original.close();
+        }
+
+        entry = in.getNextZipEntry();
+        assertEquals("method", ZipMethod.UNSHRINKING.getCode(), entry.getMethod());
+        assertTrue(in.canReadEntryData(entry));
+
+        original = Files.newInputStream(getFile("test2.xml").toPath());
+        try {
+            assertArrayEquals(IOUtils.toByteArray(original), IOUtils.toByteArray(in));
+        } finally {
+            original.close();
+        }
+    }
+
+    @Test
+    public void testUnzipBZip2CompressedEntry() throws Exception {
+
+        try (ZipArchiveInputStream in = new ZipArchiveInputStream(Files.newInputStream(getFile("bzip2-zip.zip").toPath()))) {
+            final ZipArchiveEntry ze = in.getNextZipEntry();
+            assertEquals(42, ze.getSize());
+            final byte[] expected = new byte[42];
+            Arrays.fill(expected, (byte) 'a');
+            assertArrayEquals(expected, IOUtils.toByteArray(in));
+        }
+    }
+
+    /**
+     * Test case for
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-364"
+     * >COMPRESS-364</a>.
+     */
+    @Test
+    public void testWithBytesAfterData() throws Exception {
+        final int expectedNumEntries = 2;
+        final InputStream is = ZipArchiveInputStreamTest.class
+                .getResourceAsStream("/archive_with_bytes_after_data.zip");
+
+        try (final ZipArchiveInputStream zip = new ZipArchiveInputStream(is)) {
+            int actualNumEntries = 0;
+            ZipArchiveEntry zae = zip.getNextZipEntry();
+            while (zae != null) {
+                actualNumEntries++;
+                readEntry(zip, zae);
+                zae = zip.getNextZipEntry();
+            }
+            assertEquals(expectedNumEntries, actualNumEntries);
+        }
+    }
+
+    @Test
+    public void testZipUsingStoredWithDDAndNoDDSignature() throws IOException {
+        try (InputStream inputStream = forgeZipInputStream();
+             ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(inputStream, "UTF-8", true, true)) {
+            getAllZipEntries(zipInputStream);
+        }
+    }
+
+    @Test
+    public void testZipWithBadExtraFields() throws IOException {
+        try (InputStream fis = Files.newInputStream(getFile("COMPRESS-548.zip").toPath());
+             ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis)) {
+            getAllZipEntries(zipInputStream);
+        }
+    }
+
+    @Test
+    public void throwsIfStoredDDIsDifferentFromLengthRead() throws IOException {
+        try (InputStream fs = Files.newInputStream(getFile("bla-stored-dd-contradicts-actualsize.zip").toPath());
+             ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
+            final ZipArchiveEntry e = archive.getNextZipEntry();
+            assertNotNull(e);
+            assertEquals("test1.xml", e.getName());
+            assertEquals(-1, e.getCompressedSize());
+            assertEquals(-1, e.getSize());
+            assertThrows(ZipException.class, () -> IOUtils.toByteArray(archive));
+        }
+    }
+
+    @Test
+    public void throwsIfStoredDDIsInconsistent() throws IOException {
+        try (InputStream fs = Files.newInputStream(getFile("bla-stored-dd-sizes-differ.zip").toPath());
+             ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
+            final ZipArchiveEntry e = archive.getNextZipEntry();
+            assertNotNull(e);
+            assertEquals("test1.xml", e.getName());
+            assertEquals(-1, e.getCompressedSize());
+            assertEquals(-1, e.getSize());
+            assertThrows(ZipException.class, () -> IOUtils.toByteArray(archive));
+        }
+    }
+
+    /**
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-523">COMPRESS-523</a>
+     */
+    @Test
+    public void throwsIfThereIsNoEocd() {
+        assertThrows(IOException.class, () -> fuzzingTest(new int[] {
+            0x50, 0x4b, 0x01, 0x02, 0x14, 0x00, 0x14, 0x00, 0x08, 0x00,
+            0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x43, 0xbe, 0x00, 0x00,
+            0x00, 0xb7, 0xe8, 0x07, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00
+        }));
     }
 
     /**
@@ -663,18 +760,6 @@ public class ZipArchiveInputStreamTest {
         }));
     }
 
-    /**
-     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-523">COMPRESS-523</a>
-     */
-    @Test
-    public void throwsIfThereIsNoEocd() {
-        assertThrows(IOException.class, () -> fuzzingTest(new int[] {
-            0x50, 0x4b, 0x01, 0x02, 0x14, 0x00, 0x14, 0x00, 0x08, 0x00,
-            0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x43, 0xbe, 0x00, 0x00,
-            0x00, 0xb7, 0xe8, 0x07, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00
-        }));
-    }
-
     @Test
     public void throwsIOExceptionIfThereIsCorruptedZip64Extra() throws IOException {
         try (InputStream fis = Files.newInputStream(getFile("COMPRESS-546.zip").toPath());
@@ -683,101 +768,16 @@ public class ZipArchiveInputStreamTest {
         }
     }
 
-    private void getAllZipEntries(final ZipArchiveInputStream zipInputStream) throws IOException {
-        while (zipInputStream.getNextZipEntry() != null) {
-            // noop
-        }
-    }
-
-    @Test
-    public void testZipWithBadExtraFields() throws IOException {
-        try (InputStream fis = Files.newInputStream(getFile("COMPRESS-548.zip").toPath());
-             ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis)) {
-            getAllZipEntries(zipInputStream);
-        }
-    }
-
-    @Test
-    public void testZipUsingStoredWithDDAndNoDDSignature() throws IOException {
-        try (InputStream inputStream = forgeZipInputStream();
-             ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(inputStream, "UTF-8", true, true)) {
-            getAllZipEntries(zipInputStream);
-        }
-    }
-
-    private static byte[] readEntry(final ZipArchiveInputStream zip, final ZipArchiveEntry zae) throws IOException {
-        final int len = (int)zae.getSize();
-        final byte[] buff = new byte[len];
-        zip.read(buff, 0, len);
-
-        return buff;
-    }
-
-    private static void nameSource(final String archive, final String entry, final ZipArchiveEntry.NameSource expected) throws Exception {
-        nameSource(archive, entry, 1, expected);
-    }
-
-    private static void nameSource(final String archive, final String entry, int entryNo, final ZipArchiveEntry.NameSource expected)
-        throws Exception {
-        try (ZipArchiveInputStream zis = new ZipArchiveInputStream(Files.newInputStream(getFile(archive).toPath()))) {
-            ZipArchiveEntry ze;
-            do {
-                ze = zis.getNextZipEntry();
-            } while (--entryNo > 0);
-            assertEquals(entry, ze.getName());
-            assertEquals(expected, ze.getNameSource());
-        }
-    }
-
-    private void fuzzingTest(final int[] bytes) throws Exception {
-        final int len = bytes.length;
-        final byte[] input = new byte[len];
-        for (int i = 0; i < len; i++) {
-            input[i] = (byte) bytes[i];
-        }
-        try (ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT
-             .createArchiveInputStream("zip", new ByteArrayInputStream(input))) {
-            ais.getNextEntry();
-            IOUtils.toByteArray(ais);
-        }
-    }
-
     /**
-     * Forge a zip archive in memory, using STORED and
-     * Data Descriptor, and without signature of Data
-     * Descriptor.
-     *
-     * @return the input stream of the generated zip
-     * @throws IOException there are problems
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-176"
      */
-    private InputStream forgeZipInputStream() throws IOException {
-        try (final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-             final ZipArchiveOutputStream zo = new ZipArchiveOutputStream(byteArrayOutputStream)){
-
-            final ZipArchiveEntry entryA = new ZipArchiveEntry("foo");
-            entryA.setMethod(ZipEntry.STORED);
-            entryA.setSize(4);
-            entryA.setCrc(0xb63cfbcdL);
-            zo.putArchiveEntry(entryA);
-            zo.write(new byte[] { 1, 2, 3, 4 });
-            zo.closeArchiveEntry();
-            zo.close();
-
-            final byte[] zipContent = byteArrayOutputStream.toByteArray();
-            final byte[] old = Arrays.copyOf(zipContent, zipContent.length);
-
-            final byte[] zipContentWithDataDescriptor = new byte[zipContent.length + 12];
-            System.arraycopy(zipContent, 0, zipContentWithDataDescriptor, 0, 37);
-            // modify the general purpose bit flag
-            zipContentWithDataDescriptor[6] = 8;
-
-            // copy the crc-32, compressed size and uncompressed size to the data descriptor
-            System.arraycopy(zipContent, 14, zipContentWithDataDescriptor, 37, 12);
-
-            // and copy the rest of the zip content
-            System.arraycopy(zipContent, 37, zipContentWithDataDescriptor, 49, zipContent.length - 37);
-
-            return new ByteArrayInputStream(zipContentWithDataDescriptor);
+    @Test
+    public void winzipBackSlashWorkaround() throws Exception {
+        try (ZipArchiveInputStream in = new ZipArchiveInputStream(Files.newInputStream(getFile("test-winzip.zip").toPath()))) {
+            ZipArchiveEntry zae = in.getNextZipEntry();
+            zae = in.getNextZipEntry();
+            zae = in.getNextZipEntry();
+            assertEquals("\u00e4/", zae.getName());
         }
     }
 }

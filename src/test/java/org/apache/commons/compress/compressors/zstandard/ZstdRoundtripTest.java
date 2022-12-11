@@ -43,6 +43,26 @@ public class ZstdRoundtripTest extends AbstractTestCase {
         roundtrip(ZstdCompressorOutputStream::new);
     }
 
+    @Test
+    public void factoryRoundtrip() throws Exception {
+        final File input = getFile("bla.tar");
+        long start = System.currentTimeMillis();
+        final File output = new File(dir, input.getName() + ".zstd");
+        try (InputStream is = Files.newInputStream(input.toPath());
+             OutputStream os = Files.newOutputStream(output.toPath());
+             CompressorOutputStream zos = new CompressorStreamFactory().createCompressorOutputStream("zstd", os)) {
+            IOUtils.copy(is, zos);
+        }
+        start = System.currentTimeMillis();
+        try (InputStream is = Files.newInputStream(input.toPath());
+             CompressorInputStream zis = new CompressorStreamFactory()
+             .createCompressorInputStream("zstd", Files.newInputStream(output.toPath()))) {
+            final byte[] expected = IOUtils.toByteArray(is);
+            final byte[] actual = IOUtils.toByteArray(zis);
+            Assert.assertArrayEquals(expected, actual);
+        }
+    }
+
     private void roundtrip(final OutputStreamCreator oc) throws IOException {
         final File input = getFile("bla.tar");
         long start = System.currentTimeMillis();
@@ -65,28 +85,8 @@ public class ZstdRoundtripTest extends AbstractTestCase {
     }
 
     @Test
-    public void factoryRoundtrip() throws Exception {
-        final File input = getFile("bla.tar");
-        long start = System.currentTimeMillis();
-        final File output = new File(dir, input.getName() + ".zstd");
-        try (InputStream is = Files.newInputStream(input.toPath());
-             OutputStream os = Files.newOutputStream(output.toPath());
-             CompressorOutputStream zos = new CompressorStreamFactory().createCompressorOutputStream("zstd", os)) {
-            IOUtils.copy(is, zos);
-        }
-        start = System.currentTimeMillis();
-        try (InputStream is = Files.newInputStream(input.toPath());
-             CompressorInputStream zis = new CompressorStreamFactory()
-             .createCompressorInputStream("zstd", Files.newInputStream(output.toPath()))) {
-            final byte[] expected = IOUtils.toByteArray(is);
-            final byte[] actual = IOUtils.toByteArray(zis);
-            Assert.assertArrayEquals(expected, actual);
-        }
-    }
-
-    @Test
-    public void roundtripWithCustomLevel() throws Exception {
-        roundtrip(os -> new ZstdCompressorOutputStream(os, 1));
+    public void roundtripWithChecksum() throws Exception {
+        roundtrip(os -> new ZstdCompressorOutputStream(os, 3, false, true));
     }
 
     @Test
@@ -95,8 +95,8 @@ public class ZstdRoundtripTest extends AbstractTestCase {
     }
 
     @Test
-    public void roundtripWithChecksum() throws Exception {
-        roundtrip(os -> new ZstdCompressorOutputStream(os, 3, false, true));
+    public void roundtripWithCustomLevel() throws Exception {
+        roundtrip(os -> new ZstdCompressorOutputStream(os, 1));
     }
 
 }

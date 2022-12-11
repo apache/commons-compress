@@ -42,6 +42,36 @@ import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
 public class TarMemoryFileSystemTest {
 
     @Test
+    public void checkUserInformationInTarEntry() throws IOException, ArchiveException {
+        final String user = "commons";
+        final String group = "compress";
+        try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().addUser(user).addGroup(group).build()) {
+            final Path source = fileSystem.getPath("original-file.txt");
+            Files.write(source, "Test".getBytes(UTF_8));
+            Files.setAttribute(source, "posix:owner", (UserPrincipal) () -> user);
+            Files.setAttribute(source, "posix:group", (GroupPrincipal) () -> group);
+
+            final Path target = fileSystem.getPath("original-file.tar");
+            try (final OutputStream out = Files.newOutputStream(target);
+                 final ArchiveOutputStream tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
+                final TarArchiveEntry entry = new TarArchiveEntry(source);
+                tarOut.putArchiveEntry(entry);
+
+                Files.copy(source, tarOut);
+                tarOut.closeArchiveEntry();
+            }
+
+            try (final InputStream input = Files.newInputStream(target);
+                 final TarArchiveInputStream tarIn = new TarArchiveInputStream(input)) {
+                final TarArchiveEntry nextTarEntry = tarIn.getNextTarEntry();
+
+                assertEquals(user, nextTarEntry.getUserName());
+                assertEquals(group, nextTarEntry.getGroupName());
+            }
+        }
+    }
+
+    @Test
     public void tarFromMemoryFileSystem() throws IOException, ArchiveException {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
             final Path p = fileSystem.getPath("test.txt");
@@ -77,36 +107,6 @@ public class TarMemoryFileSystemTest {
 
                 assertTrue(Files.exists(p));
                 assertEquals(Files.size(p), tarOut.getBytesWritten());
-            }
-        }
-    }
-
-    @Test
-    public void checkUserInformationInTarEntry() throws IOException, ArchiveException {
-        final String user = "commons";
-        final String group = "compress";
-        try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().addUser(user).addGroup(group).build()) {
-            final Path source = fileSystem.getPath("original-file.txt");
-            Files.write(source, "Test".getBytes(UTF_8));
-            Files.setAttribute(source, "posix:owner", (UserPrincipal) () -> user);
-            Files.setAttribute(source, "posix:group", (GroupPrincipal) () -> group);
-
-            final Path target = fileSystem.getPath("original-file.tar");
-            try (final OutputStream out = Files.newOutputStream(target);
-                 final ArchiveOutputStream tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
-                final TarArchiveEntry entry = new TarArchiveEntry(source);
-                tarOut.putArchiveEntry(entry);
-
-                Files.copy(source, tarOut);
-                tarOut.closeArchiveEntry();
-            }
-
-            try (final InputStream input = Files.newInputStream(target);
-                 final TarArchiveInputStream tarIn = new TarArchiveInputStream(input)) {
-                final TarArchiveEntry nextTarEntry = tarIn.getNextTarEntry();
-
-                assertEquals(user, nextTarEntry.getUserName());
-                assertEquals(group, nextTarEntry.getGroupName());
             }
         }
     }

@@ -60,6 +60,14 @@ public final class TarArchiveStructSparse {
                 numbytes == that.numbytes;
     }
 
+    public long getNumbytes() {
+        return numbytes;
+    }
+
+    public long getOffset() {
+        return offset;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(offset, numbytes);
@@ -71,13 +79,5 @@ public final class TarArchiveStructSparse {
                 "offset=" + offset +
                 ", numbytes=" + numbytes +
                 '}';
-    }
-
-    public long getOffset() {
-        return offset;
-    }
-
-    public long getNumbytes() {
-        return numbytes;
     }
 }

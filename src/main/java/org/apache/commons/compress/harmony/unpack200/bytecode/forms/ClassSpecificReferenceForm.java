@@ -34,13 +34,13 @@ public abstract class ClassSpecificReferenceForm extends ReferenceForm {
         super(opcode, name, rewrite);
     }
 
+    protected abstract String context(OperandManager operandManager);
+
     @Override
     protected abstract int getOffset(OperandManager operandManager);
 
     @Override
     protected abstract int getPoolID();
-
-    protected abstract String context(OperandManager operandManager);
 
     @Override
     protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset)

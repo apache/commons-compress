@@ -42,6 +42,18 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
      * @param text The file name or comment.
      * @param bytes The encoded of the file name or comment in the zip
      * file.
+     */
+    protected AbstractUnicodeExtraField(final String text, final byte[] bytes) {
+        this(text, bytes, 0, bytes.length);
+    }
+
+    /**
+     * Assemble as unicode extension from the name/comment and
+     * encoding of the original zip entry.
+     *
+     * @param text The file name or comment.
+     * @param bytes The encoded of the file name or comment in the zip
+     * file.
      * @param off The offset of the encoded file name or comment in
      * {@code bytes}.
      * @param len The length of the encoded file name or comment in
@@ -55,18 +67,6 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         unicodeName = text.getBytes(UTF_8);
     }
 
-    /**
-     * Assemble as unicode extension from the name/comment and
-     * encoding of the original zip entry.
-     *
-     * @param text The file name or comment.
-     * @param bytes The encoded of the file name or comment in the zip
-     * file.
-     */
-    protected AbstractUnicodeExtraField(final String text, final byte[] bytes) {
-        this(text, bytes, 0, bytes.length);
-    }
-
     private void assembleData() {
         if (unicodeName == null) {
             return;
@@ -77,49 +77,6 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         data[0] = 0x01;
         System.arraycopy(ZipLong.getBytes(nameCRC32), 0, data, 1, 4);
         System.arraycopy(unicodeName, 0, data, 5, unicodeName.length);
-    }
-
-    /**
-     * @return The CRC32 checksum of the file name or comment as
-     *         encoded in the central directory of the zip file.
-     */
-    public long getNameCRC32() {
-        return nameCRC32;
-    }
-
-    /**
-     * @param nameCRC32 The CRC32 checksum of the file name as encoded
-     *         in the central directory of the zip file to set.
-     */
-    public void setNameCRC32(final long nameCRC32) {
-        this.nameCRC32 = nameCRC32;
-        data = null;
-    }
-
-    /**
-     * @return The UTF-8 encoded name.
-     */
-    public byte[] getUnicodeName() {
-        byte[] b = null;
-        if (unicodeName != null) {
-            b = new byte[unicodeName.length];
-            System.arraycopy(unicodeName, 0, b, 0, b.length);
-        }
-        return b;
-    }
-
-    /**
-     * @param unicodeName The UTF-8 encoded name to set.
-     */
-    public void setUnicodeName(final byte[] unicodeName) {
-        if (unicodeName != null) {
-            this.unicodeName = new byte[unicodeName.length];
-            System.arraycopy(unicodeName, 0, this.unicodeName, 0,
-                             unicodeName.length);
-        } else {
-            this.unicodeName = null;
-        }
-        data = null;
     }
 
     @Override
@@ -153,6 +110,37 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         return getCentralDirectoryLength();
     }
 
+    /**
+     * @return The CRC32 checksum of the file name or comment as
+     *         encoded in the central directory of the zip file.
+     */
+    public long getNameCRC32() {
+        return nameCRC32;
+    }
+
+    /**
+     * @return The UTF-8 encoded name.
+     */
+    public byte[] getUnicodeName() {
+        byte[] b = null;
+        if (unicodeName != null) {
+            b = new byte[unicodeName.length];
+            System.arraycopy(unicodeName, 0, b, 0, b.length);
+        }
+        return b;
+    }
+
+    /**
+     * Doesn't do anything special since this class always uses the
+     * same data in central directory and local file data.
+     */
+    @Override
+    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset,
+                                              final int length)
+        throws ZipException {
+        parseFromLocalFileData(buffer, offset, length);
+    }
+
     @Override
     public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length)
         throws ZipException {
@@ -175,13 +163,25 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     }
 
     /**
-     * Doesn't do anything special since this class always uses the
-     * same data in central directory and local file data.
+     * @param nameCRC32 The CRC32 checksum of the file name as encoded
+     *         in the central directory of the zip file to set.
      */
-    @Override
-    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset,
-                                              final int length)
-        throws ZipException {
-        parseFromLocalFileData(buffer, offset, length);
+    public void setNameCRC32(final long nameCRC32) {
+        this.nameCRC32 = nameCRC32;
+        data = null;
+    }
+
+    /**
+     * @param unicodeName The UTF-8 encoded name to set.
+     */
+    public void setUnicodeName(final byte[] unicodeName) {
+        if (unicodeName != null) {
+            this.unicodeName = new byte[unicodeName.length];
+            System.arraycopy(unicodeName, 0, this.unicodeName, 0,
+                             unicodeName.length);
+        } else {
+            this.unicodeName = null;
+        }
+        data = null;
     }
 }

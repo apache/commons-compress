@@ -45,6 +45,11 @@ public class OsgiITest {
     @Inject
     private BundleContext ctx;
 
+    @Test
+    public void canLoadBundle() {
+        assertNotNull("Expected to find bundle " + EXPECTED_BUNDLE_NAME, loadBundle());
+    }
+
     @Configuration
     public Option[] config() {
         return new Option[] {
@@ -64,9 +69,13 @@ public class OsgiITest {
        };
     }
 
-    @Test
-    public void canLoadBundle() {
-        assertNotNull("Expected to find bundle " + EXPECTED_BUNDLE_NAME, loadBundle());
+    private Bundle loadBundle() {
+        for (final Bundle b : ctx.getBundles()) {
+            if (EXPECTED_BUNDLE_NAME.equals(b.getSymbolicName())) {
+                return b;
+            }
+        }
+        return null;
     }
 
     @Test
@@ -78,14 +87,5 @@ public class OsgiITest {
         assertNotNull("Can access isRunningInOsgiEnvironment method", m);
 
         assertTrue("Compress detects OSGi environment", (Boolean) m.invoke(null));
-    }
-
-    private Bundle loadBundle() {
-        for (final Bundle b : ctx.getBundles()) {
-            if (EXPECTED_BUNDLE_NAME.equals(b.getSymbolicName())) {
-                return b;
-            }
-        }
-        return null;
     }
 }

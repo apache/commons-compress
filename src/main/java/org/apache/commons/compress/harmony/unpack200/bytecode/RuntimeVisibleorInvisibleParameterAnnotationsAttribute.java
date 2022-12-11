@@ -27,7 +27,51 @@ import java.util.List;
  */
 public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends AnnotationsAttribute {
 
+    /**
+     * ParameterAnnotation represents the annotations on a single parameter.
+     */
+    public static class ParameterAnnotation {
+
+        private final Annotation[] annotations;
+        private final int num_annotations;
+
+        public ParameterAnnotation(final Annotation[] annotations) {
+            this.num_annotations = annotations.length;
+            this.annotations = annotations;
+        }
+
+        public List<Object> getClassFileEntries() {
+            final List<Object> nested = new ArrayList<>();
+            for (Annotation annotation : annotations) {
+                nested.addAll(annotation.getClassFileEntries());
+            }
+            return nested;
+        }
+
+        public int getLength() {
+            int length = 2;
+            for (Annotation annotation : annotations) {
+                length += annotation.getLength();
+            }
+            return length;
+        }
+
+        public void resolve(final ClassConstantPool pool) {
+            for (Annotation annotation : annotations) {
+                annotation.resolve(pool);
+            }
+        }
+
+        public void writeBody(final DataOutputStream dos) throws IOException {
+            dos.writeShort(num_annotations);
+            for (Annotation annotation : annotations) {
+                annotation.writeBody(dos);
+            }
+        }
+
+    }
     private final int num_parameters;
+
     private final ParameterAnnotation[] parameter_annotations;
 
     public RuntimeVisibleorInvisibleParameterAnnotationsAttribute(final CPUTF8 name,
@@ -47,6 +91,16 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
     }
 
     @Override
+    protected ClassFileEntry[] getNestedClassFileEntries() {
+        final List<Object> nested = new ArrayList<>();
+        nested.add(attributeName);
+        for (ParameterAnnotation parameter_annotation : parameter_annotations) {
+            nested.addAll(parameter_annotation.getClassFileEntries());
+        }
+        return nested.toArray(ClassFileEntry.NONE);
+    }
+
+    @Override
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         for (ParameterAnnotation parameter_annotation : parameter_annotations) {
@@ -55,70 +109,16 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
     }
 
     @Override
+    public String toString() {
+        return attributeName.underlyingString() + ": " + num_parameters + " parameter annotations";
+    }
+
+    @Override
     protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeByte(num_parameters);
         for (int i = 0; i < num_parameters; i++) {
             parameter_annotations[i].writeBody(dos);
         }
-    }
-
-    @Override
-    public String toString() {
-        return attributeName.underlyingString() + ": " + num_parameters + " parameter annotations";
-    }
-
-    /**
-     * ParameterAnnotation represents the annotations on a single parameter.
-     */
-    public static class ParameterAnnotation {
-
-        private final Annotation[] annotations;
-        private final int num_annotations;
-
-        public ParameterAnnotation(final Annotation[] annotations) {
-            this.num_annotations = annotations.length;
-            this.annotations = annotations;
-        }
-
-        public void writeBody(final DataOutputStream dos) throws IOException {
-            dos.writeShort(num_annotations);
-            for (Annotation annotation : annotations) {
-                annotation.writeBody(dos);
-            }
-        }
-
-        public void resolve(final ClassConstantPool pool) {
-            for (Annotation annotation : annotations) {
-                annotation.resolve(pool);
-            }
-        }
-
-        public int getLength() {
-            int length = 2;
-            for (Annotation annotation : annotations) {
-                length += annotation.getLength();
-            }
-            return length;
-        }
-
-        public List<Object> getClassFileEntries() {
-            final List<Object> nested = new ArrayList<>();
-            for (Annotation annotation : annotations) {
-                nested.addAll(annotation.getClassFileEntries());
-            }
-            return nested;
-        }
-
-    }
-
-    @Override
-    protected ClassFileEntry[] getNestedClassFileEntries() {
-        final List<Object> nested = new ArrayList<>();
-        nested.add(attributeName);
-        for (ParameterAnnotation parameter_annotation : parameter_annotations) {
-            nested.addAll(parameter_annotation.getClassFileEntries());
-        }
-        return nested.toArray(ClassFileEntry.NONE);
     }
 
 }

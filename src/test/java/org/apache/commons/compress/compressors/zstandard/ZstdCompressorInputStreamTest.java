@@ -39,6 +39,109 @@ import com.github.luben.zstd.RecyclingBufferPool;
 
 public class ZstdCompressorInputStreamTest extends AbstractTestCase {
 
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("zstandard.testdata.zst");
+        final byte[] buf = new byte[2];
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            final ZstdCompressorInputStream in =
+                    new ZstdCompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read(buf));
+            Assert.assertEquals(-1, in.read(buf));
+            in.close();
+        }
+    }
+
+    @Test
+    public void shouldBeAbleToSkipAByte() throws IOException {
+        final File input = getFile("zstandard.testdata.zst");
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            final ZstdCompressorInputStream in =
+                    new ZstdCompressorInputStream(is);
+            Assert.assertEquals(1, in.skip(1));
+            in.close();
+        }
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("zstandard.testdata.zst");
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            final ZstdCompressorInputStream in =
+                    new ZstdCompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read());
+            Assert.assertEquals(-1, in.read());
+            in.close();
+        }
+    }
+
+    @Test
+    public void singleByteReadWorksAsExpected() throws IOException {
+
+        final File input = getFile("zstandard.testdata.zst");
+
+        final File original = getFile("zstandard.testdata");
+        final long originalFileLength = original.length();
+
+        final byte[] originalFileContent = new byte[((int) originalFileLength)];
+
+        try (InputStream ois = Files.newInputStream(original.toPath())) {
+            ois.read(originalFileContent);
+        }
+
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            final ZstdCompressorInputStream in =
+                    new ZstdCompressorInputStream(is);
+
+            Assert.assertEquals(originalFileContent[0], in.read());
+            in.close();
+        }
+    }
+
+    @Test
+    public void testCachingIsEnabledByDefaultAndZstdUtilsPresent() {
+        assertEquals(ZstdUtils.CachedAvailability.CACHED_AVAILABLE, ZstdUtils.getCachedZstdAvailability());
+        assertTrue(ZstdUtils.isZstdCompressionAvailable());
+    }
+
+    @Test
+    public void testCanTurnOffCaching() {
+        try {
+            ZstdUtils.setCacheZstdAvailablity(false);
+            assertEquals(ZstdUtils.CachedAvailability.DONT_CACHE, ZstdUtils.getCachedZstdAvailability());
+            assertTrue(ZstdUtils.isZstdCompressionAvailable());
+        } finally {
+            ZstdUtils.setCacheZstdAvailablity(true);
+        }
+    }
+
+    @Test
+    public void testTurningOnCachingReEvaluatesAvailability() {
+        try {
+            ZstdUtils.setCacheZstdAvailablity(false);
+            assertEquals(ZstdUtils.CachedAvailability.DONT_CACHE, ZstdUtils.getCachedZstdAvailability());
+            ZstdUtils.setCacheZstdAvailablity(true);
+            assertEquals(ZstdUtils.CachedAvailability.CACHED_AVAILABLE, ZstdUtils.getCachedZstdAvailability());
+        } finally {
+            ZstdUtils.setCacheZstdAvailablity(true);
+        }
+    }
+
+    @Test
+    public void testZstandardUnarchive() throws Exception {
+        final File input = getFile("bla.tar.zst");
+        final File output = new File(dir, "bla.tar");
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            try (CompressorInputStream in = new CompressorStreamFactory()
+                    .createCompressorInputStream("zstd", is);
+                OutputStream out = Files.newOutputStream(output.toPath())) {
+                IOUtils.copy(in, out);
+            }
+        }
+    }
+
     /**
      * Test bridge works fine.
      *
@@ -92,109 +195,6 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
                 bos.write(readByte);
             }
             Assert.assertArrayEquals(b, bos.toByteArray());
-        }
-    }
-
-    @Test
-    public void testCachingIsEnabledByDefaultAndZstdUtilsPresent() {
-        assertEquals(ZstdUtils.CachedAvailability.CACHED_AVAILABLE, ZstdUtils.getCachedZstdAvailability());
-        assertTrue(ZstdUtils.isZstdCompressionAvailable());
-    }
-
-    @Test
-    public void testCanTurnOffCaching() {
-        try {
-            ZstdUtils.setCacheZstdAvailablity(false);
-            assertEquals(ZstdUtils.CachedAvailability.DONT_CACHE, ZstdUtils.getCachedZstdAvailability());
-            assertTrue(ZstdUtils.isZstdCompressionAvailable());
-        } finally {
-            ZstdUtils.setCacheZstdAvailablity(true);
-        }
-    }
-
-    @Test
-    public void testTurningOnCachingReEvaluatesAvailability() {
-        try {
-            ZstdUtils.setCacheZstdAvailablity(false);
-            assertEquals(ZstdUtils.CachedAvailability.DONT_CACHE, ZstdUtils.getCachedZstdAvailability());
-            ZstdUtils.setCacheZstdAvailablity(true);
-            assertEquals(ZstdUtils.CachedAvailability.CACHED_AVAILABLE, ZstdUtils.getCachedZstdAvailability());
-        } finally {
-            ZstdUtils.setCacheZstdAvailablity(true);
-        }
-    }
-
-    @Test
-    public void shouldBeAbleToSkipAByte() throws IOException {
-        final File input = getFile("zstandard.testdata.zst");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final ZstdCompressorInputStream in =
-                    new ZstdCompressorInputStream(is);
-            Assert.assertEquals(1, in.skip(1));
-            in.close();
-        }
-    }
-
-    @Test
-    public void singleByteReadWorksAsExpected() throws IOException {
-
-        final File input = getFile("zstandard.testdata.zst");
-
-        final File original = getFile("zstandard.testdata");
-        final long originalFileLength = original.length();
-
-        final byte[] originalFileContent = new byte[((int) originalFileLength)];
-
-        try (InputStream ois = Files.newInputStream(original.toPath())) {
-            ois.read(originalFileContent);
-        }
-
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final ZstdCompressorInputStream in =
-                    new ZstdCompressorInputStream(is);
-
-            Assert.assertEquals(originalFileContent[0], in.read());
-            in.close();
-        }
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("zstandard.testdata.zst");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final ZstdCompressorInputStream in =
-                    new ZstdCompressorInputStream(is);
-            IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read());
-            Assert.assertEquals(-1, in.read());
-            in.close();
-        }
-    }
-
-    @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("zstandard.testdata.zst");
-        final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final ZstdCompressorInputStream in =
-                    new ZstdCompressorInputStream(is);
-            IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read(buf));
-            Assert.assertEquals(-1, in.read(buf));
-            in.close();
-        }
-    }
-
-    @Test
-    public void testZstandardUnarchive() throws Exception {
-        final File input = getFile("bla.tar.zst");
-        final File output = new File(dir, "bla.tar");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            try (CompressorInputStream in = new CompressorStreamFactory()
-                    .createCompressorInputStream("zstd", is);
-                OutputStream out = Files.newOutputStream(output.toPath())) {
-                IOUtils.copy(in, out);
-            }
         }
     }
 

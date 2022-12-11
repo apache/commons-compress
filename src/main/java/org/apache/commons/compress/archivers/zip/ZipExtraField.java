@@ -38,18 +38,11 @@ public interface ZipExtraField {
     int EXTRAFIELD_HEADER_SIZE = 4;
 
     /**
-     * The Header-ID.
-     *
-     * @return The HeaderId value
+     * The actual data to put into central directory - without Header-ID or
+     * length specifier.
+     * @return the data
      */
-    ZipShort getHeaderId();
-
-    /**
-     * Length of the extra field in the local file data - without
-     * Header-ID or length specifier.
-     * @return the length of the field in the local file data
-     */
-    ZipShort getLocalFileDataLength();
+    byte[] getCentralDirectoryData();
 
     /**
      * Length of the extra field in the central directory - without
@@ -59,6 +52,13 @@ public interface ZipExtraField {
     ZipShort getCentralDirectoryLength();
 
     /**
+     * The Header-ID.
+     *
+     * @return The HeaderId value
+     */
+    ZipShort getHeaderId();
+
+    /**
      * The actual data to put into local file data - without Header-ID
      * or length specifier.
      * @return the data
@@ -66,22 +66,11 @@ public interface ZipExtraField {
     byte[] getLocalFileDataData();
 
     /**
-     * The actual data to put into central directory - without Header-ID or
-     * length specifier.
-     * @return the data
+     * Length of the extra field in the local file data - without
+     * Header-ID or length specifier.
+     * @return the length of the field in the local file data
      */
-    byte[] getCentralDirectoryData();
-
-    /**
-     * Populate data from this array as if it was in local file data.
-     *
-     * @param buffer the buffer to read data from
-     * @param offset offset into buffer to read data
-     * @param length the length of data
-     * @throws ZipException on error
-     */
-    void parseFromLocalFileData(byte[] buffer, int offset, int length)
-        throws ZipException;
+    ZipShort getLocalFileDataLength();
 
     /**
      * Populate data from this array as if it was in central directory data.
@@ -92,5 +81,16 @@ public interface ZipExtraField {
      * @throws ZipException on error
      */
     void parseFromCentralDirectoryData(byte[] buffer, int offset, int length)
+        throws ZipException;
+
+    /**
+     * Populate data from this array as if it was in local file data.
+     *
+     * @param buffer the buffer to read data from
+     * @param offset offset into buffer to read data
+     * @param length the length of data
+     * @throws ZipException on error
+     */
+    void parseFromLocalFileData(byte[] buffer, int offset, int length)
         throws ZipException;
 }

@@ -127,6 +127,64 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
 public class BZip2CompressorOutputStream extends CompressorOutputStream
     implements BZip2Constants {
 
+    static final class Data {
+
+        // with blockSize 900k
+        /* maps unsigned byte => "does it occur in block" */
+        final boolean[] inUse = new boolean[256]; // 256 byte
+        final byte[] unseqToSeq = new byte[256]; // 256 byte
+        final int[] mtfFreq = new int[MAX_ALPHA_SIZE]; // 1032 byte
+        final byte[] selector = new byte[MAX_SELECTORS]; // 18002 byte
+        final byte[] selectorMtf = new byte[MAX_SELECTORS]; // 18002 byte
+
+        final byte[] generateMTFValues_yy = new byte[256]; // 256 byte
+        final byte[][] sendMTFValues_len = new byte[N_GROUPS][MAX_ALPHA_SIZE]; // 1548
+        // byte
+        final int[][] sendMTFValues_rfreq = new int[N_GROUPS][MAX_ALPHA_SIZE]; // 6192
+        // byte
+        final int[] sendMTFValues_fave = new int[N_GROUPS]; // 24 byte
+        final short[] sendMTFValues_cost = new short[N_GROUPS]; // 12 byte
+        final int[][] sendMTFValues_code = new int[N_GROUPS][MAX_ALPHA_SIZE]; // 6192
+        // byte
+        final byte[] sendMTFValues2_pos = new byte[N_GROUPS]; // 6 byte
+        final boolean[] sentMTFValues4_inUse16 = new boolean[16]; // 16 byte
+
+        final int[] heap = new int[MAX_ALPHA_SIZE + 2]; // 1040 byte
+        final int[] weight = new int[MAX_ALPHA_SIZE * 2]; // 2064 byte
+        final int[] parent = new int[MAX_ALPHA_SIZE * 2]; // 2064 byte
+
+        // ------------
+        // 333408 byte
+
+        /* holds the RLEd block of original data starting at index 1.
+         * After sorting the last byte added to the buffer is at index
+         * 0. */
+        final byte[] block; // 900021 byte
+        /* maps index in Burrows-Wheeler transformed block => index of
+         * byte in original block */
+        final int[] fmap; // 3600000 byte
+        final char[] sfmap; // 3600000 byte
+        // ------------
+        // 8433529 byte
+        // ============
+
+        /**
+         * Index of original line in Burrows-Wheeler table.
+         *
+         * <p>This is the index in fmap that points to the last byte
+         * of the original data.</p>
+         */
+        int origPtr;
+
+        Data(final int blockSize100k) {
+            final int n = blockSize100k * BZip2Constants.BASEBLOCKSIZE;
+            this.block = new byte[(n + 1 + NUM_OVERSHOOT_BYTES)];
+            this.fmap = new int[n];
+            this.sfmap = new char[2 * n];
+        }
+
+    }
+
     /**
      * The minimum supported blocksize {@code  == 1}.
      */
@@ -136,9 +194,41 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      * The maximum supported blocksize {@code  == 9}.
      */
     public static final int MAX_BLOCKSIZE = 9;
-
     private static final int GREATER_ICOST = 15;
+
     private static final int LESSER_ICOST = 0;
+
+    /**
+     * Chooses a blocksize based on the given length of the data to compress.
+     *
+     * @return The blocksize, between {@link #MIN_BLOCKSIZE} and
+     *         {@link #MAX_BLOCKSIZE} both inclusive. For a negative
+     *         {@code inputLength} this method returns {@code MAX_BLOCKSIZE}
+     *         always.
+     *
+     * @param inputLength
+     *            The length of the data which will be compressed by
+     *            {@code BZip2CompressorOutputStream}.
+     */
+    public static int chooseBlockSize(final long inputLength) {
+        return (inputLength > 0) ? (int) Math
+            .min((inputLength / 132000) + 1, 9) : MAX_BLOCKSIZE;
+    }
+
+    private static void hbAssignCodes(final int[] code, final byte[] length,
+                                      final int minLen, final int maxLen,
+                                      final int alphaSize) {
+        int vec = 0;
+        for (int n = minLen; n <= maxLen; n++) {
+            for (int i = 0; i < alphaSize; i++) {
+                if ((length[i] & 0xff) == n) {
+                    code[i] = vec;
+                    vec++;
+                }
+            }
+            vec <<= 1;
+        }
+    }
 
     private static void hbMakeCodeLengths(final byte[] len, final int[] freq,
                                           final Data dat, final int alphaSize,
@@ -287,12 +377,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             }
         }
     }
-
     /**
      * Index of the last char in the block, so the block size == last + 1.
      */
     private int last;
-
     /**
      * Always: in the range 0 .. 9. The current block size is 100000 * this
      * number.
@@ -300,45 +388,30 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     private final int blockSize100k;
 
     private int bsBuff;
-    private int bsLive;
-    private final CRC crc = new CRC();
 
+    private int bsLive;
+
+    private final CRC crc = new CRC();
     private int nInUse;
 
     private int nMTF;
-
     private int currentChar = -1;
     private int runLength;
 
     private int blockCRC;
     private int combinedCRC;
-    private final int allowableBlockSize;
 
+    private final int allowableBlockSize;
     /**
      * All memory intensive stuff.
      */
     private Data data;
+
     private BlockSort blockSorter;
 
     private OutputStream out;
-    private volatile boolean closed;
 
-    /**
-     * Chooses a blocksize based on the given length of the data to compress.
-     *
-     * @return The blocksize, between {@link #MIN_BLOCKSIZE} and
-     *         {@link #MAX_BLOCKSIZE} both inclusive. For a negative
-     *         {@code inputLength} this method returns {@code MAX_BLOCKSIZE}
-     *         always.
-     *
-     * @param inputLength
-     *            The length of the data which will be compressed by
-     *            {@code BZip2CompressorOutputStream}.
-     */
-    public static int chooseBlockSize(final long inputLength) {
-        return (inputLength > 0) ? (int) Math
-            .min((inputLength / 132000) + 1, 9) : MAX_BLOCKSIZE;
-    }
+    private volatile boolean closed;
 
     /**
      * Constructs a new {@code BZip2CompressorOutputStream} with a blocksize of 900k.
@@ -390,109 +463,44 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         init();
     }
 
-    @Override
-    public void write(final int b) throws IOException {
-        if (closed) {
-            throw new IOException("Closed");
-        }
-        write0(b);
-    }
-
-    /**
-     * Writes the current byte to the buffer, run-length encoding it
-     * if it has been repeated at least four times (the first step
-     * RLEs sequences of four identical bytes).
-     *
-     * <p>Flushes the current block before writing data if it is
-     * full.</p>
-     *
-     * <p>"write to the buffer" means adding to data.buffer starting
-     * two steps "after" this.last - initially starting at index 1
-     * (not 0) - and updating this.last to point to the last index
-     * written minus 1.</p>
-     */
-    private void writeRun() throws IOException {
-        final int lastShadow = this.last;
-
-        if (lastShadow < this.allowableBlockSize) {
-            final int currentCharShadow = this.currentChar;
-            final Data dataShadow = this.data;
-            dataShadow.inUse[currentCharShadow] = true;
-            final byte ch = (byte) currentCharShadow;
-
-            int runLengthShadow = this.runLength;
-            this.crc.updateCRC(currentCharShadow, runLengthShadow);
-
-            switch (runLengthShadow) {
-            case 1:
-                dataShadow.block[lastShadow + 2] = ch;
-                this.last = lastShadow + 1;
-                break;
-
-            case 2:
-                dataShadow.block[lastShadow + 2] = ch;
-                dataShadow.block[lastShadow + 3] = ch;
-                this.last = lastShadow + 2;
-                break;
-
-            case 3: {
-                final byte[] block = dataShadow.block;
-                block[lastShadow + 2] = ch;
-                block[lastShadow + 3] = ch;
-                block[lastShadow + 4] = ch;
-                this.last = lastShadow + 3;
-            }
-                break;
-
-            default: {
-                runLengthShadow -= 4;
-                dataShadow.inUse[runLengthShadow] = true;
-                final byte[] block = dataShadow.block;
-                block[lastShadow + 2] = ch;
-                block[lastShadow + 3] = ch;
-                block[lastShadow + 4] = ch;
-                block[lastShadow + 5] = ch;
-                block[lastShadow + 6] = (byte) runLengthShadow;
-                this.last = lastShadow + 5;
-            }
-                break;
-
-            }
-        } else {
-            endBlock();
-            initBlock();
-            writeRun();
-        }
-    }
-
-    /**
-     * Overridden to warn about an unclosed stream.
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        if (!closed) {
-            System.err.println("Unclosed BZip2CompressorOutputStream detected, will *not* close it");
-        }
-        super.finalize();
+    private void blockSort() {
+        blockSorter.blockSort(data, last);
     }
 
 
-    public void finish() throws IOException {
-        if (!closed) {
-            closed = true;
-            try {
-                if (this.runLength > 0) {
-                    writeRun();
-                }
-                this.currentChar = -1;
-                endBlock();
-                endCompression();
-            } finally {
-                this.out = null;
-                this.blockSorter = null;
-                this.data = null;
-            }
+    private void bsFinishedWithStream() throws IOException {
+        while (this.bsLive > 0) {
+            final int ch = this.bsBuff >> 24;
+            this.out.write(ch); // write 8-bit
+            this.bsBuff <<= 8;
+            this.bsLive -= 8;
         }
+    }
+
+    private void bsPutInt(final int u) throws IOException {
+        bsW(8, (u >> 24) & 0xff);
+        bsW(8, (u >> 16) & 0xff);
+        bsW(8, (u >> 8) & 0xff);
+        bsW(8, u & 0xff);
+    }
+
+    private void bsPutUByte(final int c) throws IOException {
+        bsW(8, c);
+    }
+
+    private void bsW(final int n, final int v) throws IOException {
+        final OutputStream outShadow = this.out;
+        int bsLiveShadow = this.bsLive;
+        int bsBuffShadow = this.bsBuff;
+
+        while (bsLiveShadow >= 8) {
+            outShadow.write(bsBuffShadow >> 24); // write 8-bit
+            bsBuffShadow <<= 8;
+            bsLiveShadow -= 8;
+        }
+
+        this.bsBuff = bsBuffShadow | (v << (32 - bsLiveShadow - n));
+        this.bsLive = bsLiveShadow + n;
     }
 
     @Override
@@ -502,48 +510,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                 finish();
             }
         }
-    }
-
-    @Override
-    public void flush() throws IOException {
-        final OutputStream outShadow = this.out;
-        if (outShadow != null) {
-            outShadow.flush();
-        }
-    }
-
-    /**
-     * Writes magic bytes like BZ on the first position of the stream
-     * and bytes indicating the file-format, which is
-     * huffmanised, followed by a digit indicating blockSize100k.
-     * @throws IOException if the magic bytes could not been written
-     */
-    private void init() throws IOException {
-        bsPutUByte('B');
-        bsPutUByte('Z');
-
-        this.data = new Data(this.blockSize100k);
-        this.blockSorter = new BlockSort(this.data);
-
-        // huffmanised magic bytes
-        bsPutUByte('h');
-        bsPutUByte('0' + this.blockSize100k);
-
-        this.combinedCRC = 0;
-        initBlock();
-    }
-
-    private void initBlock() {
-        // blockNo++;
-        this.crc.initializeCRC();
-        this.last = -1;
-        // ch = 0;
-
-        final boolean[] inUse = this.data.inUse;
-        for (int i = 256; --i >= 0;) {
-            inUse[i] = false;
-        }
-
     }
 
     private void endBlock() throws IOException {
@@ -606,6 +572,149 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     /**
+     * Overridden to warn about an unclosed stream.
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        if (!closed) {
+            System.err.println("Unclosed BZip2CompressorOutputStream detected, will *not* close it");
+        }
+        super.finalize();
+    }
+
+    public void finish() throws IOException {
+        if (!closed) {
+            closed = true;
+            try {
+                if (this.runLength > 0) {
+                    writeRun();
+                }
+                this.currentChar = -1;
+                endBlock();
+                endCompression();
+            } finally {
+                this.out = null;
+                this.blockSorter = null;
+                this.data = null;
+            }
+        }
+    }
+
+    @Override
+    public void flush() throws IOException {
+        final OutputStream outShadow = this.out;
+        if (outShadow != null) {
+            outShadow.flush();
+        }
+    }
+
+    /*
+     * Performs Move-To-Front on the Burrows-Wheeler transformed
+     * buffer, storing the MTFed data in data.sfmap in RUNA/RUNB
+     * run-length-encoded form.
+     *
+     * <p>Keeps track of byte frequencies in data.mtfFreq at the same time.</p>
+     */
+    private void generateMTFValues() {
+        final int lastShadow = this.last;
+        final Data dataShadow = this.data;
+        final boolean[] inUse = dataShadow.inUse;
+        final byte[] block = dataShadow.block;
+        final int[] fmap = dataShadow.fmap;
+        final char[] sfmap = dataShadow.sfmap;
+        final int[] mtfFreq = dataShadow.mtfFreq;
+        final byte[] unseqToSeq = dataShadow.unseqToSeq;
+        final byte[] yy = dataShadow.generateMTFValues_yy;
+
+        // make maps
+        int nInUseShadow = 0;
+        for (int i = 0; i < 256; i++) {
+            if (inUse[i]) {
+                unseqToSeq[i] = (byte) nInUseShadow;
+                nInUseShadow++;
+            }
+        }
+        this.nInUse = nInUseShadow;
+
+        final int eob = nInUseShadow + 1;
+
+        Arrays.fill(mtfFreq, 0, eob + 1, 0);
+
+        for (int i = nInUseShadow; --i >= 0;) {
+            yy[i] = (byte) i;
+        }
+
+        int wr = 0;
+        int zPend = 0;
+
+        for (int i = 0; i <= lastShadow; i++) {
+            final byte ll_i = unseqToSeq[block[fmap[i]] & 0xff];
+            byte tmp = yy[0];
+            int j = 0;
+
+            while (ll_i != tmp) {
+                j++;
+                final byte tmp2 = tmp;
+                tmp = yy[j];
+                yy[j] = tmp2;
+            }
+            yy[0] = tmp;
+
+            if (j == 0) {
+                zPend++;
+            } else {
+                if (zPend > 0) {
+                    zPend--;
+                    while (true) {
+                        if ((zPend & 1) == 0) {
+                            sfmap[wr] = RUNA;
+                            wr++;
+                            mtfFreq[RUNA]++;
+                        } else {
+                            sfmap[wr] = RUNB;
+                            wr++;
+                            mtfFreq[RUNB]++;
+                        }
+
+                        if (zPend < 2) {
+                            break;
+                        }
+                        zPend = (zPend - 2) >> 1;
+                    }
+                    zPend = 0;
+                }
+                sfmap[wr] = (char) (j + 1);
+                wr++;
+                mtfFreq[j + 1]++;
+            }
+        }
+
+        if (zPend > 0) {
+            zPend--;
+            while (true) {
+                if ((zPend & 1) == 0) {
+                    sfmap[wr] = RUNA;
+                    wr++;
+                    mtfFreq[RUNA]++;
+                } else {
+                    sfmap[wr] = RUNB;
+                    wr++;
+                    mtfFreq[RUNB]++;
+                }
+
+                if (zPend < 2) {
+                    break;
+                }
+                zPend = (zPend - 2) >> 1;
+            }
+        }
+
+        sfmap[wr] = (char) eob;
+        mtfFreq[eob]++;
+        this.nMTF = wr + 1;
+    }
+
+    /**
      * Returns the blocksize parameter specified at construction time.
      * @return the blocksize parameter specified at construction time
      */
@@ -613,102 +722,44 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         return this.blockSize100k;
     }
 
-    @Override
-    public void write(final byte[] buf, int offs, final int len)
-        throws IOException {
-        if (offs < 0) {
-            throw new IndexOutOfBoundsException("offs(" + offs + ") < 0.");
-        }
-        if (len < 0) {
-            throw new IndexOutOfBoundsException("len(" + len + ") < 0.");
-        }
-        if (offs + len > buf.length) {
-            throw new IndexOutOfBoundsException("offs(" + offs + ") + len("
-                                                + len + ") > buf.length("
-                                                + buf.length + ").");
-        }
-        if (closed) {
-            throw new IOException("Stream closed");
-        }
-
-        for (final int hi = offs + len; offs < hi;) {
-            write0(buf[offs++]);
-        }
-    }
-
     /**
-     * Keeps track of the last bytes written and implicitly performs
-     * run-length encoding as the first step of the bzip2 algorithm.
+     * Writes magic bytes like BZ on the first position of the stream
+     * and bytes indicating the file-format, which is
+     * huffmanised, followed by a digit indicating blockSize100k.
+     * @throws IOException if the magic bytes could not been written
      */
-    private void write0(int b) throws IOException {
-        if (this.currentChar != -1) {
-            b &= 0xff;
-            if (this.currentChar == b) {
-                if (++this.runLength > 254) {
-                    writeRun();
-                    this.currentChar = -1;
-                    this.runLength = 0;
-                }
-                // else nothing to do
-            } else {
-                writeRun();
-                this.runLength = 1;
-                this.currentChar = b;
-            }
-        } else {
-            this.currentChar = b & 0xff;
-            this.runLength++;
-        }
+    private void init() throws IOException {
+        bsPutUByte('B');
+        bsPutUByte('Z');
+
+        this.data = new Data(this.blockSize100k);
+        this.blockSorter = new BlockSort(this.data);
+
+        // huffmanised magic bytes
+        bsPutUByte('h');
+        bsPutUByte('0' + this.blockSize100k);
+
+        this.combinedCRC = 0;
+        initBlock();
     }
 
-    private static void hbAssignCodes(final int[] code, final byte[] length,
-                                      final int minLen, final int maxLen,
-                                      final int alphaSize) {
-        int vec = 0;
-        for (int n = minLen; n <= maxLen; n++) {
-            for (int i = 0; i < alphaSize; i++) {
-                if ((length[i] & 0xff) == n) {
-                    code[i] = vec;
-                    vec++;
-                }
-            }
-            vec <<= 1;
-        }
-    }
+    private void initBlock() {
+        // blockNo++;
+        this.crc.initializeCRC();
+        this.last = -1;
+        // ch = 0;
 
-    private void bsFinishedWithStream() throws IOException {
-        while (this.bsLive > 0) {
-            final int ch = this.bsBuff >> 24;
-            this.out.write(ch); // write 8-bit
-            this.bsBuff <<= 8;
-            this.bsLive -= 8;
-        }
-    }
-
-    private void bsW(final int n, final int v) throws IOException {
-        final OutputStream outShadow = this.out;
-        int bsLiveShadow = this.bsLive;
-        int bsBuffShadow = this.bsBuff;
-
-        while (bsLiveShadow >= 8) {
-            outShadow.write(bsBuffShadow >> 24); // write 8-bit
-            bsBuffShadow <<= 8;
-            bsLiveShadow -= 8;
+        final boolean[] inUse = this.data.inUse;
+        for (int i = 256; --i >= 0;) {
+            inUse[i] = false;
         }
 
-        this.bsBuff = bsBuffShadow | (v << (32 - bsLiveShadow - n));
-        this.bsLive = bsLiveShadow + n;
     }
 
-    private void bsPutUByte(final int c) throws IOException {
-        bsW(8, c);
-    }
-
-    private void bsPutInt(final int u) throws IOException {
-        bsW(8, (u >> 24) & 0xff);
-        bsW(8, (u >> 16) & 0xff);
-        bsW(8, (u >> 8) & 0xff);
-        bsW(8, u & 0xff);
+    private void moveToFrontCodeAndSend() throws IOException {
+        bsW(24, this.data.origPtr);
+        generateMTFValues();
+        sendMTFValues();
     }
 
     private void sendMTFValues() throws IOException {
@@ -1153,178 +1204,127 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         this.bsLive = bsLiveShadow;
     }
 
-    private void moveToFrontCodeAndSend() throws IOException {
-        bsW(24, this.data.origPtr);
-        generateMTFValues();
-        sendMTFValues();
+    @Override
+    public void write(final byte[] buf, int offs, final int len)
+        throws IOException {
+        if (offs < 0) {
+            throw new IndexOutOfBoundsException("offs(" + offs + ") < 0.");
+        }
+        if (len < 0) {
+            throw new IndexOutOfBoundsException("len(" + len + ") < 0.");
+        }
+        if (offs + len > buf.length) {
+            throw new IndexOutOfBoundsException("offs(" + offs + ") + len("
+                                                + len + ") > buf.length("
+                                                + buf.length + ").");
+        }
+        if (closed) {
+            throw new IOException("Stream closed");
+        }
+
+        for (final int hi = offs + len; offs < hi;) {
+            write0(buf[offs++]);
+        }
     }
 
-    private void blockSort() {
-        blockSorter.blockSort(data, last);
+    @Override
+    public void write(final int b) throws IOException {
+        if (closed) {
+            throw new IOException("Closed");
+        }
+        write0(b);
     }
 
-    /*
-     * Performs Move-To-Front on the Burrows-Wheeler transformed
-     * buffer, storing the MTFed data in data.sfmap in RUNA/RUNB
-     * run-length-encoded form.
-     *
-     * <p>Keeps track of byte frequencies in data.mtfFreq at the same time.</p>
+    /**
+     * Keeps track of the last bytes written and implicitly performs
+     * run-length encoding as the first step of the bzip2 algorithm.
      */
-    private void generateMTFValues() {
-        final int lastShadow = this.last;
-        final Data dataShadow = this.data;
-        final boolean[] inUse = dataShadow.inUse;
-        final byte[] block = dataShadow.block;
-        final int[] fmap = dataShadow.fmap;
-        final char[] sfmap = dataShadow.sfmap;
-        final int[] mtfFreq = dataShadow.mtfFreq;
-        final byte[] unseqToSeq = dataShadow.unseqToSeq;
-        final byte[] yy = dataShadow.generateMTFValues_yy;
-
-        // make maps
-        int nInUseShadow = 0;
-        for (int i = 0; i < 256; i++) {
-            if (inUse[i]) {
-                unseqToSeq[i] = (byte) nInUseShadow;
-                nInUseShadow++;
-            }
-        }
-        this.nInUse = nInUseShadow;
-
-        final int eob = nInUseShadow + 1;
-
-        Arrays.fill(mtfFreq, 0, eob + 1, 0);
-
-        for (int i = nInUseShadow; --i >= 0;) {
-            yy[i] = (byte) i;
-        }
-
-        int wr = 0;
-        int zPend = 0;
-
-        for (int i = 0; i <= lastShadow; i++) {
-            final byte ll_i = unseqToSeq[block[fmap[i]] & 0xff];
-            byte tmp = yy[0];
-            int j = 0;
-
-            while (ll_i != tmp) {
-                j++;
-                final byte tmp2 = tmp;
-                tmp = yy[j];
-                yy[j] = tmp2;
-            }
-            yy[0] = tmp;
-
-            if (j == 0) {
-                zPend++;
+    private void write0(int b) throws IOException {
+        if (this.currentChar != -1) {
+            b &= 0xff;
+            if (this.currentChar == b) {
+                if (++this.runLength > 254) {
+                    writeRun();
+                    this.currentChar = -1;
+                    this.runLength = 0;
+                }
+                // else nothing to do
             } else {
-                if (zPend > 0) {
-                    zPend--;
-                    while (true) {
-                        if ((zPend & 1) == 0) {
-                            sfmap[wr] = RUNA;
-                            wr++;
-                            mtfFreq[RUNA]++;
-                        } else {
-                            sfmap[wr] = RUNB;
-                            wr++;
-                            mtfFreq[RUNB]++;
-                        }
-
-                        if (zPend < 2) {
-                            break;
-                        }
-                        zPend = (zPend - 2) >> 1;
-                    }
-                    zPend = 0;
-                }
-                sfmap[wr] = (char) (j + 1);
-                wr++;
-                mtfFreq[j + 1]++;
+                writeRun();
+                this.runLength = 1;
+                this.currentChar = b;
             }
+        } else {
+            this.currentChar = b & 0xff;
+            this.runLength++;
         }
-
-        if (zPend > 0) {
-            zPend--;
-            while (true) {
-                if ((zPend & 1) == 0) {
-                    sfmap[wr] = RUNA;
-                    wr++;
-                    mtfFreq[RUNA]++;
-                } else {
-                    sfmap[wr] = RUNB;
-                    wr++;
-                    mtfFreq[RUNB]++;
-                }
-
-                if (zPend < 2) {
-                    break;
-                }
-                zPend = (zPend - 2) >> 1;
-            }
-        }
-
-        sfmap[wr] = (char) eob;
-        mtfFreq[eob]++;
-        this.nMTF = wr + 1;
     }
 
-    static final class Data {
+    /**
+     * Writes the current byte to the buffer, run-length encoding it
+     * if it has been repeated at least four times (the first step
+     * RLEs sequences of four identical bytes).
+     *
+     * <p>Flushes the current block before writing data if it is
+     * full.</p>
+     *
+     * <p>"write to the buffer" means adding to data.buffer starting
+     * two steps "after" this.last - initially starting at index 1
+     * (not 0) - and updating this.last to point to the last index
+     * written minus 1.</p>
+     */
+    private void writeRun() throws IOException {
+        final int lastShadow = this.last;
 
-        // with blockSize 900k
-        /* maps unsigned byte => "does it occur in block" */
-        final boolean[] inUse = new boolean[256]; // 256 byte
-        final byte[] unseqToSeq = new byte[256]; // 256 byte
-        final int[] mtfFreq = new int[MAX_ALPHA_SIZE]; // 1032 byte
-        final byte[] selector = new byte[MAX_SELECTORS]; // 18002 byte
-        final byte[] selectorMtf = new byte[MAX_SELECTORS]; // 18002 byte
+        if (lastShadow < this.allowableBlockSize) {
+            final int currentCharShadow = this.currentChar;
+            final Data dataShadow = this.data;
+            dataShadow.inUse[currentCharShadow] = true;
+            final byte ch = (byte) currentCharShadow;
 
-        final byte[] generateMTFValues_yy = new byte[256]; // 256 byte
-        final byte[][] sendMTFValues_len = new byte[N_GROUPS][MAX_ALPHA_SIZE]; // 1548
-        // byte
-        final int[][] sendMTFValues_rfreq = new int[N_GROUPS][MAX_ALPHA_SIZE]; // 6192
-        // byte
-        final int[] sendMTFValues_fave = new int[N_GROUPS]; // 24 byte
-        final short[] sendMTFValues_cost = new short[N_GROUPS]; // 12 byte
-        final int[][] sendMTFValues_code = new int[N_GROUPS][MAX_ALPHA_SIZE]; // 6192
-        // byte
-        final byte[] sendMTFValues2_pos = new byte[N_GROUPS]; // 6 byte
-        final boolean[] sentMTFValues4_inUse16 = new boolean[16]; // 16 byte
+            int runLengthShadow = this.runLength;
+            this.crc.updateCRC(currentCharShadow, runLengthShadow);
 
-        final int[] heap = new int[MAX_ALPHA_SIZE + 2]; // 1040 byte
-        final int[] weight = new int[MAX_ALPHA_SIZE * 2]; // 2064 byte
-        final int[] parent = new int[MAX_ALPHA_SIZE * 2]; // 2064 byte
+            switch (runLengthShadow) {
+            case 1:
+                dataShadow.block[lastShadow + 2] = ch;
+                this.last = lastShadow + 1;
+                break;
 
-        // ------------
-        // 333408 byte
+            case 2:
+                dataShadow.block[lastShadow + 2] = ch;
+                dataShadow.block[lastShadow + 3] = ch;
+                this.last = lastShadow + 2;
+                break;
 
-        /* holds the RLEd block of original data starting at index 1.
-         * After sorting the last byte added to the buffer is at index
-         * 0. */
-        final byte[] block; // 900021 byte
-        /* maps index in Burrows-Wheeler transformed block => index of
-         * byte in original block */
-        final int[] fmap; // 3600000 byte
-        final char[] sfmap; // 3600000 byte
-        // ------------
-        // 8433529 byte
-        // ============
+            case 3: {
+                final byte[] block = dataShadow.block;
+                block[lastShadow + 2] = ch;
+                block[lastShadow + 3] = ch;
+                block[lastShadow + 4] = ch;
+                this.last = lastShadow + 3;
+            }
+                break;
 
-        /**
-         * Index of original line in Burrows-Wheeler table.
-         *
-         * <p>This is the index in fmap that points to the last byte
-         * of the original data.</p>
-         */
-        int origPtr;
+            default: {
+                runLengthShadow -= 4;
+                dataShadow.inUse[runLengthShadow] = true;
+                final byte[] block = dataShadow.block;
+                block[lastShadow + 2] = ch;
+                block[lastShadow + 3] = ch;
+                block[lastShadow + 4] = ch;
+                block[lastShadow + 5] = ch;
+                block[lastShadow + 6] = (byte) runLengthShadow;
+                this.last = lastShadow + 5;
+            }
+                break;
 
-        Data(final int blockSize100k) {
-            final int n = blockSize100k * BZip2Constants.BASEBLOCKSIZE;
-            this.block = new byte[(n + 1 + NUM_OVERSHOOT_BYTES)];
-            this.fmap = new int[n];
-            this.sfmap = new char[2 * n];
+            }
+        } else {
+            endBlock();
+            initBlock();
+            writeRun();
         }
-
     }
 
 }

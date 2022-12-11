@@ -247,36 +247,45 @@ import java.util.zip.ZipException;
  */
 public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
 
-    public X0017_StrongEncryptionHeader() {
-        super(new ZipShort(0x0017));
-    }
-
     private int format; // TODO written but not read
+
     private EncryptionAlgorithm algId;
     private int bitlen; // TODO written but not read
     private int flags; // TODO written but not read
     private long rcount;
     private HashAlgorithm hashAlg;
     private int hashSize;
-
     // encryption data
     private byte[] ivData;
-    private byte[] erdData;
 
+    private byte[] erdData;
     // encryption key
     private byte[] recipientKeyHash;
-    private byte[] keyBlob;
 
+    private byte[] keyBlob;
     // password verification data
     private byte[] vData;
+
     private byte[] vCRC32;
+    public X0017_StrongEncryptionHeader() {
+        super(new ZipShort(0x0017));
+    }
+
+    private void assertDynamicLengthFits(final String what, final int dynamicLength, final int prefixLength,
+        final int length) throws ZipException {
+        if (prefixLength + dynamicLength > length) {
+            throw new ZipException("Invalid X0017_StrongEncryptionHeader: " + what + " "
+                + dynamicLength + " doesn't fit into " + length + " bytes of data at position "
+                + prefixLength);
+        }
+    }
 
     /**
-     * Get record count.
-     * @return the record count
+     * Get encryption algorithm.
+     * @return the encryption algorithm
      */
-    public long getRecordCount() {
-        return rcount;
+    public EncryptionAlgorithm getEncryptionAlgorithm() {
+        return algId;
     }
 
     /**
@@ -288,11 +297,11 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     }
 
     /**
-     * Get encryption algorithm.
-     * @return the encryption algorithm
+     * Get record count.
+     * @return the record count
      */
-    public EncryptionAlgorithm getEncryptionAlgorithm() {
-        return algId;
+    public long getRecordCount() {
+        return rcount;
     }
 
     /**
@@ -402,25 +411,16 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     }
 
     @Override
-    public void parseFromLocalFileData(final byte[] data, final int offset, final int length)
-        throws ZipException {
-        super.parseFromLocalFileData(data, offset, length);
-        parseFileFormat(data, offset, length);
-    }
-
-    @Override
     public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length)
         throws ZipException {
         super.parseFromCentralDirectoryData(data, offset, length);
         parseCentralDirectoryFormat(data, offset, length);
     }
 
-    private void assertDynamicLengthFits(final String what, final int dynamicLength, final int prefixLength,
-        final int length) throws ZipException {
-        if (prefixLength + dynamicLength > length) {
-            throw new ZipException("Invalid X0017_StrongEncryptionHeader: " + what + " "
-                + dynamicLength + " doesn't fit into " + length + " bytes of data at position "
-                + prefixLength);
-        }
+    @Override
+    public void parseFromLocalFileData(final byte[] data, final int offset, final int length)
+        throws ZipException {
+        super.parseFromLocalFileData(data, offset, length);
+        parseFileFormat(data, offset, length);
     }
 }

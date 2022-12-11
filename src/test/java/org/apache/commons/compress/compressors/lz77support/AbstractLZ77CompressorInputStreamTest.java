@@ -39,17 +39,17 @@ public class AbstractLZ77CompressorInputStreamTest {
             super(in, 1024);
         }
 
+        void literal(final int len) {
+            startLiteral(len);
+            literal = true;
+        }
+
         @Override
         public int read(final byte[] b, final int off, final int len) throws IOException {
             if (literal) {
                 return readLiteral(b, off, len);
             }
             return readBackReference(b, off, len);
-        }
-
-        void literal(final int len) {
-            startLiteral(len);
-            literal = true;
         }
     }
 
@@ -64,8 +64,10 @@ public class AbstractLZ77CompressorInputStreamTest {
     }
 
     @Test
-    public void prefillCanBeUsedForBackReferences() throws IOException {
-        final byte[] data = { 1, 2, 3, 4 };
+    public void ifPrefillExceedsWindowSizeTheLastBytesAreUsed() throws IOException {
+        final byte[] data = new byte[2048];
+        data[2046] = 3;
+        data[2047] = 4;
         try (TestStream s = new TestStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
             s.prefill(data);
             s.startBackReference(2, 4);
@@ -76,10 +78,8 @@ public class AbstractLZ77CompressorInputStreamTest {
     }
 
     @Test
-    public void ifPrefillExceedsWindowSizeTheLastBytesAreUsed() throws IOException {
-        final byte[] data = new byte[2048];
-        data[2046] = 3;
-        data[2047] = 4;
+    public void prefillCanBeUsedForBackReferences() throws IOException {
+        final byte[] data = { 1, 2, 3, 4 };
         try (TestStream s = new TestStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
             s.prefill(data);
             s.startBackReference(2, 4);

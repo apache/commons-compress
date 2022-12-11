@@ -53,16 +53,6 @@ import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
  * @since 1.10
  */
 public class ParallelScatterZipCreator {
-    private final Deque<ScatterZipOutputStream> streams = new ConcurrentLinkedDeque<>();
-    private final ExecutorService es;
-    private final ScatterGatherBackingStoreSupplier backingStoreSupplier;
-    private final Deque<Future<? extends ScatterZipOutputStream>> futures = new ConcurrentLinkedDeque<>();
-
-    private final long startedAt = System.currentTimeMillis();
-    private long compressionDoneAt;
-    private long scatterDoneAt;
-    private final int compressionLevel;
-
     private static class DefaultBackingStoreSupplier implements ScatterGatherBackingStoreSupplier {
         final AtomicInteger storeNum = new AtomicInteger(0);
 
@@ -72,14 +62,16 @@ public class ParallelScatterZipCreator {
             return new FileBasedScatterGatherBackingStore(tempFile);
         }
     }
+    private final Deque<ScatterZipOutputStream> streams = new ConcurrentLinkedDeque<>();
+    private final ExecutorService es;
+    private final ScatterGatherBackingStoreSupplier backingStoreSupplier;
 
-    private ScatterZipOutputStream createDeferred(final ScatterGatherBackingStoreSupplier scatterGatherBackingStoreSupplier)
-            throws IOException {
-        final ScatterGatherBackingStore bs = scatterGatherBackingStoreSupplier.get();
-        // lifecycle is bound to the ScatterZipOutputStream returned
-        final StreamCompressor sc = StreamCompressor.create(compressionLevel, bs); //NOSONAR
-        return new ScatterZipOutputStream(bs, sc);
-    }
+    private final Deque<Future<? extends ScatterZipOutputStream>> futures = new ConcurrentLinkedDeque<>();
+    private final long startedAt = System.currentTimeMillis();
+    private long compressionDoneAt;
+    private long scatterDoneAt;
+
+    private final int compressionLevel;
 
     private final ThreadLocal<ScatterZipOutputStream> tlScatterStreams = new ThreadLocal<ScatterZipOutputStream>() {
         @Override
@@ -175,30 +167,14 @@ public class ParallelScatterZipCreator {
         submitStreamAwareCallable(createCallable(zipArchiveEntryRequestSupplier));
     }
 
-    /**
-     * Submit a callable for compression.
-     *
-     * @see ParallelScatterZipCreator#createCallable for details of if/when to use this.
-     *
-     * @param callable The callable to run, created by {@link #createCallable createCallable}, possibly wrapped by caller.
-     */
-    public final void submit(final Callable<? extends Object> callable) {
-        submitStreamAwareCallable(() -> {
-            callable.call();
-            return tlScatterStreams.get();
-        });
-    }
-
-    /**
-     * Submit a callable for compression.
-     *
-     * @see ParallelScatterZipCreator#createCallable for details of if/when to use this.
-     *
-     * @param callable The callable to run, created by {@link #createCallable createCallable}, possibly wrapped by caller.
-     * @since 1.19
-     */
-    public final void submitStreamAwareCallable(final Callable<? extends ScatterZipOutputStream> callable) {
-        futures.add(es.submit(callable));
+    private void closeAll() {
+        for (final ScatterZipOutputStream scatterStream : streams) {
+            try {
+                scatterStream.close();
+            } catch (final IOException ex) { //NOSONAR
+                // no way to properly log this
+            }
+        }
     }
 
     /**
@@ -257,6 +233,49 @@ public class ParallelScatterZipCreator {
         };
     }
 
+    private ScatterZipOutputStream createDeferred(final ScatterGatherBackingStoreSupplier scatterGatherBackingStoreSupplier)
+            throws IOException {
+        final ScatterGatherBackingStore bs = scatterGatherBackingStoreSupplier.get();
+        // lifecycle is bound to the ScatterZipOutputStream returned
+        final StreamCompressor sc = StreamCompressor.create(compressionLevel, bs); //NOSONAR
+        return new ScatterZipOutputStream(bs, sc);
+    }
+
+    /**
+     * Returns a message describing the overall statistics of the compression run
+     *
+     * @return A string
+     */
+    public ScatterStatistics getStatisticsMessage() {
+        return new ScatterStatistics(compressionDoneAt - startedAt, scatterDoneAt - compressionDoneAt);
+    }
+
+    /**
+     * Submit a callable for compression.
+     *
+     * @see ParallelScatterZipCreator#createCallable for details of if/when to use this.
+     *
+     * @param callable The callable to run, created by {@link #createCallable createCallable}, possibly wrapped by caller.
+     */
+    public final void submit(final Callable<? extends Object> callable) {
+        submitStreamAwareCallable(() -> {
+            callable.call();
+            return tlScatterStreams.get();
+        });
+    }
+
+    /**
+     * Submit a callable for compression.
+     *
+     * @see ParallelScatterZipCreator#createCallable for details of if/when to use this.
+     *
+     * @param callable The callable to run, created by {@link #createCallable createCallable}, possibly wrapped by caller.
+     * @since 1.19
+     */
+    public final void submitStreamAwareCallable(final Callable<? extends ScatterZipOutputStream> callable) {
+        futures.add(es.submit(callable));
+    }
+
     /**
      * Write the contents this to the target {@link ZipArchiveOutputStream}.
      * <p>
@@ -303,25 +322,6 @@ public class ParallelScatterZipCreator {
             scatterDoneAt = System.currentTimeMillis();
         } finally {
             closeAll();
-        }
-    }
-
-    /**
-     * Returns a message describing the overall statistics of the compression run
-     *
-     * @return A string
-     */
-    public ScatterStatistics getStatisticsMessage() {
-        return new ScatterStatistics(compressionDoneAt - startedAt, scatterDoneAt - compressionDoneAt);
-    }
-
-    private void closeAll() {
-        for (final ScatterZipOutputStream scatterStream : streams) {
-            try {
-                scatterStream.close();
-            } catch (final IOException ex) { //NOSONAR
-                // no way to properly log this
-            }
         }
     }
 }

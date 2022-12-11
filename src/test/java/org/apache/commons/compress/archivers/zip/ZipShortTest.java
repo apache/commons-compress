@@ -30,40 +30,15 @@ import org.junit.jupiter.api.Test;
  */
 public class ZipShortTest {
 
-    /**
-     * Test conversion to bytes.
-     */
     @Test
-    public void testToBytes() {
-        final ZipShort zs = new ZipShort(0x1234);
-        final byte[] result = zs.getBytes();
-        assertEquals("length getBytes", 2, result.length);
-        assertEquals("first byte getBytes", 0x34, result[0]);
-        assertEquals("second byte getBytes", 0x12, result[1]);
+    public void testClone() {
+        final ZipShort s1 = new ZipShort(42);
+        final ZipShort s2 = (ZipShort) s1.clone();
+        assertNotSame(s1, s2);
+        assertEquals(s1, s2);
+        assertEquals(s1.getValue(), s2.getValue());
     }
 
-
-    /**
-     * Test conversion to bytes.
-     */
-    @Test
-    public void testPut() {
-        final byte[] arr = new byte[3];
-        ZipShort.putShort(0x1234, arr, 1);
-        assertEquals("first byte getBytes", 0x34, arr[1]);
-        assertEquals("second byte getBytes", 0x12, arr[2]);
-    }
-
-
-    /**
-     * Test conversion from bytes.
-     */
-    @Test
-    public void testFromBytes() {
-        final byte[] val = {0x34, 0x12};
-        final ZipShort zs = new ZipShort(val);
-        assertEquals("value from bytes", 0x1234, zs.getValue());
-    }
 
     /**
      * Test the contract of the equals method.
@@ -85,6 +60,28 @@ public class ZipShortTest {
         assertNotEquals("non ZipShort handling", zs, Integer.valueOf(0x1234));
     }
 
+
+    /**
+     * Test conversion from bytes.
+     */
+    @Test
+    public void testFromBytes() {
+        final byte[] val = {0x34, 0x12};
+        final ZipShort zs = new ZipShort(val);
+        assertEquals("value from bytes", 0x1234, zs.getValue());
+    }
+
+    /**
+     * Test conversion to bytes.
+     */
+    @Test
+    public void testPut() {
+        final byte[] arr = new byte[3];
+        ZipShort.putShort(0x1234, arr, 1);
+        assertEquals("first byte getBytes", 0x34, arr[1]);
+        assertEquals("second byte getBytes", 0x12, arr[2]);
+    }
+
     /**
      * Test sign handling.
      */
@@ -94,12 +91,15 @@ public class ZipShortTest {
         assertEquals(0x0000FFFF, zs.getValue());
     }
 
+    /**
+     * Test conversion to bytes.
+     */
     @Test
-    public void testClone() {
-        final ZipShort s1 = new ZipShort(42);
-        final ZipShort s2 = (ZipShort) s1.clone();
-        assertNotSame(s1, s2);
-        assertEquals(s1, s2);
-        assertEquals(s1.getValue(), s2.getValue());
+    public void testToBytes() {
+        final ZipShort zs = new ZipShort(0x1234);
+        final byte[] result = zs.getBytes();
+        assertEquals("length getBytes", 2, result.length);
+        assertEquals("first byte getBytes", 0x34, result[0]);
+        assertEquals("second byte getBytes", 0x12, result[1]);
     }
 }

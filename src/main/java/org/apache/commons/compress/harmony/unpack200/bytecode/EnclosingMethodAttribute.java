@@ -24,28 +24,20 @@ import java.io.IOException;
  */
 public class EnclosingMethodAttribute extends Attribute {
 
-    private int class_index;
-    private int method_index;
-    private final CPClass cpClass;
-    private final CPNameAndType method;
     private static CPUTF8 attributeName;
-
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
+    private int class_index;
+    private int method_index;
+    private final CPClass cpClass;
+
+    private final CPNameAndType method;
 
     public EnclosingMethodAttribute(final CPClass cpClass, final CPNameAndType method) {
         super(attributeName);
         this.cpClass = cpClass;
         this.method = method;
-    }
-
-    @Override
-    protected ClassFileEntry[] getNestedClassFileEntries() {
-        if (method != null) {
-            return new ClassFileEntry[] {attributeName, cpClass, method};
-        }
-        return new ClassFileEntry[] {attributeName, cpClass};
     }
 
     /*
@@ -56,6 +48,14 @@ public class EnclosingMethodAttribute extends Attribute {
     @Override
     protected int getLength() {
         return 4;
+    }
+
+    @Override
+    protected ClassFileEntry[] getNestedClassFileEntries() {
+        if (method != null) {
+            return new ClassFileEntry[] {attributeName, cpClass, method};
+        }
+        return new ClassFileEntry[] {attributeName, cpClass};
     }
 
     @Override
@@ -74,22 +74,22 @@ public class EnclosingMethodAttribute extends Attribute {
     /*
      * (non-Javadoc)
      *
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#toString()
+     */
+    @Override
+    public String toString() {
+        return "EnclosingMethod";
+    }
+
+    /*
+     * (non-Javadoc)
+     *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#writeBody(java.io.DataOutputStream)
      */
     @Override
     protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(class_index);
         dos.writeShort(method_index);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#toString()
-     */
-    @Override
-    public String toString() {
-        return "EnclosingMethod";
     }
 
 }

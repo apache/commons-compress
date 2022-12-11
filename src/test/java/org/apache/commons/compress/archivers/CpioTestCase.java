@@ -196,7 +196,7 @@ public final class CpioTestCase extends AbstractTestCase {
     }
 
     @Test
-    public void testFileEntryFromFile() throws Exception {
+    public void testExplicitFileEntry() throws Exception {
         final File[] tmp = createTempDirAndFile();
         File archive = null;
         CpioArchiveOutputStream tos = null;
@@ -206,7 +206,10 @@ public final class CpioTestCase extends AbstractTestCase {
             archive = File.createTempFile("test.", ".cpio", tmp[0]);
             archive.deleteOnExit();
             tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()));
-            final CpioArchiveEntry in = new CpioArchiveEntry(tmp[1], "foo");
+            final CpioArchiveEntry in = new CpioArchiveEntry("foo");
+            in.setTime(tmp[1].lastModified() / 1000);
+            in.setSize(tmp[1].length());
+            in.setMode(CpioConstants.C_ISREG);
             tos.putArchiveEntry(in);
             final byte[] b = new byte[(int) tmp[1].length()];
             fis = Files.newInputStream(tmp[1].toPath());
@@ -245,7 +248,7 @@ public final class CpioTestCase extends AbstractTestCase {
     }
 
     @Test
-    public void testExplicitFileEntry() throws Exception {
+    public void testFileEntryFromFile() throws Exception {
         final File[] tmp = createTempDirAndFile();
         File archive = null;
         CpioArchiveOutputStream tos = null;
@@ -255,10 +258,7 @@ public final class CpioTestCase extends AbstractTestCase {
             archive = File.createTempFile("test.", ".cpio", tmp[0]);
             archive.deleteOnExit();
             tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()));
-            final CpioArchiveEntry in = new CpioArchiveEntry("foo");
-            in.setTime(tmp[1].lastModified() / 1000);
-            in.setSize(tmp[1].length());
-            in.setMode(CpioConstants.C_ISREG);
+            final CpioArchiveEntry in = new CpioArchiveEntry(tmp[1], "foo");
             tos.putArchiveEntry(in);
             final byte[] b = new byte[(int) tmp[1].length()];
             fis = Files.newInputStream(tmp[1].toPath());

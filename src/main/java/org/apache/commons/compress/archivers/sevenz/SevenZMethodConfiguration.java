@@ -65,6 +65,19 @@ public class SevenZMethodConfiguration {
         }
     }
 
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final SevenZMethodConfiguration other = (SevenZMethodConfiguration) obj;
+        return Objects.equals(method, other.method)
+            && Objects.equals(options, other.options);
+    }
+
     /**
      * The specified method.
      * @return the method
@@ -84,18 +97,5 @@ public class SevenZMethodConfiguration {
     @Override
     public int hashCode() {
         return method == null ? 0 : method.hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        final SevenZMethodConfiguration other = (SevenZMethodConfiguration) obj;
-        return Objects.equals(method, other.method)
-            && Objects.equals(options, other.options);
     }
 }

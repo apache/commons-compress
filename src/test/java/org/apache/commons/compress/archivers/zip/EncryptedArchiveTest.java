@@ -34,6 +34,27 @@ import org.junit.jupiter.api.Test;
 public class EncryptedArchiveTest {
 
     @Test
+    public void testReadPasswordEncryptedEntryViaStream()
+        throws IOException {
+        final File file = getFile("password-encrypted.zip");
+        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(file.toPath()))) {
+            final ZipArchiveEntry zae = zin.getNextZipEntry();
+            assertEquals("LICENSE.txt", zae.getName());
+            assertTrue(zae.getGeneralPurposeBit().usesEncryption());
+            assertFalse(zae.getGeneralPurposeBit().usesStrongEncryption());
+            assertFalse(zin.canReadEntryData(zae));
+            try {
+                final byte[] buf = new byte[1024];
+                zin.read(buf, 0, buf.length);
+                fail("expected an exception");
+            } catch (final UnsupportedZipFeatureException ex) {
+                assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION,
+                           ex.getFeature());
+            }
+        }
+    }
+
+    @Test
     public void testReadPasswordEncryptedEntryViaZipFile()
         throws IOException {
         final File file = getFile("password-encrypted.zip");
@@ -53,27 +74,6 @@ public class EncryptedArchiveTest {
             }
         } finally {
             ZipFile.closeQuietly(zf);
-        }
-    }
-
-    @Test
-    public void testReadPasswordEncryptedEntryViaStream()
-        throws IOException {
-        final File file = getFile("password-encrypted.zip");
-        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(file.toPath()))) {
-            final ZipArchiveEntry zae = zin.getNextZipEntry();
-            assertEquals("LICENSE.txt", zae.getName());
-            assertTrue(zae.getGeneralPurposeBit().usesEncryption());
-            assertFalse(zae.getGeneralPurposeBit().usesStrongEncryption());
-            assertFalse(zin.canReadEntryData(zae));
-            try {
-                final byte[] buf = new byte[1024];
-                zin.read(buf, 0, buf.length);
-                fail("expected an exception");
-            } catch (final UnsupportedZipFeatureException ex) {
-                assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION,
-                           ex.getFeature());
-            }
         }
     }
 }

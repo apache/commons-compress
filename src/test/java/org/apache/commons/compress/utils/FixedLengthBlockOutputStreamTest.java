@@ -43,48 +43,132 @@ import org.junit.jupiter.api.Test;
 
 public class FixedLengthBlockOutputStreamTest {
 
-    @Test
-    public void testSmallWrite() throws IOException {
-        testWriteAndPad(10240, "hello world!\n", false);
-        testWriteAndPad(512, "hello world!\n", false);
-        testWriteAndPad(11, "hello world!\n", false);
-        testWriteAndPad(3, "hello world!\n", false);
-    }
+    private static class MockOutputStream extends OutputStream {
 
-    @Test
-    public void testSmallWriteToStream() throws IOException {
-        testWriteAndPadToStream(10240, "hello world!\n", false);
-        testWriteAndPadToStream(512, "hello world!\n", false);
-        testWriteAndPadToStream(11, "hello world!\n", false);
-        testWriteAndPadToStream(3, "hello     world!\n", false);
-    }
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        private final int requiredWriteSize;
+        private final boolean doPartialWrite;
+        private final AtomicBoolean closed = new AtomicBoolean();
 
-    @Test
-    public void testWriteSingleBytes() throws IOException {
-        final int blockSize = 4;
-        final MockWritableByteChannel mock = new MockWritableByteChannel(blockSize, false);
-        final ByteArrayOutputStream bos = mock.bos;
-        final String text = "hello world avengers";
-        final byte[] msg = text.getBytes();
-        final int len = msg.length;
-        try (FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(mock, blockSize)) {
-            for (int i = 0; i < len; i++) {
-                out.write(msg[i]);
+        private MockOutputStream(final int requiredWriteSize, final boolean doPartialWrite) {
+            this.requiredWriteSize = requiredWriteSize;
+            this.doPartialWrite = doPartialWrite;
+        }
+
+        private void checkIsOpen() throws IOException {
+            if (closed.get()) {
+                throw new IOException("Closed");
             }
         }
-        final byte[] output = bos.toByteArray();
 
-        validate(blockSize, msg, output);
+        @Override
+        public void close() throws IOException {
+            if (closed.compareAndSet(false, true)) {
+                bos.close();
+            }
+        }
+
+        @Override
+        public void write(final byte[] b, final int off, int len) throws IOException {
+            checkIsOpen();
+            assertEquals("write size", requiredWriteSize, len);
+            if (doPartialWrite) {
+                len--;
+            }
+            bos.write(b, off, len);
+        }
+
+        @Override
+        public void write(final int b) throws IOException {
+            checkIsOpen();
+            assertEquals("write size", requiredWriteSize, 1);
+            bos.write(b);
+        }
+    }
+
+    private static class MockWritableByteChannel implements WritableByteChannel {
+
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        private final int requiredWriteSize;
+        private final boolean doPartialWrite;
+
+        final AtomicBoolean closed = new AtomicBoolean();
+
+        private MockWritableByteChannel(final int requiredWriteSize, final boolean doPartialWrite) {
+            this.requiredWriteSize = requiredWriteSize;
+            this.doPartialWrite = doPartialWrite;
+        }
+
+        @Override
+        public void close() throws IOException {
+            closed.compareAndSet(false, true);
+        }
+
+        @Override
+        public boolean isOpen() {
+            return !closed.get();
+        }
+
+        @Override
+        public int write(final ByteBuffer src) throws IOException {
+            assertEquals("write size", requiredWriteSize, src.remaining());
+            if (doPartialWrite) {
+                src.limit(src.limit() - 1);
+            }
+            final int bytesOut = src.remaining();
+            while (src.hasRemaining()) {
+                bos.write(src.get());
+            }
+            return bytesOut;
+        }
+    }
+
+    private static void assertContainsAtOffset(final String msg, final byte[] expected, final int offset,
+        final byte[] actual) {
+        assertThat(actual.length, greaterThanOrEqualTo(offset + expected.length));
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals(String.format("%s ([%d])", msg, i), expected[i], actual[i + offset]);
+        }
     }
 
 
-    @Test
-    public void testWriteBuf() throws IOException {
-        final String hwa = "hello world avengers";
-        testBuf(4, hwa);
-        testBuf(512, hwa);
-        testBuf(10240, hwa);
-        testBuf(11, hwa + hwa + hwa);
+    private ByteBuffer getByteBuffer(final byte[] msg) {
+        final int len = msg.length;
+        final ByteBuffer buf = ByteBuffer.allocate(len);
+        buf.put(msg);
+        buf.flip();
+        return buf;
+    }
+
+    private FixedLengthBlockOutputStream getClosedFLBOS() throws IOException {
+        final int blockSize = 512;
+        final FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(
+            new MockOutputStream(blockSize, false), blockSize);
+        out.write(1);
+        assertTrue(out.isOpen());
+        out.close();
+        assertFalse(out.isOpen());
+        return out;
+    }
+
+    private void testBuf(final int blockSize, final String text) throws IOException {
+        final MockWritableByteChannel mock = new MockWritableByteChannel(blockSize, false);
+
+        final ByteArrayOutputStream bos = mock.bos;
+        final byte[] msg = text.getBytes();
+        final ByteBuffer buf = getByteBuffer(msg);
+        try (FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(mock, blockSize)) {
+            out.write(buf);
+        }
+        final double v = Math.ceil(msg.length / (double) blockSize) * blockSize;
+        assertEquals("wrong size", (long) v, bos.size());
+        final byte[] output = bos.toByteArray();
+        final String l = new String(output, 0, msg.length);
+        assertEquals(text, l);
+        for (int i = msg.length; i < bos.size(); i++) {
+            assertEquals(String.format("output[%d]", i), 0, output[i]);
+
+        }
     }
 
     @Test
@@ -131,62 +215,19 @@ public class FixedLengthBlockOutputStreamTest {
     }
 
     @Test
-    public void testWriteFailsAfterFLClosedThrowsException() {
-        try {
-            final FixedLengthBlockOutputStream out = getClosedFLBOS();
-            out.write(1);
-            fail("expected Closed Channel Exception");
-        } catch (final IOException e) {
-            assertThat(e, IsInstanceOf.instanceOf(ClosedChannelException.class));
-            // expected
-        }
-        try {
-            final FixedLengthBlockOutputStream out = getClosedFLBOS();
-            out.write(new byte[] {0,1,2,3});
-            fail("expected Closed Channel Exception");
-        } catch (final IOException e) {
-            assertThat(e, IsInstanceOf.instanceOf(ClosedChannelException.class));
-            // expected
-        }
-
-        try {
-            final FixedLengthBlockOutputStream out = getClosedFLBOS();
-            out.write(ByteBuffer.wrap(new byte[] {0,1,2,3}));
-            fail("expected Closed Channel Exception");
-        } catch (final IOException e) {
-            assertThat(e, IsInstanceOf.instanceOf(ClosedChannelException.class));
-            // expected
-        }
-
-    }
-
-    private FixedLengthBlockOutputStream getClosedFLBOS() throws IOException {
-        final int blockSize = 512;
-        final FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(
-            new MockOutputStream(blockSize, false), blockSize);
-        out.write(1);
-        assertTrue(out.isOpen());
-        out.close();
-        assertFalse(out.isOpen());
-        return out;
+    public void testSmallWrite() throws IOException {
+        testWriteAndPad(10240, "hello world!\n", false);
+        testWriteAndPad(512, "hello world!\n", false);
+        testWriteAndPad(11, "hello world!\n", false);
+        testWriteAndPad(3, "hello world!\n", false);
     }
 
     @Test
-    public void testWriteFailsAfterDestClosedThrowsException() {
-        final int blockSize = 2;
-        final MockOutputStream mock = new MockOutputStream(blockSize, false);
-        final FixedLengthBlockOutputStream out =
-            new FixedLengthBlockOutputStream(mock, blockSize);
-        try {
-            out.write(1);
-            assertTrue(out.isOpen());
-            mock.close();
-            out.write(1);
-            fail("expected IO Exception");
-        } catch (final IOException e) {
-            // expected
-        }
-        assertFalse(out.isOpen());
+    public void testSmallWriteToStream() throws IOException {
+        testWriteAndPadToStream(10240, "hello world!\n", false);
+        testWriteAndPadToStream(512, "hello world!\n", false);
+        testWriteAndPadToStream(11, "hello world!\n", false);
+        testWriteAndPadToStream(3, "hello     world!\n", false);
     }
 
     @Test
@@ -221,35 +262,6 @@ public class FixedLengthBlockOutputStreamTest {
         assertEquals(-1,din.read());
     }
 
-    private void testBuf(final int blockSize, final String text) throws IOException {
-        final MockWritableByteChannel mock = new MockWritableByteChannel(blockSize, false);
-
-        final ByteArrayOutputStream bos = mock.bos;
-        final byte[] msg = text.getBytes();
-        final ByteBuffer buf = getByteBuffer(msg);
-        try (FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(mock, blockSize)) {
-            out.write(buf);
-        }
-        final double v = Math.ceil(msg.length / (double) blockSize) * blockSize;
-        assertEquals("wrong size", (long) v, bos.size());
-        final byte[] output = bos.toByteArray();
-        final String l = new String(output, 0, msg.length);
-        assertEquals(text, l);
-        for (int i = msg.length; i < bos.size(); i++) {
-            assertEquals(String.format("output[%d]", i), 0, output[i]);
-
-        }
-    }
-
-    private ByteBuffer getByteBuffer(final byte[] msg) {
-        final int len = msg.length;
-        final ByteBuffer buf = ByteBuffer.allocate(len);
-        buf.put(msg);
-        buf.flip();
-        return buf;
-    }
-
-
     private void testWriteAndPad(final int blockSize, final String text, final boolean doPartialWrite)
         throws IOException {
         final MockWritableByteChannel mock = new MockWritableByteChannel(blockSize, doPartialWrite);
@@ -263,6 +275,7 @@ public class FixedLengthBlockOutputStreamTest {
         }
         validate(blockSize, msg, bos.toByteArray());
     }
+
 
     private void testWriteAndPadToStream(final int blockSize, final String text, final boolean doPartialWrite)
         throws IOException {
@@ -278,6 +291,81 @@ public class FixedLengthBlockOutputStreamTest {
 
     }
 
+    @Test
+    public void testWriteBuf() throws IOException {
+        final String hwa = "hello world avengers";
+        testBuf(4, hwa);
+        testBuf(512, hwa);
+        testBuf(10240, hwa);
+        testBuf(11, hwa + hwa + hwa);
+    }
+
+
+    @Test
+    public void testWriteFailsAfterDestClosedThrowsException() {
+        final int blockSize = 2;
+        final MockOutputStream mock = new MockOutputStream(blockSize, false);
+        final FixedLengthBlockOutputStream out =
+            new FixedLengthBlockOutputStream(mock, blockSize);
+        try {
+            out.write(1);
+            assertTrue(out.isOpen());
+            mock.close();
+            out.write(1);
+            fail("expected IO Exception");
+        } catch (final IOException e) {
+            // expected
+        }
+        assertFalse(out.isOpen());
+    }
+
+    @Test
+    public void testWriteFailsAfterFLClosedThrowsException() {
+        try {
+            final FixedLengthBlockOutputStream out = getClosedFLBOS();
+            out.write(1);
+            fail("expected Closed Channel Exception");
+        } catch (final IOException e) {
+            assertThat(e, IsInstanceOf.instanceOf(ClosedChannelException.class));
+            // expected
+        }
+        try {
+            final FixedLengthBlockOutputStream out = getClosedFLBOS();
+            out.write(new byte[] {0,1,2,3});
+            fail("expected Closed Channel Exception");
+        } catch (final IOException e) {
+            assertThat(e, IsInstanceOf.instanceOf(ClosedChannelException.class));
+            // expected
+        }
+
+        try {
+            final FixedLengthBlockOutputStream out = getClosedFLBOS();
+            out.write(ByteBuffer.wrap(new byte[] {0,1,2,3}));
+            fail("expected Closed Channel Exception");
+        } catch (final IOException e) {
+            assertThat(e, IsInstanceOf.instanceOf(ClosedChannelException.class));
+            // expected
+        }
+
+    }
+
+    @Test
+    public void testWriteSingleBytes() throws IOException {
+        final int blockSize = 4;
+        final MockWritableByteChannel mock = new MockWritableByteChannel(blockSize, false);
+        final ByteArrayOutputStream bos = mock.bos;
+        final String text = "hello world avengers";
+        final byte[] msg = text.getBytes();
+        final int len = msg.length;
+        try (FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(mock, blockSize)) {
+            for (int i = 0; i < len; i++) {
+                out.write(msg[i]);
+            }
+        }
+        final byte[] output = bos.toByteArray();
+
+        validate(blockSize, msg, output);
+    }
 
     private void validate(final int blockSize, final byte[] expectedBytes, final byte[] actualBytes) {
         final double v = Math.ceil(expectedBytes.length / (double) blockSize) * blockSize;
@@ -286,94 +374,6 @@ public class FixedLengthBlockOutputStreamTest {
         for (int i = expectedBytes.length; i < actualBytes.length; i++) {
             assertEquals(String.format("output[%d]", i), 0, actualBytes[i]);
 
-        }
-    }
-
-    private static void assertContainsAtOffset(final String msg, final byte[] expected, final int offset,
-        final byte[] actual) {
-        assertThat(actual.length, greaterThanOrEqualTo(offset + expected.length));
-        for (int i = 0; i < expected.length; i++) {
-            assertEquals(String.format("%s ([%d])", msg, i), expected[i], actual[i + offset]);
-        }
-    }
-
-    private static class MockOutputStream extends OutputStream {
-
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        private final int requiredWriteSize;
-        private final boolean doPartialWrite;
-        private final AtomicBoolean closed = new AtomicBoolean();
-
-        private MockOutputStream(final int requiredWriteSize, final boolean doPartialWrite) {
-            this.requiredWriteSize = requiredWriteSize;
-            this.doPartialWrite = doPartialWrite;
-        }
-
-        @Override
-        public void write(final byte[] b, final int off, int len) throws IOException {
-            checkIsOpen();
-            assertEquals("write size", requiredWriteSize, len);
-            if (doPartialWrite) {
-                len--;
-            }
-            bos.write(b, off, len);
-        }
-
-        private void checkIsOpen() throws IOException {
-            if (closed.get()) {
-                throw new IOException("Closed");
-            }
-        }
-
-        @Override
-        public void write(final int b) throws IOException {
-            checkIsOpen();
-            assertEquals("write size", requiredWriteSize, 1);
-            bos.write(b);
-        }
-
-        @Override
-        public void close() throws IOException {
-            if (closed.compareAndSet(false, true)) {
-                bos.close();
-            }
-        }
-    }
-
-    private static class MockWritableByteChannel implements WritableByteChannel {
-
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        private final int requiredWriteSize;
-        private final boolean doPartialWrite;
-
-        private MockWritableByteChannel(final int requiredWriteSize, final boolean doPartialWrite) {
-            this.requiredWriteSize = requiredWriteSize;
-            this.doPartialWrite = doPartialWrite;
-        }
-
-        @Override
-        public int write(final ByteBuffer src) throws IOException {
-            assertEquals("write size", requiredWriteSize, src.remaining());
-            if (doPartialWrite) {
-                src.limit(src.limit() - 1);
-            }
-            final int bytesOut = src.remaining();
-            while (src.hasRemaining()) {
-                bos.write(src.get());
-            }
-            return bytesOut;
-        }
-
-        final AtomicBoolean closed = new AtomicBoolean();
-
-        @Override
-        public boolean isOpen() {
-            return !closed.get();
-        }
-
-        @Override
-        public void close() throws IOException {
-            closed.compareAndSet(false, true);
         }
     }
 }

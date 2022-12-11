@@ -61,6 +61,54 @@ import org.apache.commons.compress.utils.TimeUtils;
  * @since 1.6
  */
 public class SevenZOutputFile implements Closeable {
+    private class OutputStreamWrapper extends OutputStream {
+        private static final int BUF_SIZE = 8192;
+        private final ByteBuffer buffer = ByteBuffer.allocate(BUF_SIZE);
+        @Override
+        public void close() throws IOException {
+            // the file will be closed by the containing class's close method
+        }
+
+        @Override
+        public void flush() throws IOException {
+            // no reason to flush the channel
+        }
+
+        @Override
+        public void write(final byte[] b) throws IOException {
+            OutputStreamWrapper.this.write(b, 0, b.length);
+        }
+
+        @Override
+        public void write(final byte[] b, final int off, final int len)
+            throws IOException {
+            if (len > BUF_SIZE) {
+                channel.write(ByteBuffer.wrap(b, off, len));
+            } else {
+                buffer.clear();
+                buffer.put(b, off, len).flip();
+                channel.write(buffer);
+            }
+            compressedCrc32.update(b, off, len);
+            fileBytesWritten += len;
+        }
+
+        @Override
+        public void write(final int b) throws IOException {
+            buffer.clear();
+            buffer.put((byte) b).flip();
+            channel.write(buffer);
+            compressedCrc32.update(b);
+            fileBytesWritten++;
+        }
+    }
+    private static <T> Iterable<T> reverse(final Iterable<T> i) {
+        final LinkedList<T> l = new LinkedList<>();
+        for (final T t : i) {
+            l.addFirst(t);
+        }
+        return l;
+    }
     private final SeekableByteChannel channel;
     private final List<SevenZArchiveEntry> files = new ArrayList<>();
     private int numNonEmptyStreams;
@@ -72,7 +120,9 @@ public class SevenZOutputFile implements Closeable {
     private CountingOutputStream[] additionalCountingStreams;
     private Iterable<? extends SevenZMethodConfiguration> contentMethods =
             Collections.singletonList(new SevenZMethodConfiguration(SevenZMethod.LZMA2));
+
     private final Map<SevenZArchiveEntry, long[]> additionalSizes = new HashMap<>();
+
     private AES256Options aes256Options;
 
     /**
@@ -139,40 +189,6 @@ public class SevenZOutputFile implements Closeable {
     }
 
     /**
-     * Sets the default compression method to use for entry contents - the
-     * default is LZMA2.
-     *
-     * <p>Currently only {@link SevenZMethod#COPY}, {@link
-     * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
-     * SevenZMethod#DEFLATE} are supported.</p>
-     *
-     * <p>This is a short form for passing a single-element iterable
-     * to {@link #setContentMethods}.</p>
-     * @param method the default compression method
-     */
-    public void setContentCompression(final SevenZMethod method) {
-        setContentMethods(Collections.singletonList(new SevenZMethodConfiguration(method)));
-    }
-
-    /**
-     * Sets the default (compression) methods to use for entry contents - the
-     * default is LZMA2.
-     *
-     * <p>Currently only {@link SevenZMethod#COPY}, {@link
-     * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
-     * SevenZMethod#DEFLATE} are supported.</p>
-     *
-     * <p>The methods will be consulted in iteration order to create
-     * the final output.</p>
-     *
-     * @since 1.8
-     * @param methods the default (compression) methods
-     */
-    public void setContentMethods(final Iterable<? extends SevenZMethodConfiguration> methods) {
-        this.contentMethods = reverse(methods);
-    }
-
-    /**
      * Closes the archive, calling {@link #finish} if necessary.
      *
      * @throws IOException on error
@@ -186,6 +202,43 @@ public class SevenZOutputFile implements Closeable {
         } finally {
             channel.close();
         }
+    }
+
+    /**
+     * Closes the archive entry.
+     * @throws IOException on error
+     */
+    public void closeArchiveEntry() throws IOException {
+        if (currentOutputStream != null) {
+            currentOutputStream.flush();
+            currentOutputStream.close();
+        }
+
+        final SevenZArchiveEntry entry = files.get(files.size() - 1);
+        if (fileBytesWritten > 0) { // this implies currentOutputStream != null
+            entry.setHasStream(true);
+            ++numNonEmptyStreams;
+            entry.setSize(currentOutputStream.getBytesWritten()); //NOSONAR
+            entry.setCompressedSize(fileBytesWritten);
+            entry.setCrcValue(crc32.getValue());
+            entry.setCompressedCrcValue(compressedCrc32.getValue());
+            entry.setHasCrc(true);
+            if (additionalCountingStreams != null) {
+                final long[] sizes = new long[additionalCountingStreams.length];
+                Arrays.setAll(sizes, i -> additionalCountingStreams[i].getBytesWritten());
+                additionalSizes.put(entry, sizes);
+            }
+        } else {
+            entry.setHasStream(false);
+            entry.setSize(0);
+            entry.setCompressedSize(0);
+            entry.setHasCrc(false);
+        }
+        currentOutputStream = null;
+        additionalCountingStreams = null;
+        crc32.reset();
+        compressedCrc32.reset();
+        fileBytesWritten = 0;
     }
 
     /**
@@ -234,114 +287,6 @@ public class SevenZOutputFile implements Closeable {
         entry.setLastModifiedTime(attributes.lastModifiedTime());
         entry.setCreationTime(attributes.creationTime());
         entry.setAccessTime(attributes.lastAccessTime());
-    }
-
-    /**
-     * Records an archive entry to add.
-     *
-     * The caller must then write the content to the archive and call
-     * {@link #closeArchiveEntry()} to complete the process.
-     *
-     * @param archiveEntry describes the entry
-     */
-    public void putArchiveEntry(final ArchiveEntry archiveEntry) {
-        final SevenZArchiveEntry entry = (SevenZArchiveEntry) archiveEntry;
-        files.add(entry);
-    }
-
-    /**
-     * Closes the archive entry.
-     * @throws IOException on error
-     */
-    public void closeArchiveEntry() throws IOException {
-        if (currentOutputStream != null) {
-            currentOutputStream.flush();
-            currentOutputStream.close();
-        }
-
-        final SevenZArchiveEntry entry = files.get(files.size() - 1);
-        if (fileBytesWritten > 0) { // this implies currentOutputStream != null
-            entry.setHasStream(true);
-            ++numNonEmptyStreams;
-            entry.setSize(currentOutputStream.getBytesWritten()); //NOSONAR
-            entry.setCompressedSize(fileBytesWritten);
-            entry.setCrcValue(crc32.getValue());
-            entry.setCompressedCrcValue(compressedCrc32.getValue());
-            entry.setHasCrc(true);
-            if (additionalCountingStreams != null) {
-                final long[] sizes = new long[additionalCountingStreams.length];
-                Arrays.setAll(sizes, i -> additionalCountingStreams[i].getBytesWritten());
-                additionalSizes.put(entry, sizes);
-            }
-        } else {
-            entry.setHasStream(false);
-            entry.setSize(0);
-            entry.setCompressedSize(0);
-            entry.setHasCrc(false);
-        }
-        currentOutputStream = null;
-        additionalCountingStreams = null;
-        crc32.reset();
-        compressedCrc32.reset();
-        fileBytesWritten = 0;
-    }
-
-    /**
-     * Writes a byte to the current archive entry.
-     * @param b The byte to be written.
-     * @throws IOException on error
-     */
-    public void write(final int b) throws IOException {
-        getCurrentOutputStream().write(b);
-    }
-
-    /**
-     * Writes a byte array to the current archive entry.
-     * @param b The byte array to be written.
-     * @throws IOException on error
-     */
-    public void write(final byte[] b) throws IOException {
-        write(b, 0, b.length);
-    }
-
-    /**
-     * Writes part of a byte array to the current archive entry.
-     * @param b The byte array to be written.
-     * @param off offset into the array to start writing from
-     * @param len number of bytes to write
-     * @throws IOException on error
-     */
-    public void write(final byte[] b, final int off, final int len) throws IOException {
-        if (len > 0) {
-            getCurrentOutputStream().write(b, off, len);
-        }
-    }
-
-    /**
-     * Writes all of the given input stream to the current archive entry.
-     * @param inputStream the data source.
-     * @throws IOException if an I/O error occurs.
-     * @since 1.21
-     */
-    public void write(final InputStream inputStream) throws IOException {
-        final byte[] buffer = new byte[8024];
-        int n = 0;
-        while (-1 != (n = inputStream.read(buffer))) {
-            write(buffer, 0, n);
-        }
-    }
-
-    /**
-     * Writes all of the given input stream to the current archive entry.
-     * @param path the data source.
-     * @param options options specifying how the file is opened.
-     * @throws IOException if an I/O error occurs.
-     * @since 1.21
-     */
-    public void write(final Path path, final OpenOption... options) throws IOException {
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(path, options))) {
-            write(in);
-        }
     }
 
     /**
@@ -395,6 +340,23 @@ public class SevenZOutputFile implements Closeable {
         channel.write(bb);
     }
 
+    private Iterable<? extends SevenZMethodConfiguration> getContentMethods(final SevenZArchiveEntry entry) {
+        final Iterable<? extends SevenZMethodConfiguration> ms = entry.getContentMethods();
+        Iterable<? extends SevenZMethodConfiguration> iter = ms == null ? contentMethods : ms;
+
+        if (aes256Options != null) {
+            // prepend encryption 
+            iter =
+                Stream
+                    .concat(
+                        Stream.of(new SevenZMethodConfiguration(SevenZMethod.AES256SHA256, aes256Options)),
+                        StreamSupport.stream(iter.spliterator(), false)
+                    )
+                    .collect(Collectors.toList());
+        }
+        return iter;
+    }
+
     /*
      * Creation of output stream is deferred until data is actually
      * written as some codecs might write header information even for
@@ -405,6 +367,53 @@ public class SevenZOutputFile implements Closeable {
             currentOutputStream = setupFileOutputStream();
         }
         return currentOutputStream;
+    }
+
+    /**
+     * Records an archive entry to add.
+     *
+     * The caller must then write the content to the archive and call
+     * {@link #closeArchiveEntry()} to complete the process.
+     *
+     * @param archiveEntry describes the entry
+     */
+    public void putArchiveEntry(final ArchiveEntry archiveEntry) {
+        final SevenZArchiveEntry entry = (SevenZArchiveEntry) archiveEntry;
+        files.add(entry);
+    }
+
+    /**
+     * Sets the default compression method to use for entry contents - the
+     * default is LZMA2.
+     *
+     * <p>Currently only {@link SevenZMethod#COPY}, {@link
+     * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
+     * SevenZMethod#DEFLATE} are supported.</p>
+     *
+     * <p>This is a short form for passing a single-element iterable
+     * to {@link #setContentMethods}.</p>
+     * @param method the default compression method
+     */
+    public void setContentCompression(final SevenZMethod method) {
+        setContentMethods(Collections.singletonList(new SevenZMethodConfiguration(method)));
+    }
+
+    /**
+     * Sets the default (compression) methods to use for entry contents - the
+     * default is LZMA2.
+     *
+     * <p>Currently only {@link SevenZMethod#COPY}, {@link
+     * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
+     * SevenZMethod#DEFLATE} are supported.</p>
+     *
+     * <p>The methods will be consulted in iteration order to create
+     * the final output.</p>
+     *
+     * @since 1.8
+     * @param methods the default (compression) methods
+     */
+    public void setContentMethods(final Iterable<? extends SevenZMethodConfiguration> methods) {
+        this.contentMethods = reverse(methods);
     }
 
     private CountingOutputStream setupFileOutputStream() throws IOException {
@@ -430,12 +439,6 @@ public class SevenZOutputFile implements Closeable {
         }
         return new CountingOutputStream(out) {
             @Override
-            public void write(final int b) throws IOException {
-                super.write(b);
-                crc32.update(b);
-            }
-
-            @Override
             public void write(final byte[] b) throws IOException {
                 super.write(b);
                 crc32.update(b);
@@ -447,208 +450,86 @@ public class SevenZOutputFile implements Closeable {
                 super.write(b, off, len);
                 crc32.update(b, off, len);
             }
+
+            @Override
+            public void write(final int b) throws IOException {
+                super.write(b);
+                crc32.update(b);
+            }
         };
     }
 
-    private Iterable<? extends SevenZMethodConfiguration> getContentMethods(final SevenZArchiveEntry entry) {
-        final Iterable<? extends SevenZMethodConfiguration> ms = entry.getContentMethods();
-        Iterable<? extends SevenZMethodConfiguration> iter = ms == null ? contentMethods : ms;
+    /**
+     * Writes a byte array to the current archive entry.
+     * @param b The byte array to be written.
+     * @throws IOException on error
+     */
+    public void write(final byte[] b) throws IOException {
+        write(b, 0, b.length);
+    }
 
-        if (aes256Options != null) {
-            // prepend encryption 
-            iter =
-                Stream
-                    .concat(
-                        Stream.of(new SevenZMethodConfiguration(SevenZMethod.AES256SHA256, aes256Options)),
-                        StreamSupport.stream(iter.spliterator(), false)
-                    )
-                    .collect(Collectors.toList());
+    /**
+     * Writes part of a byte array to the current archive entry.
+     * @param b The byte array to be written.
+     * @param off offset into the array to start writing from
+     * @param len number of bytes to write
+     * @throws IOException on error
+     */
+    public void write(final byte[] b, final int off, final int len) throws IOException {
+        if (len > 0) {
+            getCurrentOutputStream().write(b, off, len);
         }
-        return iter;
     }
 
-    private void writeHeader(final DataOutput header) throws IOException {
-        header.write(NID.kHeader);
-
-        header.write(NID.kMainStreamsInfo);
-        writeStreamsInfo(header);
-        writeFilesInfo(header);
-        header.write(NID.kEnd);
-    }
-
-    private void writeStreamsInfo(final DataOutput header) throws IOException {
-        if (numNonEmptyStreams > 0) {
-            writePackInfo(header);
-            writeUnpackInfo(header);
+    /**
+     * Writes all of the given input stream to the current archive entry.
+     * @param inputStream the data source.
+     * @throws IOException if an I/O error occurs.
+     * @since 1.21
+     */
+    public void write(final InputStream inputStream) throws IOException {
+        final byte[] buffer = new byte[8024];
+        int n = 0;
+        while (-1 != (n = inputStream.read(buffer))) {
+            write(buffer, 0, n);
         }
-
-        writeSubStreamsInfo(header);
-
-        header.write(NID.kEnd);
     }
 
-    private void writePackInfo(final DataOutput header) throws IOException {
-        header.write(NID.kPackInfo);
+    /**
+     * Writes a byte to the current archive entry.
+     * @param b The byte to be written.
+     * @throws IOException on error
+     */
+    public void write(final int b) throws IOException {
+        getCurrentOutputStream().write(b);
+    }
 
-        writeUint64(header, 0);
-        writeUint64(header, 0xffffFFFFL & numNonEmptyStreams);
+    /**
+     * Writes all of the given input stream to the current archive entry.
+     * @param path the data source.
+     * @param options options specifying how the file is opened.
+     * @throws IOException if an I/O error occurs.
+     * @since 1.21
+     */
+    public void write(final Path path, final OpenOption... options) throws IOException {
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(path, options))) {
+            write(in);
+        }
+    }
 
-        header.write(NID.kSize);
-        for (final SevenZArchiveEntry entry : files) {
-            if (entry.hasStream()) {
-                writeUint64(header, entry.getCompressedSize());
+    private void writeBits(final DataOutput header, final BitSet bits, final int length) throws IOException {
+        int cache = 0;
+        int shift = 7;
+        for (int i = 0; i < length; i++) {
+            cache |= ((bits.get(i) ? 1 : 0) << shift);
+            if (--shift < 0) {
+                header.write(cache);
+                shift = 7;
+                cache = 0;
             }
         }
-
-        header.write(NID.kCRC);
-        header.write(1); // "allAreDefined" == true
-        for (final SevenZArchiveEntry entry : files) {
-            if (entry.hasStream()) {
-                header.writeInt(Integer.reverseBytes((int) entry.getCompressedCrcValue()));
-            }
-        }
-
-        header.write(NID.kEnd);
-    }
-
-    private void writeUnpackInfo(final DataOutput header) throws IOException {
-        header.write(NID.kUnpackInfo);
-
-        header.write(NID.kFolder);
-        writeUint64(header, numNonEmptyStreams);
-        header.write(0);
-        for (final SevenZArchiveEntry entry : files) {
-            if (entry.hasStream()) {
-                writeFolder(header, entry);
-            }
-        }
-
-        header.write(NID.kCodersUnpackSize);
-        for (final SevenZArchiveEntry entry : files) {
-            if (entry.hasStream()) {
-                final long[] moreSizes = additionalSizes.get(entry);
-                if (moreSizes != null) {
-                    for (final long s : moreSizes) {
-                        writeUint64(header, s);
-                    }
-                }
-                writeUint64(header, entry.getSize());
-            }
-        }
-
-        header.write(NID.kCRC);
-        header.write(1); // "allAreDefined" == true
-        for (final SevenZArchiveEntry entry : files) {
-            if (entry.hasStream()) {
-                header.writeInt(Integer.reverseBytes((int) entry.getCrcValue()));
-            }
-        }
-
-        header.write(NID.kEnd);
-    }
-
-    private void writeFolder(final DataOutput header, final SevenZArchiveEntry entry) throws IOException {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        int numCoders = 0;
-        for (final SevenZMethodConfiguration m : getContentMethods(entry)) {
-            numCoders++;
-            writeSingleCodec(m, bos);
-        }
-
-        writeUint64(header, numCoders);
-        header.write(bos.toByteArray());
-        for (long i = 0; i < numCoders - 1; i++) {
-            writeUint64(header, i + 1);
-            writeUint64(header, i);
-        }
-    }
-
-    private void writeSingleCodec(final SevenZMethodConfiguration m, final OutputStream bos) throws IOException {
-        final byte[] id = m.getMethod().getId();
-        final byte[] properties = Coders.findByMethod(m.getMethod())
-            .getOptionsAsProperties(m.getOptions());
-
-        int codecFlags = id.length;
-        if (properties.length > 0) {
-            codecFlags |= 0x20;
-        }
-        bos.write(codecFlags);
-        bos.write(id);
-
-        if (properties.length > 0) {
-            bos.write(properties.length);
-            bos.write(properties);
-        }
-    }
-
-    private void writeSubStreamsInfo(final DataOutput header) throws IOException {
-        header.write(NID.kSubStreamsInfo);
-        //
-        //        header.write(NID.kCRC);
-        //        header.write(1);
-        //        for (final SevenZArchiveEntry entry : files) {
-        //            if (entry.getHasCrc()) {
-        //                header.writeInt(Integer.reverseBytes(entry.getCrc()));
-        //            }
-        //        }
-        //
-        header.write(NID.kEnd);
-    }
-
-    private void writeFilesInfo(final DataOutput header) throws IOException {
-        header.write(NID.kFilesInfo);
-
-        writeUint64(header, files.size());
-
-        writeFileEmptyStreams(header);
-        writeFileEmptyFiles(header);
-        writeFileAntiItems(header);
-        writeFileNames(header);
-        writeFileCTimes(header);
-        writeFileATimes(header);
-        writeFileMTimes(header);
-        writeFileWindowsAttributes(header);
-        header.write(NID.kEnd);
-    }
-
-    private void writeFileEmptyStreams(final DataOutput header) throws IOException {
-        final boolean hasEmptyStreams = files.stream().anyMatch(entry -> !entry.hasStream());
-        if (hasEmptyStreams) {
-            header.write(NID.kEmptyStream);
-            final BitSet emptyStreams = new BitSet(files.size());
-            for (int i = 0; i < files.size(); i++) {
-                emptyStreams.set(i, !files.get(i).hasStream());
-            }
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            final DataOutputStream out = new DataOutputStream(baos);
-            writeBits(out, emptyStreams, files.size());
-            out.flush();
-            final byte[] contents = baos.toByteArray();
-            writeUint64(header, contents.length);
-            header.write(contents);
-        }
-    }
-
-    private void writeFileEmptyFiles(final DataOutput header) throws IOException {
-        boolean hasEmptyFiles = false;
-        int emptyStreamCounter = 0;
-        final BitSet emptyFiles = new BitSet(0);
-        for (final SevenZArchiveEntry file1 : files) {
-            if (!file1.hasStream()) {
-                final boolean isDir = file1.isDirectory();
-                emptyFiles.set(emptyStreamCounter++, !isDir);
-                hasEmptyFiles |= !isDir;
-            }
-        }
-        if (hasEmptyFiles) {
-            header.write(NID.kEmptyFile);
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            final DataOutputStream out = new DataOutputStream(baos);
-            writeBits(out, emptyFiles, emptyStreamCounter);
-            out.flush();
-            final byte[] contents = baos.toByteArray();
-            writeUint64(header, contents.length);
-            header.write(contents);
+        if (shift != 7) {
+            header.write(cache);
         }
     }
 
@@ -668,58 +549,6 @@ public class SevenZOutputFile implements Closeable {
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             final DataOutputStream out = new DataOutputStream(baos);
             writeBits(out, antiItems, antiItemCounter);
-            out.flush();
-            final byte[] contents = baos.toByteArray();
-            writeUint64(header, contents.length);
-            header.write(contents);
-        }
-    }
-
-    private void writeFileNames(final DataOutput header) throws IOException {
-        header.write(NID.kName);
-
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final DataOutputStream out = new DataOutputStream(baos);
-        out.write(0);
-        for (final SevenZArchiveEntry entry : files) {
-            out.write(entry.getName().getBytes(UTF_16LE));
-            out.writeShort(0);
-        }
-        out.flush();
-        final byte[] contents = baos.toByteArray();
-        writeUint64(header, contents.length);
-        header.write(contents);
-    }
-
-    private void writeFileCTimes(final DataOutput header) throws IOException {
-        int numCreationDates = 0;
-        for (final SevenZArchiveEntry entry : files) {
-            if (entry.getHasCreationDate()) {
-                ++numCreationDates;
-            }
-        }
-        if (numCreationDates > 0) {
-            header.write(NID.kCTime);
-
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            final DataOutputStream out = new DataOutputStream(baos);
-            if (numCreationDates != files.size()) {
-                out.write(0);
-                final BitSet cTimes = new BitSet(files.size());
-                for (int i = 0; i < files.size(); i++) {
-                    cTimes.set(i, files.get(i).getHasCreationDate());
-                }
-                writeBits(out, cTimes, files.size());
-            } else {
-                out.write(1); // "allAreDefined" == true
-            }
-            out.write(0);
-            for (final SevenZArchiveEntry entry : files) {
-                if (entry.getHasCreationDate()) {
-                    final long ntfsTime = TimeUtils.toNtfsTime(entry.getCreationTime());
-                    out.writeLong(Long.reverseBytes(ntfsTime));
-                }
-            }
             out.flush();
             final byte[] contents = baos.toByteArray();
             writeUint64(header, contents.length);
@@ -763,6 +592,83 @@ public class SevenZOutputFile implements Closeable {
         }
     }
 
+    private void writeFileCTimes(final DataOutput header) throws IOException {
+        int numCreationDates = 0;
+        for (final SevenZArchiveEntry entry : files) {
+            if (entry.getHasCreationDate()) {
+                ++numCreationDates;
+            }
+        }
+        if (numCreationDates > 0) {
+            header.write(NID.kCTime);
+
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final DataOutputStream out = new DataOutputStream(baos);
+            if (numCreationDates != files.size()) {
+                out.write(0);
+                final BitSet cTimes = new BitSet(files.size());
+                for (int i = 0; i < files.size(); i++) {
+                    cTimes.set(i, files.get(i).getHasCreationDate());
+                }
+                writeBits(out, cTimes, files.size());
+            } else {
+                out.write(1); // "allAreDefined" == true
+            }
+            out.write(0);
+            for (final SevenZArchiveEntry entry : files) {
+                if (entry.getHasCreationDate()) {
+                    final long ntfsTime = TimeUtils.toNtfsTime(entry.getCreationTime());
+                    out.writeLong(Long.reverseBytes(ntfsTime));
+                }
+            }
+            out.flush();
+            final byte[] contents = baos.toByteArray();
+            writeUint64(header, contents.length);
+            header.write(contents);
+        }
+    }
+
+    private void writeFileEmptyFiles(final DataOutput header) throws IOException {
+        boolean hasEmptyFiles = false;
+        int emptyStreamCounter = 0;
+        final BitSet emptyFiles = new BitSet(0);
+        for (final SevenZArchiveEntry file1 : files) {
+            if (!file1.hasStream()) {
+                final boolean isDir = file1.isDirectory();
+                emptyFiles.set(emptyStreamCounter++, !isDir);
+                hasEmptyFiles |= !isDir;
+            }
+        }
+        if (hasEmptyFiles) {
+            header.write(NID.kEmptyFile);
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final DataOutputStream out = new DataOutputStream(baos);
+            writeBits(out, emptyFiles, emptyStreamCounter);
+            out.flush();
+            final byte[] contents = baos.toByteArray();
+            writeUint64(header, contents.length);
+            header.write(contents);
+        }
+    }
+
+    private void writeFileEmptyStreams(final DataOutput header) throws IOException {
+        final boolean hasEmptyStreams = files.stream().anyMatch(entry -> !entry.hasStream());
+        if (hasEmptyStreams) {
+            header.write(NID.kEmptyStream);
+            final BitSet emptyStreams = new BitSet(files.size());
+            for (int i = 0; i < files.size(); i++) {
+                emptyStreams.set(i, !files.get(i).hasStream());
+            }
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final DataOutputStream out = new DataOutputStream(baos);
+            writeBits(out, emptyStreams, files.size());
+            out.flush();
+            final byte[] contents = baos.toByteArray();
+            writeUint64(header, contents.length);
+            header.write(contents);
+        }
+    }
+
     private void writeFileMTimes(final DataOutput header) throws IOException {
         int numLastModifiedDates = 0;
         for (final SevenZArchiveEntry entry : files) {
@@ -797,6 +703,38 @@ public class SevenZOutputFile implements Closeable {
             writeUint64(header, contents.length);
             header.write(contents);
         }
+    }
+
+    private void writeFileNames(final DataOutput header) throws IOException {
+        header.write(NID.kName);
+
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final DataOutputStream out = new DataOutputStream(baos);
+        out.write(0);
+        for (final SevenZArchiveEntry entry : files) {
+            out.write(entry.getName().getBytes(UTF_16LE));
+            out.writeShort(0);
+        }
+        out.flush();
+        final byte[] contents = baos.toByteArray();
+        writeUint64(header, contents.length);
+        header.write(contents);
+    }
+
+    private void writeFilesInfo(final DataOutput header) throws IOException {
+        header.write(NID.kFilesInfo);
+
+        writeUint64(header, files.size());
+
+        writeFileEmptyStreams(header);
+        writeFileEmptyFiles(header);
+        writeFileAntiItems(header);
+        writeFileNames(header);
+        writeFileCTimes(header);
+        writeFileATimes(header);
+        writeFileMTimes(header);
+        writeFileWindowsAttributes(header);
+        header.write(NID.kEnd);
     }
 
     private void writeFileWindowsAttributes(final DataOutput header) throws IOException {
@@ -834,6 +772,98 @@ public class SevenZOutputFile implements Closeable {
         }
     }
 
+    private void writeFolder(final DataOutput header, final SevenZArchiveEntry entry) throws IOException {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        int numCoders = 0;
+        for (final SevenZMethodConfiguration m : getContentMethods(entry)) {
+            numCoders++;
+            writeSingleCodec(m, bos);
+        }
+
+        writeUint64(header, numCoders);
+        header.write(bos.toByteArray());
+        for (long i = 0; i < numCoders - 1; i++) {
+            writeUint64(header, i + 1);
+            writeUint64(header, i);
+        }
+    }
+
+    private void writeHeader(final DataOutput header) throws IOException {
+        header.write(NID.kHeader);
+
+        header.write(NID.kMainStreamsInfo);
+        writeStreamsInfo(header);
+        writeFilesInfo(header);
+        header.write(NID.kEnd);
+    }
+
+    private void writePackInfo(final DataOutput header) throws IOException {
+        header.write(NID.kPackInfo);
+
+        writeUint64(header, 0);
+        writeUint64(header, 0xffffFFFFL & numNonEmptyStreams);
+
+        header.write(NID.kSize);
+        for (final SevenZArchiveEntry entry : files) {
+            if (entry.hasStream()) {
+                writeUint64(header, entry.getCompressedSize());
+            }
+        }
+
+        header.write(NID.kCRC);
+        header.write(1); // "allAreDefined" == true
+        for (final SevenZArchiveEntry entry : files) {
+            if (entry.hasStream()) {
+                header.writeInt(Integer.reverseBytes((int) entry.getCompressedCrcValue()));
+            }
+        }
+
+        header.write(NID.kEnd);
+    }
+
+    private void writeSingleCodec(final SevenZMethodConfiguration m, final OutputStream bos) throws IOException {
+        final byte[] id = m.getMethod().getId();
+        final byte[] properties = Coders.findByMethod(m.getMethod())
+            .getOptionsAsProperties(m.getOptions());
+
+        int codecFlags = id.length;
+        if (properties.length > 0) {
+            codecFlags |= 0x20;
+        }
+        bos.write(codecFlags);
+        bos.write(id);
+
+        if (properties.length > 0) {
+            bos.write(properties.length);
+            bos.write(properties);
+        }
+    }
+
+    private void writeStreamsInfo(final DataOutput header) throws IOException {
+        if (numNonEmptyStreams > 0) {
+            writePackInfo(header);
+            writeUnpackInfo(header);
+        }
+
+        writeSubStreamsInfo(header);
+
+        header.write(NID.kEnd);
+    }
+
+    private void writeSubStreamsInfo(final DataOutput header) throws IOException {
+        header.write(NID.kSubStreamsInfo);
+        //
+        //        header.write(NID.kCRC);
+        //        header.write(1);
+        //        for (final SevenZArchiveEntry entry : files) {
+        //            if (entry.getHasCrc()) {
+        //                header.writeInt(Integer.reverseBytes(entry.getCrc()));
+        //            }
+        //        }
+        //
+        header.write(NID.kEnd);
+    }
+
     private void writeUint64(final DataOutput header, long value) throws IOException {
         int firstByte = 0;
         int mask = 0x80;
@@ -853,70 +883,40 @@ public class SevenZOutputFile implements Closeable {
         }
     }
 
-    private void writeBits(final DataOutput header, final BitSet bits, final int length) throws IOException {
-        int cache = 0;
-        int shift = 7;
-        for (int i = 0; i < length; i++) {
-            cache |= ((bits.get(i) ? 1 : 0) << shift);
-            if (--shift < 0) {
-                header.write(cache);
-                shift = 7;
-                cache = 0;
+    private void writeUnpackInfo(final DataOutput header) throws IOException {
+        header.write(NID.kUnpackInfo);
+
+        header.write(NID.kFolder);
+        writeUint64(header, numNonEmptyStreams);
+        header.write(0);
+        for (final SevenZArchiveEntry entry : files) {
+            if (entry.hasStream()) {
+                writeFolder(header, entry);
             }
         }
-        if (shift != 7) {
-            header.write(cache);
-        }
-    }
 
-    private static <T> Iterable<T> reverse(final Iterable<T> i) {
-        final LinkedList<T> l = new LinkedList<>();
-        for (final T t : i) {
-            l.addFirst(t);
-        }
-        return l;
-    }
-
-    private class OutputStreamWrapper extends OutputStream {
-        private static final int BUF_SIZE = 8192;
-        private final ByteBuffer buffer = ByteBuffer.allocate(BUF_SIZE);
-        @Override
-        public void write(final int b) throws IOException {
-            buffer.clear();
-            buffer.put((byte) b).flip();
-            channel.write(buffer);
-            compressedCrc32.update(b);
-            fileBytesWritten++;
-        }
-
-        @Override
-        public void write(final byte[] b) throws IOException {
-            OutputStreamWrapper.this.write(b, 0, b.length);
-        }
-
-        @Override
-        public void write(final byte[] b, final int off, final int len)
-            throws IOException {
-            if (len > BUF_SIZE) {
-                channel.write(ByteBuffer.wrap(b, off, len));
-            } else {
-                buffer.clear();
-                buffer.put(b, off, len).flip();
-                channel.write(buffer);
+        header.write(NID.kCodersUnpackSize);
+        for (final SevenZArchiveEntry entry : files) {
+            if (entry.hasStream()) {
+                final long[] moreSizes = additionalSizes.get(entry);
+                if (moreSizes != null) {
+                    for (final long s : moreSizes) {
+                        writeUint64(header, s);
+                    }
+                }
+                writeUint64(header, entry.getSize());
             }
-            compressedCrc32.update(b, off, len);
-            fileBytesWritten += len;
         }
 
-        @Override
-        public void flush() throws IOException {
-            // no reason to flush the channel
+        header.write(NID.kCRC);
+        header.write(1); // "allAreDefined" == true
+        for (final SevenZArchiveEntry entry : files) {
+            if (entry.hasStream()) {
+                header.writeInt(Integer.reverseBytes((int) entry.getCrcValue()));
+            }
         }
 
-        @Override
-        public void close() throws IOException {
-            // the file will be closed by the containing class's close method
-        }
+        header.write(NID.kEnd);
     }
 
 }

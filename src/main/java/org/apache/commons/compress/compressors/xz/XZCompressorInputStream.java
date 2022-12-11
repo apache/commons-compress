@@ -37,9 +37,6 @@ import org.tukaani.xz.XZInputStream;
 public class XZCompressorInputStream extends CompressorInputStream
     implements InputStreamStatistics {
 
-    private final CountingInputStream countingStream;
-    private final InputStream in;
-
     /**
      * Checks if the signature matches what is expected for a .xz file.
      *
@@ -60,6 +57,9 @@ public class XZCompressorInputStream extends CompressorInputStream
 
         return true;
     }
+    private final CountingInputStream countingStream;
+
+    private final InputStream in;
 
     /**
      * Creates a new input stream that decompresses XZ-compressed data
@@ -136,6 +136,24 @@ public class XZCompressorInputStream extends CompressorInputStream
     }
 
     @Override
+    public int available() throws IOException {
+        return in.available();
+    }
+
+    @Override
+    public void close() throws IOException {
+        in.close();
+    }
+
+    /**
+     * @since 1.17
+     */
+    @Override
+    public long getCompressedCount() {
+        return countingStream.getBytesRead();
+    }
+
+    @Override
     public int read() throws IOException {
         try {
             final int ret = in.read();
@@ -169,23 +187,5 @@ public class XZCompressorInputStream extends CompressorInputStream
             //convert to commons-compress MemoryLimtException
             throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), e);
         }
-    }
-
-    @Override
-    public int available() throws IOException {
-        return in.available();
-    }
-
-    @Override
-    public void close() throws IOException {
-        in.close();
-    }
-
-    /**
-     * @since 1.17
-     */
-    @Override
-    public long getCompressedCount() {
-        return countingStream.getBytesRead();
     }
 }

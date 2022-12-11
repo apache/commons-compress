@@ -40,6 +40,11 @@ class BoundedSeekableByteChannelInputStream extends InputStream {
     }
 
     @Override
+    public void close() {
+        // the nested channel is controlled externally
+    }
+
+    @Override
     public int read() throws IOException {
         if (bytesRemaining > 0) {
             --bytesRemaining;
@@ -97,10 +102,5 @@ class BoundedSeekableByteChannelInputStream extends InputStream {
         final int read = channel.read(buffer);
         buffer.flip();
         return read;
-    }
-
-    @Override
-    public void close() {
-        // the nested channel is controlled externally
     }
 }

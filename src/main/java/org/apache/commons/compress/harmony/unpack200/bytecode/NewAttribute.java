@@ -26,14 +26,83 @@ import java.util.List;
  */
 public class NewAttribute extends BCIRenumberedAttribute {
 
+    private static class BCIndex extends BCValue {
+
+        private final int index;
+
+        public BCIndex(final int index) {
+            this.index = index;
+        }
+    }
+    private static class BCLength extends BCValue {
+
+        private final int length;
+
+        public BCLength(final int length) {
+            this.length = length;
+        }
+    }
+    private static class BCOffset extends BCValue {
+
+        private final int offset;
+        private int index;
+
+        public BCOffset(final int offset) {
+            this.offset = offset;
+        }
+
+        public void setIndex(final int index) {
+            this.index = index;
+        }
+
+    }
+    // Bytecode-related value (either a bytecode index or a length)
+    private static abstract class BCValue {
+
+        int actualValue;
+
+        public void setActualValue(final int value) {
+            this.actualValue = value;
+        }
+
+    }
+
     private final List<Integer> lengths = new ArrayList<>();
+
     private final List<Object> body = new ArrayList<>();
+
     private ClassConstantPool pool;
+
     private final int layoutIndex;
 
     public NewAttribute(final CPUTF8 attributeName, final int layoutIndex) {
         super(attributeName);
         this.layoutIndex = layoutIndex;
+    }
+
+    public void addBCIndex(final int length, final int value) {
+        lengths.add(Integer.valueOf(length));
+        body.add(new BCIndex(value));
+    }
+
+    public void addBCLength(final int length, final int value) {
+        lengths.add(Integer.valueOf(length));
+        body.add(new BCLength(value));
+    }
+
+    public void addBCOffset(final int length, final int value) {
+        lengths.add(Integer.valueOf(length));
+        body.add(new BCOffset(value));
+    }
+
+    public void addInteger(final int length, final long value) {
+        lengths.add(Integer.valueOf(length));
+        body.add(Long.valueOf(value));
+    }
+
+    public void addToBody(final int length, final Object value) {
+        lengths.add(Integer.valueOf(length));
+        body.add(value);
     }
 
     public int getLayoutIndex() {
@@ -54,90 +123,6 @@ public class NewAttribute extends BCIRenumberedAttribute {
         return length;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#writeBody(java.io.DataOutputStream)
-     */
-    @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        for (int i = 0; i < lengths.size(); i++) {
-            final int length = lengths.get(i).intValue();
-            final Object obj = body.get(i);
-            long value = 0;
-            if (obj instanceof Long) {
-                value = ((Long) obj).longValue();
-            } else if (obj instanceof ClassFileEntry) {
-                value = pool.indexOf(((ClassFileEntry) obj));
-            } else if (obj instanceof BCValue) {
-                value = ((BCValue) obj).actualValue;
-            }
-            // Write
-            switch (length) {
-            case 1:
-                dos.writeByte((int) value);
-                break;
-            case 2:
-                dos.writeShort((int) value);
-                break;
-            case 4:
-                dos.writeInt((int) value);
-                break;
-            case 8:
-                dos.writeLong(value);
-                break;
-            default:
-                break;
-            }
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#toString()
-     */
-    @Override
-    public String toString() {
-        return attributeName.underlyingString();
-    }
-
-    public void addInteger(final int length, final long value) {
-        lengths.add(Integer.valueOf(length));
-        body.add(Long.valueOf(value));
-    }
-
-    public void addBCOffset(final int length, final int value) {
-        lengths.add(Integer.valueOf(length));
-        body.add(new BCOffset(value));
-    }
-
-    public void addBCIndex(final int length, final int value) {
-        lengths.add(Integer.valueOf(length));
-        body.add(new BCIndex(value));
-    }
-
-    public void addBCLength(final int length, final int value) {
-        lengths.add(Integer.valueOf(length));
-        body.add(new BCLength(value));
-    }
-
-    public void addToBody(final int length, final Object value) {
-        lengths.add(Integer.valueOf(length));
-        body.add(value);
-    }
-
-    @Override
-    protected void resolve(final ClassConstantPool pool) {
-        super.resolve(pool);
-        for (final Object element : body) {
-            if (element instanceof ClassFileEntry) {
-                ((ClassFileEntry) element).resolve(pool);
-            }
-        }
-        this.pool = pool;
-    }
-
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         int total = 1;
@@ -156,50 +141,6 @@ public class NewAttribute extends BCIRenumberedAttribute {
             }
         }
         return nested;
-    }
-
-    private static class BCOffset extends BCValue {
-
-        private final int offset;
-        private int index;
-
-        public BCOffset(final int offset) {
-            this.offset = offset;
-        }
-
-        public void setIndex(final int index) {
-            this.index = index;
-        }
-
-    }
-
-    private static class BCIndex extends BCValue {
-
-        private final int index;
-
-        public BCIndex(final int index) {
-            this.index = index;
-        }
-    }
-
-    private static class BCLength extends BCValue {
-
-        private final int length;
-
-        public BCLength(final int length) {
-            this.length = length;
-        }
-    }
-
-    // Bytecode-related value (either a bytecode index or a length)
-    private static abstract class BCValue {
-
-        int actualValue;
-
-        public void setActualValue(final int value) {
-            this.actualValue = value;
-        }
-
     }
 
     @Override
@@ -241,6 +182,65 @@ public class NewAttribute extends BCIRenumberedAttribute {
                 previous = obj;
             }
             renumbered = true;
+        }
+    }
+
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
+        super.resolve(pool);
+        for (final Object element : body) {
+            if (element instanceof ClassFileEntry) {
+                ((ClassFileEntry) element).resolve(pool);
+            }
+        }
+        this.pool = pool;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#toString()
+     */
+    @Override
+    public String toString() {
+        return attributeName.underlyingString();
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#writeBody(java.io.DataOutputStream)
+     */
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        for (int i = 0; i < lengths.size(); i++) {
+            final int length = lengths.get(i).intValue();
+            final Object obj = body.get(i);
+            long value = 0;
+            if (obj instanceof Long) {
+                value = ((Long) obj).longValue();
+            } else if (obj instanceof ClassFileEntry) {
+                value = pool.indexOf(((ClassFileEntry) obj));
+            } else if (obj instanceof BCValue) {
+                value = ((BCValue) obj).actualValue;
+            }
+            // Write
+            switch (length) {
+            case 1:
+                dos.writeByte((int) value);
+                break;
+            case 2:
+                dos.writeShort((int) value);
+                break;
+            case 4:
+                dos.writeInt((int) value);
+                break;
+            case 8:
+                dos.writeLong(value);
+                break;
+            default:
+                break;
+            }
         }
     }
 

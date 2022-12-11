@@ -64,18 +64,6 @@ public class TarUtils {
             public boolean canEncode(final String name) { return true; }
 
             @Override
-            public ByteBuffer encode(final String name) {
-                final int length = name.length();
-                final byte[] buf = new byte[length];
-
-                // copy until end of input or output is reached.
-                for (int i = 0; i < length; ++i) {
-                    buf[i] = (byte) name.charAt(i);
-                }
-                return ByteBuffer.wrap(buf);
-            }
-
-            @Override
             public String decode(final byte[] buffer) {
                 final int length = buffer.length;
                 final StringBuilder result = new StringBuilder(length);
@@ -89,10 +77,458 @@ public class TarUtils {
 
                 return result.toString();
             }
+
+            @Override
+            public ByteBuffer encode(final String name) {
+                final int length = name.length();
+                final byte[] buf = new byte[length];
+
+                // copy until end of input or output is reached.
+                for (int i = 0; i < length; ++i) {
+                    buf[i] = (byte) name.charAt(i);
+                }
+                return ByteBuffer.wrap(buf);
+            }
         };
 
-    /** Private constructor to prevent instantiation of this utility class. */
-    private TarUtils(){
+    /**
+     * Compute the checksum of a tar entry header.
+     *
+     * @param buf The tar entry's header buffer.
+     * @return The computed checksum.
+     */
+    public static long computeCheckSum(final byte[] buf) {
+        long sum = 0;
+
+        for (final byte element : buf) {
+            sum += BYTE_MASK & element;
+        }
+
+        return sum;
+    }
+
+    // Helper method to generate the exception message
+    private static String exceptionMessage(final byte[] buffer, final int offset,
+            final int length, final int current, final byte currentByte) {
+        // default charset is good enough for an exception message,
+        //
+        // the alternative was to modify parseOctal and
+        // parseOctalOrBinary to receive the ZipEncoding of the
+        // archive (deprecating the existing public methods, of
+        // course) and dealing with the fact that ZipEncoding#decode
+        // can throw an IOException which parseOctal* doesn't declare
+        String string = new String(buffer, offset, length, Charset.defaultCharset());
+
+        string = string.replace("\0", "{NUL}"); // Replace NULs to allow string to be printed
+        return "Invalid byte " + currentByte + " at offset " + (current - offset) + " in '" + string + "' len=" + length;
+    }
+
+    private static void formatBigIntegerBinary(final long value, final byte[] buf,
+                                               final int offset,
+                                               final int length,
+                                               final boolean negative) {
+        final BigInteger val = BigInteger.valueOf(value);
+        final byte[] b = val.toByteArray();
+        final int len = b.length;
+        if (len > length - 1) {
+            throw new IllegalArgumentException("Value " + value +
+                " is too large for " + length + " byte field.");
+        }
+        final int off = offset + length - len;
+        System.arraycopy(b, 0, buf, off, len);
+        final byte fill = (byte) (negative ? 0xff : 0);
+        for (int i = offset + 1; i < off; i++) {
+            buf[i] = fill;
+        }
+    }
+
+    /**
+     * Writes an octal value into a buffer.
+     *
+     * Uses {@link #formatUnsignedOctalString} to format
+     * the value as an octal string with leading zeros.
+     * The converted number is followed by NUL and then space.
+     *
+     * @param value The value to convert
+     * @param buf The destination buffer
+     * @param offset The starting offset into the buffer.
+     * @param length The size of the buffer.
+     * @return The updated value of offset, i.e. offset+length
+     * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
+     */
+    public static int formatCheckSumOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
+
+        int idx=length-2; // for NUL and space
+        formatUnsignedOctalString(value, buf, offset, idx);
+
+        buf[offset + idx++]   = 0; // Trailing null
+        buf[offset + idx]     = (byte) ' '; // Trailing space
+
+        return offset + length;
+    }
+
+    private static void formatLongBinary(final long value, final byte[] buf,
+                                         final int offset, final int length,
+                                         final boolean negative) {
+        final int bits = (length - 1) * 8;
+        final long max = 1L << bits;
+        long val = Math.abs(value); // Long.MIN_VALUE stays Long.MIN_VALUE
+        if (val < 0 || val >= max) {
+            throw new IllegalArgumentException("Value " + value +
+                " is too large for " + length + " byte field.");
+        }
+        if (negative) {
+            val ^= max - 1;
+            val++;
+            val |= 0xffL << bits;
+        }
+        for (int i = offset + length - 1; i >= offset; i--) {
+            buf[i] = (byte) val;
+            val >>= 8;
+        }
+    }
+
+    /**
+     * Write an octal long integer into a buffer.
+     *
+     * Uses {@link #formatUnsignedOctalString} to format
+     * the value as an octal string with leading zeros.
+     * The converted number is followed by a space.
+     *
+     * @param value The value to write as octal
+     * @param buf The destinationbuffer.
+     * @param offset The starting offset into the buffer.
+     * @param length The length of the buffer
+     * @return The updated offset
+     * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
+     */
+    public static int formatLongOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
+
+        final int idx=length-1; // For space
+
+        formatUnsignedOctalString(value, buf, offset, idx);
+        buf[offset + idx] = (byte) ' '; // Trailing space
+
+        return offset + length;
+    }
+
+    /**
+     * Write an long integer into a buffer as an octal string if this
+     * will fit, or as a binary number otherwise.
+     *
+     * Uses {@link #formatUnsignedOctalString} to format
+     * the value as an octal string with leading zeros.
+     * The converted number is followed by a space.
+     *
+     * @param value The value to write into the buffer.
+     * @param buf The destination buffer.
+     * @param offset The starting offset into the buffer.
+     * @param length The length of the buffer.
+     * @return The updated offset.
+     * @throws IllegalArgumentException if the value (and trailer)
+     * will not fit in the buffer.
+     * @since 1.4
+     */
+    public static int formatLongOctalOrBinaryBytes(
+        final long value, final byte[] buf, final int offset, final int length) {
+
+        // Check whether we are dealing with UID/GID or SIZE field
+        final long maxAsOctalChar = length == TarConstants.UIDLEN ? TarConstants.MAXID : TarConstants.MAXSIZE;
+
+        final boolean negative = value < 0;
+        if (!negative && value <= maxAsOctalChar) { // OK to store as octal chars
+            return formatLongOctalBytes(value, buf, offset, length);
+        }
+
+        if (length < 9) {
+            formatLongBinary(value, buf, offset, length, negative);
+        } else {
+            formatBigIntegerBinary(value, buf, offset, length, negative);
+        }
+
+        buf[offset] = (byte) (negative ? 0xff : 0x80);
+        return offset + length;
+    }
+
+    /**
+     * Copy a name into a buffer.
+     * Copies characters from the name into the buffer
+     * starting at the specified offset.
+     * If the buffer is longer than the name, the buffer
+     * is filled with trailing NULs.
+     * If the name is longer than the buffer,
+     * the output is truncated.
+     *
+     * @param name The header name from which to copy the characters.
+     * @param buf The buffer where the name is to be stored.
+     * @param offset The starting offset into the buffer
+     * @param length The maximum number of header bytes to copy.
+     * @return The updated offset, i.e. offset + length
+     */
+    public static int formatNameBytes(final String name, final byte[] buf, final int offset, final int length) {
+        try {
+            return formatNameBytes(name, buf, offset, length, DEFAULT_ENCODING);
+        } catch (final IOException ex) { // NOSONAR
+            try {
+                return formatNameBytes(name, buf, offset, length,
+                                       FALLBACK_ENCODING);
+            } catch (final IOException ex2) {
+                // impossible
+                throw new UncheckedIOException(ex2); //NOSONAR
+            }
+        }
+    }
+
+    /**
+     * Copy a name into a buffer.
+     * Copies characters from the name into the buffer
+     * starting at the specified offset.
+     * If the buffer is longer than the name, the buffer
+     * is filled with trailing NULs.
+     * If the name is longer than the buffer,
+     * the output is truncated.
+     *
+     * @param name The header name from which to copy the characters.
+     * @param buf The buffer where the name is to be stored.
+     * @param offset The starting offset into the buffer
+     * @param length The maximum number of header bytes to copy.
+     * @param encoding name of the encoding to use for file names
+     * @since 1.4
+     * @return The updated offset, i.e. offset + length
+     * @throws IOException on error
+     */
+    public static int formatNameBytes(final String name, final byte[] buf, final int offset,
+                                      final int length,
+                                      final ZipEncoding encoding)
+        throws IOException {
+        int len = name.length();
+        ByteBuffer b = encoding.encode(name);
+        while (b.limit() > length && len > 0) {
+            b = encoding.encode(name.substring(0, --len));
+        }
+        final int limit = b.limit() - b.position();
+        System.arraycopy(b.array(), b.arrayOffset(), buf, offset, limit);
+
+        // Pad any remaining output bytes with NUL
+        for (int i = limit; i < length; ++i) {
+            buf[offset + i] = 0;
+        }
+
+        return offset + length;
+    }
+
+    /**
+     * Write an octal integer into a buffer.
+     *
+     * Uses {@link #formatUnsignedOctalString} to format
+     * the value as an octal string with leading zeros.
+     * The converted number is followed by space and NUL
+     *
+     * @param value The value to write
+     * @param buf The buffer to receive the output
+     * @param offset The starting offset into the buffer
+     * @param length The size of the output buffer
+     * @return The updated offset, i.e offset+length
+     * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
+     */
+    public static int formatOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
+
+        int idx=length-2; // For space and trailing null
+        formatUnsignedOctalString(value, buf, offset, idx);
+
+        buf[offset + idx++] = (byte) ' '; // Trailing space
+        buf[offset + idx]   = 0; // Trailing null
+
+        return offset + length;
+    }
+
+    /**
+     * Fill buffer with unsigned octal number, padded with leading zeroes.
+     *
+     * @param value number to convert to octal - treated as unsigned
+     * @param buffer destination buffer
+     * @param offset starting offset in buffer
+     * @param length length of buffer to fill
+     * @throws IllegalArgumentException if the value will not fit in the buffer
+     */
+    public static void formatUnsignedOctalString(final long value, final byte[] buffer,
+            final int offset, final int length) {
+        int remaining = length;
+        remaining--;
+        if (value == 0) {
+            buffer[offset + remaining--] = (byte) '0';
+        } else {
+            long val = value;
+            for (; remaining >= 0 && val != 0; --remaining) {
+                // CheckStyle:MagicNumber OFF
+                buffer[offset + remaining] = (byte) ((byte) '0' + (byte) (val & 7));
+                val = val >>> 3;
+                // CheckStyle:MagicNumber ON
+            }
+            if (val != 0){
+                throw new IllegalArgumentException
+                (value+"="+Long.toOctalString(value)+ " will not fit in octal number buffer of length "+length);
+            }
+        }
+
+        for (; remaining >= 0; --remaining) { // leading zeros
+            buffer[offset + remaining] = (byte) '0';
+        }
+    }
+
+    private static long parseBinaryBigInteger(final byte[] buffer,
+                                              final int offset,
+                                              final int length,
+                                              final boolean negative) {
+        final byte[] remainder = new byte[length - 1];
+        System.arraycopy(buffer, offset + 1, remainder, 0, length - 1);
+        BigInteger val = new BigInteger(remainder);
+        if (negative) {
+            // 2's complement
+            val = val.add(BigInteger.valueOf(-1)).not();
+        }
+        if (val.bitLength() > 63) {
+            throw new IllegalArgumentException("At offset " + offset + ", "
+                                               + length + " byte binary number"
+                                               + " exceeds maximum signed long"
+                                               + " value");
+        }
+        return negative ? -val.longValue() : val.longValue();
+    }
+
+    private static long parseBinaryLong(final byte[] buffer, final int offset,
+                                        final int length,
+                                        final boolean negative) {
+        if (length >= 9) {
+            throw new IllegalArgumentException("At offset " + offset + ", "
+                                               + length + " byte binary number"
+                                               + " exceeds maximum signed long"
+                                               + " value");
+        }
+        long val = 0;
+        for (int i = 1; i < length; i++) {
+            val = (val << 8) + (buffer[offset + i] & 0xff);
+        }
+        if (negative) {
+            // 2's complement
+            val--;
+            val ^= (long) Math.pow(2.0, (length - 1) * 8.0) - 1;
+        }
+        return negative ? -val : val;
+    }
+
+    /**
+     * Parse a boolean byte from a buffer.
+     * Leading spaces and NUL are ignored.
+     * The buffer may contain trailing spaces or NULs.
+     *
+     * @param buffer The buffer from which to parse.
+     * @param offset The offset into the buffer from which to parse.
+     * @return The boolean value of the bytes.
+     * @throws IllegalArgumentException if an invalid byte is detected.
+     */
+    public static boolean parseBoolean(final byte[] buffer, final int offset) {
+        return buffer[offset] == 1;
+    }
+
+    /**
+     * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
+     * GNU.sparse.map
+     *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
+     *
+     * @param sparseMap the sparse map string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
+     * @return unmodifiable list of sparse headers parsed from sparse map
+     * @throws IOException Corrupted TAR archive.
+     * @since 1.21
+     */
+    protected static List<TarArchiveStructSparse> parseFromPAX01SparseHeaders(final String sparseMap)
+        throws IOException {
+        List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+        String[] sparseHeaderStrings = sparseMap.split(",");
+        if (sparseHeaderStrings.length % 2 == 1) {
+            throw new IOException("Corrupted TAR archive. Bad format in GNU.sparse.map PAX Header");
+        }
+
+        for (int i = 0; i < sparseHeaderStrings.length; i += 2) {
+            long sparseOffset;
+            try {
+                sparseOffset = Long.parseLong(sparseHeaderStrings[i]);
+            } catch (NumberFormatException ex) {
+                throw new IOException("Corrupted TAR archive."
+                    + " Sparse struct offset contains a non-numeric value");
+            }
+            if (sparseOffset < 0) {
+                throw new IOException("Corrupted TAR archive."
+                    + " Sparse struct offset contains negative value");
+            }
+            long sparseNumbytes;
+            try {
+                sparseNumbytes = Long.parseLong(sparseHeaderStrings[i + 1]);
+            } catch (NumberFormatException ex) {
+                throw new IOException("Corrupted TAR archive."
+                    + " Sparse struct numbytes contains a non-numeric value");
+            }
+            if (sparseNumbytes < 0) {
+                throw new IOException("Corrupted TAR archive."
+                    + " Sparse struct numbytes contains negative value");
+            }
+            sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
+        }
+
+        return Collections.unmodifiableList(sparseHeaders);
+    }
+
+    /**
+     * Parse an entry name from a buffer.
+     * Parsing stops when a NUL is found
+     * or the buffer length is reached.
+     *
+     * @param buffer The buffer from which to parse.
+     * @param offset The offset into the buffer from which to parse.
+     * @param length The maximum number of bytes to parse.
+     * @return The entry name.
+     */
+    public static String parseName(final byte[] buffer, final int offset, final int length) {
+        try {
+            return parseName(buffer, offset, length, DEFAULT_ENCODING);
+        } catch (final IOException ex) { // NOSONAR
+            try {
+                return parseName(buffer, offset, length, FALLBACK_ENCODING);
+            } catch (final IOException ex2) {
+                // impossible
+                throw new UncheckedIOException(ex2); //NOSONAR
+            }
+        }
+    }
+
+    /**
+     * Parse an entry name from a buffer.
+     * Parsing stops when a NUL is found
+     * or the buffer length is reached.
+     *
+     * @param buffer The buffer from which to parse.
+     * @param offset The offset into the buffer from which to parse.
+     * @param length The maximum number of bytes to parse.
+     * @param encoding name of the encoding to use for file names
+     * @since 1.4
+     * @return The entry name.
+     * @throws IOException on error
+     */
+    public static String parseName(final byte[] buffer, final int offset,
+                                   final int length,
+                                   final ZipEncoding encoding)
+        throws IOException {
+
+        int len = 0;
+        for (int i = offset; len < length && buffer[i] != 0; i++) {
+            len++;
+        }
+        if (len > 0) {
+            final byte[] b = new byte[len];
+            System.arraycopy(buffer, offset, b, 0, len);
+            return encoding.decode(b);
+        }
+        return "";
     }
 
     /**
@@ -190,478 +626,73 @@ public class TarUtils {
         return parseBinaryBigInteger(buffer, offset, length, negative);
     }
 
-    private static long parseBinaryLong(final byte[] buffer, final int offset,
-                                        final int length,
-                                        final boolean negative) {
-        if (length >= 9) {
-            throw new IllegalArgumentException("At offset " + offset + ", "
-                                               + length + " byte binary number"
-                                               + " exceeds maximum signed long"
-                                               + " value");
-        }
-        long val = 0;
-        for (int i = 1; i < length; i++) {
-            val = (val << 8) + (buffer[offset + i] & 0xff);
-        }
-        if (negative) {
-            // 2's complement
-            val--;
-            val ^= (long) Math.pow(2.0, (length - 1) * 8.0) - 1;
-        }
-        return negative ? -val : val;
-    }
-
-    private static long parseBinaryBigInteger(final byte[] buffer,
-                                              final int offset,
-                                              final int length,
-                                              final boolean negative) {
-        final byte[] remainder = new byte[length - 1];
-        System.arraycopy(buffer, offset + 1, remainder, 0, length - 1);
-        BigInteger val = new BigInteger(remainder);
-        if (negative) {
-            // 2's complement
-            val = val.add(BigInteger.valueOf(-1)).not();
-        }
-        if (val.bitLength() > 63) {
-            throw new IllegalArgumentException("At offset " + offset + ", "
-                                               + length + " byte binary number"
-                                               + " exceeds maximum signed long"
-                                               + " value");
-        }
-        return negative ? -val.longValue() : val.longValue();
-    }
-
     /**
-     * Parse a boolean byte from a buffer.
-     * Leading spaces and NUL are ignored.
-     * The buffer may contain trailing spaces or NULs.
+     * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
+     * GNU.sparse.map
+     *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
      *
-     * @param buffer The buffer from which to parse.
-     * @param offset The offset into the buffer from which to parse.
-     * @return The boolean value of the bytes.
-     * @throws IllegalArgumentException if an invalid byte is detected.
-     */
-    public static boolean parseBoolean(final byte[] buffer, final int offset) {
-        return buffer[offset] == 1;
-    }
-
-    // Helper method to generate the exception message
-    private static String exceptionMessage(final byte[] buffer, final int offset,
-            final int length, final int current, final byte currentByte) {
-        // default charset is good enough for an exception message,
-        //
-        // the alternative was to modify parseOctal and
-        // parseOctalOrBinary to receive the ZipEncoding of the
-        // archive (deprecating the existing public methods, of
-        // course) and dealing with the fact that ZipEncoding#decode
-        // can throw an IOException which parseOctal* doesn't declare
-        String string = new String(buffer, offset, length, Charset.defaultCharset());
-
-        string = string.replace("\0", "{NUL}"); // Replace NULs to allow string to be printed
-        return "Invalid byte " + currentByte + " at offset " + (current - offset) + " in '" + string + "' len=" + length;
-    }
-
-    /**
-     * Parse an entry name from a buffer.
-     * Parsing stops when a NUL is found
-     * or the buffer length is reached.
+     * <p>Will internally invoke {@link #parseFromPAX01SparseHeaders} and map IOExceptions to a RzuntimeException, You
+     * should use {@link #parseFromPAX01SparseHeaders} directly instead.
      *
-     * @param buffer The buffer from which to parse.
-     * @param offset The offset into the buffer from which to parse.
-     * @param length The maximum number of bytes to parse.
-     * @return The entry name.
+     * @param sparseMap the sparse map string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
+     * @return sparse headers parsed from sparse map
+     * @deprecated use #parseFromPAX01SparseHeaders instead
      */
-    public static String parseName(final byte[] buffer, final int offset, final int length) {
+    @Deprecated
+    protected static List<TarArchiveStructSparse> parsePAX01SparseHeaders(final String sparseMap) {
         try {
-            return parseName(buffer, offset, length, DEFAULT_ENCODING);
-        } catch (final IOException ex) { // NOSONAR
-            try {
-                return parseName(buffer, offset, length, FALLBACK_ENCODING);
-            } catch (final IOException ex2) {
-                // impossible
-                throw new UncheckedIOException(ex2); //NOSONAR
+            return parseFromPAX01SparseHeaders(sparseMap);
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * For PAX Format 1.X:
+     * The sparse map itself is stored in the file data block, preceding the actual file data.
+     * It consists of a series of decimal numbers delimited by newlines. The map is padded with nulls to the nearest block boundary.
+     * The first number gives the number of entries in the map. Following are map entries, each one consisting of two numbers
+     * giving the offset and size of the data block it describes.
+     * @param inputStream parsing source.
+     * @param recordSize The size the TAR header
+     * @return sparse headers
+     * @throws IOException if an I/O error occurs.
+     */
+    protected static List<TarArchiveStructSparse> parsePAX1XSparseHeaders(final InputStream inputStream, final int recordSize) throws IOException {
+        // for 1.X PAX Headers
+        List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+        long bytesRead = 0;
+
+        long[] readResult = readLineOfNumberForPax1X(inputStream);
+        long sparseHeadersCount = readResult[0];
+        if (sparseHeadersCount < 0) {
+            // overflow while reading number?
+            throw new IOException("Corrupted TAR archive. Negative value in sparse headers block");
+        }
+        bytesRead += readResult[1];
+        while (sparseHeadersCount-- > 0) {
+            readResult = readLineOfNumberForPax1X(inputStream);
+            final long sparseOffset = readResult[0];
+            if (sparseOffset < 0) {
+                throw new IOException("Corrupted TAR archive."
+                    + " Sparse header block offset contains negative value");
             }
-        }
-    }
+            bytesRead += readResult[1];
 
-    /**
-     * Parse an entry name from a buffer.
-     * Parsing stops when a NUL is found
-     * or the buffer length is reached.
-     *
-     * @param buffer The buffer from which to parse.
-     * @param offset The offset into the buffer from which to parse.
-     * @param length The maximum number of bytes to parse.
-     * @param encoding name of the encoding to use for file names
-     * @since 1.4
-     * @return The entry name.
-     * @throws IOException on error
-     */
-    public static String parseName(final byte[] buffer, final int offset,
-                                   final int length,
-                                   final ZipEncoding encoding)
-        throws IOException {
-
-        int len = 0;
-        for (int i = offset; len < length && buffer[i] != 0; i++) {
-            len++;
-        }
-        if (len > 0) {
-            final byte[] b = new byte[len];
-            System.arraycopy(buffer, offset, b, 0, len);
-            return encoding.decode(b);
-        }
-        return "";
-    }
-
-    /**
-     * Parses the content of a PAX 1.0 sparse block.
-     * @since 1.20
-     * @param buffer The buffer from which to parse.
-     * @param offset The offset into the buffer from which to parse.
-     * @return a parsed sparse struct
-     */
-    public static TarArchiveStructSparse parseSparse(final byte[] buffer, final int offset) {
-        final long sparseOffset = parseOctalOrBinary(buffer, offset, SPARSE_OFFSET_LEN);
-        final long sparseNumbytes = parseOctalOrBinary(buffer, offset + SPARSE_OFFSET_LEN, SPARSE_NUMBYTES_LEN);
-
-        return new TarArchiveStructSparse(sparseOffset, sparseNumbytes);
-    }
-
-    /**
-     * @since 1.21
-     */
-    static List<TarArchiveStructSparse> readSparseStructs(final byte[] buffer, final int offset, final int entries)
-        throws IOException {
-        final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
-        for (int i = 0; i < entries; i++) {
-            try {
-                final TarArchiveStructSparse sparseHeader =
-                    parseSparse(buffer, offset + i * (SPARSE_OFFSET_LEN + SPARSE_NUMBYTES_LEN));
-
-                if (sparseHeader.getOffset() < 0) {
-                    throw new IOException("Corrupted TAR archive, sparse entry with negative offset");
-                }
-                if (sparseHeader.getNumbytes() < 0) {
-                    throw new IOException("Corrupted TAR archive, sparse entry with negative numbytes");
-                }
-                sparseHeaders.add(sparseHeader);
-            } catch (IllegalArgumentException ex) {
-                // thrown internally by parseOctalOrBinary
-                throw new IOException("Corrupted TAR archive, sparse entry is invalid", ex);
+            readResult = readLineOfNumberForPax1X(inputStream);
+            final long sparseNumbytes = readResult[0];
+            if (sparseNumbytes < 0) {
+                throw new IOException("Corrupted TAR archive."
+                    + " Sparse header block numbytes contains negative value");
             }
-        }
-        return Collections.unmodifiableList(sparseHeaders);
-    }
-
-    /**
-     * Copy a name into a buffer.
-     * Copies characters from the name into the buffer
-     * starting at the specified offset.
-     * If the buffer is longer than the name, the buffer
-     * is filled with trailing NULs.
-     * If the name is longer than the buffer,
-     * the output is truncated.
-     *
-     * @param name The header name from which to copy the characters.
-     * @param buf The buffer where the name is to be stored.
-     * @param offset The starting offset into the buffer
-     * @param length The maximum number of header bytes to copy.
-     * @return The updated offset, i.e. offset + length
-     */
-    public static int formatNameBytes(final String name, final byte[] buf, final int offset, final int length) {
-        try {
-            return formatNameBytes(name, buf, offset, length, DEFAULT_ENCODING);
-        } catch (final IOException ex) { // NOSONAR
-            try {
-                return formatNameBytes(name, buf, offset, length,
-                                       FALLBACK_ENCODING);
-            } catch (final IOException ex2) {
-                // impossible
-                throw new UncheckedIOException(ex2); //NOSONAR
-            }
-        }
-    }
-
-    /**
-     * Copy a name into a buffer.
-     * Copies characters from the name into the buffer
-     * starting at the specified offset.
-     * If the buffer is longer than the name, the buffer
-     * is filled with trailing NULs.
-     * If the name is longer than the buffer,
-     * the output is truncated.
-     *
-     * @param name The header name from which to copy the characters.
-     * @param buf The buffer where the name is to be stored.
-     * @param offset The starting offset into the buffer
-     * @param length The maximum number of header bytes to copy.
-     * @param encoding name of the encoding to use for file names
-     * @since 1.4
-     * @return The updated offset, i.e. offset + length
-     * @throws IOException on error
-     */
-    public static int formatNameBytes(final String name, final byte[] buf, final int offset,
-                                      final int length,
-                                      final ZipEncoding encoding)
-        throws IOException {
-        int len = name.length();
-        ByteBuffer b = encoding.encode(name);
-        while (b.limit() > length && len > 0) {
-            b = encoding.encode(name.substring(0, --len));
-        }
-        final int limit = b.limit() - b.position();
-        System.arraycopy(b.array(), b.arrayOffset(), buf, offset, limit);
-
-        // Pad any remaining output bytes with NUL
-        for (int i = limit; i < length; ++i) {
-            buf[offset + i] = 0;
+            bytesRead += readResult[1];
+            sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
         }
 
-        return offset + length;
-    }
-
-    /**
-     * Fill buffer with unsigned octal number, padded with leading zeroes.
-     *
-     * @param value number to convert to octal - treated as unsigned
-     * @param buffer destination buffer
-     * @param offset starting offset in buffer
-     * @param length length of buffer to fill
-     * @throws IllegalArgumentException if the value will not fit in the buffer
-     */
-    public static void formatUnsignedOctalString(final long value, final byte[] buffer,
-            final int offset, final int length) {
-        int remaining = length;
-        remaining--;
-        if (value == 0) {
-            buffer[offset + remaining--] = (byte) '0';
-        } else {
-            long val = value;
-            for (; remaining >= 0 && val != 0; --remaining) {
-                // CheckStyle:MagicNumber OFF
-                buffer[offset + remaining] = (byte) ((byte) '0' + (byte) (val & 7));
-                val = val >>> 3;
-                // CheckStyle:MagicNumber ON
-            }
-            if (val != 0){
-                throw new IllegalArgumentException
-                (value+"="+Long.toOctalString(value)+ " will not fit in octal number buffer of length "+length);
-            }
-        }
-
-        for (; remaining >= 0; --remaining) { // leading zeros
-            buffer[offset + remaining] = (byte) '0';
-        }
-    }
-
-    /**
-     * Write an octal integer into a buffer.
-     *
-     * Uses {@link #formatUnsignedOctalString} to format
-     * the value as an octal string with leading zeros.
-     * The converted number is followed by space and NUL
-     *
-     * @param value The value to write
-     * @param buf The buffer to receive the output
-     * @param offset The starting offset into the buffer
-     * @param length The size of the output buffer
-     * @return The updated offset, i.e offset+length
-     * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
-     */
-    public static int formatOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
-
-        int idx=length-2; // For space and trailing null
-        formatUnsignedOctalString(value, buf, offset, idx);
-
-        buf[offset + idx++] = (byte) ' '; // Trailing space
-        buf[offset + idx]   = 0; // Trailing null
-
-        return offset + length;
-    }
-
-    /**
-     * Write an octal long integer into a buffer.
-     *
-     * Uses {@link #formatUnsignedOctalString} to format
-     * the value as an octal string with leading zeros.
-     * The converted number is followed by a space.
-     *
-     * @param value The value to write as octal
-     * @param buf The destinationbuffer.
-     * @param offset The starting offset into the buffer.
-     * @param length The length of the buffer
-     * @return The updated offset
-     * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
-     */
-    public static int formatLongOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
-
-        final int idx=length-1; // For space
-
-        formatUnsignedOctalString(value, buf, offset, idx);
-        buf[offset + idx] = (byte) ' '; // Trailing space
-
-        return offset + length;
-    }
-
-    /**
-     * Write an long integer into a buffer as an octal string if this
-     * will fit, or as a binary number otherwise.
-     *
-     * Uses {@link #formatUnsignedOctalString} to format
-     * the value as an octal string with leading zeros.
-     * The converted number is followed by a space.
-     *
-     * @param value The value to write into the buffer.
-     * @param buf The destination buffer.
-     * @param offset The starting offset into the buffer.
-     * @param length The length of the buffer.
-     * @return The updated offset.
-     * @throws IllegalArgumentException if the value (and trailer)
-     * will not fit in the buffer.
-     * @since 1.4
-     */
-    public static int formatLongOctalOrBinaryBytes(
-        final long value, final byte[] buf, final int offset, final int length) {
-
-        // Check whether we are dealing with UID/GID or SIZE field
-        final long maxAsOctalChar = length == TarConstants.UIDLEN ? TarConstants.MAXID : TarConstants.MAXSIZE;
-
-        final boolean negative = value < 0;
-        if (!negative && value <= maxAsOctalChar) { // OK to store as octal chars
-            return formatLongOctalBytes(value, buf, offset, length);
-        }
-
-        if (length < 9) {
-            formatLongBinary(value, buf, offset, length, negative);
-        } else {
-            formatBigIntegerBinary(value, buf, offset, length, negative);
-        }
-
-        buf[offset] = (byte) (negative ? 0xff : 0x80);
-        return offset + length;
-    }
-
-    private static void formatLongBinary(final long value, final byte[] buf,
-                                         final int offset, final int length,
-                                         final boolean negative) {
-        final int bits = (length - 1) * 8;
-        final long max = 1L << bits;
-        long val = Math.abs(value); // Long.MIN_VALUE stays Long.MIN_VALUE
-        if (val < 0 || val >= max) {
-            throw new IllegalArgumentException("Value " + value +
-                " is too large for " + length + " byte field.");
-        }
-        if (negative) {
-            val ^= max - 1;
-            val++;
-            val |= 0xffL << bits;
-        }
-        for (int i = offset + length - 1; i >= offset; i--) {
-            buf[i] = (byte) val;
-            val >>= 8;
-        }
-    }
-
-    private static void formatBigIntegerBinary(final long value, final byte[] buf,
-                                               final int offset,
-                                               final int length,
-                                               final boolean negative) {
-        final BigInteger val = BigInteger.valueOf(value);
-        final byte[] b = val.toByteArray();
-        final int len = b.length;
-        if (len > length - 1) {
-            throw new IllegalArgumentException("Value " + value +
-                " is too large for " + length + " byte field.");
-        }
-        final int off = offset + length - len;
-        System.arraycopy(b, 0, buf, off, len);
-        final byte fill = (byte) (negative ? 0xff : 0);
-        for (int i = offset + 1; i < off; i++) {
-            buf[i] = fill;
-        }
-    }
-
-    /**
-     * Writes an octal value into a buffer.
-     *
-     * Uses {@link #formatUnsignedOctalString} to format
-     * the value as an octal string with leading zeros.
-     * The converted number is followed by NUL and then space.
-     *
-     * @param value The value to convert
-     * @param buf The destination buffer
-     * @param offset The starting offset into the buffer.
-     * @param length The size of the buffer.
-     * @return The updated value of offset, i.e. offset+length
-     * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
-     */
-    public static int formatCheckSumOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
-
-        int idx=length-2; // for NUL and space
-        formatUnsignedOctalString(value, buf, offset, idx);
-
-        buf[offset + idx++]   = 0; // Trailing null
-        buf[offset + idx]     = (byte) ' '; // Trailing space
-
-        return offset + length;
-    }
-
-    /**
-     * Compute the checksum of a tar entry header.
-     *
-     * @param buf The tar entry's header buffer.
-     * @return The computed checksum.
-     */
-    public static long computeCheckSum(final byte[] buf) {
-        long sum = 0;
-
-        for (final byte element : buf) {
-            sum += BYTE_MASK & element;
-        }
-
-        return sum;
-    }
-
-    /**
-     * Wikipedia <a href="https://en.wikipedia.org/wiki/Tar_(computing)#File_header">says</a>:
-     * <blockquote>
-     * The checksum is calculated by taking the sum of the unsigned byte values
-     * of the header block with the eight checksum bytes taken to be ascii
-     * spaces (decimal value 32). It is stored as a six digit octal number with
-     * leading zeroes followed by a NUL and then a space. Various
-     * implementations do not adhere to this format. For better compatibility,
-     * ignore leading and trailing whitespace, and get the first six digits. In
-     * addition, some historic tar implementations treated bytes as signed.
-     * Implementations typically calculate the checksum both ways, and treat it
-     * as good if either the signed or unsigned sum matches the included
-     * checksum.
-     * </blockquote>
-     * <p>
-     * The return value of this method should be treated as a best-effort
-     * heuristic rather than an absolute and final truth. The checksum
-     * verification logic may well evolve over time as more special cases
-     * are encountered.
-     *
-     * @param header tar header
-     * @return whether the checksum is reasonably good
-     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-191">COMPRESS-191</a>
-     * @since 1.5
-     */
-    public static boolean verifyCheckSum(final byte[] header) {
-        final long storedSum = parseOctal(header, CHKSUM_OFFSET, CHKSUMLEN);
-        long unsignedSum = 0;
-        long signedSum = 0;
-
-        for (int i = 0; i < header.length; i++) {
-            byte b = header[i];
-            if (CHKSUM_OFFSET  <= i && i < CHKSUM_OFFSET + CHKSUMLEN) {
-                b = ' ';
-            }
-            unsignedSum += 0xff & b;
-            signedSum += b;
-        }
-        return storedSum == unsignedSum || storedSum == signedSum;
+        // skip the rest of this record data
+        long bytesToSkip = recordSize - bytesRead % recordSize;
+        IOUtils.skip(inputStream, bytesToSkip);
+        return sparseHeaders;
     }
 
     /**
@@ -839,119 +870,17 @@ public class TarUtils {
     }
 
     /**
-     * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
-     * GNU.sparse.map
-     *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
-     *
-     * <p>Will internally invoke {@link #parseFromPAX01SparseHeaders} and map IOExceptions to a RzuntimeException, You
-     * should use {@link #parseFromPAX01SparseHeaders} directly instead.
-     *
-     * @param sparseMap the sparse map string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
-     * @return sparse headers parsed from sparse map
-     * @deprecated use #parseFromPAX01SparseHeaders instead
+     * Parses the content of a PAX 1.0 sparse block.
+     * @since 1.20
+     * @param buffer The buffer from which to parse.
+     * @param offset The offset into the buffer from which to parse.
+     * @return a parsed sparse struct
      */
-    @Deprecated
-    protected static List<TarArchiveStructSparse> parsePAX01SparseHeaders(final String sparseMap) {
-        try {
-            return parseFromPAX01SparseHeaders(sparseMap);
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex.getMessage(), ex);
-        }
-    }
+    public static TarArchiveStructSparse parseSparse(final byte[] buffer, final int offset) {
+        final long sparseOffset = parseOctalOrBinary(buffer, offset, SPARSE_OFFSET_LEN);
+        final long sparseNumbytes = parseOctalOrBinary(buffer, offset + SPARSE_OFFSET_LEN, SPARSE_NUMBYTES_LEN);
 
-    /**
-     * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
-     * GNU.sparse.map
-     *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
-     *
-     * @param sparseMap the sparse map string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
-     * @return unmodifiable list of sparse headers parsed from sparse map
-     * @throws IOException Corrupted TAR archive.
-     * @since 1.21
-     */
-    protected static List<TarArchiveStructSparse> parseFromPAX01SparseHeaders(final String sparseMap)
-        throws IOException {
-        List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
-        String[] sparseHeaderStrings = sparseMap.split(",");
-        if (sparseHeaderStrings.length % 2 == 1) {
-            throw new IOException("Corrupted TAR archive. Bad format in GNU.sparse.map PAX Header");
-        }
-
-        for (int i = 0; i < sparseHeaderStrings.length; i += 2) {
-            long sparseOffset;
-            try {
-                sparseOffset = Long.parseLong(sparseHeaderStrings[i]);
-            } catch (NumberFormatException ex) {
-                throw new IOException("Corrupted TAR archive."
-                    + " Sparse struct offset contains a non-numeric value");
-            }
-            if (sparseOffset < 0) {
-                throw new IOException("Corrupted TAR archive."
-                    + " Sparse struct offset contains negative value");
-            }
-            long sparseNumbytes;
-            try {
-                sparseNumbytes = Long.parseLong(sparseHeaderStrings[i + 1]);
-            } catch (NumberFormatException ex) {
-                throw new IOException("Corrupted TAR archive."
-                    + " Sparse struct numbytes contains a non-numeric value");
-            }
-            if (sparseNumbytes < 0) {
-                throw new IOException("Corrupted TAR archive."
-                    + " Sparse struct numbytes contains negative value");
-            }
-            sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
-        }
-
-        return Collections.unmodifiableList(sparseHeaders);
-    }
-
-    /**
-     * For PAX Format 1.X:
-     * The sparse map itself is stored in the file data block, preceding the actual file data.
-     * It consists of a series of decimal numbers delimited by newlines. The map is padded with nulls to the nearest block boundary.
-     * The first number gives the number of entries in the map. Following are map entries, each one consisting of two numbers
-     * giving the offset and size of the data block it describes.
-     * @param inputStream parsing source.
-     * @param recordSize The size the TAR header
-     * @return sparse headers
-     * @throws IOException if an I/O error occurs.
-     */
-    protected static List<TarArchiveStructSparse> parsePAX1XSparseHeaders(final InputStream inputStream, final int recordSize) throws IOException {
-        // for 1.X PAX Headers
-        List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
-        long bytesRead = 0;
-
-        long[] readResult = readLineOfNumberForPax1X(inputStream);
-        long sparseHeadersCount = readResult[0];
-        if (sparseHeadersCount < 0) {
-            // overflow while reading number?
-            throw new IOException("Corrupted TAR archive. Negative value in sparse headers block");
-        }
-        bytesRead += readResult[1];
-        while (sparseHeadersCount-- > 0) {
-            readResult = readLineOfNumberForPax1X(inputStream);
-            final long sparseOffset = readResult[0];
-            if (sparseOffset < 0) {
-                throw new IOException("Corrupted TAR archive."
-                    + " Sparse header block offset contains negative value");
-            }
-            bytesRead += readResult[1];
-
-            readResult = readLineOfNumberForPax1X(inputStream);
-            final long sparseNumbytes = readResult[0];
-            if (sparseNumbytes < 0) {
-                throw new IOException("Corrupted TAR archive."
-                    + " Sparse header block numbytes contains negative value");
-            }
-            bytesRead += readResult[1];
-            sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
-        }
-
-        // skip the rest of this record data
-        long bytesToSkip = recordSize - bytesRead % recordSize;
-        IOUtils.skip(inputStream, bytesToSkip);
-        return sparseHeaders;
+        return new TarArchiveStructSparse(sparseOffset, sparseNumbytes);
     }
 
     /**
@@ -980,6 +909,77 @@ public class TarUtils {
         bytesRead += 1;
 
         return new long[]{result, bytesRead};
+    }
+
+    /**
+     * @since 1.21
+     */
+    static List<TarArchiveStructSparse> readSparseStructs(final byte[] buffer, final int offset, final int entries)
+        throws IOException {
+        final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+        for (int i = 0; i < entries; i++) {
+            try {
+                final TarArchiveStructSparse sparseHeader =
+                    parseSparse(buffer, offset + i * (SPARSE_OFFSET_LEN + SPARSE_NUMBYTES_LEN));
+
+                if (sparseHeader.getOffset() < 0) {
+                    throw new IOException("Corrupted TAR archive, sparse entry with negative offset");
+                }
+                if (sparseHeader.getNumbytes() < 0) {
+                    throw new IOException("Corrupted TAR archive, sparse entry with negative numbytes");
+                }
+                sparseHeaders.add(sparseHeader);
+            } catch (IllegalArgumentException ex) {
+                // thrown internally by parseOctalOrBinary
+                throw new IOException("Corrupted TAR archive, sparse entry is invalid", ex);
+            }
+        }
+        return Collections.unmodifiableList(sparseHeaders);
+    }
+
+    /**
+     * Wikipedia <a href="https://en.wikipedia.org/wiki/Tar_(computing)#File_header">says</a>:
+     * <blockquote>
+     * The checksum is calculated by taking the sum of the unsigned byte values
+     * of the header block with the eight checksum bytes taken to be ascii
+     * spaces (decimal value 32). It is stored as a six digit octal number with
+     * leading zeroes followed by a NUL and then a space. Various
+     * implementations do not adhere to this format. For better compatibility,
+     * ignore leading and trailing whitespace, and get the first six digits. In
+     * addition, some historic tar implementations treated bytes as signed.
+     * Implementations typically calculate the checksum both ways, and treat it
+     * as good if either the signed or unsigned sum matches the included
+     * checksum.
+     * </blockquote>
+     * <p>
+     * The return value of this method should be treated as a best-effort
+     * heuristic rather than an absolute and final truth. The checksum
+     * verification logic may well evolve over time as more special cases
+     * are encountered.
+     *
+     * @param header tar header
+     * @return whether the checksum is reasonably good
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-191">COMPRESS-191</a>
+     * @since 1.5
+     */
+    public static boolean verifyCheckSum(final byte[] header) {
+        final long storedSum = parseOctal(header, CHKSUM_OFFSET, CHKSUMLEN);
+        long unsignedSum = 0;
+        long signedSum = 0;
+
+        for (int i = 0; i < header.length; i++) {
+            byte b = header[i];
+            if (CHKSUM_OFFSET  <= i && i < CHKSUM_OFFSET + CHKSUMLEN) {
+                b = ' ';
+            }
+            unsignedSum += 0xff & b;
+            signedSum += b;
+        }
+        return storedSum == unsignedSum || storedSum == signedSum;
+    }
+
+    /** Private constructor to prevent instantiation of this utility class. */
+    private TarUtils(){
     }
 
 }

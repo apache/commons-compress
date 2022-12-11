@@ -175,8 +175,6 @@ public enum ZipMethod {
 
     static final int UNKNOWN_CODE = -1;
 
-    private final int code;
-
     private static final Map<Integer, ZipMethod> codeToEnum;
 
     static {
@@ -186,6 +184,19 @@ public enum ZipMethod {
         }
         codeToEnum = Collections.unmodifiableMap(cte);
     }
+
+    /**
+     * returns the {@link ZipMethod} for the given code or null if the
+     * method is not known.
+     * @param code the code
+     * @return the {@link ZipMethod} for the given code or null if the
+     * method is not known.
+     */
+    public static ZipMethod getMethodByCode(final int code) {
+        return codeToEnum.get(code);
+    }
+
+    private final int code;
 
     ZipMethod() {
         this(UNKNOWN_CODE);
@@ -198,6 +209,7 @@ public enum ZipMethod {
         this.code = code;
     }
 
+
     /**
      * the code of the compression method.
      *
@@ -207,17 +219,5 @@ public enum ZipMethod {
      */
     public int getCode() {
         return code;
-    }
-
-
-    /**
-     * returns the {@link ZipMethod} for the given code or null if the
-     * method is not known.
-     * @param code the code
-     * @return the {@link ZipMethod} for the given code or null if the
-     * method is not known.
-     */
-    public static ZipMethod getMethodByCode(final int code) {
-        return codeToEnum.get(code);
     }
 }

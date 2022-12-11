@@ -18,23 +18,13 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
  */
 public class CPInterfaceMethodRef extends CPRef {
 
+    private boolean hashcodeComputed;
+
+    private int cachedHashCode;
+
     public CPInterfaceMethodRef(final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
         super(ConstantPoolEntry.CP_InterfaceMethodref, className, descriptor, globalIndex);
     }
-
-    /**
-     * This method answers the value this method will use for an invokeinterface call. This is equal to 1 + the count of
-     * all the args, where longs and doubles count for 2 and all others count for 1.
-     *
-     * @return integer count
-     */
-    public int invokeInterfaceCount() {
-        return nameAndType.invokeInterfaceCount();
-    }
-
-    private boolean hashcodeComputed;
-    private int cachedHashCode;
-
     private void generateHashCode() {
         hashcodeComputed = true;
         final int PRIME = 31;
@@ -50,6 +40,16 @@ public class CPInterfaceMethodRef extends CPRef {
             generateHashCode();
         }
         return cachedHashCode;
+    }
+
+    /**
+     * This method answers the value this method will use for an invokeinterface call. This is equal to 1 + the count of
+     * all the args, where longs and doubles count for 2 and all others count for 1.
+     *
+     * @return integer count
+     */
+    public int invokeInterfaceCount() {
+        return nameAndType.invokeInterfaceCount();
     }
 
 }

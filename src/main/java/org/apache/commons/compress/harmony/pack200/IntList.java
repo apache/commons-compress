@@ -94,6 +94,13 @@ public class IntList {
         modCount++;
     }
 
+    public void addAll(final IntList list) {
+        growAtEnd(list.size());
+        for (int i = 0; i < list.size(); i++) {
+            add(list.get(i));
+        }
+    }
+
     public void clear() {
         if (firstIndex != lastIndex) {
             Arrays.fill(array, firstIndex, lastIndex, -1);
@@ -236,13 +243,6 @@ public class IntList {
         final int[] result = new int[size];
         System.arraycopy(array, firstIndex, result, 0, size);
         return result;
-    }
-
-    public void addAll(final IntList list) {
-        growAtEnd(list.size());
-        for (int i = 0; i < list.size(); i++) {
-            add(list.get(i));
-        }
     }
 
 }

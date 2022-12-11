@@ -166,8 +166,20 @@ public class AttributeLayout implements IMatcher {
         return Codec.UNSIGNED5;
     }
 
+    public int getContext() {
+        return context;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
     public String getLayout() {
         return layout;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public ClassFileEntry getValue(final long value, final SegmentConstantPool pool) throws Pack200Exception {
@@ -204,6 +216,10 @@ public class AttributeLayout implements IMatcher {
         return r;
     }
 
+    public boolean isDefaultLayout() {
+        return isDefault;
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -214,23 +230,6 @@ public class AttributeLayout implements IMatcher {
         return (value & mask) != 0;
     }
 
-    @Override
-    public String toString() {
-        return contextNames[context] + ": " + name;
-    }
-
-    public int getContext() {
-        return context;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public int numBackwardsCallables() {
         if (layout == "*") {
             return 1;
@@ -238,12 +237,13 @@ public class AttributeLayout implements IMatcher {
         return backwardsCallCount;
     }
 
-    public boolean isDefaultLayout() {
-        return isDefault;
-    }
-
     public void setBackwardsCallCount(final int backwardsCallCount) {
         this.backwardsCallCount = backwardsCallCount;
+    }
+
+    @Override
+    public String toString() {
+        return contextNames[context] + ": " + name;
     }
 
 }

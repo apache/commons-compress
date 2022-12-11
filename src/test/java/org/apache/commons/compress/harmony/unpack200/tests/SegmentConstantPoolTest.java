@@ -60,6 +60,30 @@ public class SegmentConstantPoolTest extends TestCase {
     String[] testMethodArray = { "<init>()", "clone()", "equals()", "<init>",
             "isNull()", "Other" };
 
+    public void testMatchSpecificPoolEntryIndex_DoubleArray() {
+        MockSegmentConstantPool mockInstance = new MockSegmentConstantPool();
+        // Elements should be found at the proper position.
+        assertEquals(0, mockInstance.matchSpecificPoolEntryIndex(
+                testClassArray, testMethodArray, "Object", "^<init>.*", 0));
+        assertEquals(2, mockInstance.matchSpecificPoolEntryIndex(
+                testClassArray, testMethodArray, "java/lang/String", ".*", 0));
+        assertEquals(3, mockInstance.matchSpecificPoolEntryIndex(
+                testClassArray, testMethodArray, "java/lang/String",
+                "^<init>.*", 0));
+        assertEquals(5, mockInstance.matchSpecificPoolEntryIndex(
+                testClassArray, testMethodArray, "Other", ".*", 0));
+
+        // Elements that don't exist shouldn't be found
+        assertEquals(-1, mockInstance.matchSpecificPoolEntryIndex(
+                testClassArray, testMethodArray, "NotThere", "^<init>.*", 0));
+
+        // Elements that exist but don't have the requisite number
+        // of hits shouldn't be found.
+        assertEquals(-1, mockInstance.matchSpecificPoolEntryIndex(
+                testClassArray, testMethodArray, "java/lang/String",
+                "^<init>.*", 1));
+    }
+
     public void testMatchSpecificPoolEntryIndex_SingleArray() {
         MockSegmentConstantPool mockInstance = new MockSegmentConstantPool();
         // Elements should be found at the proper position.
@@ -84,30 +108,6 @@ public class SegmentConstantPoolTest extends TestCase {
         // of hits shouldn't be found.
         assertEquals(-1, mockInstance.matchSpecificPoolEntryIndex(
                 testClassArray, "java/lang/String", 2));
-    }
-
-    public void testMatchSpecificPoolEntryIndex_DoubleArray() {
-        MockSegmentConstantPool mockInstance = new MockSegmentConstantPool();
-        // Elements should be found at the proper position.
-        assertEquals(0, mockInstance.matchSpecificPoolEntryIndex(
-                testClassArray, testMethodArray, "Object", "^<init>.*", 0));
-        assertEquals(2, mockInstance.matchSpecificPoolEntryIndex(
-                testClassArray, testMethodArray, "java/lang/String", ".*", 0));
-        assertEquals(3, mockInstance.matchSpecificPoolEntryIndex(
-                testClassArray, testMethodArray, "java/lang/String",
-                "^<init>.*", 0));
-        assertEquals(5, mockInstance.matchSpecificPoolEntryIndex(
-                testClassArray, testMethodArray, "Other", ".*", 0));
-
-        // Elements that don't exist shouldn't be found
-        assertEquals(-1, mockInstance.matchSpecificPoolEntryIndex(
-                testClassArray, testMethodArray, "NotThere", "^<init>.*", 0));
-
-        // Elements that exist but don't have the requisite number
-        // of hits shouldn't be found.
-        assertEquals(-1, mockInstance.matchSpecificPoolEntryIndex(
-                testClassArray, testMethodArray, "java/lang/String",
-                "^<init>.*", 1));
     }
 
     public void testRegexReplacement() {

@@ -32,8 +32,14 @@ public class MemoryLimitException extends IOException {
 
     private static final long serialVersionUID = 1L;
 
+    private static String buildMessage(final long memoryNeededInKb, final int memoryLimitInKb) {
+        return memoryNeededInKb + " kb of memory would be needed; limit was "
+                + memoryLimitInKb + " kb. " +
+                "If the file is not corrupt, consider increasing the memory limit.";
+    }
     /** long instead of int to account for overflow for corrupt files. */
     private final long memoryNeededInKb;
+
     private final int memoryLimitInKb;
 
     public MemoryLimitException(final long memoryNeededInKb, final int memoryLimitInKb) {
@@ -48,17 +54,11 @@ public class MemoryLimitException extends IOException {
         this.memoryLimitInKb = memoryLimitInKb;
     }
 
-    public long getMemoryNeededInKb() {
-        return memoryNeededInKb;
-    }
-
     public int getMemoryLimitInKb() {
         return memoryLimitInKb;
     }
 
-    private static String buildMessage(final long memoryNeededInKb, final int memoryLimitInKb) {
-        return memoryNeededInKb + " kb of memory would be needed; limit was "
-                + memoryLimitInKb + " kb. " +
-                "If the file is not corrupt, consider increasing the memory limit.";
+    public long getMemoryNeededInKb() {
+        return memoryNeededInKb;
     }
 }

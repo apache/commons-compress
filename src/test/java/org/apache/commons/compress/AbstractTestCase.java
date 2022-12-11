@@ -47,24 +47,11 @@ import org.junit.jupiter.api.BeforeEach;
 
 public abstract class AbstractTestCase {
 
-    protected File dir;
-    protected File resultDir;
-
-    private File archive; // used to delete the archive in tearDown
-    protected List<String> archiveList; // Lists the content of the archive as originally created
-
-    protected final ArchiveStreamFactory factory = ArchiveStreamFactory.DEFAULT;
-
-    @BeforeEach
-    public void setUp() throws Exception {
-        dir = mkdir("dir");
-        resultDir = mkdir("dir-result");
-        archive = null;
+    protected interface StreamWrapper<I extends InputStream> {
+        I wrap(InputStream in) throws Exception;
     }
-
-    public static File mkdir(final String name) throws IOException {
-        return Files.createTempDirectory(name).toFile();
-    }
+    private static final boolean ON_WINDOWS =
+            System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows");
 
     public static File getFile(final String path) throws IOException {
         final URL url = AbstractTestCase.class.getClassLoader().getResource(path);
@@ -79,20 +66,12 @@ public abstract class AbstractTestCase {
         }
         return new File(uri);
     }
-
     public static Path getPath(final String path) throws IOException {
         return getFile(path).toPath();
     }
 
-    @AfterEach
-    public void tearDown() throws Exception {
-        rmdir(dir);
-        rmdir(resultDir);
-        dir = resultDir = null;
-        if (!tryHardToDelete(archive)) {
-            // Note: this exception won't be shown if the test has already failed
-            throw new Exception("Could not delete "+archive.getPath());
-        }
+    public static File mkdir(final String name) throws IOException {
+        return Files.createTempDirectory(name).toFile();
     }
 
     public static void rmdir(final File f) {
@@ -114,9 +93,6 @@ public abstract class AbstractTestCase {
             throw new Error("Failed to delete "+f.getPath());
         }
     }
-
-    private static final boolean ON_WINDOWS =
-            System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows");
 
     /**
      * Accommodate Windows bug encountered in both Sun and IBM JDKs.
@@ -142,68 +118,15 @@ public abstract class AbstractTestCase {
         return true;
     }
 
-    /**
-     * Creates an archive of textbased files in several directories. The
-     * archivename is the factory identifier for the archiver, for example zip,
-     * tar, cpio, jar, ar. The archive is created as a temp file.
-     *
-     * The archive contains the following files:
-     * <ul>
-     * <li>testdata/test1.xml</li>
-     * <li>testdata/test2.xml</li>
-     * <li>test/test3.xml</li>
-     * <li>bla/test4.xml</li>
-     * <li>bla/test5.xml</li>
-     * <li>bla/blubber/test6.xml</li>
-     * <li>test.txt</li>
-     * <li>something/bla</li>
-     * <li>test with spaces.txt</li>
-     * </ul>
-     *
-     * @param archivename
-     *            the identifier of this archive
-     * @return the newly created file
-     * @throws Exception
-     *             in case something goes wrong
-     */
-    protected File createArchive(final String archivename) throws Exception {
-        ArchiveOutputStream out = null;
-        OutputStream stream = null;
-        try {
-            archive = File.createTempFile("test", "." + archivename);
-            archive.deleteOnExit();
-            archiveList = new ArrayList<>();
+    protected File dir;
 
-            stream = Files.newOutputStream(archive.toPath());
-            out = factory.createArchiveOutputStream(archivename, stream);
+    protected File resultDir;
 
-            final File file1 = getFile("test1.xml");
-            final File file2 = getFile("test2.xml");
-            final File file3 = getFile("test3.xml");
-            final File file4 = getFile("test4.xml");
-            final File file5 = getFile("test.txt");
-            final File file6 = getFile("test with spaces.txt");
+    private File archive; // used to delete the archive in tearDown
 
-            addArchiveEntry(out, "testdata/test1.xml", file1);
-            addArchiveEntry(out, "testdata/test2.xml", file2);
-            addArchiveEntry(out, "test/test3.xml", file3);
-            addArchiveEntry(out, "bla/test4.xml", file4);
-            addArchiveEntry(out, "bla/test5.xml", file4);
-            addArchiveEntry(out, "bla/blubber/test6.xml", file4);
-            addArchiveEntry(out, "test.txt", file5);
-            addArchiveEntry(out, "something/bla", file6);
-            addArchiveEntry(out, "test with spaces.txt", file6);
+    protected List<String> archiveList; // Lists the content of the archive as originally created
 
-            out.finish();
-            return archive;
-        } finally {
-            if (out != null) {
-                out.close();
-            } else if (stream != null) {
-                stream.close();
-            }
-        }
-    }
+    protected final ArchiveStreamFactory factory = ArchiveStreamFactory.DEFAULT;
 
     /**
      * Add an entry to the archive, and keep track of the names in archiveList.
@@ -221,79 +144,6 @@ public abstract class AbstractTestCase {
         IOUtils.copy(infile, out);
         out.closeArchiveEntry();
         archiveList.add(filename);
-    }
-
-    /**
-     * Create an empty archive.
-     * @param archivename
-     * @return the archive File
-     * @throws Exception
-     */
-    protected File createEmptyArchive(final String archivename) throws Exception {
-        ArchiveOutputStream out = null;
-        OutputStream stream = null;
-        archiveList = new ArrayList<>();
-        try {
-            archive = File.createTempFile("empty", "." + archivename);
-            archive.deleteOnExit();
-            stream = Files.newOutputStream(archive.toPath());
-            out = factory.createArchiveOutputStream(archivename, stream);
-            out.finish();
-        } finally {
-            if (out != null) {
-                out.close();
-            } else if (stream != null) {
-                stream.close();
-            }
-        }
-        return archive;
-    }
-
-    /**
-     * Create an archive with a single file "test1.xml".
-     *
-     * @param archivename
-     * @return the archive File
-     * @throws Exception
-     */
-    protected File createSingleEntryArchive(final String archivename) throws Exception {
-        ArchiveOutputStream out = null;
-        OutputStream stream = null;
-        archiveList = new ArrayList<>();
-        try {
-            archive = File.createTempFile("empty", "." + archivename);
-            archive.deleteOnExit();
-            stream = Files.newOutputStream(archive.toPath());
-            out = factory.createArchiveOutputStream(archivename, stream);
-            // Use short file name so does not cause problems for ar
-            addArchiveEntry(out, "test1.xml", getFile("test1.xml"));
-            out.finish();
-        } finally {
-            if (out != null) {
-                out.close();
-            } else if (stream != null) {
-                stream.close();
-            }
-        }
-        return archive;
-    }
-
-    /**
-     * Checks if an archive contains all expected files.
-     *
-     * @param archive
-     *            the archive to check
-     * @param expected
-     *            a list with expected string file names
-     * @throws Exception
-     */
-    protected void checkArchiveContent(final File archive, final List<String> expected)
-            throws Exception {
-        try (InputStream is = Files.newInputStream(archive.toPath())) {
-            final BufferedInputStream buf = new BufferedInputStream(is);
-            final ArchiveInputStream in = factory.createArchiveInputStream(buf);
-            this.checkArchiveContent(in, expected);
-        }
     }
 
     /**
@@ -364,14 +214,155 @@ public abstract class AbstractTestCase {
     }
 
     /**
-     * Override this method to change what is to be compared in the List.
-     * For example, size + name instead of just name.
+     * Checks if an archive contains all expected files.
      *
-     * @param entry
-     * @return returns the entry name
+     * @param archive
+     *            the archive to check
+     * @param expected
+     *            a list with expected string file names
+     * @throws Exception
      */
-    protected String getExpectedString(final ArchiveEntry entry) {
-        return entry.getName();
+    protected void checkArchiveContent(final File archive, final List<String> expected)
+            throws Exception {
+        try (InputStream is = Files.newInputStream(archive.toPath())) {
+            final BufferedInputStream buf = new BufferedInputStream(is);
+            final ArchiveInputStream in = factory.createArchiveInputStream(buf);
+            this.checkArchiveContent(in, expected);
+        }
+    }
+
+    protected void closeQuietly(final Closeable closeable){
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (final IOException ignored) {
+                // ignored
+            }
+        }
+    }
+
+    /**
+     * Creates an archive of textbased files in several directories. The
+     * archivename is the factory identifier for the archiver, for example zip,
+     * tar, cpio, jar, ar. The archive is created as a temp file.
+     *
+     * The archive contains the following files:
+     * <ul>
+     * <li>testdata/test1.xml</li>
+     * <li>testdata/test2.xml</li>
+     * <li>test/test3.xml</li>
+     * <li>bla/test4.xml</li>
+     * <li>bla/test5.xml</li>
+     * <li>bla/blubber/test6.xml</li>
+     * <li>test.txt</li>
+     * <li>something/bla</li>
+     * <li>test with spaces.txt</li>
+     * </ul>
+     *
+     * @param archivename
+     *            the identifier of this archive
+     * @return the newly created file
+     * @throws Exception
+     *             in case something goes wrong
+     */
+    protected File createArchive(final String archivename) throws Exception {
+        ArchiveOutputStream out = null;
+        OutputStream stream = null;
+        try {
+            archive = File.createTempFile("test", "." + archivename);
+            archive.deleteOnExit();
+            archiveList = new ArrayList<>();
+
+            stream = Files.newOutputStream(archive.toPath());
+            out = factory.createArchiveOutputStream(archivename, stream);
+
+            final File file1 = getFile("test1.xml");
+            final File file2 = getFile("test2.xml");
+            final File file3 = getFile("test3.xml");
+            final File file4 = getFile("test4.xml");
+            final File file5 = getFile("test.txt");
+            final File file6 = getFile("test with spaces.txt");
+
+            addArchiveEntry(out, "testdata/test1.xml", file1);
+            addArchiveEntry(out, "testdata/test2.xml", file2);
+            addArchiveEntry(out, "test/test3.xml", file3);
+            addArchiveEntry(out, "bla/test4.xml", file4);
+            addArchiveEntry(out, "bla/test5.xml", file4);
+            addArchiveEntry(out, "bla/blubber/test6.xml", file4);
+            addArchiveEntry(out, "test.txt", file5);
+            addArchiveEntry(out, "something/bla", file6);
+            addArchiveEntry(out, "test with spaces.txt", file6);
+
+            out.finish();
+            return archive;
+        } finally {
+            if (out != null) {
+                out.close();
+            } else if (stream != null) {
+                stream.close();
+            }
+        }
+    }
+
+    /**
+     * Create an empty archive.
+     * @param archivename
+     * @return the archive File
+     * @throws Exception
+     */
+    protected File createEmptyArchive(final String archivename) throws Exception {
+        ArchiveOutputStream out = null;
+        OutputStream stream = null;
+        archiveList = new ArrayList<>();
+        try {
+            archive = File.createTempFile("empty", "." + archivename);
+            archive.deleteOnExit();
+            stream = Files.newOutputStream(archive.toPath());
+            out = factory.createArchiveOutputStream(archivename, stream);
+            out.finish();
+        } finally {
+            if (out != null) {
+                out.close();
+            } else if (stream != null) {
+                stream.close();
+            }
+        }
+        return archive;
+    }
+
+    /**
+     * Create an archive with a single file "test1.xml".
+     *
+     * @param archivename
+     * @return the archive File
+     * @throws Exception
+     */
+    protected File createSingleEntryArchive(final String archivename) throws Exception {
+        ArchiveOutputStream out = null;
+        OutputStream stream = null;
+        archiveList = new ArrayList<>();
+        try {
+            archive = File.createTempFile("empty", "." + archivename);
+            archive.deleteOnExit();
+            stream = Files.newOutputStream(archive.toPath());
+            out = factory.createArchiveOutputStream(archivename, stream);
+            // Use short file name so does not cause problems for ar
+            addArchiveEntry(out, "test1.xml", getFile("test1.xml"));
+            out.finish();
+        } finally {
+            if (out != null) {
+                out.close();
+            } else if (stream != null) {
+                stream.close();
+            }
+        }
+        return archive;
+    }
+
+    protected File createTempDir() throws IOException {
+        final File tmpDir = mkdir("testdir");
+        tmpDir.deleteOnExit();
+        return tmpDir;
     }
 
     /**
@@ -389,23 +380,32 @@ public abstract class AbstractTestCase {
         }
     }
 
-    protected File createTempDir() throws IOException {
-        final File tmpDir = mkdir("testdir");
-        tmpDir.deleteOnExit();
-        return tmpDir;
+    /**
+     * Override this method to change what is to be compared in the List.
+     * For example, size + name instead of just name.
+     *
+     * @param entry
+     * @return returns the entry name
+     */
+    protected String getExpectedString(final ArchiveEntry entry) {
+        return entry.getName();
     }
 
-    protected void closeQuietly(final Closeable closeable){
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (final IOException ignored) {
-                // ignored
-            }
+    @BeforeEach
+    public void setUp() throws Exception {
+        dir = mkdir("dir");
+        resultDir = mkdir("dir-result");
+        archive = null;
+    }
+
+    @AfterEach
+    public void tearDown() throws Exception {
+        rmdir(dir);
+        rmdir(resultDir);
+        dir = resultDir = null;
+        if (!tryHardToDelete(archive)) {
+            // Note: this exception won't be shown if the test has already failed
+            throw new Exception("Could not delete "+archive.getPath());
         }
-    }
-
-    protected interface StreamWrapper<I extends InputStream> {
-        I wrap(InputStream in) throws Exception;
     }
 }

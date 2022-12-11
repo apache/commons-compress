@@ -54,15 +54,15 @@ class DeltaDecoder extends AbstractCoder {
         };
     }
 
-    @Override
-    Object getOptionsFromCoder(final Coder coder, final InputStream in) {
-        return getOptionsFromCoder(coder);
-    }
-
     private int getOptionsFromCoder(final Coder coder) {
         if (coder.properties == null || coder.properties.length == 0) {
             return 1;
         }
         return (0xff & coder.properties[0]) + 1;
+    }
+
+    @Override
+    Object getOptionsFromCoder(final Coder coder, final InputStream in) {
+        return getOptionsFromCoder(coder);
     }
 }

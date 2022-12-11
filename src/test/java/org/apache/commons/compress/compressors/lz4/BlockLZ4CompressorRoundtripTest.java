@@ -42,6 +42,27 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
                 Arguments.of("tuned for compression ratio", BlockLZ4CompressorOutputStream.createParameterBuilder().tunedForCompressionRatio().build()));
     }
 
+    // yields no compression at all
+    @ParameterizedTest
+    @MethodSource("factory")
+    public void biggerFileRoundtrip(final String config, final Parameters params) throws IOException {
+        roundTripTest("COMPRESS-256.7z", config, params);
+    }
+
+    // should yield decent compression
+    @ParameterizedTest
+    @MethodSource("factory")
+    public void blaTarRoundtrip(final String config, final Parameters params) throws IOException {
+        roundTripTest("bla.tar", config, params);
+    }
+
+    // yields no compression at all
+    @ParameterizedTest
+    @MethodSource("factory")
+    public void gzippedLoremIpsumRoundtrip(final String config, final Parameters params) throws IOException {
+        roundTripTest("lorem-ipsum.txt.gz", config, params);
+    }
+
     private void roundTripTest(final String testFile, final String config, final Parameters params) throws IOException {
         final File input = getFile(testFile);
         long start = System.currentTimeMillis();
@@ -62,27 +83,6 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
             Assert.assertArrayEquals(expected, actual);
         }
         // System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
-    }
-
-    // should yield decent compression
-    @ParameterizedTest
-    @MethodSource("factory")
-    public void blaTarRoundtrip(final String config, final Parameters params) throws IOException {
-        roundTripTest("bla.tar", config, params);
-    }
-
-    // yields no compression at all
-    @ParameterizedTest
-    @MethodSource("factory")
-    public void gzippedLoremIpsumRoundtrip(final String config, final Parameters params) throws IOException {
-        roundTripTest("lorem-ipsum.txt.gz", config, params);
-    }
-
-    // yields no compression at all
-    @ParameterizedTest
-    @MethodSource("factory")
-    public void biggerFileRoundtrip(final String config, final Parameters params) throws IOException {
-        roundTripTest("COMPRESS-256.7z", config, params);
     }
 
 }

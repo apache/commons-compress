@@ -78,68 +78,6 @@ public class TimeUtilsTest {
         );
     }
 
-    @ParameterizedTest
-    @MethodSource("dateToNtfsProvider")
-    public void shouldConvertNtfsTimeToDate(final String instant, final long ntfsTime) {
-        final Date converted = ntfsTimeToDate(ntfsTime);
-        assertEquals(Instant.parse(instant), converted.toInstant());
-        // ensuring the deprecated method still works
-        assertEquals(converted, SevenZArchiveEntry.ntfsTimeToJavaTime(ntfsTime));
-    }
-
-    @ParameterizedTest
-    @MethodSource("dateToNtfsProvider")
-    public void shouldConvertDateToNtfsTime(final String instant, final long ntfsTime) {
-        final long ntfsMillis = Math.floorDiv(ntfsTime, HUNDRED_NANOS_PER_MILLISECOND) * HUNDRED_NANOS_PER_MILLISECOND;
-        final Date parsed = Date.from(Instant.parse(instant));
-        final long converted = toNtfsTime(parsed);
-        assertEquals(ntfsMillis, converted);
-        // ensuring the deprecated method still works
-        assertEquals(converted, SevenZArchiveEntry.javaTimeToNtfsTime(parsed));
-    }
-
-    @ParameterizedTest
-    @MethodSource("fileTimeToNtfsProvider")
-    public void shouldConvertFileTimeToNtfsTime(final String instant, final long ntfsTime) {
-        final FileTime parsed = FileTime.from(Instant.parse(instant));
-        assertEquals(ntfsTime, toNtfsTime(parsed));
-    }
-
-    @ParameterizedTest
-    @MethodSource("fileTimeToNtfsProvider")
-    public void shouldConvertNtfsTimeToFileTime(final String instant, final long ntfsTime) {
-        final FileTime parsed = FileTime.from(Instant.parse(instant));
-        assertEquals(parsed, ntfsTimeToFileTime(ntfsTime));
-    }
-
-    @Test
-    public void shouldConvertNullDateToNullFileTime() {
-        assertNull(toFileTime(null));
-    }
-
-    @Test
-    public void shouldConvertNullFileTimeToNullDate() {
-        assertNull(toDate(null));
-    }
-
-    @ParameterizedTest
-    @MethodSource("dateToNtfsProvider")
-    public void shouldConvertDateToFileTime(final String instant, final long ignored) {
-        final Instant parsedInstant = Instant.parse(instant);
-        final FileTime parsedFileTime = FileTime.from(parsedInstant);
-        final Date parsedDate = Date.from(parsedInstant);
-        assertEquals(parsedFileTime, toFileTime(parsedDate));
-    }
-
-    @ParameterizedTest
-    @MethodSource("fileTimeToNtfsProvider")
-    public void shouldConvertFileTimeToDate(final String instant, final long ignored) {
-        final Instant parsedInstant = Instant.parse(instant);
-        final FileTime parsedFileTime = FileTime.from(parsedInstant);
-        final Date parsedDate = Date.from(parsedInstant);
-        assertEquals(parsedDate, toDate(parsedFileTime));
-    }
-
     public static Stream<Arguments> truncateFileTimeProvider() {
         return Stream.of(
                 Arguments.of(
@@ -175,6 +113,68 @@ public class TimeUtilsTest {
                         "1969-12-31T23:59:59.0000001Z"
                 )
         );
+    }
+
+    @ParameterizedTest
+    @MethodSource("dateToNtfsProvider")
+    public void shouldConvertDateToFileTime(final String instant, final long ignored) {
+        final Instant parsedInstant = Instant.parse(instant);
+        final FileTime parsedFileTime = FileTime.from(parsedInstant);
+        final Date parsedDate = Date.from(parsedInstant);
+        assertEquals(parsedFileTime, toFileTime(parsedDate));
+    }
+
+    @ParameterizedTest
+    @MethodSource("dateToNtfsProvider")
+    public void shouldConvertDateToNtfsTime(final String instant, final long ntfsTime) {
+        final long ntfsMillis = Math.floorDiv(ntfsTime, HUNDRED_NANOS_PER_MILLISECOND) * HUNDRED_NANOS_PER_MILLISECOND;
+        final Date parsed = Date.from(Instant.parse(instant));
+        final long converted = toNtfsTime(parsed);
+        assertEquals(ntfsMillis, converted);
+        // ensuring the deprecated method still works
+        assertEquals(converted, SevenZArchiveEntry.javaTimeToNtfsTime(parsed));
+    }
+
+    @ParameterizedTest
+    @MethodSource("fileTimeToNtfsProvider")
+    public void shouldConvertFileTimeToDate(final String instant, final long ignored) {
+        final Instant parsedInstant = Instant.parse(instant);
+        final FileTime parsedFileTime = FileTime.from(parsedInstant);
+        final Date parsedDate = Date.from(parsedInstant);
+        assertEquals(parsedDate, toDate(parsedFileTime));
+    }
+
+    @ParameterizedTest
+    @MethodSource("fileTimeToNtfsProvider")
+    public void shouldConvertFileTimeToNtfsTime(final String instant, final long ntfsTime) {
+        final FileTime parsed = FileTime.from(Instant.parse(instant));
+        assertEquals(ntfsTime, toNtfsTime(parsed));
+    }
+
+    @ParameterizedTest
+    @MethodSource("dateToNtfsProvider")
+    public void shouldConvertNtfsTimeToDate(final String instant, final long ntfsTime) {
+        final Date converted = ntfsTimeToDate(ntfsTime);
+        assertEquals(Instant.parse(instant), converted.toInstant());
+        // ensuring the deprecated method still works
+        assertEquals(converted, SevenZArchiveEntry.ntfsTimeToJavaTime(ntfsTime));
+    }
+
+    @ParameterizedTest
+    @MethodSource("fileTimeToNtfsProvider")
+    public void shouldConvertNtfsTimeToFileTime(final String instant, final long ntfsTime) {
+        final FileTime parsed = FileTime.from(Instant.parse(instant));
+        assertEquals(parsed, ntfsTimeToFileTime(ntfsTime));
+    }
+
+    @Test
+    public void shouldConvertNullDateToNullFileTime() {
+        assertNull(toFileTime(null));
+    }
+
+    @Test
+    public void shouldConvertNullFileTimeToNullDate() {
+        assertNull(toDate(null));
     }
 
     @ParameterizedTest

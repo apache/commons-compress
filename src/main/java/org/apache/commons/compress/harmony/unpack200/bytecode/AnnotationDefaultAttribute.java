@@ -26,17 +26,22 @@ import java.util.List;
  */
 public class AnnotationDefaultAttribute extends AnnotationsAttribute {
 
-    private final ElementValue element_value;
-
     private static CPUTF8 attributeName;
 
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
 
+    private final ElementValue element_value;
+
     public AnnotationDefaultAttribute(final ElementValue element_value) {
         super(attributeName);
         this.element_value = element_value;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return this == obj;
     }
 
     @Override
@@ -45,8 +50,15 @@ public class AnnotationDefaultAttribute extends AnnotationsAttribute {
     }
 
     @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        element_value.writeBody(dos);
+    protected ClassFileEntry[] getNestedClassFileEntries() {
+        final List<Object> nested = new ArrayList<>();
+        nested.add(attributeName);
+        nested.addAll(element_value.getClassFileEntries());
+        final ClassFileEntry[] nestedEntries = new ClassFileEntry[nested.size()];
+        for (int i = 0; i < nestedEntries.length; i++) {
+            nestedEntries[i] = (ClassFileEntry) nested.get(i);
+        }
+        return nestedEntries;
     }
 
     @Override
@@ -61,20 +73,8 @@ public class AnnotationDefaultAttribute extends AnnotationsAttribute {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        return this == obj;
-    }
-
-    @Override
-    protected ClassFileEntry[] getNestedClassFileEntries() {
-        final List<Object> nested = new ArrayList<>();
-        nested.add(attributeName);
-        nested.addAll(element_value.getClassFileEntries());
-        final ClassFileEntry[] nestedEntries = new ClassFileEntry[nested.size()];
-        for (int i = 0; i < nestedEntries.length; i++) {
-            nestedEntries[i] = (ClassFileEntry) nested.get(i);
-        }
-        return nestedEntries;
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        element_value.writeBody(dos);
     }
 
 }

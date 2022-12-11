@@ -26,10 +26,6 @@ package org.apache.commons.compress.utils;
  */
 public class ExactMath {
 
-    private ExactMath() {
-        // no instances
-    }
-
     /**
      * Returns the int result of adding an int and a long, and throws an exception if the result overflows an int.
      *
@@ -41,6 +37,10 @@ public class ExactMath {
      */
     public static int add(final int x, final long y) {
         return Math.addExact(x, Math.toIntExact(y));
+    }
+
+    private ExactMath() {
+        // no instances
     }
 
 }

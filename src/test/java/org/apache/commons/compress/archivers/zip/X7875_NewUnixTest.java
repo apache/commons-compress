@@ -37,50 +37,66 @@ public class X7875_NewUnixTest {
 
     private final static ZipShort X7875 = new ZipShort(0x7875);
 
+    private static byte[] trimTest(final byte[] b) { return X7875_NewUnix.trimLeadingZeroesForceMinLength(b); }
+
     private X7875_NewUnix xf;
+
 
     @BeforeEach
     public void before() {
         xf = new X7875_NewUnix();
     }
 
+    private void parseReparse(
+            final long uid,
+            final long gid,
+            final byte[] expected,
+            final long expectedUID,
+            final long expectedGID
+    ) throws ZipException {
 
-    @Test
-    public void testSampleFile() throws Exception {
-        final File archive = getFile("COMPRESS-211_uid_gid_zip_test.zip");
+        // Initial local parse (init with garbage to avoid defaults causing test to pass).
+        xf.setUID(54321);
+        xf.setGID(12345);
+        xf.parseFromLocalFileData(expected, 0, expected.length);
+        assertEquals(expectedUID, xf.getUID());
+        assertEquals(expectedGID, xf.getGID());
 
-        try (ZipFile zf = new ZipFile(archive)) {
-            final Enumeration<ZipArchiveEntry> en = zf.getEntries();
-
-            // We expect EVERY entry of this zip file (dir & file) to
-            // contain extra field 0x7875.
-            while (en.hasMoreElements()) {
-
-                final ZipArchiveEntry zae = en.nextElement();
-                final String name = zae.getName();
-                final X7875_NewUnix xf = (X7875_NewUnix) zae.getExtraField(X7875);
-
-                // The directory entry in the test zip file is uid/gid 1000.
-                long expected = 1000;
-                if (name.contains("uid555_gid555")) {
-                    expected = 555;
-                } else if (name.contains("uid5555_gid5555")) {
-                    expected = 5555;
-                } else if (name.contains("uid55555_gid55555")) {
-                    expected = 55555;
-                } else if (name.contains("uid555555_gid555555")) {
-                    expected = 555555;
-                } else if (name.contains("min_unix")) {
-                    expected = 0;
-                } else if (name.contains("max_unix")) {
-                    // 2^32-2 was the biggest UID/GID I could create on my linux!
-                    // (December 2012, linux kernel 3.4)
-                    expected = 0x100000000L - 2;
-                }
-                assertEquals(expected, xf.getUID());
-                assertEquals(expected, xf.getGID());
-            }
+        xf.setUID(uid);
+        xf.setGID(gid);
+        if (expected.length < 5) {
+            // We never emit zero-length entries.
+            assertEquals(5, xf.getLocalFileDataLength().getValue());
+        } else {
+            assertEquals(expected.length, xf.getLocalFileDataLength().getValue());
         }
+        byte[] result = xf.getLocalFileDataData();
+        if (expected.length < 5) {
+            // We never emit zero-length entries.
+            assertArrayEquals(new byte[]{1, 1, 0, 1, 0}, result);
+        } else {
+            assertArrayEquals(expected, result);
+        }
+
+
+
+        // And now we re-parse:
+        xf.parseFromLocalFileData(result, 0, result.length);
+
+        // Did uid/gid change from re-parse?  They shouldn't!
+        assertEquals(expectedUID, xf.getUID());
+        assertEquals(expectedGID, xf.getGID());
+
+        assertEquals(0, xf.getCentralDirectoryLength().getValue());
+        result = xf.getCentralDirectoryData();
+        assertArrayEquals(ByteUtils.EMPTY_BYTE_ARRAY, result);
+
+        // And now we re-parse:
+        xf.parseFromCentralDirectoryData(result, 0, result.length);
+
+        // Did uid/gid change from 2nd re-parse?  They shouldn't!
+        assertEquals(expectedUID, xf.getUID());
+        assertEquals(expectedGID, xf.getGID());
     }
 
     @Test
@@ -98,37 +114,6 @@ public class X7875_NewUnixTest {
         xf.setUID(12345);
         assertNotEquals(xf, o);
     }
-
-    @Test
-    public void testTrimLeadingZeroesForceMinLength4() {
-        final byte[] NULL = null;
-        final byte[] EMPTY = ByteUtils.EMPTY_BYTE_ARRAY;
-        final byte[] ONE_ZERO = {0};
-        final byte[] TWO_ZEROES = {0, 0};
-        final byte[] FOUR_ZEROES = {0, 0, 0, 0};
-        final byte[] SEQUENCE = {1, 2, 3};
-        final byte[] SEQUENCE_LEADING_ZERO = {0, 1, 2, 3};
-        final byte[] SEQUENCE_LEADING_ZEROES = {0, 0, 0, 0, 0, 0, 0, 1, 2, 3};
-        final byte[] TRAILING_ZERO = {1, 2, 3, 0};
-        final byte[] PADDING_ZERO = {0, 1, 2, 3, 0};
-        final byte[] SEQUENCE6 = {1, 2, 3, 4, 5, 6};
-        final byte[] SEQUENCE6_LEADING_ZERO = {0, 1, 2, 3, 4, 5, 6};
-
-        assertSame(NULL, trimTest(NULL));
-        assertArrayEquals(ONE_ZERO, trimTest(EMPTY));
-        assertArrayEquals(ONE_ZERO, trimTest(ONE_ZERO));
-        assertArrayEquals(ONE_ZERO, trimTest(TWO_ZEROES));
-        assertArrayEquals(ONE_ZERO, trimTest(FOUR_ZEROES));
-        assertArrayEquals(SEQUENCE, trimTest(SEQUENCE));
-        assertArrayEquals(SEQUENCE, trimTest(SEQUENCE_LEADING_ZERO));
-        assertArrayEquals(SEQUENCE, trimTest(SEQUENCE_LEADING_ZEROES));
-        assertArrayEquals(TRAILING_ZERO, trimTest(TRAILING_ZERO));
-        assertArrayEquals(TRAILING_ZERO, trimTest(PADDING_ZERO));
-        assertArrayEquals(SEQUENCE6, trimTest(SEQUENCE6));
-        assertArrayEquals(SEQUENCE6, trimTest(SEQUENCE6_LEADING_ZERO));
-    }
-
-    private static byte[] trimTest(final byte[] b) { return X7875_NewUnix.trimLeadingZeroesForceMinLength(b); }
 
     @Test
     public void testParseReparse() throws ZipException {
@@ -187,56 +172,71 @@ public class X7875_NewUnixTest {
         assertArrayEquals(EXPECTED_2, xf.getLocalFileDataData());
     }
 
+    @Test
+    public void testSampleFile() throws Exception {
+        final File archive = getFile("COMPRESS-211_uid_gid_zip_test.zip");
 
-    private void parseReparse(
-            final long uid,
-            final long gid,
-            final byte[] expected,
-            final long expectedUID,
-            final long expectedGID
-    ) throws ZipException {
+        try (ZipFile zf = new ZipFile(archive)) {
+            final Enumeration<ZipArchiveEntry> en = zf.getEntries();
 
-        // Initial local parse (init with garbage to avoid defaults causing test to pass).
-        xf.setUID(54321);
-        xf.setGID(12345);
-        xf.parseFromLocalFileData(expected, 0, expected.length);
-        assertEquals(expectedUID, xf.getUID());
-        assertEquals(expectedGID, xf.getGID());
+            // We expect EVERY entry of this zip file (dir & file) to
+            // contain extra field 0x7875.
+            while (en.hasMoreElements()) {
 
-        xf.setUID(uid);
-        xf.setGID(gid);
-        if (expected.length < 5) {
-            // We never emit zero-length entries.
-            assertEquals(5, xf.getLocalFileDataLength().getValue());
-        } else {
-            assertEquals(expected.length, xf.getLocalFileDataLength().getValue());
+                final ZipArchiveEntry zae = en.nextElement();
+                final String name = zae.getName();
+                final X7875_NewUnix xf = (X7875_NewUnix) zae.getExtraField(X7875);
+
+                // The directory entry in the test zip file is uid/gid 1000.
+                long expected = 1000;
+                if (name.contains("uid555_gid555")) {
+                    expected = 555;
+                } else if (name.contains("uid5555_gid5555")) {
+                    expected = 5555;
+                } else if (name.contains("uid55555_gid55555")) {
+                    expected = 55555;
+                } else if (name.contains("uid555555_gid555555")) {
+                    expected = 555555;
+                } else if (name.contains("min_unix")) {
+                    expected = 0;
+                } else if (name.contains("max_unix")) {
+                    // 2^32-2 was the biggest UID/GID I could create on my linux!
+                    // (December 2012, linux kernel 3.4)
+                    expected = 0x100000000L - 2;
+                }
+                assertEquals(expected, xf.getUID());
+                assertEquals(expected, xf.getGID());
+            }
         }
-        byte[] result = xf.getLocalFileDataData();
-        if (expected.length < 5) {
-            // We never emit zero-length entries.
-            assertArrayEquals(new byte[]{1, 1, 0, 1, 0}, result);
-        } else {
-            assertArrayEquals(expected, result);
-        }
+    }
 
 
+    @Test
+    public void testTrimLeadingZeroesForceMinLength4() {
+        final byte[] NULL = null;
+        final byte[] EMPTY = ByteUtils.EMPTY_BYTE_ARRAY;
+        final byte[] ONE_ZERO = {0};
+        final byte[] TWO_ZEROES = {0, 0};
+        final byte[] FOUR_ZEROES = {0, 0, 0, 0};
+        final byte[] SEQUENCE = {1, 2, 3};
+        final byte[] SEQUENCE_LEADING_ZERO = {0, 1, 2, 3};
+        final byte[] SEQUENCE_LEADING_ZEROES = {0, 0, 0, 0, 0, 0, 0, 1, 2, 3};
+        final byte[] TRAILING_ZERO = {1, 2, 3, 0};
+        final byte[] PADDING_ZERO = {0, 1, 2, 3, 0};
+        final byte[] SEQUENCE6 = {1, 2, 3, 4, 5, 6};
+        final byte[] SEQUENCE6_LEADING_ZERO = {0, 1, 2, 3, 4, 5, 6};
 
-        // And now we re-parse:
-        xf.parseFromLocalFileData(result, 0, result.length);
-
-        // Did uid/gid change from re-parse?  They shouldn't!
-        assertEquals(expectedUID, xf.getUID());
-        assertEquals(expectedGID, xf.getGID());
-
-        assertEquals(0, xf.getCentralDirectoryLength().getValue());
-        result = xf.getCentralDirectoryData();
-        assertArrayEquals(ByteUtils.EMPTY_BYTE_ARRAY, result);
-
-        // And now we re-parse:
-        xf.parseFromCentralDirectoryData(result, 0, result.length);
-
-        // Did uid/gid change from 2nd re-parse?  They shouldn't!
-        assertEquals(expectedUID, xf.getUID());
-        assertEquals(expectedGID, xf.getGID());
+        assertSame(NULL, trimTest(NULL));
+        assertArrayEquals(ONE_ZERO, trimTest(EMPTY));
+        assertArrayEquals(ONE_ZERO, trimTest(ONE_ZERO));
+        assertArrayEquals(ONE_ZERO, trimTest(TWO_ZEROES));
+        assertArrayEquals(ONE_ZERO, trimTest(FOUR_ZEROES));
+        assertArrayEquals(SEQUENCE, trimTest(SEQUENCE));
+        assertArrayEquals(SEQUENCE, trimTest(SEQUENCE_LEADING_ZERO));
+        assertArrayEquals(SEQUENCE, trimTest(SEQUENCE_LEADING_ZEROES));
+        assertArrayEquals(TRAILING_ZERO, trimTest(TRAILING_ZERO));
+        assertArrayEquals(TRAILING_ZERO, trimTest(PADDING_ZERO));
+        assertArrayEquals(SEQUENCE6, trimTest(SEQUENCE6));
+        assertArrayEquals(SEQUENCE6, trimTest(SEQUENCE6_LEADING_ZERO));
     }
 }

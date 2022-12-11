@@ -25,6 +25,17 @@ import java.util.Date;
  */
 public interface ArchiveEntry {
 
+    /** Special value indicating that the size is unknown */
+    long SIZE_UNKNOWN = -1;
+
+    /**
+     * Gets the last modified date of this entry.
+     *
+     * @return the last modified date of this entry.
+     * @since 1.1
+     */
+    Date getLastModifiedDate();
+
     /**
      * Gets the name of the entry in this archive. May refer to a file or directory or other item.
      *
@@ -41,21 +52,10 @@ public interface ArchiveEntry {
      */
     long getSize();
 
-    /** Special value indicating that the size is unknown */
-    long SIZE_UNKNOWN = -1;
-
     /**
      * Returns true if this entry refers to a directory.
      *
      * @return true if this entry refers to a directory.
      */
     boolean isDirectory();
-
-    /**
-     * Gets the last modified date of this entry.
-     *
-     * @return the last modified date of this entry.
-     * @since 1.1
-     */
-    Date getLastModifiedDate();
 }

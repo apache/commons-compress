@@ -33,37 +33,6 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
     private final PackingOptions options = new PackingOptions();
 
     @Override
-    public void pack(final JarFile file, final OutputStream out) throws IOException {
-        if (file == null || out == null) {
-            throw new IllegalArgumentException("Must specify both input and output streams");
-        }
-        completed(0);
-        try {
-            new org.apache.commons.compress.harmony.pack200.Archive(file, out, options).pack();
-        } catch (final Pack200Exception e) {
-            throw new IOException("Failed to pack Jar:" + e);
-        }
-        completed(1);
-    }
-
-    @Override
-    public void pack(final JarInputStream in, final OutputStream out) throws IOException {
-        if (in == null || out == null) {
-            throw new IllegalArgumentException("Must specify both input and output streams");
-        }
-        completed(0);
-        final PackingOptions options = new PackingOptions();
-
-        try {
-            new org.apache.commons.compress.harmony.pack200.Archive(in, out, options).pack();
-        } catch (final Pack200Exception e) {
-            throw new IOException("Failed to pack Jar:" + e);
-        }
-        completed(1);
-        in.close();
-    }
-
-    @Override
     protected void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) {
         super.firePropertyChange(propertyName, oldValue, newValue);
         if (newValue != null && !newValue.equals(oldValue)) {
@@ -98,6 +67,37 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
                 options.setUnknownAttributeAction((String) newValue);
             }
         }
+    }
+
+    @Override
+    public void pack(final JarFile file, final OutputStream out) throws IOException {
+        if (file == null || out == null) {
+            throw new IllegalArgumentException("Must specify both input and output streams");
+        }
+        completed(0);
+        try {
+            new org.apache.commons.compress.harmony.pack200.Archive(file, out, options).pack();
+        } catch (final Pack200Exception e) {
+            throw new IOException("Failed to pack Jar:" + e);
+        }
+        completed(1);
+    }
+
+    @Override
+    public void pack(final JarInputStream in, final OutputStream out) throws IOException {
+        if (in == null || out == null) {
+            throw new IllegalArgumentException("Must specify both input and output streams");
+        }
+        completed(0);
+        final PackingOptions options = new PackingOptions();
+
+        try {
+            new org.apache.commons.compress.harmony.pack200.Archive(in, out, options).pack();
+        } catch (final Pack200Exception e) {
+            throw new IOException("Failed to pack Jar:" + e);
+        }
+        completed(1);
+        in.close();
     }
 
 }

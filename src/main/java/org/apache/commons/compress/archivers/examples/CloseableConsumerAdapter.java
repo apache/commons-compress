@@ -30,15 +30,15 @@ final class CloseableConsumerAdapter implements Closeable {
         this.consumer = Objects.requireNonNull(consumer, "consumer");
     }
 
-    <C extends Closeable> C track(final C closeable) {
-        this.closeable = closeable;
-        return closeable;
-    }
-
     @Override
     public void close() throws IOException {
         if (closeable != null) {
             consumer.accept(closeable);
         }
+    }
+
+    <C extends Closeable> C track(final C closeable) {
+        this.closeable = closeable;
+        return closeable;
     }
 }

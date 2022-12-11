@@ -25,10 +25,9 @@ import org.junit.jupiter.api.Test;
 public class DumpArchiveUtilTest {
 
     @Test
-    public void convert64() {
-        assertEquals(0xABCDEF0123456780L,
-                     DumpArchiveUtil.convert64(new byte[] {
-                             (byte) 0x80, 0x67, 0x45, 0x23, 1, (byte) 0xEF,
+    public void convert16() {
+        assertEquals(0xABCD,
+                     DumpArchiveUtil.convert16(new byte[] {
                              (byte) 0xCD, (byte) 0xAB
                          }, 0));
     }
@@ -42,9 +41,10 @@ public class DumpArchiveUtilTest {
     }
 
     @Test
-    public void convert16() {
-        assertEquals(0xABCD,
-                     DumpArchiveUtil.convert16(new byte[] {
+    public void convert64() {
+        assertEquals(0xABCDEF0123456780L,
+                     DumpArchiveUtil.convert64(new byte[] {
+                             (byte) 0x80, 0x67, 0x45, 0x23, 1, (byte) 0xEF,
                              (byte) 0xCD, (byte) 0xAB
                          }, 0));
     }

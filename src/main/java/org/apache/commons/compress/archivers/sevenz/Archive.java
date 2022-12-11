@@ -20,6 +20,12 @@ package org.apache.commons.compress.archivers.sevenz;
 import java.util.BitSet;
 
 class Archive {
+    private static String lengthOf(final long[] a) {
+        return a == null ? "(null)" : String.valueOf(a.length);
+    }
+    private static String lengthOf(final Object[] a) {
+        return a == null ? "(null)" : String.valueOf(a.length);
+    }
     /// Offset from beginning of file + SIGNATURE_HEADER_SIZE to packed streams.
     long packPos;
     /// Size of each packed stream.
@@ -32,8 +38,10 @@ class Archive {
     Folder[] folders = Folder.EMPTY_FOLDER_ARRAY;
     /// Temporary properties for non-empty files (subsumed into the files array later).
     SubStreamsInfo subStreamsInfo;
+
     /// The files and directories in the archive.
     SevenZArchiveEntry[] files = SevenZArchiveEntry.EMPTY_SEVEN_Z_ARCHIVE_ENTRY_ARRAY;
+
     /// Mapping between folders, files and streams.
     StreamMap streamMap;
 
@@ -43,13 +51,5 @@ class Archive {
             + ", " + lengthOf(packSizes) + " pack sizes, " + lengthOf(packCrcs)
             + " CRCs, " + lengthOf(folders) + " folders, " + lengthOf(files)
             + " files and " + streamMap;
-    }
-
-    private static String lengthOf(final long[] a) {
-        return a == null ? "(null)" : String.valueOf(a.length);
-    }
-
-    private static String lengthOf(final Object[] a) {
-        return a == null ? "(null)" : String.valueOf(a.length);
     }
 }

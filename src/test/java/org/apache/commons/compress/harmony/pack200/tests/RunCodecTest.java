@@ -30,33 +30,6 @@ import junit.framework.TestCase;
  */
 public class RunCodecTest extends TestCase {
 
-    public void testRunCodec() {
-        try {
-            new RunCodec(0, Codec.SIGNED5, Codec.UDELTA5);
-            fail("Should not allow a k value of 0");
-        } catch (Pack200Exception e) {
-            // pass
-        }
-        try {
-            new RunCodec(10, null, Codec.UDELTA5);
-            fail("Should not allow a null codec");
-        } catch (Pack200Exception e) {
-            // pass
-        }
-        try {
-            new RunCodec(10, Codec.UDELTA5, null);
-            fail("Should not allow a null codec");
-        } catch (Pack200Exception e) {
-            // pass
-        }
-        try {
-            new RunCodec(10, null, null);
-            fail("Should not allow a null codec");
-        } catch (Pack200Exception e) {
-            // pass
-        }
-    }
-
     public void testDecode() throws Exception {
         RunCodec runCodec = new RunCodec(1, Codec.UNSIGNED5, Codec.BYTE1);
         ByteArrayInputStream bais = new ByteArrayInputStream(new byte[] {
@@ -89,6 +62,21 @@ public class RunCodecTest extends TestCase {
         assertEquals(band.length, bandDecoded.length);
         for (int i = 0; i < band.length; i++) {
             assertEquals(band[i], bandDecoded[i]);
+        }
+    }
+
+    public void testEncodeSingleValue() {
+        try {
+            new RunCodec(10, Codec.SIGNED5, Codec.UDELTA5).encode(5);
+            fail("Should not allow a single value to be encoded as we don't know which codec to use");
+        } catch (Pack200Exception e) {
+            // pass
+        }
+        try {
+            new RunCodec(10, Codec.SIGNED5, Codec.UDELTA5).encode(5, 8);
+            fail("Should not allow a single value to be encoded as we don't know which codec to use");
+        } catch (Pack200Exception e) {
+            // pass
         }
     }
 
@@ -140,25 +128,37 @@ public class RunCodecTest extends TestCase {
         }
     }
 
+    public void testRunCodec() {
+        try {
+            new RunCodec(0, Codec.SIGNED5, Codec.UDELTA5);
+            fail("Should not allow a k value of 0");
+        } catch (Pack200Exception e) {
+            // pass
+        }
+        try {
+            new RunCodec(10, null, Codec.UDELTA5);
+            fail("Should not allow a null codec");
+        } catch (Pack200Exception e) {
+            // pass
+        }
+        try {
+            new RunCodec(10, Codec.UDELTA5, null);
+            fail("Should not allow a null codec");
+        } catch (Pack200Exception e) {
+            // pass
+        }
+        try {
+            new RunCodec(10, null, null);
+            fail("Should not allow a null codec");
+        } catch (Pack200Exception e) {
+            // pass
+        }
+    }
+
     public void testToString() throws Pack200Exception {
         RunCodec runCodec = new RunCodec(3, Codec.UNSIGNED5, Codec.BYTE1);
         assertEquals(
                 "RunCodec[k=" + 3 + ";aCodec=" + Codec.UNSIGNED5 + "bCodec=" + Codec.BYTE1 + "]",
                 runCodec.toString());
-    }
-
-    public void testEncodeSingleValue() {
-        try {
-            new RunCodec(10, Codec.SIGNED5, Codec.UDELTA5).encode(5);
-            fail("Should not allow a single value to be encoded as we don't know which codec to use");
-        } catch (Pack200Exception e) {
-            // pass
-        }
-        try {
-            new RunCodec(10, Codec.SIGNED5, Codec.UDELTA5).encode(5, 8);
-            fail("Should not allow a single value to be encoded as we don't know which codec to use");
-        } catch (Pack200Exception e) {
-            // pass
-        }
     }
 }

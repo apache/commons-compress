@@ -35,15 +35,49 @@ public final class ZipShort implements Cloneable, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final int value;
+    /**
+     * Get value as two bytes in big endian byte order.
+     * @param value the Java int to convert to bytes
+     * @return the converted int as a byte array in big endian byte order
+     */
+    public static byte[] getBytes(final int value) {
+        final byte[] result = new byte[2];
+        putShort(value, result, 0);
+        return result;
+    }
 
     /**
-     * Create instance from a number.
-     * @param value the int to store as a ZipShort
+     * Helper method to get the value as a java int from a two-byte array
+     * @param bytes the array of bytes
+     * @return the corresponding java int value
      */
-    public ZipShort (final int value) {
-        this.value = value;
+    public static int getValue(final byte[] bytes) {
+        return getValue(bytes, 0);
     }
+
+    /**
+     * Helper method to get the value as a java int from two bytes starting at given array offset
+     * @param bytes the array of bytes
+     * @param offset the offset to start
+     * @return the corresponding java int value
+     */
+    public static int getValue(final byte[] bytes, final int offset) {
+        return (int) ByteUtils.fromLittleEndian(bytes, offset, 2);
+    }
+
+    /**
+     * put the value as two bytes in big endian byte order.
+     * @param value the Java int to convert to bytes
+     * @param buf the output buffer
+     * @param  offset
+     *         The offset within the output buffer of the first byte to be written.
+     *         must be non-negative and no larger than {@code buf.length-2}
+     */
+    public static void putShort(final int value, final byte[] buf, final int offset) {
+        ByteUtils.toLittleEndian(buf, value, offset, 2);
+    }
+
+    private final int value;
 
     /**
      * Create instance from bytes.
@@ -60,6 +94,37 @@ public final class ZipShort implements Cloneable, Serializable {
      */
     public ZipShort (final byte[] bytes, final int offset) {
         value = ZipShort.getValue(bytes, offset);
+    }
+
+    /**
+     * Create instance from a number.
+     * @param value the int to store as a ZipShort
+     */
+    public ZipShort (final int value) {
+        this.value = value;
+    }
+
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (final CloneNotSupportedException cnfe) {
+            // impossible
+            throw new IllegalStateException(cnfe); //NOSONAR
+        }
+    }
+
+    /**
+     * Override to make two instances with same value equal.
+     * @param o an object to compare
+     * @return true if the objects are equal
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (!(o instanceof ZipShort)) {
+            return false;
+        }
+        return value == ((ZipShort) o).getValue();
     }
 
     /**
@@ -81,77 +146,12 @@ public final class ZipShort implements Cloneable, Serializable {
     }
 
     /**
-     * Get value as two bytes in big endian byte order.
-     * @param value the Java int to convert to bytes
-     * @return the converted int as a byte array in big endian byte order
-     */
-    public static byte[] getBytes(final int value) {
-        final byte[] result = new byte[2];
-        putShort(value, result, 0);
-        return result;
-    }
-
-    /**
-     * put the value as two bytes in big endian byte order.
-     * @param value the Java int to convert to bytes
-     * @param buf the output buffer
-     * @param  offset
-     *         The offset within the output buffer of the first byte to be written.
-     *         must be non-negative and no larger than {@code buf.length-2}
-     */
-    public static void putShort(final int value, final byte[] buf, final int offset) {
-        ByteUtils.toLittleEndian(buf, value, offset, 2);
-    }
-
-    /**
-     * Helper method to get the value as a java int from two bytes starting at given array offset
-     * @param bytes the array of bytes
-     * @param offset the offset to start
-     * @return the corresponding java int value
-     */
-    public static int getValue(final byte[] bytes, final int offset) {
-        return (int) ByteUtils.fromLittleEndian(bytes, offset, 2);
-    }
-
-    /**
-     * Helper method to get the value as a java int from a two-byte array
-     * @param bytes the array of bytes
-     * @return the corresponding java int value
-     */
-    public static int getValue(final byte[] bytes) {
-        return getValue(bytes, 0);
-    }
-
-    /**
-     * Override to make two instances with same value equal.
-     * @param o an object to compare
-     * @return true if the objects are equal
-     */
-    @Override
-    public boolean equals(final Object o) {
-        if (!(o instanceof ZipShort)) {
-            return false;
-        }
-        return value == ((ZipShort) o).getValue();
-    }
-
-    /**
      * Override to make two instances with same value equal.
      * @return the value stored in the ZipShort
      */
     @Override
     public int hashCode() {
         return value;
-    }
-
-    @Override
-    public Object clone() {
-        try {
-            return super.clone();
-        } catch (final CloneNotSupportedException cnfe) {
-            // impossible
-            throw new IllegalStateException(cnfe); //NOSONAR
-        }
     }
 
     @Override

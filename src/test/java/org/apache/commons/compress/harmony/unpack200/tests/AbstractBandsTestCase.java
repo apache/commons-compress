@@ -30,8 +30,35 @@ import junit.framework.TestCase;
  */
 public abstract class AbstractBandsTestCase extends TestCase {
 
-    protected int numClasses = 1;
-    protected int[] numMethods = { 1 };
+    public class MockAttributeDefinitionBands extends AttrDefinitionBands {
+
+        public MockAttributeDefinitionBands(final Segment segment) {
+            super(segment);
+        }
+
+        @Override
+        public AttributeLayoutMap getAttributeDefinitionMap() {
+            try {
+                return new AttributeLayoutMap();
+            } catch (Pack200Exception e) {
+                fail(e.getLocalizedMessage());
+            }
+            return null;
+        }
+
+    }
+    public class MockSegment extends Segment {
+
+        @Override
+        protected AttrDefinitionBands getAttrDefinitionBands() {
+            return new MockAttributeDefinitionBands(this);
+        }
+
+        @Override
+        public SegmentHeader getSegmentHeader() {
+            return new MockSegmentHeader(this);
+        }
+    }
 
     public class MockSegmentHeader extends SegmentHeader {
 
@@ -54,35 +81,8 @@ public abstract class AbstractBandsTestCase extends TestCase {
         }
     }
 
-    public class MockAttributeDefinitionBands extends AttrDefinitionBands {
+    protected int numClasses = 1;
 
-        public MockAttributeDefinitionBands(final Segment segment) {
-            super(segment);
-        }
-
-        @Override
-        public AttributeLayoutMap getAttributeDefinitionMap() {
-            try {
-                return new AttributeLayoutMap();
-            } catch (Pack200Exception e) {
-                fail(e.getLocalizedMessage());
-            }
-            return null;
-        }
-
-    }
-
-    public class MockSegment extends Segment {
-
-        @Override
-        protected AttrDefinitionBands getAttrDefinitionBands() {
-            return new MockAttributeDefinitionBands(this);
-        }
-
-        @Override
-        public SegmentHeader getSegmentHeader() {
-            return new MockSegmentHeader(this);
-        }
-    }
+    protected int[] numMethods = { 1 };
 
 }

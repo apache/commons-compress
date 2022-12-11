@@ -71,14 +71,12 @@ public class ZstdCompressorInputStream extends CompressorInputStream
         decIS.close();
     }
 
+    /**
+     * @since 1.17
+     */
     @Override
-    public int read(final byte[] b) throws IOException {
-        return read(b, 0, b.length);
-    }
-
-    @Override
-    public long skip(final long n) throws IOException {
-        return IOUtils.skip(decIS, n);
+    public long getCompressedCount() {
+        return countingStream.getBytesRead();
     }
 
     @Override
@@ -99,6 +97,11 @@ public class ZstdCompressorInputStream extends CompressorInputStream
     }
 
     @Override
+    public int read(final byte[] b) throws IOException {
+        return read(b, 0, b.length);
+    }
+
+    @Override
     public int read(final byte[] buf, final int off, final int len) throws IOException {
         if (len == 0) {
             return 0;
@@ -109,20 +112,17 @@ public class ZstdCompressorInputStream extends CompressorInputStream
     }
 
     @Override
-    public String toString() {
-        return decIS.toString();
-    }
-
-    @Override
     public synchronized void reset() throws IOException {
         decIS.reset();
     }
 
-    /**
-     * @since 1.17
-     */
     @Override
-    public long getCompressedCount() {
-        return countingStream.getBytesRead();
+    public long skip(final long n) throws IOException {
+        return IOUtils.skip(decIS, n);
+    }
+
+    @Override
+    public String toString() {
+        return decIS.toString();
     }
 }

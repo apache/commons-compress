@@ -123,6 +123,21 @@ public class FileBands extends BandSet {
         }
     }
 
+    private int[] flatten(final byte[][] bytes) {
+        int total = 0;
+        for (byte[] element : bytes) {
+            total += element.length;
+        }
+        final int[] band = new int[total];
+        int index = 0;
+        for (byte[] element : bytes) {
+            for (byte element2 : element) {
+                band[index++] = element2 & 0xFF;
+            }
+        }
+        return band;
+    }
+
     @Override
     public void pack(final OutputStream out) throws IOException, Pack200Exception {
         PackingUtils.log("Writing file bands...");
@@ -149,21 +164,6 @@ public class FileBands extends BandSet {
         encodedBand = encodeBandInt("file_bits", flatten(file_bits), Codec.BYTE1);
         out.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length + " bytes from file_bits[" + file_bits.length + "]");
-    }
-
-    private int[] flatten(final byte[][] bytes) {
-        int total = 0;
-        for (byte[] element : bytes) {
-            total += element.length;
-        }
-        final int[] band = new int[total];
-        int index = 0;
-        for (byte[] element : bytes) {
-            for (byte element2 : element) {
-                band[index++] = element2 & 0xFF;
-            }
-        }
-        return band;
     }
 
 }

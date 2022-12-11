@@ -35,16 +35,16 @@ public class NarrowClassRefForm extends ClassRefForm {
     }
 
     @Override
+    public boolean nestedMustStartClassPool() {
+        return !widened;
+    }
+
+    @Override
     protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset)
         throws Pack200Exception {
         super.setNestedEntries(byteCode, operandManager, offset);
         if (!widened) {
             byteCode.setNestedPositions(new int[][] {{0, 1}});
         }
-    }
-
-    @Override
-    public boolean nestedMustStartClassPool() {
-        return !widened;
     }
 }

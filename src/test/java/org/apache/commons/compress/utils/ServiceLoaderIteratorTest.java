@@ -34,18 +34,18 @@ import org.junit.jupiter.api.Test;
 public class ServiceLoaderIteratorTest {
 
     @Test
-    public void testNextThrowsNoSuchElementException() {
-        final Class<String> clasz = String.class;
-        final ServiceLoaderIterator<String> serviceLoaderIterator = new ServiceLoaderIterator<>(clasz);
-        assertThrows(NoSuchElementException.class, () -> serviceLoaderIterator.next());
-    }
-
-    @Test
     public void testHasNextReturnsFalse() {
         final Class<Object> clasz = Object.class;
         final ServiceLoaderIterator<Object> serviceLoaderIterator = new ServiceLoaderIterator<>(clasz);
         final boolean result = serviceLoaderIterator.hasNext();
         assertFalse(result);
+    }
+
+    @Test
+    public void testNextThrowsNoSuchElementException() {
+        final Class<String> clasz = String.class;
+        final ServiceLoaderIterator<String> serviceLoaderIterator = new ServiceLoaderIterator<>(clasz);
+        assertThrows(NoSuchElementException.class, () -> serviceLoaderIterator.next());
     }
 
     @Test

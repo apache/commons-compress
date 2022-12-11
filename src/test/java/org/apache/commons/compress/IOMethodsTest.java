@@ -54,93 +54,6 @@ public class IOMethodsTest extends AbstractTestCase {
         }
     }
 
-    @Test
-    public void testWriteAr() throws Exception {
-        final ArchiveEntry entry = new ArArchiveEntry("dummy", bytesToTest);
-        compareWrites("ar", entry);
-    }
-
-    @Test
-    public void testWriteCpio() throws Exception {
-        final ArchiveEntry entry = new CpioArchiveEntry("dummy", bytesToTest);
-        compareWrites("cpio", entry);
-    }
-
-    @Test
-    public void testWriteJar() throws Exception {
-        final ArchiveEntry entry = new JarArchiveEntry("dummy");
-        compareWrites("jar", entry);
-    }
-
-    @Test
-    public void testWriteTar() throws Exception {
-        final TarArchiveEntry entry = new TarArchiveEntry("dummy");
-        entry.setSize(bytesToTest);
-        compareWrites("tar", entry);
-    }
-
-    @Test
-    public void testWriteZip() throws Exception {
-        final ArchiveEntry entry = new ZipArchiveEntry("dummy");
-        compareWrites("zip", entry);
-    }
-
-    @Test
-    public void testReadAr() throws Exception {
-        compareReads("ar");
-    }
-
-    @Test
-    public void testReadCpio() throws Exception {
-        compareReads("cpio");
-    }
-
-    @Test
-    public void testReadJar() throws Exception {
-        compareReads("jar");
-    }
-
-    @Test
-    public void testReadTar() throws Exception {
-        compareReads("tar");
-    }
-
-    @Test
-    public void testReadZip() throws Exception {
-        compareReads("zip");
-    }
-
-    private void compareWrites(final String archiverName, final ArchiveEntry entry) throws Exception {
-        final OutputStream out1 = new ByteArrayOutputStream();
-        final OutputStream out2 = new ByteArrayOutputStream();
-        final OutputStream out3 = new ByteArrayOutputStream();
-        final ArchiveOutputStream aos1 = factory.createArchiveOutputStream(archiverName, out1);
-        aos1.putArchiveEntry(entry);
-        final ArchiveOutputStream aos2 = factory.createArchiveOutputStream(archiverName, out2);
-        aos2.putArchiveEntry(entry);
-        final ArchiveOutputStream aos3 = factory.createArchiveOutputStream(archiverName, out3);
-        aos3.putArchiveEntry(entry);
-        for (final byte element : byteTest) {
-            aos1.write(element);
-        }
-        aos1.closeArchiveEntry();
-        aos1.close();
-
-        aos2.write(byteTest);
-        aos2.closeArchiveEntry();
-        aos2.close();
-
-        aos3.write(byteTest, 0, byteTest.length);
-        aos3.closeArchiveEntry();
-        aos3.close();
-        assertEquals("aos1Bytes!=aos2Bytes",aos1.getBytesWritten(),aos2.getBytesWritten());
-        assertEquals("aos1Bytes!=aos3Bytes",aos1.getBytesWritten(),aos3.getBytesWritten());
-        assertEquals("out1Len!=out2Len",out1.toString().length(),out2.toString().length());
-        assertEquals("out1Len!=out2Len",out1.toString().length(),out3.toString().length());
-        assertEquals("out1!=out2",out1.toString(),out2.toString());
-        assertEquals("out1!=out3",out1.toString(),out3.toString());
-    }
-
     private void compareReads(final String archiverName) throws Exception {
         final OutputStream out1 = new ByteArrayOutputStream();
         final OutputStream out2 = new ByteArrayOutputStream();
@@ -192,5 +105,92 @@ public class IOMethodsTest extends AbstractTestCase {
         assertEquals("out1Len!=out3Len",out1.toString().length(),out3.toString().length());
         assertEquals("out1!=out2",out1.toString(),out2.toString());
         assertEquals("out1!=out3",out1.toString(),out3.toString());
+    }
+
+    private void compareWrites(final String archiverName, final ArchiveEntry entry) throws Exception {
+        final OutputStream out1 = new ByteArrayOutputStream();
+        final OutputStream out2 = new ByteArrayOutputStream();
+        final OutputStream out3 = new ByteArrayOutputStream();
+        final ArchiveOutputStream aos1 = factory.createArchiveOutputStream(archiverName, out1);
+        aos1.putArchiveEntry(entry);
+        final ArchiveOutputStream aos2 = factory.createArchiveOutputStream(archiverName, out2);
+        aos2.putArchiveEntry(entry);
+        final ArchiveOutputStream aos3 = factory.createArchiveOutputStream(archiverName, out3);
+        aos3.putArchiveEntry(entry);
+        for (final byte element : byteTest) {
+            aos1.write(element);
+        }
+        aos1.closeArchiveEntry();
+        aos1.close();
+
+        aos2.write(byteTest);
+        aos2.closeArchiveEntry();
+        aos2.close();
+
+        aos3.write(byteTest, 0, byteTest.length);
+        aos3.closeArchiveEntry();
+        aos3.close();
+        assertEquals("aos1Bytes!=aos2Bytes",aos1.getBytesWritten(),aos2.getBytesWritten());
+        assertEquals("aos1Bytes!=aos3Bytes",aos1.getBytesWritten(),aos3.getBytesWritten());
+        assertEquals("out1Len!=out2Len",out1.toString().length(),out2.toString().length());
+        assertEquals("out1Len!=out2Len",out1.toString().length(),out3.toString().length());
+        assertEquals("out1!=out2",out1.toString(),out2.toString());
+        assertEquals("out1!=out3",out1.toString(),out3.toString());
+    }
+
+    @Test
+    public void testReadAr() throws Exception {
+        compareReads("ar");
+    }
+
+    @Test
+    public void testReadCpio() throws Exception {
+        compareReads("cpio");
+    }
+
+    @Test
+    public void testReadJar() throws Exception {
+        compareReads("jar");
+    }
+
+    @Test
+    public void testReadTar() throws Exception {
+        compareReads("tar");
+    }
+
+    @Test
+    public void testReadZip() throws Exception {
+        compareReads("zip");
+    }
+
+    @Test
+    public void testWriteAr() throws Exception {
+        final ArchiveEntry entry = new ArArchiveEntry("dummy", bytesToTest);
+        compareWrites("ar", entry);
+    }
+
+    @Test
+    public void testWriteCpio() throws Exception {
+        final ArchiveEntry entry = new CpioArchiveEntry("dummy", bytesToTest);
+        compareWrites("cpio", entry);
+    }
+
+    @Test
+    public void testWriteJar() throws Exception {
+        final ArchiveEntry entry = new JarArchiveEntry("dummy");
+        compareWrites("jar", entry);
+    }
+
+    @Test
+    public void testWriteTar() throws Exception {
+        final TarArchiveEntry entry = new TarArchiveEntry("dummy");
+        entry.setSize(bytesToTest);
+        compareWrites("tar", entry);
+    }
+
+    @Test
+    public void testWriteZip() throws Exception {
+        final ArchiveEntry entry = new ZipArchiveEntry("dummy");
+        compareWrites("zip", entry);
     }
 }

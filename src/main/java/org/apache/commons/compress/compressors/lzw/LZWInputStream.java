@@ -56,56 +56,6 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
         this.in = new BitInputStream(inputStream, byteOrder);
     }
 
-    @Override
-    public void close() throws IOException {
-        in.close();
-    }
-
-    @Override
-    public int read() throws IOException {
-        final int ret = read(oneByte);
-        if (ret < 0) {
-            return ret;
-        }
-        return 0xff & oneByte[0];
-    }
-
-    @Override
-    public int read(final byte[] b, final int off, final int len) throws IOException {
-        if (len == 0) {
-            return 0;
-        }
-        int bytesRead = readFromStack(b, off, len);
-        while (len - bytesRead > 0) {
-            final int result = decompressNextSymbol();
-            if (result < 0) {
-                if (bytesRead > 0) {
-                    count(bytesRead);
-                    return bytesRead;
-                }
-                return result;
-            }
-            bytesRead += readFromStack(b, off + bytesRead, len - bytesRead);
-        }
-        count(bytesRead);
-        return bytesRead;
-    }
-
-    /**
-     * @since 1.17
-     */
-    @Override
-    public long getCompressedCount() {
-        return in.getBytesRead();
-    }
-
-    /**
-     * Read the next code and expand it.
-     * @return the expanded next code, negative on EOF
-     * @throws IOException on error
-     */
-    protected abstract int decompressNextSymbol() throws IOException;
-
     /**
      * Add a new entry to the dictionary.
      * @param previousCode the previous code
@@ -115,77 +65,6 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
      */
     protected abstract int addEntry(int previousCode, byte character)
         throws IOException;
-
-    /**
-     * Sets the clear code based on the code size.
-     * @param codeSize code size
-     */
-    protected void setClearCode(final int codeSize) {
-        clearCode = (1 << (codeSize - 1));
-    }
-
-    /**
-     * Initializes the arrays based on the maximum code size.
-     * First checks that the estimated memory usage is below memoryLimitInKb
-     *
-     * @param maxCodeSize maximum code size
-     * @param memoryLimitInKb maximum allowed estimated memory usage in Kb
-     * @throws MemoryLimitException if estimated memory usage is greater than memoryLimitInKb
-     * @throws IllegalArgumentException if {@code maxCodeSize} is not bigger than 0
-     */
-    protected void initializeTables(final int maxCodeSize, final int memoryLimitInKb)
-            throws MemoryLimitException {
-        if (maxCodeSize <= 0) {
-            throw new IllegalArgumentException("maxCodeSize is " + maxCodeSize
-                + ", must be bigger than 0");
-        }
-
-        if (memoryLimitInKb > -1) {
-            final int maxTableSize = 1 << maxCodeSize;
-            //account for potential overflow
-            final long memoryUsageInBytes = (long) maxTableSize * 6;//(4 (prefixes) + 1 (characters) +1 (outputStack))
-            final long memoryUsageInKb = memoryUsageInBytes >> 10;
-
-            if (memoryUsageInKb > memoryLimitInKb) {
-                throw new MemoryLimitException(memoryUsageInKb, memoryLimitInKb);
-            }
-        }
-        initializeTables(maxCodeSize);
-    }
-
-    /**
-     * Initializes the arrays based on the maximum code size.
-     * @param maxCodeSize maximum code size
-     * @throws IllegalArgumentException if {@code maxCodeSize} is not bigger than 0
-     */
-    protected void initializeTables(final int maxCodeSize) {
-        if (maxCodeSize <= 0) {
-            throw new IllegalArgumentException("maxCodeSize is " + maxCodeSize
-                + ", must be bigger than 0");
-        }
-        final int maxTableSize = 1 << maxCodeSize;
-        prefixes = new int[maxTableSize];
-        characters = new byte[maxTableSize];
-        outputStack = new byte[maxTableSize];
-        outputStackLocation = maxTableSize;
-        final int max = 1 << 8;
-        for (int i = 0; i < max; i++) {
-            prefixes[i] = -1;
-            characters[i] = (byte) i;
-        }
-    }
-
-    /**
-     * Reads the next code from the stream.
-     * @return the next code
-     * @throws IOException on error
-     */
-    protected int readNextCode() throws IOException {
-        if (codeSize > 31) {
-            throw new IllegalArgumentException("Code size must not be bigger than 31");
-        }
-        return (int) in.readBits(codeSize);
-    }
 
     /**
      * Adds a new entry if the maximum table size hasn't been exceeded
@@ -218,6 +97,18 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
         return addEntry(previousCode, previousCodeFirstChar);
     }
 
+    @Override
+    public void close() throws IOException {
+        in.close();
+    }
+
+    /**
+     * Read the next code and expand it.
+     * @return the expanded next code, negative on EOF
+     * @throws IOException on error
+     */
+    protected abstract int decompressNextSymbol() throws IOException;
+
     /**
      * Expands the entry with index code to the output stack and may
      * create a new entry
@@ -239,6 +130,119 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
         return outputStackLocation;
     }
 
+    protected int getClearCode() {
+        return clearCode;
+    }
+
+    protected int getCodeSize() {
+        return codeSize;
+    }
+
+    /**
+     * @since 1.17
+     */
+    @Override
+    public long getCompressedCount() {
+        return in.getBytesRead();
+    }
+
+    protected int getPrefix(final int offset) {
+        return prefixes[offset];
+    }
+
+    protected int getPrefixesLength() {
+        return prefixes.length;
+    }
+
+    protected int getTableSize() {
+        return tableSize;
+    }
+
+    protected void incrementCodeSize() {
+        codeSize++;
+    }
+
+    /**
+     * Initializes the arrays based on the maximum code size.
+     * @param maxCodeSize maximum code size
+     * @throws IllegalArgumentException if {@code maxCodeSize} is not bigger than 0
+     */
+    protected void initializeTables(final int maxCodeSize) {
+        if (maxCodeSize <= 0) {
+            throw new IllegalArgumentException("maxCodeSize is " + maxCodeSize
+                + ", must be bigger than 0");
+        }
+        final int maxTableSize = 1 << maxCodeSize;
+        prefixes = new int[maxTableSize];
+        characters = new byte[maxTableSize];
+        outputStack = new byte[maxTableSize];
+        outputStackLocation = maxTableSize;
+        final int max = 1 << 8;
+        for (int i = 0; i < max; i++) {
+            prefixes[i] = -1;
+            characters[i] = (byte) i;
+        }
+    }
+
+    /**
+     * Initializes the arrays based on the maximum code size.
+     * First checks that the estimated memory usage is below memoryLimitInKb
+     *
+     * @param maxCodeSize maximum code size
+     * @param memoryLimitInKb maximum allowed estimated memory usage in Kb
+     * @throws MemoryLimitException if estimated memory usage is greater than memoryLimitInKb
+     * @throws IllegalArgumentException if {@code maxCodeSize} is not bigger than 0
+     */
+    protected void initializeTables(final int maxCodeSize, final int memoryLimitInKb)
+            throws MemoryLimitException {
+        if (maxCodeSize <= 0) {
+            throw new IllegalArgumentException("maxCodeSize is " + maxCodeSize
+                + ", must be bigger than 0");
+        }
+
+        if (memoryLimitInKb > -1) {
+            final int maxTableSize = 1 << maxCodeSize;
+            //account for potential overflow
+            final long memoryUsageInBytes = (long) maxTableSize * 6;//(4 (prefixes) + 1 (characters) +1 (outputStack))
+            final long memoryUsageInKb = memoryUsageInBytes >> 10;
+
+            if (memoryUsageInKb > memoryLimitInKb) {
+                throw new MemoryLimitException(memoryUsageInKb, memoryLimitInKb);
+            }
+        }
+        initializeTables(maxCodeSize);
+    }
+
+    @Override
+    public int read() throws IOException {
+        final int ret = read(oneByte);
+        if (ret < 0) {
+            return ret;
+        }
+        return 0xff & oneByte[0];
+    }
+
+    @Override
+    public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
+        int bytesRead = readFromStack(b, off, len);
+        while (len - bytesRead > 0) {
+            final int result = decompressNextSymbol();
+            if (result < 0) {
+                if (bytesRead > 0) {
+                    count(bytesRead);
+                    return bytesRead;
+                }
+                return result;
+            }
+            bytesRead += readFromStack(b, off + bytesRead, len - bytesRead);
+        }
+        count(bytesRead);
+        return bytesRead;
+    }
+
     private int readFromStack(final byte[] b, final int off, final int len) {
         final int remainingInStack = outputStack.length - outputStackLocation;
         if (remainingInStack > 0) {
@@ -250,44 +254,40 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
         return 0;
     }
 
-    protected int getCodeSize() {
-        return codeSize;
+    /**
+     * Reads the next code from the stream.
+     * @return the next code
+     * @throws IOException on error
+     */
+    protected int readNextCode() throws IOException {
+        if (codeSize > 31) {
+            throw new IllegalArgumentException("Code size must not be bigger than 31");
+        }
+        return (int) in.readBits(codeSize);
     }
 
     protected void resetCodeSize() {
         setCodeSize(DEFAULT_CODE_SIZE);
     }
 
-    protected void setCodeSize(final int cs) {
-        this.codeSize = cs;
-    }
-
-    protected void incrementCodeSize() {
-        codeSize++;
-    }
-
     protected void resetPreviousCode() {
         this.previousCode = -1;
     }
 
-    protected int getPrefix(final int offset) {
-        return prefixes[offset];
+    /**
+     * Sets the clear code based on the code size.
+     * @param codeSize code size
+     */
+    protected void setClearCode(final int codeSize) {
+        clearCode = (1 << (codeSize - 1));
+    }
+
+    protected void setCodeSize(final int cs) {
+        this.codeSize = cs;
     }
 
     protected void setPrefix(final int offset, final int value) {
         prefixes[offset] = value;
-    }
-
-    protected int getPrefixesLength() {
-        return prefixes.length;
-    }
-
-    protected int getClearCode() {
-        return clearCode;
-    }
-
-    protected int getTableSize() {
-        return tableSize;
     }
 
     protected void setTableSize(final int newSize) {

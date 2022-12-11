@@ -34,21 +34,6 @@ public class CountingOutputStream extends FilterOutputStream {
         super(out);
     }
 
-    @Override
-    public void write(final int b) throws IOException {
-        out.write(b);
-        count(1);
-    }
-    @Override
-    public void write(final byte[] b) throws IOException {
-        write(b, 0, b.length);
-    }
-    @Override
-    public void write(final byte[] b, final int off, final int len) throws IOException {
-        out.write(b, off, len);
-        count(len);
-    }
-
     /**
      * Increments the counter of already written bytes.
      * Doesn't increment if the EOF has been hit (written == -1)
@@ -60,12 +45,27 @@ public class CountingOutputStream extends FilterOutputStream {
             bytesWritten += written;
         }
     }
-
     /**
      * Returns the current number of bytes written to this stream.
      * @return the number of written bytes
      */
     public long getBytesWritten() {
         return bytesWritten;
+    }
+    @Override
+    public void write(final byte[] b) throws IOException {
+        write(b, 0, b.length);
+    }
+
+    @Override
+    public void write(final byte[] b, final int off, final int len) throws IOException {
+        out.write(b, off, len);
+        count(len);
+    }
+
+    @Override
+    public void write(final int b) throws IOException {
+        out.write(b);
+        count(1);
     }
 }

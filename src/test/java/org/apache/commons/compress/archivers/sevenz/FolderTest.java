@@ -33,6 +33,20 @@ public class FolderTest {
 
 
     @Test
+    public void testFindBindPairForInStream() {
+
+        final Folder folder = new Folder();
+        final BindPair[] bindPairArray = new BindPair[1];
+        final BindPair bindPair = new BindPair();
+        bindPairArray[0] = bindPair;
+        folder.bindPairs = bindPairArray;
+
+        assertEquals(0, folder.findBindPairForInStream(0));
+
+    }
+
+
+    @Test
     public void testGetUnpackSizeForCoderOne() {
 
         final Folder folder = new Folder();
@@ -67,20 +81,6 @@ public class FolderTest {
         final Folder folder = new Folder();
 
         assertEquals(0L, folder.getUnpackSize());
-
-    }
-
-
-    @Test
-    public void testFindBindPairForInStream() {
-
-        final Folder folder = new Folder();
-        final BindPair[] bindPairArray = new BindPair[1];
-        final BindPair bindPair = new BindPair();
-        bindPairArray[0] = bindPair;
-        folder.bindPairs = bindPairArray;
-
-        assertEquals(0, folder.findBindPairForInStream(0));
 
     }
 

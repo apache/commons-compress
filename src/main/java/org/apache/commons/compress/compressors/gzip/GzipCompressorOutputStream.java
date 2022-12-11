@@ -86,6 +86,91 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
         writeHeader(parameters);
     }
 
+    @Override
+    public void close() throws IOException {
+        if (!closed) {
+            try {
+                finish();
+            } finally {
+                deflater.end();
+                out.close();
+                closed = true;
+            }
+        }
+    }
+
+    private void deflate() throws IOException {
+        final int length = deflater.deflate(deflateBuffer, 0, deflateBuffer.length);
+        if (length > 0) {
+            out.write(deflateBuffer, 0, length);
+        }
+    }
+
+    /**
+     * Finishes writing compressed data to the underlying stream without closing it.
+     *
+     * @since 1.7
+     * @throws IOException on error
+     */
+    public void finish() throws IOException {
+        if (!deflater.finished()) {
+            deflater.finish();
+
+            while (!deflater.finished()) {
+                deflate();
+            }
+
+            writeTrailer();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.7
+     */
+    @Override
+    public void flush() throws IOException {
+        out.flush();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.1
+     */
+    @Override
+    public void write(final byte[] buffer) throws IOException {
+        write(buffer, 0, buffer.length);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.1
+     */
+    @Override
+    public void write(final byte[] buffer, final int offset, final int length) throws IOException {
+        if (deflater.finished()) {
+            throw new IOException("Cannot write more data, the end of the compressed data stream has been reached");
+
+        }
+        if (length > 0) {
+            deflater.setInput(buffer, offset, length);
+
+            while (!deflater.needsInput()) {
+                deflate();
+            }
+
+            crc.update(buffer, offset, length);
+        }
+    }
+
+    @Override
+    public void write(final int b) throws IOException {
+        write(new byte[]{(byte) (b & 0xff)}, 0, 1);
+    }
+
     private void writeHeader(final GzipParameters parameters) throws IOException {
         final String filename = parameters.getFilename();
         final String comment = parameters.getComment();
@@ -129,91 +214,6 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
         buffer.putInt(deflater.getTotalIn());
 
         out.write(buffer.array());
-    }
-
-    @Override
-    public void write(final int b) throws IOException {
-        write(new byte[]{(byte) (b & 0xff)}, 0, 1);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @since 1.1
-     */
-    @Override
-    public void write(final byte[] buffer) throws IOException {
-        write(buffer, 0, buffer.length);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @since 1.1
-     */
-    @Override
-    public void write(final byte[] buffer, final int offset, final int length) throws IOException {
-        if (deflater.finished()) {
-            throw new IOException("Cannot write more data, the end of the compressed data stream has been reached");
-
-        }
-        if (length > 0) {
-            deflater.setInput(buffer, offset, length);
-
-            while (!deflater.needsInput()) {
-                deflate();
-            }
-
-            crc.update(buffer, offset, length);
-        }
-    }
-
-    private void deflate() throws IOException {
-        final int length = deflater.deflate(deflateBuffer, 0, deflateBuffer.length);
-        if (length > 0) {
-            out.write(deflateBuffer, 0, length);
-        }
-    }
-
-    /**
-     * Finishes writing compressed data to the underlying stream without closing it.
-     *
-     * @since 1.7
-     * @throws IOException on error
-     */
-    public void finish() throws IOException {
-        if (!deflater.finished()) {
-            deflater.finish();
-
-            while (!deflater.finished()) {
-                deflate();
-            }
-
-            writeTrailer();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @since 1.7
-     */
-    @Override
-    public void flush() throws IOException {
-        out.flush();
-    }
-
-    @Override
-    public void close() throws IOException {
-        if (!closed) {
-            try {
-                finish();
-            } finally {
-                deflater.end();
-                out.close();
-                closed = true;
-            }
-        }
     }
 
 }

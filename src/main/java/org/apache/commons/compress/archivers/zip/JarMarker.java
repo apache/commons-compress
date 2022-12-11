@@ -32,11 +32,6 @@ public final class JarMarker implements ZipExtraField {
     private static final ZipShort NULL = new ZipShort(0);
     private static final JarMarker DEFAULT = new JarMarker();
 
-    /** No-arg constructor */
-    public JarMarker() {
-        // empty
-    }
-
     /**
      * Since JarMarker is stateless we can always use the same instance.
      * @return the DEFAULT jarmaker.
@@ -45,23 +40,19 @@ public final class JarMarker implements ZipExtraField {
         return DEFAULT;
     }
 
-    /**
-     * The Header-ID.
-     * @return the header id
-     */
-    @Override
-    public ZipShort getHeaderId() {
-        return ID;
+    /** No-arg constructor */
+    public JarMarker() {
+        // empty
     }
 
     /**
-     * Length of the extra field in the local file data - without
-     * Header-ID or length specifier.
-     * @return 0
+     * The actual data to put central directory - without Header-ID or
+     * length specifier.
+     * @return the data
      */
     @Override
-    public ZipShort getLocalFileDataLength() {
-        return NULL;
+    public byte[] getCentralDirectoryData() {
+        return ByteUtils.EMPTY_BYTE_ARRAY;
     }
 
     /**
@@ -75,6 +66,15 @@ public final class JarMarker implements ZipExtraField {
     }
 
     /**
+     * The Header-ID.
+     * @return the header id
+     */
+    @Override
+    public ZipShort getHeaderId() {
+        return ID;
+    }
+
+    /**
      * The actual data to put into local file data - without Header-ID
      * or length specifier.
      * @return the data
@@ -85,13 +85,24 @@ public final class JarMarker implements ZipExtraField {
     }
 
     /**
-     * The actual data to put central directory - without Header-ID or
-     * length specifier.
-     * @return the data
+     * Length of the extra field in the local file data - without
+     * Header-ID or length specifier.
+     * @return 0
      */
     @Override
-    public byte[] getCentralDirectoryData() {
-        return ByteUtils.EMPTY_BYTE_ARRAY;
+    public ZipShort getLocalFileDataLength() {
+        return NULL;
+    }
+
+    /**
+     * Doesn't do anything special since this class always uses the
+     * same data in central directory and local file data.
+     */
+    @Override
+    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset,
+                                              final int length)
+        throws ZipException {
+        parseFromLocalFileData(buffer, offset, length);
     }
 
     /**
@@ -108,16 +119,5 @@ public final class JarMarker implements ZipExtraField {
         if (length != 0) {
             throw new ZipException("JarMarker doesn't expect any data");
         }
-    }
-
-    /**
-     * Doesn't do anything special since this class always uses the
-     * same data in central directory and local file data.
-     */
-    @Override
-    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset,
-                                              final int length)
-        throws ZipException {
-        parseFromLocalFileData(buffer, offset, length);
     }
 }

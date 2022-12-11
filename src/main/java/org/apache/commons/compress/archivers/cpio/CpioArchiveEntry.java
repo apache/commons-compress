@@ -197,6 +197,37 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     private long uid;
 
     /**
+     * Creates a CpioArchiveEntry with a specified name for a
+     * specified file. The format of this entry will be the new
+     * format.
+     *
+     * @param inputFile
+     *            The file to gather information from.
+     * @param entryName
+     *            The name of this entry.
+     */
+    public CpioArchiveEntry(final File inputFile, final String entryName) {
+        this(FORMAT_NEW, inputFile, entryName);
+    }
+
+    /**
+     * Creates a CpioArchiveEntry with a specified name for a
+     * specified file. The format of this entry will be the new
+     * format.
+     *
+     * @param inputPath
+     *            The file to gather information from.
+     * @param entryName
+     *            The name of this entry.
+     * @param options options indicating how symbolic links are handled.
+     * @throws IOException if an I/O error occurs
+     * @since 1.21
+     */
+    public CpioArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
+        this(FORMAT_NEW, inputPath, entryName, options);
+    }
+
+    /**
      * Creates a CpioArchiveEntry with a specified format.
      *
      * @param format
@@ -232,111 +263,6 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
             throw new IllegalArgumentException("Unknown header type " + format);
         }
         this.fileFormat = format;
-    }
-
-    /**
-     * Creates a CpioArchiveEntry with a specified name. The format of
-     * this entry will be the new format.
-     *
-     * @param name
-     *            The name of this entry.
-     */
-    public CpioArchiveEntry(final String name) {
-        this(FORMAT_NEW, name);
-    }
-
-    /**
-     * Creates a CpioArchiveEntry with a specified name.
-     *
-     * @param format
-     *            The cpio format for this entry.
-     * @param name
-     *            The name of this entry.
-     * <p>
-     * Possible format values are:
-     * <pre>
-     * CpioConstants.FORMAT_NEW
-     * CpioConstants.FORMAT_NEW_CRC
-     * CpioConstants.FORMAT_OLD_BINARY
-     * CpioConstants.FORMAT_OLD_ASCII
-     * </pre>
-     *
-     * @since 1.1
-     */
-    public CpioArchiveEntry(final short format, final String name) {
-        this(format);
-        this.name = name;
-    }
-
-    /**
-     * Creates a CpioArchiveEntry with a specified name. The format of
-     * this entry will be the new format.
-     *
-     * @param name
-     *            The name of this entry.
-     * @param size
-     *            The size of this entry
-     */
-    public CpioArchiveEntry(final String name, final long size) {
-        this(name);
-        this.setSize(size);
-    }
-
-    /**
-     * Creates a CpioArchiveEntry with a specified name.
-     *
-     * @param format
-     *            The cpio format for this entry.
-     * @param name
-     *            The name of this entry.
-     * @param size
-     *            The size of this entry
-     * <p>
-     * Possible format values are:
-     * <pre>
-     * CpioConstants.FORMAT_NEW
-     * CpioConstants.FORMAT_NEW_CRC
-     * CpioConstants.FORMAT_OLD_BINARY
-     * CpioConstants.FORMAT_OLD_ASCII
-     * </pre>
-     *
-     * @since 1.1
-     */
-    public CpioArchiveEntry(final short format, final String name,
-                            final long size) {
-        this(format, name);
-        this.setSize(size);
-    }
-
-    /**
-     * Creates a CpioArchiveEntry with a specified name for a
-     * specified file. The format of this entry will be the new
-     * format.
-     *
-     * @param inputFile
-     *            The file to gather information from.
-     * @param entryName
-     *            The name of this entry.
-     */
-    public CpioArchiveEntry(final File inputFile, final String entryName) {
-        this(FORMAT_NEW, inputFile, entryName);
-    }
-
-    /**
-     * Creates a CpioArchiveEntry with a specified name for a
-     * specified file. The format of this entry will be the new
-     * format.
-     *
-     * @param inputPath
-     *            The file to gather information from.
-     * @param entryName
-     *            The name of this entry.
-     * @param options options indicating how symbolic links are handled.
-     * @throws IOException if an I/O error occurs
-     * @since 1.21
-     */
-    public CpioArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
-        this(FORMAT_NEW, inputPath, entryName, options);
     }
 
     /**
@@ -413,6 +339,80 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
+     * Creates a CpioArchiveEntry with a specified name.
+     *
+     * @param format
+     *            The cpio format for this entry.
+     * @param name
+     *            The name of this entry.
+     * <p>
+     * Possible format values are:
+     * <pre>
+     * CpioConstants.FORMAT_NEW
+     * CpioConstants.FORMAT_NEW_CRC
+     * CpioConstants.FORMAT_OLD_BINARY
+     * CpioConstants.FORMAT_OLD_ASCII
+     * </pre>
+     *
+     * @since 1.1
+     */
+    public CpioArchiveEntry(final short format, final String name) {
+        this(format);
+        this.name = name;
+    }
+
+    /**
+     * Creates a CpioArchiveEntry with a specified name.
+     *
+     * @param format
+     *            The cpio format for this entry.
+     * @param name
+     *            The name of this entry.
+     * @param size
+     *            The size of this entry
+     * <p>
+     * Possible format values are:
+     * <pre>
+     * CpioConstants.FORMAT_NEW
+     * CpioConstants.FORMAT_NEW_CRC
+     * CpioConstants.FORMAT_OLD_BINARY
+     * CpioConstants.FORMAT_OLD_ASCII
+     * </pre>
+     *
+     * @since 1.1
+     */
+    public CpioArchiveEntry(final short format, final String name,
+                            final long size) {
+        this(format, name);
+        this.setSize(size);
+    }
+
+    /**
+     * Creates a CpioArchiveEntry with a specified name. The format of
+     * this entry will be the new format.
+     *
+     * @param name
+     *            The name of this entry.
+     */
+    public CpioArchiveEntry(final String name) {
+        this(FORMAT_NEW, name);
+    }
+
+    /**
+     * Creates a CpioArchiveEntry with a specified name. The format of
+     * this entry will be the new format.
+     *
+     * @param name
+     *            The name of this entry.
+     * @param size
+     *            The size of this entry
+     */
+    public CpioArchiveEntry(final String name, final long size) {
+        this(name);
+        this.setSize(size);
+    }
+
+    /**
      * Checks if the method is allowed for the defined format.
      */
     private void checkNewFormat() {
@@ -430,6 +430,33 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         }
     }
 
+    /* (non-Javadoc)
+     * @see Object#equals(Object)
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final CpioArchiveEntry other = (CpioArchiveEntry) obj;
+        if (name == null) {
+            return other.name == null;
+        }
+        return name.equals(other.name);
+    }
+
+    /**
+     * Gets the alignment boundary for this CPIO format
+     *
+     * @return Returns the aligment boundary (0, 2, 4) in bytes
+     */
+    public int getAlignmentBoundary() {
+        return this.alignmentBoundary;
+    }
+
     /**
      * Gets the checksum.
      * Only supported for the new formats.
@@ -440,6 +467,23 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     public long getChksum() {
         checkNewFormat();
         return this.chksum & 0xFFFFFFFFL;
+    }
+
+    /**
+     * Gets the number of bytes needed to pad the data to the alignment boundary.
+     *
+     * @return the number of bytes needed to pad the data (0,1,2,3)
+     */
+    public int getDataPadCount() {
+        if (this.alignmentBoundary == 0) {
+            return 0;
+        }
+        final long size = this.filesize;
+        final int remain = (int) (size % this.alignmentBoundary);
+        if (remain > 0) {
+            return this.alignmentBoundary - remain;
+        }
+        return 0;
     }
 
     /**
@@ -480,17 +524,6 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Gets the filesize.
-     *
-     * @return Returns the filesize.
-     * @see org.apache.commons.compress.archivers.ArchiveEntry#getSize()
-     */
-    @Override
-    public long getSize() {
-        return this.filesize;
-    }
-
-    /**
      * Gets the format for this entry.
      *
      * @return Returns the format.
@@ -506,24 +539,6 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public long getGID() {
         return this.gid;
-    }
-
-    /**
-     * Gets the header size for this CPIO format
-     *
-     * @return Returns the header size in bytes.
-     */
-    public int getHeaderSize() {
-        return this.headerSize;
-    }
-
-    /**
-     * Gets the alignment boundary for this CPIO format
-     *
-     * @return Returns the aligment boundary (0, 2, 4) in bytes
-     */
-    public int getAlignmentBoundary() {
-        return this.alignmentBoundary;
     }
 
     /**
@@ -583,20 +598,12 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Gets the number of bytes needed to pad the data to the alignment boundary.
+     * Gets the header size for this CPIO format
      *
-     * @return the number of bytes needed to pad the data (0,1,2,3)
+     * @return Returns the header size in bytes.
      */
-    public int getDataPadCount() {
-        if (this.alignmentBoundary == 0) {
-            return 0;
-        }
-        final long size = this.filesize;
-        final int remain = (int) (size % this.alignmentBoundary);
-        if (remain > 0) {
-            return this.alignmentBoundary - remain;
-        }
-        return 0;
+    public int getHeaderSize() {
+        return this.headerSize;
     }
 
     /**
@@ -606,6 +613,11 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public long getInode() {
         return this.inode;
+    }
+
+    @Override
+    public Date getLastModifiedDate() {
+        return new Date(1000 * getTime());
     }
 
     /**
@@ -678,17 +690,23 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
+     * Gets the filesize.
+     *
+     * @return Returns the filesize.
+     * @see org.apache.commons.compress.archivers.ArchiveEntry#getSize()
+     */
+    @Override
+    public long getSize() {
+        return this.filesize;
+    }
+
+    /**
      * Gets the time in seconds.
      *
      * @return Returns the time.
      */
     public long getTime() {
         return this.mtime;
-    }
-
-    @Override
-    public Date getLastModifiedDate() {
-        return new Date(1000 * getTime());
     }
 
     /**
@@ -698,6 +716,14 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public long getUID() {
         return this.uid;
+    }
+
+    /* (non-Javadoc)
+     * @see Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 
     /**
@@ -822,19 +848,6 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Sets the filesize.
-     *
-     * @param size
-     *            The filesize to set.
-     */
-    public void setSize(final long size) {
-        if (size < 0 || size > 0xFFFFFFFFL) {
-            throw new IllegalArgumentException("Invalid entry size <" + size + ">");
-        }
-        this.filesize = size;
-    }
-
-    /**
      * Sets the group id.
      *
      * @param gid
@@ -945,13 +958,16 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Sets the time in seconds.
+     * Sets the filesize.
      *
-     * @param time
-     *            The time to set.
+     * @param size
+     *            The filesize to set.
      */
-    public void setTime(final long time) {
-        this.mtime = time;
+    public void setSize(final long size) {
+        if (size < 0 || size > 0xFFFFFFFFL) {
+            throw new IllegalArgumentException("Invalid entry size <" + size + ">");
+        }
+        this.filesize = size;
     }
 
     /**
@@ -965,6 +981,16 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
+     * Sets the time in seconds.
+     *
+     * @param time
+     *            The time to set.
+     */
+    public void setTime(final long time) {
+        this.mtime = time;
+    }
+
+    /**
      * Sets the user id.
      *
      * @param uid
@@ -972,31 +998,5 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public void setUID(final long uid) {
         this.uid = uid;
-    }
-
-    /* (non-Javadoc)
-     * @see Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
-    }
-
-    /* (non-Javadoc)
-     * @see Object#equals(Object)
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        final CpioArchiveEntry other = (CpioArchiveEntry) obj;
-        if (name == null) {
-            return other.name == null;
-        }
-        return name.equals(other.name);
     }
 }

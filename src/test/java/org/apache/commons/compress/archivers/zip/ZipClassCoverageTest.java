@@ -32,19 +32,6 @@ import org.junit.jupiter.api.Test;
 public class ZipClassCoverageTest {
 
     @Test
-    public void testConstructZip64RequiredException() {
-        final Zip64RequiredException e = new Zip64RequiredException("critique of pure");
-        assertNotNull(e);
-    }
-    @Test
-    public void testMessageException() {
-        final ZipArchiveEntry ze = new ZipArchiveEntry("hello");
-        final String entryTooBigMessage = Zip64RequiredException.getEntryTooBigMessage(ze);
-        assertEquals("hello's size exceeds the limit of 4GByte.",
-            entryTooBigMessage);
-    }
-
-    @Test
     public void testConstantConstructor()
         throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         final Class<ZipConstants> clazz = ZipConstants.class;
@@ -55,6 +42,19 @@ public class ZipClassCoverageTest {
         assertThat(o, IsInstanceOf.instanceOf(clazz));
         constructor.setAccessible(false);
 
+    }
+    @Test
+    public void testConstructZip64RequiredException() {
+        final Zip64RequiredException e = new Zip64RequiredException("critique of pure");
+        assertNotNull(e);
+    }
+
+    @Test
+    public void testMessageException() {
+        final ZipArchiveEntry ze = new ZipArchiveEntry("hello");
+        final String entryTooBigMessage = Zip64RequiredException.getEntryTooBigMessage(ze);
+        assertEquals("hello's size exceeds the limit of 4GByte.",
+            entryTooBigMessage);
     }
 
 }

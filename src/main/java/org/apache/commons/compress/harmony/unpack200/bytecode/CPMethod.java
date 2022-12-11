@@ -23,18 +23,13 @@ import java.util.List;
  */
 public class CPMethod extends CPMember {
 
+    private boolean hashcodeComputed;
+
+    private int cachedHashCode;
+
     public CPMethod(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List<Attribute> attributes) {
         super(name, descriptor, flags, attributes);
     }
-
-    @Override
-    public String toString() {
-        return "Method: " + name + "(" + descriptor + ")";
-    }
-
-    private boolean hashcodeComputed;
-    private int cachedHashCode;
-
     private void generateHashCode() {
         hashcodeComputed = true;
         final int PRIME = 31;
@@ -50,6 +45,11 @@ public class CPMethod extends CPMember {
             generateHashCode();
         }
         return cachedHashCode;
+    }
+
+    @Override
+    public String toString() {
+        return "Method: " + name + "(" + descriptor + ")";
     }
 
 }

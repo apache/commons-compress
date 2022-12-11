@@ -46,11 +46,57 @@ public class ZipEncodingTest {
     private static final String BAD_STRING_ENC =
         "%U2016%U2015%U2016%U2015%U2016%U2015%U2016%U2015%U2016%U2015%U2016";
 
+    private static void assertEquals(final byte[] expected, final ByteBuffer actual) {
+
+        Assert.assertEquals(expected.length, actual.limit());
+
+        for (final byte anExpected : expected) {
+            final byte a = actual.get();
+            Assert.assertEquals(anExpected, a);
+        }
+
+    }
+
+    private void doSimpleEncodingsTest(final int n) throws IOException {
+
+        doSimpleEncodingTest("Cp" + n, null);
+        doSimpleEncodingTest("cp" + n, null);
+        doSimpleEncodingTest("CP" + n, null);
+        doSimpleEncodingTest("IBM" + n, null);
+        doSimpleEncodingTest("ibm" + n, null);
+    }
+
+    private void doSimpleEncodingTest(final String name, byte[] testBytes)
+        throws IOException {
+
+        final ZipEncoding enc = ZipEncodingHelper.getZipEncoding(name);
+        assertThat(enc, IsInstanceOf.instanceOf(NioZipEncoding.class));
+        if (testBytes == null) {
+
+            testBytes = new byte[256];
+            for (int i = 0; i < 256; ++i) {
+                testBytes[i] = (byte) i;
+            }
+        }
+
+        final String decoded = enc.decode(testBytes);
+
+        assertTrue(enc.canEncode(decoded));
+
+        final ByteBuffer encoded = enc.encode(decoded);
+
+        assertEquals(testBytes, encoded);
+
+        assertFalse(enc.canEncode(UNENC_STRING));
+        assertEquals("%U2016".getBytes(name), enc.encode(UNENC_STRING));
+        assertFalse(enc.canEncode(BAD_STRING));
+        assertEquals(BAD_STRING_ENC.getBytes(name), enc.encode(BAD_STRING));
+    }
+
     @Test
-    public void testNothingToMakeCoverallsHappier() {
-        final Object o = new ZipEncodingHelper() {
-        };
-        assertNotNull(o);
+    public void testEbcidic() throws IOException {
+
+        doSimpleEncodingTest("IBM1047", null);
     }
 
     @Test
@@ -70,31 +116,6 @@ public class ZipEncodingTest {
        Assert.assertEquals(Charset.defaultCharset().name().equals("UTF-8"), ZipEncodingHelper.isUTF8(null));
     }
 
-    @Test
-    public void testSimpleCp437Encoding() throws IOException {
-        doSimpleEncodingsTest(437);
-    }
-
-    @Test
-    public void testSimpleCp850Encoding() throws IOException {
-        doSimpleEncodingsTest(850);
-    }
-
-    @Test
-    public void testEbcidic() throws IOException {
-
-        doSimpleEncodingTest("IBM1047", null);
-    }
-
-
-    private void doSimpleEncodingsTest(final int n) throws IOException {
-
-        doSimpleEncodingTest("Cp" + n, null);
-        doSimpleEncodingTest("cp" + n, null);
-        doSimpleEncodingTest("CP" + n, null);
-        doSimpleEncodingTest("IBM" + n, null);
-        doSimpleEncodingTest("ibm" + n, null);
-    }
 
     @Test
     public void testNioCp1252Encoding() throws IOException {
@@ -154,42 +175,21 @@ public class ZipEncodingTest {
         doSimpleEncodingTest("Cp1252",b);
     }
 
-    private static void assertEquals(final byte[] expected, final ByteBuffer actual) {
-
-        Assert.assertEquals(expected.length, actual.limit());
-
-        for (final byte anExpected : expected) {
-            final byte a = actual.get();
-            Assert.assertEquals(anExpected, a);
-        }
-
+    @Test
+    public void testNothingToMakeCoverallsHappier() {
+        final Object o = new ZipEncodingHelper() {
+        };
+        assertNotNull(o);
     }
 
-    private void doSimpleEncodingTest(final String name, byte[] testBytes)
-        throws IOException {
+    @Test
+    public void testSimpleCp437Encoding() throws IOException {
+        doSimpleEncodingsTest(437);
+    }
 
-        final ZipEncoding enc = ZipEncodingHelper.getZipEncoding(name);
-        assertThat(enc, IsInstanceOf.instanceOf(NioZipEncoding.class));
-        if (testBytes == null) {
-
-            testBytes = new byte[256];
-            for (int i = 0; i < 256; ++i) {
-                testBytes[i] = (byte) i;
-            }
-        }
-
-        final String decoded = enc.decode(testBytes);
-
-        assertTrue(enc.canEncode(decoded));
-
-        final ByteBuffer encoded = enc.encode(decoded);
-
-        assertEquals(testBytes, encoded);
-
-        assertFalse(enc.canEncode(UNENC_STRING));
-        assertEquals("%U2016".getBytes(name), enc.encode(UNENC_STRING));
-        assertFalse(enc.canEncode(BAD_STRING));
-        assertEquals(BAD_STRING_ENC.getBytes(name), enc.encode(BAD_STRING));
+    @Test
+    public void testSimpleCp850Encoding() throws IOException {
+        doSimpleEncodingsTest(850);
     }
 
 }

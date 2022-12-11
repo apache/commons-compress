@@ -30,14 +30,162 @@ import java.util.stream.IntStream;
  */
 public abstract class BandSet {
 
-    protected final SegmentHeader segmentHeader;
-    final int effort;
+    /**
+     * Results obtained by trying different Codecs to encode a band
+     */
+    public class BandAnalysisResults {
+
+        // The number of Codecs tried so far
+        private int numCodecsTried = 0;
+
+        // The number of bytes saved by using betterCodec instead of the default codec
+        private int saved = 0;
+
+        // Extra metadata to pass to the segment header (to be appended to the
+        // band_headers band)
+        private int[] extraMetadata;
+
+        // The results of encoding the band with betterCodec
+        private byte[] encodedBand;
+
+        // The best Codec found so far, or should be null if the default is the
+        // best so far
+        private Codec betterCodec;
+
+    }
+    /**
+     * BandData represents information about a band, e.g. largest value etc and is used in the heuristics that calculate
+     * whether an alternative Codec could make the encoded band smaller.
+     */
+    public class BandData {
+
+        private final int[] band;
+        private int smallest = Integer.MAX_VALUE;
+        private int largest = Integer.MIN_VALUE;
+        private int smallestDelta;
+        private int largestDelta;
+
+        private int deltaIsAscending = 0;
+        private int smallDeltaCount = 0;
+
+        private double averageAbsoluteDelta = 0;
+        private double averageAbsoluteValue = 0;
+
+        private Map<Integer, Integer> distinctValues;
+
+        /**
+         * Create a new instance of BandData. The band is then analysed.
+         *
+         * @param band - the band of integers
+         */
+        public BandData(final int[] band) {
+            this.band = band;
+            final Integer one = Integer.valueOf(1);
+            for (int i = 0; i < band.length; i++) {
+                if (band[i] < smallest) {
+                    smallest = band[i];
+                }
+                if (band[i] > largest) {
+                    largest = band[i];
+                }
+                if (i != 0) {
+                    final int delta = band[i] - band[i - 1];
+                    if (delta < smallestDelta) {
+                        smallestDelta = delta;
+                    }
+                    if (delta > largestDelta) {
+                        largestDelta = delta;
+                    }
+                    if (delta >= 0) {
+                        deltaIsAscending++;
+                    }
+                    averageAbsoluteDelta += (double) Math.abs(delta) / (double) (band.length - 1);
+                    if (Math.abs(delta) < 256) {
+                        smallDeltaCount++;
+                    }
+                } else {
+                    smallestDelta = band[0];
+                    largestDelta = band[0];
+                }
+                averageAbsoluteValue += (double) Math.abs(band[i]) / (double) band.length;
+                if (effort > 3) { // do calculations needed to consider population codec
+                    if (distinctValues == null) {
+                        distinctValues = new HashMap<>();
+                    }
+                    final Integer value = Integer.valueOf(band[i]);
+                    Integer count = distinctValues.get(value);
+                    if (count == null) {
+                        count = one;
+                    } else {
+                        count = Integer.valueOf(count.intValue() + 1);
+                    }
+                    distinctValues.put(value, count);
+                }
+            }
+        }
+
+        /**
+         * Returns true if any band elements are negative.
+         *
+         * @return true if any band elements are negative.
+         */
+        public boolean anyNegatives() {
+            return smallest < 0;
+        }
+
+        /**
+         * Returns true if the band deltas are mainly positive (heuristic).
+         *
+         * @return true if the band deltas are mainly positive (heuristic).
+         */
+        public boolean mainlyPositiveDeltas() {
+            // Note: the value below has been tuned - please test carefully if changing it
+            return (float) deltaIsAscending / (float) band.length > 0.95F;
+        }
+
+        /**
+         * Returns true if the deltas between adjacent band elements are mainly small (heuristic).
+         *
+         * @return true if the deltas between adjacent band elements are mainly small (heuristic).
+         */
+        public boolean mainlySmallDeltas() {
+            // Note: the value below has been tuned - please test carefully if changing it
+            return (float) smallDeltaCount / (float) band.length > 0.7F;
+        }
+
+        /**
+         * Returns the total number of distinct values found in the band.
+         *
+         * @return the total number of distinct values found in the band.
+         */
+        public int numDistinctValues() {
+            if (distinctValues == null) {
+                return band.length;
+            }
+            return distinctValues.size();
+        }
+
+        /**
+         * Returns true if the band is well correlated (i.e. would be suitable for a delta encoding) (heuristic).
+         *
+         * @return true if the band is well correlated (i.e. would be suitable for a delta encoding) (heuristic).
+         */
+        public boolean wellCorrelated() {
+            // Note: the value below has been tuned - please test carefully if changing it
+            return averageAbsoluteDelta * 3.1 < averageAbsoluteValue;
+        }
+
+    }
 
     // Minimum size of band for each effort level where we consider alternative codecs
     // Note: these values have been tuned - please test carefully if changing them
     private static final int[] effortThresholds = {0, 0, 1000, 500, 100, 100, 100, 100, 100, 0};
 
+    protected final SegmentHeader segmentHeader;
+    final int effort;
+
     private long[] canonicalLargest;
+
     private long[] canonicalSmallest;
 
     /**
@@ -49,119 +197,6 @@ public abstract class BandSet {
     public BandSet(final int effort, final SegmentHeader header) {
         this.effort = effort;
         this.segmentHeader = header;
-    }
-
-    /**
-     * Write the packed set of bands to the given output stream
-     *
-     * @param out TODO
-     * @throws IOException If an I/O error occurs.
-     * @throws Pack200Exception TODO
-     */
-    public abstract void pack(OutputStream out) throws IOException, Pack200Exception;
-
-    /**
-     * Encode a band without considering other Codecs
-     *
-     * @param band - the band
-     * @param codec - the Codec to use
-     * @return the encoded band
-     * @throws Pack200Exception TODO
-     */
-    public byte[] encodeScalar(final int[] band, final BHSDCodec codec) throws Pack200Exception {
-        return codec.encode(band);
-    }
-
-    /**
-     * Encode a single value with the given Codec
-     *
-     * @param value - the value to encode
-     * @param codec - Codec to use
-     * @return the encoded value
-     * @throws Pack200Exception TODO
-     */
-    public byte[] encodeScalar(final int value, final BHSDCodec codec) throws Pack200Exception {
-        return codec.encode(value);
-    }
-
-    /**
-     * Encode a band of integers. The default codec may be used, but other Codecs are considered if effort is greater
-     * than 1.
-     *
-     * @param name - name of the band (used for debugging)
-     * @param ints - the band
-     * @param defaultCodec - the default Codec
-     * @return the encoded band
-     * @throws Pack200Exception TODO
-     */
-    public byte[] encodeBandInt(final String name, final int[] ints, final BHSDCodec defaultCodec)
-        throws Pack200Exception {
-        byte[] encodedBand = null;
-        // Useful for debugging
-//        if(ints.length > 0) {
-//            System.out.println("encoding " + name + " " + ints.length);
-//        }
-        if (effort > 1 && (ints.length >= effortThresholds[effort])) {
-            final BandAnalysisResults results = analyseBand(name, ints, defaultCodec);
-            final Codec betterCodec = results.betterCodec;
-            encodedBand = results.encodedBand;
-            if (betterCodec != null) {
-                if (betterCodec instanceof BHSDCodec) {
-                    final int[] specifierBand = CodecEncoding.getSpecifier(betterCodec, defaultCodec);
-                    int specifier = specifierBand[0];
-                    if (specifierBand.length > 1) {
-                        for (int i = 1; i < specifierBand.length; i++) {
-                            segmentHeader.appendBandCodingSpecifier(specifierBand[i]);
-                        }
-                    }
-                    if (defaultCodec.isSigned()) {
-                        specifier = -1 - specifier;
-                    } else {
-                        specifier = specifier + defaultCodec.getL();
-                    }
-                    final byte[] specifierEncoded = defaultCodec.encode(new int[] {specifier});
-                    final byte[] band = new byte[specifierEncoded.length + encodedBand.length];
-                    System.arraycopy(specifierEncoded, 0, band, 0, specifierEncoded.length);
-                    System.arraycopy(encodedBand, 0, band, specifierEncoded.length, encodedBand.length);
-                    return band;
-                }
-                if (betterCodec instanceof PopulationCodec) {
-                    IntStream.of(results.extraMetadata).forEach(segmentHeader::appendBandCodingSpecifier);
-                    return encodedBand;
-                }
-                if (betterCodec instanceof RunCodec) {
-
-                }
-            }
-        }
-
-        // If we get here then we've decided to use the default codec.
-        if (ints.length > 0) {
-            if (encodedBand == null) {
-                encodedBand = defaultCodec.encode(ints);
-            }
-            final int first = ints[0];
-            if (defaultCodec.getB() != 1) {
-                if (defaultCodec.isSigned() && first >= -256 && first <= -1) {
-                    final int specifier = -1 - CodecEncoding.getSpecifierForDefaultCodec(defaultCodec);
-                    final byte[] specifierEncoded = defaultCodec.encode(new int[] {specifier});
-                    final byte[] band = new byte[specifierEncoded.length + encodedBand.length];
-                    System.arraycopy(specifierEncoded, 0, band, 0, specifierEncoded.length);
-                    System.arraycopy(encodedBand, 0, band, specifierEncoded.length, encodedBand.length);
-                    return band;
-                }
-                if (!defaultCodec.isSigned() && first >= defaultCodec.getL() && first <= defaultCodec.getL() + 255) {
-                    final int specifier = CodecEncoding.getSpecifierForDefaultCodec(defaultCodec) + defaultCodec.getL();
-                    final byte[] specifierEncoded = defaultCodec.encode(new int[] {specifier});
-                    final byte[] band = new byte[specifierEncoded.length + encodedBand.length];
-                    System.arraycopy(specifierEncoded, 0, band, 0, specifierEncoded.length);
-                    System.arraycopy(encodedBand, 0, band, specifierEncoded.length, encodedBand.length);
-                    return band;
-                }
-            }
-            return encodedBand;
-        }
-        return new byte[0];
     }
 
     private BandAnalysisResults analyseBand(final String name, final int[] band, final BHSDCodec defaultCodec)
@@ -270,54 +305,152 @@ public abstract class BandSet {
         return results;
     }
 
-    private boolean timeToStop(final BandAnalysisResults results) {
-        // if tried more than effort number of codecs for this band then return
-        // Note: these values have been tuned - please test carefully if changing them
-        if (effort > 6) {
-            return results.numCodecsTried >= effort * 2;
+    /**
+     * Converts a list of ConstantPoolEntrys to an int[] array of their indices
+     *
+     * @param list conversion source.
+     * @return conversion result.
+     */
+    protected int[] cpEntryListToArray(final List<? extends ConstantPoolEntry> list) {
+        final int[] array = new int[list.size()];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = list.get(i).getIndex();
+            if (array[i] < 0) {
+                throw new IllegalArgumentException("Index should be > 0");
+            }
         }
-        return results.numCodecsTried >= effort;
-        // May want to also check how much we've saved if performance needs improving, e.g. saved more than effort*2 %
-        // || (float)results.saved/(float)results.encodedBand.length > (float)effort * 2/100;
+        return array;
     }
 
-    private void tryCodecs(final String name, final int[] band, final BHSDCodec defaultCodec, final BandData bandData,
-        final BandAnalysisResults results, final byte[] encoded, final BHSDCodec[] potentialCodecs)
-        throws Pack200Exception {
-        for (final BHSDCodec potential : potentialCodecs) {
-            if (potential.equals(defaultCodec)) {
-                return; // don't try codecs with greater cardinality in the same 'family' as the default codec as there
-                        // won't be any savings
-            }
-            if (potential.isDelta()) {
-                if (potential.largest() >= bandData.largestDelta && potential.smallest() <= bandData.smallestDelta
-                    && potential.largest() >= bandData.largest && potential.smallest() <= bandData.smallest) {
-                    // TODO: can represent some negative deltas with overflow
-                    final byte[] encoded2 = potential.encode(band);
-                    results.numCodecsTried++;
-                    final byte[] specifierEncoded = defaultCodec.encode(CodecEncoding.getSpecifier(potential, null));
-                    final int saved = encoded.length - encoded2.length - specifierEncoded.length;
-                    if (saved > results.saved) {
-                        results.betterCodec = potential;
-                        results.encodedBand = encoded2;
-                        results.saved = saved;
-                    }
-                }
-            } else if (potential.largest() >= bandData.largest && potential.smallest() <= bandData.smallest) {
-                final byte[] encoded2 = potential.encode(band);
-                results.numCodecsTried++;
-                final byte[] specifierEncoded = defaultCodec.encode(CodecEncoding.getSpecifier(potential, null));
-                final int saved = encoded.length - encoded2.length - specifierEncoded.length;
-                if (saved > results.saved) {
-                    results.betterCodec = potential;
-                    results.encodedBand = encoded2;
-                    results.saved = saved;
-                }
-            }
-            if (timeToStop(results)) {
-                return;
+    /**
+     * Converts a list of ConstantPoolEntrys or nulls to an int[] array of their indices +1 (or 0 for nulls)
+     *
+     * @param list conversion source.
+     * @return conversion result.
+     */
+    protected int[] cpEntryOrNullListToArray(final List<? extends ConstantPoolEntry> list) {
+        final int[] array = new int[list.size()];
+        for (int j = 0; j < array.length; j++) {
+            final ConstantPoolEntry cpEntry = list.get(j);
+            array[j] = cpEntry == null ? 0 : cpEntry.getIndex() + 1;
+            if (cpEntry != null && cpEntry.getIndex() < 0) {
+                throw new IllegalArgumentException("Index should be > 0");
             }
         }
+        return array;
+    }
+
+    /**
+     * Encode a band of integers. The default codec may be used, but other Codecs are considered if effort is greater
+     * than 1.
+     *
+     * @param name - name of the band (used for debugging)
+     * @param ints - the band
+     * @param defaultCodec - the default Codec
+     * @return the encoded band
+     * @throws Pack200Exception TODO
+     */
+    public byte[] encodeBandInt(final String name, final int[] ints, final BHSDCodec defaultCodec)
+        throws Pack200Exception {
+        byte[] encodedBand = null;
+        // Useful for debugging
+//        if(ints.length > 0) {
+//            System.out.println("encoding " + name + " " + ints.length);
+//        }
+        if (effort > 1 && (ints.length >= effortThresholds[effort])) {
+            final BandAnalysisResults results = analyseBand(name, ints, defaultCodec);
+            final Codec betterCodec = results.betterCodec;
+            encodedBand = results.encodedBand;
+            if (betterCodec != null) {
+                if (betterCodec instanceof BHSDCodec) {
+                    final int[] specifierBand = CodecEncoding.getSpecifier(betterCodec, defaultCodec);
+                    int specifier = specifierBand[0];
+                    if (specifierBand.length > 1) {
+                        for (int i = 1; i < specifierBand.length; i++) {
+                            segmentHeader.appendBandCodingSpecifier(specifierBand[i]);
+                        }
+                    }
+                    if (defaultCodec.isSigned()) {
+                        specifier = -1 - specifier;
+                    } else {
+                        specifier = specifier + defaultCodec.getL();
+                    }
+                    final byte[] specifierEncoded = defaultCodec.encode(new int[] {specifier});
+                    final byte[] band = new byte[specifierEncoded.length + encodedBand.length];
+                    System.arraycopy(specifierEncoded, 0, band, 0, specifierEncoded.length);
+                    System.arraycopy(encodedBand, 0, band, specifierEncoded.length, encodedBand.length);
+                    return band;
+                }
+                if (betterCodec instanceof PopulationCodec) {
+                    IntStream.of(results.extraMetadata).forEach(segmentHeader::appendBandCodingSpecifier);
+                    return encodedBand;
+                }
+                if (betterCodec instanceof RunCodec) {
+
+                }
+            }
+        }
+
+        // If we get here then we've decided to use the default codec.
+        if (ints.length > 0) {
+            if (encodedBand == null) {
+                encodedBand = defaultCodec.encode(ints);
+            }
+            final int first = ints[0];
+            if (defaultCodec.getB() != 1) {
+                if (defaultCodec.isSigned() && first >= -256 && first <= -1) {
+                    final int specifier = -1 - CodecEncoding.getSpecifierForDefaultCodec(defaultCodec);
+                    final byte[] specifierEncoded = defaultCodec.encode(new int[] {specifier});
+                    final byte[] band = new byte[specifierEncoded.length + encodedBand.length];
+                    System.arraycopy(specifierEncoded, 0, band, 0, specifierEncoded.length);
+                    System.arraycopy(encodedBand, 0, band, specifierEncoded.length, encodedBand.length);
+                    return band;
+                }
+                if (!defaultCodec.isSigned() && first >= defaultCodec.getL() && first <= defaultCodec.getL() + 255) {
+                    final int specifier = CodecEncoding.getSpecifierForDefaultCodec(defaultCodec) + defaultCodec.getL();
+                    final byte[] specifierEncoded = defaultCodec.encode(new int[] {specifier});
+                    final byte[] band = new byte[specifierEncoded.length + encodedBand.length];
+                    System.arraycopy(specifierEncoded, 0, band, 0, specifierEncoded.length);
+                    System.arraycopy(encodedBand, 0, band, specifierEncoded.length, encodedBand.length);
+                    return band;
+                }
+            }
+            return encodedBand;
+        }
+        return new byte[0];
+    }
+
+    /**
+     * Encode a band of longs (values are split into their high and low 32 bits and then encoded as two separate bands
+     *
+     * @param name - name of the band (for debugging purposes)
+     * @param flags - the band
+     * @param loCodec - Codec for the low 32-bits band
+     * @param hiCodec - Codec for the high 32-bits band
+     * @param haveHiFlags - ignores the high band if true as all values would be zero
+     * @return the encoded band
+     * @throws Pack200Exception TODO
+     */
+    protected byte[] encodeFlags(final String name, final long[] flags, final BHSDCodec loCodec,
+        final BHSDCodec hiCodec, final boolean haveHiFlags) throws Pack200Exception {
+        if (!haveHiFlags) {
+            final int[] loBits = new int[flags.length];
+            Arrays.setAll(loBits, i -> (int) flags[i]);
+            return encodeBandInt(name, loBits, loCodec);
+        }
+        final int[] hiBits = new int[flags.length];
+        final int[] loBits = new int[flags.length];
+        for (int i = 0; i < flags.length; i++) {
+            final long l = flags[i];
+            hiBits[i] = (int) (l >> 32);
+            loBits[i] = (int) l;
+        }
+        final byte[] hi = encodeBandInt(name, hiBits, hiCodec);
+        final byte[] lo = encodeBandInt(name, loBits, loCodec);
+        final byte[] total = new byte[hi.length + lo.length];
+        System.arraycopy(hi, 0, total, 0, hi.length);
+        System.arraycopy(lo, 0, total, hi.length + 1, lo.length);
+        return total;
     }
 
 // This could be useful if further enhancements are done but is not currently used
@@ -345,6 +478,35 @@ public abstract class BandSet {
 //            results.betterCodec = new RunCodec(index, firstResults.betterCodec, secondResults.betterCodec);
 //        }
 //    }
+
+    protected byte[] encodeFlags(final String name, final long[][] flags, final BHSDCodec loCodec,
+        final BHSDCodec hiCodec, final boolean haveHiFlags) throws Pack200Exception {
+        return encodeFlags(name, flatten(flags), loCodec, hiCodec, haveHiFlags);
+    }
+
+    /**
+     * Encode a single value with the given Codec
+     *
+     * @param value - the value to encode
+     * @param codec - Codec to use
+     * @return the encoded value
+     * @throws Pack200Exception TODO
+     */
+    public byte[] encodeScalar(final int value, final BHSDCodec codec) throws Pack200Exception {
+        return codec.encode(value);
+    }
+
+    /**
+     * Encode a band without considering other Codecs
+     *
+     * @param band - the band
+     * @param codec - the Codec to use
+     * @return the encoded band
+     * @throws Pack200Exception TODO
+     */
+    public byte[] encodeScalar(final int[] band, final BHSDCodec codec) throws Pack200Exception {
+        return codec.encode(band);
+    }
 
     private void encodeWithPopulationCodec(final String name, final int[] band, final BHSDCodec defaultCodec,
         final BandData bandData, final BandAnalysisResults results) throws Pack200Exception {
@@ -501,37 +663,23 @@ public abstract class BandSet {
         }
     }
 
-    /**
-     * Encode a band of longs (values are split into their high and low 32 bits and then encoded as two separate bands
-     *
-     * @param name - name of the band (for debugging purposes)
-     * @param flags - the band
-     * @param loCodec - Codec for the low 32-bits band
-     * @param hiCodec - Codec for the high 32-bits band
-     * @param haveHiFlags - ignores the high band if true as all values would be zero
-     * @return the encoded band
-     * @throws Pack200Exception TODO
+    /*
+     * Flatten a 2-dimension array into a 1-dimension array
      */
-    protected byte[] encodeFlags(final String name, final long[] flags, final BHSDCodec loCodec,
-        final BHSDCodec hiCodec, final boolean haveHiFlags) throws Pack200Exception {
-        if (!haveHiFlags) {
-            final int[] loBits = new int[flags.length];
-            Arrays.setAll(loBits, i -> (int) flags[i]);
-            return encodeBandInt(name, loBits, loCodec);
+    private long[] flatten(final long[][] flags) {
+        int totalSize = 0;
+        for (long[] flag : flags) {
+            totalSize += flag.length;
         }
-        final int[] hiBits = new int[flags.length];
-        final int[] loBits = new int[flags.length];
-        for (int i = 0; i < flags.length; i++) {
-            final long l = flags[i];
-            hiBits[i] = (int) (l >> 32);
-            loBits[i] = (int) l;
+        final long[] flatArray = new long[totalSize];
+        int index = 0;
+        for (long[] flag : flags) {
+            for (long element : flag) {
+                flatArray[index] = element;
+                index++;
+            }
         }
-        final byte[] hi = encodeBandInt(name, hiBits, hiCodec);
-        final byte[] lo = encodeBandInt(name, loBits, loCodec);
-        final byte[] total = new byte[hi.length + lo.length];
-        System.arraycopy(hi, 0, total, 0, hi.length);
-        System.arraycopy(lo, 0, total, hi.length + 1, lo.length);
-        return total;
+        return flatArray;
     }
 
     /**
@@ -555,210 +703,62 @@ public abstract class BandSet {
     }
 
     /**
-     * Converts a list of ConstantPoolEntrys to an int[] array of their indices
+     * Write the packed set of bands to the given output stream
      *
-     * @param list conversion source.
-     * @return conversion result.
+     * @param out TODO
+     * @throws IOException If an I/O error occurs.
+     * @throws Pack200Exception TODO
      */
-    protected int[] cpEntryListToArray(final List<? extends ConstantPoolEntry> list) {
-        final int[] array = new int[list.size()];
-        for (int i = 0; i < array.length; i++) {
-            array[i] = list.get(i).getIndex();
-            if (array[i] < 0) {
-                throw new IllegalArgumentException("Index should be > 0");
+    public abstract void pack(OutputStream out) throws IOException, Pack200Exception;
+
+    private boolean timeToStop(final BandAnalysisResults results) {
+        // if tried more than effort number of codecs for this band then return
+        // Note: these values have been tuned - please test carefully if changing them
+        if (effort > 6) {
+            return results.numCodecsTried >= effort * 2;
+        }
+        return results.numCodecsTried >= effort;
+        // May want to also check how much we've saved if performance needs improving, e.g. saved more than effort*2 %
+        // || (float)results.saved/(float)results.encodedBand.length > (float)effort * 2/100;
+    }
+
+    private void tryCodecs(final String name, final int[] band, final BHSDCodec defaultCodec, final BandData bandData,
+        final BandAnalysisResults results, final byte[] encoded, final BHSDCodec[] potentialCodecs)
+        throws Pack200Exception {
+        for (final BHSDCodec potential : potentialCodecs) {
+            if (potential.equals(defaultCodec)) {
+                return; // don't try codecs with greater cardinality in the same 'family' as the default codec as there
+                        // won't be any savings
             }
-        }
-        return array;
-    }
-
-    /**
-     * Converts a list of ConstantPoolEntrys or nulls to an int[] array of their indices +1 (or 0 for nulls)
-     *
-     * @param list conversion source.
-     * @return conversion result.
-     */
-    protected int[] cpEntryOrNullListToArray(final List<? extends ConstantPoolEntry> list) {
-        final int[] array = new int[list.size()];
-        for (int j = 0; j < array.length; j++) {
-            final ConstantPoolEntry cpEntry = list.get(j);
-            array[j] = cpEntry == null ? 0 : cpEntry.getIndex() + 1;
-            if (cpEntry != null && cpEntry.getIndex() < 0) {
-                throw new IllegalArgumentException("Index should be > 0");
-            }
-        }
-        return array;
-    }
-
-    protected byte[] encodeFlags(final String name, final long[][] flags, final BHSDCodec loCodec,
-        final BHSDCodec hiCodec, final boolean haveHiFlags) throws Pack200Exception {
-        return encodeFlags(name, flatten(flags), loCodec, hiCodec, haveHiFlags);
-    }
-
-    /*
-     * Flatten a 2-dimension array into a 1-dimension array
-     */
-    private long[] flatten(final long[][] flags) {
-        int totalSize = 0;
-        for (long[] flag : flags) {
-            totalSize += flag.length;
-        }
-        final long[] flatArray = new long[totalSize];
-        int index = 0;
-        for (long[] flag : flags) {
-            for (long element : flag) {
-                flatArray[index] = element;
-                index++;
-            }
-        }
-        return flatArray;
-    }
-
-    /**
-     * BandData represents information about a band, e.g. largest value etc and is used in the heuristics that calculate
-     * whether an alternative Codec could make the encoded band smaller.
-     */
-    public class BandData {
-
-        private final int[] band;
-        private int smallest = Integer.MAX_VALUE;
-        private int largest = Integer.MIN_VALUE;
-        private int smallestDelta;
-        private int largestDelta;
-
-        private int deltaIsAscending = 0;
-        private int smallDeltaCount = 0;
-
-        private double averageAbsoluteDelta = 0;
-        private double averageAbsoluteValue = 0;
-
-        private Map<Integer, Integer> distinctValues;
-
-        /**
-         * Create a new instance of BandData. The band is then analysed.
-         *
-         * @param band - the band of integers
-         */
-        public BandData(final int[] band) {
-            this.band = band;
-            final Integer one = Integer.valueOf(1);
-            for (int i = 0; i < band.length; i++) {
-                if (band[i] < smallest) {
-                    smallest = band[i];
+            if (potential.isDelta()) {
+                if (potential.largest() >= bandData.largestDelta && potential.smallest() <= bandData.smallestDelta
+                    && potential.largest() >= bandData.largest && potential.smallest() <= bandData.smallest) {
+                    // TODO: can represent some negative deltas with overflow
+                    final byte[] encoded2 = potential.encode(band);
+                    results.numCodecsTried++;
+                    final byte[] specifierEncoded = defaultCodec.encode(CodecEncoding.getSpecifier(potential, null));
+                    final int saved = encoded.length - encoded2.length - specifierEncoded.length;
+                    if (saved > results.saved) {
+                        results.betterCodec = potential;
+                        results.encodedBand = encoded2;
+                        results.saved = saved;
+                    }
                 }
-                if (band[i] > largest) {
-                    largest = band[i];
-                }
-                if (i != 0) {
-                    final int delta = band[i] - band[i - 1];
-                    if (delta < smallestDelta) {
-                        smallestDelta = delta;
-                    }
-                    if (delta > largestDelta) {
-                        largestDelta = delta;
-                    }
-                    if (delta >= 0) {
-                        deltaIsAscending++;
-                    }
-                    averageAbsoluteDelta += (double) Math.abs(delta) / (double) (band.length - 1);
-                    if (Math.abs(delta) < 256) {
-                        smallDeltaCount++;
-                    }
-                } else {
-                    smallestDelta = band[0];
-                    largestDelta = band[0];
-                }
-                averageAbsoluteValue += (double) Math.abs(band[i]) / (double) band.length;
-                if (effort > 3) { // do calculations needed to consider population codec
-                    if (distinctValues == null) {
-                        distinctValues = new HashMap<>();
-                    }
-                    final Integer value = Integer.valueOf(band[i]);
-                    Integer count = distinctValues.get(value);
-                    if (count == null) {
-                        count = one;
-                    } else {
-                        count = Integer.valueOf(count.intValue() + 1);
-                    }
-                    distinctValues.put(value, count);
+            } else if (potential.largest() >= bandData.largest && potential.smallest() <= bandData.smallest) {
+                final byte[] encoded2 = potential.encode(band);
+                results.numCodecsTried++;
+                final byte[] specifierEncoded = defaultCodec.encode(CodecEncoding.getSpecifier(potential, null));
+                final int saved = encoded.length - encoded2.length - specifierEncoded.length;
+                if (saved > results.saved) {
+                    results.betterCodec = potential;
+                    results.encodedBand = encoded2;
+                    results.saved = saved;
                 }
             }
-        }
-
-        /**
-         * Returns true if the deltas between adjacent band elements are mainly small (heuristic).
-         *
-         * @return true if the deltas between adjacent band elements are mainly small (heuristic).
-         */
-        public boolean mainlySmallDeltas() {
-            // Note: the value below has been tuned - please test carefully if changing it
-            return (float) smallDeltaCount / (float) band.length > 0.7F;
-        }
-
-        /**
-         * Returns true if the band is well correlated (i.e. would be suitable for a delta encoding) (heuristic).
-         *
-         * @return true if the band is well correlated (i.e. would be suitable for a delta encoding) (heuristic).
-         */
-        public boolean wellCorrelated() {
-            // Note: the value below has been tuned - please test carefully if changing it
-            return averageAbsoluteDelta * 3.1 < averageAbsoluteValue;
-        }
-
-        /**
-         * Returns true if the band deltas are mainly positive (heuristic).
-         *
-         * @return true if the band deltas are mainly positive (heuristic).
-         */
-        public boolean mainlyPositiveDeltas() {
-            // Note: the value below has been tuned - please test carefully if changing it
-            return (float) deltaIsAscending / (float) band.length > 0.95F;
-        }
-
-        /**
-         * Returns true if any band elements are negative.
-         *
-         * @return true if any band elements are negative.
-         */
-        public boolean anyNegatives() {
-            return smallest < 0;
-        }
-
-        /**
-         * Returns the total number of distinct values found in the band.
-         *
-         * @return the total number of distinct values found in the band.
-         */
-        public int numDistinctValues() {
-            if (distinctValues == null) {
-                return band.length;
+            if (timeToStop(results)) {
+                return;
             }
-            return distinctValues.size();
         }
-
-    }
-
-    /**
-     * Results obtained by trying different Codecs to encode a band
-     */
-    public class BandAnalysisResults {
-
-        // The number of Codecs tried so far
-        private int numCodecsTried = 0;
-
-        // The number of bytes saved by using betterCodec instead of the default codec
-        private int saved = 0;
-
-        // Extra metadata to pass to the segment header (to be appended to the
-        // band_headers band)
-        private int[] extraMetadata;
-
-        // The results of encoding the band with betterCodec
-        private byte[] encodedBand;
-
-        // The best Codec found so far, or should be null if the default is the
-        // best so far
-        private Codec betterCodec;
-
     }
 
 }

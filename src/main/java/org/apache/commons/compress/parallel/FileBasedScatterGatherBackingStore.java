@@ -60,8 +60,12 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
     }
 
     @Override
-    public InputStream getInputStream() throws IOException {
-        return Files.newInputStream(target);
+    public void close() throws IOException {
+        try {
+            closeForWriting();
+        } finally {
+            Files.deleteIfExists(target);
+        }
     }
 
     @Override
@@ -73,16 +77,12 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
     }
 
     @Override
-    public void writeOut(final byte[] data, final int offset, final int length) throws IOException {
-        outputStream.write(data, offset, length);
+    public InputStream getInputStream() throws IOException {
+        return Files.newInputStream(target);
     }
 
     @Override
-    public void close() throws IOException {
-        try {
-            closeForWriting();
-        } finally {
-            Files.deleteIfExists(target);
-        }
+    public void writeOut(final byte[] data, final int offset, final int length) throws IOException {
+        outputStream.write(data, offset, length);
     }
 }

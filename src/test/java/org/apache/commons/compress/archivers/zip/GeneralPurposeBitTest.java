@@ -30,6 +30,24 @@ import org.junit.jupiter.api.Test;
 public class GeneralPurposeBitTest {
 
     @Test
+    public void testClone() {
+        final GeneralPurposeBit b = new GeneralPurposeBit();
+        b.useStrongEncryption(true);
+        b.useUTF8ForNames(true);
+        assertEquals(b, b.clone());
+        assertNotSame(b, b.clone());
+    }
+
+    @Test
+    public void testDataDescriptor() {
+        final byte[] flags = {(byte) 8, (byte) 0};
+        assertTrue(GeneralPurposeBit.parse(flags, 0).usesDataDescriptor());
+        final GeneralPurposeBit b = new GeneralPurposeBit();
+        b.useDataDescriptor(true);
+        assertArrayEquals(flags, b.encode());
+    }
+
+    @Test
     public void testDefaults() {
         assertFalse(new GeneralPurposeBit().usesDataDescriptor());
         assertFalse(new GeneralPurposeBit().usesUTF8ForNames());
@@ -37,6 +55,24 @@ public class GeneralPurposeBitTest {
         assertFalse(new GeneralPurposeBit().usesStrongEncryption());
         final byte[] b = new byte[2];
         assertArrayEquals(b, new GeneralPurposeBit().encode());
+    }
+
+    @Test
+    public void testEncryption() {
+        final byte[] flags = {(byte) 1, (byte) 0};
+        assertTrue(GeneralPurposeBit.parse(flags, 0).usesEncryption());
+        final GeneralPurposeBit b = new GeneralPurposeBit();
+        b.useEncryption(true);
+        assertArrayEquals(flags, b.encode());
+    }
+
+    @Test
+    public void testLanguageEncodingFlag() {
+        final byte[] flags = {(byte) 0, (byte) 8};
+        assertTrue(GeneralPurposeBit.parse(flags, 0).usesUTF8ForNames());
+        final GeneralPurposeBit b = new GeneralPurposeBit();
+        b.useUTF8ForNames(true);
+        assertArrayEquals(flags, b.encode());
     }
 
     @Test
@@ -64,33 +100,6 @@ public class GeneralPurposeBitTest {
     }
 
     @Test
-    public void testDataDescriptor() {
-        final byte[] flags = {(byte) 8, (byte) 0};
-        assertTrue(GeneralPurposeBit.parse(flags, 0).usesDataDescriptor());
-        final GeneralPurposeBit b = new GeneralPurposeBit();
-        b.useDataDescriptor(true);
-        assertArrayEquals(flags, b.encode());
-    }
-
-    @Test
-    public void testLanguageEncodingFlag() {
-        final byte[] flags = {(byte) 0, (byte) 8};
-        assertTrue(GeneralPurposeBit.parse(flags, 0).usesUTF8ForNames());
-        final GeneralPurposeBit b = new GeneralPurposeBit();
-        b.useUTF8ForNames(true);
-        assertArrayEquals(flags, b.encode());
-    }
-
-    @Test
-    public void testEncryption() {
-        final byte[] flags = {(byte) 1, (byte) 0};
-        assertTrue(GeneralPurposeBit.parse(flags, 0).usesEncryption());
-        final GeneralPurposeBit b = new GeneralPurposeBit();
-        b.useEncryption(true);
-        assertArrayEquals(flags, b.encode());
-    }
-
-    @Test
     public void testStrongEncryption() {
         byte[] flags = {(byte) 65, (byte) 0};
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesStrongEncryption());
@@ -101,14 +110,5 @@ public class GeneralPurposeBitTest {
 
         flags = new byte[] {(byte) 64, (byte) 0};
         assertFalse(GeneralPurposeBit.parse(flags, 0).usesStrongEncryption());
-    }
-
-    @Test
-    public void testClone() {
-        final GeneralPurposeBit b = new GeneralPurposeBit();
-        b.useStrongEncryption(true);
-        b.useUTF8ForNames(true);
-        assertEquals(b, b.clone());
-        assertNotSame(b, b.clone());
     }
 }

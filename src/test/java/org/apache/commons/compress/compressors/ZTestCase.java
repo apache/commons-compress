@@ -35,23 +35,6 @@ import org.junit.jupiter.api.Test;
 public final class ZTestCase extends AbstractTestCase {
 
     @Test
-    public void testZUnarchive() throws Exception {
-        testUnarchive(ZCompressorInputStream::new);
-    }
-
-    @Test
-    public void testZUnarchiveViaFactory() throws Exception {
-        testUnarchive(is -> new CompressorStreamFactory()
-            .createCompressorInputStream(CompressorStreamFactory.Z, is));
-    }
-
-    @Test
-    public void testZUnarchiveViaAutoDetection() throws Exception {
-        testUnarchive(is -> new CompressorStreamFactory()
-            .createCompressorInputStream(new BufferedInputStream(is)));
-    }
-
-    @Test
     public void testMatches() {
         assertFalse(ZCompressorInputStream.matches(new byte[] { 1, 2, 3, 4 }, 4));
         assertFalse(ZCompressorInputStream.matches(new byte[] { 0x1f, 2, 3, 4 }, 4));
@@ -72,6 +55,23 @@ public final class ZTestCase extends AbstractTestCase {
                 IOUtils.copy(in, out);
             }
         }
+    }
+
+    @Test
+    public void testZUnarchive() throws Exception {
+        testUnarchive(ZCompressorInputStream::new);
+    }
+
+    @Test
+    public void testZUnarchiveViaAutoDetection() throws Exception {
+        testUnarchive(is -> new CompressorStreamFactory()
+            .createCompressorInputStream(new BufferedInputStream(is)));
+    }
+
+    @Test
+    public void testZUnarchiveViaFactory() throws Exception {
+        testUnarchive(is -> new CompressorStreamFactory()
+            .createCompressorInputStream(CompressorStreamFactory.Z, is));
     }
 
 }

@@ -41,9 +41,17 @@ import org.junit.jupiter.api.Test;
 public class ZCompressorInputStreamTest {
 
     @Test
-    public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() {
-        final SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration());
-        assertThrows(IOException.class, () -> new ZCompressorInputStream(sequenceInputStream));
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tar.Z");
+        final byte[] buf = new byte[2];
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            final ZCompressorInputStream in =
+                    new ZCompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read(buf));
+            Assert.assertEquals(-1, in.read(buf));
+            in.close();
+        }
     }
 
     @Test
@@ -60,17 +68,9 @@ public class ZCompressorInputStreamTest {
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.tar.Z");
-        final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final ZCompressorInputStream in =
-                    new ZCompressorInputStream(is);
-            IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read(buf));
-            Assert.assertEquals(-1, in.read(buf));
-            in.close();
-        }
+    public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() {
+        final SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration());
+        assertThrows(IOException.class, () -> new ZCompressorInputStream(sequenceInputStream));
     }
 
 }

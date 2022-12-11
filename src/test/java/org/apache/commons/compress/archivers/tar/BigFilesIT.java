@@ -36,14 +36,40 @@ import org.junit.jupiter.api.Test;
 
 public class BigFilesIT extends AbstractTestCase {
 
-    @Test
-    public void readFileBiggerThan8GByteStar() throws Exception {
-        readFileBiggerThan8GByte("8.star.tar.gz");
+    private void readFileBiggerThan8GByte(final String name) throws Exception {
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(name)));
+             GzipCompressorInputStream gzin = new GzipCompressorInputStream(in);
+             TarArchiveInputStream tin = new TarArchiveInputStream(gzin)) {
+            final TarArchiveEntry e = tin.getNextTarEntry();
+            assertNotNull(e);
+            assertEquals(8200L * 1024 * 1024, e.getSize());
+
+            long read = 0;
+            final Random r = new Random(System.currentTimeMillis());
+            int readNow;
+            final byte[] buf = new byte[1024 * 1024];
+            while ((readNow = tin.read(buf, 0, buf.length)) > 0) {
+                // testing all bytes for a value of 0 is going to take
+                // too long, just pick a few ones randomly
+                for (int i = 0; i < 100; i++) {
+                    final int idx = r.nextInt(readNow);
+                    assertEquals("testing byte " + (read + idx), 0, buf[idx]);
+                }
+                read += readNow;
+            }
+            assertEquals(8200L * 1024 * 1024, read);
+            assertNull(tin.getNextTarEntry());
+        }
     }
 
     @Test
     public void readFileBiggerThan8GBytePosix() throws Exception {
         readFileBiggerThan8GByte("8.posix.tar.gz");
+    }
+
+    @Test
+    public void readFileBiggerThan8GByteStar() throws Exception {
+        readFileBiggerThan8GByte("8.star.tar.gz");
     }
 
     @Test
@@ -70,32 +96,6 @@ public class BigFilesIT extends AbstractTestCase {
             List<TarArchiveEntry> entries = tarFile.getEntries();
             assertEquals(1, entries.size());
             assertNotNull(entries.get(0));
-        }
-    }
-
-    private void readFileBiggerThan8GByte(final String name) throws Exception {
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(name)));
-             GzipCompressorInputStream gzin = new GzipCompressorInputStream(in);
-             TarArchiveInputStream tin = new TarArchiveInputStream(gzin)) {
-            final TarArchiveEntry e = tin.getNextTarEntry();
-            assertNotNull(e);
-            assertEquals(8200L * 1024 * 1024, e.getSize());
-
-            long read = 0;
-            final Random r = new Random(System.currentTimeMillis());
-            int readNow;
-            final byte[] buf = new byte[1024 * 1024];
-            while ((readNow = tin.read(buf, 0, buf.length)) > 0) {
-                // testing all bytes for a value of 0 is going to take
-                // too long, just pick a few ones randomly
-                for (int i = 0; i < 100; i++) {
-                    final int idx = r.nextInt(readNow);
-                    assertEquals("testing byte " + (read + idx), 0, buf[idx]);
-                }
-                read += readNow;
-            }
-            assertEquals(8200L * 1024 * 1024, read);
-            assertNull(tin.getNextTarEntry());
         }
     }
 

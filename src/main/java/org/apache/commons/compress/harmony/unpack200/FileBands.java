@@ -52,6 +52,43 @@ public class FileBands extends BandSet {
         this.cpUTF8 = segment.getCpBands().getCpUTF8();
     }
 
+    public byte[][] getFileBits() {
+        return fileBits;
+    }
+
+    public int[] getFileModtime() {
+        return fileModtime;
+    }
+
+    public String[] getFileName() {
+        return fileName;
+    }
+
+    public int[] getFileOptions() {
+        return fileOptions;
+    }
+
+    public long[] getFileSize() {
+        return fileSize;
+    }
+
+    // TODO: stream the file bits directly somehow
+    public void processFileBits() throws IOException, Pack200Exception {
+        // now read in the bytes
+        final int numberOfFiles = header.getNumberOfFiles();
+        fileBits = new byte[numberOfFiles][];
+        for (int i = 0; i < numberOfFiles; i++) {
+            final int size = (int) fileSize[i];
+            // TODO This breaks if file_size > 2^32. Probably an array is
+            // not the right choice, and we should just serialize it here?
+            fileBits[i] = new byte[size];
+            final int read = in.read(fileBits[i]);
+            if (size != 0 && read < size) {
+                throw new Pack200Exception("Expected to read " + size + " bytes but read " + read);
+            }
+        }
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -78,46 +115,9 @@ public class FileBands extends BandSet {
         // later
     }
 
-    // TODO: stream the file bits directly somehow
-    public void processFileBits() throws IOException, Pack200Exception {
-        // now read in the bytes
-        final int numberOfFiles = header.getNumberOfFiles();
-        fileBits = new byte[numberOfFiles][];
-        for (int i = 0; i < numberOfFiles; i++) {
-            final int size = (int) fileSize[i];
-            // TODO This breaks if file_size > 2^32. Probably an array is
-            // not the right choice, and we should just serialize it here?
-            fileBits[i] = new byte[size];
-            final int read = in.read(fileBits[i]);
-            if (size != 0 && read < size) {
-                throw new Pack200Exception("Expected to read " + size + " bytes but read " + read);
-            }
-        }
-    }
-
     @Override
     public void unpack() {
 
-    }
-
-    public byte[][] getFileBits() {
-        return fileBits;
-    }
-
-    public int[] getFileModtime() {
-        return fileModtime;
-    }
-
-    public String[] getFileName() {
-        return fileName;
-    }
-
-    public int[] getFileOptions() {
-        return fileOptions;
-    }
-
-    public long[] getFileSize() {
-        return fileSize;
     }
 
 }

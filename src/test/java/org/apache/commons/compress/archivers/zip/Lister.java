@@ -46,6 +46,21 @@ public final class Lister {
         String dir;
     }
 
+    private static void extract(final String dir, final ZipArchiveEntry entry,
+                                final InputStream is) throws IOException {
+        final File f = new File(dir, entry.getName());
+        if (!f.getParentFile().exists()) {
+            f.getParentFile().mkdirs();
+        }
+        try (OutputStream fos = Files.newOutputStream(f.toPath())) {
+            IOUtils.copy(is, fos);
+        }
+    }
+
+    private static void list(final ZipArchiveEntry entry) {
+        System.out.println(entry.getName());
+    }
+
     public static void main(final String[] args) throws IOException {
         final CommandLine cl = parse(args);
         final File f = new File(cl.archive);
@@ -81,21 +96,6 @@ public final class Lister {
                     }
                 }
             }
-        }
-    }
-
-    private static void list(final ZipArchiveEntry entry) {
-        System.out.println(entry.getName());
-    }
-
-    private static void extract(final String dir, final ZipArchiveEntry entry,
-                                final InputStream is) throws IOException {
-        final File f = new File(dir, entry.getName());
-        if (!f.getParentFile().exists()) {
-            f.getParentFile().mkdirs();
-        }
-        try (OutputStream fos = Files.newOutputStream(f.toPath())) {
-            IOUtils.copy(is, fos);
         }
     }
 

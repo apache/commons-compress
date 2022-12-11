@@ -33,14 +33,6 @@ import org.apache.commons.compress.utils.FileNameUtils;
  * @since 1.20
  */
 class ZipSplitOutputStream extends OutputStream {
-    private OutputStream outputStream;
-    private Path zipFile;
-    private final long splitSize;
-    private int currentSplitSegmentIndex;
-    private long currentSplitSegmentBytesWritten;
-    private boolean finished;
-    private final byte[] singleByte = new byte[1];
-
     /**
      * 8.5.1 Capacities for split archives are as follows:
      * <p>
@@ -51,6 +43,14 @@ class ZipSplitOutputStream extends OutputStream {
      */
     private final static long ZIP_SEGMENT_MIN_SIZE = 64 * 1024L;
     private final static long ZIP_SEGMENT_MAX_SIZE = 4294967295L;
+    private OutputStream outputStream;
+    private Path zipFile;
+    private final long splitSize;
+    private int currentSplitSegmentIndex;
+    private long currentSplitSegmentBytesWritten;
+
+    private boolean finished;
+    private final byte[] singleByte = new byte[1];
 
     /**
      * Create a split zip. If the zip file is smaller than the split size,
@@ -82,122 +82,11 @@ class ZipSplitOutputStream extends OutputStream {
         writeZipSplitSignature();
     }
 
-    /**
-     * Some data can not be written to different split segments, for example:
-     * <p>
-     * 4.4.1.5  The end of central directory record and the Zip64 end
-     * of central directory locator record MUST reside on the same
-     * disk when splitting or spanning an archive.
-     *
-     * @param unsplittableContentSize
-     * @throws IllegalArgumentException
-     * @throws IOException
-     */
-    public void prepareToWriteUnsplittableContent(final long unsplittableContentSize) throws IllegalArgumentException, IOException {
-        if (unsplittableContentSize > this.splitSize) {
-            throw new IllegalArgumentException("The unsplittable content size is bigger than the split segment size");
-        }
-
-        final long bytesRemainingInThisSegment = this.splitSize - this.currentSplitSegmentBytesWritten;
-        if (bytesRemainingInThisSegment < unsplittableContentSize) {
-            openNewSplitSegment();
-        }
-    }
-
-    @Override
-    public void write(final int i) throws IOException {
-        singleByte[0] = (byte)(i & 0xff);
-        write(singleByte);
-    }
-
-    @Override
-    public void write(final byte[] b) throws IOException {
-        write(b, 0, b.length);
-    }
-
-    /**
-     * Write the data to zip split segments, if the remaining space of current split segment
-     * is not enough, then a new split segment should be created
-     *
-     * @param b   data to write
-     * @param off offset of the start of data in param b
-     * @param len the length of data to write
-     * @throws IOException
-     */
-    @Override
-    public void write(final byte[] b, final int off, final int len) throws IOException {
-        if (len <= 0) {
-            return;
-        }
-
-        if (currentSplitSegmentBytesWritten >= splitSize) {
-            openNewSplitSegment();
-            write(b, off, len);
-        } else if (currentSplitSegmentBytesWritten + len > splitSize) {
-            final int bytesToWriteForThisSegment = (int) splitSize - (int) currentSplitSegmentBytesWritten;
-            write(b, off, bytesToWriteForThisSegment);
-            openNewSplitSegment();
-            write(b, off + bytesToWriteForThisSegment, len - bytesToWriteForThisSegment);
-        } else {
-            outputStream.write(b, off, len);
-            currentSplitSegmentBytesWritten += len;
-        }
-    }
-
     @Override
     public void close() throws IOException {
         if (!finished) {
             finish();
         }
-    }
-
-    /**
-     * The last zip split segment's suffix should be .zip
-     *
-     * @throws IOException
-     */
-    private void finish() throws IOException {
-        if (finished) {
-            throw new IOException("This archive has already been finished");
-        }
-
-        final String zipFileBaseName = FileNameUtils.getBaseName(zipFile);
-        outputStream.close();
-        Files.move(zipFile, zipFile.resolveSibling(zipFileBaseName + ".zip"), StandardCopyOption.ATOMIC_MOVE);
-        finished = true;
-    }
-
-    /**
-     * Create a new zip split segment and prepare to write to the new segment
-     *
-     * @throws IOException
-     */
-    private void openNewSplitSegment() throws IOException {
-        Path newFile;
-        if (currentSplitSegmentIndex == 0) {
-            outputStream.close();
-            newFile = createNewSplitSegmentFile(1);
-            Files.move(zipFile, newFile, StandardCopyOption.ATOMIC_MOVE);
-        }
-
-        newFile = createNewSplitSegmentFile(null);
-
-        outputStream.close();
-        outputStream = Files.newOutputStream(newFile);
-        currentSplitSegmentBytesWritten = 0;
-        zipFile = newFile;
-        currentSplitSegmentIndex++;
-
-    }
-
-    /**
-     * Write the zip split signature (0x08074B50) to the head of the first zip split segment
-     *
-     * @throws IOException
-     */
-    private void writeZipSplitSignature() throws IOException {
-        outputStream.write(ZipArchiveOutputStream.DD_SIG);
-        currentSplitSegmentBytesWritten += ZipArchiveOutputStream.DD_SIG.length;
     }
 
     /**
@@ -242,11 +131,122 @@ class ZipSplitOutputStream extends OutputStream {
         return newFile;
     }
 
-    public int getCurrentSplitSegmentIndex() {
-        return currentSplitSegmentIndex;
+    /**
+     * The last zip split segment's suffix should be .zip
+     *
+     * @throws IOException
+     */
+    private void finish() throws IOException {
+        if (finished) {
+            throw new IOException("This archive has already been finished");
+        }
+
+        final String zipFileBaseName = FileNameUtils.getBaseName(zipFile);
+        outputStream.close();
+        Files.move(zipFile, zipFile.resolveSibling(zipFileBaseName + ".zip"), StandardCopyOption.ATOMIC_MOVE);
+        finished = true;
     }
 
     public long getCurrentSplitSegmentBytesWritten() {
         return currentSplitSegmentBytesWritten;
+    }
+
+    public int getCurrentSplitSegmentIndex() {
+        return currentSplitSegmentIndex;
+    }
+
+    /**
+     * Create a new zip split segment and prepare to write to the new segment
+     *
+     * @throws IOException
+     */
+    private void openNewSplitSegment() throws IOException {
+        Path newFile;
+        if (currentSplitSegmentIndex == 0) {
+            outputStream.close();
+            newFile = createNewSplitSegmentFile(1);
+            Files.move(zipFile, newFile, StandardCopyOption.ATOMIC_MOVE);
+        }
+
+        newFile = createNewSplitSegmentFile(null);
+
+        outputStream.close();
+        outputStream = Files.newOutputStream(newFile);
+        currentSplitSegmentBytesWritten = 0;
+        zipFile = newFile;
+        currentSplitSegmentIndex++;
+
+    }
+
+    /**
+     * Some data can not be written to different split segments, for example:
+     * <p>
+     * 4.4.1.5  The end of central directory record and the Zip64 end
+     * of central directory locator record MUST reside on the same
+     * disk when splitting or spanning an archive.
+     *
+     * @param unsplittableContentSize
+     * @throws IllegalArgumentException
+     * @throws IOException
+     */
+    public void prepareToWriteUnsplittableContent(final long unsplittableContentSize) throws IllegalArgumentException, IOException {
+        if (unsplittableContentSize > this.splitSize) {
+            throw new IllegalArgumentException("The unsplittable content size is bigger than the split segment size");
+        }
+
+        final long bytesRemainingInThisSegment = this.splitSize - this.currentSplitSegmentBytesWritten;
+        if (bytesRemainingInThisSegment < unsplittableContentSize) {
+            openNewSplitSegment();
+        }
+    }
+
+    @Override
+    public void write(final byte[] b) throws IOException {
+        write(b, 0, b.length);
+    }
+
+    /**
+     * Write the data to zip split segments, if the remaining space of current split segment
+     * is not enough, then a new split segment should be created
+     *
+     * @param b   data to write
+     * @param off offset of the start of data in param b
+     * @param len the length of data to write
+     * @throws IOException
+     */
+    @Override
+    public void write(final byte[] b, final int off, final int len) throws IOException {
+        if (len <= 0) {
+            return;
+        }
+
+        if (currentSplitSegmentBytesWritten >= splitSize) {
+            openNewSplitSegment();
+            write(b, off, len);
+        } else if (currentSplitSegmentBytesWritten + len > splitSize) {
+            final int bytesToWriteForThisSegment = (int) splitSize - (int) currentSplitSegmentBytesWritten;
+            write(b, off, bytesToWriteForThisSegment);
+            openNewSplitSegment();
+            write(b, off + bytesToWriteForThisSegment, len - bytesToWriteForThisSegment);
+        } else {
+            outputStream.write(b, off, len);
+            currentSplitSegmentBytesWritten += len;
+        }
+    }
+
+    @Override
+    public void write(final int i) throws IOException {
+        singleByte[0] = (byte)(i & 0xff);
+        write(singleByte);
+    }
+
+    /**
+     * Write the zip split signature (0x08074B50) to the head of the first zip split segment
+     *
+     * @throws IOException
+     */
+    private void writeZipSplitSignature() throws IOException {
+        outputStream.write(ZipArchiveOutputStream.DD_SIG);
+        currentSplitSegmentBytesWritten += ZipArchiveOutputStream.DD_SIG.length;
     }
 }

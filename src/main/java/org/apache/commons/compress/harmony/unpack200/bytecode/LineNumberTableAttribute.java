@@ -24,14 +24,14 @@ import java.io.IOException;
  */
 public class LineNumberTableAttribute extends BCIRenumberedAttribute {
 
-    private final int line_number_table_length;
-    private final int[] start_pcs;
-    private final int[] line_numbers;
     private static CPUTF8 attributeName;
-
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
+    private final int line_number_table_length;
+    private final int[] start_pcs;
+
+    private final int[] line_numbers;
 
     public LineNumberTableAttribute(final int line_number_table_length, final int[] start_pcs,
         final int[] line_numbers) {
@@ -42,27 +42,13 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
     }
 
     @Override
+    public boolean equals(final Object obj) {
+        return this == obj;
+    }
+
+    @Override
     protected int getLength() {
         return 2 + (4 * line_number_table_length);
-    }
-
-    @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeShort(line_number_table_length);
-        for (int i = 0; i < line_number_table_length; i++) {
-            dos.writeShort(start_pcs[i]);
-            dos.writeShort(line_numbers[i]);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#toString()
-     */
-    @Override
-    public String toString() {
-        return "LineNumberTable: " + line_number_table_length + " lines";
     }
 
     /*
@@ -76,8 +62,8 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        return this == obj;
+    protected int[] getStartPCs() {
+        return start_pcs;
     }
 
     /*
@@ -92,8 +78,22 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
         super.resolve(pool);
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#toString()
+     */
     @Override
-    protected int[] getStartPCs() {
-        return start_pcs;
+    public String toString() {
+        return "LineNumberTable: " + line_number_table_length + " lines";
+    }
+
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        dos.writeShort(line_number_table_length);
+        for (int i = 0; i < line_number_table_length; i++) {
+            dos.writeShort(start_pcs[i]);
+            dos.writeShort(line_numbers[i]);
+        }
     }
 }

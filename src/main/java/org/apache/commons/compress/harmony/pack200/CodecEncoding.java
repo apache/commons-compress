@@ -67,6 +67,10 @@ public class CodecEncoding {
 
     private static Map<BHSDCodec, Integer> canonicalCodecsToSpecifiers;
 
+    public static BHSDCodec getCanonicalCodec(final int i) {
+        return canonicalCodec[i];
+    }
+
     /**
      * Returns the codec specified by the given value byte and optional byte header. If the value is &gt;= 116, then
      * bytes may be consumed from the secondary input stream, which is taken to be the contents of the band_headers byte
@@ -171,10 +175,6 @@ public class CodecEncoding {
         final Codec tCodec = getCodec(in.read(), in, defaultCodec);
         final Codec uCodec = (udef ? defaultCodec : getCodec(in.read(), in, defaultCodec));
         return new PopulationCodec(fCodec, tCodec, uCodec);
-    }
-
-    public static int getSpecifierForDefaultCodec(final BHSDCodec defaultCodec) {
-        return getSpecifier(defaultCodec, null)[0];
     }
 
     public static int[] getSpecifier(final Codec codec, final Codec defaultForBand) {
@@ -296,7 +296,7 @@ public class CodecEncoding {
         return null;
     }
 
-    public static BHSDCodec getCanonicalCodec(final int i) {
-        return canonicalCodec[i];
+    public static int getSpecifierForDefaultCodec(final BHSDCodec defaultCodec) {
+        return getSpecifier(defaultCodec, null)[0];
     }
 }

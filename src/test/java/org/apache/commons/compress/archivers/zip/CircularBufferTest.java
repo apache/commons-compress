@@ -28,24 +28,6 @@ import org.junit.jupiter.api.Test;
 public class CircularBufferTest {
 
     @Test
-    public void testPutAndGet() {
-        final int size = 16;
-        final CircularBuffer buffer = new CircularBuffer(size);
-        for (int i = 0; i < size / 2; i++) {
-            buffer.put(i);
-        }
-
-        assertTrue("available", buffer.available());
-
-        for (int i = 0; i < size / 2; i++) {
-            assertEquals("buffer[" + i + "]", i, buffer.get());
-        }
-
-        assertEquals(-1, buffer.get());
-        assertFalse("available", buffer.available());
-    }
-
-    @Test
     public void testCopy() {
         final CircularBuffer buffer = new CircularBuffer(16);
 
@@ -78,5 +60,23 @@ public class CircularBufferTest {
         for (int i = 14; i < 18; i++) {
             assertEquals("buffer[" + i + "]", i % 2 == 0 ? 12 : 13, buffer.get());
         }
+    }
+
+    @Test
+    public void testPutAndGet() {
+        final int size = 16;
+        final CircularBuffer buffer = new CircularBuffer(size);
+        for (int i = 0; i < size / 2; i++) {
+            buffer.put(i);
+        }
+
+        assertTrue("available", buffer.available());
+
+        for (int i = 0; i < size / 2; i++) {
+            assertEquals("buffer[" + i + "]", i, buffer.get());
+        }
+
+        assertEquals(-1, buffer.get());
+        assertFalse("available", buffer.available());
     }
 }

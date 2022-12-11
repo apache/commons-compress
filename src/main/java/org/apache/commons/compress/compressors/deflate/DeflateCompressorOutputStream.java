@@ -53,13 +53,21 @@ public class DeflateCompressorOutputStream extends CompressorOutputStream {
     }
 
     @Override
-    public void write(final int b) throws IOException {
-        out.write(b);
+    public void close() throws IOException {
+        try {
+            out.close();
+        } finally {
+            deflater.end();
+        }
     }
 
-    @Override
-    public void write(final byte[] buf, final int off, final int len) throws IOException {
-        out.write(buf, off, len);
+    /**
+     * Finishes compression without closing the underlying stream.
+     * <p>No more data can be written to this stream after finishing.</p>
+     * @throws IOException on error
+     */
+    public void finish() throws IOException {
+        out.finish();
     }
 
     /**
@@ -73,21 +81,13 @@ public class DeflateCompressorOutputStream extends CompressorOutputStream {
         out.flush();
     }
 
-    /**
-     * Finishes compression without closing the underlying stream.
-     * <p>No more data can be written to this stream after finishing.</p>
-     * @throws IOException on error
-     */
-    public void finish() throws IOException {
-        out.finish();
+    @Override
+    public void write(final byte[] buf, final int off, final int len) throws IOException {
+        out.write(buf, off, len);
     }
 
     @Override
-    public void close() throws IOException {
-        try {
-            out.close();
-        } finally {
-            deflater.end();
-        }
+    public void write(final int b) throws IOException {
+        out.write(b);
     }
 }

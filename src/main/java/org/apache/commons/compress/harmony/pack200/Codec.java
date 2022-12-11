@@ -93,25 +93,6 @@ public abstract class Codec {
     public abstract int decode(InputStream in) throws IOException, Pack200Exception;
 
     /**
-     * Encode a single value into a sequence of bytes.
-     *
-     * @param value the value to encode
-     * @param last the previous value encoded (for delta encodings)
-     * @return the encoded bytes
-     * @throws Pack200Exception TODO
-     */
-    public abstract byte[] encode(int value, int last) throws Pack200Exception;
-
-    /**
-     * Encode a single value into a sequence of bytes. Note that this method can only be used for non-delta encodings.
-     *
-     * @param value the value to encode
-     * @return the encoded bytes
-     * @throws Pack200Exception TODO
-     */
-    public abstract byte[] encode(int value) throws Pack200Exception;
-
-    /**
      * Decode a sequence of bytes from the given input stream, returning the value as a long. If this encoding is a
      * delta encoding (d=1) then the previous value must be passed in as a parameter. If it is a non-delta encoding,
      * then it does not matter what value is passed in, so it makes sense for the value to be passed in by default using
@@ -174,6 +155,25 @@ public abstract class Codec {
         }
         return result;
     }
+
+    /**
+     * Encode a single value into a sequence of bytes. Note that this method can only be used for non-delta encodings.
+     *
+     * @param value the value to encode
+     * @return the encoded bytes
+     * @throws Pack200Exception TODO
+     */
+    public abstract byte[] encode(int value) throws Pack200Exception;
+
+    /**
+     * Encode a single value into a sequence of bytes.
+     *
+     * @param value the value to encode
+     * @param last the previous value encoded (for delta encodings)
+     * @return the encoded bytes
+     * @throws Pack200Exception TODO
+     */
+    public abstract byte[] encode(int value, int last) throws Pack200Exception;
 
     /**
      * Encode a sequence of integers into a byte array

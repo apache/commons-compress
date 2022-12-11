@@ -21,6 +21,30 @@ import java.util.Arrays;
 import java.util.Objects;
 
 class LocalFileHeader {
+    static class FileTypes {
+        static final int BINARY = 0;
+        static final int SEVEN_BIT_TEXT = 1;
+        static final int COMMENT_HEADER = 2;
+        static final int DIRECTORY = 3;
+        static final int VOLUME_LABEL = 4;
+        static final int CHAPTER_LABEL = 5;
+    }
+    static class Flags {
+        static final int GARBLED = 0x01;
+        static final int VOLUME = 0x04;
+        static final int EXTFILE = 0x08;
+        static final int PATHSYM = 0x10;
+        static final int BACKUP = 0x20;
+    }
+    static class Methods {
+        static final int STORED = 0;
+        static final int COMPRESSED_MOST = 1;
+        static final int COMPRESSED = 2;
+        static final int COMPRESSED_FASTER = 3;
+        static final int COMPRESSED_FASTEST = 4;
+        static final int NO_DATA_NO_CRC = 8;
+        static final int NO_DATA = 9;
+    }
     int archiverVersionNumber;
     int minVersionToExtract;
     int hostOS;
@@ -33,45 +57,60 @@ class LocalFileHeader {
     long originalSize;
     long originalCrc32;
     int fileSpecPosition;
+
     int fileAccessMode;
     int firstChapter;
     int lastChapter;
-
     int extendedFilePosition;
+
     int dateTimeAccessed;
     int dateTimeCreated;
+
     int originalSizeEvenForVolumes;
 
     String name;
+
     String comment;
 
     byte[][] extendedHeaders;
 
-    static class Flags {
-        static final int GARBLED = 0x01;
-        static final int VOLUME = 0x04;
-        static final int EXTFILE = 0x08;
-        static final int PATHSYM = 0x10;
-        static final int BACKUP = 0x20;
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final LocalFileHeader other = (LocalFileHeader) obj;
+        return
+            archiverVersionNumber == other.archiverVersionNumber &&
+            minVersionToExtract == other.minVersionToExtract &&
+            hostOS == other.hostOS &&
+            arjFlags == other.arjFlags &&
+            method == other.method &&
+            fileType == other.fileType &&
+            reserved == other.reserved &&
+            dateTimeModified == other.dateTimeModified &&
+            compressedSize == other.compressedSize &&
+            originalSize == other.originalSize &&
+            originalCrc32 == other.originalCrc32 &&
+            fileSpecPosition == other.fileSpecPosition &&
+            fileAccessMode == other.fileAccessMode &&
+            firstChapter == other.firstChapter &&
+            lastChapter == other.lastChapter &&
+            extendedFilePosition == other.extendedFilePosition &&
+            dateTimeAccessed == other.dateTimeAccessed &&
+            dateTimeCreated == other.dateTimeCreated &&
+            originalSizeEvenForVolumes == other.originalSizeEvenForVolumes &&
+            Objects.equals(name, other.name) &&
+            Objects.equals(comment, other.comment) &&
+            Arrays.deepEquals(extendedHeaders, other.extendedHeaders);
     }
 
-    static class FileTypes {
-        static final int BINARY = 0;
-        static final int SEVEN_BIT_TEXT = 1;
-        static final int COMMENT_HEADER = 2;
-        static final int DIRECTORY = 3;
-        static final int VOLUME_LABEL = 4;
-        static final int CHAPTER_LABEL = 5;
-    }
-
-    static class Methods {
-        static final int STORED = 0;
-        static final int COMPRESSED_MOST = 1;
-        static final int COMPRESSED = 2;
-        static final int COMPRESSED_FASTER = 3;
-        static final int COMPRESSED_FASTEST = 4;
-        static final int NO_DATA_NO_CRC = 8;
-        static final int NO_DATA = 9;
+    @Override
+    public int hashCode() {
+        return name == null ? 0 : name.hashCode();
     }
 
     @Override
@@ -123,45 +162,6 @@ class LocalFileHeader {
         builder.append(Arrays.toString(extendedHeaders));
         builder.append("]");
         return builder.toString();
-    }
-
-    @Override
-    public int hashCode() {
-        return name == null ? 0 : name.hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        final LocalFileHeader other = (LocalFileHeader) obj;
-        return
-            archiverVersionNumber == other.archiverVersionNumber &&
-            minVersionToExtract == other.minVersionToExtract &&
-            hostOS == other.hostOS &&
-            arjFlags == other.arjFlags &&
-            method == other.method &&
-            fileType == other.fileType &&
-            reserved == other.reserved &&
-            dateTimeModified == other.dateTimeModified &&
-            compressedSize == other.compressedSize &&
-            originalSize == other.originalSize &&
-            originalCrc32 == other.originalCrc32 &&
-            fileSpecPosition == other.fileSpecPosition &&
-            fileAccessMode == other.fileAccessMode &&
-            firstChapter == other.firstChapter &&
-            lastChapter == other.lastChapter &&
-            extendedFilePosition == other.extendedFilePosition &&
-            dateTimeAccessed == other.dateTimeAccessed &&
-            dateTimeCreated == other.dateTimeCreated &&
-            originalSizeEvenForVolumes == other.originalSizeEvenForVolumes &&
-            Objects.equals(name, other.name) &&
-            Objects.equals(comment, other.comment) &&
-            Arrays.deepEquals(extendedHeaders, other.extendedHeaders);
     }
 
 }

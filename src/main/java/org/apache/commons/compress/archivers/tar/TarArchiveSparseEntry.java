@@ -66,10 +66,6 @@ public class TarArchiveSparseEntry implements TarConstants {
         isExtended = TarUtils.parseBoolean(headerBuf, offset);
     }
 
-    public boolean isExtended() {
-        return isExtended;
-    }
-
     /**
      * Obtains information about the configuration for the sparse entry.
      * @since 1.20
@@ -77,5 +73,9 @@ public class TarArchiveSparseEntry implements TarConstants {
      */
     public List<TarArchiveStructSparse> getSparseHeaders() {
         return sparseHeaders;
+    }
+
+    public boolean isExtended() {
+        return isExtended;
     }
 }

@@ -62,24 +62,24 @@ public class CPSignature extends ConstantPoolEntry implements Comparable {
         return signature.compareTo(((CPSignature) arg0).signature);
     }
 
-    public int getIndexInCpUtf8() {
-        return signatureForm.getIndex();
-    }
-
     public List<CPClass> getClasses() {
         return classes;
     }
 
-    @Override
-    public String toString() {
-        return signature;
+    public int getIndexInCpUtf8() {
+        return signatureForm.getIndex();
+    }
+
+    public CPUTF8 getSignatureForm() {
+        return signatureForm;
     }
 
     public String getUnderlyingString() {
         return signature;
     }
 
-    public CPUTF8 getSignatureForm() {
-        return signatureForm;
+    @Override
+    public String toString() {
+        return signature;
     }
 }

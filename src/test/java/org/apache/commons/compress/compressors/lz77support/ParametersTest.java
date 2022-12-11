@@ -25,6 +25,30 @@ import org.junit.jupiter.api.Test;
 
 public class ParametersTest {
 
+    private static Parameters newParameters(final int windowSize) {
+        return Parameters.builder(windowSize).build();
+    }
+
+    private static Parameters newParameters(final int windowSize, final int minBackReferenceLength, final int maxBackReferenceLength,
+        final int maxOffset, final int maxLiteralLength) {
+        return Parameters.builder(windowSize)
+            .withMinBackReferenceLength(minBackReferenceLength)
+            .withMaxBackReferenceLength(maxBackReferenceLength)
+            .withMaxOffset(maxOffset)
+            .withMaxLiteralLength(maxLiteralLength)
+            .build();
+    }
+
+    @Test
+    public void allParametersUsuallyTakeTheirSpecifiedValues() {
+        final Parameters p = newParameters(256, 4, 5, 6, 7);
+        assertEquals(256, p.getWindowSize());
+        assertEquals(4, p.getMinBackReferenceLength());
+        assertEquals(5, p.getMaxBackReferenceLength());
+        assertEquals(6, p.getMaxOffset());
+        assertEquals(7, p.getMaxLiteralLength());
+    }
+
     @Test
     public void defaultConstructor() {
         final Parameters p = newParameters(128);
@@ -36,9 +60,9 @@ public class ParametersTest {
     }
 
     @Test
-    public void minBackReferenceLengthIsAtLeastThree() {
+    public void maxBackReferenceLengthIsMinBackReferenceLengthIfBothAreEqual() {
         final Parameters p = newParameters(128, 2, 3, 4, 5);
-        assertEquals(3, p.getMinBackReferenceLength());
+        assertEquals(3, p.getMaxBackReferenceLength());
     }
 
     @Test
@@ -56,30 +80,6 @@ public class ParametersTest {
             .withMaxLiteralLength(5)
             .build();
         assertEquals(3, p.getMaxBackReferenceLength());
-    }
-
-    @Test
-    public void maxBackReferenceLengthIsMinBackReferenceLengthIfBothAreEqual() {
-        final Parameters p = newParameters(128, 2, 3, 4, 5);
-        assertEquals(3, p.getMaxBackReferenceLength());
-    }
-
-    @Test
-    public void maxOffsetIsWindowSizeMinus1IfSetTo0() {
-        final Parameters p = newParameters(128, 2, 3, 0, 5);
-        assertEquals(127, p.getMaxOffset());
-    }
-
-    @Test
-    public void maxOffsetIsWindowSizeMinus1IfSetToANegativeValue() {
-        final Parameters p = newParameters(128, 2, 3, -1, 5);
-        assertEquals(127, p.getMaxOffset());
-    }
-
-    @Test
-    public void maxOffsetIsWindowSizeMinus1IfBiggerThanWindowSize() {
-        final Parameters p = newParameters(128, 2, 3, 129, 5);
-        assertEquals(127, p.getMaxOffset());
     }
 
     @Test
@@ -101,18 +101,27 @@ public class ParametersTest {
     }
 
     @Test
-    public void allParametersUsuallyTakeTheirSpecifiedValues() {
-        final Parameters p = newParameters(256, 4, 5, 6, 7);
-        assertEquals(256, p.getWindowSize());
-        assertEquals(4, p.getMinBackReferenceLength());
-        assertEquals(5, p.getMaxBackReferenceLength());
-        assertEquals(6, p.getMaxOffset());
-        assertEquals(7, p.getMaxLiteralLength());
+    public void maxOffsetIsWindowSizeMinus1IfBiggerThanWindowSize() {
+        final Parameters p = newParameters(128, 2, 3, 129, 5);
+        assertEquals(127, p.getMaxOffset());
     }
 
     @Test
-    public void windowSizeMustNotBeSmallerThanMinBackReferenceLength() {
-        assertThrows(IllegalArgumentException.class, () -> newParameters(128, 200, 300, 400, 500));
+    public void maxOffsetIsWindowSizeMinus1IfSetTo0() {
+        final Parameters p = newParameters(128, 2, 3, 0, 5);
+        assertEquals(127, p.getMaxOffset());
+    }
+
+    @Test
+    public void maxOffsetIsWindowSizeMinus1IfSetToANegativeValue() {
+        final Parameters p = newParameters(128, 2, 3, -1, 5);
+        assertEquals(127, p.getMaxOffset());
+    }
+
+    @Test
+    public void minBackReferenceLengthIsAtLeastThree() {
+        final Parameters p = newParameters(128, 2, 3, 4, 5);
+        assertEquals(3, p.getMinBackReferenceLength());
     }
 
     @Test
@@ -120,17 +129,8 @@ public class ParametersTest {
         assertThrows(IllegalArgumentException.class, () -> newParameters(100, 200, 300, 400, 500));
     }
 
-    private static Parameters newParameters(final int windowSize) {
-        return Parameters.builder(windowSize).build();
-    }
-
-    private static Parameters newParameters(final int windowSize, final int minBackReferenceLength, final int maxBackReferenceLength,
-        final int maxOffset, final int maxLiteralLength) {
-        return Parameters.builder(windowSize)
-            .withMinBackReferenceLength(minBackReferenceLength)
-            .withMaxBackReferenceLength(maxBackReferenceLength)
-            .withMaxOffset(maxOffset)
-            .withMaxLiteralLength(maxLiteralLength)
-            .build();
+    @Test
+    public void windowSizeMustNotBeSmallerThanMinBackReferenceLength() {
+        assertThrows(IllegalArgumentException.class, () -> newParameters(128, 200, 300, 400, 500));
     }
 }

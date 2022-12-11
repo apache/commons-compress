@@ -29,32 +29,18 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * @Immutable
  */
 class Change {
-    private final String targetFile; // entry name to delete
-    private final ArchiveEntry entry; // new entry to add
-    private final InputStream input; // source for new entry
-    private final boolean replaceMode; // change should replaceMode existing entries
-
-    // Type of change
-    private final int type;
     // Possible type values
     static final int TYPE_DELETE = 1;
     static final int TYPE_ADD = 2;
     static final int TYPE_MOVE = 3; // NOT USED
     static final int TYPE_DELETE_DIR = 4;
 
-    /**
-     * Constructor. Takes the file name of the file to be deleted
-     * from the stream as argument.
-     * @param fileName the file name of the file to delete
-     */
-    Change(final String fileName, final int type) {
-        Objects.requireNonNull(fileName, "fileName");
-        this.targetFile = fileName;
-        this.type = type;
-        this.input = null;
-        this.entry = null;
-        this.replaceMode = true;
-    }
+    private final String targetFile; // entry name to delete
+    private final ArchiveEntry entry; // new entry to add
+    private final InputStream input; // source for new entry
+    private final boolean replaceMode; // change should replaceMode existing entries
+    // Type of change
+    private final int type;
 
     /**
      * Construct a change which adds an entry.
@@ -72,6 +58,20 @@ class Change {
         this.replaceMode = replace;
     }
 
+    /**
+     * Constructor. Takes the file name of the file to be deleted
+     * from the stream as argument.
+     * @param fileName the file name of the file to delete
+     */
+    Change(final String fileName, final int type) {
+        Objects.requireNonNull(fileName, "fileName");
+        this.targetFile = fileName;
+        this.type = type;
+        this.input = null;
+        this.entry = null;
+        this.replaceMode = true;
+    }
+
     ArchiveEntry getEntry() {
         return entry;
     }
@@ -80,15 +80,15 @@ class Change {
         return input;
     }
 
+    boolean isReplaceMode() {
+        return replaceMode;
+    }
+
     String targetFile() {
         return targetFile;
     }
 
     int type() {
         return type;
-    }
-
-    boolean isReplaceMode() {
-        return replaceMode;
     }
 }

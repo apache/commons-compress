@@ -30,6 +30,10 @@ public class AttributeLayoutTest extends TestCase {
 
     public class TestSegment extends Segment {
 
+        private ClassFileEntry entry(final String string) {
+            return new CPUTF8(string);
+        }
+
         @Override
         public SegmentConstantPool getConstantPool() {
             final ClassFileEntry[][] data = {
@@ -60,10 +64,6 @@ public class AttributeLayoutTest extends TestCase {
 
             };
         }
-
-        private ClassFileEntry entry(final String string) {
-            return new CPUTF8(string);
-        }
     }
 
     public void testBadData() {
@@ -75,42 +75,6 @@ public class AttributeLayoutTest extends TestCase {
         assertTrue(!throwsException("name", AttributeLayout.CONTEXT_CODE, ""));
         assertTrue(throwsException("name", -1, ""));
         assertTrue(throwsException("name", 1234, ""));
-    }
-
-    public void testLayoutRU() throws Pack200Exception {
-        AttributeLayout layout = new AttributeLayout("RU",
-                AttributeLayout.CONTEXT_CLASS, "RU", 1);
-        Segment segment = new TestSegment();
-        assertNull(layout.getValue(-1, segment.getConstantPool()));
-        assertEquals("Zero", ((CPUTF8)layout.getValue(0, segment.getConstantPool())).underlyingString());
-        assertEquals("One", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
-    }
-
-    public void testLayoutRUN() throws Pack200Exception {
-        AttributeLayout layout = new AttributeLayout("RUN",
-                AttributeLayout.CONTEXT_CLASS, "RUN", 1);
-        Segment segment = new TestSegment();
-        assertNull(layout.getValue(0, segment.getConstantPool()));
-        assertEquals("Zero", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
-        assertEquals("One", ((CPUTF8)layout.getValue(2, segment.getConstantPool())).underlyingString());
-    }
-
-    public void testLayoutRS() throws Pack200Exception {
-        AttributeLayout layout = new AttributeLayout("RS",
-                AttributeLayout.CONTEXT_CLASS, "RS", 1);
-        Segment segment = new TestSegment();
-        assertNull(layout.getValue(-1, segment.getConstantPool()));
-        assertEquals("Eins", ((CPUTF8)layout.getValue(0, segment.getConstantPool())).underlyingString());
-        assertEquals("Zwei", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
-    }
-
-    public void testLayoutRSN() throws Pack200Exception {
-        AttributeLayout layout = new AttributeLayout("RSN",
-                AttributeLayout.CONTEXT_CLASS, "RSN", 1);
-        Segment segment = new TestSegment();
-        assertNull(layout.getValue(0, segment.getConstantPool()));
-        assertEquals("Eins", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
-        assertEquals("Zwei", ((CPUTF8)layout.getValue(2, segment.getConstantPool())).underlyingString());
     }
 
     public void testGetCodec() throws Pack200Exception {
@@ -132,6 +96,42 @@ public class AttributeLayoutTest extends TestCase {
         layout = new AttributeLayout("B", AttributeLayout.CONTEXT_CLASS,
                 "TRKSB", 1);
         assertEquals(Codec.BYTE1, layout.getCodec());
+    }
+
+    public void testLayoutRS() throws Pack200Exception {
+        AttributeLayout layout = new AttributeLayout("RS",
+                AttributeLayout.CONTEXT_CLASS, "RS", 1);
+        Segment segment = new TestSegment();
+        assertNull(layout.getValue(-1, segment.getConstantPool()));
+        assertEquals("Eins", ((CPUTF8)layout.getValue(0, segment.getConstantPool())).underlyingString());
+        assertEquals("Zwei", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
+    }
+
+    public void testLayoutRSN() throws Pack200Exception {
+        AttributeLayout layout = new AttributeLayout("RSN",
+                AttributeLayout.CONTEXT_CLASS, "RSN", 1);
+        Segment segment = new TestSegment();
+        assertNull(layout.getValue(0, segment.getConstantPool()));
+        assertEquals("Eins", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
+        assertEquals("Zwei", ((CPUTF8)layout.getValue(2, segment.getConstantPool())).underlyingString());
+    }
+
+    public void testLayoutRU() throws Pack200Exception {
+        AttributeLayout layout = new AttributeLayout("RU",
+                AttributeLayout.CONTEXT_CLASS, "RU", 1);
+        Segment segment = new TestSegment();
+        assertNull(layout.getValue(-1, segment.getConstantPool()));
+        assertEquals("Zero", ((CPUTF8)layout.getValue(0, segment.getConstantPool())).underlyingString());
+        assertEquals("One", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
+    }
+
+    public void testLayoutRUN() throws Pack200Exception {
+        AttributeLayout layout = new AttributeLayout("RUN",
+                AttributeLayout.CONTEXT_CLASS, "RUN", 1);
+        Segment segment = new TestSegment();
+        assertNull(layout.getValue(0, segment.getConstantPool()));
+        assertEquals("Zero", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
+        assertEquals("One", ((CPUTF8)layout.getValue(2, segment.getConstantPool())).underlyingString());
     }
 
     public boolean throwsException(final String name, final int context, final String layout) {

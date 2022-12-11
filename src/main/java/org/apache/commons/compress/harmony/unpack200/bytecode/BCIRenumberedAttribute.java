@@ -30,6 +30,15 @@ public abstract class BCIRenumberedAttribute extends Attribute {
 
     protected boolean renumbered;
 
+    public BCIRenumberedAttribute(final CPUTF8 attributeName) {
+        super(attributeName);
+    }
+
+    @Override
+    protected abstract int getLength();
+
+    protected abstract int[] getStartPCs();
+
     /*
      * (non-Javadoc)
      *
@@ -39,21 +48,6 @@ public abstract class BCIRenumberedAttribute extends Attribute {
     public boolean hasBCIRenumbering() {
         return true;
     }
-
-    public BCIRenumberedAttribute(final CPUTF8 attributeName) {
-        super(attributeName);
-    }
-
-    @Override
-    protected abstract int getLength();
-
-    @Override
-    protected abstract void writeBody(DataOutputStream dos) throws IOException;
-
-    @Override
-    public abstract String toString();
-
-    protected abstract int[] getStartPCs();
 
     /**
      * In Pack200, line number tables are BCI renumbered. This method takes the byteCodeOffsets (which is a List of
@@ -71,5 +65,11 @@ public abstract class BCIRenumberedAttribute extends Attribute {
         final int[] startPCs = getStartPCs();
         Arrays.setAll(startPCs, i -> byteCodeOffsets.get(startPCs[i]).intValue());
     }
+
+    @Override
+    public abstract String toString();
+
+    @Override
+    protected abstract void writeBody(DataOutputStream dos) throws IOException;
 
 }

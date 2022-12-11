@@ -33,14 +33,14 @@ public class DeflateParametersTest {
     }
 
     @Test
-    public void shouldNotBeAbleToSetCompressionLevelToANegativeValue() {
-        final DeflateParameters p = new DeflateParameters();
-        assertThrows(IllegalArgumentException.class, () -> p.setCompressionLevel(DeflateParameters.MIN_LEVEL - 1));
-    }
-
-    @Test
     public void shouldNotBeAbleToSetCompressionLevelToADoubleDigitValue() {
         final DeflateParameters p = new DeflateParameters();
         assertThrows(IllegalArgumentException.class, () -> p.setCompressionLevel(DeflateParameters.MAX_LEVEL + 1));
+    }
+
+    @Test
+    public void shouldNotBeAbleToSetCompressionLevelToANegativeValue() {
+        final DeflateParameters p = new DeflateParameters();
+        assertThrows(IllegalArgumentException.class, () -> p.setCompressionLevel(DeflateParameters.MIN_LEVEL - 1));
     }
 }

@@ -32,12 +32,19 @@ import org.junit.jupiter.api.Test;
 
 public class ScatterSampleTest {
 
-    @Test
-    public void testSample() throws Exception {
-        final File result = File.createTempFile("testSample", "fe");
-
-        createFile(result);
-        checkFile(result);
+    private void checkFile(final File result) throws IOException {
+        try (final ZipFile zipFile = new ZipFile(result)) {
+            final ZipArchiveEntry archiveEntry1 = zipFile.getEntries().nextElement();
+            assertEquals("test1.xml", archiveEntry1.getName());
+            try (final InputStream inputStream = zipFile.getInputStream(archiveEntry1)) {
+                final byte[] b = new byte[6];
+                final int i = IOUtils.readFully(inputStream, b);
+                assertEquals(5, i);
+                assertEquals('H', b[0]);
+                assertEquals('o', b[4]);
+            }
+        }
+        result.delete();
     }
 
     private void createFile(final File result) throws IOException, ExecutionException, InterruptedException {
@@ -52,18 +59,11 @@ public class ScatterSampleTest {
         }
     }
 
-    private void checkFile(final File result) throws IOException {
-        try (final ZipFile zipFile = new ZipFile(result)) {
-            final ZipArchiveEntry archiveEntry1 = zipFile.getEntries().nextElement();
-            assertEquals("test1.xml", archiveEntry1.getName());
-            try (final InputStream inputStream = zipFile.getInputStream(archiveEntry1)) {
-                final byte[] b = new byte[6];
-                final int i = IOUtils.readFully(inputStream, b);
-                assertEquals(5, i);
-                assertEquals('H', b[0]);
-                assertEquals('o', b[4]);
-            }
-        }
-        result.delete();
+    @Test
+    public void testSample() throws Exception {
+        final File result = File.createTempFile("testSample", "fe");
+
+        createFile(result);
+        checkFile(result);
     }
 }

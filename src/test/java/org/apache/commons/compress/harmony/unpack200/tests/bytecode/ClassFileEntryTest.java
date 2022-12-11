@@ -29,13 +29,6 @@ import junit.framework.TestCase;
 
 public class ClassFileEntryTest extends TestCase {
 
-    public void testUTF8() {
-        CPUTF8 u1 = new CPUTF8(new String("thing"), 1); //$NON-NLS-1$
-        CPUTF8 u2 = new CPUTF8(new String("thing"), 1); //$NON-NLS-1$
-        CPUTF8 u3 = new CPUTF8(new String("otherthing"), 2); //$NON-NLS-1$
-        checkEquality(u1, u2, "thing", u3);
-    }
-
     private void checkEquality(Object equal1, Object equal2, String toString,
             Object unequal) {
         assertEquals(equal1, equal2);
@@ -47,14 +40,31 @@ public class ClassFileEntryTest extends TestCase {
         assertFalse(unequal.equals(equal2));
     }
 
-    public void testSourceAttribute() {
-        SourceFileAttribute sfa1 = new SourceFileAttribute(new CPUTF8(
-                new String("Thing.java"), 1)); //$NON-NLS-1$
-        SourceFileAttribute sfa2 = new SourceFileAttribute(new CPUTF8(
-                new String("Thing.java"), 1)); //$NON-NLS-1$
-        SourceFileAttribute sfa3 = new SourceFileAttribute(new CPUTF8(
-                new String("OtherThing.java"), 2)); //$NON-NLS-1$
-        checkEquality(sfa1, sfa2, "Thing.java", sfa3); //$NON-NLS-1$
+    public void testCPDouble() {
+        CPDouble cp1 = new CPDouble(new Double(3), 3);
+        CPDouble cp2 = new CPDouble(new Double(3), 3);
+        CPDouble cp3 = new CPDouble(new Double(5), 5);
+        checkEquality(cp1, cp2, "3", cp3); //$NON-NLS-1$
+    }
+
+    public void testCPField() {
+        CPMember cp1 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("I", 4),
+                0, null);
+        CPMember cp2 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("I", 4),
+                0, null);
+        CPMember cp3 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("Z", 5),
+                0, null);
+        CPMember cp4 = new CPMember(new CPUTF8("GName", 6), new CPUTF8("I", 4),
+                0, null);
+        checkEquality(cp1, cp2, "Name", cp3); //$NON-NLS-1$
+        checkEquality(cp1, cp2, "I", cp4); //$NON-NLS-1$
+    }
+
+    public void testCPFloat() {
+        CPFloat cp1 = new CPFloat(new Float(3), 3);
+        CPFloat cp2 = new CPFloat(new Float(3), 3);
+        CPFloat cp3 = new CPFloat(new Float(5), 5);
+        checkEquality(cp1, cp2, "3", cp3); //$NON-NLS-1$
     }
 
     public void testCPInteger() {
@@ -71,20 +81,6 @@ public class ClassFileEntryTest extends TestCase {
         checkEquality(cp1, cp2, "3", cp3); //$NON-NLS-1$
     }
 
-    public void testCPDouble() {
-        CPDouble cp1 = new CPDouble(new Double(3), 3);
-        CPDouble cp2 = new CPDouble(new Double(3), 3);
-        CPDouble cp3 = new CPDouble(new Double(5), 5);
-        checkEquality(cp1, cp2, "3", cp3); //$NON-NLS-1$
-    }
-
-    public void testCPFloat() {
-        CPFloat cp1 = new CPFloat(new Float(3), 3);
-        CPFloat cp2 = new CPFloat(new Float(3), 3);
-        CPFloat cp3 = new CPFloat(new Float(5), 5);
-        checkEquality(cp1, cp2, "3", cp3); //$NON-NLS-1$
-    }
-
     public void testCPString() {
         CPString cp1 = new CPString(new CPUTF8(new String("3"), 3), 3);
         CPString cp2 = new CPString(new CPUTF8(new String("3"), 3), 3);
@@ -92,17 +88,21 @@ public class ClassFileEntryTest extends TestCase {
         checkEquality(cp1, cp2, "3", cp3); //$NON-NLS-1$
     }
 
-    public void testCPField() {
-        CPMember cp1 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("I", 4),
-                0, null);
-        CPMember cp2 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("I", 4),
-                0, null);
-        CPMember cp3 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("Z", 5),
-                0, null);
-        CPMember cp4 = new CPMember(new CPUTF8("GName", 6), new CPUTF8("I", 4),
-                0, null);
-        checkEquality(cp1, cp2, "Name", cp3); //$NON-NLS-1$
-        checkEquality(cp1, cp2, "I", cp4); //$NON-NLS-1$
+    public void testSourceAttribute() {
+        SourceFileAttribute sfa1 = new SourceFileAttribute(new CPUTF8(
+                new String("Thing.java"), 1)); //$NON-NLS-1$
+        SourceFileAttribute sfa2 = new SourceFileAttribute(new CPUTF8(
+                new String("Thing.java"), 1)); //$NON-NLS-1$
+        SourceFileAttribute sfa3 = new SourceFileAttribute(new CPUTF8(
+                new String("OtherThing.java"), 2)); //$NON-NLS-1$
+        checkEquality(sfa1, sfa2, "Thing.java", sfa3); //$NON-NLS-1$
+    }
+
+    public void testUTF8() {
+        CPUTF8 u1 = new CPUTF8(new String("thing"), 1); //$NON-NLS-1$
+        CPUTF8 u2 = new CPUTF8(new String("thing"), 1); //$NON-NLS-1$
+        CPUTF8 u3 = new CPUTF8(new String("otherthing"), 2); //$NON-NLS-1$
+        checkEquality(u1, u2, "thing", u3);
     }
 
 }

@@ -39,6 +39,52 @@ import org.apache.commons.compress.PasswordRequiredException;
 
 class AES256SHA256Decoder extends AbstractCoder {
     
+    static byte[] sha256Password(final byte[] password, final int numCyclesPower, final byte[] salt) {
+        final MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (final NoSuchAlgorithmException noSuchAlgorithmException) {
+            throw new IllegalStateException("SHA-256 is unsupported by your Java implementation", noSuchAlgorithmException);
+        }
+        final byte[] extra = new byte[8];
+        for (long j = 0; j < (1L << numCyclesPower); j++) {
+            digest.update(salt);
+            digest.update(password);
+            digest.update(extra);
+            for (int k = 0; k < extra.length; k++) {
+                ++extra[k];
+                if (extra[k] != 0) {
+                    break;
+                }
+            }
+        }
+        return digest.digest();
+    }
+
+    static byte[] sha256Password(final char[] password, final int numCyclesPower, final byte[] salt) {
+        return sha256Password(utf16Decode(password), numCyclesPower, salt);
+    }
+
+    /**
+     * Convenience method that encodes Unicode characters into bytes in UTF-16 (ittle-endian byte order) charset
+     *
+     * @param chars characters to encode
+     * @return encoded characters
+     * @since 1.23
+     */
+    static byte[] utf16Decode(final char[] chars) {
+        if (chars == null) {
+            return null;
+        }
+        final ByteBuffer encoded = UTF_16LE.encode(CharBuffer.wrap(chars));
+        if (encoded.hasArray()) {
+            return encoded.array();
+        }
+        final byte[] e = new byte[encoded.remaining()];
+        encoded.get(e);
+        return e;
+    }
+
     AES256SHA256Decoder() {
         super(AES256Options.class);
     }
@@ -49,6 +95,13 @@ class AES256SHA256Decoder extends AbstractCoder {
         return new InputStream() {
             private boolean isInitialized;
             private CipherInputStream cipherInputStream;
+
+            @Override
+            public void close() throws IOException {
+                if (cipherInputStream != null) {
+                    cipherInputStream.close();
+                }
+            }
 
             private CipherInputStream init() throws IOException {
                 if (isInitialized) {
@@ -109,13 +162,6 @@ class AES256SHA256Decoder extends AbstractCoder {
             public int read(final byte[] b, final int off, final int len) throws IOException {
                 return init().read(b, off, len);
             }
-
-            @Override
-            public void close() throws IOException {
-                if (cipherInputStream != null) {
-                    cipherInputStream.close();
-                }
-            }
         };
     }
 
@@ -134,11 +180,22 @@ class AES256SHA256Decoder extends AbstractCoder {
             private int count = 0;
 
             @Override
-            public void write(int b) throws IOException {
-                cipherBlockBuffer[count++] = (byte) b;
-                if (count == cipherBlockSize) {
-                    flushBuffer();
+            public void close() throws IOException {
+                if (count > 0) {
+                    cipherOutputStream.write(cipherBlockBuffer);
                 }
+                cipherOutputStream.close();
+            }
+
+            @Override
+            public void flush() throws IOException {
+                cipherOutputStream.flush();
+            }
+
+            private void flushBuffer() throws IOException {
+                cipherOutputStream.write(cipherBlockBuffer);
+                count = 0;
+                Arrays.fill(cipherBlockBuffer, (byte) 0);
             }
 
             @Override
@@ -161,23 +218,12 @@ class AES256SHA256Decoder extends AbstractCoder {
                 }
             }
 
-            private void flushBuffer() throws IOException {
-                cipherOutputStream.write(cipherBlockBuffer);
-                count = 0;
-                Arrays.fill(cipherBlockBuffer, (byte) 0);
-            }
-
             @Override
-            public void flush() throws IOException {
-                cipherOutputStream.flush();
-            }
-
-            @Override
-            public void close() throws IOException {
-                if (count > 0) {
-                    cipherOutputStream.write(cipherBlockBuffer);
+            public void write(int b) throws IOException {
+                cipherBlockBuffer[count++] = (byte) b;
+                if (count == cipherBlockSize) {
+                    flushBuffer();
                 }
-                cipherOutputStream.close();
             }
         };
     }
@@ -200,51 +246,5 @@ class AES256SHA256Decoder extends AbstractCoder {
         }
 
         return props;
-    }
-
-    static byte[] sha256Password(final char[] password, final int numCyclesPower, final byte[] salt) {
-        return sha256Password(utf16Decode(password), numCyclesPower, salt);
-    }
-
-    static byte[] sha256Password(final byte[] password, final int numCyclesPower, final byte[] salt) {
-        final MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("SHA-256");
-        } catch (final NoSuchAlgorithmException noSuchAlgorithmException) {
-            throw new IllegalStateException("SHA-256 is unsupported by your Java implementation", noSuchAlgorithmException);
-        }
-        final byte[] extra = new byte[8];
-        for (long j = 0; j < (1L << numCyclesPower); j++) {
-            digest.update(salt);
-            digest.update(password);
-            digest.update(extra);
-            for (int k = 0; k < extra.length; k++) {
-                ++extra[k];
-                if (extra[k] != 0) {
-                    break;
-                }
-            }
-        }
-        return digest.digest();
-    }
-
-    /**
-     * Convenience method that encodes Unicode characters into bytes in UTF-16 (ittle-endian byte order) charset
-     *
-     * @param chars characters to encode
-     * @return encoded characters
-     * @since 1.23
-     */
-    static byte[] utf16Decode(final char[] chars) {
-        if (chars == null) {
-            return null;
-        }
-        final ByteBuffer encoded = UTF_16LE.encode(CharBuffer.wrap(chars));
-        if (encoded.hasArray()) {
-            return encoded.array();
-        }
-        final byte[] e = new byte[encoded.remaining()];
-        encoded.get(e);
-        return e;
     }
 }

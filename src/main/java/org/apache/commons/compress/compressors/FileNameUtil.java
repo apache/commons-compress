@@ -122,22 +122,28 @@ public class FileNameUtil {
     }
 
     /**
-     * Detects common format suffixes in the given file name.
+     * Maps the given file name to the name that the file should have after
+     * compression. Common file types with custom suffixes for
+     * compressed versions are automatically detected and correctly mapped.
+     * For example the name "package.tar" is mapped to "package.tgz". If no
+     * custom mapping is applicable, then the default ".gz" suffix is appended
+     * to the file name.
      *
      * @param fileName name of a file
-     * @return {@code true} if the file name has a common format suffix,
-     *         {@code false} otherwise
+     * @return name of the corresponding compressed file
      */
-    public boolean isCompressedFilename(final String fileName) {
+    public String getCompressedFilename(final String fileName) {
         final String lower = fileName.toLowerCase(Locale.ENGLISH);
         final int n = lower.length();
-        for (int i = shortestCompressedSuffix;
-             i <= longestCompressedSuffix && i < n; i++) {
-            if (uncompressSuffix.containsKey(lower.substring(n - i))) {
-                return true;
+        for (int i = shortestUncompressedSuffix;
+             i <= longestUncompressedSuffix && i < n; i++) {
+            final String suffix = compressSuffix.get(lower.substring(n - i));
+            if (suffix != null) {
+                return fileName.substring(0, n - i) + suffix;
             }
         }
-        return false;
+        // No custom suffix found, just append the default
+        return fileName + defaultExtension;
     }
 
     /**
@@ -167,27 +173,21 @@ public class FileNameUtil {
     }
 
     /**
-     * Maps the given file name to the name that the file should have after
-     * compression. Common file types with custom suffixes for
-     * compressed versions are automatically detected and correctly mapped.
-     * For example the name "package.tar" is mapped to "package.tgz". If no
-     * custom mapping is applicable, then the default ".gz" suffix is appended
-     * to the file name.
+     * Detects common format suffixes in the given file name.
      *
      * @param fileName name of a file
-     * @return name of the corresponding compressed file
+     * @return {@code true} if the file name has a common format suffix,
+     *         {@code false} otherwise
      */
-    public String getCompressedFilename(final String fileName) {
+    public boolean isCompressedFilename(final String fileName) {
         final String lower = fileName.toLowerCase(Locale.ENGLISH);
         final int n = lower.length();
-        for (int i = shortestUncompressedSuffix;
-             i <= longestUncompressedSuffix && i < n; i++) {
-            final String suffix = compressSuffix.get(lower.substring(n - i));
-            if (suffix != null) {
-                return fileName.substring(0, n - i) + suffix;
+        for (int i = shortestCompressedSuffix;
+             i <= longestCompressedSuffix && i < n; i++) {
+            if (uncompressSuffix.containsKey(lower.substring(n - i))) {
+                return true;
             }
         }
-        // No custom suffix found, just append the default
-        return fileName + defaultExtension;
+        return false;
     }
 }

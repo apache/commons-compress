@@ -48,6 +48,16 @@ public abstract class AnnotationsAttribute extends Attribute {
             this.element_values = element_values;
         }
 
+        public List<Object> getClassFileEntries() {
+            final List<Object> entries = new ArrayList<>();
+            for (int i = 0; i < element_names.length; i++) {
+                entries.add(element_names[i]);
+                entries.addAll(element_values[i].getClassFileEntries());
+            }
+            entries.add(type);
+            return entries;
+        }
+
         public int getLength() {
             int length = 4;
             for (int i = 0; i < num_pairs; i++) {
@@ -75,16 +85,6 @@ public abstract class AnnotationsAttribute extends Attribute {
                 dos.writeShort(name_indexes[i]);
                 element_values[i].writeBody(dos);
             }
-        }
-
-        public List<Object> getClassFileEntries() {
-            final List<Object> entries = new ArrayList<>();
-            for (int i = 0; i < element_names.length; i++) {
-                entries.add(element_names[i]);
-                entries.addAll(element_values[i].getClassFileEntries());
-            }
-            entries.add(type);
-            return entries;
         }
     }
 
@@ -119,6 +119,34 @@ public abstract class AnnotationsAttribute extends Attribute {
                 entries.addAll(((Annotation) value).getClassFileEntries());
             }
             return entries;
+        }
+
+        public int getLength() {
+            switch (tag) {
+            case 'B':
+            case 'C':
+            case 'D':
+            case 'F':
+            case 'I':
+            case 'J':
+            case 'S':
+            case 'Z':
+            case 'c':
+            case 's':
+                return 3;
+            case 'e':
+                return 5;
+            case '[':
+                int length = 3;
+                final ElementValue[] nestedValues = (ElementValue[]) value;
+                for (ElementValue nestedValue : nestedValues) {
+                    length += nestedValue.getLength();
+                }
+                return length;
+            case '@':
+                return (1 + ((Annotation) value).getLength());
+            }
+            return 0;
         }
 
         public void resolve(final ClassConstantPool pool) {
@@ -160,34 +188,6 @@ public abstract class AnnotationsAttribute extends Attribute {
             } else {
                 throw new Error("");
             }
-        }
-
-        public int getLength() {
-            switch (tag) {
-            case 'B':
-            case 'C':
-            case 'D':
-            case 'F':
-            case 'I':
-            case 'J':
-            case 'S':
-            case 'Z':
-            case 'c':
-            case 's':
-                return 3;
-            case 'e':
-                return 5;
-            case '[':
-                int length = 3;
-                final ElementValue[] nestedValues = (ElementValue[]) value;
-                for (ElementValue nestedValue : nestedValues) {
-                    length += nestedValue.getLength();
-                }
-                return length;
-            case '@':
-                return (1 + ((Annotation) value).getLength());
-            }
-            return 0;
         }
     }
 

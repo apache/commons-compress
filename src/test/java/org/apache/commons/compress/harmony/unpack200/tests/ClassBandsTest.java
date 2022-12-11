@@ -32,10 +32,6 @@ import org.apache.commons.compress.harmony.unpack200.Segment;
  */
 public class ClassBandsTest extends AbstractBandsTestCase {
 
-    private String[] cpClasses;
-    private String[] cpDescriptor;
-    private String[] cpUTF8;
-
     public class MockCpBands extends CpBands {
 
         public MockCpBands(final Segment segment) {
@@ -52,23 +48,8 @@ public class ClassBandsTest extends AbstractBandsTestCase {
             return cpDescriptor;
         }
 
-        @Override
-        public String[] getCpUTF8() {
-            return cpUTF8;
-        }
-
-        @Override
-        public int[] getCpInt() {
-            return new int[0];
-        }
-
         public double[] getCpDouble() {
             return new double[0];
-        }
-
-        @Override
-        public long[] getCpLong() {
-            return new long[0];
         }
 
         public float[] getCpFloat() {
@@ -76,11 +57,25 @@ public class ClassBandsTest extends AbstractBandsTestCase {
         }
 
         @Override
+        public int[] getCpInt() {
+            return new int[0];
+        }
+
+        @Override
+        public long[] getCpLong() {
+            return new long[0];
+        }
+
+        @Override
         public String[] getCpSignature() {
             return new String[0];
         }
-    }
 
+        @Override
+        public String[] getCpUTF8() {
+            return cpUTF8;
+        }
+    }
     public class MockSegment extends AbstractBandsTestCase.MockSegment {
 
         @Override
@@ -88,8 +83,22 @@ public class ClassBandsTest extends AbstractBandsTestCase {
             return new MockCpBands(this);
         }
     }
+    private String[] cpClasses;
+
+    private String[] cpDescriptor;
+
+    private String[] cpUTF8;
 
     ClassBands classBands = new ClassBands(new MockSegment());
+
+    public byte[] encodeBandInt(final int[] data, final BHSDCodec codec)
+            throws IOException, Pack200Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        for (int i = 0; i < data.length; i++) {
+            baos.write(codec.encode(data[i], i == 0 ? 0 : data[i - 1]));
+        }
+        return baos.toByteArray();
+    }
 
     public void testSimple() throws IOException, Pack200Exception {
         cpClasses = new String[] { "Class1", "Class2", "Class3", "Interface1",
@@ -171,15 +180,6 @@ public class ClassBandsTest extends AbstractBandsTestCase {
 
         cpClasses = null;
         cpDescriptor = null;
-    }
-
-    public byte[] encodeBandInt(final int[] data, final BHSDCodec codec)
-            throws IOException, Pack200Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        for (int i = 0; i < data.length; i++) {
-            baos.write(codec.encode(data[i], i == 0 ? 0 : data[i - 1]));
-        }
-        return baos.toByteArray();
     }
 
 

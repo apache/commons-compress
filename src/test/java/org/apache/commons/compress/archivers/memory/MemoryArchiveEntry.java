@@ -31,6 +31,11 @@ public final class MemoryArchiveEntry implements ArchiveEntry {
     }
 
     @Override
+    public Date getLastModifiedDate() {
+        return new Date();
+    }
+
+    @Override
     public String getName() {
         return name;
     }
@@ -45,10 +50,5 @@ public final class MemoryArchiveEntry implements ArchiveEntry {
     public boolean isDirectory() {
         // TODO Auto-generated method stub
         return false;
-    }
-
-    @Override
-    public Date getLastModifiedDate() {
-        return new Date();
     }
 }

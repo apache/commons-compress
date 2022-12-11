@@ -35,10 +35,70 @@ import org.junit.jupiter.api.Test;
 
 public final class SnappyRoundtripTest extends AbstractTestCase {
 
-    private void roundTripTest(final String testFile) throws IOException {
-        roundTripTest(getFile(testFile),
+    private static Parameters newParameters(final int windowSize, final int minBackReferenceLength, final int maxBackReferenceLength,
+        final int maxOffset, final int maxLiteralLength) {
+        return Parameters.builder(windowSize)
+            .withMinBackReferenceLength(minBackReferenceLength)
+            .withMaxBackReferenceLength(maxBackReferenceLength)
+            .withMaxOffset(maxOffset)
+            .withMaxLiteralLength(maxLiteralLength)
+            .build();
+    }
+
+    // yields no compression at all
+    @Test
+    public void biggerFileRoundtrip() throws IOException {
+        roundTripTest("COMPRESS-256.7z");
+    }
+
+    // should yield decent compression
+    @Test
+    public void blaTarRoundtrip() throws IOException {
+        // System.err.println("Configuration: default");
+        roundTripTest("bla.tar");
+    }
+
+    @Test
+    public void blaTarRoundtripTunedForCompressionRatio() throws IOException {
+        // System.err.println("Configuration: tuned for compression ratio");
+        roundTripTest(getFile("bla.tar"),
             SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE)
+                .tunedForCompressionRatio()
                 .build());
+    }
+
+    @Test
+    public void blaTarRoundtripTunedForSpeed() throws IOException {
+        // System.err.println("Configuration: tuned for speed");
+        roundTripTest(getFile("bla.tar"),
+            SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE)
+                .tunedForSpeed()
+                .build());
+    }
+
+    // yields no compression at all
+    @Test
+    public void gzippedLoremIpsumRoundtrip() throws IOException {
+        roundTripTest("lorem-ipsum.txt.gz");
+    }
+
+    private void roundTripTest(final byte[] input, final Parameters params) throws IOException {
+        long start = System.currentTimeMillis();
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try (
+             SnappyCompressorOutputStream sos = new SnappyCompressorOutputStream(os, input.length, params)) {
+            sos.write(input);
+        }
+        // System.err.println("byte array" + " written, uncompressed bytes: " + input.length
+        //    + ", compressed bytes: " + os.size() + " after " + (System.currentTimeMillis() - start) + "ms");
+        start = System.currentTimeMillis();
+        try (
+             SnappyCompressorInputStream sis = new SnappyCompressorInputStream(new ByteArrayInputStream(os.toByteArray()),
+                 params.getWindowSize())) {
+            final byte[] actual = IOUtils.toByteArray(sis);
+            Assert.assertArrayEquals(input, actual);
+        }
+        // System.err.println("byte array" + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
     private void roundTripTest(final File input, final Parameters params) throws IOException {
@@ -62,60 +122,10 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
         //System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
-    private void roundTripTest(final byte[] input, final Parameters params) throws IOException {
-        long start = System.currentTimeMillis();
-        final ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try (
-             SnappyCompressorOutputStream sos = new SnappyCompressorOutputStream(os, input.length, params)) {
-            sos.write(input);
-        }
-        // System.err.println("byte array" + " written, uncompressed bytes: " + input.length
-        //    + ", compressed bytes: " + os.size() + " after " + (System.currentTimeMillis() - start) + "ms");
-        start = System.currentTimeMillis();
-        try (
-             SnappyCompressorInputStream sis = new SnappyCompressorInputStream(new ByteArrayInputStream(os.toByteArray()),
-                 params.getWindowSize())) {
-            final byte[] actual = IOUtils.toByteArray(sis);
-            Assert.assertArrayEquals(input, actual);
-        }
-        // System.err.println("byte array" + " read after " + (System.currentTimeMillis() - start) + "ms");
-    }
-
-    // should yield decent compression
-    @Test
-    public void blaTarRoundtrip() throws IOException {
-        // System.err.println("Configuration: default");
-        roundTripTest("bla.tar");
-    }
-
-    @Test
-    public void blaTarRoundtripTunedForSpeed() throws IOException {
-        // System.err.println("Configuration: tuned for speed");
-        roundTripTest(getFile("bla.tar"),
+    private void roundTripTest(final String testFile) throws IOException {
+        roundTripTest(getFile(testFile),
             SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE)
-                .tunedForSpeed()
                 .build());
-    }
-
-    @Test
-    public void blaTarRoundtripTunedForCompressionRatio() throws IOException {
-        // System.err.println("Configuration: tuned for compression ratio");
-        roundTripTest(getFile("bla.tar"),
-            SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE)
-                .tunedForCompressionRatio()
-                .build());
-    }
-
-    // yields no compression at all
-    @Test
-    public void gzippedLoremIpsumRoundtrip() throws IOException {
-        roundTripTest("lorem-ipsum.txt.gz");
-    }
-
-    // yields no compression at all
-    @Test
-    public void biggerFileRoundtrip() throws IOException {
-        roundTripTest("COMPRESS-256.7z");
     }
 
     @Test
@@ -173,15 +183,5 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
             }
         }
         roundTripTest(f, newParameters(1 << 18, 4, 64, 1 << 16 - 1, 1 << 18 - 1));
-    }
-
-    private static Parameters newParameters(final int windowSize, final int minBackReferenceLength, final int maxBackReferenceLength,
-        final int maxOffset, final int maxLiteralLength) {
-        return Parameters.builder(windowSize)
-            .withMinBackReferenceLength(minBackReferenceLength)
-            .withMaxBackReferenceLength(maxBackReferenceLength)
-            .withMaxOffset(maxOffset)
-            .withMaxLiteralLength(maxLiteralLength)
-            .build();
     }
 }

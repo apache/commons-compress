@@ -31,6 +31,8 @@ public abstract class CPRef extends ConstantPoolEntry {
     protected CPNameAndType nameAndType;
     transient int nameAndTypeIndex;
 
+    protected String cachedToString;
+
     /**
      * Create a new CPRef
      *
@@ -84,8 +86,6 @@ public abstract class CPRef extends ConstantPoolEntry {
         nameAndTypeIndex = pool.indexOf(nameAndType);
         classNameIndex = pool.indexOf(className);
     }
-
-    protected String cachedToString;
 
     @Override
     public String toString() {

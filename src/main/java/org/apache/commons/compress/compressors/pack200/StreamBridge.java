@@ -35,12 +35,12 @@ abstract class StreamBridge extends FilterOutputStream {
     private InputStream input;
     private final Object inputLock = new Object();
 
-    protected StreamBridge(final OutputStream out) {
-        super(out);
-    }
-
     protected StreamBridge() {
         this(null);
+    }
+
+    protected StreamBridge(final OutputStream out) {
+        super(out);
     }
 
     /**

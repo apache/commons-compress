@@ -51,6 +51,17 @@ class Dirent {
     }
 
     /**
+     * Get name of directory entry.
+     *
+     * <p>This method returns the raw name as it is stored inside of the archive.</p>
+     *
+     * @return the directory name
+     */
+    String getName() {
+        return name;
+    }
+
+    /**
      * Get ino of parent directory.
      * @return the parent i-node
      */
@@ -64,17 +75,6 @@ class Dirent {
      */
     int getType() {
         return type;
-    }
-
-    /**
-     * Get name of directory entry.
-     *
-     * <p>This method returns the raw name as it is stored inside of the archive.</p>
-     *
-     * @return the directory name
-     */
-    String getName() {
-        return name;
     }
 
     /**

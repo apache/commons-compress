@@ -38,67 +38,8 @@ public class IOUtilsTest {
         InputStream wrap(InputStream toWrap);
     }
 
-    @Test
-    public void skipUsingSkip() throws Exception {
-        skip(toWrap -> toWrap);
-    }
-
-    @Test
-    public void skipUsingRead() throws Exception {
-        skip(toWrap -> new FilterInputStream(toWrap) {
-            @Override
-            public long skip(final long s) {
-                return 0;
-            }
-        });
-    }
-
-    @Test
-    public void skipUsingSkipAndRead() throws Exception {
-        skip(toWrap -> new FilterInputStream(toWrap) {
-            boolean skipped;
-            @Override
-            public long skip(final long s) throws IOException {
-                if (!skipped) {
-                    toWrap.skip(5);
-                    skipped = true;
-                    return 5;
-                }
-                return 0;
-            }
-        });
-    }
-
-    @Test
-    public void readFullyOnChannelReadsFully() throws IOException {
-        final ByteBuffer b = ByteBuffer.allocate(20);
-        final byte[] source = new byte[20];
-        for (byte i = 0; i < 20; i++) {
-            source[i] = i;
-        }
-        readFully(source, b);
-        Assert.assertArrayEquals(source, b.array());
-    }
-
-    @Test
-    public void readFullyOnChannelThrowsEof() {
-        final ByteBuffer b = ByteBuffer.allocate(21);
-        final byte[] source = new byte[20];
-        for (byte i = 0; i < 20; i++) {
-            source[i] = i;
-        }
-        assertThrows(EOFException.class, () -> readFully(source, b));
-    }
-
-    @Test
-    public void copyThrowsOnZeroBufferSize() {
-        assertThrows(IllegalArgumentException.class, () -> IOUtils.copy(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), new ByteArrayOutputStream(), 0));
-    }
-
-    @Test
-    public void copyRangeThrowsOnZeroBufferSize() {
-        assertThrows(IllegalArgumentException.class,
-            () -> IOUtils.copyRange(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 5, new ByteArrayOutputStream(), 0));
+    private static void readFully(final byte[] source, final ByteBuffer b) throws IOException {
+        IOUtils.readFully(new SeekableInMemoryByteChannel(source), b);
     }
 
     @Test
@@ -122,21 +63,35 @@ public class IOUtilsTest {
     }
 
     @Test
-    public void readRangeFromStreamDoesntReadMoreThanAskedFor() throws IOException {
-        try (ByteArrayInputStream in = new ByteArrayInputStream(new byte[] { 1, 2, 3, 4, 5 })) {
-            byte[] read = IOUtils.readRange(in, 3);
-            Assert.assertArrayEquals(new byte[] { 1, 2, 3 }, read);
-            Assert.assertEquals(4, in.read());
-        }
+    public void copyRangeThrowsOnZeroBufferSize() {
+        assertThrows(IllegalArgumentException.class,
+            () -> IOUtils.copyRange(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 5, new ByteArrayOutputStream(), 0));
     }
 
     @Test
-    public void readRangeFromStreamStopsIfThereIsNothingToReadAnymore() throws IOException {
-        try (ByteArrayInputStream in = new ByteArrayInputStream(new byte[] { 1, 2, 3, 4, 5 })) {
-            byte[] read = IOUtils.readRange(in, 10);
-            Assert.assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, read);
-            Assert.assertEquals(-1, in.read());
+    public void copyThrowsOnZeroBufferSize() {
+        assertThrows(IllegalArgumentException.class, () -> IOUtils.copy(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), new ByteArrayOutputStream(), 0));
+    }
+
+    @Test
+    public void readFullyOnChannelReadsFully() throws IOException {
+        final ByteBuffer b = ByteBuffer.allocate(20);
+        final byte[] source = new byte[20];
+        for (byte i = 0; i < 20; i++) {
+            source[i] = i;
         }
+        readFully(source, b);
+        Assert.assertArrayEquals(source, b.array());
+    }
+
+    @Test
+    public void readFullyOnChannelThrowsEof() {
+        final ByteBuffer b = ByteBuffer.allocate(21);
+        final byte[] source = new byte[20];
+        for (byte i = 0; i < 20; i++) {
+            source[i] = i;
+        }
+        assertThrows(EOFException.class, () -> readFully(source, b));
     }
 
     @Test
@@ -170,6 +125,34 @@ public class IOUtilsTest {
     }
 
     @Test
+    public void readRangeFromChannelStopsIfThereIsNothingToReadAnymore() throws IOException {
+        try (ReadableByteChannel in = new SeekableInMemoryByteChannel(new byte[] { 1, 2, 3, 4, 5 })) {
+            byte[] read = IOUtils.readRange(in, 10);
+            Assert.assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, read);
+            final ByteBuffer b = ByteBuffer.allocate(1);
+            Assert.assertEquals(-1, in.read(b));
+        }
+    }
+
+    @Test
+    public void readRangeFromStreamDoesntReadMoreThanAskedFor() throws IOException {
+        try (ByteArrayInputStream in = new ByteArrayInputStream(new byte[] { 1, 2, 3, 4, 5 })) {
+            byte[] read = IOUtils.readRange(in, 3);
+            Assert.assertArrayEquals(new byte[] { 1, 2, 3 }, read);
+            Assert.assertEquals(4, in.read());
+        }
+    }
+
+    @Test
+    public void readRangeFromStreamStopsIfThereIsNothingToReadAnymore() throws IOException {
+        try (ByteArrayInputStream in = new ByteArrayInputStream(new byte[] { 1, 2, 3, 4, 5 })) {
+            byte[] read = IOUtils.readRange(in, 10);
+            Assert.assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, read);
+            Assert.assertEquals(-1, in.read());
+        }
+    }
+
+    @Test
     public void readRangeMoreThanCopyBufferSize() throws Exception {
         final Field COPY_BUF_SIZE = IOUtils.class.getDeclaredField("COPY_BUF_SIZE");
         COPY_BUF_SIZE.setAccessible(true);
@@ -187,20 +170,6 @@ public class IOUtilsTest {
         }
     }
 
-    @Test
-    public void readRangeFromChannelStopsIfThereIsNothingToReadAnymore() throws IOException {
-        try (ReadableByteChannel in = new SeekableInMemoryByteChannel(new byte[] { 1, 2, 3, 4, 5 })) {
-            byte[] read = IOUtils.readRange(in, 10);
-            Assert.assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, read);
-            final ByteBuffer b = ByteBuffer.allocate(1);
-            Assert.assertEquals(-1, in.read(b));
-        }
-    }
-
-    private static void readFully(final byte[] source, final ByteBuffer b) throws IOException {
-        IOUtils.readFully(new SeekableInMemoryByteChannel(source), b);
-    }
-
     private void skip(final StreamWrapper wrapper) throws Exception {
         final ByteArrayInputStream in = new ByteArrayInputStream(new byte[] {
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
@@ -208,5 +177,36 @@ public class IOUtilsTest {
         final InputStream sut = wrapper.wrap(in);
         Assert.assertEquals(10, IOUtils.skip(sut, 10));
         Assert.assertEquals(11, sut.read());
+    }
+
+    @Test
+    public void skipUsingRead() throws Exception {
+        skip(toWrap -> new FilterInputStream(toWrap) {
+            @Override
+            public long skip(final long s) {
+                return 0;
+            }
+        });
+    }
+
+    @Test
+    public void skipUsingSkip() throws Exception {
+        skip(toWrap -> toWrap);
+    }
+
+    @Test
+    public void skipUsingSkipAndRead() throws Exception {
+        skip(toWrap -> new FilterInputStream(toWrap) {
+            boolean skipped;
+            @Override
+            public long skip(final long s) throws IOException {
+                if (!skipped) {
+                    toWrap.skip(5);
+                    skipped = true;
+                    return 5;
+                }
+                return 0;
+            }
+        });
     }
 }

@@ -79,6 +79,98 @@ public class BcBands extends BandSet {
         super(segment);
     }
 
+    private boolean endsWithLoad(final int codePacked) {
+        return (codePacked >= 21 && codePacked <= 25);
+    }
+
+    private boolean endsWithStore(final int codePacked) {
+        return (codePacked >= 54 && codePacked <= 58);
+    }
+
+    public int[] getBcByte() {
+        return bcByte;
+    }
+
+    public int[] getBcCaseCount() {
+        return bcCaseCount;
+    }
+
+    public int[] getBcCaseValue() {
+        return bcCaseValue;
+    }
+
+    public int[] getBcClassRef() {
+        return bcClassRef;
+    }
+
+    public int[] getBcDoubleRef() {
+        return bcDoubleRef;
+    }
+
+    public int[] getBcFieldRef() {
+        return bcFieldRef;
+    }
+
+    public int[] getBcFloatRef() {
+        return bcFloatRef;
+    }
+
+    public int[] getBcIMethodRef() {
+        return bcIMethodRef;
+    }
+
+    public int[] getBcInitRef() {
+        return bcInitRef;
+    }
+
+    public int[] getBcIntRef() {
+        return bcIntRef;
+    }
+
+    public int[] getBcLabel() {
+        return bcLabel;
+    }
+
+    public int[] getBcLocal() {
+        return bcLocal;
+    }
+
+    public int[] getBcLongRef() {
+        return bcLongRef;
+    }
+
+    public int[] getBcMethodRef() {
+        return bcMethodRef;
+    }
+
+    public int[] getBcShort() {
+        return bcShort;
+    }
+
+    public int[] getBcStringRef() {
+        return bcStringRef;
+    }
+
+    public int[] getBcSuperField() {
+        return bcSuperField;
+    }
+
+    public int[] getBcSuperMethod() {
+        return bcSuperMethod;
+    }
+
+    public int[] getBcThisField() {
+        return bcThisField;
+    }
+
+    public int[] getBcThisMethod() {
+        return bcThisMethod;
+    }
+
+    public byte[][][] getMethodByteCodePacked() {
+        return methodByteCodePacked;
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -331,6 +423,10 @@ public class BcBands extends BandSet {
         bcEscByte = decodeBandInt("bc_escbyte", in, Codec.BYTE1, bcEscSize);
     }
 
+    private boolean startsWithIf(final int codePacked) {
+        return (codePacked >= 153 && codePacked <= 166) || (codePacked == 198) || (codePacked == 199);
+    }
+
     @Override
     public void unpack() throws Pack200Exception {
         final int classCount = header.getClassCount();
@@ -437,101 +533,5 @@ public class BcBands extends BandSet {
                 }
             }
         }
-    }
-
-    private boolean startsWithIf(final int codePacked) {
-        return (codePacked >= 153 && codePacked <= 166) || (codePacked == 198) || (codePacked == 199);
-    }
-
-    private boolean endsWithLoad(final int codePacked) {
-        return (codePacked >= 21 && codePacked <= 25);
-    }
-
-    private boolean endsWithStore(final int codePacked) {
-        return (codePacked >= 54 && codePacked <= 58);
-    }
-
-    public byte[][][] getMethodByteCodePacked() {
-        return methodByteCodePacked;
-    }
-
-    public int[] getBcCaseCount() {
-        return bcCaseCount;
-    }
-
-    public int[] getBcCaseValue() {
-        return bcCaseValue;
-    }
-
-    public int[] getBcByte() {
-        return bcByte;
-    }
-
-    public int[] getBcClassRef() {
-        return bcClassRef;
-    }
-
-    public int[] getBcDoubleRef() {
-        return bcDoubleRef;
-    }
-
-    public int[] getBcFieldRef() {
-        return bcFieldRef;
-    }
-
-    public int[] getBcFloatRef() {
-        return bcFloatRef;
-    }
-
-    public int[] getBcIMethodRef() {
-        return bcIMethodRef;
-    }
-
-    public int[] getBcInitRef() {
-        return bcInitRef;
-    }
-
-    public int[] getBcIntRef() {
-        return bcIntRef;
-    }
-
-    public int[] getBcLabel() {
-        return bcLabel;
-    }
-
-    public int[] getBcLocal() {
-        return bcLocal;
-    }
-
-    public int[] getBcLongRef() {
-        return bcLongRef;
-    }
-
-    public int[] getBcMethodRef() {
-        return bcMethodRef;
-    }
-
-    public int[] getBcShort() {
-        return bcShort;
-    }
-
-    public int[] getBcStringRef() {
-        return bcStringRef;
-    }
-
-    public int[] getBcSuperField() {
-        return bcSuperField;
-    }
-
-    public int[] getBcSuperMethod() {
-        return bcSuperMethod;
-    }
-
-    public int[] getBcThisField() {
-        return bcThisField;
-    }
-
-    public int[] getBcThisMethod() {
-        return bcThisMethod;
     }
 }

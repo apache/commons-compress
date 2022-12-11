@@ -27,21 +27,13 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ConstantPoolEntry;
  */
 public class SegmentConstantPool {
 
-    private final CpBands bands;
-    private final SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
+    public static final int ALL = 0;
+    public static final int UTF_8 = 1;
 
-    /**
-     * @param bands TODO
-     */
-    public SegmentConstantPool(final CpBands bands) {
-        this.bands = bands;
-    }
+    public static final int CP_INT = 2;
 
     // define in archive order
 
-    public static final int ALL = 0;
-    public static final int UTF_8 = 1;
-    public static final int CP_INT = 2;
     public static final int CP_FLOAT = 3;
     public static final int CP_LONG = 4;
     public static final int CP_DOUBLE = 5;
@@ -52,42 +44,59 @@ public class SegmentConstantPool {
     public static final int CP_FIELD = 10;
     public static final int CP_METHOD = 11;
     public static final int CP_IMETHOD = 12;
-
     protected static final String REGEX_MATCH_ALL = ".*";
     protected static final String INITSTRING = "<init>";
     protected static final String REGEX_MATCH_INIT = "^" + INITSTRING + ".*";
 
-    public ClassFileEntry getValue(final int cp, final long value) throws Pack200Exception {
-        final int index = (int) value;
+    /**
+     * We don't want a dependency on regex in Pack200. The only place one exists is in matchSpecificPoolEntryIndex(). To
+     * eliminate this dependency, we've implemented the world's stupidest regexMatch. It knows about the two forms we
+     * care about: .* (aka REGEX_MATCH_ALL) {@code ^<init>;.*} (aka REGEX_MATCH_INIT) and will answer correctly if those
+     * are passed as the regexString.
+     *
+     * @param regexString String against which the compareString will be matched
+     * @param compareString String to match against the regexString
+     * @return boolean true if the compareString matches the regexString; otherwise false.
+     */
+    protected static boolean regexMatches(final String regexString, final String compareString) {
+        if (REGEX_MATCH_ALL.equals(regexString)) {
+            return true;
+        }
+        if (REGEX_MATCH_INIT.equals(regexString)) {
+            if (compareString.length() < (INITSTRING.length())) {
+                return false;
+            }
+            return (INITSTRING.equals(compareString.substring(0, INITSTRING.length())));
+        }
+        throw new Error("regex trying to match a pattern I don't know: " + regexString);
+    }
+    private final CpBands bands;
+    private final SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
+
+    /**
+     * @param bands TODO
+     */
+    public SegmentConstantPool(final CpBands bands) {
+        this.bands = bands;
+    }
+
+    /**
+     * Given the name of a class, answer the CPClass associated with that class. Answer null if the class doesn't exist.
+     *
+     * @param name Class name to look for (form: java/lang/Object)
+     * @return CPClass for that class name, or null if not found.
+     */
+    public ConstantPoolEntry getClassPoolEntry(final String name) {
+        final String[] classes = bands.getCpClass();
+        final int index = matchSpecificPoolEntryIndex(classes, name, 0);
         if (index == -1) {
             return null;
         }
-        if (index < 0) {
-            throw new Pack200Exception("Cannot have a negative range");
+        try {
+            return getConstantPoolEntry(CP_CLASS, index);
+        } catch (final Pack200Exception ex) {
+            throw new Error("Error getting class pool entry");
         }
-        switch (cp) {
-        case UTF_8:
-            return bands.cpUTF8Value(index);
-        case CP_INT:
-            return bands.cpIntegerValue(index);
-        case CP_FLOAT:
-            return bands.cpFloatValue(index);
-        case CP_LONG:
-            return bands.cpLongValue(index);
-        case CP_DOUBLE:
-            return bands.cpDoubleValue(index);
-        case CP_STRING:
-            return bands.cpStringValue(index);
-        case CP_CLASS:
-            return bands.cpClassValue(index);
-        case SIGNATURE:
-            return bands.cpSignatureValue(index);
-        case CP_DESCR:
-            return bands.cpNameAndTypeValue(index);
-        default:
-            break;
-        }
-        throw new Error("Tried to get a value I don't know about: " + cp);
     }
 
     /**
@@ -122,23 +131,47 @@ public class SegmentConstantPool {
         return getConstantPoolEntry(cp, realIndex);
     }
 
-    /**
-     * Given the name of a class, answer the CPClass associated with that class. Answer null if the class doesn't exist.
-     *
-     * @param name Class name to look for (form: java/lang/Object)
-     * @return CPClass for that class name, or null if not found.
-     */
-    public ConstantPoolEntry getClassPoolEntry(final String name) {
-        final String[] classes = bands.getCpClass();
-        final int index = matchSpecificPoolEntryIndex(classes, name, 0);
+    public ConstantPoolEntry getConstantPoolEntry(final int cp, final long value) throws Pack200Exception {
+        final int index = (int) value;
         if (index == -1) {
             return null;
         }
-        try {
-            return getConstantPoolEntry(CP_CLASS, index);
-        } catch (final Pack200Exception ex) {
-            throw new Error("Error getting class pool entry");
+        if (index < 0) {
+            throw new Pack200Exception("Cannot have a negative range");
         }
+        switch (cp) {
+        case UTF_8:
+            return bands.cpUTF8Value(index);
+        case CP_INT:
+            return bands.cpIntegerValue(index);
+        case CP_FLOAT:
+            return bands.cpFloatValue(index);
+        case CP_LONG:
+            return bands.cpLongValue(index);
+        case CP_DOUBLE:
+            return bands.cpDoubleValue(index);
+        case CP_STRING:
+            return bands.cpStringValue(index);
+        case CP_CLASS:
+            return bands.cpClassValue(index);
+        case SIGNATURE:
+            throw new Error("I don't know what to do with signatures yet");
+            // return null /* new CPSignature(bands.getCpSignature()[index]) */;
+        case CP_DESCR:
+            throw new Error("I don't know what to do with descriptors yet");
+            // return null /* new CPDescriptor(bands.getCpDescriptor()[index])
+            // */;
+        case CP_FIELD:
+            return bands.cpFieldValue(index);
+        case CP_METHOD:
+            return bands.cpMethodValue(index);
+        case CP_IMETHOD:
+            return bands.cpIMethodValue(index);
+        default:
+            break;
+        }
+        // etc
+        throw new Error("Get value incomplete");
     }
 
     /**
@@ -160,6 +193,39 @@ public class SegmentConstantPool {
         realIndex = matchSpecificPoolEntryIndex(bands.getCpMethodClass(), bands.getCpMethodDescriptor(),
             desiredClassName, REGEX_MATCH_INIT, (int) value);
         return getConstantPoolEntry(cp, realIndex);
+    }
+
+    public ClassFileEntry getValue(final int cp, final long value) throws Pack200Exception {
+        final int index = (int) value;
+        if (index == -1) {
+            return null;
+        }
+        if (index < 0) {
+            throw new Pack200Exception("Cannot have a negative range");
+        }
+        switch (cp) {
+        case UTF_8:
+            return bands.cpUTF8Value(index);
+        case CP_INT:
+            return bands.cpIntegerValue(index);
+        case CP_FLOAT:
+            return bands.cpFloatValue(index);
+        case CP_LONG:
+            return bands.cpLongValue(index);
+        case CP_DOUBLE:
+            return bands.cpDoubleValue(index);
+        case CP_STRING:
+            return bands.cpStringValue(index);
+        case CP_CLASS:
+            return bands.cpClassValue(index);
+        case SIGNATURE:
+            return bands.cpSignatureValue(index);
+        case CP_DESCR:
+            return bands.cpNameAndTypeValue(index);
+        default:
+            break;
+        }
+        throw new Error("Tried to get a value I don't know about: " + cp);
     }
 
     /**
@@ -221,71 +287,5 @@ public class SegmentConstantPool {
         // We didn't return in the for loop, so the desiredMatch
         // with desiredIndex must not exist in the arrays.
         return -1;
-    }
-
-    /**
-     * We don't want a dependency on regex in Pack200. The only place one exists is in matchSpecificPoolEntryIndex(). To
-     * eliminate this dependency, we've implemented the world's stupidest regexMatch. It knows about the two forms we
-     * care about: .* (aka REGEX_MATCH_ALL) {@code ^<init>;.*} (aka REGEX_MATCH_INIT) and will answer correctly if those
-     * are passed as the regexString.
-     *
-     * @param regexString String against which the compareString will be matched
-     * @param compareString String to match against the regexString
-     * @return boolean true if the compareString matches the regexString; otherwise false.
-     */
-    protected static boolean regexMatches(final String regexString, final String compareString) {
-        if (REGEX_MATCH_ALL.equals(regexString)) {
-            return true;
-        }
-        if (REGEX_MATCH_INIT.equals(regexString)) {
-            if (compareString.length() < (INITSTRING.length())) {
-                return false;
-            }
-            return (INITSTRING.equals(compareString.substring(0, INITSTRING.length())));
-        }
-        throw new Error("regex trying to match a pattern I don't know: " + regexString);
-    }
-
-    public ConstantPoolEntry getConstantPoolEntry(final int cp, final long value) throws Pack200Exception {
-        final int index = (int) value;
-        if (index == -1) {
-            return null;
-        }
-        if (index < 0) {
-            throw new Pack200Exception("Cannot have a negative range");
-        }
-        switch (cp) {
-        case UTF_8:
-            return bands.cpUTF8Value(index);
-        case CP_INT:
-            return bands.cpIntegerValue(index);
-        case CP_FLOAT:
-            return bands.cpFloatValue(index);
-        case CP_LONG:
-            return bands.cpLongValue(index);
-        case CP_DOUBLE:
-            return bands.cpDoubleValue(index);
-        case CP_STRING:
-            return bands.cpStringValue(index);
-        case CP_CLASS:
-            return bands.cpClassValue(index);
-        case SIGNATURE:
-            throw new Error("I don't know what to do with signatures yet");
-            // return null /* new CPSignature(bands.getCpSignature()[index]) */;
-        case CP_DESCR:
-            throw new Error("I don't know what to do with descriptors yet");
-            // return null /* new CPDescriptor(bands.getCpDescriptor()[index])
-            // */;
-        case CP_FIELD:
-            return bands.cpFieldValue(index);
-        case CP_METHOD:
-            return bands.cpMethodValue(index);
-        case CP_IMETHOD:
-            return bands.cpIMethodValue(index);
-        default:
-            break;
-        }
-        // etc
-        throw new Error("Get value incomplete");
     }
 }

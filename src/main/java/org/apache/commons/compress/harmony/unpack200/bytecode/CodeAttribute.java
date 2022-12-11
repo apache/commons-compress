@@ -25,6 +25,10 @@ import org.apache.commons.compress.harmony.unpack200.Segment;
 
 public class CodeAttribute extends BCIRenumberedAttribute {
 
+    private static CPUTF8 attributeName;
+    public static void setAttributeName(final CPUTF8 attributeName) {
+        CodeAttribute.attributeName = attributeName;
+    }
     public List<Attribute> attributes = new ArrayList<>();
     // instances
     public List<Integer> byteCodeOffsets = new ArrayList<>();
@@ -32,8 +36,8 @@ public class CodeAttribute extends BCIRenumberedAttribute {
     public int codeLength;
     public List<ExceptionTableEntry> exceptionTable;
     public int maxLocals;
+
     public int maxStack;
-    private static CPUTF8 attributeName;
 
     public CodeAttribute(final int maxStack, final int maxLocals, final byte[] codePacked, final Segment segment,
         final OperandManager operandManager, final List<ExceptionTableEntry> exceptionTable) {
@@ -83,6 +87,16 @@ public class CodeAttribute extends BCIRenumberedAttribute {
         }
     }
 
+    public void addAttribute(final Attribute attribute) {
+        attributes.add(attribute);
+        if (attribute instanceof LocalVariableTableAttribute) {
+            ((LocalVariableTableAttribute) attribute).setCodeLength(codeLength);
+        }
+        if (attribute instanceof LocalVariableTypeTableAttribute) {
+            ((LocalVariableTypeTableAttribute) attribute).setCodeLength(codeLength);
+        }
+    }
+
     @Override
     protected int getLength() {
         int attributesSize = 0;
@@ -109,6 +123,17 @@ public class CodeAttribute extends BCIRenumberedAttribute {
             }
         }
         return nestedEntries.toArray(ClassFileEntry.NONE);
+    }
+
+    @Override
+    protected int[] getStartPCs() {
+        // Do nothing here as we've overriden renumber
+        return null;
+    }
+
+    @Override
+    public void renumber(final List<Integer> byteCodeOffsets) {
+        exceptionTable.forEach(entry -> entry.renumber(byteCodeOffsets));
     }
 
     @Override
@@ -143,30 +168,5 @@ public class CodeAttribute extends BCIRenumberedAttribute {
         for (Attribute attribute : attributes) {
             attribute.write(dos);
         }
-    }
-
-    public void addAttribute(final Attribute attribute) {
-        attributes.add(attribute);
-        if (attribute instanceof LocalVariableTableAttribute) {
-            ((LocalVariableTableAttribute) attribute).setCodeLength(codeLength);
-        }
-        if (attribute instanceof LocalVariableTypeTableAttribute) {
-            ((LocalVariableTypeTableAttribute) attribute).setCodeLength(codeLength);
-        }
-    }
-
-    @Override
-    protected int[] getStartPCs() {
-        // Do nothing here as we've overriden renumber
-        return null;
-    }
-
-    @Override
-    public void renumber(final List<Integer> byteCodeOffsets) {
-        exceptionTable.forEach(entry -> entry.renumber(byteCodeOffsets));
-    }
-
-    public static void setAttributeName(final CPUTF8 attributeName) {
-        CodeAttribute.attributeName = attributeName;
     }
 }

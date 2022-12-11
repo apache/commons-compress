@@ -42,13 +42,10 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
  */
 public class CpBands extends BandSet {
 
-    public SegmentConstantPool getConstantPool() {
-        return pool;
-    }
-
     private final SegmentConstantPool pool = new SegmentConstantPool(this);
 
     private String[] cpClass;
+
     private int[] cpClassInts;
     private int[] cpDescriptorNameInts;
     private int[] cpDescriptorTypeInts;
@@ -74,8 +71,8 @@ public class CpBands extends BandSet {
     private String[] cpString;
     private int[] cpStringInts;
     private String[] cpUTF8;
-
     private final Map<String, CPUTF8> stringsToCPUTF8 = new HashMap<>();
+
     private final Map<String, CPString> stringsToCPStrings = new HashMap<>();
     private final Map<Long, CPLong> longsToCPLongs = new HashMap<>();
     private final Map<Integer, CPInteger> integersToCPIntegers = new HashMap<>();
@@ -83,15 +80,15 @@ public class CpBands extends BandSet {
     private final Map<String, CPClass> stringsToCPClass = new HashMap<>();
     private final Map<Double, CPDouble> doublesToCPDoubles = new HashMap<>();
     private final Map<String, CPNameAndType> descriptorsToCPNameAndTypes = new HashMap<>();
-
     private Map<String, Integer> mapClass;
+
     private Map<String, Integer> mapDescriptor;
     private Map<String, Integer> mapUTF8;
-
     // TODO: Not used
     private Map<String, Integer> mapSignature;
 
     private int intOffset;
+
     private int floatOffset;
     private int longOffset;
     private int doubleOffset;
@@ -102,42 +99,240 @@ public class CpBands extends BandSet {
     private int fieldOffset;
     private int methodOffset;
     private int imethodOffset;
-
     public CpBands(final Segment segment) {
         super(segment);
     }
 
-    @Override
-    public void read(final InputStream in) throws IOException, Pack200Exception {
-        parseCpUtf8(in);
-        parseCpInt(in);
-        parseCpFloat(in);
-        parseCpLong(in);
-        parseCpDouble(in);
-        parseCpString(in);
-        parseCpClass(in);
-        parseCpSignature(in);
-        parseCpDescriptor(in);
-        parseCpField(in);
-        parseCpMethod(in);
-        parseCpIMethod(in);
-
-        intOffset = cpUTF8.length;
-        floatOffset = intOffset + cpInt.length;
-        longOffset = floatOffset + cpFloat.length;
-        doubleOffset = longOffset + cpLong.length;
-        stringOffset = doubleOffset + cpDouble.length;
-        classOffset = stringOffset + cpString.length;
-        signatureOffset = classOffset + cpClass.length;
-        descrOffset = signatureOffset + cpSignature.length;
-        fieldOffset = descrOffset + cpDescriptor.length;
-        methodOffset = fieldOffset + cpFieldClass.length;
-        imethodOffset = methodOffset + cpMethodClass.length;
+    public CPClass cpClassValue(final int index) {
+        final String string = cpClass[index];
+        final int utf8Index = cpClassInts[index];
+        final int globalIndex = classOffset + index;
+        CPClass cpString = stringsToCPClass.get(string);
+        if (cpString == null) {
+            cpString = new CPClass(cpUTF8Value(utf8Index), globalIndex);
+            stringsToCPClass.put(string, cpString);
+        }
+        return cpString;
     }
 
-    @Override
-    public void unpack() {
+    public CPClass cpClassValue(final String string) {
+        CPClass cpString = stringsToCPClass.get(string);
+        if (cpString == null) {
+            final Integer index = mapClass.get(string);
+            if (index != null) {
+                return cpClassValue(index.intValue());
+            }
+            cpString = new CPClass(cpUTF8Value(string, false), -1);
+            stringsToCPClass.put(string, cpString);
+        }
+        return cpString;
+    }
 
+    public CPDouble cpDoubleValue(final int index) {
+        final Double dbl = Double.valueOf(cpDouble[index]);
+        CPDouble cpDouble = doublesToCPDoubles.get(dbl);
+        if (cpDouble == null) {
+            cpDouble = new CPDouble(dbl, index + doubleOffset);
+            doublesToCPDoubles.put(dbl, cpDouble);
+        }
+        return cpDouble;
+    }
+
+    public CPFieldRef cpFieldValue(final int index) {
+        return new CPFieldRef(cpClassValue(cpFieldClassInts[index]), cpNameAndTypeValue(cpFieldDescriptorInts[index]),
+            index + fieldOffset);
+    }
+
+    public CPFloat cpFloatValue(final int index) {
+        final Float f = Float.valueOf(cpFloat[index]);
+        CPFloat cpFloat = floatsToCPFloats.get(f);
+        if (cpFloat == null) {
+            cpFloat = new CPFloat(f, index + floatOffset);
+            floatsToCPFloats.put(f, cpFloat);
+        }
+        return cpFloat;
+    }
+
+    public CPInterfaceMethodRef cpIMethodValue(final int index) {
+        return new CPInterfaceMethodRef(cpClassValue(cpIMethodClassInts[index]),
+            cpNameAndTypeValue(cpIMethodDescriptorInts[index]), index + imethodOffset);
+    }
+
+    public CPInteger cpIntegerValue(final int index) {
+        final Integer i = Integer.valueOf(cpInt[index]);
+        CPInteger cpInteger = integersToCPIntegers.get(i);
+        if (cpInteger == null) {
+            cpInteger = new CPInteger(i, index + intOffset);
+            integersToCPIntegers.put(i, cpInteger);
+        }
+        return cpInteger;
+    }
+
+    public CPLong cpLongValue(final int index) {
+        final Long l = Long.valueOf(cpLong[index]);
+        CPLong cpLong = longsToCPLongs.get(l);
+        if (cpLong == null) {
+            cpLong = new CPLong(l, index + longOffset);
+            longsToCPLongs.put(l, cpLong);
+        }
+        return cpLong;
+    }
+
+    public CPMethodRef cpMethodValue(final int index) {
+        return new CPMethodRef(cpClassValue(cpMethodClassInts[index]),
+            cpNameAndTypeValue(cpMethodDescriptorInts[index]), index + methodOffset);
+    }
+
+    public CPNameAndType cpNameAndTypeValue(final int index) {
+        final String descriptor = cpDescriptor[index];
+        CPNameAndType cpNameAndType = descriptorsToCPNameAndTypes.get(descriptor);
+        if (cpNameAndType == null) {
+            final int nameIndex = cpDescriptorNameInts[index];
+            final int descriptorIndex = cpDescriptorTypeInts[index];
+
+            final CPUTF8 name = cpUTF8Value(nameIndex);
+            final CPUTF8 descriptorU = cpSignatureValue(descriptorIndex);
+            cpNameAndType = new CPNameAndType(name, descriptorU, index + descrOffset);
+            descriptorsToCPNameAndTypes.put(descriptor, cpNameAndType);
+        }
+        return cpNameAndType;
+    }
+
+    public CPNameAndType cpNameAndTypeValue(final String descriptor) {
+        CPNameAndType cpNameAndType = descriptorsToCPNameAndTypes.get(descriptor);
+        if (cpNameAndType == null) {
+            final Integer index = mapDescriptor.get(descriptor);
+            if (index != null) {
+                return cpNameAndTypeValue(index.intValue());
+            }
+            final int colon = descriptor.indexOf(':');
+            final String nameString = descriptor.substring(0, colon);
+            final String descriptorString = descriptor.substring(colon + 1);
+
+            final CPUTF8 name = cpUTF8Value(nameString, true);
+            final CPUTF8 descriptorU = cpUTF8Value(descriptorString, true);
+            cpNameAndType = new CPNameAndType(name, descriptorU, -1 + descrOffset);
+            descriptorsToCPNameAndTypes.put(descriptor, cpNameAndType);
+        }
+        return cpNameAndType;
+    }
+
+    public CPUTF8 cpSignatureValue(final int index) {
+        int globalIndex;
+        if (cpSignatureInts[index] != -1) {
+            globalIndex = cpSignatureInts[index];
+        } else {
+            globalIndex = index + signatureOffset;
+        }
+        final String string = cpSignature[index];
+        CPUTF8 cpUTF8 = stringsToCPUTF8.get(string);
+        if (cpUTF8 == null) {
+            cpUTF8 = new CPUTF8(string, globalIndex);
+            stringsToCPUTF8.put(string, cpUTF8);
+        }
+        return cpUTF8;
+    }
+
+    public CPString cpStringValue(final int index) {
+        final String string = cpString[index];
+        final int utf8Index = cpStringInts[index];
+        final int globalIndex = stringOffset + index;
+        CPString cpString = stringsToCPStrings.get(string);
+        if (cpString == null) {
+            cpString = new CPString(cpUTF8Value(utf8Index), globalIndex);
+            stringsToCPStrings.put(string, cpString);
+        }
+        return cpString;
+    }
+
+    public CPUTF8 cpUTF8Value(final int index) {
+        final String string = cpUTF8[index];
+        CPUTF8 cputf8 = stringsToCPUTF8.get(string);
+        if (cputf8 == null) {
+            cputf8 = new CPUTF8(string, index);
+            stringsToCPUTF8.put(string, cputf8);
+        } else if (cputf8.getGlobalIndex() > index) {
+            cputf8.setGlobalIndex(index);
+        }
+        return cputf8;
+    }
+
+    public CPUTF8 cpUTF8Value(final String string) {
+        return cpUTF8Value(string, true);
+    }
+
+    public CPUTF8 cpUTF8Value(final String string, final boolean searchForIndex) {
+        CPUTF8 cputf8 = stringsToCPUTF8.get(string);
+        if (cputf8 == null) {
+            Integer index = null;
+            if (searchForIndex) {
+                index = mapUTF8.get(string);
+            }
+            if (index != null) {
+                return cpUTF8Value(index.intValue());
+            }
+            if (searchForIndex) {
+                index = mapSignature.get(string);
+            }
+            if (index != null) {
+                return cpSignatureValue(index.intValue());
+            }
+            cputf8 = new CPUTF8(string, -1);
+            stringsToCPUTF8.put(string, cputf8);
+        }
+        return cputf8;
+    }
+
+    public SegmentConstantPool getConstantPool() {
+        return pool;
+    }
+
+    public String[] getCpClass() {
+        return cpClass;
+    }
+
+    public String[] getCpDescriptor() {
+        return cpDescriptor;
+    }
+
+    public int[] getCpDescriptorNameInts() {
+        return cpDescriptorNameInts;
+    }
+
+    public int[] getCpDescriptorTypeInts() {
+        return cpDescriptorTypeInts;
+    }
+
+    public String[] getCpFieldClass() {
+        return cpFieldClass;
+    }
+
+    public String[] getCpIMethodClass() {
+        return cpIMethodClass;
+    }
+
+    public int[] getCpInt() {
+        return cpInt;
+    }
+
+    public long[] getCpLong() {
+        return cpLong;
+    }
+
+    public String[] getCpMethodClass() {
+        return cpMethodClass;
+    }
+
+    public String[] getCpMethodDescriptor() {
+        return cpMethodDescriptor;
+    }
+
+    public String[] getCpSignature() {
+        return cpSignature;
+    }
+
+    public String[] getCpUTF8() {
+        return cpUTF8;
     }
 
     /**
@@ -400,232 +595,37 @@ public class CpBands extends BandSet {
         }
     }
 
-    public String[] getCpClass() {
-        return cpClass;
+    @Override
+    public void read(final InputStream in) throws IOException, Pack200Exception {
+        parseCpUtf8(in);
+        parseCpInt(in);
+        parseCpFloat(in);
+        parseCpLong(in);
+        parseCpDouble(in);
+        parseCpString(in);
+        parseCpClass(in);
+        parseCpSignature(in);
+        parseCpDescriptor(in);
+        parseCpField(in);
+        parseCpMethod(in);
+        parseCpIMethod(in);
+
+        intOffset = cpUTF8.length;
+        floatOffset = intOffset + cpInt.length;
+        longOffset = floatOffset + cpFloat.length;
+        doubleOffset = longOffset + cpLong.length;
+        stringOffset = doubleOffset + cpDouble.length;
+        classOffset = stringOffset + cpString.length;
+        signatureOffset = classOffset + cpClass.length;
+        descrOffset = signatureOffset + cpSignature.length;
+        fieldOffset = descrOffset + cpDescriptor.length;
+        methodOffset = fieldOffset + cpFieldClass.length;
+        imethodOffset = methodOffset + cpMethodClass.length;
     }
 
-    public String[] getCpDescriptor() {
-        return cpDescriptor;
-    }
+    @Override
+    public void unpack() {
 
-    public String[] getCpFieldClass() {
-        return cpFieldClass;
-    }
-
-    public String[] getCpIMethodClass() {
-        return cpIMethodClass;
-    }
-
-    public int[] getCpInt() {
-        return cpInt;
-    }
-
-    public long[] getCpLong() {
-        return cpLong;
-    }
-
-    public String[] getCpMethodClass() {
-        return cpMethodClass;
-    }
-
-    public String[] getCpMethodDescriptor() {
-        return cpMethodDescriptor;
-    }
-
-    public String[] getCpSignature() {
-        return cpSignature;
-    }
-
-    public String[] getCpUTF8() {
-        return cpUTF8;
-    }
-
-    public CPUTF8 cpUTF8Value(final int index) {
-        final String string = cpUTF8[index];
-        CPUTF8 cputf8 = stringsToCPUTF8.get(string);
-        if (cputf8 == null) {
-            cputf8 = new CPUTF8(string, index);
-            stringsToCPUTF8.put(string, cputf8);
-        } else if (cputf8.getGlobalIndex() > index) {
-            cputf8.setGlobalIndex(index);
-        }
-        return cputf8;
-    }
-
-    public CPUTF8 cpUTF8Value(final String string) {
-        return cpUTF8Value(string, true);
-    }
-
-    public CPUTF8 cpUTF8Value(final String string, final boolean searchForIndex) {
-        CPUTF8 cputf8 = stringsToCPUTF8.get(string);
-        if (cputf8 == null) {
-            Integer index = null;
-            if (searchForIndex) {
-                index = mapUTF8.get(string);
-            }
-            if (index != null) {
-                return cpUTF8Value(index.intValue());
-            }
-            if (searchForIndex) {
-                index = mapSignature.get(string);
-            }
-            if (index != null) {
-                return cpSignatureValue(index.intValue());
-            }
-            cputf8 = new CPUTF8(string, -1);
-            stringsToCPUTF8.put(string, cputf8);
-        }
-        return cputf8;
-    }
-
-    public CPString cpStringValue(final int index) {
-        final String string = cpString[index];
-        final int utf8Index = cpStringInts[index];
-        final int globalIndex = stringOffset + index;
-        CPString cpString = stringsToCPStrings.get(string);
-        if (cpString == null) {
-            cpString = new CPString(cpUTF8Value(utf8Index), globalIndex);
-            stringsToCPStrings.put(string, cpString);
-        }
-        return cpString;
-    }
-
-    public CPLong cpLongValue(final int index) {
-        final Long l = Long.valueOf(cpLong[index]);
-        CPLong cpLong = longsToCPLongs.get(l);
-        if (cpLong == null) {
-            cpLong = new CPLong(l, index + longOffset);
-            longsToCPLongs.put(l, cpLong);
-        }
-        return cpLong;
-    }
-
-    public CPInteger cpIntegerValue(final int index) {
-        final Integer i = Integer.valueOf(cpInt[index]);
-        CPInteger cpInteger = integersToCPIntegers.get(i);
-        if (cpInteger == null) {
-            cpInteger = new CPInteger(i, index + intOffset);
-            integersToCPIntegers.put(i, cpInteger);
-        }
-        return cpInteger;
-    }
-
-    public CPFloat cpFloatValue(final int index) {
-        final Float f = Float.valueOf(cpFloat[index]);
-        CPFloat cpFloat = floatsToCPFloats.get(f);
-        if (cpFloat == null) {
-            cpFloat = new CPFloat(f, index + floatOffset);
-            floatsToCPFloats.put(f, cpFloat);
-        }
-        return cpFloat;
-    }
-
-    public CPClass cpClassValue(final int index) {
-        final String string = cpClass[index];
-        final int utf8Index = cpClassInts[index];
-        final int globalIndex = classOffset + index;
-        CPClass cpString = stringsToCPClass.get(string);
-        if (cpString == null) {
-            cpString = new CPClass(cpUTF8Value(utf8Index), globalIndex);
-            stringsToCPClass.put(string, cpString);
-        }
-        return cpString;
-    }
-
-    public CPClass cpClassValue(final String string) {
-        CPClass cpString = stringsToCPClass.get(string);
-        if (cpString == null) {
-            final Integer index = mapClass.get(string);
-            if (index != null) {
-                return cpClassValue(index.intValue());
-            }
-            cpString = new CPClass(cpUTF8Value(string, false), -1);
-            stringsToCPClass.put(string, cpString);
-        }
-        return cpString;
-    }
-
-    public CPDouble cpDoubleValue(final int index) {
-        final Double dbl = Double.valueOf(cpDouble[index]);
-        CPDouble cpDouble = doublesToCPDoubles.get(dbl);
-        if (cpDouble == null) {
-            cpDouble = new CPDouble(dbl, index + doubleOffset);
-            doublesToCPDoubles.put(dbl, cpDouble);
-        }
-        return cpDouble;
-    }
-
-    public CPNameAndType cpNameAndTypeValue(final int index) {
-        final String descriptor = cpDescriptor[index];
-        CPNameAndType cpNameAndType = descriptorsToCPNameAndTypes.get(descriptor);
-        if (cpNameAndType == null) {
-            final int nameIndex = cpDescriptorNameInts[index];
-            final int descriptorIndex = cpDescriptorTypeInts[index];
-
-            final CPUTF8 name = cpUTF8Value(nameIndex);
-            final CPUTF8 descriptorU = cpSignatureValue(descriptorIndex);
-            cpNameAndType = new CPNameAndType(name, descriptorU, index + descrOffset);
-            descriptorsToCPNameAndTypes.put(descriptor, cpNameAndType);
-        }
-        return cpNameAndType;
-    }
-
-    public CPInterfaceMethodRef cpIMethodValue(final int index) {
-        return new CPInterfaceMethodRef(cpClassValue(cpIMethodClassInts[index]),
-            cpNameAndTypeValue(cpIMethodDescriptorInts[index]), index + imethodOffset);
-    }
-
-    public CPMethodRef cpMethodValue(final int index) {
-        return new CPMethodRef(cpClassValue(cpMethodClassInts[index]),
-            cpNameAndTypeValue(cpMethodDescriptorInts[index]), index + methodOffset);
-    }
-
-    public CPFieldRef cpFieldValue(final int index) {
-        return new CPFieldRef(cpClassValue(cpFieldClassInts[index]), cpNameAndTypeValue(cpFieldDescriptorInts[index]),
-            index + fieldOffset);
-    }
-
-    public CPUTF8 cpSignatureValue(final int index) {
-        int globalIndex;
-        if (cpSignatureInts[index] != -1) {
-            globalIndex = cpSignatureInts[index];
-        } else {
-            globalIndex = index + signatureOffset;
-        }
-        final String string = cpSignature[index];
-        CPUTF8 cpUTF8 = stringsToCPUTF8.get(string);
-        if (cpUTF8 == null) {
-            cpUTF8 = new CPUTF8(string, globalIndex);
-            stringsToCPUTF8.put(string, cpUTF8);
-        }
-        return cpUTF8;
-    }
-
-    public CPNameAndType cpNameAndTypeValue(final String descriptor) {
-        CPNameAndType cpNameAndType = descriptorsToCPNameAndTypes.get(descriptor);
-        if (cpNameAndType == null) {
-            final Integer index = mapDescriptor.get(descriptor);
-            if (index != null) {
-                return cpNameAndTypeValue(index.intValue());
-            }
-            final int colon = descriptor.indexOf(':');
-            final String nameString = descriptor.substring(0, colon);
-            final String descriptorString = descriptor.substring(colon + 1);
-
-            final CPUTF8 name = cpUTF8Value(nameString, true);
-            final CPUTF8 descriptorU = cpUTF8Value(descriptorString, true);
-            cpNameAndType = new CPNameAndType(name, descriptorU, -1 + descrOffset);
-            descriptorsToCPNameAndTypes.put(descriptor, cpNameAndType);
-        }
-        return cpNameAndType;
-    }
-
-    public int[] getCpDescriptorNameInts() {
-        return cpDescriptorNameInts;
-    }
-
-    public int[] getCpDescriptorTypeInts() {
-        return cpDescriptorTypeInts;
     }
 
 }

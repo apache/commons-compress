@@ -25,6 +25,22 @@ public class CLI {
 
     private enum Mode {
         LIST("Analysing") {
+            private String getContentMethods(final SevenZArchiveEntry entry) {
+                final StringBuilder sb = new StringBuilder();
+                boolean first = true;
+                for (final SevenZMethodConfiguration m : entry.getContentMethods()) {
+                    if (!first) {
+                        sb.append(", ");
+                    }
+                    first = false;
+                    sb.append(m.getMethod());
+                    if (m.getOptions() != null) {
+                        sb.append("(").append(m.getOptions()).append(")");
+                    }
+                }
+                return sb.toString();
+            }
+
             @Override
             public void takeAction(final SevenZFile archive, final SevenZArchiveEntry entry) {
                 System.out.print(entry.getName());
@@ -45,22 +61,6 @@ public class CLI {
                     System.out.println();
                 }
             }
-
-            private String getContentMethods(final SevenZArchiveEntry entry) {
-                final StringBuilder sb = new StringBuilder();
-                boolean first = true;
-                for (final SevenZMethodConfiguration m : entry.getContentMethods()) {
-                    if (!first) {
-                        sb.append(", ");
-                    }
-                    first = false;
-                    sb.append(m.getMethod());
-                    if (m.getOptions() != null) {
-                        sb.append("(").append(m.getOptions()).append(")");
-                    }
-                }
-                return sb.toString();
-            }
         };
 
         private final String message;
@@ -72,6 +72,13 @@ public class CLI {
         }
         public abstract void takeAction(SevenZFile archive, SevenZArchiveEntry entry)
             throws IOException;
+    }
+
+    private static Mode grabMode(final String[] args) {
+        if (args.length < 2) {
+            return Mode.LIST;
+        }
+        return Enum.valueOf(Mode.class, args[1].toUpperCase());
     }
 
     public static void main(final String[] args) throws Exception {
@@ -95,13 +102,6 @@ public class CLI {
 
     private static void usage() {
         System.out.println("Parameters: archive-name [list]");
-    }
-
-    private static Mode grabMode(final String[] args) {
-        if (args.length < 2) {
-            return Mode.LIST;
-        }
-        return Enum.valueOf(Mode.class, args[1].toUpperCase());
     }
 
 }

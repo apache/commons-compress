@@ -52,20 +52,6 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
     }
 
     /**
-     * Compresses the given stream using the given strategy to cache
-     * the results.
-     *
-     * @param out the stream to write to
-     * @param mode the strategy to use
-     * @throws IOException if writing fails
-     */
-    public Pack200CompressorOutputStream(final OutputStream out,
-                                         final Pack200Strategy mode)
-        throws IOException {
-        this(out, mode, null);
-    }
-
-    /**
      * Compresses the given stream, caching the compressed data in
      * memory and using the given properties.
      *
@@ -77,6 +63,20 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
                                          final Map<String, String> props)
         throws IOException {
         this(out, Pack200Strategy.IN_MEMORY, props);
+    }
+
+    /**
+     * Compresses the given stream using the given strategy to cache
+     * the results.
+     *
+     * @param out the stream to write to
+     * @param mode the strategy to use
+     * @throws IOException if writing fails
+     */
+    public Pack200CompressorOutputStream(final OutputStream out,
+                                         final Pack200Strategy mode)
+        throws IOException {
+        this(out, mode, null);
     }
 
     /**
@@ -95,21 +95,6 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
         originalOutput = out;
         streamBridge = mode.newStreamBridge();
         properties = props;
-    }
-
-    @Override
-    public void write(final int b) throws IOException {
-        streamBridge.write(b);
-    }
-
-    @Override
-    public void write(final byte[] b) throws IOException {
-        streamBridge.write(b);
-    }
-
-    @Override
-    public void write(final byte[] b, final int from, final int length) throws IOException {
-        streamBridge.write(b, from, length);
     }
 
     @Override
@@ -136,5 +121,20 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
                 p.pack(ji, originalOutput);
             }
         }
+    }
+
+    @Override
+    public void write(final byte[] b) throws IOException {
+        streamBridge.write(b);
+    }
+
+    @Override
+    public void write(final byte[] b, final int from, final int length) throws IOException {
+        streamBridge.write(b, from, length);
+    }
+
+    @Override
+    public void write(final int b) throws IOException {
+        streamBridge.write(b);
     }
 }

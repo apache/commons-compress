@@ -33,14 +33,6 @@ public class ConstantPoolTest extends TestCase {
         pool = new ClassConstantPool();
     }
 
-    public void testDuplicateUTF8() {
-        CPUTF8 u1 = new CPUTF8("thing", 1);
-        CPUTF8 u2 = new CPUTF8("thing", 1);
-        pool.add(u1);
-        pool.add(u2);
-        assertEquals(1, pool.size());
-    }
-
     public void testDuplicateField() {
         CPMember cp1 = new CPMember(new CPUTF8("name", 1), new CPUTF8("I", 2),
                 0, null);
@@ -54,17 +46,25 @@ public class ConstantPoolTest extends TestCase {
         assertEquals(2, pool.size());
     }
 
-    public void testIndex() {
-        pool.add(new CPUTF8("OtherThing", 1));
-        CPUTF8 u1 = new CPUTF8("thing", 2);
+    public void testDuplicateUTF8() {
+        CPUTF8 u1 = new CPUTF8("thing", 1);
+        CPUTF8 u2 = new CPUTF8("thing", 1);
         pool.add(u1);
-        pool.resolve(new Segment());
-        assertTrue(pool.indexOf(u1) > 0);
+        pool.add(u2);
+        assertEquals(1, pool.size());
     }
 
     public void testEntries() {
         pool.add(new CPClass(new CPUTF8("RandomClass", 1), 10));
         pool.add(new CPClass(new CPUTF8("RandomClass2", 2), 20));
         assertEquals(2, pool.entries().size());
+    }
+
+    public void testIndex() {
+        pool.add(new CPUTF8("OtherThing", 1));
+        CPUTF8 u1 = new CPUTF8("thing", 2);
+        pool.add(u1);
+        pool.resolve(new Segment());
+        assertTrue(pool.indexOf(u1) > 0);
     }
 }

@@ -30,6 +30,11 @@ import org.apache.commons.compress.harmony.pack200.Pack200Exception;
  */
 public class SegmentHeader {
 
+    /**
+     * The magic header for a Pack200 Segment is 0xCAFED00D. I wonder where they get their inspiration from ...
+     */
+    private static final int[] magic = {0xCA, 0xFE, 0xD0, 0x0D};
+
     private int archiveMajor;
 
     private int archiveMinor;
@@ -84,82 +89,81 @@ public class SegmentHeader {
 
     private final Segment segment;
 
-    /**
-     * The magic header for a Pack200 Segment is 0xCAFED00D. I wonder where they get their inspiration from ...
-     */
-    private static final int[] magic = {0xCA, 0xFE, 0xD0, 0x0D};
+    private int archiveSizeOffset;
 
     public SegmentHeader(final Segment segment) {
         this.segment = segment;
     }
 
-    public int getArchiveSizeOffset() {
-        return archiveSizeOffset;
-    }
-
-    private int archiveSizeOffset;
-
-    public void read(final InputStream in) throws IOException, Error, Pack200Exception {
-
-        final int[] word = decodeScalar("archive_magic_word", in, Codec.BYTE1, magic.length);
-        for (int m = 0; m < magic.length; m++) {
-            if (word[m] != magic[m]) {
-                throw new Error("Bad header");
-            }
-        }
-        setArchiveMinorVersion(decodeScalar("archive_minver", in, Codec.UNSIGNED5));
-        setArchiveMajorVersion(decodeScalar("archive_majver", in, Codec.UNSIGNED5));
-        options = new SegmentOptions(decodeScalar("archive_options", in, Codec.UNSIGNED5));
-        parseArchiveFileCounts(in);
-        parseArchiveSpecialCounts(in);
-        parseCpCounts(in);
-        parseClassCounts(in);
-
-        if (getBandHeadersSize() > 0) {
-            final byte[] bandHeaders = new byte[getBandHeadersSize()];
-            readFully(in, bandHeaders);
-            setBandHeadersData(bandHeaders);
-        }
-
-        archiveSizeOffset = archiveSizeOffset - in.available();
-    }
-
-    public void unpack() {
-
+    /**
+     * Decode a scalar from the band file. A scalar is like a band, but does not perform any band code switching.
+     *
+     * @param name the name of the scalar (primarily for logging/debugging purposes)
+     * @param in the input stream to read from
+     * @param codec the codec for this scalar
+     * @return the decoded value
+     * @throws IOException if there is a problem reading from the underlying input stream
+     * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
+     */
+    private int decodeScalar(final String name, final InputStream in, final BHSDCodec codec)
+        throws IOException, Pack200Exception {
+        final int ret = codec.decode(in);
+        segment.log(Segment.LOG_LEVEL_VERBOSE, "Parsed #" + name + " as " + ret);
+        return ret;
     }
 
     /**
-     * Sets the minor version of this archive
+     * Decode a number of scalars from the band file. A scalar is like a band, but does not perform any band code
+     * switching.
      *
-     * @param version the minor version of the archive
-     * @throws Pack200Exception if the minor version is not 7
+     * @param name the name of the scalar (primarily for logging/debugging purposes)
+     * @param in the input stream to read from
+     * @param codec the codec for this scalar
+     * @return an array of decoded {@code long[]} values
+     * @throws IOException if there is a problem reading from the underlying input stream
+     * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
-    private void setArchiveMinorVersion(final int version) throws Pack200Exception {
-        if (version != 7) {
-            throw new Pack200Exception("Invalid segment minor version");
-        }
-        archiveMinor = version;
-    }
-
-    /**
-     * Sets the major version of this archive.
-     *
-     * @param version the minor version of the archive
-     * @throws Pack200Exception if the major version is not 150
-     */
-    private void setArchiveMajorVersion(final int version) throws Pack200Exception {
-        if (version != 150) {
-            throw new Pack200Exception("Invalid segment major version: " + version);
-        }
-        archiveMajor = version;
+    private int[] decodeScalar(final String name, final InputStream in, final BHSDCodec codec, final int n)
+        throws IOException, Pack200Exception {
+        segment.log(Segment.LOG_LEVEL_VERBOSE, "Parsed #" + name + " (" + n + ")");
+        return codec.decodeInts(n, in);
     }
 
     public long getArchiveModtime() {
         return archiveModtime;
     }
 
+    public long getArchiveSize() {
+        return archiveSize;
+    }
+
+    public int getArchiveSizeOffset() {
+        return archiveSizeOffset;
+    }
+
     public int getAttributeDefinitionCount() {
         return attributeDefinitionCount;
+    }
+
+    /**
+     * Obtain the band headers data as an input stream. If no band headers are present, this will return an empty input
+     * stream to prevent any further reads taking place.
+     *
+     * Note that as a stream, data consumed from this input stream can't be re-used. Data is only read from this stream
+     * if the encoding is such that additional information needs to be decoded from the stream itself.
+     *
+     * @return the band headers input stream
+     */
+    public InputStream getBandHeadersInputStream() {
+        if (bandHeadersInputStream == null) {
+            bandHeadersInputStream = new ByteArrayInputStream(new byte[0]);
+        }
+        return bandHeadersInputStream;
+
+    }
+
+    public int getBandHeadersSize() {
+        return bandHeadersSize;
     }
 
     public int getClassCount() {
@@ -226,37 +230,16 @@ public class SegmentHeader {
         return innerClassCount;
     }
 
-    public long getArchiveSize() {
-        return archiveSize;
-    }
-
-    /**
-     * Obtain the band headers data as an input stream. If no band headers are present, this will return an empty input
-     * stream to prevent any further reads taking place.
-     *
-     * Note that as a stream, data consumed from this input stream can't be re-used. Data is only read from this stream
-     * if the encoding is such that additional information needs to be decoded from the stream itself.
-     *
-     * @return the band headers input stream
-     */
-    public InputStream getBandHeadersInputStream() {
-        if (bandHeadersInputStream == null) {
-            bandHeadersInputStream = new ByteArrayInputStream(new byte[0]);
-        }
-        return bandHeadersInputStream;
-
-    }
-
     public int getNumberOfFiles() {
         return numberOfFiles;
     }
 
-    public int getSegmentsRemaining() {
-        return segmentsRemaining;
-    }
-
     public SegmentOptions getOptions() {
         return options;
+    }
+
+    public int getSegmentsRemaining() {
+        return segmentsRemaining;
     }
 
     private void parseArchiveFileCounts(final InputStream in) throws IOException, Pack200Exception {
@@ -301,58 +284,29 @@ public class SegmentHeader {
         cpIMethodCount = decodeScalar("cp_Imethod_count", in, Codec.UNSIGNED5);
     }
 
-    /**
-     * Decode a number of scalars from the band file. A scalar is like a band, but does not perform any band code
-     * switching.
-     *
-     * @param name the name of the scalar (primarily for logging/debugging purposes)
-     * @param in the input stream to read from
-     * @param codec the codec for this scalar
-     * @return an array of decoded {@code long[]} values
-     * @throws IOException if there is a problem reading from the underlying input stream
-     * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
-     */
-    private int[] decodeScalar(final String name, final InputStream in, final BHSDCodec codec, final int n)
-        throws IOException, Pack200Exception {
-        segment.log(Segment.LOG_LEVEL_VERBOSE, "Parsed #" + name + " (" + n + ")");
-        return codec.decodeInts(n, in);
-    }
+    public void read(final InputStream in) throws IOException, Error, Pack200Exception {
 
-    /**
-     * Decode a scalar from the band file. A scalar is like a band, but does not perform any band code switching.
-     *
-     * @param name the name of the scalar (primarily for logging/debugging purposes)
-     * @param in the input stream to read from
-     * @param codec the codec for this scalar
-     * @return the decoded value
-     * @throws IOException if there is a problem reading from the underlying input stream
-     * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
-     */
-    private int decodeScalar(final String name, final InputStream in, final BHSDCodec codec)
-        throws IOException, Pack200Exception {
-        final int ret = codec.decode(in);
-        segment.log(Segment.LOG_LEVEL_VERBOSE, "Parsed #" + name + " as " + ret);
-        return ret;
-    }
+        final int[] word = decodeScalar("archive_magic_word", in, Codec.BYTE1, magic.length);
+        for (int m = 0; m < magic.length; m++) {
+            if (word[m] != magic[m]) {
+                throw new Error("Bad header");
+            }
+        }
+        setArchiveMinorVersion(decodeScalar("archive_minver", in, Codec.UNSIGNED5));
+        setArchiveMajorVersion(decodeScalar("archive_majver", in, Codec.UNSIGNED5));
+        options = new SegmentOptions(decodeScalar("archive_options", in, Codec.UNSIGNED5));
+        parseArchiveFileCounts(in);
+        parseArchiveSpecialCounts(in);
+        parseCpCounts(in);
+        parseClassCounts(in);
 
-    public void setArchiveModtime(final long archiveModtime) {
-        this.archiveModtime = archiveModtime;
-    }
+        if (getBandHeadersSize() > 0) {
+            final byte[] bandHeaders = new byte[getBandHeadersSize()];
+            readFully(in, bandHeaders);
+            setBandHeadersData(bandHeaders);
+        }
 
-    public void setArchiveSize(final long archiveSize) {
-        this.archiveSize = archiveSize;
-    }
-
-    private void setAttributeDefinitionCount(final long valuie) {
-        this.attributeDefinitionCount = (int) valuie;
-    }
-
-    private void setBandHeadersData(final byte[] bandHeaders) {
-        this.bandHeadersInputStream = new ByteArrayInputStream(bandHeaders);
-    }
-
-    public void setSegmentsRemaining(final long value) {
-        segmentsRemaining = (int) value;
+        archiveSizeOffset = archiveSizeOffset - in.available();
     }
 
     /**
@@ -377,7 +331,53 @@ public class SegmentHeader {
         }
     }
 
-    public int getBandHeadersSize() {
-        return bandHeadersSize;
+    /**
+     * Sets the major version of this archive.
+     *
+     * @param version the minor version of the archive
+     * @throws Pack200Exception if the major version is not 150
+     */
+    private void setArchiveMajorVersion(final int version) throws Pack200Exception {
+        if (version != 150) {
+            throw new Pack200Exception("Invalid segment major version: " + version);
+        }
+        archiveMajor = version;
+    }
+
+    /**
+     * Sets the minor version of this archive
+     *
+     * @param version the minor version of the archive
+     * @throws Pack200Exception if the minor version is not 7
+     */
+    private void setArchiveMinorVersion(final int version) throws Pack200Exception {
+        if (version != 7) {
+            throw new Pack200Exception("Invalid segment minor version");
+        }
+        archiveMinor = version;
+    }
+
+    public void setArchiveModtime(final long archiveModtime) {
+        this.archiveModtime = archiveModtime;
+    }
+
+    public void setArchiveSize(final long archiveSize) {
+        this.archiveSize = archiveSize;
+    }
+
+    private void setAttributeDefinitionCount(final long valuie) {
+        this.attributeDefinitionCount = (int) valuie;
+    }
+
+    private void setBandHeadersData(final byte[] bandHeaders) {
+        this.bandHeadersInputStream = new ByteArrayInputStream(bandHeaders);
+    }
+
+    public void setSegmentsRemaining(final long value) {
+        segmentsRemaining = (int) value;
+    }
+
+    public void unpack() {
+
     }
 }

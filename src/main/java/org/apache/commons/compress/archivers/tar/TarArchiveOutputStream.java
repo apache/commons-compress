@@ -97,13 +97,18 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     public static final int BIGNUMBER_POSIX = 2;
     private static final int RECORD_SIZE = 512;
 
+    private static final ZipEncoding ASCII =
+        ZipEncodingHelper.getZipEncoding("ASCII");
+    private static final int BLOCK_SIZE_UNSPECIFIED = -511;
     private long currSize;
     private String currName;
     private long currBytes;
     private final byte[] recordBuf;
     private int longFileMode = LONGFILE_ERROR;
     private int bigNumberMode = BIGNUMBER_ERROR;
+
     private int recordsWritten;
+
     private final int recordsPerBlock;
 
     private boolean closed;
@@ -112,25 +117,20 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      * Indicates if putArchiveEntry has been called without closeArchiveEntry
      */
     private boolean haveUnclosedEntry;
-
     /**
      * indicates if this archive is finished
      */
     private boolean finished;
 
     private final FixedLengthBlockOutputStream out;
+
     private final CountingOutputStream countingOut;
 
     private final ZipEncoding zipEncoding;
-
     // the provided encoding (for unit tests)
     final String encoding;
 
     private boolean addPaxHeadersForNonAsciiNames;
-    private static final ZipEncoding ASCII =
-        ZipEncodingHelper.getZipEncoding("ASCII");
-
-    private static final int BLOCK_SIZE_UNSPECIFIED = -511;
 
     /**
      * Constructor for TarArchiveOutputStream.
@@ -146,26 +146,12 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Constructor for TarArchiveOutputStream.
      *
-     * <p>Uses a block size of 512 bytes.</p>
-     *
-     * @param os the output stream to use
-     * @param encoding name of the encoding to use for file names
-     * @since 1.4
-     */
-    public TarArchiveOutputStream(final OutputStream os, final String encoding) {
-        this(os, BLOCK_SIZE_UNSPECIFIED, encoding);
-    }
-
-    /**
-     * Constructor for TarArchiveOutputStream.
-     *
      * @param os the output stream to use
      * @param blockSize the block size to use. Must be a multiple of 512 bytes.
      */
     public TarArchiveOutputStream(final OutputStream os, final int blockSize) {
         this(os, blockSize, null);
     }
-
 
     /**
      * Constructor for TarArchiveOutputStream.
@@ -181,6 +167,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         final int recordSize) {
         this(os, blockSize, recordSize, null);
     }
+
 
     /**
      * Constructor for TarArchiveOutputStream.
@@ -234,48 +221,212 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Set the long file mode. This can be LONGFILE_ERROR(0), LONGFILE_TRUNCATE(1), LONGFILE_GNU(2) or
-     * LONGFILE_POSIX(3). This specifies the treatment of long file names (names &gt;=
-     * TarConstants.NAMELEN). Default is LONGFILE_ERROR.
+     * Constructor for TarArchiveOutputStream.
      *
-     * @param longFileMode the mode to use
+     * <p>Uses a block size of 512 bytes.</p>
+     *
+     * @param os the output stream to use
+     * @param encoding name of the encoding to use for file names
+     * @since 1.4
      */
-    public void setLongFileMode(final int longFileMode) {
-        this.longFileMode = longFileMode;
+    public TarArchiveOutputStream(final OutputStream os, final String encoding) {
+        this(os, BLOCK_SIZE_UNSPECIFIED, encoding);
+    }
+
+    private void addFileTimePaxHeader(final Map<String, String> paxHeaders,
+        final String header, final FileTime value) {
+        if (value != null) {
+            final Instant instant = value.toInstant();
+            final long seconds = instant.getEpochSecond();
+            final int nanos = instant.getNano();
+            if (nanos == 0) {
+                paxHeaders.put(header, String.valueOf(seconds));
+            } else {
+                addInstantPaxHeader(paxHeaders, header, seconds, nanos);
+            }
+        }
+    }
+
+    private void addFileTimePaxHeaderForBigNumber(final Map<String, String> paxHeaders,
+        final String header, final FileTime value,
+        final long maxValue) {
+        if (value != null) {
+            final Instant instant = value.toInstant();
+            final long seconds = instant.getEpochSecond();
+            final int nanos = instant.getNano();
+            if (nanos == 0) {
+                addPaxHeaderForBigNumber(paxHeaders, header, seconds, maxValue);
+            } else {
+                addInstantPaxHeader(paxHeaders, header, seconds, nanos);
+            }
+        }
+    }
+
+    private void addInstantPaxHeader(final Map<String, String> paxHeaders,
+        final String header, final long seconds, final int nanos) {
+        final BigDecimal bdSeconds = BigDecimal.valueOf(seconds);
+        final BigDecimal bdNanos = BigDecimal.valueOf(nanos).movePointLeft(9).setScale(7, RoundingMode.DOWN);
+        final BigDecimal timestamp = bdSeconds.add(bdNanos);
+        paxHeaders.put(header, timestamp.toPlainString());
+    }
+
+    private void addPaxHeaderForBigNumber(final Map<String, String> paxHeaders,
+        final String header, final long value,
+        final long maxValue) {
+        if (value < 0 || value > maxValue) {
+            paxHeaders.put(header, String.valueOf(value));
+        }
+    }
+
+    private void addPaxHeadersForBigNumbers(final Map<String, String> paxHeaders,
+        final TarArchiveEntry entry) {
+        addPaxHeaderForBigNumber(paxHeaders, "size", entry.getSize(),
+            TarConstants.MAXSIZE);
+        addPaxHeaderForBigNumber(paxHeaders, "gid", entry.getLongGroupId(),
+            TarConstants.MAXID);
+        addFileTimePaxHeaderForBigNumber(paxHeaders, "mtime",
+                entry.getLastModifiedTime(), TarConstants.MAXSIZE);
+        addFileTimePaxHeader(paxHeaders, "atime", entry.getLastAccessTime());
+        if (entry.getStatusChangeTime() != null) {
+            addFileTimePaxHeader(paxHeaders, "ctime", entry.getStatusChangeTime());
+        } else {
+            // ctime is usually set from creation time on platforms where the real ctime is not available
+            addFileTimePaxHeader(paxHeaders, "ctime", entry.getCreationTime());
+        }
+        addPaxHeaderForBigNumber(paxHeaders, "uid", entry.getLongUserId(),
+            TarConstants.MAXID);
+        // libarchive extensions
+        addFileTimePaxHeader(paxHeaders, "LIBARCHIVE.creationtime", entry.getCreationTime());
+        // star extensions by Jörg Schilling
+        addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devmajor",
+            entry.getDevMajor(), TarConstants.MAXID);
+        addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devminor",
+            entry.getDevMinor(), TarConstants.MAXID);
+        // there is no PAX header for file mode
+        failForBigNumber("mode", entry.getMode(), TarConstants.MAXID);
     }
 
     /**
-     * Set the big number mode. This can be BIGNUMBER_ERROR(0), BIGNUMBER_STAR(1) or
-     * BIGNUMBER_POSIX(2). This specifies the treatment of big files (sizes &gt;
-     * TarConstants.MAXSIZE) and other numeric values too big to fit into a traditional tar header.
-     * Default is BIGNUMBER_ERROR.
+     * Closes the underlying OutputStream.
      *
-     * @param bigNumberMode the mode to use
-     * @since 1.4
+     * @throws IOException on error
      */
-    public void setBigNumberMode(final int bigNumberMode) {
-        this.bigNumberMode = bigNumberMode;
+    @Override
+    public void close() throws IOException {
+        try {
+            if (!finished) {
+                finish();
+            }
+        } finally {
+            if (!closed) {
+                out.close();
+                closed = true;
+            }
+        }
     }
 
     /**
-     * Whether to add a PAX extension header for non-ASCII file names.
+     * Close an entry. This method MUST be called for all file entries that contain data. The reason
+     * is that we must buffer data written to the stream in order to satisfy the buffer's record
+     * based writes. Thus, there may be data fragments still being assembled that must be written to
+     * the output stream before this entry is closed and the next entry written.
      *
-     * @param b whether to add a PAX extension header for non-ASCII file names.
-     * @since 1.4
+     * @throws IOException on error
      */
-    public void setAddPaxHeadersForNonAsciiNames(final boolean b) {
-        addPaxHeadersForNonAsciiNames = b;
+    @Override
+    public void closeArchiveEntry() throws IOException {
+        if (finished) {
+            throw new IOException("Stream has already been finished");
+        }
+        if (!haveUnclosedEntry) {
+            throw new IOException("No current entry to close");
+        }
+        out.flushBlock();
+        if (currBytes < currSize) {
+            throw new IOException("Entry '" + currName + "' closed at '"
+                + currBytes
+                + "' before the '" + currSize
+                + "' bytes specified in the header were written");
+        }
+        recordsWritten = ExactMath.add(recordsWritten, (currSize / RECORD_SIZE));
+
+        if (0 != currSize % RECORD_SIZE) {
+            recordsWritten++;
+        }
+        haveUnclosedEntry = false;
     }
 
-    @Deprecated
     @Override
-    public int getCount() {
-        return (int) getBytesWritten();
+    public ArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
+        throws IOException {
+        if (finished) {
+            throw new IOException("Stream has already been finished");
+        }
+        return new TarArchiveEntry(inputFile, entryName);
     }
 
     @Override
-    public long getBytesWritten() {
-        return countingOut.getBytesWritten();
+    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
+        if (finished) {
+            throw new IOException("Stream has already been finished");
+        }
+        return new TarArchiveEntry(inputPath, entryName, options);
+    }
+
+    private byte[] encodeExtendedPaxHeadersContents(final Map<String, String> headers) {
+        final StringWriter w = new StringWriter();
+        headers.forEach((k, v) -> {
+            int len = k.length() + v.length()
+                + 3 /* blank, equals and newline */
+                + 2 /* guess 9 < actual length < 100 */;
+            String line = len + " " + k + "=" + v + "\n";
+            int actualLength = line.getBytes(UTF_8).length;
+            while (len != actualLength) {
+                // Adjust for cases where length < 10 or > 100
+                // or where UTF-8 encoding isn't a single octet
+                // per character.
+                // Must be in loop as size may go from 99 to 100 in
+                // first pass so we'd need a second.
+                len = actualLength;
+                line = len + " " + k + "=" + v + "\n";
+                actualLength = line.getBytes(UTF_8).length;
+            }
+            w.write(line);
+        });
+        return w.toString().getBytes(UTF_8);
+    }
+
+    private void failForBigNumber(final String field, final long value, final long maxValue) {
+        failForBigNumber(field, value, maxValue, "");
+    }
+
+    private void failForBigNumber(final String field, final long value, final long maxValue,
+        final String additionalMsg) {
+        if (value < 0 || value > maxValue) {
+            throw new IllegalArgumentException(field + " '" + value //NOSONAR
+                + "' is too big ( > "
+                + maxValue + " )." + additionalMsg);
+        }
+    }
+
+    private void failForBigNumbers(final TarArchiveEntry entry) {
+        failForBigNumber("entry size", entry.getSize(), TarConstants.MAXSIZE);
+        failForBigNumberWithPosixMessage("group id", entry.getLongGroupId(), TarConstants.MAXID);
+        failForBigNumber("last modification time",
+            entry.getLastModifiedTime().to(TimeUnit.SECONDS),
+            TarConstants.MAXSIZE);
+        failForBigNumber("user id", entry.getLongUserId(), TarConstants.MAXID);
+        failForBigNumber("mode", entry.getMode(), TarConstants.MAXID);
+        failForBigNumber("major device number", entry.getDevMajor(),
+            TarConstants.MAXID);
+        failForBigNumber("minor device number", entry.getDevMinor(),
+            TarConstants.MAXID);
+    }
+
+    private void failForBigNumberWithPosixMessage(final String field, final long value,
+        final long maxValue) {
+        failForBigNumber(field, value, maxValue,
+            " Use STAR or POSIX extensions to overcome this limit");
     }
 
     /**
@@ -303,23 +454,20 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         finished = true;
     }
 
-    /**
-     * Closes the underlying OutputStream.
-     *
-     * @throws IOException on error
-     */
     @Override
-    public void close() throws IOException {
-        try {
-            if (!finished) {
-                finish();
-            }
-        } finally {
-            if (!closed) {
-                out.close();
-                closed = true;
-            }
-        }
+    public void flush() throws IOException {
+        out.flush();
+    }
+
+    @Override
+    public long getBytesWritten() {
+        return countingOut.getBytesWritten();
+    }
+
+    @Deprecated
+    @Override
+    public int getCount() {
+        return (int) getBytesWritten();
     }
 
     /**
@@ -331,6 +479,68 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     @Deprecated
     public int getRecordSize() {
         return RECORD_SIZE;
+    }
+
+    /**
+     * Handles long file or link names according to the longFileMode setting.
+     *
+     * <p>I.e. if the given name is too long to be written to a plain tar header then <ul> <li>it
+     * creates a pax header who's name is given by the paxHeaderName parameter if longFileMode is
+     * POSIX</li> <li>it creates a GNU longlink entry who's type is given by the linkType parameter
+     * if longFileMode is GNU</li> <li>it throws an exception if longFileMode is ERROR</li> <li>it
+     * truncates the name if longFileMode is TRUNCATE</li> </ul></p>
+     *
+     * @param entry entry the name belongs to
+     * @param name the name to write
+     * @param paxHeaders current map of pax headers
+     * @param paxHeaderName name of the pax header to write
+     * @param linkType type of the GNU entry to write
+     * @param fieldName the name of the field
+     * @throws IllegalArgumentException if the {@link TarArchiveOutputStream#longFileMode} equals
+     *                                  {@link TarArchiveOutputStream#LONGFILE_ERROR} and the file
+     *                                  name is too long
+     * @return whether a pax header has been written.
+     */
+    private boolean handleLongName(final TarArchiveEntry entry, final String name,
+        final Map<String, String> paxHeaders,
+        final String paxHeaderName, final byte linkType, final String fieldName)
+        throws IOException {
+        final ByteBuffer encodedName = zipEncoding.encode(name);
+        final int len = encodedName.limit() - encodedName.position();
+        if (len >= TarConstants.NAMELEN) {
+
+            if (longFileMode == LONGFILE_POSIX) {
+                paxHeaders.put(paxHeaderName, name);
+                return true;
+            }
+            if (longFileMode == LONGFILE_GNU) {
+                // create a TarEntry for the LongLink, the contents
+                // of which are the link's name
+                final TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK,
+                    linkType);
+
+                longLinkEntry.setSize(len + 1L); // +1 for NUL
+                transferModTime(entry, longLinkEntry);
+                putArchiveEntry(longLinkEntry);
+                write(encodedName.array(), encodedName.arrayOffset(), len);
+                write(0); // NUL terminator
+                closeArchiveEntry();
+            } else if (longFileMode != LONGFILE_TRUNCATE) {
+                throw new IllegalArgumentException(fieldName + " '" + name //NOSONAR
+                    + "' is too long ( > "
+                    + TarConstants.NAMELEN + " bytes)");
+            }
+        }
+        return false;
+    }
+
+    private void padAsNeeded() throws IOException {
+        final int start = recordsWritten % recordsPerBlock;
+        if (start != 0) {
+            for (int i = start; i < recordsPerBlock; i++) {
+                writeEOFRecord();
+            }
+        }
     }
 
     /**
@@ -414,34 +624,69 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Close an entry. This method MUST be called for all file entries that contain data. The reason
-     * is that we must buffer data written to the stream in order to satisfy the buffer's record
-     * based writes. Thus, there may be data fragments still being assembled that must be written to
-     * the output stream before this entry is closed and the next entry written.
+     * Whether to add a PAX extension header for non-ASCII file names.
      *
-     * @throws IOException on error
+     * @param b whether to add a PAX extension header for non-ASCII file names.
+     * @since 1.4
      */
-    @Override
-    public void closeArchiveEntry() throws IOException {
-        if (finished) {
-            throw new IOException("Stream has already been finished");
-        }
-        if (!haveUnclosedEntry) {
-            throw new IOException("No current entry to close");
-        }
-        out.flushBlock();
-        if (currBytes < currSize) {
-            throw new IOException("Entry '" + currName + "' closed at '"
-                + currBytes
-                + "' before the '" + currSize
-                + "' bytes specified in the header were written");
-        }
-        recordsWritten = ExactMath.add(recordsWritten, (currSize / RECORD_SIZE));
+    public void setAddPaxHeadersForNonAsciiNames(final boolean b) {
+        addPaxHeadersForNonAsciiNames = b;
+    }
 
-        if (0 != currSize % RECORD_SIZE) {
-            recordsWritten++;
+    /**
+     * Set the big number mode. This can be BIGNUMBER_ERROR(0), BIGNUMBER_STAR(1) or
+     * BIGNUMBER_POSIX(2). This specifies the treatment of big files (sizes &gt;
+     * TarConstants.MAXSIZE) and other numeric values too big to fit into a traditional tar header.
+     * Default is BIGNUMBER_ERROR.
+     *
+     * @param bigNumberMode the mode to use
+     * @since 1.4
+     */
+    public void setBigNumberMode(final int bigNumberMode) {
+        this.bigNumberMode = bigNumberMode;
+    }
+
+    /**
+     * Set the long file mode. This can be LONGFILE_ERROR(0), LONGFILE_TRUNCATE(1), LONGFILE_GNU(2) or
+     * LONGFILE_POSIX(3). This specifies the treatment of long file names (names &gt;=
+     * TarConstants.NAMELEN). Default is LONGFILE_ERROR.
+     *
+     * @param longFileMode the mode to use
+     */
+    public void setLongFileMode(final int longFileMode) {
+        this.longFileMode = longFileMode;
+    }
+
+    /**
+     * @return true if the character could lead to problems when used inside a TarArchiveEntry name
+     * for a PAX header.
+     */
+    private boolean shouldBeReplaced(final char c) {
+        return c == 0 // would be read as Trailing null
+            || c == '/' // when used as last character TAE will consider the PAX header a directory
+            || c == '\\'; // same as '/' as slashes get "normalized" on Windows
+    }
+
+    private String stripTo7Bits(final String name) {
+        final int length = name.length();
+        final StringBuilder result = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            final char stripped = (char) (name.charAt(i) & 0x7F);
+            if (shouldBeReplaced(stripped)) {
+                result.append("_");
+            } else {
+                result.append(stripped);
+            }
         }
-        haveUnclosedEntry = false;
+        return result.toString();
+    }
+
+    private void transferModTime(final TarArchiveEntry from, final TarArchiveEntry to) {
+        long fromModTimeSeconds = from.getLastModifiedTime().to(TimeUnit.SECONDS);
+        if (fromModTimeSeconds < 0 || fromModTimeSeconds > TarConstants.MAXSIZE) {
+            fromModTimeSeconds = 0;
+        }
+        to.setLastModifiedTime(FileTime.from(fromModTimeSeconds, TimeUnit.SECONDS));
     }
 
     /**
@@ -470,6 +715,15 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
+     * Write an EOF (end of archive) record to the tar archive. An EOF record consists of a record
+     * of all zeros.
+     */
+    private void writeEOFRecord() throws IOException {
+        Arrays.fill(recordBuf, (byte) 0);
+        writeRecord(recordBuf);
+    }
+
+    /**
      * Writes a PAX extended header with the given map as contents.
      *
      * @since 1.4
@@ -492,84 +746,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         closeArchiveEntry();
     }
 
-    private byte[] encodeExtendedPaxHeadersContents(final Map<String, String> headers) {
-        final StringWriter w = new StringWriter();
-        headers.forEach((k, v) -> {
-            int len = k.length() + v.length()
-                + 3 /* blank, equals and newline */
-                + 2 /* guess 9 < actual length < 100 */;
-            String line = len + " " + k + "=" + v + "\n";
-            int actualLength = line.getBytes(UTF_8).length;
-            while (len != actualLength) {
-                // Adjust for cases where length < 10 or > 100
-                // or where UTF-8 encoding isn't a single octet
-                // per character.
-                // Must be in loop as size may go from 99 to 100 in
-                // first pass so we'd need a second.
-                len = actualLength;
-                line = len + " " + k + "=" + v + "\n";
-                actualLength = line.getBytes(UTF_8).length;
-            }
-            w.write(line);
-        });
-        return w.toString().getBytes(UTF_8);
-    }
-
-    private String stripTo7Bits(final String name) {
-        final int length = name.length();
-        final StringBuilder result = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            final char stripped = (char) (name.charAt(i) & 0x7F);
-            if (shouldBeReplaced(stripped)) {
-                result.append("_");
-            } else {
-                result.append(stripped);
-            }
-        }
-        return result.toString();
-    }
-
-    /**
-     * @return true if the character could lead to problems when used inside a TarArchiveEntry name
-     * for a PAX header.
-     */
-    private boolean shouldBeReplaced(final char c) {
-        return c == 0 // would be read as Trailing null
-            || c == '/' // when used as last character TAE will consider the PAX header a directory
-            || c == '\\'; // same as '/' as slashes get "normalized" on Windows
-    }
-
-    /**
-     * Write an EOF (end of archive) record to the tar archive. An EOF record consists of a record
-     * of all zeros.
-     */
-    private void writeEOFRecord() throws IOException {
-        Arrays.fill(recordBuf, (byte) 0);
-        writeRecord(recordBuf);
-    }
-
-    @Override
-    public void flush() throws IOException {
-        out.flush();
-    }
-
-    @Override
-    public ArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
-        throws IOException {
-        if (finished) {
-            throw new IOException("Stream has already been finished");
-        }
-        return new TarArchiveEntry(inputFile, entryName);
-    }
-
-    @Override
-    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
-        if (finished) {
-            throw new IOException("Stream has already been finished");
-        }
-        return new TarArchiveEntry(inputPath, entryName, options);
-    }
-
     /**
      * Write an archive record to the archive.
      *
@@ -586,181 +762,5 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
         out.write(record);
         recordsWritten++;
-    }
-
-    private void padAsNeeded() throws IOException {
-        final int start = recordsWritten % recordsPerBlock;
-        if (start != 0) {
-            for (int i = start; i < recordsPerBlock; i++) {
-                writeEOFRecord();
-            }
-        }
-    }
-
-    private void addPaxHeadersForBigNumbers(final Map<String, String> paxHeaders,
-        final TarArchiveEntry entry) {
-        addPaxHeaderForBigNumber(paxHeaders, "size", entry.getSize(),
-            TarConstants.MAXSIZE);
-        addPaxHeaderForBigNumber(paxHeaders, "gid", entry.getLongGroupId(),
-            TarConstants.MAXID);
-        addFileTimePaxHeaderForBigNumber(paxHeaders, "mtime",
-                entry.getLastModifiedTime(), TarConstants.MAXSIZE);
-        addFileTimePaxHeader(paxHeaders, "atime", entry.getLastAccessTime());
-        if (entry.getStatusChangeTime() != null) {
-            addFileTimePaxHeader(paxHeaders, "ctime", entry.getStatusChangeTime());
-        } else {
-            // ctime is usually set from creation time on platforms where the real ctime is not available
-            addFileTimePaxHeader(paxHeaders, "ctime", entry.getCreationTime());
-        }
-        addPaxHeaderForBigNumber(paxHeaders, "uid", entry.getLongUserId(),
-            TarConstants.MAXID);
-        // libarchive extensions
-        addFileTimePaxHeader(paxHeaders, "LIBARCHIVE.creationtime", entry.getCreationTime());
-        // star extensions by Jörg Schilling
-        addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devmajor",
-            entry.getDevMajor(), TarConstants.MAXID);
-        addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devminor",
-            entry.getDevMinor(), TarConstants.MAXID);
-        // there is no PAX header for file mode
-        failForBigNumber("mode", entry.getMode(), TarConstants.MAXID);
-    }
-
-    private void addPaxHeaderForBigNumber(final Map<String, String> paxHeaders,
-        final String header, final long value,
-        final long maxValue) {
-        if (value < 0 || value > maxValue) {
-            paxHeaders.put(header, String.valueOf(value));
-        }
-    }
-
-    private void addFileTimePaxHeaderForBigNumber(final Map<String, String> paxHeaders,
-        final String header, final FileTime value,
-        final long maxValue) {
-        if (value != null) {
-            final Instant instant = value.toInstant();
-            final long seconds = instant.getEpochSecond();
-            final int nanos = instant.getNano();
-            if (nanos == 0) {
-                addPaxHeaderForBigNumber(paxHeaders, header, seconds, maxValue);
-            } else {
-                addInstantPaxHeader(paxHeaders, header, seconds, nanos);
-            }
-        }
-    }
-
-    private void addFileTimePaxHeader(final Map<String, String> paxHeaders,
-        final String header, final FileTime value) {
-        if (value != null) {
-            final Instant instant = value.toInstant();
-            final long seconds = instant.getEpochSecond();
-            final int nanos = instant.getNano();
-            if (nanos == 0) {
-                paxHeaders.put(header, String.valueOf(seconds));
-            } else {
-                addInstantPaxHeader(paxHeaders, header, seconds, nanos);
-            }
-        }
-    }
-
-    private void addInstantPaxHeader(final Map<String, String> paxHeaders,
-        final String header, final long seconds, final int nanos) {
-        final BigDecimal bdSeconds = BigDecimal.valueOf(seconds);
-        final BigDecimal bdNanos = BigDecimal.valueOf(nanos).movePointLeft(9).setScale(7, RoundingMode.DOWN);
-        final BigDecimal timestamp = bdSeconds.add(bdNanos);
-        paxHeaders.put(header, timestamp.toPlainString());
-    }
-
-    private void failForBigNumbers(final TarArchiveEntry entry) {
-        failForBigNumber("entry size", entry.getSize(), TarConstants.MAXSIZE);
-        failForBigNumberWithPosixMessage("group id", entry.getLongGroupId(), TarConstants.MAXID);
-        failForBigNumber("last modification time",
-            entry.getLastModifiedTime().to(TimeUnit.SECONDS),
-            TarConstants.MAXSIZE);
-        failForBigNumber("user id", entry.getLongUserId(), TarConstants.MAXID);
-        failForBigNumber("mode", entry.getMode(), TarConstants.MAXID);
-        failForBigNumber("major device number", entry.getDevMajor(),
-            TarConstants.MAXID);
-        failForBigNumber("minor device number", entry.getDevMinor(),
-            TarConstants.MAXID);
-    }
-
-    private void failForBigNumber(final String field, final long value, final long maxValue) {
-        failForBigNumber(field, value, maxValue, "");
-    }
-
-    private void failForBigNumberWithPosixMessage(final String field, final long value,
-        final long maxValue) {
-        failForBigNumber(field, value, maxValue,
-            " Use STAR or POSIX extensions to overcome this limit");
-    }
-
-    private void failForBigNumber(final String field, final long value, final long maxValue,
-        final String additionalMsg) {
-        if (value < 0 || value > maxValue) {
-            throw new IllegalArgumentException(field + " '" + value //NOSONAR
-                + "' is too big ( > "
-                + maxValue + " )." + additionalMsg);
-        }
-    }
-
-    /**
-     * Handles long file or link names according to the longFileMode setting.
-     *
-     * <p>I.e. if the given name is too long to be written to a plain tar header then <ul> <li>it
-     * creates a pax header who's name is given by the paxHeaderName parameter if longFileMode is
-     * POSIX</li> <li>it creates a GNU longlink entry who's type is given by the linkType parameter
-     * if longFileMode is GNU</li> <li>it throws an exception if longFileMode is ERROR</li> <li>it
-     * truncates the name if longFileMode is TRUNCATE</li> </ul></p>
-     *
-     * @param entry entry the name belongs to
-     * @param name the name to write
-     * @param paxHeaders current map of pax headers
-     * @param paxHeaderName name of the pax header to write
-     * @param linkType type of the GNU entry to write
-     * @param fieldName the name of the field
-     * @throws IllegalArgumentException if the {@link TarArchiveOutputStream#longFileMode} equals
-     *                                  {@link TarArchiveOutputStream#LONGFILE_ERROR} and the file
-     *                                  name is too long
-     * @return whether a pax header has been written.
-     */
-    private boolean handleLongName(final TarArchiveEntry entry, final String name,
-        final Map<String, String> paxHeaders,
-        final String paxHeaderName, final byte linkType, final String fieldName)
-        throws IOException {
-        final ByteBuffer encodedName = zipEncoding.encode(name);
-        final int len = encodedName.limit() - encodedName.position();
-        if (len >= TarConstants.NAMELEN) {
-
-            if (longFileMode == LONGFILE_POSIX) {
-                paxHeaders.put(paxHeaderName, name);
-                return true;
-            }
-            if (longFileMode == LONGFILE_GNU) {
-                // create a TarEntry for the LongLink, the contents
-                // of which are the link's name
-                final TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK,
-                    linkType);
-
-                longLinkEntry.setSize(len + 1L); // +1 for NUL
-                transferModTime(entry, longLinkEntry);
-                putArchiveEntry(longLinkEntry);
-                write(encodedName.array(), encodedName.arrayOffset(), len);
-                write(0); // NUL terminator
-                closeArchiveEntry();
-            } else if (longFileMode != LONGFILE_TRUNCATE) {
-                throw new IllegalArgumentException(fieldName + " '" + name //NOSONAR
-                    + "' is too long ( > "
-                    + TarConstants.NAMELEN + " bytes)");
-            }
-        }
-        return false;
-    }
-
-    private void transferModTime(final TarArchiveEntry from, final TarArchiveEntry to) {
-        long fromModTimeSeconds = from.getLastModifiedTime().to(TimeUnit.SECONDS);
-        if (fromModTimeSeconds < 0 || fromModTimeSeconds > TarConstants.MAXSIZE) {
-            fromModTimeSeconds = 0;
-        }
-        to.setLastModifiedTime(FileTime.from(fromModTimeSeconds, TimeUnit.SECONDS));
     }
 }

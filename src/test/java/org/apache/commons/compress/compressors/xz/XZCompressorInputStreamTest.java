@@ -30,6 +30,29 @@ import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public class XZCompressorInputStreamTest {
+    private void multiByteReadConsistentlyReturnsMinusOneAtEof(final boolean decompressConcatenated) throws IOException {
+        final File input = getFile("bla.tar.xz");
+        final byte[] buf = new byte[2];
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            final XZCompressorInputStream in =
+                new XZCompressorInputStream(is, decompressConcatenated);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read(buf));
+            Assert.assertEquals(-1, in.read(buf));
+            in.close();
+        }
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofDecompressConcatenated() throws IOException {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(true);
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofNoDecompressConcatenated() throws IOException {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(false);
+    }
+
     @Test
     public void redundantTestOfAlmostDeprecatedMatchesMethod() {
         final byte[] data = {
@@ -40,16 +63,6 @@ public class XZCompressorInputStreamTest {
         Assert.assertTrue(XZCompressorInputStream.matches(data, 7));
         data[5] = '0';
         Assert.assertFalse(XZCompressorInputStream.matches(data, 6));
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofNoDecompressConcatenated() throws IOException {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(false);
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofDecompressConcatenated() throws IOException {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(true);
     }
 
     private void singleByteReadConsistentlyReturnsMinusOneAtEof(final boolean decompressConcatenated) throws IOException {
@@ -65,26 +78,13 @@ public class XZCompressorInputStreamTest {
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofNoDecompressConcatenated() throws IOException {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(false);
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofDecompressConcatenated() throws IOException {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(true);
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofDecompressConcatenated() throws IOException {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(true);
-    }
-
-    private void multiByteReadConsistentlyReturnsMinusOneAtEof(final boolean decompressConcatenated) throws IOException {
-        final File input = getFile("bla.tar.xz");
-        final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final XZCompressorInputStream in =
-                new XZCompressorInputStream(is, decompressConcatenated);
-            IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read(buf));
-            Assert.assertEquals(-1, in.read(buf));
-            in.close();
-        }
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofNoDecompressConcatenated() throws IOException {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(false);
     }
 
 }

@@ -31,12 +31,6 @@ import org.junit.jupiter.api.Test;
 public class FileNameUtilsTest {
 
     @Test
-    public void getBaseNameStringBaseCases() {
-        assertEquals("bar", FileNameUtils.getBaseName("a/b/c/bar.foo"));
-        assertEquals("foo", FileNameUtils.getBaseName("foo"));
-    }
-
-    @Test
     public void getBaseNamePathBaseCases() {
         assertEquals("bar", FileNameUtils.getBaseName(Paths.get("a/b/c/bar.foo")));
         assertEquals("foo", FileNameUtils.getBaseName(Paths.get("foo")));
@@ -51,13 +45,6 @@ public class FileNameUtilsTest {
     }
 
     @Test
-    public void getBaseNameStringCornerCases() {
-        assertNull(FileNameUtils.getBaseName((String) null));
-        assertEquals("foo", FileNameUtils.getBaseName("foo."));
-        assertEquals("", FileNameUtils.getBaseName("bar/.foo"));
-    }
-
-    @Test
     public void getBaseNamePathCornerCases() {
         assertNull(FileNameUtils.getBaseName((Path) null));
         assertEquals("foo", FileNameUtils.getBaseName(Paths.get("foo.")));
@@ -65,9 +52,16 @@ public class FileNameUtilsTest {
     }
 
     @Test
-    public void getExtensionStringBaseCases() {
-        assertEquals("foo", FileNameUtils.getExtension("a/b/c/bar.foo"));
-        assertEquals("", FileNameUtils.getExtension("foo"));
+    public void getBaseNameStringBaseCases() {
+        assertEquals("bar", FileNameUtils.getBaseName("a/b/c/bar.foo"));
+        assertEquals("foo", FileNameUtils.getBaseName("foo"));
+    }
+
+    @Test
+    public void getBaseNameStringCornerCases() {
+        assertNull(FileNameUtils.getBaseName((String) null));
+        assertEquals("foo", FileNameUtils.getBaseName("foo."));
+        assertEquals("", FileNameUtils.getBaseName("bar/.foo"));
     }
 
     @Test
@@ -85,16 +79,22 @@ public class FileNameUtilsTest {
     }
 
     @Test
-    public void getExtensionStringCornerCases() {
-        assertNull(FileNameUtils.getExtension((String) null));
-        assertEquals("", FileNameUtils.getExtension("foo."));
-        assertEquals("foo", FileNameUtils.getExtension("bar/.foo"));
-    }
-
-    @Test
     public void getExtensionPathCornerCases() {
         assertNull(FileNameUtils.getExtension((String) null));
         assertEquals("", FileNameUtils.getExtension(Paths.get("foo.")));
         assertEquals("foo", FileNameUtils.getExtension(Paths.get("bar/.foo")));
+    }
+
+    @Test
+    public void getExtensionStringBaseCases() {
+        assertEquals("foo", FileNameUtils.getExtension("a/b/c/bar.foo"));
+        assertEquals("", FileNameUtils.getExtension("foo"));
+    }
+
+    @Test
+    public void getExtensionStringCornerCases() {
+        assertNull(FileNameUtils.getExtension((String) null));
+        assertEquals("", FileNameUtils.getExtension("foo."));
+        assertEquals("foo", FileNameUtils.getExtension("bar/.foo"));
     }
 }

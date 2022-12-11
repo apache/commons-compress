@@ -92,61 +92,6 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
     }
 
     /**
-     * Reads the encoded binary trees and prepares the bit stream.
-     *
-     * @throws IOException
-     */
-    private void init() throws IOException {
-        if (bits == null) {
-            // we do not want to close in
-            try (CountingInputStream i = new CountingInputStream(new CloseShieldFilterInputStream(in))) {
-                if (numberOfTrees == 3) {
-                    literalTree = BinaryTree.decode(i, 256);
-                }
-
-                lengthTree = BinaryTree.decode(i, 64);
-                distanceTree = BinaryTree.decode(i, 64);
-                treeSizes += i.getBytesRead();
-            }
-
-            bits = new BitStream(in);
-        }
-    }
-
-    @Override
-    public int read() throws IOException {
-        if (!buffer.available()) {
-            try {
-                fillBuffer();
-            } catch (final IllegalArgumentException ex) {
-                throw new IOException("bad IMPLODE stream", ex);
-            }
-        }
-
-        final int ret = buffer.get();
-        if (ret > -1) {
-            uncompressedCount++;
-        }
-        return ret;
-    }
-
-    /**
-     * @since 1.17
-     */
-    @Override
-    public long getCompressedCount() {
-        return bits.getBytesRead() + treeSizes;
-    }
-
-    /**
-     * @since 1.17
-     */
-    @Override
-    public long getUncompressedCount() {
-        return uncompressedCount;
-    }
-
-    /**
      * @since 1.17
      */
     @Override
@@ -206,6 +151,61 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
 
             buffer.copy(distance + 1, length);
         }
+    }
+
+    /**
+     * @since 1.17
+     */
+    @Override
+    public long getCompressedCount() {
+        return bits.getBytesRead() + treeSizes;
+    }
+
+    /**
+     * @since 1.17
+     */
+    @Override
+    public long getUncompressedCount() {
+        return uncompressedCount;
+    }
+
+    /**
+     * Reads the encoded binary trees and prepares the bit stream.
+     *
+     * @throws IOException
+     */
+    private void init() throws IOException {
+        if (bits == null) {
+            // we do not want to close in
+            try (CountingInputStream i = new CountingInputStream(new CloseShieldFilterInputStream(in))) {
+                if (numberOfTrees == 3) {
+                    literalTree = BinaryTree.decode(i, 256);
+                }
+
+                lengthTree = BinaryTree.decode(i, 64);
+                distanceTree = BinaryTree.decode(i, 64);
+                treeSizes += i.getBytesRead();
+            }
+
+            bits = new BitStream(in);
+        }
+    }
+
+    @Override
+    public int read() throws IOException {
+        if (!buffer.available()) {
+            try {
+                fillBuffer();
+            } catch (final IllegalArgumentException ex) {
+                throw new IOException("bad IMPLODE stream", ex);
+            }
+        }
+
+        final int ret = buffer.get();
+        if (ret > -1) {
+            uncompressedCount++;
+        }
+        return ret;
     }
 
 }

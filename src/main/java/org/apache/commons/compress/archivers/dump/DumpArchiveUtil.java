@@ -29,12 +29,6 @@ import org.apache.commons.compress.utils.ByteUtils;
  */
 class DumpArchiveUtil {
     /**
-     * Private constructor to prevent instantiation.
-     */
-    private DumpArchiveUtil() {
-    }
-
-    /**
      * Calculate checksum for buffer.
      *
      * @param buffer buffer containing tape segment header
@@ -49,6 +43,57 @@ class DumpArchiveUtil {
 
         return DumpArchiveConstants.CHECKSUM -
         (calc - DumpArchiveUtil.convert32(buffer, 28));
+    }
+
+    /**
+     * Read 2-byte integer from buffer.
+     *
+     * @param buffer
+     * @param offset
+     * @return the 2-byte entry as an int
+     */
+    public static final int convert16(final byte[] buffer, final int offset) {
+        return (int) ByteUtils.fromLittleEndian(buffer, offset, 2);
+    }
+
+    /**
+     * Read 4-byte integer from buffer.
+     *
+     * @param buffer
+     * @param offset
+     * @return the 4-byte entry as an int
+     */
+    public static final int convert32(final byte[] buffer, final int offset) {
+        return (int) ByteUtils.fromLittleEndian(buffer, offset, 4);
+    }
+
+    /**
+     * Read 8-byte integer from buffer.
+     *
+     * @param buffer
+     * @param offset
+     * @return the 8-byte entry as a long
+     */
+    public static final long convert64(final byte[] buffer, final int offset) {
+        return ByteUtils.fromLittleEndian(buffer, offset, 8);
+    }
+
+    /**
+     * Decodes a byte array to a string.
+     */
+    static String decode(final ZipEncoding encoding, final byte[] b, final int offset, final int len)
+        throws IOException {
+        return encoding.decode(Arrays.copyOfRange(b, offset, offset + len));
+    }
+
+    /**
+     * Gets the ino associated with this buffer.
+     *
+     * @param buffer
+     * @return the ino associated with this buffer.
+     */
+    public static final int getIno(final byte[] buffer) {
+        return convert32(buffer, 20);
     }
 
     /**
@@ -72,53 +117,8 @@ class DumpArchiveUtil {
     }
 
     /**
-     * Gets the ino associated with this buffer.
-     *
-     * @param buffer
-     * @return the ino associated with this buffer.
+     * Private constructor to prevent instantiation.
      */
-    public static final int getIno(final byte[] buffer) {
-        return convert32(buffer, 20);
-    }
-
-    /**
-     * Read 8-byte integer from buffer.
-     *
-     * @param buffer
-     * @param offset
-     * @return the 8-byte entry as a long
-     */
-    public static final long convert64(final byte[] buffer, final int offset) {
-        return ByteUtils.fromLittleEndian(buffer, offset, 8);
-    }
-
-    /**
-     * Read 4-byte integer from buffer.
-     *
-     * @param buffer
-     * @param offset
-     * @return the 4-byte entry as an int
-     */
-    public static final int convert32(final byte[] buffer, final int offset) {
-        return (int) ByteUtils.fromLittleEndian(buffer, offset, 4);
-    }
-
-    /**
-     * Read 2-byte integer from buffer.
-     *
-     * @param buffer
-     * @param offset
-     * @return the 2-byte entry as an int
-     */
-    public static final int convert16(final byte[] buffer, final int offset) {
-        return (int) ByteUtils.fromLittleEndian(buffer, offset, 2);
-    }
-
-    /**
-     * Decodes a byte array to a string.
-     */
-    static String decode(final ZipEncoding encoding, final byte[] b, final int offset, final int len)
-        throws IOException {
-        return encoding.decode(Arrays.copyOfRange(b, offset, offset + len));
+    private DumpArchiveUtil() {
     }
 }

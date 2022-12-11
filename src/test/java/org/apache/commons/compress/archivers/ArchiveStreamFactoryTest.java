@@ -46,123 +46,6 @@ import org.junit.jupiter.api.Test;
 
 public class ArchiveStreamFactoryTest {
 
-    private static final String UNKNOWN = "??";
-
-    /**
-     * see https://issues.apache.org/jira/browse/COMPRESS-171
-     */
-    @Test
-    public void shortTextFilesAreNoTARs() {
-        try {
-            ArchiveStreamFactory.DEFAULT
-                .createArchiveInputStream(new ByteArrayInputStream("This certainly is not a tar archive, really, no kidding".getBytes()));
-            fail("created an input stream for a non-archive");
-        } catch (final ArchiveException ae) {
-            assertTrue(ae.getMessage().startsWith("No Archiver found"));
-        }
-    }
-
-    /**
-     * see https://issues.apache.org/jira/browse/COMPRESS-191
-     */
-    @Test
-    public void aiffFilesAreNoTARs() throws Exception {
-        try (InputStream fis = Files.newInputStream(new File("src/test/resources/testAIFF.aif").toPath())) {
-            try (InputStream is = new BufferedInputStream(fis)) {
-                ArchiveStreamFactory.DEFAULT.createArchiveInputStream(is);
-                fail("created an input stream for a non-archive");
-            } catch (final ArchiveException ae) {
-                assertTrue(ae.getMessage().startsWith("No Archiver found"));
-            }
-        }
-    }
-
-    @Test
-    public void testCOMPRESS209() throws Exception {
-        try (InputStream fis = Files.newInputStream(new File("src/test/resources/testCompress209.doc").toPath())) {
-            try (InputStream bis = new BufferedInputStream(fis)) {
-                ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis);
-                fail("created an input stream for a non-archive");
-            } catch (final ArchiveException ae) {
-                assertTrue(ae.getMessage().startsWith("No Archiver found"));
-            }
-        }
-    }
-
-    @Test
-    public void cantRead7zFromStream() throws Exception {
-        assertThrows(StreamingNotSupportedException.class,
-            () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(ArchiveStreamFactory.SEVEN_Z, new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)));
-    }
-
-    @Test
-    public void cantWrite7zToStream() throws Exception {
-        assertThrows(StreamingNotSupportedException.class,
-            () -> ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.SEVEN_Z, new ByteArrayOutputStream()));
-    }
-
-    /**
-     * Test case for
-     * <a href="https://issues.apache.org/jira/browse/COMPRESS-267"
-     * >COMPRESS-267</a>.
-     */
-    @Test
-    public void detectsAndThrowsFor7z() throws Exception {
-        try (InputStream fis = Files.newInputStream(new File("src/test/resources/bla.7z").toPath())) {
-            try (InputStream bis = new BufferedInputStream(fis)) {
-                ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis);
-                fail("Expected a StreamingNotSupportedException");
-            } catch (final StreamingNotSupportedException ex) {
-                assertEquals(ArchiveStreamFactory.SEVEN_Z, ex.getFormat());
-            }
-        }
-    }
-
-    /**
-     * Test case for
-     * <a href="https://issues.apache.org/jira/browse/COMPRESS-208"
-     * >COMPRESS-208</a>.
-     */
-    @Test
-    public void skipsPK00Prefix() throws Exception {
-        try (InputStream fis = Files.newInputStream(new File("src/test/resources/COMPRESS-208.zip").toPath())) {
-            try (InputStream bis = new BufferedInputStream(fis)) {
-                try (ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis)) {
-                    assertTrue(ais instanceof ZipArchiveInputStream);
-                }
-            }
-        }
-    }
-
-    @Test
-    public void testEncodingCtor() {
-        ArchiveStreamFactory fac = new ArchiveStreamFactory();
-        assertNull(fac.getEntryEncoding());
-        fac = new ArchiveStreamFactory(null);
-        assertNull(fac.getEntryEncoding());
-        fac = new ArchiveStreamFactory("UTF-8");
-        assertEquals("UTF-8", fac.getEntryEncoding());
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testEncodingDeprecated() {
-        ArchiveStreamFactory fac = new ArchiveStreamFactory();
-        assertNull(fac.getEntryEncoding());
-        fac.setEntryEncoding("UTF-8");
-        assertEquals("UTF-8", fac.getEntryEncoding());
-        fac.setEntryEncoding("US_ASCII");
-        assertEquals("US_ASCII", fac.getEntryEncoding());
-        fac = new ArchiveStreamFactory("UTF-8");
-        assertEquals("UTF-8", fac.getEntryEncoding());
-        try {
-            fac.setEntryEncoding("US_ASCII");
-            fail("Expected IllegalStateException");
-        } catch (final IllegalStateException ise) {
-            // expected
-        }
-    }
-
     static class TestData {
         final String testFile;
         final String expectedEncoding;
@@ -187,29 +70,31 @@ public class ArchiveStreamFactoryTest {
         }
     }
 
-    @SuppressWarnings("deprecation") // test of deprecated method
-    static ArchiveStreamFactory getFactory(final String entryEncoding) {
-        final ArchiveStreamFactory fac = new ArchiveStreamFactory();
-        fac.setEntryEncoding(entryEncoding);
-        return fac;
-    }
+    private static final String UNKNOWN = "??";
+
     // The different factory types
     private static final ArchiveStreamFactory FACTORY = ArchiveStreamFactory.DEFAULT;
+
     private static final ArchiveStreamFactory FACTORY_UTF8 = new ArchiveStreamFactory("UTF-8");
+
     private static final ArchiveStreamFactory FACTORY_ASCII = new ArchiveStreamFactory("ASCII");
+
     private static final ArchiveStreamFactory FACTORY_SET_UTF8 = getFactory("UTF-8");
+
     private static final ArchiveStreamFactory FACTORY_SET_ASCII = getFactory("ASCII");
 
     // Default encoding if none is provided (not even null)
     // The test currently assumes that the output default is the same as the input default
     private static final String ARJ_DEFAULT;
+
     private static final String DUMP_DEFAULT;
 
     private static final String ZIP_DEFAULT = getField(new ZipArchiveInputStream(null),"encoding");
+
     private static final String CPIO_DEFAULT = getField(new CpioArchiveInputStream(null),"encoding");
+
     private static final String TAR_DEFAULT = getField(new TarArchiveInputStream(null),"encoding");
     private static final String JAR_DEFAULT = getField(new JarArchiveInputStream(null),"encoding");
-
     static {
         String dflt;
         dflt = UNKNOWN;
@@ -226,6 +111,196 @@ public class ArchiveStreamFactoryTest {
             e.printStackTrace();
         }
         DUMP_DEFAULT = dflt;
+    }
+    static final TestData[] TESTS = {
+        new TestData("bla.arj", ArchiveStreamFactory.ARJ, false, ARJ_DEFAULT, FACTORY, "charsetName"),
+        new TestData("bla.arj", ArchiveStreamFactory.ARJ, false, "UTF-8", FACTORY_UTF8, "charsetName"),
+        new TestData("bla.arj", ArchiveStreamFactory.ARJ, false, "ASCII", FACTORY_ASCII, "charsetName"),
+        new TestData("bla.arj", ArchiveStreamFactory.ARJ, false, "UTF-8", FACTORY_SET_UTF8, "charsetName"),
+        new TestData("bla.arj", ArchiveStreamFactory.ARJ, false, "ASCII", FACTORY_SET_ASCII, "charsetName"),
+
+        new TestData("bla.cpio", ArchiveStreamFactory.CPIO, true, CPIO_DEFAULT, FACTORY, "encoding"),
+        new TestData("bla.cpio", ArchiveStreamFactory.CPIO, true, "UTF-8", FACTORY_UTF8, "encoding"),
+        new TestData("bla.cpio", ArchiveStreamFactory.CPIO, true, "ASCII", FACTORY_ASCII, "encoding"),
+        new TestData("bla.cpio", ArchiveStreamFactory.CPIO, true, "UTF-8", FACTORY_SET_UTF8, "encoding"),
+        new TestData("bla.cpio", ArchiveStreamFactory.CPIO, true, "ASCII", FACTORY_SET_ASCII, "encoding"),
+
+        new TestData("bla.dump", ArchiveStreamFactory.DUMP, false, DUMP_DEFAULT, FACTORY, "encoding"),
+        new TestData("bla.dump", ArchiveStreamFactory.DUMP, false, "UTF-8", FACTORY_UTF8, "encoding"),
+        new TestData("bla.dump", ArchiveStreamFactory.DUMP, false, "ASCII", FACTORY_ASCII, "encoding"),
+        new TestData("bla.dump", ArchiveStreamFactory.DUMP, false, "UTF-8", FACTORY_SET_UTF8, "encoding"),
+        new TestData("bla.dump", ArchiveStreamFactory.DUMP, false, "ASCII", FACTORY_SET_ASCII, "encoding"),
+
+        new TestData("bla.tar", ArchiveStreamFactory.TAR, true, TAR_DEFAULT, FACTORY, "encoding"),
+        new TestData("bla.tar", ArchiveStreamFactory.TAR, true, "UTF-8", FACTORY_UTF8, "encoding"),
+        new TestData("bla.tar", ArchiveStreamFactory.TAR, true, "ASCII", FACTORY_ASCII, "encoding"),
+        new TestData("bla.tar", ArchiveStreamFactory.TAR, true, "UTF-8", FACTORY_SET_UTF8, "encoding"),
+        new TestData("bla.tar", ArchiveStreamFactory.TAR, true, "ASCII", FACTORY_SET_ASCII, "encoding"),
+
+        new TestData("bla.jar", ArchiveStreamFactory.JAR, true, JAR_DEFAULT, FACTORY, "encoding"),
+        new TestData("bla.jar", ArchiveStreamFactory.JAR, true, "UTF-8", FACTORY_UTF8, "encoding"),
+        new TestData("bla.jar", ArchiveStreamFactory.JAR, true, "ASCII", FACTORY_ASCII, "encoding"),
+        new TestData("bla.jar", ArchiveStreamFactory.JAR, true, "UTF-8", FACTORY_SET_UTF8, "encoding"),
+        new TestData("bla.jar", ArchiveStreamFactory.JAR, true, "ASCII", FACTORY_SET_ASCII, "encoding"),
+
+        new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, ZIP_DEFAULT, FACTORY, "encoding"),
+        new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, "UTF-8", FACTORY_UTF8, "encoding"),
+        new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, "ASCII", FACTORY_ASCII, "encoding"),
+        new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, "UTF-8", FACTORY_SET_UTF8, "encoding"),
+        new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, "ASCII", FACTORY_SET_ASCII, "encoding"),
+    };
+    // equals allowing null
+    private static boolean eq(final String exp, final String act) {
+        if (exp == null) {
+            return act == null;
+        }
+        return exp.equals(act);
+    }
+    @SuppressWarnings("deprecation") // test of deprecated method
+    static ArchiveStreamFactory getFactory(final String entryEncoding) {
+        final ArchiveStreamFactory fac = new ArchiveStreamFactory();
+        fac.setEntryEncoding(entryEncoding);
+        return fac;
+    }
+
+    private static String getField(final Object instance, final String name) {
+        final Class<?> cls = instance.getClass();
+        Field fld;
+        try {
+            fld = cls.getDeclaredField(name);
+        } catch (final NoSuchFieldException nsfe) {
+                try {
+                    fld = cls.getSuperclass().getDeclaredField(name);
+                } catch (final NoSuchFieldException e) {
+                    System.out.println("Cannot find " + name + " in class " + instance.getClass().getSimpleName());
+                    return UNKNOWN;
+                }
+        }
+        final boolean isAccessible = fld.isAccessible();
+        try {
+            if (!isAccessible) {
+                fld.setAccessible(true);
+            }
+            final Object object = fld.get(instance);
+            if (object instanceof String || object == null) {
+                return (String) object;
+            }
+            System.out.println("Wrong type: " + object.getClass().getCanonicalName() + " for " + name + " in class " + instance.getClass().getSimpleName());
+            return UNKNOWN;
+        } catch (final Exception e) {
+            e.printStackTrace();
+            return UNKNOWN;
+        } finally {
+            if (!isAccessible) {
+                fld.setAccessible(isAccessible);
+            }
+        }
+    }
+    /**
+     * see https://issues.apache.org/jira/browse/COMPRESS-191
+     */
+    @Test
+    public void aiffFilesAreNoTARs() throws Exception {
+        try (InputStream fis = Files.newInputStream(new File("src/test/resources/testAIFF.aif").toPath())) {
+            try (InputStream is = new BufferedInputStream(fis)) {
+                ArchiveStreamFactory.DEFAULT.createArchiveInputStream(is);
+                fail("created an input stream for a non-archive");
+            } catch (final ArchiveException ae) {
+                assertTrue(ae.getMessage().startsWith("No Archiver found"));
+            }
+        }
+    }
+
+    @Test
+    public void cantRead7zFromStream() throws Exception {
+        assertThrows(StreamingNotSupportedException.class,
+            () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(ArchiveStreamFactory.SEVEN_Z, new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)));
+    }
+    @Test
+    public void cantWrite7zToStream() throws Exception {
+        assertThrows(StreamingNotSupportedException.class,
+            () -> ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.SEVEN_Z, new ByteArrayOutputStream()));
+    }
+    private String detect(final String resource) throws IOException, ArchiveException {
+        try(InputStream in = new BufferedInputStream(Files.newInputStream(getFile(resource).toPath()))) {
+            return ArchiveStreamFactory.detect(in);
+        }
+    }
+    /**
+     * Test case for
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-267"
+     * >COMPRESS-267</a>.
+     */
+    @Test
+    public void detectsAndThrowsFor7z() throws Exception {
+        try (InputStream fis = Files.newInputStream(new File("src/test/resources/bla.7z").toPath())) {
+            try (InputStream bis = new BufferedInputStream(fis)) {
+                ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis);
+                fail("Expected a StreamingNotSupportedException");
+            } catch (final StreamingNotSupportedException ex) {
+                assertEquals(ArchiveStreamFactory.SEVEN_Z, ex.getFormat());
+            }
+        }
+    }
+
+    private ArchiveInputStream getInputStreamFor(final String resource, final ArchiveStreamFactory factory)
+            throws IOException, ArchiveException {
+        return factory.createArchiveInputStream(
+                   new BufferedInputStream(Files.newInputStream(getFile(resource).toPath())));
+    }
+
+    private ArchiveInputStream getInputStreamFor(final String type, final String resource, final ArchiveStreamFactory factory)
+            throws IOException, ArchiveException {
+        return factory.createArchiveInputStream(
+                   type,
+                   new BufferedInputStream(Files.newInputStream(getFile(resource).toPath())));
+    }
+
+    private ArchiveOutputStream getOutputStreamFor(final String type, final ArchiveStreamFactory factory)
+            throws ArchiveException {
+        return factory.createArchiveOutputStream(type, new ByteArrayOutputStream());
+    }
+
+    /**
+     * see https://issues.apache.org/jira/browse/COMPRESS-171
+     */
+    @Test
+    public void shortTextFilesAreNoTARs() {
+        try {
+            ArchiveStreamFactory.DEFAULT
+                .createArchiveInputStream(new ByteArrayInputStream("This certainly is not a tar archive, really, no kidding".getBytes()));
+            fail("created an input stream for a non-archive");
+        } catch (final ArchiveException ae) {
+            assertTrue(ae.getMessage().startsWith("No Archiver found"));
+        }
+    }
+
+    /**
+     * Test case for
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-208"
+     * >COMPRESS-208</a>.
+     */
+    @Test
+    public void skipsPK00Prefix() throws Exception {
+        try (InputStream fis = Files.newInputStream(new File("src/test/resources/COMPRESS-208.zip").toPath())) {
+            try (InputStream bis = new BufferedInputStream(fis)) {
+                try (ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis)) {
+                    assertTrue(ais instanceof ZipArchiveInputStream);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testCOMPRESS209() throws Exception {
+        try (InputStream fis = Files.newInputStream(new File("src/test/resources/testCompress209.doc").toPath())) {
+            try (InputStream bis = new BufferedInputStream(fis)) {
+                ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis);
+                fail("created an input stream for a non-archive");
+            } catch (final ArchiveException ae) {
+                assertTrue(ae.getMessage().startsWith("No Archiver found"));
+            }
+        }
     }
 
     @Test
@@ -266,56 +341,41 @@ public class ArchiveStreamFactoryTest {
         }
     }
 
-    private String detect(final String resource) throws IOException, ArchiveException {
-        try(InputStream in = new BufferedInputStream(Files.newInputStream(getFile(resource).toPath()))) {
-            return ArchiveStreamFactory.detect(in);
+    @Test
+    public void testEncodingCtor() {
+        ArchiveStreamFactory fac = new ArchiveStreamFactory();
+        assertNull(fac.getEntryEncoding());
+        fac = new ArchiveStreamFactory(null);
+        assertNull(fac.getEntryEncoding());
+        fac = new ArchiveStreamFactory("UTF-8");
+        assertEquals("UTF-8", fac.getEntryEncoding());
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testEncodingDeprecated() {
+        ArchiveStreamFactory fac = new ArchiveStreamFactory();
+        assertNull(fac.getEntryEncoding());
+        fac.setEntryEncoding("UTF-8");
+        assertEquals("UTF-8", fac.getEntryEncoding());
+        fac.setEntryEncoding("US_ASCII");
+        assertEquals("US_ASCII", fac.getEntryEncoding());
+        fac = new ArchiveStreamFactory("UTF-8");
+        assertEquals("UTF-8", fac.getEntryEncoding());
+        try {
+            fac.setEntryEncoding("US_ASCII");
+            fail("Expected IllegalStateException");
+        } catch (final IllegalStateException ise) {
+            // expected
         }
     }
 
-    static final TestData[] TESTS = {
-        new TestData("bla.arj", ArchiveStreamFactory.ARJ, false, ARJ_DEFAULT, FACTORY, "charsetName"),
-        new TestData("bla.arj", ArchiveStreamFactory.ARJ, false, "UTF-8", FACTORY_UTF8, "charsetName"),
-        new TestData("bla.arj", ArchiveStreamFactory.ARJ, false, "ASCII", FACTORY_ASCII, "charsetName"),
-        new TestData("bla.arj", ArchiveStreamFactory.ARJ, false, "UTF-8", FACTORY_SET_UTF8, "charsetName"),
-        new TestData("bla.arj", ArchiveStreamFactory.ARJ, false, "ASCII", FACTORY_SET_ASCII, "charsetName"),
-
-        new TestData("bla.cpio", ArchiveStreamFactory.CPIO, true, CPIO_DEFAULT, FACTORY, "encoding"),
-        new TestData("bla.cpio", ArchiveStreamFactory.CPIO, true, "UTF-8", FACTORY_UTF8, "encoding"),
-        new TestData("bla.cpio", ArchiveStreamFactory.CPIO, true, "ASCII", FACTORY_ASCII, "encoding"),
-        new TestData("bla.cpio", ArchiveStreamFactory.CPIO, true, "UTF-8", FACTORY_SET_UTF8, "encoding"),
-        new TestData("bla.cpio", ArchiveStreamFactory.CPIO, true, "ASCII", FACTORY_SET_ASCII, "encoding"),
-
-        new TestData("bla.dump", ArchiveStreamFactory.DUMP, false, DUMP_DEFAULT, FACTORY, "encoding"),
-        new TestData("bla.dump", ArchiveStreamFactory.DUMP, false, "UTF-8", FACTORY_UTF8, "encoding"),
-        new TestData("bla.dump", ArchiveStreamFactory.DUMP, false, "ASCII", FACTORY_ASCII, "encoding"),
-        new TestData("bla.dump", ArchiveStreamFactory.DUMP, false, "UTF-8", FACTORY_SET_UTF8, "encoding"),
-        new TestData("bla.dump", ArchiveStreamFactory.DUMP, false, "ASCII", FACTORY_SET_ASCII, "encoding"),
-
-        new TestData("bla.tar", ArchiveStreamFactory.TAR, true, TAR_DEFAULT, FACTORY, "encoding"),
-        new TestData("bla.tar", ArchiveStreamFactory.TAR, true, "UTF-8", FACTORY_UTF8, "encoding"),
-        new TestData("bla.tar", ArchiveStreamFactory.TAR, true, "ASCII", FACTORY_ASCII, "encoding"),
-        new TestData("bla.tar", ArchiveStreamFactory.TAR, true, "UTF-8", FACTORY_SET_UTF8, "encoding"),
-        new TestData("bla.tar", ArchiveStreamFactory.TAR, true, "ASCII", FACTORY_SET_ASCII, "encoding"),
-
-        new TestData("bla.jar", ArchiveStreamFactory.JAR, true, JAR_DEFAULT, FACTORY, "encoding"),
-        new TestData("bla.jar", ArchiveStreamFactory.JAR, true, "UTF-8", FACTORY_UTF8, "encoding"),
-        new TestData("bla.jar", ArchiveStreamFactory.JAR, true, "ASCII", FACTORY_ASCII, "encoding"),
-        new TestData("bla.jar", ArchiveStreamFactory.JAR, true, "UTF-8", FACTORY_SET_UTF8, "encoding"),
-        new TestData("bla.jar", ArchiveStreamFactory.JAR, true, "ASCII", FACTORY_SET_ASCII, "encoding"),
-
-        new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, ZIP_DEFAULT, FACTORY, "encoding"),
-        new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, "UTF-8", FACTORY_UTF8, "encoding"),
-        new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, "ASCII", FACTORY_ASCII, "encoding"),
-        new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, "UTF-8", FACTORY_SET_UTF8, "encoding"),
-        new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, "ASCII", FACTORY_SET_ASCII, "encoding"),
-    };
-
     @Test
-    public void testEncodingInputStreamAutodetect() throws Exception {
+    public void testEncodingInputStream() throws Exception {
         int failed = 0;
         for (int i = 1; i <= TESTS.length; i++) {
             final TestData test = TESTS[i - 1];
-            try (final ArchiveInputStream ais = getInputStreamFor(test.testFile, test.fac)) {
+            try (final ArchiveInputStream ais = getInputStreamFor(test.type, test.testFile, test.fac)) {
                 final String field = getField(ais, test.fieldName);
                 if (!eq(test.expectedEncoding, field)) {
                     System.out.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field
@@ -330,11 +390,11 @@ public class ArchiveStreamFactoryTest {
     }
 
     @Test
-    public void testEncodingInputStream() throws Exception {
+    public void testEncodingInputStreamAutodetect() throws Exception {
         int failed = 0;
         for (int i = 1; i <= TESTS.length; i++) {
             final TestData test = TESTS[i - 1];
-            try (final ArchiveInputStream ais = getInputStreamFor(test.type, test.testFile, test.fac)) {
+            try (final ArchiveInputStream ais = getInputStreamFor(test.testFile, test.fac)) {
                 final String field = getField(ais, test.fieldName);
                 if (!eq(test.expectedEncoding, field)) {
                     System.out.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field
@@ -367,65 +427,5 @@ public class ArchiveStreamFactoryTest {
         if (failed > 0) {
             fail("Tests failed: " + failed + " out of " + TESTS.length);
         }
-    }
-
-    // equals allowing null
-    private static boolean eq(final String exp, final String act) {
-        if (exp == null) {
-            return act == null;
-        }
-        return exp.equals(act);
-    }
-
-    private static String getField(final Object instance, final String name) {
-        final Class<?> cls = instance.getClass();
-        Field fld;
-        try {
-            fld = cls.getDeclaredField(name);
-        } catch (final NoSuchFieldException nsfe) {
-                try {
-                    fld = cls.getSuperclass().getDeclaredField(name);
-                } catch (final NoSuchFieldException e) {
-                    System.out.println("Cannot find " + name + " in class " + instance.getClass().getSimpleName());
-                    return UNKNOWN;
-                }
-        }
-        final boolean isAccessible = fld.isAccessible();
-        try {
-            if (!isAccessible) {
-                fld.setAccessible(true);
-            }
-            final Object object = fld.get(instance);
-            if (object instanceof String || object == null) {
-                return (String) object;
-            }
-            System.out.println("Wrong type: " + object.getClass().getCanonicalName() + " for " + name + " in class " + instance.getClass().getSimpleName());
-            return UNKNOWN;
-        } catch (final Exception e) {
-            e.printStackTrace();
-            return UNKNOWN;
-        } finally {
-            if (!isAccessible) {
-                fld.setAccessible(isAccessible);
-            }
-        }
-    }
-
-    private ArchiveInputStream getInputStreamFor(final String resource, final ArchiveStreamFactory factory)
-            throws IOException, ArchiveException {
-        return factory.createArchiveInputStream(
-                   new BufferedInputStream(Files.newInputStream(getFile(resource).toPath())));
-    }
-
-    private ArchiveInputStream getInputStreamFor(final String type, final String resource, final ArchiveStreamFactory factory)
-            throws IOException, ArchiveException {
-        return factory.createArchiveInputStream(
-                   type,
-                   new BufferedInputStream(Files.newInputStream(getFile(resource).toPath())));
-    }
-
-    private ArchiveOutputStream getOutputStreamFor(final String type, final ArchiveStreamFactory factory)
-            throws ArchiveException {
-        return factory.createArchiveOutputStream(type, new ByteArrayOutputStream());
     }
 }

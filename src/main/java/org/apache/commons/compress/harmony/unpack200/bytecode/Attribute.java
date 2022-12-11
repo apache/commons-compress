@@ -89,6 +89,11 @@ public abstract class Attribute extends ClassFileEntry {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(attributeName);
+    }
+
     /**
      * Answer true if the receiver is a source file attribute (which gets special handling when the class is built);
      * otherwise answer false.
@@ -97,11 +102,6 @@ public abstract class Attribute extends ClassFileEntry {
      */
     public boolean isSourceFileAttribute() {
         return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(attributeName);
     }
 
     @Override

@@ -42,6 +42,66 @@ import org.apache.commons.compress.utils.IOUtils;
  * @Immutable
  */
 public class ChangeSetPerformer {
+    /**
+     * Used in perform to abstract out getting entries and streams for
+     * those entries.
+     *
+     * <p>Iterator#hasNext is not allowed to throw exceptions that's
+     * why we can't use Iterator&lt;ArchiveEntry&gt; directly -
+     * otherwise we'd need to convert exceptions thrown in
+     * ArchiveInputStream#getNextEntry.</p>
+     */
+    interface ArchiveEntryIterator {
+        InputStream getInputStream() throws IOException;
+        boolean hasNext() throws IOException;
+        ArchiveEntry next();
+    }
+
+    private static class ArchiveInputStreamIterator
+        implements ArchiveEntryIterator {
+        private final ArchiveInputStream in;
+        private ArchiveEntry next;
+        ArchiveInputStreamIterator(final ArchiveInputStream in) {
+            this.in = in;
+        }
+        @Override
+        public InputStream getInputStream() {
+            return in;
+        }
+        @Override
+        public boolean hasNext() throws IOException {
+            return (next = in.getNextEntry()) != null;
+        }
+        @Override
+        public ArchiveEntry next() {
+            return next;
+        }
+    }
+
+    private static class ZipFileIterator
+        implements ArchiveEntryIterator {
+        private final ZipFile in;
+        private final Enumeration<ZipArchiveEntry> nestedEnum;
+        private ZipArchiveEntry current;
+        ZipFileIterator(final ZipFile in) {
+            this.in = in;
+            nestedEnum = in.getEntriesInPhysicalOrder();
+        }
+        @Override
+        public InputStream getInputStream() throws IOException {
+            return in.getInputStream(current);
+        }
+        @Override
+        public boolean hasNext() {
+            return nestedEnum.hasMoreElements();
+        }
+        @Override
+        public ArchiveEntry next() {
+            current = nestedEnum.nextElement();
+            return current;
+        }
+    }
+
     private final Set<Change> changes;
 
     /**
@@ -53,44 +113,50 @@ public class ChangeSetPerformer {
     }
 
     /**
-     * Performs all changes collected in this ChangeSet on the input stream and
-     * streams the result to the output stream. Perform may be called more than once.
-     *
-     * This method finishes the stream, no other entries should be added
-     * after that.
+     * Copies the ArchiveEntry to the Output stream
      *
      * @param in
-     *            the InputStream to perform the changes on
+     *            the stream to read the data from
      * @param out
-     *            the resulting OutputStream with all modifications
+     *            the stream to write the data to
+     * @param entry
+     *            the entry to write
      * @throws IOException
-     *             if an read/write error occurs
-     * @return the results of this operation
+     *             if data cannot be read or written
      */
-    public ChangeSetResults perform(final ArchiveInputStream in, final ArchiveOutputStream out)
-            throws IOException {
-        return perform(new ArchiveInputStreamIterator(in), out);
+    private void copyStream(final InputStream in, final ArchiveOutputStream out,
+            final ArchiveEntry entry) throws IOException {
+        out.putArchiveEntry(entry);
+        IOUtils.copy(in, out);
+        out.closeArchiveEntry();
     }
 
     /**
-     * Performs all changes collected in this ChangeSet on the ZipFile and
-     * streams the result to the output stream. Perform may be called more than once.
+     * Checks if an ArchiveEntry is deleted later in the ChangeSet. This is
+     * necessary if an file is added with this ChangeSet, but later became
+     * deleted in the same set.
      *
-     * This method finishes the stream, no other entries should be added
-     * after that.
-     *
-     * @param in
-     *            the ZipFile to perform the changes on
-     * @param out
-     *            the resulting OutputStream with all modifications
-     * @throws IOException
-     *             if an read/write error occurs
-     * @return the results of this operation
-     * @since 1.5
+     * @param entry
+     *            the entry to check
+     * @return true, if this entry has an deletion change later, false otherwise
      */
-    public ChangeSetResults perform(final ZipFile in, final ArchiveOutputStream out)
-            throws IOException {
-        return perform(new ZipFileIterator(in), out);
+    private boolean isDeletedLater(final Set<Change> workingSet, final ArchiveEntry entry) {
+        final String source = entry.getName();
+
+        if (!workingSet.isEmpty()) {
+            for (final Change change : workingSet) {
+                final int type = change.type();
+                final String target = change.targetFile();
+                if (type == Change.TYPE_DELETE && source.equals(target)) {
+                    return true;
+                }
+
+                if (type == Change.TYPE_DELETE_DIR && source.startsWith(target + "/")){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -176,109 +242,43 @@ public class ChangeSetPerformer {
     }
 
     /**
-     * Checks if an ArchiveEntry is deleted later in the ChangeSet. This is
-     * necessary if an file is added with this ChangeSet, but later became
-     * deleted in the same set.
+     * Performs all changes collected in this ChangeSet on the input stream and
+     * streams the result to the output stream. Perform may be called more than once.
      *
-     * @param entry
-     *            the entry to check
-     * @return true, if this entry has an deletion change later, false otherwise
-     */
-    private boolean isDeletedLater(final Set<Change> workingSet, final ArchiveEntry entry) {
-        final String source = entry.getName();
-
-        if (!workingSet.isEmpty()) {
-            for (final Change change : workingSet) {
-                final int type = change.type();
-                final String target = change.targetFile();
-                if (type == Change.TYPE_DELETE && source.equals(target)) {
-                    return true;
-                }
-
-                if (type == Change.TYPE_DELETE_DIR && source.startsWith(target + "/")){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Copies the ArchiveEntry to the Output stream
+     * This method finishes the stream, no other entries should be added
+     * after that.
      *
      * @param in
-     *            the stream to read the data from
+     *            the InputStream to perform the changes on
      * @param out
-     *            the stream to write the data to
-     * @param entry
-     *            the entry to write
+     *            the resulting OutputStream with all modifications
      * @throws IOException
-     *             if data cannot be read or written
+     *             if an read/write error occurs
+     * @return the results of this operation
      */
-    private void copyStream(final InputStream in, final ArchiveOutputStream out,
-            final ArchiveEntry entry) throws IOException {
-        out.putArchiveEntry(entry);
-        IOUtils.copy(in, out);
-        out.closeArchiveEntry();
+    public ChangeSetResults perform(final ArchiveInputStream in, final ArchiveOutputStream out)
+            throws IOException {
+        return perform(new ArchiveInputStreamIterator(in), out);
     }
 
     /**
-     * Used in perform to abstract out getting entries and streams for
-     * those entries.
+     * Performs all changes collected in this ChangeSet on the ZipFile and
+     * streams the result to the output stream. Perform may be called more than once.
      *
-     * <p>Iterator#hasNext is not allowed to throw exceptions that's
-     * why we can't use Iterator&lt;ArchiveEntry&gt; directly -
-     * otherwise we'd need to convert exceptions thrown in
-     * ArchiveInputStream#getNextEntry.</p>
+     * This method finishes the stream, no other entries should be added
+     * after that.
+     *
+     * @param in
+     *            the ZipFile to perform the changes on
+     * @param out
+     *            the resulting OutputStream with all modifications
+     * @throws IOException
+     *             if an read/write error occurs
+     * @return the results of this operation
+     * @since 1.5
      */
-    interface ArchiveEntryIterator {
-        boolean hasNext() throws IOException;
-        ArchiveEntry next();
-        InputStream getInputStream() throws IOException;
-    }
-
-    private static class ArchiveInputStreamIterator
-        implements ArchiveEntryIterator {
-        private final ArchiveInputStream in;
-        private ArchiveEntry next;
-        ArchiveInputStreamIterator(final ArchiveInputStream in) {
-            this.in = in;
-        }
-        @Override
-        public boolean hasNext() throws IOException {
-            return (next = in.getNextEntry()) != null;
-        }
-        @Override
-        public ArchiveEntry next() {
-            return next;
-        }
-        @Override
-        public InputStream getInputStream() {
-            return in;
-        }
-    }
-
-    private static class ZipFileIterator
-        implements ArchiveEntryIterator {
-        private final ZipFile in;
-        private final Enumeration<ZipArchiveEntry> nestedEnum;
-        private ZipArchiveEntry current;
-        ZipFileIterator(final ZipFile in) {
-            this.in = in;
-            nestedEnum = in.getEntriesInPhysicalOrder();
-        }
-        @Override
-        public boolean hasNext() {
-            return nestedEnum.hasMoreElements();
-        }
-        @Override
-        public ArchiveEntry next() {
-            current = nestedEnum.nextElement();
-            return current;
-        }
-        @Override
-        public InputStream getInputStream() throws IOException {
-            return in.getInputStream(current);
-        }
+    public ChangeSetResults perform(final ZipFile in, final ArchiveOutputStream out)
+            throws IOException {
+        return perform(new ZipFileIterator(in), out);
     }
 }

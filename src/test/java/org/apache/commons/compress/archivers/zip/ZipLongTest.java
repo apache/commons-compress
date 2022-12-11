@@ -30,41 +30,13 @@ import org.junit.jupiter.api.Test;
  */
 public class ZipLongTest {
 
-    /**
-     * Test conversion to bytes.
-     */
     @Test
-    public void testToBytes() {
-        final ZipLong zl = new ZipLong(0x12345678);
-        final byte[] result = zl.getBytes();
-        assertEquals("length getBytes", 4, result.length);
-        assertEquals("first byte getBytes", 0x78, result[0]);
-        assertEquals("second byte getBytes", 0x56, result[1]);
-        assertEquals("third byte getBytes", 0x34, result[2]);
-        assertEquals("fourth byte getBytes", 0x12, result[3]);
-    }
-
-    /**
-     * Test conversion to bytes.
-     */
-    @Test
-    public void testPut() {
-        final byte[] arr = new byte[5];
-        ZipLong.putLong(0x12345678, arr, 1);
-        assertEquals("first byte getBytes", 0x78, arr[1]);
-        assertEquals("second byte getBytes", 0x56, arr[2]);
-        assertEquals("third byte getBytes", 0x34, arr[3]);
-        assertEquals("fourth byte getBytes", 0x12, arr[4]);
-    }
-
-    /**
-     * Test conversion from bytes.
-     */
-    @Test
-    public void testFromBytes() {
-        final byte[] val = {0x78, 0x56, 0x34, 0x12};
-        final ZipLong zl = new ZipLong(val);
-        assertEquals("value from bytes", 0x12345678, zl.getValue());
+    public void testClone() {
+        final ZipLong s1 = new ZipLong(42);
+        final ZipLong s2 = (ZipLong) s1.clone();
+        assertNotSame(s1, s2);
+        assertEquals(s1, s2);
+        assertEquals(s1.getValue(), s2.getValue());
     }
 
     /**
@@ -88,6 +60,29 @@ public class ZipLongTest {
     }
 
     /**
+     * Test conversion from bytes.
+     */
+    @Test
+    public void testFromBytes() {
+        final byte[] val = {0x78, 0x56, 0x34, 0x12};
+        final ZipLong zl = new ZipLong(val);
+        assertEquals("value from bytes", 0x12345678, zl.getValue());
+    }
+
+    /**
+     * Test conversion to bytes.
+     */
+    @Test
+    public void testPut() {
+        final byte[] arr = new byte[5];
+        ZipLong.putLong(0x12345678, arr, 1);
+        assertEquals("first byte getBytes", 0x78, arr[1]);
+        assertEquals("second byte getBytes", 0x56, arr[2]);
+        assertEquals("third byte getBytes", 0x34, arr[3]);
+        assertEquals("fourth byte getBytes", 0x12, arr[4]);
+    }
+
+    /**
      * Test sign handling.
      */
     @Test
@@ -103,12 +98,17 @@ public class ZipLongTest {
 
     }
 
+    /**
+     * Test conversion to bytes.
+     */
     @Test
-    public void testClone() {
-        final ZipLong s1 = new ZipLong(42);
-        final ZipLong s2 = (ZipLong) s1.clone();
-        assertNotSame(s1, s2);
-        assertEquals(s1, s2);
-        assertEquals(s1.getValue(), s2.getValue());
+    public void testToBytes() {
+        final ZipLong zl = new ZipLong(0x12345678);
+        final byte[] result = zl.getBytes();
+        assertEquals("length getBytes", 4, result.length);
+        assertEquals("first byte getBytes", 0x78, result[0]);
+        assertEquals("second byte getBytes", 0x56, result[1]);
+        assertEquals("third byte getBytes", 0x34, result[2]);
+        assertEquals("fourth byte getBytes", 0x12, result[3]);
     }
 }

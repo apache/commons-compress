@@ -41,9 +41,29 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
 
     final ClassLoader classLoader = getClass().getClassLoader();
 
-    @Test
-    public void testDetectionNotArchive() {
-        assertThrows(ArchiveException.class, () -> getStreamFor("test.txt"));
+    private void checkEmptyArchive(final String type) throws Exception{
+        final File ar = createEmptyArchive(type); // will be deleted by tearDown()
+        ar.deleteOnExit(); // Just in case file cannot be deleted
+        ArchiveInputStream ais = null;
+        BufferedInputStream in = null;
+        try {
+            in = new BufferedInputStream(Files.newInputStream(ar.toPath()));
+            ais = factory.createArchiveInputStream(in);
+        } catch (final ArchiveException ae) {
+            fail("Should have recognized empty archive for "+type);
+        } finally {
+            if (ais != null) {
+                ais.close(); // will close input as well
+            } else if (in != null){
+                in.close();
+            }
+        }
+    }
+
+    private ArchiveInputStream getStreamFor(final String resource)
+            throws ArchiveException, IOException {
+        return factory.createArchiveInputStream(
+                   new BufferedInputStream(Files.newInputStream(getFile(resource).toPath())));
     }
 
     @Test
@@ -101,18 +121,17 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
 
     }
 
-    private ArchiveInputStream getStreamFor(final String resource)
-            throws ArchiveException, IOException {
-        return factory.createArchiveInputStream(
-                   new BufferedInputStream(Files.newInputStream(getFile(resource).toPath())));
-    }
-
     // Check that the empty archives created by the code are readable
 
     // Not possible to detect empty "ar" archive as it is completely empty
 //    public void testEmptyArArchive() throws Exception {
 //        emptyArchive("ar");
 //    }
+
+    @Test
+    public void testDetectionNotArchive() {
+        assertThrows(ArchiveException.class, () -> getStreamFor("test.txt"));
+    }
 
     @Test
     public void testEmptyCpioArchive() throws Exception {
@@ -131,24 +150,5 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
     @Test
     public void testEmptyZipArchive() throws Exception {
         checkEmptyArchive("zip");
-    }
-
-    private void checkEmptyArchive(final String type) throws Exception{
-        final File ar = createEmptyArchive(type); // will be deleted by tearDown()
-        ar.deleteOnExit(); // Just in case file cannot be deleted
-        ArchiveInputStream ais = null;
-        BufferedInputStream in = null;
-        try {
-            in = new BufferedInputStream(Files.newInputStream(ar.toPath()));
-            ais = factory.createArchiveInputStream(in);
-        } catch (final ArchiveException ae) {
-            fail("Should have recognized empty archive for "+type);
-        } finally {
-            if (ais != null) {
-                ais.close(); // will close input as well
-            } else if (in != null){
-                in.close();
-            }
-        }
     }
 }

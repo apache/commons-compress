@@ -36,8 +36,9 @@ public class JarArchiveEntry extends ZipArchiveEntry {
     private final Attributes manifestAttributes = null;
     private final Certificate[] certificates = null;
 
-    public JarArchiveEntry(final ZipEntry entry) throws ZipException {
+    public JarArchiveEntry(final JarEntry entry) throws ZipException {
         super(entry);
+
     }
 
     public JarArchiveEntry(final String name) {
@@ -48,21 +49,8 @@ public class JarArchiveEntry extends ZipArchiveEntry {
         super(entry);
     }
 
-    public JarArchiveEntry(final JarEntry entry) throws ZipException {
+    public JarArchiveEntry(final ZipEntry entry) throws ZipException {
         super(entry);
-
-    }
-
-    /**
-     * This method is not implemented and won't ever be.
-     * The JVM equivalent has a different name {@link java.util.jar.JarEntry#getAttributes()}
-     *
-     * @deprecated since 1.5, do not use; always returns null
-     * @return Always returns null.
-     */
-    @Deprecated
-    public Attributes getManifestAttributes() {
-        return manifestAttributes;
     }
 
     /**
@@ -85,6 +73,18 @@ public class JarArchiveEntry extends ZipArchiveEntry {
          * also returns null or the list of certificates (but not copied)
          */
         return null;
+    }
+
+    /**
+     * This method is not implemented and won't ever be.
+     * The JVM equivalent has a different name {@link java.util.jar.JarEntry#getAttributes()}
+     *
+     * @deprecated since 1.5, do not use; always returns null
+     * @return Always returns null.
+     */
+    @Deprecated
+    public Attributes getManifestAttributes() {
+        return manifestAttributes;
     }
 
 }

@@ -63,6 +63,14 @@ public class LongSymLinkTest extends AbstractTestCase {
         }
     }
 
+    public static Stream<Arguments> data() {
+        final Collection<Arguments> params = new ArrayList<>();
+        for (final String fileName : ARCDIR.list((dir, name) -> !name.endsWith(".txt"))) {
+            params.add(Arguments.of(new File(ARCDIR, fileName)));
+        }
+        return params.stream();
+    }
+
     @BeforeAll
     public static void setUpFileList() throws Exception {
         assertTrue(ARCDIR.exists());
@@ -76,14 +84,6 @@ public class LongSymLinkTest extends AbstractTestCase {
             }
         }
         br.close();
-    }
-
-    public static Stream<Arguments> data() {
-        final Collection<Arguments> params = new ArrayList<>();
-        for (final String fileName : ARCDIR.list((dir, name) -> !name.endsWith(".txt"))) {
-            params.add(Arguments.of(new File(ARCDIR, fileName)));
-        }
-        return params.stream();
     }
 
 

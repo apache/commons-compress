@@ -26,12 +26,6 @@ import java.util.List;
  */
 public class InnerClassesAttribute extends Attribute {
 
-    private static CPUTF8 attributeName;
-
-    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
-        attributeName = cpUTF8Value;
-    }
-
     private static class InnerClassesEntry {
 
         CPClass inner_class_info;
@@ -88,12 +82,42 @@ public class InnerClassesAttribute extends Attribute {
 
     }
 
+    private static CPUTF8 attributeName;
+
+    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
+        attributeName = cpUTF8Value;
+    }
+
     private final List<InnerClassesEntry> innerClasses = new ArrayList<>();
     private final List<ConstantPoolEntry> nestedClassFileEntries = new ArrayList<>();
 
     public InnerClassesAttribute(final String name) {
         super(attributeName);
         nestedClassFileEntries.add(getAttributeName());
+    }
+
+    public void addInnerClassesEntry(final CPClass innerClass, final CPClass outerClass, final CPUTF8 innerName,
+        final int flags) {
+        if (innerClass != null) {
+            nestedClassFileEntries.add(innerClass);
+        }
+        if (outerClass != null) {
+            nestedClassFileEntries.add(outerClass);
+        }
+        if (innerName != null) {
+            nestedClassFileEntries.add(innerName);
+        }
+        addInnerClassesEntry(new InnerClassesEntry(innerClass, outerClass, innerName, flags));
+    }
+
+    private void addInnerClassesEntry(final InnerClassesEntry innerClassesEntry) {
+        innerClasses.add(innerClassesEntry);
+    }
+
+    @Override
+    protected void doWrite(final DataOutputStream dos) throws IOException {
+        // Hack so I can see what's being written.
+        super.doWrite(dos);
     }
 
     @Override
@@ -150,35 +174,11 @@ public class InnerClassesAttribute extends Attribute {
     }
 
     @Override
-    protected void doWrite(final DataOutputStream dos) throws IOException {
-        // Hack so I can see what's being written.
-        super.doWrite(dos);
-    }
-
-    @Override
     protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(innerClasses.size());
 
         for (InnerClassesEntry entry : innerClasses) {
             entry.write(dos);
         }
-    }
-
-    public void addInnerClassesEntry(final CPClass innerClass, final CPClass outerClass, final CPUTF8 innerName,
-        final int flags) {
-        if (innerClass != null) {
-            nestedClassFileEntries.add(innerClass);
-        }
-        if (outerClass != null) {
-            nestedClassFileEntries.add(outerClass);
-        }
-        if (innerName != null) {
-            nestedClassFileEntries.add(innerName);
-        }
-        addInnerClassesEntry(new InnerClassesEntry(innerClass, outerClass, innerName, flags));
-    }
-
-    private void addInnerClassesEntry(final InnerClassesEntry innerClassesEntry) {
-        innerClasses.add(innerClassesEntry);
     }
 }

@@ -39,38 +39,34 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.RuntimeVisibleorIn
  */
 public class MetadataBandGroup {
 
-    private final String type;
-    private final CpBands cpBands;
-
     private static CPUTF8 rvaUTF8;
     private static CPUTF8 riaUTF8;
+
     private static CPUTF8 rvpaUTF8;
     private static CPUTF8 ripaUTF8;
+    public static void setRiaAttributeName(final CPUTF8 cpUTF8Value) {
+        riaUTF8 = cpUTF8Value;
+    }
+    public static void setRipaAttributeName(final CPUTF8 cpUTF8Value) {
+        ripaUTF8 = cpUTF8Value;
+    }
 
     public static void setRvaAttributeName(final CPUTF8 cpUTF8Value) {
         rvaUTF8 = cpUTF8Value;
-    }
-
-    public static void setRiaAttributeName(final CPUTF8 cpUTF8Value) {
-        riaUTF8 = cpUTF8Value;
     }
 
     public static void setRvpaAttributeName(final CPUTF8 cpUTF8Value) {
         rvpaUTF8 = cpUTF8Value;
     }
 
-    public static void setRipaAttributeName(final CPUTF8 cpUTF8Value) {
-        ripaUTF8 = cpUTF8Value;
-    }
+    private final String type;
 
-    public MetadataBandGroup(final String type, final CpBands cpBands) {
-        this.type = type;
-        this.cpBands = cpBands;
-    }
+    private final CpBands cpBands;
 
     private List<Attribute> attributes;
 
     public int[] param_NB;
+
     public int[] anno_N;
     public CPUTF8[][] type_RS;
     public int[][] pair_N;
@@ -88,7 +84,6 @@ public class MetadataBandGroup {
     public CPUTF8[] nesttype_RS;
     public int[] nestpair_N;
     public CPUTF8[] nestname_RU;
-
     private int caseI_KI_Index;
 
     private int caseD_KD_Index;
@@ -118,6 +113,29 @@ public class MetadataBandGroup {
     private int anno_N_Index;
 
     private int pair_N_Index;
+
+    public MetadataBandGroup(final String type, final CpBands cpBands) {
+        this.type = type;
+        this.cpBands = cpBands;
+    }
+
+    private Annotation getAnnotation(final CPUTF8 type, final int pairCount, final Iterator<CPUTF8> namesIterator) {
+        final CPUTF8[] elementNames = new CPUTF8[pairCount];
+        final ElementValue[] elementValues = new ElementValue[pairCount];
+        for (int j = 0; j < elementNames.length; j++) {
+            elementNames[j] = namesIterator.next();
+            final int t = T[T_index++];
+            elementValues[j] = new ElementValue(t, getNextValue(t));
+        }
+        return new Annotation(pairCount, type, elementNames, elementValues);
+    }
+
+    private Attribute getAttribute(final int numAnnotations, final CPUTF8[] types, final int[] pairCounts,
+        final Iterator<CPUTF8> namesIterator) {
+        final Annotation[] annotations = new Annotation[numAnnotations];
+        Arrays.setAll(annotations, i -> getAnnotation(types[i], pairCounts[i], namesIterator));
+        return new RuntimeVisibleorInvisibleAnnotationsAttribute(type.equals("RVA") ? rvaUTF8 : riaUTF8, annotations);
+    }
 
     public List<Attribute> getAttributes() {
         // TODO: Optimize iterators!
@@ -160,37 +178,6 @@ public class MetadataBandGroup {
         return attributes;
     }
 
-    private Attribute getAttribute(final int numAnnotations, final CPUTF8[] types, final int[] pairCounts,
-        final Iterator<CPUTF8> namesIterator) {
-        final Annotation[] annotations = new Annotation[numAnnotations];
-        Arrays.setAll(annotations, i -> getAnnotation(types[i], pairCounts[i], namesIterator));
-        return new RuntimeVisibleorInvisibleAnnotationsAttribute(type.equals("RVA") ? rvaUTF8 : riaUTF8, annotations);
-    }
-
-    private Attribute getParameterAttribute(final int numParameters, final Iterator<CPUTF8> namesIterator) {
-        final ParameterAnnotation[] parameter_annotations = new ParameterAnnotation[numParameters];
-        for (int i = 0; i < numParameters; i++) {
-            final int numAnnotations = anno_N[anno_N_Index++];
-            final int[] pairCounts = pair_N[pair_N_Index++];
-            final Annotation[] annotations = new Annotation[numAnnotations];
-            Arrays.setAll(annotations, j -> getAnnotation(type_RS[anno_N_Index - 1][j], pairCounts[j], namesIterator));
-            parameter_annotations[i] = new ParameterAnnotation(annotations);
-        }
-        return new RuntimeVisibleorInvisibleParameterAnnotationsAttribute(type.equals("RVPA") ? rvpaUTF8 : ripaUTF8,
-            parameter_annotations);
-    }
-
-    private Annotation getAnnotation(final CPUTF8 type, final int pairCount, final Iterator<CPUTF8> namesIterator) {
-        final CPUTF8[] elementNames = new CPUTF8[pairCount];
-        final ElementValue[] elementValues = new ElementValue[pairCount];
-        for (int j = 0; j < elementNames.length; j++) {
-            elementNames[j] = namesIterator.next();
-            final int t = T[T_index++];
-            elementValues[j] = new ElementValue(t, getNextValue(t));
-        }
-        return new Annotation(pairCount, type, elementNames, elementValues);
-    }
-
     private Object getNextValue(final int t) {
         switch (t) {
         case 'B':
@@ -229,6 +216,19 @@ public class MetadataBandGroup {
             return getAnnotation(type, numPairs, nestname_RU_Iterator);
         }
         return null;
+    }
+
+    private Attribute getParameterAttribute(final int numParameters, final Iterator<CPUTF8> namesIterator) {
+        final ParameterAnnotation[] parameter_annotations = new ParameterAnnotation[numParameters];
+        for (int i = 0; i < numParameters; i++) {
+            final int numAnnotations = anno_N[anno_N_Index++];
+            final int[] pairCounts = pair_N[pair_N_Index++];
+            final Annotation[] annotations = new Annotation[numAnnotations];
+            Arrays.setAll(annotations, j -> getAnnotation(type_RS[anno_N_Index - 1][j], pairCounts[j], namesIterator));
+            parameter_annotations[i] = new ParameterAnnotation(annotations);
+        }
+        return new RuntimeVisibleorInvisibleParameterAnnotationsAttribute(type.equals("RVPA") ? rvpaUTF8 : ripaUTF8,
+            parameter_annotations);
     }
 
 }

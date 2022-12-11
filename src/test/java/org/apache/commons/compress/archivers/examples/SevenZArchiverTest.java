@@ -42,19 +42,31 @@ import org.junit.jupiter.api.Test;
 public class SevenZArchiverTest extends AbstractTestCase {
     private File target;
 
-    @BeforeEach
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        final File c = new File(dir, "a/b/c");
-        c.mkdirs();
-        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/d.txt").toPath())) {
-            os.write("Hello, world 1".getBytes(UTF_8));
+    private void assertDir(final String expectedName, final ArchiveEntry entry) {
+        assertNotNull(entry, () -> expectedName + " does not exists");
+        Assert.assertEquals(expectedName + "/", entry.getName());
+        Assert.assertTrue(expectedName + " is not a directory", entry.isDirectory());
+    }
+
+    private void assertHelloWorld(final String expectedName, final String suffix, final ArchiveEntry entry, final SevenZFile z)
+        throws IOException {
+        assertNotNull(entry, () -> expectedName + " does not exists");
+        Assert.assertEquals(expectedName, entry.getName());
+        Assert.assertFalse(expectedName + " is a directory", entry.isDirectory());
+        final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
+        final byte[] actual = new byte[expected.length];
+        Assert.assertEquals(actual.length, z.read(actual));
+        Assert.assertEquals(-1, z.read());
+        Assert.assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    public void channelVersion() throws IOException, ArchiveException {
+        try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
+            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+            new Archiver().create("7z", c, dir);
         }
-        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/c/e.txt").toPath())) {
-            os.write("Hello, world 2".getBytes(UTF_8));
-        }
-        target = new File(resultDir, "test.7z");
+        verifyContent();
     }
 
     @Test
@@ -70,13 +82,19 @@ public class SevenZArchiverTest extends AbstractTestCase {
         }
     }
 
-    @Test
-    public void channelVersion() throws IOException, ArchiveException {
-        try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
-            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-            new Archiver().create("7z", c, dir);
+    @BeforeEach
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        final File c = new File(dir, "a/b/c");
+        c.mkdirs();
+        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/d.txt").toPath())) {
+            os.write("Hello, world 1".getBytes(UTF_8));
         }
-        verifyContent();
+        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/c/e.txt").toPath())) {
+            os.write("Hello, world 2".getBytes(UTF_8));
+        }
+        target = new File(resultDir, "test.7z");
     }
 
     // not really a 7z test but I didn't feel like adding a new test just for this
@@ -105,23 +123,5 @@ public class SevenZArchiverTest extends AbstractTestCase {
                 assertHelloWorld("a/b/c/e.txt", "2", z.getNextEntry(), z);
             }
         }
-    }
-
-    private void assertDir(final String expectedName, final ArchiveEntry entry) {
-        assertNotNull(entry, () -> expectedName + " does not exists");
-        Assert.assertEquals(expectedName + "/", entry.getName());
-        Assert.assertTrue(expectedName + " is not a directory", entry.isDirectory());
-    }
-
-    private void assertHelloWorld(final String expectedName, final String suffix, final ArchiveEntry entry, final SevenZFile z)
-        throws IOException {
-        assertNotNull(entry, () -> expectedName + " does not exists");
-        Assert.assertEquals(expectedName, entry.getName());
-        Assert.assertFalse(expectedName + " is a directory", entry.isDirectory());
-        final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
-        final byte[] actual = new byte[expected.length];
-        Assert.assertEquals(actual.length, z.read(actual));
-        Assert.assertEquals(-1, z.read());
-        Assert.assertArrayEquals(expected, actual);
     }
 }

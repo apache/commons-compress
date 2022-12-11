@@ -32,20 +32,8 @@ public abstract class Pack200Adapter {
 
     private final SortedMap<String, String> properties = new TreeMap<>();
 
-    public SortedMap<String, String> properties() {
-        return properties;
-    }
-
     public void addPropertyChangeListener(final PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
-    }
-
-    protected void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) {
-        support.firePropertyChange(propertyName, oldValue, newValue);
-    }
-
-    public void removePropertyChangeListener(final PropertyChangeListener listener) {
-        support.removePropertyChangeListener(listener);
     }
 
     /**
@@ -55,5 +43,17 @@ public abstract class Pack200Adapter {
      */
     protected void completed(final double value) {
         firePropertyChange("pack.progress", null, String.valueOf((int) (100 * value))); //$NON-NLS-1$
+    }
+
+    protected void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) {
+        support.firePropertyChange(propertyName, oldValue, newValue);
+    }
+
+    public SortedMap<String, String> properties() {
+        return properties;
+    }
+
+    public void removePropertyChangeListener(final PropertyChangeListener listener) {
+        support.removePropertyChangeListener(listener);
     }
 }

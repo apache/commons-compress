@@ -34,14 +34,55 @@ import org.junit.jupiter.api.Test;
 
 public final class DumpTestCase extends AbstractTestCase {
 
+    private void archiveDetection(final File f) throws Exception {
+        try (InputStream is = Files.newInputStream(f.toPath())) {
+            assertEquals(DumpArchiveInputStream.class,
+                ArchiveStreamFactory.DEFAULT
+                            .createArchiveInputStream(new BufferedInputStream(is))
+                            .getClass());
+        }
+    }
+
+    private void checkDumpArchive(final File f) throws Exception {
+        final ArrayList<String> expected = new ArrayList<>();
+        expected.add("");
+        expected.add("lost+found/");
+        expected.add("test1.xml");
+        expected.add("test2.xml");
+        try (InputStream is = Files.newInputStream(f.toPath())) {
+            checkArchiveContent(new DumpArchiveInputStream(is),
+                    expected);
+        }
+    }
+
     @Test
-    public void testDumpUnarchiveAll() throws Exception {
-        unarchiveAll(getFile("bla.dump"));
+    public void testArchiveDetection() throws Exception {
+        archiveDetection(getFile("bla.dump"));
+    }
+
+    @Test
+    public void testCheckArchive() throws Exception {
+        checkDumpArchive(getFile("bla.dump"));
+    }
+
+    @Test
+    public void testCheckCompressedArchive() throws Exception {
+        checkDumpArchive(getFile("bla.z.dump"));
+    }
+
+    @Test
+    public void testCompressedArchiveDetection() throws Exception {
+        archiveDetection(getFile("bla.z.dump"));
     }
 
     @Test
     public void testCompressedDumpUnarchiveAll() throws Exception {
         unarchiveAll(getFile("bla.z.dump"));
+    }
+
+    @Test
+    public void testDumpUnarchiveAll() throws Exception {
+        unarchiveAll(getFile("bla.dump"));
     }
 
     private void unarchiveAll(final File input) throws Exception {
@@ -75,47 +116,6 @@ public final class DumpTestCase extends AbstractTestCase {
                 in.close();
             }
             is.close();
-        }
-    }
-
-    @Test
-    public void testArchiveDetection() throws Exception {
-        archiveDetection(getFile("bla.dump"));
-    }
-
-    @Test
-    public void testCompressedArchiveDetection() throws Exception {
-        archiveDetection(getFile("bla.z.dump"));
-    }
-
-    private void archiveDetection(final File f) throws Exception {
-        try (InputStream is = Files.newInputStream(f.toPath())) {
-            assertEquals(DumpArchiveInputStream.class,
-                ArchiveStreamFactory.DEFAULT
-                            .createArchiveInputStream(new BufferedInputStream(is))
-                            .getClass());
-        }
-    }
-
-    @Test
-    public void testCheckArchive() throws Exception {
-        checkDumpArchive(getFile("bla.dump"));
-    }
-
-    @Test
-    public void testCheckCompressedArchive() throws Exception {
-        checkDumpArchive(getFile("bla.z.dump"));
-    }
-
-    private void checkDumpArchive(final File f) throws Exception {
-        final ArrayList<String> expected = new ArrayList<>();
-        expected.add("");
-        expected.add("lost+found/");
-        expected.add("test1.xml");
-        expected.add("test2.xml");
-        try (InputStream is = Files.newInputStream(f.toPath())) {
-            checkArchiveContent(new DumpArchiveInputStream(is),
-                    expected);
         }
     }
 }

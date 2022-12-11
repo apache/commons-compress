@@ -45,19 +45,11 @@ import java.util.zip.ZipException;
  */
 public class X0015_CertificateIdForFile extends PKWareExtraHeader {
 
+    private int rcount;
+
+    private HashAlgorithm hashAlg;
     public X0015_CertificateIdForFile() {
         super(new ZipShort(0x0015));
-    }
-
-    private int rcount;
-    private HashAlgorithm hashAlg;
-
-    /**
-     * Get record count.
-     * @return the record count
-     */
-    public int getRecordCount() {
-        return rcount;
     }
 
     /**
@@ -66,6 +58,14 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader {
      */
     public HashAlgorithm getHashAlgorithm() {
         return hashAlg;
+    }
+
+    /**
+     * Get record count.
+     * @return the record count
+     */
+    public int getRecordCount() {
+        return rcount;
     }
 
     @Override

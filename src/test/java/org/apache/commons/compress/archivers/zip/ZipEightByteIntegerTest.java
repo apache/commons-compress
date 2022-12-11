@@ -32,31 +32,15 @@ import org.junit.jupiter.api.Test;
 public class ZipEightByteIntegerTest {
 
     /**
-     * Test conversion to bytes.
-     */
-    @Test
-    public void testLongToBytes() {
-        final ZipEightByteInteger zl = new ZipEightByteInteger(0xAB12345678L);
-        final byte[] result = zl.getBytes();
-        assertEquals("length getBytes", 8, result.length);
-        assertEquals("first byte getBytes", 0x78, result[0]);
-        assertEquals("second byte getBytes", 0x56, result[1]);
-        assertEquals("third byte getBytes", 0x34, result[2]);
-        assertEquals("fourth byte getBytes", 0x12, result[3]);
-        assertEquals("fifth byte getBytes", (byte) 0xAB, result[4]);
-        assertEquals("sixth byte getBytes", 0, result[5]);
-        assertEquals("seventh byte getBytes", 0, result[6]);
-        assertEquals("eighth byte getBytes", 0, result[7]);
-    }
-
-    /**
      * Test conversion from bytes.
      */
     @Test
-    public void testLongFromBytes() {
-        final byte[] val = {0x78, 0x56, 0x34, 0x12, (byte) 0xAB, 0x00, 0x00, 0x00};
+    public void testBIFromBytes() {
+        final byte[] val = {(byte) 0xFE, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
         final ZipEightByteInteger zl = new ZipEightByteInteger(val);
-        assertEquals("longValue from bytes", 0xAB12345678L, zl.getLongValue());
+        assertEquals("value from bytes",
+                     BigInteger.valueOf(Long.MAX_VALUE).shiftLeft(1),
+                     zl.getValue());
     }
 
     /**
@@ -80,18 +64,6 @@ public class ZipEightByteIntegerTest {
     }
 
     /**
-     * Test conversion from bytes.
-     */
-    @Test
-    public void testBIFromBytes() {
-        final byte[] val = {(byte) 0xFE, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
-        final ZipEightByteInteger zl = new ZipEightByteInteger(val);
-        assertEquals("value from bytes",
-                     BigInteger.valueOf(Long.MAX_VALUE).shiftLeft(1),
-                     zl.getValue());
-    }
-
-    /**
      * Test the contract of the equals method.
      */
     @Test
@@ -109,6 +81,34 @@ public class ZipEightByteIntegerTest {
 
         assertNotEquals("null handling", null, zl);
         assertNotEquals("non ZipEightByteInteger handling", zl, Integer.valueOf(0x1234));
+    }
+
+    /**
+     * Test conversion from bytes.
+     */
+    @Test
+    public void testLongFromBytes() {
+        final byte[] val = {0x78, 0x56, 0x34, 0x12, (byte) 0xAB, 0x00, 0x00, 0x00};
+        final ZipEightByteInteger zl = new ZipEightByteInteger(val);
+        assertEquals("longValue from bytes", 0xAB12345678L, zl.getLongValue());
+    }
+
+    /**
+     * Test conversion to bytes.
+     */
+    @Test
+    public void testLongToBytes() {
+        final ZipEightByteInteger zl = new ZipEightByteInteger(0xAB12345678L);
+        final byte[] result = zl.getBytes();
+        assertEquals("length getBytes", 8, result.length);
+        assertEquals("first byte getBytes", 0x78, result[0]);
+        assertEquals("second byte getBytes", 0x56, result[1]);
+        assertEquals("third byte getBytes", 0x34, result[2]);
+        assertEquals("fourth byte getBytes", 0x12, result[3]);
+        assertEquals("fifth byte getBytes", (byte) 0xAB, result[4]);
+        assertEquals("sixth byte getBytes", 0, result[5]);
+        assertEquals("seventh byte getBytes", 0, result[6]);
+        assertEquals("eighth byte getBytes", 0, result[7]);
     }
 
     /**

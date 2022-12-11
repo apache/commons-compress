@@ -34,10 +34,10 @@ import org.junit.jupiter.api.Test;
 public class ChainingTestCase extends AbstractTestCase {
 
     @Test
-    public void testTarGzip() throws Exception {
-        final File file = getFile("bla.tgz");
+    public void testTarBzip2() throws Exception {
+        final File file = getFile("bla.tar.bz2");
         try (final TarArchiveInputStream is = new TarArchiveInputStream(
-            new GzipCompressorInputStream(Files.newInputStream(file.toPath())))) {
+            new BZip2CompressorInputStream(Files.newInputStream(file.toPath())))) {
             final TarArchiveEntry entry = (TarArchiveEntry) is.getNextEntry();
             assertNotNull(entry);
             assertEquals("test1.xml", entry.getName());
@@ -45,10 +45,10 @@ public class ChainingTestCase extends AbstractTestCase {
     }
 
     @Test
-    public void testTarBzip2() throws Exception {
-        final File file = getFile("bla.tar.bz2");
+    public void testTarGzip() throws Exception {
+        final File file = getFile("bla.tgz");
         try (final TarArchiveInputStream is = new TarArchiveInputStream(
-            new BZip2CompressorInputStream(Files.newInputStream(file.toPath())))) {
+            new GzipCompressorInputStream(Files.newInputStream(file.toPath())))) {
             final TarArchiveEntry entry = (TarArchiveEntry) is.getNextEntry();
             assertNotNull(entry);
             assertEquals("test1.xml", entry.getName());

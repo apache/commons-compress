@@ -54,11 +54,8 @@ public class ExceptionTableEntry {
         this.catchType = catchType;
     }
 
-    public void write(final DataOutputStream dos) throws IOException {
-        dos.writeShort(startPcRenumbered);
-        dos.writeShort(endPcRenumbered);
-        dos.writeShort(handlerPcRenumbered);
-        dos.writeShort(catchTypeIndex);
+    public CPClass getCatchType() {
+        return catchType;
     }
 
     public void renumber(final List<Integer> byteCodeOffsets) {
@@ -67,10 +64,6 @@ public class ExceptionTableEntry {
         endPcRenumbered = byteCodeOffsets.get(endPcIndex).intValue();
         final int handlerPcIndex = endPcIndex + handlerPC;
         handlerPcRenumbered = byteCodeOffsets.get(handlerPcIndex).intValue();
-    }
-
-    public CPClass getCatchType() {
-        return catchType;
     }
 
     public void resolve(final ClassConstantPool pool) {
@@ -82,5 +75,12 @@ public class ExceptionTableEntry {
         }
         catchType.resolve(pool);
         catchTypeIndex = pool.indexOf(catchType);
+    }
+
+    public void write(final DataOutputStream dos) throws IOException {
+        dos.writeShort(startPcRenumbered);
+        dos.writeShort(endPcRenumbered);
+        dos.writeShort(handlerPcRenumbered);
+        dos.writeShort(catchTypeIndex);
     }
 }

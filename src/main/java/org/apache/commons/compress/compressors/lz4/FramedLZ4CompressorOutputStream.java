@@ -36,26 +36,6 @@ import org.apache.commons.compress.utils.ByteUtils;
  */
 public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
 
-    private static final byte[] END_MARK = new byte[4];
-
-    // used in one-arg write method
-    private final byte[] oneByte = new byte[1];
-
-    private final byte[] blockData;
-    private final OutputStream out;
-    private final Parameters params;
-    private boolean finished;
-    private int currentIndex;
-
-    // used for frame header checksum and content checksum, if requested
-    private final XXHash32 contentHash = new XXHash32();
-    // used for block checksum, if requested
-    private final XXHash32 blockHash;
-
-    // only created if the config requires block dependency
-    private final byte[] blockDependencyBuffer;
-    private int collectedBlockDependencyBytes;
-
     /**
      * The block sizes supported by the format.
      */
@@ -74,11 +54,11 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
             this.size = size;
             this.index = index;
         }
-        int getSize() {
-            return size;
-        }
         int getIndex() {
             return index;
+        }
+        int getSize() {
+            return size;
         }
     }
 
@@ -86,10 +66,6 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
      * Parameters of the LZ4 frame format.
      */
     public static class Parameters {
-        private final BlockSize blockSize;
-        private final boolean withContentChecksum, withBlockChecksum, withBlockDependency;
-        private final org.apache.commons.compress.compressors.lz77support.Parameters lz77params;
-
         /**
          * The default parameters of 4M block size, enabled content
          * checksum, disabled block checksums and independent blocks.
@@ -97,6 +73,10 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
          * <p>This matches the defaults of the lz4 command line utility.</p>
          */
         public static final Parameters DEFAULT = new Parameters(BlockSize.M4, true, false, false);
+        private final BlockSize blockSize;
+        private final boolean withContentChecksum, withBlockChecksum, withBlockDependency;
+
+        private final org.apache.commons.compress.compressors.lz77support.Parameters lz77params;
 
         /**
          * Sets up custom a custom block size for the LZ4 stream but
@@ -106,19 +86,6 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
          */
         public Parameters(final BlockSize blockSize) {
             this(blockSize, true, false, false);
-        }
-        /**
-         * Sets up custom a custom block size for the LZ4 stream but
-         * otherwise uses the defaults of enabled content checksum,
-         * disabled block checksums and independent blocks.
-         * @param blockSize the size of a single block.
-         * @param lz77params parameters used to fine-tune compression,
-         * in particular to balance compression ratio vs compression
-         * speed.
-         */
-        public Parameters(final BlockSize blockSize,
-            final org.apache.commons.compress.compressors.lz77support.Parameters lz77params) {
-            this(blockSize, true, false, false, lz77params);
         }
         /**
          * Sets up custom parameters for the LZ4 stream.
@@ -137,7 +104,6 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
             this(blockSize, withContentChecksum, withBlockChecksum, withBlockDependency,
                  BlockLZ4CompressorOutputStream.createParameterBuilder().build());
         }
-
         /**
          * Sets up custom parameters for the LZ4 stream.
          * @param blockSize the size of a single block.
@@ -163,12 +129,46 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
             this.lz77params = lz77params;
         }
 
+        /**
+         * Sets up custom a custom block size for the LZ4 stream but
+         * otherwise uses the defaults of enabled content checksum,
+         * disabled block checksums and independent blocks.
+         * @param blockSize the size of a single block.
+         * @param lz77params parameters used to fine-tune compression,
+         * in particular to balance compression ratio vs compression
+         * speed.
+         */
+        public Parameters(final BlockSize blockSize,
+            final org.apache.commons.compress.compressors.lz77support.Parameters lz77params) {
+            this(blockSize, true, false, false, lz77params);
+        }
+
         @Override
         public String toString() {
             return "LZ4 Parameters with BlockSize " + blockSize + ", withContentChecksum " + withContentChecksum
                 + ", withBlockChecksum " + withBlockChecksum + ", withBlockDependency " + withBlockDependency;
         }
     }
+
+    private static final byte[] END_MARK = new byte[4];
+    // used in one-arg write method
+    private final byte[] oneByte = new byte[1];
+    private final byte[] blockData;
+    private final OutputStream out;
+    private final Parameters params;
+
+    private boolean finished;
+    private int currentIndex;
+
+    // used for frame header checksum and content checksum, if requested
+    private final XXHash32 contentHash = new XXHash32();
+    // used for block checksum, if requested
+    private final XXHash32 blockHash;
+
+    // only created if the config requires block dependency
+    private final byte[] blockDependencyBuffer;
+
+    private int collectedBlockDependencyBytes;
 
     /**
      * Constructs a new output stream that compresses data using the
@@ -199,30 +199,19 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
             : null;
     }
 
-    @Override
-    public void write(final int b) throws IOException {
-        oneByte[0] = (byte) (b & 0xff);
-        write(oneByte);
-    }
-
-    @Override
-    public void write(final byte[] data, int off, int len) throws IOException {
-        if (params.withContentChecksum) {
-            contentHash.update(data, off, len);
-        }
-        final int blockDataLength = blockData.length;
-        if (currentIndex + len > blockDataLength) {
-            flushBlock();
-            while (len > blockDataLength) {
-                System.arraycopy(data, off, blockData, 0, blockDataLength);
-                off += blockDataLength;
-                len -= blockDataLength;
-                currentIndex = blockDataLength;
-                flushBlock();
+    private void appendToBlockDependencyBuffer(final byte[] b, final int off, int len) {
+        len = Math.min(len, blockDependencyBuffer.length);
+        if (len > 0) {
+            final int keep = blockDependencyBuffer.length - len;
+            if (keep > 0) {
+                // move last keep bytes towards the start of the buffer
+                System.arraycopy(blockDependencyBuffer, len, blockDependencyBuffer, 0, keep);
             }
+            // append new data
+            System.arraycopy(b, off, blockDependencyBuffer, keep, len);
+            collectedBlockDependencyBytes = Math.min(collectedBlockDependencyBytes + len,
+                blockDependencyBuffer.length);
         }
-        System.arraycopy(data, off, blockData, currentIndex, len);
-        currentIndex += len;
     }
 
     @Override
@@ -247,26 +236,6 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
             writeTrailer();
             finished = true;
         }
-    }
-
-    private void writeFrameDescriptor() throws IOException {
-        int flags = FramedLZ4CompressorInputStream.SUPPORTED_VERSION;
-        if (!params.withBlockDependency) {
-            flags |= FramedLZ4CompressorInputStream.BLOCK_INDEPENDENCE_MASK;
-        }
-        if (params.withContentChecksum) {
-            flags |= FramedLZ4CompressorInputStream.CONTENT_CHECKSUM_MASK;
-        }
-        if (params.withBlockChecksum) {
-            flags |= FramedLZ4CompressorInputStream.BLOCK_CHECKSUM_MASK;
-        }
-        out.write(flags);
-        contentHash.update(flags);
-        final int bd = (params.blockSize.getIndex() << 4) & FramedLZ4CompressorInputStream.BLOCK_MAX_SIZE_MASK;
-        out.write(bd);
-        contentHash.update(bd);
-        out.write((int) ((contentHash.getValue() >> 8) & 0xff));
-        contentHash.reset();
     }
 
     private void flushBlock() throws IOException {
@@ -304,25 +273,56 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
         currentIndex = 0;
     }
 
+    @Override
+    public void write(final byte[] data, int off, int len) throws IOException {
+        if (params.withContentChecksum) {
+            contentHash.update(data, off, len);
+        }
+        final int blockDataLength = blockData.length;
+        if (currentIndex + len > blockDataLength) {
+            flushBlock();
+            while (len > blockDataLength) {
+                System.arraycopy(data, off, blockData, 0, blockDataLength);
+                off += blockDataLength;
+                len -= blockDataLength;
+                currentIndex = blockDataLength;
+                flushBlock();
+            }
+        }
+        System.arraycopy(data, off, blockData, currentIndex, len);
+        currentIndex += len;
+    }
+
+    @Override
+    public void write(final int b) throws IOException {
+        oneByte[0] = (byte) (b & 0xff);
+        write(oneByte);
+    }
+
+    private void writeFrameDescriptor() throws IOException {
+        int flags = FramedLZ4CompressorInputStream.SUPPORTED_VERSION;
+        if (!params.withBlockDependency) {
+            flags |= FramedLZ4CompressorInputStream.BLOCK_INDEPENDENCE_MASK;
+        }
+        if (params.withContentChecksum) {
+            flags |= FramedLZ4CompressorInputStream.CONTENT_CHECKSUM_MASK;
+        }
+        if (params.withBlockChecksum) {
+            flags |= FramedLZ4CompressorInputStream.BLOCK_CHECKSUM_MASK;
+        }
+        out.write(flags);
+        contentHash.update(flags);
+        final int bd = (params.blockSize.getIndex() << 4) & FramedLZ4CompressorInputStream.BLOCK_MAX_SIZE_MASK;
+        out.write(bd);
+        contentHash.update(bd);
+        out.write((int) ((contentHash.getValue() >> 8) & 0xff));
+        contentHash.reset();
+    }
+
     private void writeTrailer() throws IOException {
         out.write(END_MARK);
         if (params.withContentChecksum) {
             ByteUtils.toLittleEndian(out, contentHash.getValue(), 4);
-        }
-    }
-
-    private void appendToBlockDependencyBuffer(final byte[] b, final int off, int len) {
-        len = Math.min(len, blockDependencyBuffer.length);
-        if (len > 0) {
-            final int keep = blockDependencyBuffer.length - len;
-            if (keep > 0) {
-                // move last keep bytes towards the start of the buffer
-                System.arraycopy(blockDependencyBuffer, len, blockDependencyBuffer, 0, keep);
-            }
-            // append new data
-            System.arraycopy(b, off, blockDependencyBuffer, keep, len);
-            collectedBlockDependencyBytes = Math.min(collectedBlockDependencyBytes + len,
-                blockDependencyBuffer.length);
         }
     }
 

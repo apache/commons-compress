@@ -36,8 +36,52 @@ public class GzipParameters {
     private int operatingSystem = 255; // Unknown OS by default
     private int bufferSize = 512;
 
+    /**
+     * Gets size of the buffer used to retrieve compressed data.
+     * @return The size of the buffer used to retrieve compressed data.
+     * @since 1.21
+     * @see #setBufferSize(int)
+     */
+    public int getBufferSize() {
+        return this.bufferSize;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
     public int getCompressionLevel() {
         return compressionLevel;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public long getModificationTime() {
+        return modificationTime;
+    }
+
+    public int getOperatingSystem() {
+        return operatingSystem;
+    }
+
+    /**
+     * Sets size of the buffer used to retrieve compressed data from
+     * {@link Deflater} and write to underlying {@link OutputStream}.
+     *
+     * @param bufferSize the bufferSize to set. Must be a positive value.
+     * @since 1.21
+     */
+    public void setBufferSize(final int bufferSize) {
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("invalid buffer size: " + bufferSize);
+        }
+        this.bufferSize = bufferSize;
+    }
+
+    public void setComment(final String comment) {
+        this.comment = comment;
     }
 
     /**
@@ -56,23 +100,6 @@ public class GzipParameters {
         this.compressionLevel = compressionLevel;
     }
 
-    public long getModificationTime() {
-        return modificationTime;
-    }
-
-    /**
-     * Sets the modification time of the compressed file.
-     *
-     * @param modificationTime the modification time, in milliseconds
-     */
-    public void setModificationTime(final long modificationTime) {
-        this.modificationTime = modificationTime;
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
     /**
      * Sets the name of the compressed file.
      *
@@ -82,16 +109,13 @@ public class GzipParameters {
         this.filename = fileName;
     }
 
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(final String comment) {
-        this.comment = comment;
-    }
-
-    public int getOperatingSystem() {
-        return operatingSystem;
+    /**
+     * Sets the modification time of the compressed file.
+     *
+     * @param modificationTime the modification time, in milliseconds
+     */
+    public void setModificationTime(final long modificationTime) {
+        this.modificationTime = modificationTime;
     }
 
     /**
@@ -119,29 +143,5 @@ public class GzipParameters {
      */
     public void setOperatingSystem(final int operatingSystem) {
         this.operatingSystem = operatingSystem;
-    }
-
-    /**
-     * Gets size of the buffer used to retrieve compressed data.
-     * @return The size of the buffer used to retrieve compressed data.
-     * @since 1.21
-     * @see #setBufferSize(int)
-     */
-    public int getBufferSize() {
-        return this.bufferSize;
-    }
-
-    /**
-     * Sets size of the buffer used to retrieve compressed data from
-     * {@link Deflater} and write to underlying {@link OutputStream}.
-     *
-     * @param bufferSize the bufferSize to set. Must be a positive value.
-     * @since 1.21
-     */
-    public void setBufferSize(final int bufferSize) {
-        if (bufferSize <= 0) {
-            throw new IllegalArgumentException("invalid buffer size: " + bufferSize);
-        }
-        this.bufferSize = bufferSize;
     }
 }

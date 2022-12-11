@@ -43,17 +43,17 @@ public class CPClass extends CPConstant<CPClass> {
         return className.compareTo(arg0.className);
     }
 
-    @Override
-    public String toString() {
-        return className;
-    }
-
     public int getIndexInCpUtf8() {
         return utf8.getIndex();
     }
 
     public boolean isInnerClass() {
         return isInnerClass;
+    }
+
+    @Override
+    public String toString() {
+        return className;
     }
 
 }

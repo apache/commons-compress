@@ -210,8 +210,81 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     private static final String YOU_NEED_XZ_JAVA = youNeed("XZ for Java", "https://tukaani.org/xz/java.html");
     private static final String YOU_NEED_ZSTD_JNI = youNeed("Zstd JNI", "https://github.com/luben/zstd-jni");
 
-    private static String youNeed(final String name, final String url) {
-        return " In addition to Apache Commons Compress you need the " + name + " library - see " + url;
+    private static Iterable<CompressorStreamProvider> archiveStreamProviderIterable() {
+        return ServiceLoader.load(CompressorStreamProvider.class, ClassLoader.getSystemClassLoader());
+    }
+
+    /**
+     * Try to detect the type of compressor stream.
+     *
+     * @param inputStream input stream
+     * @return type of compressor stream detected
+     * @throws CompressorException if no compressor stream type was detected
+     *                             or if something else went wrong
+     * @throws IllegalArgumentException if stream is null or does not support mark
+     *
+     * @since 1.14
+     */
+    public static String detect(final InputStream inputStream) throws CompressorException {
+        if (inputStream == null) {
+            throw new IllegalArgumentException("Stream must not be null.");
+        }
+
+        if (!inputStream.markSupported()) {
+            throw new IllegalArgumentException("Mark is not supported.");
+        }
+
+        final byte[] signature = new byte[12];
+        inputStream.mark(signature.length);
+        int signatureLength = -1;
+        try {
+            signatureLength = IOUtils.readFully(inputStream, signature);
+            inputStream.reset();
+        } catch (final IOException e) {
+            throw new CompressorException("IOException while reading signature.", e);
+        }
+
+        if (BZip2CompressorInputStream.matches(signature, signatureLength)) {
+            return BZIP2;
+        }
+
+        if (GzipCompressorInputStream.matches(signature, signatureLength)) {
+            return GZIP;
+        }
+
+        if (Pack200CompressorInputStream.matches(signature, signatureLength)) {
+            return PACK200;
+        }
+
+        if (FramedSnappyCompressorInputStream.matches(signature, signatureLength)) {
+            return SNAPPY_FRAMED;
+        }
+
+        if (ZCompressorInputStream.matches(signature, signatureLength)) {
+            return Z;
+        }
+
+        if (DeflateCompressorInputStream.matches(signature, signatureLength)) {
+            return DEFLATE;
+        }
+
+        if (XZUtils.matches(signature, signatureLength)) {
+            return XZ;
+        }
+
+        if (LZMAUtils.matches(signature, signatureLength)) {
+            return LZMA;
+        }
+
+        if (FramedLZ4CompressorInputStream.matches(signature, signatureLength)) {
+            return LZ4_FRAMED;
+        }
+
+        if (ZstdUtils.matches(signature, signatureLength)) {
+            return ZSTANDARD;
+        }
+
+        throw new CompressorException("No Compressor found for the stream signature.");
     }
 
     /**
@@ -310,6 +383,14 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         return GZIP;
     }
 
+    public static String getLZ4Block() {
+        return LZ4_BLOCK;
+    }
+
+    public static String getLZ4Framed() {
+        return LZ4_FRAMED;
+    }
+
     public static String getLzma() {
         return LZMA;
     }
@@ -338,14 +419,6 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         return Z;
     }
 
-    public static String getLZ4Framed() {
-        return LZ4_FRAMED;
-    }
-
-    public static String getLZ4Block() {
-        return LZ4_BLOCK;
-    }
-
     public static String getZstandard() {
         return ZSTANDARD;
     }
@@ -354,12 +427,12 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         names.forEach(name -> map.put(toKey(name), provider));
     }
 
-    private static Iterable<CompressorStreamProvider> archiveStreamProviderIterable() {
-        return ServiceLoader.load(CompressorStreamProvider.class, ClassLoader.getSystemClassLoader());
-    }
-
     private static String toKey(final String name) {
         return name.toUpperCase(Locale.ROOT);
+    }
+
+    private static String youNeed(final String name, final String url) {
+        return " In addition to Apache Commons Compress you need the " + name + " library - see " + url;
     }
 
     /**
@@ -402,6 +475,20 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      *            after the first stream and leave the input position to point
      *            to the next byte after the stream. This setting applies to the
      *            gzip, bzip2 and xz formats only.
+     * @since 1.10
+     */
+    public CompressorStreamFactory(final boolean decompressUntilEOF) {
+        this(decompressUntilEOF, -1);
+    }
+
+    /**
+     * Create an instance with the provided decompress Concatenated option.
+     *
+     * @param decompressUntilEOF
+     *            if true, decompress until the end of the input; if false, stop
+     *            after the first stream and leave the input position to point
+     *            to the next byte after the stream. This setting applies to the
+     *            gzip, bzip2 and xz formats only.
      *
      * @param memoryLimitInKb
      *            Some streams require allocation of potentially significant
@@ -416,93 +503,6 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         // current value
         this.decompressConcatenated = decompressUntilEOF;
         this.memoryLimitInKb = memoryLimitInKb;
-    }
-
-    /**
-     * Create an instance with the provided decompress Concatenated option.
-     *
-     * @param decompressUntilEOF
-     *            if true, decompress until the end of the input; if false, stop
-     *            after the first stream and leave the input position to point
-     *            to the next byte after the stream. This setting applies to the
-     *            gzip, bzip2 and xz formats only.
-     * @since 1.10
-     */
-    public CompressorStreamFactory(final boolean decompressUntilEOF) {
-        this(decompressUntilEOF, -1);
-    }
-
-    /**
-     * Try to detect the type of compressor stream.
-     *
-     * @param inputStream input stream
-     * @return type of compressor stream detected
-     * @throws CompressorException if no compressor stream type was detected
-     *                             or if something else went wrong
-     * @throws IllegalArgumentException if stream is null or does not support mark
-     *
-     * @since 1.14
-     */
-    public static String detect(final InputStream inputStream) throws CompressorException {
-        if (inputStream == null) {
-            throw new IllegalArgumentException("Stream must not be null.");
-        }
-
-        if (!inputStream.markSupported()) {
-            throw new IllegalArgumentException("Mark is not supported.");
-        }
-
-        final byte[] signature = new byte[12];
-        inputStream.mark(signature.length);
-        int signatureLength = -1;
-        try {
-            signatureLength = IOUtils.readFully(inputStream, signature);
-            inputStream.reset();
-        } catch (final IOException e) {
-            throw new CompressorException("IOException while reading signature.", e);
-        }
-
-        if (BZip2CompressorInputStream.matches(signature, signatureLength)) {
-            return BZIP2;
-        }
-
-        if (GzipCompressorInputStream.matches(signature, signatureLength)) {
-            return GZIP;
-        }
-
-        if (Pack200CompressorInputStream.matches(signature, signatureLength)) {
-            return PACK200;
-        }
-
-        if (FramedSnappyCompressorInputStream.matches(signature, signatureLength)) {
-            return SNAPPY_FRAMED;
-        }
-
-        if (ZCompressorInputStream.matches(signature, signatureLength)) {
-            return Z;
-        }
-
-        if (DeflateCompressorInputStream.matches(signature, signatureLength)) {
-            return DEFLATE;
-        }
-
-        if (XZUtils.matches(signature, signatureLength)) {
-            return XZ;
-        }
-
-        if (LZMAUtils.matches(signature, signatureLength)) {
-            return LZMA;
-        }
-
-        if (FramedLZ4CompressorInputStream.matches(signature, signatureLength)) {
-            return LZ4_FRAMED;
-        }
-
-        if (ZstdUtils.matches(signature, signatureLength)) {
-            return ZSTANDARD;
-        }
-
-        throw new CompressorException("No Compressor found for the stream signature.");
     }
     /**
      * Create an compressor input stream from an input stream, autodetecting the

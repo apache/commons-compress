@@ -27,21 +27,35 @@ public class CPString extends CPConstant {
     private transient int nameIndex;
     private final CPUTF8 name;
 
+    private boolean hashcodeComputed;
+
+    private int cachedHashCode;
+
     public CPString(final CPUTF8 value, final int globalIndex) {
         super(ConstantPoolEntry.CP_String, value, globalIndex);
         this.name = value;
     }
 
-    @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeShort(nameIndex);
+    private void generateHashCode() {
+        hashcodeComputed = true;
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + name.hashCode();
+        cachedHashCode = result;
     }
 
     @Override
-    public String toString() {
-        return "String: " + getValue();
+    protected ClassFileEntry[] getNestedClassFileEntries() {
+        return new ClassFileEntry[] {name};
     }
 
+    @Override
+    public int hashCode() {
+        if (!hashcodeComputed) {
+            generateHashCode();
+        }
+        return cachedHashCode;
+    }
     /**
      * Allows the constant pool entries to resolve their nested entries
      *
@@ -54,26 +68,12 @@ public class CPString extends CPConstant {
     }
 
     @Override
-    protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] {name};
-    }
-
-    private boolean hashcodeComputed;
-    private int cachedHashCode;
-
-    private void generateHashCode() {
-        hashcodeComputed = true;
-        final int PRIME = 31;
-        int result = 1;
-        result = PRIME * result + name.hashCode();
-        cachedHashCode = result;
+    public String toString() {
+        return "String: " + getValue();
     }
 
     @Override
-    public int hashCode() {
-        if (!hashcodeComputed) {
-            generateHashCode();
-        }
-        return cachedHashCode;
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        dos.writeShort(nameIndex);
     }
 }

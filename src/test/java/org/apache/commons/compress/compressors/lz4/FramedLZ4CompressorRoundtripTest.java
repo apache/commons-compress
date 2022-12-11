@@ -56,6 +56,26 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
                         .tunedForSpeed().build())));
     }
 
+    @ParameterizedTest
+    @MethodSource("factory")
+    public void biggerFileRoundtrip(final FramedLZ4CompressorOutputStream.Parameters params) throws IOException {
+        roundTripTest("COMPRESS-256.7z", params);
+    }
+
+    // should yield decent compression
+    @ParameterizedTest
+    @MethodSource("factory")
+    public void blaTarRoundtrip(final FramedLZ4CompressorOutputStream.Parameters params) throws IOException {
+        roundTripTest("bla.tar", params);
+    }
+
+    // yields no compression at all
+    @ParameterizedTest
+    @MethodSource("factory")
+   public void gzippedLoremIpsumRoundtrip(final FramedLZ4CompressorOutputStream.Parameters params) throws IOException {
+        roundTripTest("lorem-ipsum.txt.gz", params);
+    }
+
     private void roundTripTest(final String testFile, final FramedLZ4CompressorOutputStream.Parameters params) throws IOException {
         final File input = getFile(testFile);
         long start = System.currentTimeMillis();
@@ -79,26 +99,6 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
         }
 
         // System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
-    }
-
-    // should yield decent compression
-    @ParameterizedTest
-    @MethodSource("factory")
-    public void blaTarRoundtrip(final FramedLZ4CompressorOutputStream.Parameters params) throws IOException {
-        roundTripTest("bla.tar", params);
-    }
-
-    // yields no compression at all
-    @ParameterizedTest
-    @MethodSource("factory")
-   public void gzippedLoremIpsumRoundtrip(final FramedLZ4CompressorOutputStream.Parameters params) throws IOException {
-        roundTripTest("lorem-ipsum.txt.gz", params);
-    }
-
-    @ParameterizedTest
-    @MethodSource("factory")
-    public void biggerFileRoundtrip(final FramedLZ4CompressorOutputStream.Parameters params) throws IOException {
-        roundTripTest("COMPRESS-256.7z", params);
     }
 
 }

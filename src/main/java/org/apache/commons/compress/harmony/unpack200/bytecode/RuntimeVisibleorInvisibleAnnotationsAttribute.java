@@ -46,11 +46,26 @@ public class RuntimeVisibleorInvisibleAnnotationsAttribute extends AnnotationsAt
     }
 
     @Override
+    protected ClassFileEntry[] getNestedClassFileEntries() {
+        final List<Object> nested = new ArrayList<>();
+        nested.add(attributeName);
+        for (Annotation annotation : annotations) {
+            nested.addAll(annotation.getClassFileEntries());
+        }
+        return nested.toArray(ClassFileEntry.NONE);
+    }
+
+    @Override
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         for (Annotation annotation : annotations) {
             annotation.resolve(pool);
         }
+    }
+
+    @Override
+    public String toString() {
+        return attributeName.underlyingString() + ": " + num_annotations + " annotations";
     }
 
     @Override
@@ -63,20 +78,5 @@ public class RuntimeVisibleorInvisibleAnnotationsAttribute extends AnnotationsAt
         if (dos.size() - size != getLength()) {
             throw new Error();
         }
-    }
-
-    @Override
-    public String toString() {
-        return attributeName.underlyingString() + ": " + num_annotations + " annotations";
-    }
-
-    @Override
-    protected ClassFileEntry[] getNestedClassFileEntries() {
-        final List<Object> nested = new ArrayList<>();
-        nested.add(attributeName);
-        for (Annotation annotation : annotations) {
-            nested.addAll(annotation.getClassFileEntries());
-        }
-        return nested.toArray(ClassFileEntry.NONE);
     }
 }

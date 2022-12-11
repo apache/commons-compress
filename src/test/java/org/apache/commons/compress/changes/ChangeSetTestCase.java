@@ -46,15 +46,107 @@ import org.junit.jupiter.api.Test;
  */
 public final class ChangeSetTestCase extends AbstractTestCase {
 
+    // Delete a single file
+    private void archiveListDelete(final String prefix){
+        archiveList.removeIf(entry -> entry.equals(prefix));
+    }
+
     // Delete a directory tree
     private void archiveListDeleteDir(final String prefix){
         // TODO won't work with folders
         archiveList.removeIf(entry -> entry.startsWith(prefix + "/"));
     }
 
-    // Delete a single file
-    private void archiveListDelete(final String prefix){
-        archiveList.removeIf(entry -> entry.equals(prefix));
+    /**
+     * Adds a file with the same file name as an existing file from the stream.
+     * Should lead to a replacement.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testAddAllreadyExistingWithReplaceFalse() throws Exception {
+        final String archivename = "zip";
+        final File input = this.createArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        final File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        try {
+
+            final InputStream is = Files.newInputStream(input.toPath());
+            ais = factory.createArchiveInputStream(archivename, is);
+            out = factory.createArchiveOutputStream(archivename,
+                    Files.newOutputStream(result.toPath()));
+
+            final ChangeSet changes = new ChangeSet();
+
+            final File file1 = getFile("test.txt");
+            final ArchiveEntry entry = new ZipArchiveEntry("testdata/test1.xml");
+            changes.add(entry, Files.newInputStream(file1.toPath()), false);
+
+            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            final ChangeSetResults results = performer.perform(ais, out);
+            assertTrue(results.getAddedFromStream().contains("testdata/test1.xml"));
+            assertTrue(results.getAddedFromChangeSet().isEmpty());
+            assertTrue(results.getDeleted().isEmpty());
+            is.close();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            if (ais != null) {
+                ais.close();
+            }
+        }
+
+        this.checkArchiveContent(result, archiveList);
+    }
+
+    /**
+     * Adds a file with the same file name as an existing file from the stream.
+     * Should lead to a replacement.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testAddAllreadyExistingWithReplaceTrue() throws Exception {
+        final String archivename = "zip";
+        final File input = this.createArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        final File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        try {
+
+            final InputStream is = Files.newInputStream(input.toPath());
+            ais = factory.createArchiveInputStream(archivename, is);
+            out = factory.createArchiveOutputStream(archivename,
+                    Files.newOutputStream(result.toPath()));
+
+            final ChangeSet changes = new ChangeSet();
+
+            final File file1 = getFile("test.txt");
+            final ArchiveEntry entry = new ZipArchiveEntry("testdata/test1.xml");
+            changes.add(entry, Files.newInputStream(file1.toPath()), true);
+
+            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            final ChangeSetResults results = performer.perform(ais, out);
+            assertTrue(results.getAddedFromChangeSet().contains("testdata/test1.xml"));
+            is.close();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            if (ais != null) {
+                ais.close();
+            }
+        }
+
+        this.checkArchiveContent(result, archiveList);
     }
 
     /**
@@ -125,6 +217,326 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 in2.close();
             }
         }
+    }
+
+    /**
+     * add blub/test.txt + delete blub Should add blub/test.txt and delete it
+     * afterwards. In this example, the archive should stay untouched.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testAddDeleteAdd() throws Exception {
+        final String archivename = "cpio";
+        final File input = this.createArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        final File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        try {
+
+            final InputStream is = Files.newInputStream(input.toPath());
+            ais = factory.createArchiveInputStream(archivename, is);
+            out = factory.createArchiveOutputStream(archivename,
+                    Files.newOutputStream(result.toPath()));
+
+            final ChangeSet changes = new ChangeSet();
+
+            final File file1 = getFile("test.txt");
+            final ArchiveEntry entry = new CpioArchiveEntry("blub/test.txt");
+            changes.add(entry, Files.newInputStream(file1.toPath()));
+            archiveList.add("blub/test.txt");
+
+            changes.deleteDir("blub");
+            archiveListDeleteDir("blub");
+
+            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+
+            is.close();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            if (ais != null) {
+                ais.close();
+            }
+        }
+
+        this.checkArchiveContent(result, archiveList);
+    }
+
+    /**
+     * Check can add and delete a file to an archive with a single file
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testAddDeleteToOneFileArchive() throws Exception {
+        final String archivename = "cpio";
+        final File input = this.createSingleEntryArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        InputStream is = null;
+        final File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        final ChangeSet changes = new ChangeSet();
+        try {
+
+            is = Files.newInputStream(input.toPath());
+            ais = factory.createArchiveInputStream(archivename, is);
+
+            out = factory.createArchiveOutputStream(archivename,
+                    Files.newOutputStream(result.toPath()));
+            final File file = getFile("test.txt");
+            final ArchiveEntry entry = out.createArchiveEntry(file,"bla/test.txt");
+            changes.add(entry, Files.newInputStream(file.toPath()));
+            archiveList.add("bla/test.txt");
+
+            changes.delete("test1.xml");
+            archiveListDelete("test1.xml");
+
+            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+            is.close();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            if (ais != null) {
+                ais.close(); // will close is
+            } else if (is != null){
+                is.close();
+            }
+        }
+
+        this.checkArchiveContent(result, archiveList);
+    }
+
+    /**
+     * TODO: Move operations are not supported currently
+     *
+     * add dir1/bla.txt + mv dir1/test.text dir2/test.txt + delete dir1
+     *
+     * Add dir1/bla.txt should be surpressed. All other dir1 files will be
+     * deleted, except dir1/test.text will be moved
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testAddMoveDelete() throws Exception {
+    }
+
+    /**
+     * Check can add a file to an empty archive.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testAddToEmptyArchive() throws Exception {
+        final String archivename = "zip";
+        final File input = this.createEmptyArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        InputStream is = null;
+        final File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        final ChangeSet changes = new ChangeSet();
+        try {
+
+            is = Files.newInputStream(input.toPath());
+            ais = factory.createArchiveInputStream(archivename, is);
+
+            out = factory.createArchiveOutputStream(archivename,
+                    Files.newOutputStream(result.toPath()));
+
+            final File file1 = getFile("test.txt");
+            final ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
+            changes.add(entry, Files.newInputStream(file1.toPath()));
+            archiveList.add("bla/test.txt");
+            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+            is.close();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            if (ais != null) {
+                ais.close(); // will close is
+            } else if (is != null){
+                is.close();
+            }
+        }
+
+        this.checkArchiveContent(result, archiveList);
+    }
+
+    /**
+     * Checks for the correct ChangeSetResults
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testChangeSetResults() throws Exception {
+        final String archivename = "cpio";
+        final File input = this.createArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        final File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        try {
+
+            final InputStream is = Files.newInputStream(input.toPath());
+            ais = factory.createArchiveInputStream(archivename, is);
+            out = factory.createArchiveOutputStream(archivename,
+                    Files.newOutputStream(result.toPath()));
+
+            final ChangeSet changes = new ChangeSet();
+            changes.deleteDir("bla");
+            archiveListDeleteDir("bla");
+
+            // Add a file
+            final File file1 = getFile("test.txt");
+            final ArchiveEntry entry = out.createArchiveEntry(file1, "bla/test.txt");
+            changes.add(entry, Files.newInputStream(file1.toPath()));
+            archiveList.add("bla/test.txt");
+
+            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            final ChangeSetResults results = performer.perform(ais, out);
+            is.close();
+
+            // Checks
+            assertEquals(1,results.getAddedFromChangeSet().size());
+            assertEquals("bla/test.txt",results.getAddedFromChangeSet().iterator().next());
+            assertEquals(3,results.getDeleted().size());
+            assertTrue(results.getDeleted().contains("bla/test4.xml"));
+            assertTrue(results.getDeleted().contains("bla/test5.xml"));
+            assertTrue(results.getDeleted().contains("bla/blubber/test6.xml"));
+
+            assertTrue(results.getAddedFromStream().contains("testdata/test1.xml"));
+            assertTrue(results.getAddedFromStream().contains("testdata/test2.xml"));
+            assertTrue(results.getAddedFromStream().contains("test/test3.xml"));
+            assertTrue(results.getAddedFromStream().contains("test.txt"));
+            assertTrue(results.getAddedFromStream().contains("something/bla"));
+            assertTrue(results.getAddedFromStream().contains("test with spaces.txt"));
+            assertEquals(6,results.getAddedFromStream().size());
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            if (ais != null) {
+                ais.close();
+            }
+        }
+
+        this.checkArchiveContent(result, archiveList);
+    }
+
+    /**
+     * delete bla + add bla/test.txt + delete bla Deletes dir1/* first, then
+     * suppresses the add of bla.txt because there is a delete operation later.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testDeleteAddDelete() throws Exception {
+        final String archivename = "cpio";
+        final File input = this.createArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        final File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        try {
+
+            final InputStream is = Files.newInputStream(input.toPath());
+            ais = factory.createArchiveInputStream(archivename, is);
+            out = factory.createArchiveOutputStream(archivename,
+                    Files.newOutputStream(result.toPath()));
+
+            final ChangeSet changes = new ChangeSet();
+
+            changes.deleteDir("bla");
+
+            final File file1 = getFile("test.txt");
+            final ArchiveEntry entry = new CpioArchiveEntry("bla/test.txt");
+            changes.add(entry, Files.newInputStream(file1.toPath()));
+            archiveList.add("bla/test.txt");
+
+            changes.deleteDir("bla");
+            archiveListDeleteDir("bla");
+
+            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+
+            is.close();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            if (ais != null) {
+                ais.close();
+            }
+        }
+
+        this.checkArchiveContent(result, archiveList);
+    }
+
+    /**
+     * Check can delete and add a file to an archive with a single file
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testDeleteAddToOneFileArchive() throws Exception {
+        final String archivename = "zip";
+        final File input = this.createSingleEntryArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        InputStream is = null;
+        final File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        final ChangeSet changes = new ChangeSet();
+        try {
+
+            is = Files.newInputStream(input.toPath());
+            ais = factory.createArchiveInputStream(archivename, is);
+
+            out = factory.createArchiveOutputStream(archivename,
+                    Files.newOutputStream(result.toPath()));
+            changes.delete("test1.xml");
+            archiveListDelete("test1.xml");
+
+            final File file = getFile("test.txt");
+            final ArchiveEntry entry = out.createArchiveEntry(file,"bla/test.txt");
+            changes.add(entry, Files.newInputStream(file.toPath()));
+            archiveList.add("bla/test.txt");
+
+            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+            is.close();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            if (ais != null) {
+                ais.close(); // will close is
+            } else if (is != null){
+                is.close();
+            }
+        }
+
+        this.checkArchiveContent(result, archiveList);
     }
 
     /**
@@ -342,43 +754,36 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     /**
-     * Tries to delete and then add a file with the same name.
-     * Should delete test/test3.xml and adds test.txt with the name
-     * test/test3.xml
+     * Deletes a file from an AR-archive and adds another
      *
      * @throws Exception
      */
     @Test
-    public void testDeletePlusAddSame() throws Exception {
-        final String archivename = "zip";
-        final File input = this.createArchive(archivename);
-
+    public void testDeleteFromAndAddToAr() throws Exception {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
-        final File result = File.createTempFile("test", "."+archivename);
-        result.deleteOnExit();
-
-        File testtxt = null;
+        File temp = null;
         try {
-
-            final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream(archivename, is);
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
-
             final ChangeSet changes = new ChangeSet();
-            changes.delete("test/test3.xml");
-            archiveListDelete("test/test3.xml");
+            changes.delete("test2.xml");
 
-            // Add a file
-            testtxt = getFile("test.txt");
-            final ArchiveEntry entry = out.createArchiveEntry(testtxt, "test/test3.xml");
-            changes.add(entry, Files.newInputStream(testtxt.toPath()));
-            archiveList.add("test/test3.xml");
+            final File file1 = getFile("test.txt");
+
+            final ArArchiveEntry entry = new ArArchiveEntry("test.txt", file1
+                    .length());
+
+            changes.add(entry, Files.newInputStream(file1.toPath()));
+
+            final File input = getFile("bla.ar");
+            final InputStream is = Files.newInputStream(input.toPath());
+            ais = factory.createArchiveInputStream("ar", is);
+
+            temp = new File(dir, "bla.ar");
+            out = factory.createArchiveOutputStream("ar",
+                    Files.newOutputStream(temp.toPath()));
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-            is.close();
 
         } finally {
             if (out != null) {
@@ -388,131 +793,43 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 ais.close();
             }
         }
-
-        // Checks
-        ArchiveInputStream in = null;
-        File check = null;
-        try {
-            final InputStream is = Files.newInputStream(result.toPath());
-            final BufferedInputStream buf = new BufferedInputStream(is);
-            in = factory.createArchiveInputStream(buf);
-            check = this.checkArchiveContent(in, archiveList, false);
-            final File test3xml = new File(check,"result/test/test3.xml");
-            assertEquals(testtxt.length(), test3xml.length());
-
-            final BufferedReader reader = new BufferedReader(Files.newBufferedReader(test3xml.toPath()));
-            String str;
-            while ((str = reader.readLine()) != null) {
-                // All lines look like this
-                "111111111111111111111111111000101011".equals(str);
-            }
-            reader.close();
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-            rmdir(check);
-        }
+        final List<String> expected = new ArrayList<>();
+        expected.add("test1.xml");
+        expected.add("test.txt");
+        this.checkArchiveContent(temp, expected);
     }
 
     /**
-     * Checks for the correct ChangeSetResults
+     * Delete from a jar file and add another file
      *
      * @throws Exception
      */
     @Test
-    public void testChangeSetResults() throws Exception {
-        final String archivename = "cpio";
-        final File input = this.createArchive(archivename);
-
+    public void testDeleteFromAndAddToJar() throws Exception {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
-        final File result = File.createTempFile("test", "."+archivename);
-        result.deleteOnExit();
+        File temp = null;
         try {
-
-            final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream(archivename, is);
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
-
             final ChangeSet changes = new ChangeSet();
-            changes.deleteDir("bla");
-            archiveListDeleteDir("bla");
+            changes.delete("test2.xml");
+            changes.deleteDir("META-INF");
+            changes.delete(".classpath");
+            changes.delete(".project");
 
-            // Add a file
             final File file1 = getFile("test.txt");
-            final ArchiveEntry entry = out.createArchiveEntry(file1, "bla/test.txt");
+            final JarArchiveEntry entry = new JarArchiveEntry("testdata/test.txt");
             changes.add(entry, Files.newInputStream(file1.toPath()));
-            archiveList.add("bla/test.txt");
 
-            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
-            final ChangeSetResults results = performer.perform(ais, out);
-            is.close();
-
-            // Checks
-            assertEquals(1,results.getAddedFromChangeSet().size());
-            assertEquals("bla/test.txt",results.getAddedFromChangeSet().iterator().next());
-            assertEquals(3,results.getDeleted().size());
-            assertTrue(results.getDeleted().contains("bla/test4.xml"));
-            assertTrue(results.getDeleted().contains("bla/test5.xml"));
-            assertTrue(results.getDeleted().contains("bla/blubber/test6.xml"));
-
-            assertTrue(results.getAddedFromStream().contains("testdata/test1.xml"));
-            assertTrue(results.getAddedFromStream().contains("testdata/test2.xml"));
-            assertTrue(results.getAddedFromStream().contains("test/test3.xml"));
-            assertTrue(results.getAddedFromStream().contains("test.txt"));
-            assertTrue(results.getAddedFromStream().contains("something/bla"));
-            assertTrue(results.getAddedFromStream().contains("test with spaces.txt"));
-            assertEquals(6,results.getAddedFromStream().size());
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
-        }
-
-        this.checkArchiveContent(result, archiveList);
-    }
-
-    /**
-     * Tries to delete a directory with a file and adds a new directory with a
-     * new file and with the same name. Should delete dir1/* and add
-     * dir1/test.txt at the end
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testDeletePlusAdd() throws Exception {
-        final String archivename = "cpio";
-        final File input = this.createArchive(archivename);
-
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        final File result = File.createTempFile("test", "."+archivename);
-        result.deleteOnExit();
-        try {
-
+            final File input = getFile("bla.jar");
             final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream(archivename, is);
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
+            ais = factory.createArchiveInputStream("jar", is);
 
-            final ChangeSet changes = new ChangeSet();
-            changes.deleteDir("bla");
-            archiveListDeleteDir("bla");
-
-            // Add a file
-            final File file1 = getFile("test.txt");
-            final ArchiveEntry entry = out.createArchiveEntry(file1, "bla/test.txt");
-            changes.add(entry, Files.newInputStream(file1.toPath()));
-            archiveList.add("bla/test.txt");
+            temp = new File(dir, "bla.jar");
+            out = factory.createArchiveOutputStream("jar",
+                    Files.newOutputStream(temp.toPath()));
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-            is.close();
 
         } finally {
             if (out != null) {
@@ -522,8 +839,59 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 ais.close();
             }
         }
+        final List<String> expected = new ArrayList<>();
+        expected.add("test1.xml");
+        expected.add("testdata/test.txt");
+        this.checkArchiveContent(temp, expected);
+    }
 
-        this.checkArchiveContent(result, archiveList);
+    @Test
+    public void testDeleteFromAndAddToTar() throws Exception {
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        File temp = null;
+        try {
+            final ChangeSet changes = new ChangeSet();
+            changes.delete("test2.xml");
+
+            final File file1 = getFile("test.txt");
+
+            final TarArchiveEntry entry = new TarArchiveEntry(
+                    "testdata/test.txt");
+            entry.setModTime(0);
+            entry.setSize(file1.length());
+            entry.setUserId(0);
+            entry.setGroupId(0);
+            entry.setUserName("avalon");
+            entry.setGroupName("excalibur");
+            entry.setMode(0100000);
+
+            changes.add(entry, Files.newInputStream(file1.toPath()));
+
+            final File input = getFile("bla.tar");
+            final InputStream is = Files.newInputStream(input.toPath());
+            ais = factory.createArchiveInputStream("tar", is);
+
+            temp = new File(dir, "bla.tar");
+            out = factory.createArchiveOutputStream("tar",
+                    Files.newOutputStream(temp.toPath()));
+
+            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            if (ais != null) {
+                ais.close();
+            }
+        }
+        final List<String> expected = new ArrayList<>();
+        expected.add("test1.xml");
+        expected.add("testdata/test.txt");
+        final ArchiveInputStream in = factory.createArchiveInputStream("tar", Files.newInputStream(temp.toPath()));
+        this.checkArchiveContent(in, expected);
     }
 
     /**
@@ -619,112 +987,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     /**
-     * add blub/test.txt + delete blub Should add blub/test.txt and delete it
-     * afterwards. In this example, the archive should stay untouched.
+     * Simple delete from an ar file
      *
      * @throws Exception
      */
     @Test
-    public void testAddDeleteAdd() throws Exception {
-        final String archivename = "cpio";
-        final File input = this.createArchive(archivename);
-
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        final File result = File.createTempFile("test", "."+archivename);
-        result.deleteOnExit();
-        try {
-
-            final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream(archivename, is);
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
-
-            final ChangeSet changes = new ChangeSet();
-
-            final File file1 = getFile("test.txt");
-            final ArchiveEntry entry = new CpioArchiveEntry("blub/test.txt");
-            changes.add(entry, Files.newInputStream(file1.toPath()));
-            archiveList.add("blub/test.txt");
-
-            changes.deleteDir("blub");
-            archiveListDeleteDir("blub");
-
-            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
-            performer.perform(ais, out);
-
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
-        }
-
-        this.checkArchiveContent(result, archiveList);
-    }
-
-    /**
-     * delete bla + add bla/test.txt + delete bla Deletes dir1/* first, then
-     * suppresses the add of bla.txt because there is a delete operation later.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testDeleteAddDelete() throws Exception {
-        final String archivename = "cpio";
-        final File input = this.createArchive(archivename);
-
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        final File result = File.createTempFile("test", "."+archivename);
-        result.deleteOnExit();
-        try {
-
-            final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream(archivename, is);
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
-
-            final ChangeSet changes = new ChangeSet();
-
-            changes.deleteDir("bla");
-
-            final File file1 = getFile("test.txt");
-            final ArchiveEntry entry = new CpioArchiveEntry("bla/test.txt");
-            changes.add(entry, Files.newInputStream(file1.toPath()));
-            archiveList.add("bla/test.txt");
-
-            changes.deleteDir("bla");
-            archiveListDeleteDir("bla");
-
-            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
-            performer.perform(ais, out);
-
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
-        }
-
-        this.checkArchiveContent(result, archiveList);
-    }
-
-    /**
-     * Simple Delete from a zip file.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testDeleteFromZip() throws Exception {
+    public void testDeleteFromAr() throws Exception {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
         File temp = null;
@@ -732,13 +1000,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             final ChangeSet changes = new ChangeSet();
             changes.delete("test2.xml");
 
-            final File input = getFile("bla.zip");
+            final File input = getFile("bla.ar");
             final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream("zip", is);
+            ais = factory.createArchiveInputStream("ar", is);
 
-            temp = File.createTempFile("test", ".zip");
-            temp.deleteOnExit();
-            out = factory.createArchiveOutputStream("zip",
+            temp = new File(dir, "bla.ar");
+            out = factory.createArchiveOutputStream("ar",
                     Files.newOutputStream(temp.toPath()));
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
@@ -753,45 +1020,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             }
         }
 
-        final List<String> expected = new ArrayList<>();
-        expected.add("test1.xml");
-
-        this.checkArchiveContent(temp, expected);
-    }
-
-    /**
-     * Simple delete from a tar file
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testDeleteFromTar() throws Exception {
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        File temp = null;
-        try {
-            final ChangeSet changes = new ChangeSet();
-            changes.delete("test2.xml");
-
-            final File input = getFile("bla.tar");
-            final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream("tar", is);
-
-            temp = new File(dir, "bla.tar");
-            out = factory.createArchiveOutputStream("tar",
-                    Files.newOutputStream(temp.toPath()));
-
-            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
-            performer.perform(ais, out);
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
-        }
         final List<String> expected = new ArrayList<>();
         expected.add("test1.xml");
         this.checkArchiveContent(temp, expected);
@@ -838,28 +1066,19 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         this.checkArchiveContent(temp, expected);
     }
 
+    /**
+     * Simple delete from a tar file
+     *
+     * @throws Exception
+     */
     @Test
-    public void testDeleteFromAndAddToTar() throws Exception {
+    public void testDeleteFromTar() throws Exception {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
         File temp = null;
         try {
             final ChangeSet changes = new ChangeSet();
             changes.delete("test2.xml");
-
-            final File file1 = getFile("test.txt");
-
-            final TarArchiveEntry entry = new TarArchiveEntry(
-                    "testdata/test.txt");
-            entry.setModTime(0);
-            entry.setSize(file1.length());
-            entry.setUserId(0);
-            entry.setGroupId(0);
-            entry.setUserName("avalon");
-            entry.setGroupName("excalibur");
-            entry.setMode(0100000);
-
-            changes.add(entry, Files.newInputStream(file1.toPath()));
 
             final File input = getFile("bla.tar");
             final InputStream is = Files.newInputStream(input.toPath());
@@ -882,42 +1101,86 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         }
         final List<String> expected = new ArrayList<>();
         expected.add("test1.xml");
-        expected.add("testdata/test.txt");
-        final ArchiveInputStream in = factory.createArchiveInputStream("tar", Files.newInputStream(temp.toPath()));
-        this.checkArchiveContent(in, expected);
+        this.checkArchiveContent(temp, expected);
     }
 
     /**
-     * Delete from a jar file and add another file
+     * Simple Delete from a zip file.
      *
      * @throws Exception
      */
     @Test
-    public void testDeleteFromAndAddToJar() throws Exception {
+    public void testDeleteFromZip() throws Exception {
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
         File temp = null;
         try {
             final ChangeSet changes = new ChangeSet();
             changes.delete("test2.xml");
-            changes.deleteDir("META-INF");
-            changes.delete(".classpath");
-            changes.delete(".project");
 
+            final File input = getFile("bla.zip");
+            final InputStream is = Files.newInputStream(input.toPath());
+            ais = factory.createArchiveInputStream("zip", is);
+
+            temp = File.createTempFile("test", ".zip");
+            temp.deleteOnExit();
+            out = factory.createArchiveOutputStream("zip",
+                    Files.newOutputStream(temp.toPath()));
+
+            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, out);
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            if (ais != null) {
+                ais.close();
+            }
+        }
+
+        final List<String> expected = new ArrayList<>();
+        expected.add("test1.xml");
+
+        this.checkArchiveContent(temp, expected);
+    }
+
+    /**
+     * Tries to delete a directory with a file and adds a new directory with a
+     * new file and with the same name. Should delete dir1/* and add
+     * dir1/test.txt at the end
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testDeletePlusAdd() throws Exception {
+        final String archivename = "cpio";
+        final File input = this.createArchive(archivename);
+
+        ArchiveOutputStream out = null;
+        ArchiveInputStream ais = null;
+        final File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+        try {
+
+            final InputStream is = Files.newInputStream(input.toPath());
+            ais = factory.createArchiveInputStream(archivename, is);
+            out = factory.createArchiveOutputStream(archivename,
+                    Files.newOutputStream(result.toPath()));
+
+            final ChangeSet changes = new ChangeSet();
+            changes.deleteDir("bla");
+            archiveListDeleteDir("bla");
+
+            // Add a file
             final File file1 = getFile("test.txt");
-            final JarArchiveEntry entry = new JarArchiveEntry("testdata/test.txt");
+            final ArchiveEntry entry = out.createArchiveEntry(file1, "bla/test.txt");
             changes.add(entry, Files.newInputStream(file1.toPath()));
-
-            final File input = getFile("bla.jar");
-            final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream("jar", is);
-
-            temp = new File(dir, "bla.jar");
-            out = factory.createArchiveOutputStream("jar",
-                    Files.newOutputStream(temp.toPath()));
+            archiveList.add("bla/test.txt");
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
+            is.close();
 
         } finally {
             if (out != null) {
@@ -927,36 +1190,48 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                 ais.close();
             }
         }
-        final List<String> expected = new ArrayList<>();
-        expected.add("test1.xml");
-        expected.add("testdata/test.txt");
-        this.checkArchiveContent(temp, expected);
+
+        this.checkArchiveContent(result, archiveList);
     }
 
     /**
-     * Simple delete from an ar file
+     * Tries to delete and then add a file with the same name.
+     * Should delete test/test3.xml and adds test.txt with the name
+     * test/test3.xml
      *
      * @throws Exception
      */
     @Test
-    public void testDeleteFromAr() throws Exception {
+    public void testDeletePlusAddSame() throws Exception {
+        final String archivename = "zip";
+        final File input = this.createArchive(archivename);
+
         ArchiveOutputStream out = null;
         ArchiveInputStream ais = null;
-        File temp = null;
+        final File result = File.createTempFile("test", "."+archivename);
+        result.deleteOnExit();
+
+        File testtxt = null;
         try {
-            final ChangeSet changes = new ChangeSet();
-            changes.delete("test2.xml");
 
-            final File input = getFile("bla.ar");
             final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream("ar", is);
+            ais = factory.createArchiveInputStream(archivename, is);
+            out = factory.createArchiveOutputStream(archivename,
+                    Files.newOutputStream(result.toPath()));
 
-            temp = new File(dir, "bla.ar");
-            out = factory.createArchiveOutputStream("ar",
-                    Files.newOutputStream(temp.toPath()));
+            final ChangeSet changes = new ChangeSet();
+            changes.delete("test/test3.xml");
+            archiveListDelete("test/test3.xml");
+
+            // Add a file
+            testtxt = getFile("test.txt");
+            final ArchiveEntry entry = out.createArchiveEntry(testtxt, "test/test3.xml");
+            changes.add(entry, Files.newInputStream(testtxt.toPath()));
+            archiveList.add("test/test3.xml");
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
+            is.close();
 
         } finally {
             if (out != null) {
@@ -967,55 +1242,30 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             }
         }
 
-        final List<String> expected = new ArrayList<>();
-        expected.add("test1.xml");
-        this.checkArchiveContent(temp, expected);
-    }
-
-    /**
-     * Deletes a file from an AR-archive and adds another
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testDeleteFromAndAddToAr() throws Exception {
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        File temp = null;
+        // Checks
+        ArchiveInputStream in = null;
+        File check = null;
         try {
-            final ChangeSet changes = new ChangeSet();
-            changes.delete("test2.xml");
+            final InputStream is = Files.newInputStream(result.toPath());
+            final BufferedInputStream buf = new BufferedInputStream(is);
+            in = factory.createArchiveInputStream(buf);
+            check = this.checkArchiveContent(in, archiveList, false);
+            final File test3xml = new File(check,"result/test/test3.xml");
+            assertEquals(testtxt.length(), test3xml.length());
 
-            final File file1 = getFile("test.txt");
-
-            final ArArchiveEntry entry = new ArArchiveEntry("test.txt", file1
-                    .length());
-
-            changes.add(entry, Files.newInputStream(file1.toPath()));
-
-            final File input = getFile("bla.ar");
-            final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream("ar", is);
-
-            temp = new File(dir, "bla.ar");
-            out = factory.createArchiveOutputStream("ar",
-                    Files.newOutputStream(temp.toPath()));
-
-            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
-            performer.perform(ais, out);
-
+            final BufferedReader reader = new BufferedReader(Files.newBufferedReader(test3xml.toPath()));
+            String str;
+            while ((str = reader.readLine()) != null) {
+                // All lines look like this
+                "111111111111111111111111111000101011".equals(str);
+            }
+            reader.close();
         } finally {
-            if (out != null) {
-                out.close();
+            if (in != null) {
+                in.close();
             }
-            if (ais != null) {
-                ais.close();
-            }
+            rmdir(check);
         }
-        final List<String> expected = new ArrayList<>();
-        expected.add("test1.xml");
-        expected.add("test.txt");
-        this.checkArchiveContent(temp, expected);
     }
 
     /**
@@ -1028,256 +1278,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      */
     @Test
     public void testRenameAndDelete() throws Exception {
-    }
-
-    /**
-     * TODO: Move operations are not supported currently
-     *
-     * add dir1/bla.txt + mv dir1/test.text dir2/test.txt + delete dir1
-     *
-     * Add dir1/bla.txt should be surpressed. All other dir1 files will be
-     * deleted, except dir1/test.text will be moved
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testAddMoveDelete() throws Exception {
-    }
-
-    /**
-     * Check can add a file to an empty archive.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testAddToEmptyArchive() throws Exception {
-        final String archivename = "zip";
-        final File input = this.createEmptyArchive(archivename);
-
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        InputStream is = null;
-        final File result = File.createTempFile("test", "."+archivename);
-        result.deleteOnExit();
-        final ChangeSet changes = new ChangeSet();
-        try {
-
-            is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream(archivename, is);
-
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
-
-            final File file1 = getFile("test.txt");
-            final ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
-            changes.add(entry, Files.newInputStream(file1.toPath()));
-            archiveList.add("bla/test.txt");
-            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
-            performer.perform(ais, out);
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close(); // will close is
-            } else if (is != null){
-                is.close();
-            }
-        }
-
-        this.checkArchiveContent(result, archiveList);
-    }
-
-    /**
-     * Check can delete and add a file to an archive with a single file
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testDeleteAddToOneFileArchive() throws Exception {
-        final String archivename = "zip";
-        final File input = this.createSingleEntryArchive(archivename);
-
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        InputStream is = null;
-        final File result = File.createTempFile("test", "."+archivename);
-        result.deleteOnExit();
-        final ChangeSet changes = new ChangeSet();
-        try {
-
-            is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream(archivename, is);
-
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
-            changes.delete("test1.xml");
-            archiveListDelete("test1.xml");
-
-            final File file = getFile("test.txt");
-            final ArchiveEntry entry = out.createArchiveEntry(file,"bla/test.txt");
-            changes.add(entry, Files.newInputStream(file.toPath()));
-            archiveList.add("bla/test.txt");
-
-            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
-            performer.perform(ais, out);
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close(); // will close is
-            } else if (is != null){
-                is.close();
-            }
-        }
-
-        this.checkArchiveContent(result, archiveList);
-    }
-
-    /**
-     * Check can add and delete a file to an archive with a single file
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testAddDeleteToOneFileArchive() throws Exception {
-        final String archivename = "cpio";
-        final File input = this.createSingleEntryArchive(archivename);
-
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        InputStream is = null;
-        final File result = File.createTempFile("test", "."+archivename);
-        result.deleteOnExit();
-        final ChangeSet changes = new ChangeSet();
-        try {
-
-            is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream(archivename, is);
-
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
-            final File file = getFile("test.txt");
-            final ArchiveEntry entry = out.createArchiveEntry(file,"bla/test.txt");
-            changes.add(entry, Files.newInputStream(file.toPath()));
-            archiveList.add("bla/test.txt");
-
-            changes.delete("test1.xml");
-            archiveListDelete("test1.xml");
-
-            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
-            performer.perform(ais, out);
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close(); // will close is
-            } else if (is != null){
-                is.close();
-            }
-        }
-
-        this.checkArchiveContent(result, archiveList);
-    }
-
-    /**
-     * Adds a file with the same file name as an existing file from the stream.
-     * Should lead to a replacement.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testAddAllreadyExistingWithReplaceTrue() throws Exception {
-        final String archivename = "zip";
-        final File input = this.createArchive(archivename);
-
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        final File result = File.createTempFile("test", "."+archivename);
-        result.deleteOnExit();
-        try {
-
-            final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream(archivename, is);
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
-
-            final ChangeSet changes = new ChangeSet();
-
-            final File file1 = getFile("test.txt");
-            final ArchiveEntry entry = new ZipArchiveEntry("testdata/test1.xml");
-            changes.add(entry, Files.newInputStream(file1.toPath()), true);
-
-            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
-            final ChangeSetResults results = performer.perform(ais, out);
-            assertTrue(results.getAddedFromChangeSet().contains("testdata/test1.xml"));
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
-        }
-
-        this.checkArchiveContent(result, archiveList);
-    }
-
-    /**
-     * Adds a file with the same file name as an existing file from the stream.
-     * Should lead to a replacement.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testAddAllreadyExistingWithReplaceFalse() throws Exception {
-        final String archivename = "zip";
-        final File input = this.createArchive(archivename);
-
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        final File result = File.createTempFile("test", "."+archivename);
-        result.deleteOnExit();
-        try {
-
-            final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream(archivename, is);
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
-
-            final ChangeSet changes = new ChangeSet();
-
-            final File file1 = getFile("test.txt");
-            final ArchiveEntry entry = new ZipArchiveEntry("testdata/test1.xml");
-            changes.add(entry, Files.newInputStream(file1.toPath()), false);
-
-            final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
-            final ChangeSetResults results = performer.perform(ais, out);
-            assertTrue(results.getAddedFromStream().contains("testdata/test1.xml"));
-            assertTrue(results.getAddedFromChangeSet().isEmpty());
-            assertTrue(results.getDeleted().isEmpty());
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
-        }
-
-        this.checkArchiveContent(result, archiveList);
     }
 
 }

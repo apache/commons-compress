@@ -31,22 +31,25 @@ import org.objectweb.asm.Label;
  */
 public class BcBands extends BandSet {
 
+    private static final int MULTIANEWARRAY = 197;
+    private static final int ALOAD_0 = 42;
+
+    private static final int WIDE = 196;
+
+    private static final int INVOKEINTERFACE = 185;
+    private static final int TABLESWITCH = 170;
+    private static final int IINC = 132;
+    private static final int LOOKUPSWITCH = 171;
+    private static final int endMarker = 255;
     private final CpBands cpBands;
+
     private final Segment segment;
-
-    public BcBands(final CpBands cpBands, final Segment segment, final int effort) {
-        super(effort, segment.getSegmentHeader());
-        this.cpBands = cpBands;
-        this.segment = segment;
-    }
-
     private final IntList bcCodes = new IntList();
     private final IntList bcCaseCount = new IntList();
     private final IntList bcCaseValue = new IntList();
     private final IntList bcByte = new IntList();
     private final IntList bcShort = new IntList();
     private final IntList bcLocal = new IntList();
-
     // Integers and/or Labels?
     private final List bcLabel = new ArrayList();
     private final List<CPInt> bcIntref = new ArrayList<>();
@@ -56,36 +59,28 @@ public class BcBands extends BandSet {
     private final List<CPString> bcStringRef = new ArrayList<>();
     private final List<CPClass> bcClassRef = new ArrayList<>();
     private final List<CPMethodOrField> bcFieldRef = new ArrayList<>();
+
     private final List<CPMethodOrField> bcMethodRef = new ArrayList<>();
     private final List<CPMethodOrField> bcIMethodRef = new ArrayList<>();
     private List bcThisField = new ArrayList<>();
+
     private final List bcSuperField = new ArrayList<>();
     private List bcThisMethod = new ArrayList<>();
     private List bcSuperMethod = new ArrayList<>();
     private List bcInitRef = new ArrayList<>();
-
     private String currentClass;
     private String superClass;
     private String currentNewClass;
-
-    private static final int MULTIANEWARRAY = 197;
-    private static final int ALOAD_0 = 42;
-    private static final int WIDE = 196;
-    private static final int INVOKEINTERFACE = 185;
-    private static final int TABLESWITCH = 170;
-    private static final int IINC = 132;
-    private static final int LOOKUPSWITCH = 171;
-    private static final int endMarker = 255;
-
     private final IntList bciRenumbering = new IntList();
+
     private final Map<Label, Integer> labelsToOffsets = new HashMap<>();
     private int byteCodeOffset;
     private int renumberedOffset;
     private final IntList bcLabelRelativeOffsets = new IntList();
-
-    public void setCurrentClass(final String name, final String superName) {
-        currentClass = name;
-        superClass = superName;
+    public BcBands(final CpBands cpBands, final Segment segment, final int effort) {
+        super(effort, segment.getSegmentHeader());
+        this.cpBands = cpBands;
+        this.segment = segment;
     }
 
     /**
@@ -97,6 +92,14 @@ public class BcBands extends BandSet {
         bcThisMethod = getIndexInClass(bcThisMethod);
         bcSuperMethod = getIndexInClass(bcSuperMethod);
         bcInitRef = getIndexInClassForConstructor(bcInitRef);
+    }
+
+    private List<Integer> getIndexInClass(final List<CPMethodOrField> cPMethodOrFieldList) {
+        return cPMethodOrFieldList.stream().collect(Collectors.mapping(CPMethodOrField::getIndexInClass, Collectors.toList()));
+    }
+
+    private List<Integer> getIndexInClassForConstructor(final List<CPMethodOrField> cPMethodList) {
+        return cPMethodList.stream().collect(Collectors.mapping(CPMethodOrField::getIndexInClassForConstructor, Collectors.toList()));
     }
 
     @Override
@@ -195,12 +198,20 @@ public class BcBands extends BandSet {
         // out.write(encodeBandInt(integerListToArray(bcEscByte), Codec.BYTE1));
     }
 
-    private List<Integer> getIndexInClass(final List<CPMethodOrField> cPMethodOrFieldList) {
-        return cPMethodOrFieldList.stream().collect(Collectors.mapping(CPMethodOrField::getIndexInClass, Collectors.toList()));
+    public void setCurrentClass(final String name, final String superName) {
+        currentClass = name;
+        superClass = superName;
     }
 
-    private List<Integer> getIndexInClassForConstructor(final List<CPMethodOrField> cPMethodList) {
-        return cPMethodList.stream().collect(Collectors.mapping(CPMethodOrField::getIndexInClassForConstructor, Collectors.toList()));
+    private void updateRenumbering() {
+        if (bciRenumbering.isEmpty()) {
+            bciRenumbering.add(0);
+        }
+        renumberedOffset++;
+        for (int i = bciRenumbering.size(); i < byteCodeOffset; i++) {
+            bciRenumbering.add(-1);
+        }
+        bciRenumbering.add(renumberedOffset);
     }
 
     public void visitEnd() {
@@ -236,10 +247,6 @@ public class BcBands extends BandSet {
         }
     }
 
-    public void visitLabel(final Label label) {
-        labelsToOffsets.put(label, Integer.valueOf(byteCodeOffset));
-    }
-
     public void visitFieldInsn(int opcode, final String owner, final String name, final String desc) {
         byteCodeOffset += 3;
         updateRenumbering();
@@ -269,17 +276,6 @@ public class BcBands extends BandSet {
         }
         aload_0 = false;
         bcCodes.add(opcode);
-    }
-
-    private void updateRenumbering() {
-        if (bciRenumbering.isEmpty()) {
-            bciRenumbering.add(0);
-        }
-        renumberedOffset++;
-        for (int i = bciRenumbering.size(); i < byteCodeOffset; i++) {
-            bciRenumbering.add(-1);
-        }
-        bciRenumbering.add(renumberedOffset);
     }
 
     public void visitIincInsn(final int var, final int increment) {
@@ -329,6 +325,10 @@ public class BcBands extends BandSet {
         bcLabelRelativeOffsets.add(byteCodeOffset);
         byteCodeOffset += 3;
         updateRenumbering();
+    }
+
+    public void visitLabel(final Label label) {
+        labelsToOffsets.put(label, Integer.valueOf(byteCodeOffset));
     }
 
     public void visitLdcInsn(final Object cst) {

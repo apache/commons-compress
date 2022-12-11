@@ -41,13 +41,6 @@ import org.apache.commons.compress.harmony.pack200.Archive.PackingFile;
 
 public class PackingUtils {
 
-    private static PackingLogger packingLogger;
-
-    static {
-        packingLogger = new PackingLogger("org.harmony.apache.pack200", null);
-        LogManager.getLogManager().addLogger(packingLogger);
-    }
-
     private static class PackingLogger extends Logger {
 
         private boolean verbose = false;
@@ -68,6 +61,13 @@ public class PackingUtils {
         }
     }
 
+    private static PackingLogger packingLogger;
+
+    static {
+        packingLogger = new PackingLogger("org.harmony.apache.pack200", null);
+        LogManager.getLogManager().addLogger(packingLogger);
+    }
+
     public static void config(final PackingOptions options) throws IOException {
         final String logFileName = options.getLogFile();
         if (logFileName != null) {
@@ -79,38 +79,6 @@ public class PackingUtils {
 
         packingLogger.setVerbose(options.isVerbose());
     }
-
-    public static void log(final String message) {
-        packingLogger.log(Level.INFO, message);
-    }
-
-    /**
-     * When effort is 0, the packer copies through the original jar input stream without compression
-     *
-     * @param jarInputStream the jar input stream
-     * @param outputStream the jar output stream
-     * @throws IOException If an I/O error occurs.
-     */
-    public static void copyThroughJar(final JarInputStream jarInputStream, final OutputStream outputStream)
-			throws IOException {
-		final Manifest manifest = jarInputStream.getManifest();
-		try (final JarOutputStream jarOutputStream = new JarOutputStream(outputStream, manifest)) {
-			jarOutputStream.setComment("PACK200");
-			log("Packed " + JarFile.MANIFEST_NAME);
-
-			final byte[] bytes = new byte[16384];
-			JarEntry jarEntry;
-			int bytesRead;
-			while ((jarEntry = jarInputStream.getNextJarEntry()) != null) {
-				jarOutputStream.putNextEntry(jarEntry);
-				while ((bytesRead = jarInputStream.read(bytes)) != -1) {
-					jarOutputStream.write(bytes, 0, bytesRead);
-				}
-				log("Packed " + jarEntry.getName());
-			}
-			jarInputStream.close();
-		}
-	}
 
     /**
      * When effort is 0, the packer copys through the original jar file without compression
@@ -140,6 +108,53 @@ public class PackingUtils {
 		}
 	}
 
+    /**
+     * When effort is 0, the packer copies through the original jar input stream without compression
+     *
+     * @param jarInputStream the jar input stream
+     * @param outputStream the jar output stream
+     * @throws IOException If an I/O error occurs.
+     */
+    public static void copyThroughJar(final JarInputStream jarInputStream, final OutputStream outputStream)
+			throws IOException {
+		final Manifest manifest = jarInputStream.getManifest();
+		try (final JarOutputStream jarOutputStream = new JarOutputStream(outputStream, manifest)) {
+			jarOutputStream.setComment("PACK200");
+			log("Packed " + JarFile.MANIFEST_NAME);
+
+			final byte[] bytes = new byte[16384];
+			JarEntry jarEntry;
+			int bytesRead;
+			while ((jarEntry = jarInputStream.getNextJarEntry()) != null) {
+				jarOutputStream.putNextEntry(jarEntry);
+				while ((bytesRead = jarInputStream.read(bytes)) != -1) {
+					jarOutputStream.write(bytes, 0, bytesRead);
+				}
+				log("Packed " + jarEntry.getName());
+			}
+			jarInputStream.close();
+		}
+	}
+
+    public static List<PackingFile> getPackingFileListFromJar(final JarFile jarFile, final boolean keepFileOrder)
+			throws IOException {
+		final List<PackingFile> packingFileList = new ArrayList<>();
+		final Enumeration<JarEntry> jarEntries = jarFile.entries();
+		while (jarEntries.hasMoreElements()) {
+			final JarEntry jarEntry = jarEntries.nextElement();
+			try (InputStream inputStream = jarFile.getInputStream(jarEntry)) {
+				final byte[] bytes = readJarEntry(jarEntry, new BufferedInputStream(inputStream));
+				packingFileList.add(new PackingFile(bytes, jarEntry));
+			}
+		}
+
+		// check whether it need reorder packing file list
+		if (!keepFileOrder) {
+			reorderPackingFiles(packingFileList);
+		}
+		return packingFileList;
+	}
+
     public static List<PackingFile> getPackingFileListFromJar(final JarInputStream jarInputStream, final boolean keepFileOrder)
         throws IOException {
         final List<PackingFile> packingFileList = new ArrayList<>();
@@ -167,24 +182,9 @@ public class PackingUtils {
         return packingFileList;
     }
 
-    public static List<PackingFile> getPackingFileListFromJar(final JarFile jarFile, final boolean keepFileOrder)
-			throws IOException {
-		final List<PackingFile> packingFileList = new ArrayList<>();
-		final Enumeration<JarEntry> jarEntries = jarFile.entries();
-		while (jarEntries.hasMoreElements()) {
-			final JarEntry jarEntry = jarEntries.nextElement();
-			try (InputStream inputStream = jarFile.getInputStream(jarEntry)) {
-				final byte[] bytes = readJarEntry(jarEntry, new BufferedInputStream(inputStream));
-				packingFileList.add(new PackingFile(bytes, jarEntry));
-			}
-		}
-
-		// check whether it need reorder packing file list
-		if (!keepFileOrder) {
-			reorderPackingFiles(packingFileList);
-		}
-		return packingFileList;
-	}
+    public static void log(final String message) {
+        packingLogger.log(Level.INFO, message);
+    }
 
     private static byte[] readJarEntry(final JarEntry jarEntry, final InputStream inputStream) throws IOException {
         long size = jarEntry.getSize();

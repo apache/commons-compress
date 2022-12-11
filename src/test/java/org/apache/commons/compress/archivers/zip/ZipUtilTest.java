@@ -62,12 +62,6 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testZipLong() {
-        final ZipLong test = ZipUtil.toDosTime(time);
-        assertEquals(test.getValue(), zl.getValue());
-    }
-
-    @Test
     public void testAdjustToLong() {
         assertEquals(Integer.MAX_VALUE,
                      ZipUtil.adjustToLong(Integer.MAX_VALUE));
@@ -75,62 +69,6 @@ public class ZipUtilTest {
                      ZipUtil.adjustToLong(Integer.MAX_VALUE + 1));
         assertEquals(2 * ((long) Integer.MAX_VALUE),
                      ZipUtil.adjustToLong(2 * Integer.MAX_VALUE));
-    }
-
-    @Test
-    public void testMinTime(){
-        final byte[] b1 = ZipUtil.toDosTime(0);
-        final byte b10 = b1[0]; // Save the first byte
-        b1[0]++; // change it
-        final byte[] b2 = ZipUtil.toDosTime(0); // get the same time
-        assertEquals(b10,b2[0]); // first byte should still be the same
-    }
-
-    @Test
-    public void testOutsideCalendar(){
-        final byte[] b1 = ZipUtil.toDosTime(160441200000L); // 1.1..1975
-        assertEquals(0, b1[0]);
-        assertEquals(33, b1[1]);
-        assertEquals(0, b1[2]);
-        assertEquals(0, b1[3]);
-    }
-
-    @Test
-    public void testInsideCalendar(){
-        final TimeZone tz = TimeZone.getDefault();
-        final long date = 476096400000L; // 1.1.1985, 10:00 am GMT
-        final byte[] b1 = ZipUtil.toDosTime(date - tz.getOffset(date));
-        assertEquals(0, b1[0]);
-        assertEquals(72, b1[1]);
-        assertEquals(65, b1[2]);
-        assertEquals(10, b1[3]);
-    }
-
-    @Test
-    public void testReverse() {
-        final byte[][] bTest = new byte[6][];
-        bTest[0] = new byte[]{};
-        bTest[1] = new byte[]{1};
-        bTest[2] = new byte[]{1, 2};
-        bTest[3] = new byte[]{1, 2, 3};
-        bTest[4] = new byte[]{1, 2, 3, 4};
-        bTest[5] = new byte[]{1, 2, 3, 4, 5};
-
-        final byte[][] rTest = new byte[6][];
-        rTest[0] = new byte[]{};
-        rTest[1] = new byte[]{1};
-        rTest[2] = new byte[]{2, 1};
-        rTest[3] = new byte[]{3, 2, 1};
-        rTest[4] = new byte[]{4, 3, 2, 1};
-        rTest[5] = new byte[]{5, 4, 3, 2, 1};
-
-        assertEquals("test and result arrays are same length", bTest.length, rTest.length);
-
-        for (int i = 0; i < bTest.length; i++) {
-            final byte[] result = ZipUtil.reverse(bTest[i]);
-            assertSame("reverse mutates in-place", bTest[i], result);
-            assertArrayEquals("reverse actually reverses", rTest[i], result);
-        }
     }
 
     @Test
@@ -158,6 +96,37 @@ public class ZipUtilTest {
         } catch (final IllegalArgumentException iae) {
             // All is good.
         }
+    }
+
+    @Test
+    public void testFromDosTime() {
+        ZipLong testDosTime = new ZipLong(1 << 21);
+        final Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 1980);
+        cal.set(Calendar.MONTH, 0);
+        cal.set(Calendar.DATE, 0);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Date testDate = ZipUtil.fromDosTime(testDosTime);
+        assertEquals(testDate.getTime(), cal.getTime().getTime());
+
+        testDosTime = ZipUtil.toDosTime(time);
+        testDate = ZipUtil.fromDosTime(testDosTime);
+        // the minimal time unit for dos time is 2 seconds
+        assertEquals(testDate.getTime() / 2000, (time.getTime() / 2000));
+    }
+
+    @Test
+    public void testInsideCalendar(){
+        final TimeZone tz = TimeZone.getDefault();
+        final long date = 476096400000L; // 1.1.1985, 10:00 am GMT
+        final byte[] b1 = ZipUtil.toDosTime(date - tz.getOffset(date));
+        assertEquals(0, b1[0]);
+        assertEquals(72, b1[1]);
+        assertEquals(65, b1[2]);
+        assertEquals(10, b1[3]);
     }
 
     @Test
@@ -190,6 +159,51 @@ public class ZipUtilTest {
     }
 
     @Test
+    public void testMinTime(){
+        final byte[] b1 = ZipUtil.toDosTime(0);
+        final byte b10 = b1[0]; // Save the first byte
+        b1[0]++; // change it
+        final byte[] b2 = ZipUtil.toDosTime(0); // get the same time
+        assertEquals(b10,b2[0]); // first byte should still be the same
+    }
+
+    @Test
+    public void testOutsideCalendar(){
+        final byte[] b1 = ZipUtil.toDosTime(160441200000L); // 1.1..1975
+        assertEquals(0, b1[0]);
+        assertEquals(33, b1[1]);
+        assertEquals(0, b1[2]);
+        assertEquals(0, b1[3]);
+    }
+
+    @Test
+    public void testReverse() {
+        final byte[][] bTest = new byte[6][];
+        bTest[0] = new byte[]{};
+        bTest[1] = new byte[]{1};
+        bTest[2] = new byte[]{1, 2};
+        bTest[3] = new byte[]{1, 2, 3};
+        bTest[4] = new byte[]{1, 2, 3, 4};
+        bTest[5] = new byte[]{1, 2, 3, 4, 5};
+
+        final byte[][] rTest = new byte[6][];
+        rTest[0] = new byte[]{};
+        rTest[1] = new byte[]{1};
+        rTest[2] = new byte[]{2, 1};
+        rTest[3] = new byte[]{3, 2, 1};
+        rTest[4] = new byte[]{4, 3, 2, 1};
+        rTest[5] = new byte[]{5, 4, 3, 2, 1};
+
+        assertEquals("test and result arrays are same length", bTest.length, rTest.length);
+
+        for (int i = 0; i < bTest.length; i++) {
+            final byte[] result = ZipUtil.reverse(bTest[i]);
+            assertSame("reverse mutates in-place", bTest[i], result);
+            assertArrayEquals("reverse actually reverses", rTest[i], result);
+        }
+    }
+
+    @Test
     public void testSignedByteToUnsignedInt() {
         // Yay, we can completely test all possible input values in this case!
         int expectedVal = 128;
@@ -201,6 +215,13 @@ public class ZipUtilTest {
                 expectedVal = 0;
             }
         }
+    }
+
+    @Test
+    public void testUnknownMethod() throws Exception {
+        final ZipArchiveEntry ze = new ZipArchiveEntry();
+        ze.setMethod(100);
+        assertThrows(UnsupportedZipFeatureException.class, () -> ZipUtil.checkRequestedFeatures(ze));
     }
 
     @Test
@@ -232,26 +253,6 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testFromDosTime() {
-        ZipLong testDosTime = new ZipLong(1 << 21);
-        final Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, 1980);
-        cal.set(Calendar.MONTH, 0);
-        cal.set(Calendar.DATE, 0);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        Date testDate = ZipUtil.fromDosTime(testDosTime);
-        assertEquals(testDate.getTime(), cal.getTime().getTime());
-
-        testDosTime = ZipUtil.toDosTime(time);
-        testDate = ZipUtil.fromDosTime(testDosTime);
-        // the minimal time unit for dos time is 2 seconds
-        assertEquals(testDate.getTime() / 2000, (time.getTime() / 2000));
-    }
-
-    @Test
     public void testUnsupportedMethod() throws Exception {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
         ze.setMethod(ZipMethod.EXPANDING_LEVEL_1.getCode());
@@ -259,9 +260,8 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testUnknownMethod() throws Exception {
-        final ZipArchiveEntry ze = new ZipArchiveEntry();
-        ze.setMethod(100);
-        assertThrows(UnsupportedZipFeatureException.class, () -> ZipUtil.checkRequestedFeatures(ze));
+    public void testZipLong() {
+        final ZipLong test = ZipUtil.toDosTime(time);
+        assertEquals(test.getValue(), zl.getValue());
     }
 }

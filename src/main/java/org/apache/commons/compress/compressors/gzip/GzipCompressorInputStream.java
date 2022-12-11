@@ -85,6 +85,29 @@ public class GzipCompressorInputStream extends CompressorInputStream
     private static final int FCOMMENT = 0x10;
     private static final int FRESERVED = 0xE0;
 
+    /**
+     * Checks if the signature matches what is expected for a .gz file.
+     *
+     * @param signature the bytes to check
+     * @param length    the number of bytes to check
+     * @return          true if this is a .gz stream, false otherwise
+     *
+     * @since 1.1
+     */
+    public static boolean matches(final byte[] signature, final int length) {
+        return length >= 2 && signature[0] == 31 && signature[1] == -117;
+    }
+
+    private static byte[] readToNull(final DataInput inData) throws IOException {
+        try (final ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            int b = 0;
+            while ((b = inData.readUnsignedByte()) != 0x00) { // NOPMD NOSONAR
+                bos.write(b);
+            }
+            return bos.toByteArray();
+        }
+    }
+
     private final CountingInputStream countingStream;
 
     // Compressed input stream, possibly wrapped in a
@@ -166,6 +189,31 @@ public class GzipCompressorInputStream extends CompressorInputStream
 
         this.decompressConcatenated = decompressConcatenated;
         init(true);
+    }
+
+    /**
+     * Closes the input stream (unless it is System.in).
+     *
+     * @since 1.2
+     */
+    @Override
+    public void close() throws IOException {
+        if (inf != null) {
+            inf.end();
+            inf = null;
+        }
+
+        if (this.in != System.in) {
+            this.in.close();
+        }
+    }
+
+    /**
+     * @since 1.17
+     */
+    @Override
+    public long getCompressedCount() {
+        return countingStream.getBytesRead();
     }
 
     /**
@@ -263,16 +311,6 @@ public class GzipCompressorInputStream extends CompressorInputStream
         return true;
     }
 
-    private static byte[] readToNull(final DataInput inData) throws IOException {
-        try (final ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-            int b = 0;
-            while ((b = inData.readUnsignedByte()) != 0x00) { // NOPMD NOSONAR
-                bos.write(b);
-            }
-            return bos.toByteArray();
-        }
-    }
-
     @Override
     public int read() throws IOException {
         return read(oneByte, 0, 1) == -1 ? -1 : oneByte[0] & 0xFF;
@@ -362,43 +400,5 @@ public class GzipCompressorInputStream extends CompressorInputStream
         }
 
         return size;
-    }
-
-    /**
-     * Checks if the signature matches what is expected for a .gz file.
-     *
-     * @param signature the bytes to check
-     * @param length    the number of bytes to check
-     * @return          true if this is a .gz stream, false otherwise
-     *
-     * @since 1.1
-     */
-    public static boolean matches(final byte[] signature, final int length) {
-        return length >= 2 && signature[0] == 31 && signature[1] == -117;
-    }
-
-    /**
-     * Closes the input stream (unless it is System.in).
-     *
-     * @since 1.2
-     */
-    @Override
-    public void close() throws IOException {
-        if (inf != null) {
-            inf.end();
-            inf = null;
-        }
-
-        if (this.in != System.in) {
-            this.in.close();
-        }
-    }
-
-    /**
-     * @since 1.17
-     */
-    @Override
-    public long getCompressedCount() {
-        return countingStream.getBytesRead();
     }
 }

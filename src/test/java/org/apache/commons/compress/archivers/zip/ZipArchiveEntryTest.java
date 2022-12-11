@@ -40,6 +40,209 @@ import org.junit.jupiter.api.Test;
  */
 public class ZipArchiveEntryTest {
 
+    @Test
+    public void bestEffortIncludesUnparseableExtraData() throws Exception {
+        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
+        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        ze.setExtraFields(extraFields);
+        final ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.BEST_EFFORT);
+        assertEquals(extraFields.length, read.length);
+    }
+
+    @Test
+    public void draconicThrowsOnUnparseableExtraData() throws Exception {
+        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
+        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        ze.setExtraFields(extraFields);
+        assertThrows(ZipException.class, () -> ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.DRACONIC));
+    }
+
+    /**
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-379"
+     */
+    @Test
+    public void isUnixSymlinkIsFalseIfMoreThanOneFlagIsSet() throws Exception {
+        try (ZipFile zf = new ZipFile(getFile("COMPRESS-379.jar"))) {
+            final ZipArchiveEntry ze = zf.getEntry("META-INF/maven/");
+            assertFalse(ze.isUnixSymlink());
+        }
+    }
+
+    @Test
+    public void onlyParseableLenientExcludesUnparseableExtraData() throws Exception {
+        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
+        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        ze.setExtraFields(extraFields);
+        final ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.ONLY_PARSEABLE_LENIENT);
+        assertEquals(extraFields.length, read.length + 1);
+    }
+
+    @Test
+    public void onlyParseableStrictExcludesUnparseableExtraData() throws Exception {
+        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
+        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        ze.setExtraFields(extraFields);
+        final ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.ONLY_PARSEABLE_STRICT);
+        assertEquals(extraFields.length, read.length + 1);
+    }
+
+    private ZipExtraField[] parsingModeBehaviorTestData() {
+        final AsiExtraField a = new AsiExtraField();
+        a.setDirectory(true);
+        a.setMode(0755);
+        final UnrecognizedExtraField u = new UnrecognizedExtraField();
+        u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
+        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
+        final UnparseableExtraFieldData x = new UnparseableExtraFieldData();
+        final byte[] unparseable = {
+            0, 0, (byte) 0xff, (byte) 0xff, 0, 0, 0
+        };
+        x.parseFromLocalFileData(unparseable, 0, unparseable.length);
+        return new ZipExtraField[] { a, u, x };
+    }
+
+    @Test
+    public void reparsingUnicodeExtraWithUnsupportedversionThrowsInStrictMode()
+        throws Exception {
+        try (ZipFile zf = new ZipFile(getFile("COMPRESS-479.zip"))) {
+            final ZipArchiveEntry ze = zf.getEntry("%U20AC_for_Dollar.txt");
+            assertThrows(ZipException.class, () -> ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.STRICT_FOR_KNOW_EXTRA_FIELDS));
+        }
+    }
+
+    @Test
+    public void strictForKnowExtraFieldsIncludesUnparseableExtraData() throws Exception {
+        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
+        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        ze.setExtraFields(extraFields);
+        final ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.STRICT_FOR_KNOW_EXTRA_FIELDS);
+        assertEquals(extraFields.length, read.length);
+    }
+
+    /**
+     * test handling of extra fields
+     */
+    @Test
+    public void testAddAsFirstExtraField() {
+        final AsiExtraField a = new AsiExtraField();
+        a.setDirectory(true);
+        a.setMode(0755);
+        final UnrecognizedExtraField u = new UnrecognizedExtraField();
+        u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
+        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
+
+        final ZipArchiveEntry ze = new ZipArchiveEntry("test/");
+        ze.setExtraFields(new ZipExtraField[] {a, u});
+        final byte[] data1 = ze.getExtra();
+
+        final UnrecognizedExtraField u2 = new UnrecognizedExtraField();
+        u2.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
+        u2.setLocalFileDataData(new byte[] {1});
+
+        ze.addAsFirstExtraField(u2);
+        final byte[] data2 = ze.getExtra();
+        ZipExtraField[] result = ze.getExtraFields();
+        assertEquals("second pass", 2, result.length);
+        assertSame(u2, result[0]);
+        assertSame(a, result[1]);
+        assertEquals("length second pass", data1.length + 1, data2.length);
+
+        final UnrecognizedExtraField u3 = new UnrecognizedExtraField();
+        u3.setHeaderId(new ZipShort(2));
+        u3.setLocalFileDataData(new byte[] {1});
+        ze.addAsFirstExtraField(u3);
+        result = ze.getExtraFields();
+        assertEquals("third pass", 3, result.length);
+        assertSame(u3, result[0]);
+        assertSame(u2, result[1]);
+        assertSame(a, result[2]);
+    }
+
+    /**
+     * Test case for
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-93"
+     * >COMPRESS-93</a>.
+     */
+    @Test
+    public void testCompressionMethod() throws Exception {
+        final ZipArchiveOutputStream zos =
+            new ZipArchiveOutputStream(new ByteArrayOutputStream());
+        final ZipArchiveEntry entry = new ZipArchiveEntry("foo");
+        assertEquals(-1, entry.getMethod());
+        assertFalse(zos.canWriteEntryData(entry));
+
+        entry.setMethod(ZipEntry.STORED);
+        assertEquals(ZipEntry.STORED, entry.getMethod());
+        assertTrue(zos.canWriteEntryData(entry));
+
+        entry.setMethod(ZipEntry.DEFLATED);
+        assertEquals(ZipEntry.DEFLATED, entry.getMethod());
+        assertTrue(zos.canWriteEntryData(entry));
+
+        // Test the unsupported "imploded" compression method (6)
+        entry.setMethod(6);
+        assertEquals(6, entry.getMethod());
+        assertFalse(zos.canWriteEntryData(entry));
+        zos.close();
+    }
+
+    @Test
+    public void testCopyConstructor() throws Exception {
+        final ZipArchiveEntry archiveEntry = new ZipArchiveEntry("fred");
+        archiveEntry.setUnixMode(0664);
+        archiveEntry.setMethod(ZipEntry.DEFLATED);
+        archiveEntry.getGeneralPurposeBit().useStrongEncryption(true);
+        final ZipArchiveEntry copy = new ZipArchiveEntry(archiveEntry);
+        assertEquals(archiveEntry, copy);
+    }
+
+    /**
+     * test handling of extra fields via central directory
+     */
+    @Test
+    public void testExtraFieldMerging() {
+        final AsiExtraField a = new AsiExtraField();
+        a.setDirectory(true);
+        a.setMode(0755);
+        final UnrecognizedExtraField u = new UnrecognizedExtraField();
+        u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
+        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
+
+        final ZipArchiveEntry ze = new ZipArchiveEntry("test/");
+        ze.setExtraFields(new ZipExtraField[] {a, u});
+
+        // merge
+        // Header-ID 1 + length 1 + one byte of data
+        final byte[] b = ExtraFieldUtilsTest.UNRECOGNIZED_HEADER.getBytes();
+        ze.setCentralDirectoryExtra(new byte[] {b[0], b[1], 1, 0, 127});
+
+        ZipExtraField[] result = ze.getExtraFields();
+        assertEquals("first pass", 2, result.length);
+        assertSame(a, result[0]);
+        assertEquals(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER,
+                     result[1].getHeaderId());
+        assertEquals(new ZipShort(0), result[1].getLocalFileDataLength());
+        assertEquals(new ZipShort(1), result[1].getCentralDirectoryLength());
+
+        // add new
+        // Header-ID 2 + length 0
+        ze.setCentralDirectoryExtra(new byte[] {2, 0, 0, 0});
+
+        result = ze.getExtraFields();
+        assertEquals("second pass", 3, result.length);
+
+        // merge
+        // Header-ID 2 + length 1 + one byte of data
+        ze.setExtra(new byte[] {2, 0, 1, 0, 127});
+
+        result = ze.getExtraFields();
+        assertEquals("third pass", 3, result.length);
+        assertSame(a, result[0]);
+        assertEquals(new ZipShort(2), result[2].getHeaderId());
+        assertEquals(new ZipShort(1), result[2].getLocalFileDataLength());
+        assertEquals(new ZipShort(0), result[2].getCentralDirectoryLength());
+    }
+
     /**
      * test handling of extra fields
      */
@@ -94,149 +297,13 @@ public class ZipArchiveEntryTest {
         }
     }
 
-    /**
-     * test handling of extra fields via central directory
-     */
     @Test
-    public void testExtraFieldMerging() {
-        final AsiExtraField a = new AsiExtraField();
-        a.setDirectory(true);
-        a.setMode(0755);
-        final UnrecognizedExtraField u = new UnrecognizedExtraField();
-        u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
-
-        final ZipArchiveEntry ze = new ZipArchiveEntry("test/");
-        ze.setExtraFields(new ZipExtraField[] {a, u});
-
-        // merge
-        // Header-ID 1 + length 1 + one byte of data
-        final byte[] b = ExtraFieldUtilsTest.UNRECOGNIZED_HEADER.getBytes();
-        ze.setCentralDirectoryExtra(new byte[] {b[0], b[1], 1, 0, 127});
-
-        ZipExtraField[] result = ze.getExtraFields();
-        assertEquals("first pass", 2, result.length);
-        assertSame(a, result[0]);
-        assertEquals(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER,
-                     result[1].getHeaderId());
-        assertEquals(new ZipShort(0), result[1].getLocalFileDataLength());
-        assertEquals(new ZipShort(1), result[1].getCentralDirectoryLength());
-
-        // add new
-        // Header-ID 2 + length 0
-        ze.setCentralDirectoryExtra(new byte[] {2, 0, 0, 0});
-
-        result = ze.getExtraFields();
-        assertEquals("second pass", 3, result.length);
-
-        // merge
-        // Header-ID 2 + length 1 + one byte of data
-        ze.setExtra(new byte[] {2, 0, 1, 0, 127});
-
-        result = ze.getExtraFields();
-        assertEquals("third pass", 3, result.length);
-        assertSame(a, result[0]);
-        assertEquals(new ZipShort(2), result[2].getHeaderId());
-        assertEquals(new ZipShort(1), result[2].getLocalFileDataLength());
-        assertEquals(new ZipShort(0), result[2].getCentralDirectoryLength());
-    }
-
-    /**
-     * test handling of extra fields
-     */
-    @Test
-    public void testAddAsFirstExtraField() {
-        final AsiExtraField a = new AsiExtraField();
-        a.setDirectory(true);
-        a.setMode(0755);
-        final UnrecognizedExtraField u = new UnrecognizedExtraField();
-        u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
-
-        final ZipArchiveEntry ze = new ZipArchiveEntry("test/");
-        ze.setExtraFields(new ZipExtraField[] {a, u});
-        final byte[] data1 = ze.getExtra();
-
-        final UnrecognizedExtraField u2 = new UnrecognizedExtraField();
-        u2.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        u2.setLocalFileDataData(new byte[] {1});
-
-        ze.addAsFirstExtraField(u2);
-        final byte[] data2 = ze.getExtra();
-        ZipExtraField[] result = ze.getExtraFields();
-        assertEquals("second pass", 2, result.length);
-        assertSame(u2, result[0]);
-        assertSame(a, result[1]);
-        assertEquals("length second pass", data1.length + 1, data2.length);
-
-        final UnrecognizedExtraField u3 = new UnrecognizedExtraField();
-        u3.setHeaderId(new ZipShort(2));
-        u3.setLocalFileDataData(new byte[] {1});
-        ze.addAsFirstExtraField(u3);
-        result = ze.getExtraFields();
-        assertEquals("third pass", 3, result.length);
-        assertSame(u3, result[0]);
-        assertSame(u2, result[1]);
-        assertSame(a, result[2]);
-    }
-
-    @Test
-    public void testUnixMode() {
-        ZipArchiveEntry ze = new ZipArchiveEntry("foo");
-        assertEquals(0, ze.getPlatform());
-        ze.setUnixMode(0755);
-        assertEquals(3, ze.getPlatform());
-        assertEquals(0755,
-                     (ze.getExternalAttributes() >> 16) & 0xFFFF);
-        assertEquals(0, ze.getExternalAttributes()  & 0xFFFF);
-
-        ze.setUnixMode(0444);
-        assertEquals(3, ze.getPlatform());
-        assertEquals(0444,
-                     (ze.getExternalAttributes() >> 16) & 0xFFFF);
-        assertEquals(1, ze.getExternalAttributes()  & 0xFFFF);
-
-        ze = new ZipArchiveEntry("foo/");
-        assertEquals(0, ze.getPlatform());
-        ze.setUnixMode(0777);
-        assertEquals(3, ze.getPlatform());
-        assertEquals(0777,
-                     (ze.getExternalAttributes() >> 16) & 0xFFFF);
-        assertEquals(0x10, ze.getExternalAttributes()  & 0xFFFF);
-
-        ze.setUnixMode(0577);
-        assertEquals(3, ze.getPlatform());
-        assertEquals(0577,
-                     (ze.getExternalAttributes() >> 16) & 0xFFFF);
-        assertEquals(0x11, ze.getExternalAttributes()  & 0xFFFF);
-    }
-
-    /**
-     * Test case for
-     * <a href="https://issues.apache.org/jira/browse/COMPRESS-93"
-     * >COMPRESS-93</a>.
-     */
-    @Test
-    public void testCompressionMethod() throws Exception {
-        final ZipArchiveOutputStream zos =
-            new ZipArchiveOutputStream(new ByteArrayOutputStream());
-        final ZipArchiveEntry entry = new ZipArchiveEntry("foo");
-        assertEquals(-1, entry.getMethod());
-        assertFalse(zos.canWriteEntryData(entry));
-
-        entry.setMethod(ZipEntry.STORED);
-        assertEquals(ZipEntry.STORED, entry.getMethod());
-        assertTrue(zos.canWriteEntryData(entry));
-
-        entry.setMethod(ZipEntry.DEFLATED);
-        assertEquals(ZipEntry.DEFLATED, entry.getMethod());
-        assertTrue(zos.canWriteEntryData(entry));
-
-        // Test the unsupported "imploded" compression method (6)
-        entry.setMethod(6);
-        assertEquals(6, entry.getMethod());
-        assertFalse(zos.canWriteEntryData(entry));
-        zos.close();
+    public void testIsUnixSymlink() {
+        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        ze.setUnixMode(UnixStat.LINK_FLAG);
+        assertTrue(ze.isUnixSymlink());
+        ze.setUnixMode(UnixStat.LINK_FLAG | UnixStat.DIR_FLAG);
+        assertFalse(ze.isUnixSymlink());
     }
 
     /**
@@ -269,101 +336,34 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testCopyConstructor() throws Exception {
-        final ZipArchiveEntry archiveEntry = new ZipArchiveEntry("fred");
-        archiveEntry.setUnixMode(0664);
-        archiveEntry.setMethod(ZipEntry.DEFLATED);
-        archiveEntry.getGeneralPurposeBit().useStrongEncryption(true);
-        final ZipArchiveEntry copy = new ZipArchiveEntry(archiveEntry);
-        assertEquals(archiveEntry, copy);
-    }
+    public void testUnixMode() {
+        ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        assertEquals(0, ze.getPlatform());
+        ze.setUnixMode(0755);
+        assertEquals(3, ze.getPlatform());
+        assertEquals(0755,
+                     (ze.getExternalAttributes() >> 16) & 0xFFFF);
+        assertEquals(0, ze.getExternalAttributes()  & 0xFFFF);
 
-    /**
-     * @see "https://issues.apache.org/jira/browse/COMPRESS-379"
-     */
-    @Test
-    public void isUnixSymlinkIsFalseIfMoreThanOneFlagIsSet() throws Exception {
-        try (ZipFile zf = new ZipFile(getFile("COMPRESS-379.jar"))) {
-            final ZipArchiveEntry ze = zf.getEntry("META-INF/maven/");
-            assertFalse(ze.isUnixSymlink());
-        }
-    }
+        ze.setUnixMode(0444);
+        assertEquals(3, ze.getPlatform());
+        assertEquals(0444,
+                     (ze.getExternalAttributes() >> 16) & 0xFFFF);
+        assertEquals(1, ze.getExternalAttributes()  & 0xFFFF);
 
-    @Test
-    public void testIsUnixSymlink() {
-        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
-        ze.setUnixMode(UnixStat.LINK_FLAG);
-        assertTrue(ze.isUnixSymlink());
-        ze.setUnixMode(UnixStat.LINK_FLAG | UnixStat.DIR_FLAG);
-        assertFalse(ze.isUnixSymlink());
-    }
+        ze = new ZipArchiveEntry("foo/");
+        assertEquals(0, ze.getPlatform());
+        ze.setUnixMode(0777);
+        assertEquals(3, ze.getPlatform());
+        assertEquals(0777,
+                     (ze.getExternalAttributes() >> 16) & 0xFFFF);
+        assertEquals(0x10, ze.getExternalAttributes()  & 0xFFFF);
 
-    @Test
-    public void reparsingUnicodeExtraWithUnsupportedversionThrowsInStrictMode()
-        throws Exception {
-        try (ZipFile zf = new ZipFile(getFile("COMPRESS-479.zip"))) {
-            final ZipArchiveEntry ze = zf.getEntry("%U20AC_for_Dollar.txt");
-            assertThrows(ZipException.class, () -> ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.STRICT_FOR_KNOW_EXTRA_FIELDS));
-        }
-    }
-
-    @Test
-    public void bestEffortIncludesUnparseableExtraData() throws Exception {
-        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
-        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
-        ze.setExtraFields(extraFields);
-        final ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.BEST_EFFORT);
-        assertEquals(extraFields.length, read.length);
-    }
-
-    @Test
-    public void onlyParseableLenientExcludesUnparseableExtraData() throws Exception {
-        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
-        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
-        ze.setExtraFields(extraFields);
-        final ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.ONLY_PARSEABLE_LENIENT);
-        assertEquals(extraFields.length, read.length + 1);
-    }
-
-    @Test
-    public void strictForKnowExtraFieldsIncludesUnparseableExtraData() throws Exception {
-        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
-        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
-        ze.setExtraFields(extraFields);
-        final ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.STRICT_FOR_KNOW_EXTRA_FIELDS);
-        assertEquals(extraFields.length, read.length);
-    }
-
-    @Test
-    public void onlyParseableStrictExcludesUnparseableExtraData() throws Exception {
-        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
-        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
-        ze.setExtraFields(extraFields);
-        final ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.ONLY_PARSEABLE_STRICT);
-        assertEquals(extraFields.length, read.length + 1);
-    }
-
-    @Test
-    public void draconicThrowsOnUnparseableExtraData() throws Exception {
-        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
-        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
-        ze.setExtraFields(extraFields);
-        assertThrows(ZipException.class, () -> ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.DRACONIC));
-    }
-
-    private ZipExtraField[] parsingModeBehaviorTestData() {
-        final AsiExtraField a = new AsiExtraField();
-        a.setDirectory(true);
-        a.setMode(0755);
-        final UnrecognizedExtraField u = new UnrecognizedExtraField();
-        u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
-        final UnparseableExtraFieldData x = new UnparseableExtraFieldData();
-        final byte[] unparseable = {
-            0, 0, (byte) 0xff, (byte) 0xff, 0, 0, 0
-        };
-        x.parseFromLocalFileData(unparseable, 0, unparseable.length);
-        return new ZipExtraField[] { a, u, x };
+        ze.setUnixMode(0577);
+        assertEquals(3, ze.getPlatform());
+        assertEquals(0577,
+                     (ze.getExternalAttributes() >> 16) & 0xFFFF);
+        assertEquals(0x11, ze.getExternalAttributes()  & 0xFFFF);
     }
 
     @Test

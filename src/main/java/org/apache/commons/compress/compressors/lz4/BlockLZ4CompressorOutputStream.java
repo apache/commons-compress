@@ -39,8 +39,104 @@ import org.apache.commons.compress.utils.ByteUtils;
  */
 public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
 
+    final static class Pair {
+        private static int lengths(final int litLength, final int brLength) {
+            final int l = Math.min(litLength, 15);
+            final int br = brLength < 4 ? 0 : (brLength < 19 ? brLength - 4 : 15);
+            return (l << BlockLZ4CompressorInputStream.SIZE_BITS) | br;
+        }
+        private static void writeLength(int length, final OutputStream out) throws IOException {
+            while (length >= 255) {
+                out.write(255);
+                length -= 255;
+            }
+            out.write(length);
+        }
+        private final Deque<byte[]> literals = new LinkedList<>();
+
+        private int brOffset, brLength;
+
+        private boolean written;
+
+        byte[] addLiteral(final LZ77Compressor.LiteralBlock block) {
+            final byte[] copy = Arrays.copyOfRange(block.getData(), block.getOffset(),
+                block.getOffset() + block.getLength());
+            literals.add(copy);
+            return copy;
+        }
+
+        private int backReferenceLength() {
+            return brLength;
+        }
+
+        boolean canBeWritten(final int lengthOfBlocksAfterThisPair) {
+            return hasBackReference()
+                && lengthOfBlocksAfterThisPair >= MIN_OFFSET_OF_LAST_BACK_REFERENCE + MIN_BACK_REFERENCE_LENGTH;
+        }
+
+        boolean hasBackReference() {
+            return brOffset > 0;
+        }
+
+        private boolean hasBeenWritten() {
+            return written;
+        }
+
+        int length() {
+            return literalLength() + brLength;
+        }
+
+        private int literalLength() {
+            return literals.stream().mapToInt(b -> b.length).sum();
+        }
+
+        private void prependLiteral(final byte[] data) {
+            literals.addFirst(data);
+        }
+
+        private void prependTo(final Pair other) {
+            final Iterator<byte[]> listBackwards = literals.descendingIterator();
+            while (listBackwards.hasNext()) {
+                other.prependLiteral(listBackwards.next());
+            }
+        }
+
+        void setBackReference(final LZ77Compressor.BackReference block) {
+            if (hasBackReference()) {
+                throw new IllegalStateException();
+            }
+            brOffset = block.getOffset();
+            brLength = block.getLength();
+        }
+
+        private Pair splitWithNewBackReferenceLengthOf(final int newBackReferenceLength) {
+            final Pair p = new Pair();
+            p.literals.addAll(literals);
+            p.brOffset = brOffset;
+            p.brLength = newBackReferenceLength;
+            return p;
+        }
+
+        void writeTo(final OutputStream out) throws IOException {
+            final int litLength = literalLength();
+            out.write(lengths(litLength, brLength));
+            if (litLength >= BlockLZ4CompressorInputStream.BACK_REFERENCE_SIZE_MASK) {
+                writeLength(litLength - BlockLZ4CompressorInputStream.BACK_REFERENCE_SIZE_MASK, out);
+            }
+            for (final byte[] b : literals) {
+                out.write(b);
+            }
+            if (hasBackReference()) {
+                ByteUtils.toLittleEndian(out, brOffset, 2);
+                if (brLength - MIN_BACK_REFERENCE_LENGTH >= BlockLZ4CompressorInputStream.BACK_REFERENCE_SIZE_MASK) {
+                    writeLength(brLength - MIN_BACK_REFERENCE_LENGTH
+                        - BlockLZ4CompressorInputStream.BACK_REFERENCE_SIZE_MASK, out);
+                }
+            }
+            written = true;
+        }
+    }
     private static final int MIN_BACK_REFERENCE_LENGTH = 4;
-    private static final int MIN_OFFSET_OF_LAST_BACK_REFERENCE = 12;
 
     /*
 
@@ -75,15 +171,30 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
 
     */
 
+    private static final int MIN_OFFSET_OF_LAST_BACK_REFERENCE = 12;
+    /**
+     * Returns a builder correctly configured for the LZ4 algorithm.
+     * @return a builder correctly configured for the LZ4 algorithm
+     */
+    public static Parameters.Builder createParameterBuilder() {
+        final int maxLen = BlockLZ4CompressorInputStream.WINDOW_SIZE - 1;
+        return Parameters.builder(BlockLZ4CompressorInputStream.WINDOW_SIZE)
+            .withMinBackReferenceLength(MIN_BACK_REFERENCE_LENGTH)
+            .withMaxBackReferenceLength(maxLen)
+            .withMaxOffset(maxLen)
+            .withMaxLiteralLength(maxLen);
+    }
+
     private final LZ77Compressor compressor;
+
     private final OutputStream os;
 
     // used in one-arg write method
     private final byte[] oneByte = new byte[1];
-
     private boolean finished;
 
     private final Deque<Pair> pairs = new LinkedList<>();
+
     // keeps track of the last window-size bytes (64k) in order to be
     // able to expand back-references when needed
     private final Deque<byte[]> expandedBlocks = new LinkedList<>();
@@ -124,61 +235,6 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
             });
     }
 
-    @Override
-    public void write(final int b) throws IOException {
-        oneByte[0] = (byte) (b & 0xff);
-        write(oneByte);
-    }
-
-    @Override
-    public void write(final byte[] data, final int off, final int len) throws IOException {
-        compressor.compress(data, off, len);
-    }
-
-    @Override
-    public void close() throws IOException {
-        try {
-            finish();
-        } finally {
-            os.close();
-        }
-    }
-
-    /**
-     * Compresses all remaining data and writes it to the stream,
-     * doesn't close the underlying stream.
-     * @throws IOException if an error occurs
-     */
-    public void finish() throws IOException {
-        if (!finished) {
-            compressor.finish();
-            finished = true;
-        }
-    }
-
-    /**
-     * Adds some initial data to fill the window with.
-     *
-     * @param data the data to fill the window with.
-     * @param off offset of real data into the array
-     * @param len amount of data
-     * @throws IllegalStateException if the stream has already started to write data
-     * @see LZ77Compressor#prefill
-     */
-    public void prefill(final byte[] data, final int off, final int len) {
-        if (len > 0) {
-            final byte[] b = Arrays.copyOfRange(data, off, off + len);
-            compressor.prefill(b);
-            recordLiteral(b);
-        }
-    }
-
-    private void addLiteralBlock(final LZ77Compressor.LiteralBlock block) throws IOException {
-        final Pair last = writeBlocksAndReturnUnfinishedPair(block.getLength());
-        recordLiteral(last.addLiteral(block));
-        clearUnusedBlocksAndPairs();
-    }
-
     private void addBackReference(final LZ77Compressor.BackReference block) throws IOException {
         final Pair last = writeBlocksAndReturnUnfinishedPair(block.getLength());
         last.setBackReference(block);
@@ -186,23 +242,10 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         clearUnusedBlocksAndPairs();
     }
 
-    private Pair writeBlocksAndReturnUnfinishedPair(final int length) throws IOException {
-        writeWritablePairs(length);
-        Pair last = pairs.peekLast();
-        if (last == null || last.hasBackReference()) {
-            last = new Pair();
-            pairs.addLast(last);
-        }
-        return last;
-    }
-
-    private void recordLiteral(final byte[] b) {
-        expandedBlocks.addFirst(b);
-    }
-
-    private void clearUnusedBlocksAndPairs() {
-        clearUnusedBlocks();
-        clearUnusedPairs();
+    private void addLiteralBlock(final LZ77Compressor.LiteralBlock block) throws IOException {
+        final Pair last = writeBlocksAndReturnUnfinishedPair(block.getLength());
+        recordLiteral(last.addLiteral(block));
+        clearUnusedBlocksAndPairs();
     }
 
     private void clearUnusedBlocks() {
@@ -221,8 +264,39 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         }
     }
 
-    private void recordBackReference(final LZ77Compressor.BackReference block) {
-        expandedBlocks.addFirst(expand(block.getOffset(), block.getLength()));
+    private void clearUnusedBlocksAndPairs() {
+        clearUnusedBlocks();
+        clearUnusedPairs();
+    }
+
+    private void clearUnusedPairs() {
+        int pairLengths = 0;
+        int pairsToKeep = 0;
+        for (final Iterator<Pair> it = pairs.descendingIterator(); it.hasNext(); ) {
+            final Pair p = it.next();
+            pairsToKeep++;
+            pairLengths += p.length();
+            if (pairLengths >= BlockLZ4CompressorInputStream.WINDOW_SIZE) {
+                break;
+            }
+        }
+        final int size = pairs.size();
+        for (int i = pairsToKeep; i < size; i++) {
+            final Pair p = pairs.peekFirst();
+            if (!p.hasBeenWritten()) {
+                break;
+            }
+            pairs.removeFirst();
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            finish();
+        } finally {
+            os.close();
+        }
     }
 
     private byte[] expand(final int offset, final int length) {
@@ -276,56 +350,41 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         }
     }
 
-    private void clearUnusedPairs() {
-        int pairLengths = 0;
-        int pairsToKeep = 0;
-        for (final Iterator<Pair> it = pairs.descendingIterator(); it.hasNext(); ) {
-            final Pair p = it.next();
-            pairsToKeep++;
-            pairLengths += p.length();
-            if (pairLengths >= BlockLZ4CompressorInputStream.WINDOW_SIZE) {
-                break;
-            }
-        }
-        final int size = pairs.size();
-        for (int i = pairsToKeep; i < size; i++) {
-            final Pair p = pairs.peekFirst();
-            if (!p.hasBeenWritten()) {
-                break;
-            }
-            pairs.removeFirst();
+    /**
+     * Compresses all remaining data and writes it to the stream,
+     * doesn't close the underlying stream.
+     * @throws IOException if an error occurs
+     */
+    public void finish() throws IOException {
+        if (!finished) {
+            compressor.finish();
+            finished = true;
         }
     }
 
-    private void writeFinalLiteralBlock() throws IOException {
-        rewriteLastPairs();
-        for (final Pair p : pairs) {
-            if (!p.hasBeenWritten()) {
-                p.writeTo(os);
-            }
+    /**
+     * Adds some initial data to fill the window with.
+     *
+     * @param data the data to fill the window with.
+     * @param off offset of real data into the array
+     * @param len amount of data
+     * @throws IllegalStateException if the stream has already started to write data
+     * @see LZ77Compressor#prefill
+     */
+    public void prefill(final byte[] data, final int off, final int len) {
+        if (len > 0) {
+            final byte[] b = Arrays.copyOfRange(data, off, off + len);
+            compressor.prefill(b);
+            recordLiteral(b);
         }
-        pairs.clear();
     }
 
-    private void writeWritablePairs(final int lengthOfBlocksAfterLastPair) throws IOException {
-        int unwrittenLength = lengthOfBlocksAfterLastPair;
-        for (final Iterator<Pair> it = pairs.descendingIterator(); it.hasNext(); ) {
-            final Pair p = it.next();
-            if (p.hasBeenWritten()) {
-                break;
-            }
-            unwrittenLength += p.length();
-        }
-        for (final Pair p : pairs) {
-            if (p.hasBeenWritten()) {
-                continue;
-            }
-            unwrittenLength -= p.length();
-            if (!p.canBeWritten(unwrittenLength)) {
-                break;
-            }
-            p.writeTo(os);
-        }
+    private void recordBackReference(final LZ77Compressor.BackReference block) {
+        expandedBlocks.addFirst(expand(block.getOffset(), block.getLength()));
+    }
+
+    private void recordLiteral(final byte[] b) {
+        expandedBlocks.addFirst(b);
     }
 
     private void rewriteLastPairs() {
@@ -394,114 +453,55 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         pairs.add(replacement);
     }
 
-    /**
-     * Returns a builder correctly configured for the LZ4 algorithm.
-     * @return a builder correctly configured for the LZ4 algorithm
-     */
-    public static Parameters.Builder createParameterBuilder() {
-        final int maxLen = BlockLZ4CompressorInputStream.WINDOW_SIZE - 1;
-        return Parameters.builder(BlockLZ4CompressorInputStream.WINDOW_SIZE)
-            .withMinBackReferenceLength(MIN_BACK_REFERENCE_LENGTH)
-            .withMaxBackReferenceLength(maxLen)
-            .withMaxOffset(maxLen)
-            .withMaxLiteralLength(maxLen);
+    @Override
+    public void write(final byte[] data, final int off, final int len) throws IOException {
+        compressor.compress(data, off, len);
     }
 
-    final static class Pair {
-        private final Deque<byte[]> literals = new LinkedList<>();
-        private int brOffset, brLength;
-        private boolean written;
+    @Override
+    public void write(final int b) throws IOException {
+        oneByte[0] = (byte) (b & 0xff);
+        write(oneByte);
+    }
 
-        private void prependLiteral(final byte[] data) {
-            literals.addFirst(data);
+    private Pair writeBlocksAndReturnUnfinishedPair(final int length) throws IOException {
+        writeWritablePairs(length);
+        Pair last = pairs.peekLast();
+        if (last == null || last.hasBackReference()) {
+            last = new Pair();
+            pairs.addLast(last);
         }
+        return last;
+    }
 
-        byte[] addLiteral(final LZ77Compressor.LiteralBlock block) {
-            final byte[] copy = Arrays.copyOfRange(block.getData(), block.getOffset(),
-                block.getOffset() + block.getLength());
-            literals.add(copy);
-            return copy;
-        }
-
-        void setBackReference(final LZ77Compressor.BackReference block) {
-            if (hasBackReference()) {
-                throw new IllegalStateException();
-            }
-            brOffset = block.getOffset();
-            brLength = block.getLength();
-        }
-
-        boolean hasBackReference() {
-            return brOffset > 0;
-        }
-
-        boolean canBeWritten(final int lengthOfBlocksAfterThisPair) {
-            return hasBackReference()
-                && lengthOfBlocksAfterThisPair >= MIN_OFFSET_OF_LAST_BACK_REFERENCE + MIN_BACK_REFERENCE_LENGTH;
-        }
-
-        int length() {
-            return literalLength() + brLength;
-        }
-
-        private boolean hasBeenWritten() {
-            return written;
-        }
-
-        void writeTo(final OutputStream out) throws IOException {
-            final int litLength = literalLength();
-            out.write(lengths(litLength, brLength));
-            if (litLength >= BlockLZ4CompressorInputStream.BACK_REFERENCE_SIZE_MASK) {
-                writeLength(litLength - BlockLZ4CompressorInputStream.BACK_REFERENCE_SIZE_MASK, out);
-            }
-            for (final byte[] b : literals) {
-                out.write(b);
-            }
-            if (hasBackReference()) {
-                ByteUtils.toLittleEndian(out, brOffset, 2);
-                if (brLength - MIN_BACK_REFERENCE_LENGTH >= BlockLZ4CompressorInputStream.BACK_REFERENCE_SIZE_MASK) {
-                    writeLength(brLength - MIN_BACK_REFERENCE_LENGTH
-                        - BlockLZ4CompressorInputStream.BACK_REFERENCE_SIZE_MASK, out);
-                }
-            }
-            written = true;
-        }
-
-        private int literalLength() {
-            return literals.stream().mapToInt(b -> b.length).sum();
-        }
-
-        private static int lengths(final int litLength, final int brLength) {
-            final int l = Math.min(litLength, 15);
-            final int br = brLength < 4 ? 0 : (brLength < 19 ? brLength - 4 : 15);
-            return (l << BlockLZ4CompressorInputStream.SIZE_BITS) | br;
-        }
-
-        private static void writeLength(int length, final OutputStream out) throws IOException {
-            while (length >= 255) {
-                out.write(255);
-                length -= 255;
-            }
-            out.write(length);
-        }
-
-        private int backReferenceLength() {
-            return brLength;
-        }
-
-        private void prependTo(final Pair other) {
-            final Iterator<byte[]> listBackwards = literals.descendingIterator();
-            while (listBackwards.hasNext()) {
-                other.prependLiteral(listBackwards.next());
+    private void writeFinalLiteralBlock() throws IOException {
+        rewriteLastPairs();
+        for (final Pair p : pairs) {
+            if (!p.hasBeenWritten()) {
+                p.writeTo(os);
             }
         }
+        pairs.clear();
+    }
 
-        private Pair splitWithNewBackReferenceLengthOf(final int newBackReferenceLength) {
-            final Pair p = new Pair();
-            p.literals.addAll(literals);
-            p.brOffset = brOffset;
-            p.brLength = newBackReferenceLength;
-            return p;
+    private void writeWritablePairs(final int lengthOfBlocksAfterLastPair) throws IOException {
+        int unwrittenLength = lengthOfBlocksAfterLastPair;
+        for (final Iterator<Pair> it = pairs.descendingIterator(); it.hasNext(); ) {
+            final Pair p = it.next();
+            if (p.hasBeenWritten()) {
+                break;
+            }
+            unwrittenLength += p.length();
+        }
+        for (final Pair p : pairs) {
+            if (p.hasBeenWritten()) {
+                continue;
+            }
+            unwrittenLength -= p.length();
+            if (!p.canBeWritten(unwrittenLength)) {
+                break;
+            }
+            p.writeTo(os);
         }
     }
 }

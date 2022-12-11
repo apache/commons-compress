@@ -46,6 +46,102 @@ import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
  */
 public class TarFile implements Closeable {
 
+    private final class BoundedTarEntryInputStream extends BoundedArchiveInputStream {
+
+        private final SeekableByteChannel channel;
+
+        private final TarArchiveEntry entry;
+
+        private long entryOffset;
+
+        private int currentSparseInputStreamIndex;
+
+        BoundedTarEntryInputStream(final TarArchiveEntry entry, final SeekableByteChannel channel) throws IOException {
+            super(entry.getDataOffset(), entry.getRealSize());
+            if (channel.size() - entry.getSize() < entry.getDataOffset()) {
+                throw new IOException("entry size exceeds archive size");
+            }
+            this.entry = entry;
+            this.channel = channel;
+        }
+
+        @Override
+        protected int read(final long pos, final ByteBuffer buf) throws IOException {
+            if (entryOffset >= entry.getRealSize()) {
+                return -1;
+            }
+
+            final int totalRead;
+            if (entry.isSparse()) {
+                totalRead = readSparse(entryOffset, buf, buf.limit());
+            } else {
+                totalRead = readArchive(pos, buf);
+            }
+
+            if (totalRead == -1) {
+                if (buf.array().length > 0) {
+                    throw new IOException("Truncated TAR archive");
+                }
+                setAtEOF(true);
+            } else {
+                entryOffset += totalRead;
+                buf.flip();
+            }
+            return totalRead;
+        }
+
+        private int readArchive(final long pos, final ByteBuffer buf) throws IOException {
+            channel.position(pos);
+            return channel.read(buf);
+        }
+
+        private int readSparse(final long pos, final ByteBuffer buf, final int numToRead) throws IOException {
+            // if there are no actual input streams, just read from the original archive
+            final List<InputStream> entrySparseInputStreams = sparseInputStreams.get(entry.getName());
+            if (entrySparseInputStreams == null || entrySparseInputStreams.isEmpty()) {
+                return readArchive(entry.getDataOffset() + pos, buf);
+            }
+
+            if (currentSparseInputStreamIndex >= entrySparseInputStreams.size()) {
+                return -1;
+            }
+
+            final InputStream currentInputStream = entrySparseInputStreams.get(currentSparseInputStreamIndex);
+            final byte[] bufArray = new byte[numToRead];
+            final int readLen = currentInputStream.read(bufArray);
+            if (readLen != -1) {
+                buf.put(bufArray, 0, readLen);
+            }
+
+            // if the current input stream is the last input stream,
+            // just return the number of bytes read from current input stream
+            if (currentSparseInputStreamIndex == entrySparseInputStreams.size() - 1) {
+                return readLen;
+            }
+
+            // if EOF of current input stream is meet, open a new input stream and recursively call read
+            if (readLen == -1) {
+                currentSparseInputStreamIndex++;
+                return readSparse(pos, buf, numToRead);
+            }
+
+            // if the rest data of current input stream is not long enough, open a new input stream
+            // and recursively call read
+            if (readLen < numToRead) {
+                currentSparseInputStreamIndex++;
+                final int readLenOfNext = readSparse(pos + readLen, buf, numToRead - readLen);
+                if (readLenOfNext == -1) {
+                    return readLen;
+                }
+
+                return readLen + readLenOfNext;
+            }
+
+            // if the rest data of current input stream is enough(which means readLen == len), just return readLen
+            return readLen;
+        }
+    }
+
     private static final int SMALL_BUFFER_SIZE = 256;
 
     private final byte[] smallBuf = new byte[SMALL_BUFFER_SIZE];
@@ -95,17 +191,6 @@ public class TarFile implements Closeable {
     /**
      * Constructor for TarFile.
      *
-     * @param content  the content to use
-     * @param encoding the encoding to use
-     * @throws IOException when reading the tar archive fails
-     */
-    public TarFile(final byte[] content, final String encoding) throws IOException {
-        this(new SeekableInMemoryByteChannel(content), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding, false);
-    }
-
-    /**
-     * Constructor for TarFile.
-     *
      * @param content the content to use
      * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be
      *                ignored and the fields set to {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an
@@ -119,22 +204,22 @@ public class TarFile implements Closeable {
     /**
      * Constructor for TarFile.
      *
-     * @param archive the file of the archive to use
+     * @param content  the content to use
+     * @param encoding the encoding to use
      * @throws IOException when reading the tar archive fails
      */
-    public TarFile(final File archive) throws IOException {
-        this(archive.toPath());
+    public TarFile(final byte[] content, final String encoding) throws IOException {
+        this(new SeekableInMemoryByteChannel(content), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding, false);
     }
 
     /**
      * Constructor for TarFile.
      *
-     * @param archive  the file of the archive to use
-     * @param encoding the encoding to use
+     * @param archive the file of the archive to use
      * @throws IOException when reading the tar archive fails
      */
-    public TarFile(final File archive, final String encoding) throws IOException {
-        this(archive.toPath(), encoding);
+    public TarFile(final File archive) throws IOException {
+        this(archive.toPath());
     }
 
     /**
@@ -153,22 +238,22 @@ public class TarFile implements Closeable {
     /**
      * Constructor for TarFile.
      *
-     * @param archivePath the path of the archive to use
+     * @param archive  the file of the archive to use
+     * @param encoding the encoding to use
      * @throws IOException when reading the tar archive fails
      */
-    public TarFile(final Path archivePath) throws IOException {
-        this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, false);
+    public TarFile(final File archive, final String encoding) throws IOException {
+        this(archive.toPath(), encoding);
     }
 
     /**
      * Constructor for TarFile.
      *
      * @param archivePath the path of the archive to use
-     * @param encoding    the encoding to use
      * @throws IOException when reading the tar archive fails
      */
-    public TarFile(final Path archivePath, final String encoding) throws IOException {
-        this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding, false);
+    public TarFile(final Path archivePath) throws IOException {
+        this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, false);
     }
 
     /**
@@ -182,6 +267,17 @@ public class TarFile implements Closeable {
      */
     public TarFile(final Path archivePath, final boolean lenient) throws IOException {
         this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, lenient);
+    }
+
+    /**
+     * Constructor for TarFile.
+     *
+     * @param archivePath the path of the archive to use
+     * @param encoding    the encoding to use
+     * @throws IOException when reading the tar archive fails
+     */
+    public TarFile(final Path archivePath, final String encoding) throws IOException {
+        this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding, false);
     }
 
     /**
@@ -219,6 +315,139 @@ public class TarFile implements Closeable {
         while ((entry = getNextTarEntry()) != null) {
             entries.add(entry);
         }
+    }
+
+    /**
+     * Update the current entry with the read pax headers
+     * @param headers Headers read from the pax header
+     * @param sparseHeaders Sparse headers read from pax header
+     */
+    private void applyPaxHeadersToCurrentEntry(final Map<String, String> headers, final List<TarArchiveStructSparse> sparseHeaders)
+        throws IOException {
+        currEntry.updateEntryFromPaxHeaders(headers);
+        currEntry.setSparseHeaders(sparseHeaders);
+    }
+
+    /**
+     * Build the input streams consisting of all-zero input streams and non-zero input streams.
+     * When reading from the non-zero input streams, the data is actually read from the original input stream.
+     * The size of each input stream is introduced by the sparse headers.
+     *
+     * @implNote Some all-zero input streams and non-zero input streams have the size of 0. We DO NOT store the
+     *        0 size input streams because they are meaningless.
+     */
+    private void buildSparseInputStreams() throws IOException {
+        final List<InputStream> streams = new ArrayList<>();
+
+        final List<TarArchiveStructSparse> sparseHeaders = currEntry.getOrderedSparseHeaders();
+
+        // Stream doesn't need to be closed at all as it doesn't use any resources
+        final InputStream zeroInputStream = new TarArchiveSparseZeroInputStream(); //NOSONAR
+        // logical offset into the extracted entry
+        long offset = 0;
+        long numberOfZeroBytesInSparseEntry = 0;
+        for (TarArchiveStructSparse sparseHeader : sparseHeaders) {
+            final long zeroBlockSize = sparseHeader.getOffset() - offset;
+            if (zeroBlockSize < 0) {
+                // sparse header says to move backwards inside of the extracted entry
+                throw new IOException("Corrupted struct sparse detected");
+            }
+
+            // only store the zero block if it is not empty
+            if (zeroBlockSize > 0) {
+                streams.add(new BoundedInputStream(zeroInputStream, zeroBlockSize));
+                numberOfZeroBytesInSparseEntry += zeroBlockSize;
+            }
+
+            // only store the input streams with non-zero size
+            if (sparseHeader.getNumbytes() > 0) {
+                final long start =
+                    currEntry.getDataOffset() + sparseHeader.getOffset() - numberOfZeroBytesInSparseEntry;
+                if (start + sparseHeader.getNumbytes() < start) {
+                    // possible integer overflow
+                    throw new IOException("Unreadable TAR archive, sparse block offset or length too big");
+                }
+                streams.add(new BoundedSeekableByteChannelInputStream(start, sparseHeader.getNumbytes(), archive));
+            }
+
+            offset = sparseHeader.getOffset() + sparseHeader.getNumbytes();
+        }
+
+        sparseInputStreams.put(currEntry.getName(), streams);
+    }
+
+    @Override
+    public void close() throws IOException {
+        archive.close();
+    }
+
+    /**
+     * This method is invoked once the end of the archive is hit, it
+     * tries to consume the remaining bytes under the assumption that
+     * the tool creating this archive has padded the last block.
+     */
+    private void consumeRemainderOfLastBlock() throws IOException {
+        final long bytesReadOfLastBlock = archive.position() % blockSize;
+        if (bytesReadOfLastBlock > 0) {
+            repositionForwardBy(blockSize - bytesReadOfLastBlock);
+        }
+    }
+
+    /**
+     * Get all TAR Archive Entries from the TarFile
+     *
+     * @return All entries from the tar file
+     */
+    public List<TarArchiveEntry> getEntries() {
+        return new ArrayList<>(entries);
+    }
+
+    /**
+     * Gets the input stream for the provided Tar Archive Entry.
+     * @param entry Entry to get the input stream from
+     * @return Input stream of the provided entry
+     * @throws IOException Corrupted TAR archive. Can't read entry.
+     */
+    public InputStream getInputStream(final TarArchiveEntry entry) throws IOException {
+        try {
+            return new BoundedTarEntryInputStream(entry, archive);
+        } catch (RuntimeException ex) {
+            throw new IOException("Corrupted TAR archive. Can't read entry", ex);
+        }
+    }
+
+    /**
+     * Get the next entry in this tar archive as longname data.
+     *
+     * @return The next entry in the archive as longname data, or null.
+     * @throws IOException on error
+     */
+    private byte[] getLongNameData() throws IOException {
+        final ByteArrayOutputStream longName = new ByteArrayOutputStream();
+        int length;
+        try (final InputStream in = getInputStream(currEntry)) {
+            while ((length = in.read(smallBuf)) >= 0) {
+                longName.write(smallBuf, 0, length);
+            }
+        }
+        getNextTarEntry();
+        if (currEntry == null) {
+            // Bugzilla: 40334
+            // Malformed tar file - long entry name not followed by entry
+            return null;
+        }
+        byte[] longNameData = longName.toByteArray();
+        // remove trailing null terminator(s)
+        length = longNameData.length;
+        while (length > 0 && longNameData[length - 1] == 0) {
+            --length;
+        }
+        if (length != longNameData.length) {
+            final byte[] l = new byte[length];
+            System.arraycopy(longNameData, 0, l, 0, length);
+            longNameData = l;
+        }
+        return longNameData;
     }
 
     /**
@@ -310,87 +539,41 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Adds the sparse chunks from the current entry to the sparse chunks,
-     * including any additional sparse entries following the current entry.
+     * Get the next record in this tar archive. This will skip
+     * over any remaining data in the current entry, if there
+     * is one, and place the input stream at the header of the
+     * next entry.
      *
-     * @throws IOException when reading the sparse entry fails
+     * <p>If there are no more entries in the archive, null will be
+     * returned to indicate that the end of the archive has been
+     * reached.  At the same time the {@code hasHitEOF} marker will be
+     * set to true.</p>
+     *
+     * @return The next TarEntry in the archive, or null if there is no next entry.
+     * @throws IOException when reading the next TarEntry fails
      */
-    private void readOldGNUSparse() throws IOException {
-        if (currEntry.isExtended()) {
-            TarArchiveSparseEntry entry;
-            do {
-                final ByteBuffer headerBuf = getRecord();
-                if (headerBuf == null) {
-                    throw new IOException("premature end of tar archive. Didn't find extended_header after header with extended flag.");
-                }
-                entry = new TarArchiveSparseEntry(headerBuf.array());
-                currEntry.getSparseHeaders().addAll(entry.getSparseHeaders());
-                currEntry.setDataOffset(currEntry.getDataOffset() + recordSize);
-            } while (entry.isExtended());
+    private ByteBuffer getRecord() throws IOException {
+        ByteBuffer headerBuf = readRecord();
+        setAtEOF(isEOFRecord(headerBuf));
+        if (isAtEOF() && headerBuf != null) {
+            // Consume rest
+            tryToConsumeSecondEOFRecord();
+            consumeRemainderOfLastBlock();
+            headerBuf = null;
         }
-
-        // sparse headers are all done reading, we need to build
-        // sparse input streams using these sparse headers
-        buildSparseInputStreams();
+        return headerBuf;
     }
 
-    /**
-     * Build the input streams consisting of all-zero input streams and non-zero input streams.
-     * When reading from the non-zero input streams, the data is actually read from the original input stream.
-     * The size of each input stream is introduced by the sparse headers.
-     *
-     * @implNote Some all-zero input streams and non-zero input streams have the size of 0. We DO NOT store the
-     *        0 size input streams because they are meaningless.
-     */
-    private void buildSparseInputStreams() throws IOException {
-        final List<InputStream> streams = new ArrayList<>();
-
-        final List<TarArchiveStructSparse> sparseHeaders = currEntry.getOrderedSparseHeaders();
-
-        // Stream doesn't need to be closed at all as it doesn't use any resources
-        final InputStream zeroInputStream = new TarArchiveSparseZeroInputStream(); //NOSONAR
-        // logical offset into the extracted entry
-        long offset = 0;
-        long numberOfZeroBytesInSparseEntry = 0;
-        for (TarArchiveStructSparse sparseHeader : sparseHeaders) {
-            final long zeroBlockSize = sparseHeader.getOffset() - offset;
-            if (zeroBlockSize < 0) {
-                // sparse header says to move backwards inside of the extracted entry
-                throw new IOException("Corrupted struct sparse detected");
-            }
-
-            // only store the zero block if it is not empty
-            if (zeroBlockSize > 0) {
-                streams.add(new BoundedInputStream(zeroInputStream, zeroBlockSize));
-                numberOfZeroBytesInSparseEntry += zeroBlockSize;
-            }
-
-            // only store the input streams with non-zero size
-            if (sparseHeader.getNumbytes() > 0) {
-                final long start =
-                    currEntry.getDataOffset() + sparseHeader.getOffset() - numberOfZeroBytesInSparseEntry;
-                if (start + sparseHeader.getNumbytes() < start) {
-                    // possible integer overflow
-                    throw new IOException("Unreadable TAR archive, sparse block offset or length too big");
-                }
-                streams.add(new BoundedSeekableByteChannelInputStream(start, sparseHeader.getNumbytes(), archive));
-            }
-
-            offset = sparseHeader.getOffset() + sparseHeader.getNumbytes();
-        }
-
-        sparseInputStreams.put(currEntry.getName(), streams);
+    protected final boolean isAtEOF() {
+        return hasHitEOF;
     }
 
-    /**
-     * Update the current entry with the read pax headers
-     * @param headers Headers read from the pax header
-     * @param sparseHeaders Sparse headers read from pax header
-     */
-    private void applyPaxHeadersToCurrentEntry(final Map<String, String> headers, final List<TarArchiveStructSparse> sparseHeaders)
-        throws IOException {
-        currEntry.updateEntryFromPaxHeaders(headers);
-        currEntry.setSparseHeaders(sparseHeaders);
+    private boolean isDirectory() {
+        return currEntry != null && currEntry.isDirectory();
+    }
+
+    private boolean isEOFRecord(final ByteBuffer headerBuf) {
+        return headerBuf == null || ArchiveUtils.isArrayZero(headerBuf.array(), recordSize);
     }
 
     /**
@@ -467,37 +650,59 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Get the next entry in this tar archive as longname data.
+     * Adds the sparse chunks from the current entry to the sparse chunks,
+     * including any additional sparse entries following the current entry.
      *
-     * @return The next entry in the archive as longname data, or null.
-     * @throws IOException on error
+     * @throws IOException when reading the sparse entry fails
      */
-    private byte[] getLongNameData() throws IOException {
-        final ByteArrayOutputStream longName = new ByteArrayOutputStream();
-        int length;
-        try (final InputStream in = getInputStream(currEntry)) {
-            while ((length = in.read(smallBuf)) >= 0) {
-                longName.write(smallBuf, 0, length);
-            }
+    private void readOldGNUSparse() throws IOException {
+        if (currEntry.isExtended()) {
+            TarArchiveSparseEntry entry;
+            do {
+                final ByteBuffer headerBuf = getRecord();
+                if (headerBuf == null) {
+                    throw new IOException("premature end of tar archive. Didn't find extended_header after header with extended flag.");
+                }
+                entry = new TarArchiveSparseEntry(headerBuf.array());
+                currEntry.getSparseHeaders().addAll(entry.getSparseHeaders());
+                currEntry.setDataOffset(currEntry.getDataOffset() + recordSize);
+            } while (entry.isExtended());
         }
-        getNextTarEntry();
-        if (currEntry == null) {
-            // Bugzilla: 40334
-            // Malformed tar file - long entry name not followed by entry
+
+        // sparse headers are all done reading, we need to build
+        // sparse input streams using these sparse headers
+        buildSparseInputStreams();
+    }
+
+    /**
+     * Read a record from the input stream and return the data.
+     *
+     * @return The record data or null if EOF has been hit.
+     * @throws IOException if reading from the archive fails
+     */
+    private ByteBuffer readRecord() throws IOException {
+        recordBuffer.rewind();
+        final int readNow = archive.read(recordBuffer);
+        if (readNow != recordSize) {
             return null;
         }
-        byte[] longNameData = longName.toByteArray();
-        // remove trailing null terminator(s)
-        length = longNameData.length;
-        while (length > 0 && longNameData[length - 1] == 0) {
-            --length;
+        return recordBuffer;
+    }
+
+    private void repositionForwardBy(final long offset) throws IOException {
+        repositionForwardTo(archive.position() + offset);
+    }
+
+    private void repositionForwardTo(final long newPosition) throws IOException {
+        final long currPosition = archive.position();
+        if (newPosition < currPosition) {
+            throw new IOException("trying to move backwards inside of the archive");
         }
-        if (length != longNameData.length) {
-            final byte[] l = new byte[length];
-            System.arraycopy(longNameData, 0, l, 0, length);
-            longNameData = l;
-        }
-        return longNameData;
+        archive.position(newPosition);
+    }
+
+    protected final void setAtEOF(final boolean b) {
+        hasHitEOF = b;
     }
 
     /**
@@ -515,18 +720,6 @@ public class TarFile implements Closeable {
         }
     }
 
-    private void repositionForwardTo(final long newPosition) throws IOException {
-        final long currPosition = archive.position();
-        if (newPosition < currPosition) {
-            throw new IOException("trying to move backwards inside of the archive");
-        }
-        archive.position(newPosition);
-    }
-
-    private void repositionForwardBy(final long offset) throws IOException {
-        repositionForwardTo(archive.position() + offset);
-    }
-
     /**
      * Checks if the current position of the SeekableByteChannel is in the archive.
      * @throws IOException If the position is not in the archive
@@ -535,32 +728,6 @@ public class TarFile implements Closeable {
         if (archive.size() < archive.position()) {
             throw new IOException("Truncated TAR archive");
         }
-    }
-
-    /**
-     * Get the next record in this tar archive. This will skip
-     * over any remaining data in the current entry, if there
-     * is one, and place the input stream at the header of the
-     * next entry.
-     *
-     * <p>If there are no more entries in the archive, null will be
-     * returned to indicate that the end of the archive has been
-     * reached.  At the same time the {@code hasHitEOF} marker will be
-     * set to true.</p>
-     *
-     * @return The next TarEntry in the archive, or null if there is no next entry.
-     * @throws IOException when reading the next TarEntry fails
-     */
-    private ByteBuffer getRecord() throws IOException {
-        ByteBuffer headerBuf = readRecord();
-        setAtEOF(isEOFRecord(headerBuf));
-        if (isAtEOF() && headerBuf != null) {
-            // Consume rest
-            tryToConsumeSecondEOFRecord();
-            consumeRemainderOfLastBlock();
-            headerBuf = null;
-        }
-        return headerBuf;
     }
 
     /**
@@ -584,173 +751,6 @@ public class TarFile implements Closeable {
             if (shouldReset) {
                 archive.position(archive.position() - recordSize);
             }
-        }
-    }
-
-    /**
-     * This method is invoked once the end of the archive is hit, it
-     * tries to consume the remaining bytes under the assumption that
-     * the tool creating this archive has padded the last block.
-     */
-    private void consumeRemainderOfLastBlock() throws IOException {
-        final long bytesReadOfLastBlock = archive.position() % blockSize;
-        if (bytesReadOfLastBlock > 0) {
-            repositionForwardBy(blockSize - bytesReadOfLastBlock);
-        }
-    }
-
-    /**
-     * Read a record from the input stream and return the data.
-     *
-     * @return The record data or null if EOF has been hit.
-     * @throws IOException if reading from the archive fails
-     */
-    private ByteBuffer readRecord() throws IOException {
-        recordBuffer.rewind();
-        final int readNow = archive.read(recordBuffer);
-        if (readNow != recordSize) {
-            return null;
-        }
-        return recordBuffer;
-    }
-
-    /**
-     * Get all TAR Archive Entries from the TarFile
-     *
-     * @return All entries from the tar file
-     */
-    public List<TarArchiveEntry> getEntries() {
-        return new ArrayList<>(entries);
-    }
-
-    private boolean isEOFRecord(final ByteBuffer headerBuf) {
-        return headerBuf == null || ArchiveUtils.isArrayZero(headerBuf.array(), recordSize);
-    }
-
-    protected final boolean isAtEOF() {
-        return hasHitEOF;
-    }
-
-    protected final void setAtEOF(final boolean b) {
-        hasHitEOF = b;
-    }
-
-    private boolean isDirectory() {
-        return currEntry != null && currEntry.isDirectory();
-    }
-
-    /**
-     * Gets the input stream for the provided Tar Archive Entry.
-     * @param entry Entry to get the input stream from
-     * @return Input stream of the provided entry
-     * @throws IOException Corrupted TAR archive. Can't read entry.
-     */
-    public InputStream getInputStream(final TarArchiveEntry entry) throws IOException {
-        try {
-            return new BoundedTarEntryInputStream(entry, archive);
-        } catch (RuntimeException ex) {
-            throw new IOException("Corrupted TAR archive. Can't read entry", ex);
-        }
-    }
-
-    @Override
-    public void close() throws IOException {
-        archive.close();
-    }
-
-    private final class BoundedTarEntryInputStream extends BoundedArchiveInputStream {
-
-        private final SeekableByteChannel channel;
-
-        private final TarArchiveEntry entry;
-
-        private long entryOffset;
-
-        private int currentSparseInputStreamIndex;
-
-        BoundedTarEntryInputStream(final TarArchiveEntry entry, final SeekableByteChannel channel) throws IOException {
-            super(entry.getDataOffset(), entry.getRealSize());
-            if (channel.size() - entry.getSize() < entry.getDataOffset()) {
-                throw new IOException("entry size exceeds archive size");
-            }
-            this.entry = entry;
-            this.channel = channel;
-        }
-
-        @Override
-        protected int read(final long pos, final ByteBuffer buf) throws IOException {
-            if (entryOffset >= entry.getRealSize()) {
-                return -1;
-            }
-
-            final int totalRead;
-            if (entry.isSparse()) {
-                totalRead = readSparse(entryOffset, buf, buf.limit());
-            } else {
-                totalRead = readArchive(pos, buf);
-            }
-
-            if (totalRead == -1) {
-                if (buf.array().length > 0) {
-                    throw new IOException("Truncated TAR archive");
-                }
-                setAtEOF(true);
-            } else {
-                entryOffset += totalRead;
-                buf.flip();
-            }
-            return totalRead;
-        }
-
-        private int readSparse(final long pos, final ByteBuffer buf, final int numToRead) throws IOException {
-            // if there are no actual input streams, just read from the original archive
-            final List<InputStream> entrySparseInputStreams = sparseInputStreams.get(entry.getName());
-            if (entrySparseInputStreams == null || entrySparseInputStreams.isEmpty()) {
-                return readArchive(entry.getDataOffset() + pos, buf);
-            }
-
-            if (currentSparseInputStreamIndex >= entrySparseInputStreams.size()) {
-                return -1;
-            }
-
-            final InputStream currentInputStream = entrySparseInputStreams.get(currentSparseInputStreamIndex);
-            final byte[] bufArray = new byte[numToRead];
-            final int readLen = currentInputStream.read(bufArray);
-            if (readLen != -1) {
-                buf.put(bufArray, 0, readLen);
-            }
-
-            // if the current input stream is the last input stream,
-            // just return the number of bytes read from current input stream
-            if (currentSparseInputStreamIndex == entrySparseInputStreams.size() - 1) {
-                return readLen;
-            }
-
-            // if EOF of current input stream is meet, open a new input stream and recursively call read
-            if (readLen == -1) {
-                currentSparseInputStreamIndex++;
-                return readSparse(pos, buf, numToRead);
-            }
-
-            // if the rest data of current input stream is not long enough, open a new input stream
-            // and recursively call read
-            if (readLen < numToRead) {
-                currentSparseInputStreamIndex++;
-                final int readLenOfNext = readSparse(pos + readLen, buf, numToRead - readLen);
-                if (readLenOfNext == -1) {
-                    return readLen;
-                }
-
-                return readLen + readLenOfNext;
-            }
-
-            // if the rest data of current input stream is enough(which means readLen == len), just return readLen
-            return readLen;
-        }
-
-        private int readArchive(final long pos, final ByteBuffer buf) throws IOException {
-            channel.position(pos);
-            return channel.read(buf);
         }
     }
 }

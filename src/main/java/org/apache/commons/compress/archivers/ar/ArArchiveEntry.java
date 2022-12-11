@@ -64,6 +64,7 @@ public class ArArchiveEntry implements ArchiveEntry {
     /** The trailer for each entry */
     public static final String TRAILER = "`\012";
 
+    private static final int DEFAULT_MODE = 33188; // = (octal) 0100644
     /**
      * SVR4/GNU adds a trailing / to names; BSD does not.
      * They also vary in how names longer than 16 characters are represented.
@@ -73,9 +74,32 @@ public class ArArchiveEntry implements ArchiveEntry {
     private final int userId;
     private final int groupId;
     private final int mode;
-    private static final int DEFAULT_MODE = 33188; // = (octal) 0100644
     private final long lastModified;
     private final long length;
+
+    /**
+     * Creates a new instance using the attributes of the given file
+     * @param inputFile the file to create an entry from
+     * @param entryName the name of the entry
+     */
+    public ArArchiveEntry(final File inputFile, final String entryName) {
+        // TODO sort out mode
+        this(entryName, inputFile.isFile() ? inputFile.length() : 0,
+             0, 0, DEFAULT_MODE, inputFile.lastModified() / 1000);
+    }
+
+    /**
+     * Creates a new instance using the attributes of the given file
+     * @param inputPath the file to create an entry from
+     * @param entryName the name of the entry
+     * @param options options indicating how symbolic links are handled.
+     * @throws IOException if an I/O error occurs.
+     * @since 1.21
+     */
+    public ArArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
+        this(entryName, Files.isRegularFile(inputPath, options) ? Files.size(inputPath) : 0, 0, 0, DEFAULT_MODE,
+            Files.getLastModifiedTime(inputPath, options).toMillis() / 1000);
+    }
 
     /**
      * Create a new instance using a couple of default values.
@@ -114,50 +138,23 @@ public class ArArchiveEntry implements ArchiveEntry {
         this.lastModified = lastModified;
     }
 
-    /**
-     * Creates a new instance using the attributes of the given file
-     * @param inputFile the file to create an entry from
-     * @param entryName the name of the entry
-     */
-    public ArArchiveEntry(final File inputFile, final String entryName) {
-        // TODO sort out mode
-        this(entryName, inputFile.isFile() ? inputFile.length() : 0,
-             0, 0, DEFAULT_MODE, inputFile.lastModified() / 1000);
-    }
-
-    /**
-     * Creates a new instance using the attributes of the given file
-     * @param inputPath the file to create an entry from
-     * @param entryName the name of the entry
-     * @param options options indicating how symbolic links are handled.
-     * @throws IOException if an I/O error occurs.
-     * @since 1.21
-     */
-    public ArArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
-        this(entryName, Files.isRegularFile(inputPath, options) ? Files.size(inputPath) : 0, 0, 0, DEFAULT_MODE,
-            Files.getLastModifiedTime(inputPath, options).toMillis() / 1000);
-    }
-
     @Override
-    public long getSize() {
-        return this.getLength();
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public int getUserId() {
-        return userId;
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final ArArchiveEntry other = (ArArchiveEntry) obj;
+        if (name == null) {
+            return other.name == null;
+        }
+        return name.equals(other.name);
     }
 
     public int getGroupId() {
         return groupId;
-    }
-
-    public int getMode() {
-        return mode;
     }
 
     /**
@@ -177,9 +174,22 @@ public class ArArchiveEntry implements ArchiveEntry {
         return length;
     }
 
+    public int getMode() {
+        return mode;
+    }
+
     @Override
-    public boolean isDirectory() {
-        return false;
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public long getSize() {
+        return this.getLength();
+    }
+
+    public int getUserId() {
+        return userId;
     }
 
     @Override
@@ -188,17 +198,7 @@ public class ArArchiveEntry implements ArchiveEntry {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        final ArArchiveEntry other = (ArArchiveEntry) obj;
-        if (name == null) {
-            return other.name == null;
-        }
-        return name.equals(other.name);
+    public boolean isDirectory() {
+        return false;
     }
 }

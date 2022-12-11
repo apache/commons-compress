@@ -64,6 +64,16 @@ public abstract class ZipEncodingHelper {
         return new NioZipEncoding(cs, useReplacement);
     }
 
+    static ByteBuffer growBufferBy(final ByteBuffer buffer, final int increment) {
+        buffer.limit(buffer.position());
+        buffer.rewind();
+
+        final ByteBuffer on = ByteBuffer.allocate(buffer.capacity() + increment);
+
+        on.put(buffer);
+        return on;
+    }
+
     /**
      * Returns whether a given encoding is UTF-8. If the given name is null, then check the platform's default encoding.
      *
@@ -75,15 +85,5 @@ public abstract class ZipEncodingHelper {
             return true;
         }
         return UTF_8.aliases().stream().anyMatch(alias -> alias.equalsIgnoreCase(actual));
-    }
-
-    static ByteBuffer growBufferBy(final ByteBuffer buffer, final int increment) {
-        buffer.limit(buffer.position());
-        buffer.rewind();
-
-        final ByteBuffer on = ByteBuffer.allocate(buffer.capacity() + increment);
-
-        on.put(buffer);
-        return on;
     }
 }

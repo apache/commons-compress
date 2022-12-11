@@ -52,6 +52,13 @@ public interface ZipEncoding {
     boolean canEncode(String name);
 
     /**
+     * @param data The byte values to decode.
+     * @return The decoded string.
+     * @throws IOException on error
+     */
+    String decode(byte [] data) throws IOException;
+
+    /**
      * Encode a file name or a comment to a byte array suitable for
      * storing it to a serialized zip entry.
      *
@@ -74,11 +81,4 @@ public interface ZipEncoding {
      * @throws IOException on error
      */
     ByteBuffer encode(String name) throws IOException;
-
-    /**
-     * @param data The byte values to decode.
-     * @return The decoded string.
-     * @throws IOException on error
-     */
-    String decode(byte [] data) throws IOException;
 }

@@ -42,24 +42,26 @@ public class DeflateCompressorInputStreamTest {
     }
 
     @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = AbstractTestCase.getFile("bla.tar.deflatez");
+        final byte[] buf = new byte[2];
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            final DeflateCompressorInputStream in =
+                    new DeflateCompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read(buf));
+            Assert.assertEquals(-1, in.read(buf));
+            in.close();
+        }
+    }
+
+    @Test
     public void shouldBeAbleToSkipAByte() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             final DeflateCompressorInputStream in =
                     new DeflateCompressorInputStream(is);
             Assert.assertEquals(1, in.skip(1));
-            in.close();
-        }
-    }
-
-    @Test
-    public void singleByteReadWorksAsExpected() throws IOException {
-        final File input = AbstractTestCase.getFile("bla.tar.deflatez");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final DeflateCompressorInputStream in =
-                    new DeflateCompressorInputStream(is);
-            // tar header starts with filename "test1.xml"
-            Assert.assertEquals('t', in.read());
             in.close();
         }
     }
@@ -78,15 +80,13 @@ public class DeflateCompressorInputStreamTest {
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void singleByteReadWorksAsExpected() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
-        final byte[] buf = new byte[2];
         try (InputStream is = Files.newInputStream(input.toPath())) {
             final DeflateCompressorInputStream in =
                     new DeflateCompressorInputStream(is);
-            IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read(buf));
-            Assert.assertEquals(-1, in.read(buf));
+            // tar header starts with filename "test1.xml"
+            Assert.assertEquals('t', in.read());
             in.close();
         }
     }

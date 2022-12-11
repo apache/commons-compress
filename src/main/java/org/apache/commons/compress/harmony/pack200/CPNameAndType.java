@@ -30,11 +30,6 @@ public class CPNameAndType extends ConstantPoolEntry implements Comparable {
     }
 
     @Override
-    public String toString() {
-        return name + ":" + signature;
-    }
-
-    @Override
     public int compareTo(final Object obj) {
         if (obj instanceof CPNameAndType) {
             final CPNameAndType nat = (CPNameAndType) obj;
@@ -47,16 +42,21 @@ public class CPNameAndType extends ConstantPoolEntry implements Comparable {
         return 0;
     }
 
-    public int getNameIndex() {
-        return name.getIndex();
-    }
-
     public String getName() {
         return name.getUnderlyingString();
     }
 
+    public int getNameIndex() {
+        return name.getIndex();
+    }
+
     public int getTypeIndex() {
         return signature.getIndex();
+    }
+
+    @Override
+    public String toString() {
+        return name + ":" + signature;
     }
 
 }

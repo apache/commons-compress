@@ -31,14 +31,95 @@ import java.util.TreeSet;
  */
 public class IcBands extends BandSet {
 
+    class IcTuple implements Comparable<IcTuple> {
+
+        protected CPClass C; // this class
+        protected int F; // flags
+        protected CPClass C2; // outer class
+        protected CPUTF8 N; // name
+
+        public IcTuple(final CPClass C, final int F, final CPClass C2, final CPUTF8 N) {
+            this.C = C;
+            this.F = F;
+            this.C2 = C2;
+            this.N = N;
+        }
+
+        @Override
+        public int compareTo(final IcTuple arg0) {
+            return C.compareTo(arg0.C);
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (o instanceof IcTuple) {
+                final IcTuple icT = (IcTuple) o;
+                return C.equals(icT.C) && F == icT.F && (Objects.equals(C2, icT.C2))
+                    && (Objects.equals(N, icT.N));
+            }
+            return false;
+        }
+
+        public boolean isAnonymous() {
+            final String className = C.toString();
+            final String innerName = className.substring(className.lastIndexOf('$') + 1);
+            return Character.isDigit(innerName.charAt(0));
+        }
+
+        @Override
+        public String toString() {
+            return C.toString();
+        }
+
+    }
     private final Set<IcTuple> innerClasses = new TreeSet<>();
     private final CpBands cpBands;
     private int bit16Count = 0;
+
     private final Map<String, List<IcTuple>> outerToInner = new HashMap<>();
 
     public IcBands(final SegmentHeader segmentHeader, final CpBands cpBands, final int effort) {
         super(effort, segmentHeader);
         this.cpBands = cpBands;
+    }
+
+    public void addInnerClass(final String name, final String outerName, final String innerName, int flags) {
+        if (outerName != null || innerName != null) {
+            if (namesArePredictable(name, outerName, innerName)) {
+                final IcTuple innerClass = new IcTuple(cpBands.getCPClass(name), flags, null, null);
+                addToMap(outerName, innerClass);
+                innerClasses.add(innerClass);
+            } else {
+                flags |= (1 << 16);
+                final IcTuple icTuple = new IcTuple(cpBands.getCPClass(name), flags, cpBands.getCPClass(outerName),
+                    cpBands.getCPUtf8(innerName));
+                final boolean added = innerClasses.add(icTuple);
+                if (added) {
+                    bit16Count++;
+                    addToMap(outerName, icTuple);
+                }
+            }
+        } else {
+            final IcTuple innerClass = new IcTuple(cpBands.getCPClass(name), flags, null, null);
+            addToMap(getOuter(name), innerClass);
+            innerClasses.add(innerClass);
+        }
+    }
+
+    private void addToMap(final String outerName, final IcTuple icTuple) {
+        List<IcTuple> tuples = outerToInner.get(outerName);
+        if (tuples == null) {
+            tuples = new ArrayList<>();
+            outerToInner.put(outerName, tuples);
+            tuples.add(icTuple);
+        } else {
+            for (IcTuple tuple : tuples) {
+                if (icTuple.equals(tuple)) {
+                    return;
+                }
+            }
+            tuples.add(icTuple);
+        }
     }
 
     /**
@@ -47,6 +128,28 @@ public class IcBands extends BandSet {
      */
     public void finaliseBands() {
         segmentHeader.setIc_count(innerClasses.size());
+    }
+
+    public IcTuple getIcTuple(final CPClass inner) {
+        for (IcTuple icTuple : innerClasses) {
+            if (icTuple.C.equals(inner)) {
+                return icTuple;
+            }
+        }
+        return null;
+    }
+
+    public List<IcTuple> getInnerClassesForOuter(final String outerClassName) {
+        return outerToInner.get(outerClassName);
+    }
+
+    private String getOuter(final String name) {
+        return name.substring(0, name.lastIndexOf('$'));
+    }
+
+    private boolean namesArePredictable(final String name, final String outerName, final String innerName) {
+        // TODO: Could be multiple characters, not just $
+        return name.equals(outerName + '$' + innerName) && innerName.indexOf('$') == -1;
     }
 
     @Override
@@ -84,109 +187,6 @@ public class IcBands extends BandSet {
         encodedBand = encodeBandInt("ic_name", ic_name, Codec.DELTA5);
         outputStream.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length + " bytes from ic_name[" + ic_name.length + "]");
-    }
-
-    public void addInnerClass(final String name, final String outerName, final String innerName, int flags) {
-        if (outerName != null || innerName != null) {
-            if (namesArePredictable(name, outerName, innerName)) {
-                final IcTuple innerClass = new IcTuple(cpBands.getCPClass(name), flags, null, null);
-                addToMap(outerName, innerClass);
-                innerClasses.add(innerClass);
-            } else {
-                flags |= (1 << 16);
-                final IcTuple icTuple = new IcTuple(cpBands.getCPClass(name), flags, cpBands.getCPClass(outerName),
-                    cpBands.getCPUtf8(innerName));
-                final boolean added = innerClasses.add(icTuple);
-                if (added) {
-                    bit16Count++;
-                    addToMap(outerName, icTuple);
-                }
-            }
-        } else {
-            final IcTuple innerClass = new IcTuple(cpBands.getCPClass(name), flags, null, null);
-            addToMap(getOuter(name), innerClass);
-            innerClasses.add(innerClass);
-        }
-    }
-
-    public List<IcTuple> getInnerClassesForOuter(final String outerClassName) {
-        return outerToInner.get(outerClassName);
-    }
-
-    private String getOuter(final String name) {
-        return name.substring(0, name.lastIndexOf('$'));
-    }
-
-    private void addToMap(final String outerName, final IcTuple icTuple) {
-        List<IcTuple> tuples = outerToInner.get(outerName);
-        if (tuples == null) {
-            tuples = new ArrayList<>();
-            outerToInner.put(outerName, tuples);
-            tuples.add(icTuple);
-        } else {
-            for (IcTuple tuple : tuples) {
-                if (icTuple.equals(tuple)) {
-                    return;
-                }
-            }
-            tuples.add(icTuple);
-        }
-    }
-
-    private boolean namesArePredictable(final String name, final String outerName, final String innerName) {
-        // TODO: Could be multiple characters, not just $
-        return name.equals(outerName + '$' + innerName) && innerName.indexOf('$') == -1;
-    }
-
-    class IcTuple implements Comparable<IcTuple> {
-
-        protected CPClass C; // this class
-        protected int F; // flags
-        protected CPClass C2; // outer class
-        protected CPUTF8 N; // name
-
-        public IcTuple(final CPClass C, final int F, final CPClass C2, final CPUTF8 N) {
-            this.C = C;
-            this.F = F;
-            this.C2 = C2;
-            this.N = N;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (o instanceof IcTuple) {
-                final IcTuple icT = (IcTuple) o;
-                return C.equals(icT.C) && F == icT.F && (Objects.equals(C2, icT.C2))
-                    && (Objects.equals(N, icT.N));
-            }
-            return false;
-        }
-
-        @Override
-        public String toString() {
-            return C.toString();
-        }
-
-        @Override
-        public int compareTo(final IcTuple arg0) {
-            return C.compareTo(arg0.C);
-        }
-
-        public boolean isAnonymous() {
-            final String className = C.toString();
-            final String innerName = className.substring(className.lastIndexOf('$') + 1);
-            return Character.isDigit(innerName.charAt(0));
-        }
-
-    }
-
-    public IcTuple getIcTuple(final CPClass inner) {
-        for (IcTuple icTuple : innerClasses) {
-            if (icTuple.C.equals(inner)) {
-                return icTuple;
-            }
-        }
-        return null;
     }
 
 }

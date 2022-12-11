@@ -40,75 +40,6 @@ class BinaryTree {
     private static final int NODE = -2;
 
     /**
-     * The array representing the binary tree. The root is at index 0,
-     * the left children are at 2*i+1 and the right children at 2*i+2.
-     */
-    private final int[] tree;
-
-    public BinaryTree(final int depth) {
-        if (depth < 0 || depth > 30) {
-            throw new IllegalArgumentException("depth must be bigger than 0 and not bigger than 30"
-                + " but is " + depth);
-        }
-        tree = new int[(int) ((1L << (depth + 1)) - 1)];
-        Arrays.fill(tree, UNDEFINED);
-    }
-
-    /**
-     * Adds a leaf to the tree.
-     *
-     * @param node   the index of the node where the path is appended
-     * @param path   the path to the leaf (bits are parsed from the right to the left)
-     * @param depth  the number of nodes in the path
-     * @param value  the value of the leaf (must be positive)
-     */
-    public void addLeaf(final int node, final int path, final int depth, final int value) {
-        if (depth == 0) {
-            // end of the path reached, add the value to the current node
-            if (tree[node] != UNDEFINED) {
-                throw new IllegalArgumentException("Tree value at index " + node + " has already been assigned (" + tree[node] + ")");
-            }
-            tree[node] = value;
-        } else {
-            // mark the current node as a non leaf node
-            tree[node] = NODE;
-
-            // move down the path recursively
-            final int nextChild = 2 * node + 1 + (path & 1);
-            addLeaf(nextChild, path >>> 1, depth - 1, value);
-        }
-    }
-
-    /**
-     * Reads a value from the specified bit stream.
-     *
-     * @param stream
-     * @return the value decoded, or -1 if the end of the stream is reached
-     */
-    public int read(final BitStream stream) throws IOException {
-        int currentIndex = 0;
-
-        while (true) {
-            final int bit = stream.nextBit();
-            if (bit == -1) {
-                return -1;
-            }
-
-            final int childIndex = 2 * currentIndex + 1 + bit;
-            final int value = tree[childIndex];
-            if (value == NODE) {
-                // consume the next bit
-                currentIndex = childIndex;
-            } else if (value != UNDEFINED) {
-                return value;
-            } else {
-                throw new IOException("The child " + bit + " of node at index " + currentIndex + " is not defined");
-            }
-        }
-    }
-
-
-    /**
      * Decodes the packed binary tree from the specified stream.
      */
     static BinaryTree decode(final InputStream inputStream, final int totalNumberOfValues) throws IOException {
@@ -199,5 +130,74 @@ class BinaryTree {
         }
 
         return tree;
+    }
+
+    /**
+     * The array representing the binary tree. The root is at index 0,
+     * the left children are at 2*i+1 and the right children at 2*i+2.
+     */
+    private final int[] tree;
+
+    public BinaryTree(final int depth) {
+        if (depth < 0 || depth > 30) {
+            throw new IllegalArgumentException("depth must be bigger than 0 and not bigger than 30"
+                + " but is " + depth);
+        }
+        tree = new int[(int) ((1L << (depth + 1)) - 1)];
+        Arrays.fill(tree, UNDEFINED);
+    }
+
+    /**
+     * Adds a leaf to the tree.
+     *
+     * @param node   the index of the node where the path is appended
+     * @param path   the path to the leaf (bits are parsed from the right to the left)
+     * @param depth  the number of nodes in the path
+     * @param value  the value of the leaf (must be positive)
+     */
+    public void addLeaf(final int node, final int path, final int depth, final int value) {
+        if (depth == 0) {
+            // end of the path reached, add the value to the current node
+            if (tree[node] != UNDEFINED) {
+                throw new IllegalArgumentException("Tree value at index " + node + " has already been assigned (" + tree[node] + ")");
+            }
+            tree[node] = value;
+        } else {
+            // mark the current node as a non leaf node
+            tree[node] = NODE;
+
+            // move down the path recursively
+            final int nextChild = 2 * node + 1 + (path & 1);
+            addLeaf(nextChild, path >>> 1, depth - 1, value);
+        }
+    }
+
+
+    /**
+     * Reads a value from the specified bit stream.
+     *
+     * @param stream
+     * @return the value decoded, or -1 if the end of the stream is reached
+     */
+    public int read(final BitStream stream) throws IOException {
+        int currentIndex = 0;
+
+        while (true) {
+            final int bit = stream.nextBit();
+            if (bit == -1) {
+                return -1;
+            }
+
+            final int childIndex = 2 * currentIndex + 1 + bit;
+            final int value = tree[childIndex];
+            if (value == NODE) {
+                // consume the next bit
+                currentIndex = childIndex;
+            } else if (value != UNDEFINED) {
+                return value;
+            } else {
+                throw new IOException("The child " + bit + " of node at index " + currentIndex + " is not defined");
+            }
+        }
     }
 }

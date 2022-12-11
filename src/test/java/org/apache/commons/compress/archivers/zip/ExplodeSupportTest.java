@@ -66,8 +66,29 @@ public class ExplodeSupportTest {
     }
 
     @Test
+    public void testConstructorThrowsExceptions() {
+        try {
+            final ExplodingInputStream eis = new  ExplodingInputStream(4095,2,new ByteArrayInputStream(new byte[] {}));
+            fail("should have failed with illegal argument exception");
+        } catch (final IllegalArgumentException e) {
+        }
+
+        try {
+            final ExplodingInputStream eis = new  ExplodingInputStream(4096,4,new ByteArrayInputStream(new byte[] {}));
+            fail("should have failed with illegal argument exception");
+        } catch (final IllegalArgumentException e) {
+        }
+
+    }
+
+    @Test
     public void testTikaTestArchive() throws IOException {
         testArchiveWithImplodeCompression("target/test-classes/moby-imploded.zip", "README");
+    }
+
+    @Test
+    public void testTikaTestStream() throws IOException {
+        testZipStreamWithImplodeCompression("target/test-classes/moby-imploded.zip", "README");
     }
 
     private void testZipStreamWithImplodeCompression(final String filename, final String entryName) throws IOException {
@@ -96,27 +117,6 @@ public class ExplodeSupportTest {
     @Test
     public void testZipStreamWithImplodeCompression8K3Trees() throws IOException {
         testZipStreamWithImplodeCompression("target/test-classes/imploding-8Kdict-3trees.zip", "LICENSE.TXT");
-    }
-
-    @Test
-    public void testTikaTestStream() throws IOException {
-        testZipStreamWithImplodeCompression("target/test-classes/moby-imploded.zip", "README");
-    }
-
-    @Test
-    public void testConstructorThrowsExceptions() {
-        try {
-            final ExplodingInputStream eis = new  ExplodingInputStream(4095,2,new ByteArrayInputStream(new byte[] {}));
-            fail("should have failed with illegal argument exception");
-        } catch (final IllegalArgumentException e) {
-        }
-
-        try {
-            final ExplodingInputStream eis = new  ExplodingInputStream(4096,4,new ByteArrayInputStream(new byte[] {}));
-            fail("should have failed with illegal argument exception");
-        } catch (final IllegalArgumentException e) {
-        }
-
     }
 
 }

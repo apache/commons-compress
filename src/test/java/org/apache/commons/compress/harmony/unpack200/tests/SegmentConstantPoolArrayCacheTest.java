@@ -25,24 +25,6 @@ import junit.framework.TestCase;
 
 public class SegmentConstantPoolArrayCacheTest extends TestCase {
 
-    public void testSingleSimpleArray() {
-        SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
-        String array[] = {"Zero", "One", "Two", "Three", "Four"};
-        List list = arrayCache.indexesForArrayKey(array, "Three");
-        assertEquals(1, list.size());
-        assertEquals(3, ((Integer)list.get(0)).intValue());
-    }
-
-    public void testSingleMultipleHitArray() {
-        SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
-        String array[] = {"Zero", "OneThreeFour", "Two", "OneThreeFour", "OneThreeFour"};
-        List list = arrayCache.indexesForArrayKey(array, "OneThreeFour");
-        assertEquals(3, list.size());
-        assertEquals(1, ((Integer)list.get(0)).intValue());
-        assertEquals(3, ((Integer)list.get(1)).intValue());
-        assertEquals(4, ((Integer)list.get(2)).intValue());
-    }
-
     public void testMultipleArrayMultipleHit() {
         SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
         String arrayOne[] = {"Zero", "Shared", "Two", "Shared", "Shared"};
@@ -73,6 +55,24 @@ public class SegmentConstantPoolArrayCacheTest extends TestCase {
 
         List listThree = arrayCache.indexesForArrayKey(arrayOne, "Not found");
         assertEquals(0, listThree.size());
+    }
+
+    public void testSingleMultipleHitArray() {
+        SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
+        String array[] = {"Zero", "OneThreeFour", "Two", "OneThreeFour", "OneThreeFour"};
+        List list = arrayCache.indexesForArrayKey(array, "OneThreeFour");
+        assertEquals(3, list.size());
+        assertEquals(1, ((Integer)list.get(0)).intValue());
+        assertEquals(3, ((Integer)list.get(1)).intValue());
+        assertEquals(4, ((Integer)list.get(2)).intValue());
+    }
+
+    public void testSingleSimpleArray() {
+        SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
+        String array[] = {"Zero", "One", "Two", "Three", "Four"};
+        List list = arrayCache.indexesForArrayKey(array, "Three");
+        assertEquals(1, list.size());
+        assertEquals(3, ((Integer)list.get(0)).intValue());
     }
 
 }

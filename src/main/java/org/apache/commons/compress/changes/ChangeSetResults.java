@@ -30,11 +30,12 @@ public class ChangeSetResults {
     private final List<String> deleted = new ArrayList<>();
 
     /**
-     * Adds the file name of a recently deleted file to the result list.
-     * @param fileName the file which has been deleted
+     * Adds the name of a file to the result list which has been
+     * copied from the changeset to the target stream
+     * @param fileName the name of the file
      */
-    void deleted(final String fileName) {
-        deleted.add(fileName);
+    void addedFromChangeSet(final String fileName) {
+        addedFromChangeSet.add(fileName);
     }
 
     /**
@@ -47,12 +48,11 @@ public class ChangeSetResults {
     }
 
     /**
-     * Adds the name of a file to the result list which has been
-     * copied from the changeset to the target stream
-     * @param fileName the name of the file
+     * Adds the file name of a recently deleted file to the result list.
+     * @param fileName the file which has been deleted
      */
-    void addedFromChangeSet(final String fileName) {
-        addedFromChangeSet.add(fileName);
+    void deleted(final String fileName) {
+        deleted.add(fileName);
     }
 
     /**

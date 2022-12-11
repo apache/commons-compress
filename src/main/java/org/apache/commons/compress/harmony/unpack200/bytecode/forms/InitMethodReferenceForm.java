@@ -36,13 +36,13 @@ public abstract class InitMethodReferenceForm extends ClassSpecificReferenceForm
     protected abstract String context(OperandManager operandManager);
 
     @Override
-    protected int getPoolID() {
-        return SegmentConstantPool.CP_METHOD;
+    protected int getOffset(final OperandManager operandManager) {
+        return operandManager.nextInitRef();
     }
 
     @Override
-    protected int getOffset(final OperandManager operandManager) {
-        return operandManager.nextInitRef();
+    protected int getPoolID() {
+        return SegmentConstantPool.CP_METHOD;
     }
 
     @Override

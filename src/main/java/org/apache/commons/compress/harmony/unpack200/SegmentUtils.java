@@ -25,10 +25,6 @@ public final class SegmentUtils {
         return countArgs(descriptor, 1);
     }
 
-    public static int countInvokeInterfaceArgs(final String descriptor) {
-        return countArgs(descriptor, 2);
-    }
-
     /**
      * Count the number of arguments in the descriptor. Each long or double counts as widthOfLongsAndDoubles; all other
      * arguments count as 1.
@@ -72,16 +68,6 @@ public final class SegmentUtils {
         return count;
     }
 
-    public static int countMatches(final long[] flags, final IMatcher matcher) {
-        int count = 0;
-        for (long flag : flags) {
-            if (matcher.matches(flag)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
     public static int countBit16(final int[] flags) {
         int count = 0;
         for (int flag : flags) {
@@ -109,6 +95,20 @@ public final class SegmentUtils {
                 if ((element & (1 << 16)) != 0) {
                     count++;
                 }
+            }
+        }
+        return count;
+    }
+
+    public static int countInvokeInterfaceArgs(final String descriptor) {
+        return countArgs(descriptor, 2);
+    }
+
+    public static int countMatches(final long[] flags, final IMatcher matcher) {
+        int count = 0;
+        for (long flag : flags) {
+            if (matcher.matches(flag)) {
+                count++;
             }
         }
         return count;

@@ -26,13 +26,6 @@ package org.apache.commons.compress.archivers.cpio;
 class CpioUtil {
 
     /**
-     * Extracts the file type bits from a mode.
-     */
-    static long fileType(final long mode) {
-        return mode & CpioConstants.S_IFMT;
-    }
-
-    /**
      * Converts a byte array to a long. Halfwords can be swapped by setting
      * swapHalfWord=true.
      *
@@ -68,6 +61,13 @@ class CpioUtil {
             ret |= tmp_number[pos] & 0xFF;
         }
         return ret;
+    }
+
+    /**
+     * Extracts the file type bits from a mode.
+     */
+    static long fileType(final long mode) {
+        return mode & CpioConstants.S_IFMT;
     }
 
     /**

@@ -34,34 +34,113 @@ import java.util.zip.ZipEntry;
  */
 public class Archive {
 
+    static class PackingFile {
+
+        private final String name;
+        private byte[] contents;
+        private final long modtime;
+        private final boolean deflateHint;
+        private final boolean isDirectory;
+
+        public PackingFile(final byte[] bytes, final JarEntry jarEntry) {
+            name = jarEntry.getName();
+            contents = bytes;
+            modtime = jarEntry.getTime();
+            deflateHint = jarEntry.getMethod() == ZipEntry.DEFLATED;
+            isDirectory = jarEntry.isDirectory();
+        }
+
+        public PackingFile(final String name, final byte[] contents, final long modtime) {
+            this.name = name;
+            this.contents = contents;
+            this.modtime = modtime;
+            deflateHint = false;
+            isDirectory = false;
+        }
+
+        public byte[] getContents() {
+            return contents;
+        }
+
+        public long getModtime() {
+            return modtime;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean isDefalteHint() {
+            return deflateHint;
+        }
+
+        public boolean isDirectory() {
+            return isDirectory;
+        }
+
+        public void setContents(final byte[] contents) {
+            this.contents = contents;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+    static class SegmentUnit {
+
+        private final List<Pack200ClassReader> classList;
+
+        private final List<PackingFile> fileList;
+
+        private int byteAmount;
+
+        private int packedByteAmount;
+
+        public SegmentUnit(final List<Pack200ClassReader> classes, final List<PackingFile> files) {
+            classList = classes;
+            fileList = files;
+            byteAmount = 0;
+            // Calculate the amount of bytes in classes and files before packing
+            byteAmount += classList.stream().mapToInt(element -> element.b.length).sum();
+            byteAmount += fileList.stream().mapToInt(element -> element.contents.length).sum();
+        }
+
+        public void addPackedByteAmount(final int amount) {
+            packedByteAmount += amount;
+        }
+
+        public int classListSize() {
+            return classList.size();
+        }
+
+        public int fileListSize() {
+            return fileList.size();
+        }
+
+        public int getByteAmount() {
+            return byteAmount;
+        }
+
+        public List<Pack200ClassReader> getClassList() {
+            return classList;
+        }
+
+        public List<PackingFile> getFileList() {
+            return fileList;
+        }
+
+        public int getPackedByteAmount() {
+            return packedByteAmount;
+        }
+    }
     private final JarInputStream jarInputStream;
     private final OutputStream outputStream;
     private JarFile jarFile;
-    private long currentSegmentSize;
-    private final PackingOptions options;
 
-    /**
-     * Creates an Archive with streams for the input and output.
-     *
-     * @param inputStream TODO
-     * @param outputStream TODO
-     * @param options - packing options (if null then defaults are used)
-     * @throws IOException If an I/O error occurs.
-     */
-    public Archive(final JarInputStream inputStream, OutputStream outputStream, PackingOptions options)
-        throws IOException {
-        jarInputStream = inputStream;
-        if (options == null) {
-            // use all defaults
-            options = new PackingOptions();
-        }
-        this.options = options;
-        if (options.isGzip()) {
-            outputStream = new GZIPOutputStream(outputStream);
-        }
-        this.outputStream = new BufferedOutputStream(outputStream);
-        PackingUtils.config(options);
-    }
+    private long currentSegmentSize;
+
+    private final PackingOptions options;
 
     /**
      * Creates an Archive with the given input file and a stream for the output
@@ -86,29 +165,55 @@ public class Archive {
     }
 
     /**
-     * Pack the archive
+     * Creates an Archive with streams for the input and output.
      *
-     * @throws Pack200Exception TODO
+     * @param inputStream TODO
+     * @param outputStream TODO
+     * @param options - packing options (if null then defaults are used)
      * @throws IOException If an I/O error occurs.
      */
-    public void pack() throws Pack200Exception, IOException {
-        if (0 == options.getEffort()) {
-            doZeroEffortPack();
-        } else {
-            doNormalPack();
+    public Archive(final JarInputStream inputStream, OutputStream outputStream, PackingOptions options)
+        throws IOException {
+        jarInputStream = inputStream;
+        if (options == null) {
+            // use all defaults
+            options = new PackingOptions();
         }
+        this.options = options;
+        if (options.isGzip()) {
+            outputStream = new GZIPOutputStream(outputStream);
+        }
+        this.outputStream = new BufferedOutputStream(outputStream);
+        PackingUtils.config(options);
     }
 
-    private void doZeroEffortPack() throws IOException {
-        PackingUtils.log("Start to perform a zero-effort packing");
-        if (jarInputStream != null) {
-            PackingUtils.copyThroughJar(jarInputStream, outputStream);
-        } else {
-            PackingUtils.copyThroughJar(jarFile, outputStream);
+	private boolean addJarEntry(final PackingFile packingFile, final List<Pack200ClassReader> javaClasses, final List<PackingFile> files) {
+        final long segmentLimit = options.getSegmentLimit();
+        if (segmentLimit != -1 && segmentLimit != 0) {
+            // -1 is a special case where only one segment is created and
+            // 0 is a special case where one segment is created for each file
+            // except for files in "META-INF"
+            final long packedSize = estimateSize(packingFile);
+            if (packedSize + currentSegmentSize > segmentLimit && currentSegmentSize > 0) {
+                // don't add this JarEntry to the current segment
+                return false;
+            }
+            // do add this JarEntry
+            currentSegmentSize += packedSize;
         }
+
+        final String name = packingFile.getName();
+        if (name.endsWith(".class") && !options.isPassFile(name)) {
+            final Pack200ClassReader classParser = new Pack200ClassReader(packingFile.contents);
+            classParser.setFileName(name);
+            javaClasses.add(classParser);
+            packingFile.contents = new byte[0];
+        }
+        files.add(packingFile);
+        return true;
     }
 
-	private void doNormalPack() throws IOException, Pack200Exception {
+    private void doNormalPack() throws IOException, Pack200Exception {
 		PackingUtils.log("Start to perform a normal packing");
 		List<PackingFile> packingFileList;
 		if (jarInputStream != null) {
@@ -135,6 +240,43 @@ public class Archive {
 
 		outputStream.close();
 	}
+
+    private void doZeroEffortPack() throws IOException {
+        PackingUtils.log("Start to perform a zero-effort packing");
+        if (jarInputStream != null) {
+            PackingUtils.copyThroughJar(jarInputStream, outputStream);
+        } else {
+            PackingUtils.copyThroughJar(jarFile, outputStream);
+        }
+    }
+
+    private long estimateSize(final PackingFile packingFile) {
+        // The heuristic used here is for compatibility with the RI and should
+        // not be changed
+        final String name = packingFile.getName();
+        if (name.startsWith("META-INF") || name.startsWith("/META-INF")) {
+            return 0;
+        }
+        long fileSize = packingFile.contents.length;
+        if (fileSize < 0) {
+            fileSize = 0;
+        }
+        return name.length() + fileSize + 5;
+    }
+
+    /**
+     * Pack the archive
+     *
+     * @throws Pack200Exception TODO
+     * @throws IOException If an I/O error occurs.
+     */
+    public void pack() throws Pack200Exception, IOException {
+        if (0 == options.getEffort()) {
+            doZeroEffortPack();
+        } else {
+            doNormalPack();
+        }
+    }
 
     private List<SegmentUnit> splitIntoSegments(final List<PackingFile> packingFileList) {
         final List<SegmentUnit> segmentUnitList = new ArrayList<>();
@@ -169,148 +311,6 @@ public class Archive {
             segmentUnitList.add(new SegmentUnit(classes, files));
         }
         return segmentUnitList;
-    }
-
-    private boolean addJarEntry(final PackingFile packingFile, final List<Pack200ClassReader> javaClasses, final List<PackingFile> files) {
-        final long segmentLimit = options.getSegmentLimit();
-        if (segmentLimit != -1 && segmentLimit != 0) {
-            // -1 is a special case where only one segment is created and
-            // 0 is a special case where one segment is created for each file
-            // except for files in "META-INF"
-            final long packedSize = estimateSize(packingFile);
-            if (packedSize + currentSegmentSize > segmentLimit && currentSegmentSize > 0) {
-                // don't add this JarEntry to the current segment
-                return false;
-            }
-            // do add this JarEntry
-            currentSegmentSize += packedSize;
-        }
-
-        final String name = packingFile.getName();
-        if (name.endsWith(".class") && !options.isPassFile(name)) {
-            final Pack200ClassReader classParser = new Pack200ClassReader(packingFile.contents);
-            classParser.setFileName(name);
-            javaClasses.add(classParser);
-            packingFile.contents = new byte[0];
-        }
-        files.add(packingFile);
-        return true;
-    }
-
-    private long estimateSize(final PackingFile packingFile) {
-        // The heuristic used here is for compatibility with the RI and should
-        // not be changed
-        final String name = packingFile.getName();
-        if (name.startsWith("META-INF") || name.startsWith("/META-INF")) {
-            return 0;
-        }
-        long fileSize = packingFile.contents.length;
-        if (fileSize < 0) {
-            fileSize = 0;
-        }
-        return name.length() + fileSize + 5;
-    }
-
-    static class SegmentUnit {
-
-        private final List<Pack200ClassReader> classList;
-
-        private final List<PackingFile> fileList;
-
-        private int byteAmount;
-
-        private int packedByteAmount;
-
-        public SegmentUnit(final List<Pack200ClassReader> classes, final List<PackingFile> files) {
-            classList = classes;
-            fileList = files;
-            byteAmount = 0;
-            // Calculate the amount of bytes in classes and files before packing
-            byteAmount += classList.stream().mapToInt(element -> element.b.length).sum();
-            byteAmount += fileList.stream().mapToInt(element -> element.contents.length).sum();
-        }
-
-        public List<Pack200ClassReader> getClassList() {
-            return classList;
-        }
-
-        public int classListSize() {
-            return classList.size();
-        }
-
-        public int fileListSize() {
-            return fileList.size();
-        }
-
-        public List<PackingFile> getFileList() {
-            return fileList;
-        }
-
-        public int getByteAmount() {
-            return byteAmount;
-        }
-
-        public int getPackedByteAmount() {
-            return packedByteAmount;
-        }
-
-        public void addPackedByteAmount(final int amount) {
-            packedByteAmount += amount;
-        }
-    }
-
-    static class PackingFile {
-
-        private final String name;
-        private byte[] contents;
-        private final long modtime;
-        private final boolean deflateHint;
-        private final boolean isDirectory;
-
-        public PackingFile(final String name, final byte[] contents, final long modtime) {
-            this.name = name;
-            this.contents = contents;
-            this.modtime = modtime;
-            deflateHint = false;
-            isDirectory = false;
-        }
-
-        public PackingFile(final byte[] bytes, final JarEntry jarEntry) {
-            name = jarEntry.getName();
-            contents = bytes;
-            modtime = jarEntry.getTime();
-            deflateHint = jarEntry.getMethod() == ZipEntry.DEFLATED;
-            isDirectory = jarEntry.isDirectory();
-        }
-
-        public byte[] getContents() {
-            return contents;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public long getModtime() {
-            return modtime;
-        }
-
-        public void setContents(final byte[] contents) {
-            this.contents = contents;
-        }
-
-        public boolean isDefalteHint() {
-            return deflateHint;
-        }
-
-        public boolean isDirectory() {
-            return isDirectory;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
     }
 
 }

@@ -37,10 +37,30 @@ import org.junit.jupiter.api.Test;
 
 public class BZip2CompressorInputStreamTest {
 
+    private void fuzzingTest(final int[] bytes) throws IOException, ArchiveException {
+        final int len = bytes.length;
+        final byte[] input = new byte[len];
+        for (int i = 0; i < len; i++) {
+            input[i] = (byte) bytes[i];
+        }
+        try (ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT
+             .createArchiveInputStream("zip", new ByteArrayInputStream(input))) {
+            ais.getNextEntry();
+            IOUtils.toByteArray(ais);
+        }
+    }
+
     @Test
-    public void shouldThrowAnIOExceptionWhenAppliedToAZipFile() throws Exception {
-        try (InputStream in = Files.newInputStream(getFile("bla.zip").toPath())) {
-            assertThrows(IOException.class, () -> new BZip2CompressorInputStream(in));
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.txt.bz2");
+        final byte[] buf = new byte[2];
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            final BZip2CompressorInputStream in =
+                    new BZip2CompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read(buf));
+            Assert.assertEquals(-1, in.read(buf));
+            in.close();
         }
     }
 
@@ -75,29 +95,9 @@ public class BZip2CompressorInputStreamTest {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.txt.bz2");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final BZip2CompressorInputStream in =
-                    new BZip2CompressorInputStream(is);
-            IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read());
-            Assert.assertEquals(-1, in.read());
-            in.close();
-        }
-    }
-
-    @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.txt.bz2");
-        final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final BZip2CompressorInputStream in =
-                    new BZip2CompressorInputStream(is);
-            IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read(buf));
-            Assert.assertEquals(-1, in.read(buf));
-            in.close();
+    public void shouldThrowAnIOExceptionWhenAppliedToAZipFile() throws Exception {
+        try (InputStream in = Files.newInputStream(getFile("bla.zip").toPath())) {
+            assertThrows(IOException.class, () -> new BZip2CompressorInputStream(in));
         }
     }
 
@@ -147,16 +147,16 @@ public class BZip2CompressorInputStreamTest {
         }));
     }
 
-    private void fuzzingTest(final int[] bytes) throws IOException, ArchiveException {
-        final int len = bytes.length;
-        final byte[] input = new byte[len];
-        for (int i = 0; i < len; i++) {
-            input[i] = (byte) bytes[i];
-        }
-        try (ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT
-             .createArchiveInputStream("zip", new ByteArrayInputStream(input))) {
-            ais.getNextEntry();
-            IOUtils.toByteArray(ais);
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.txt.bz2");
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            final BZip2CompressorInputStream in =
+                    new BZip2CompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read());
+            Assert.assertEquals(-1, in.read());
+            in.close();
         }
     }
 }

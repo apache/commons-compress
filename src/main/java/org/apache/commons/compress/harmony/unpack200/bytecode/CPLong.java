@@ -29,13 +29,13 @@ public class CPLong extends CPConstantNumber {
     }
 
     @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeLong(getNumber().longValue());
+    public String toString() {
+        return "Long: " + getValue();
     }
 
     @Override
-    public String toString() {
-        return "Long: " + getValue();
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        dos.writeLong(getNumber().longValue());
     }
 
 }

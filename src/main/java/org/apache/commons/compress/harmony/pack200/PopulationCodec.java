@@ -121,25 +121,13 @@ public class PopulationCodec extends Codec {
         return result;
     }
 
-    public int[] getFavoured() {
-        return favoured;
-    }
-
-    public Codec getFavouredCodec() {
-        return favouredCodec;
-    }
-
-    public Codec getUnfavouredCodec() {
-        return unfavouredCodec;
-    }
-
     @Override
-    public byte[] encode(final int value, final int last) throws Pack200Exception {
+    public byte[] encode(final int value) throws Pack200Exception {
         throw new Pack200Exception("Population encoding does not work unless the number of elements are known");
     }
 
     @Override
-    public byte[] encode(final int value) throws Pack200Exception {
+    public byte[] encode(final int value, final int last) throws Pack200Exception {
         throw new Pack200Exception("Population encoding does not work unless the number of elements are known");
     }
 
@@ -158,7 +146,19 @@ public class PopulationCodec extends Codec {
         return band;
     }
 
+    public int[] getFavoured() {
+        return favoured;
+    }
+
+    public Codec getFavouredCodec() {
+        return favouredCodec;
+    }
+
     public Codec getTokenCodec() {
         return tokenCodec;
+    }
+
+    public Codec getUnfavouredCodec() {
+        return unfavouredCodec;
     }
 }

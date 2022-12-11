@@ -65,13 +65,17 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
     }
 
     @Override
-    public void write(final int b) throws IOException {
-        out.write(b);
+    public void close() throws IOException {
+        out.close();
     }
 
-    @Override
-    public void write(final byte[] buf, final int off, final int len) throws IOException {
-        out.write(buf, off, len);
+    /**
+     * Finishes compression without closing the underlying stream.
+     * No more data can be written to this stream after finishing.
+     * @throws IOException on error
+     */
+    public void finish() throws IOException {
+        out.finish();
     }
 
     /**
@@ -85,17 +89,13 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
         out.flush();
     }
 
-    /**
-     * Finishes compression without closing the underlying stream.
-     * No more data can be written to this stream after finishing.
-     * @throws IOException on error
-     */
-    public void finish() throws IOException {
-        out.finish();
+    @Override
+    public void write(final byte[] buf, final int off, final int len) throws IOException {
+        out.write(buf, off, len);
     }
 
     @Override
-    public void close() throws IOException {
-        out.close();
+    public void write(final int b) throws IOException {
+        out.write(b);
     }
 }

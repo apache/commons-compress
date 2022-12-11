@@ -30,53 +30,14 @@ public class CPFieldRef extends ConstantPoolEntry {
     private final CPNameAndType nameAndType;
     transient int nameAndTypeIndex;
 
+    private boolean hashcodeComputed;
+
+    private int cachedHashCode;
+
     public CPFieldRef(final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
         super(ConstantPoolEntry.CP_Fieldref, globalIndex);
         this.className = className;
         this.nameAndType = descriptor;
-    }
-
-    @Override
-    protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] {className, nameAndType};
-    }
-
-    @Override
-    protected void resolve(final ClassConstantPool pool) {
-        super.resolve(pool);
-        nameAndTypeIndex = pool.indexOf(nameAndType);
-        classNameIndex = pool.indexOf(className);
-    }
-
-    @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeShort(classNameIndex);
-        dos.writeShort(nameAndTypeIndex);
-    }
-
-    @Override
-    public String toString() {
-        return "FieldRef: " + className + "#" + nameAndType;
-    }
-
-    private boolean hashcodeComputed;
-    private int cachedHashCode;
-
-    private void generateHashCode() {
-        hashcodeComputed = true;
-        final int PRIME = 31;
-        int result = 1;
-        result = PRIME * result + ((className == null) ? 0 : className.hashCode());
-        result = PRIME * result + ((nameAndType == null) ? 0 : nameAndType.hashCode());
-        cachedHashCode = result;
-    }
-
-    @Override
-    public int hashCode() {
-        if (!hashcodeComputed) {
-            generateHashCode();
-        }
-        return cachedHashCode;
     }
 
     @Override
@@ -98,6 +59,45 @@ public class CPFieldRef extends ConstantPoolEntry {
             return false;
         }
         return true;
+    }
+
+    private void generateHashCode() {
+        hashcodeComputed = true;
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + ((className == null) ? 0 : className.hashCode());
+        result = PRIME * result + ((nameAndType == null) ? 0 : nameAndType.hashCode());
+        cachedHashCode = result;
+    }
+
+    @Override
+    protected ClassFileEntry[] getNestedClassFileEntries() {
+        return new ClassFileEntry[] {className, nameAndType};
+    }
+    @Override
+    public int hashCode() {
+        if (!hashcodeComputed) {
+            generateHashCode();
+        }
+        return cachedHashCode;
+    }
+
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
+        super.resolve(pool);
+        nameAndTypeIndex = pool.indexOf(nameAndType);
+        classNameIndex = pool.indexOf(className);
+    }
+
+    @Override
+    public String toString() {
+        return "FieldRef: " + className + "#" + nameAndType;
+    }
+
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        dos.writeShort(classNameIndex);
+        dos.writeShort(nameAndTypeIndex);
     }
 
 }

@@ -33,6 +33,14 @@ import org.junit.jupiter.api.Test;
 
 public final class LZMATestCase extends AbstractTestCase {
 
+    private void copy(final InputStream in, final File output) throws IOException {
+        try (OutputStream out = Files.newOutputStream(output.toPath())) {
+            IOUtils.copy(in, out);
+        } finally {
+            in.close();
+        }
+    }
+
     @Test
     public void lzmaRoundtrip() throws Exception {
         final File input = getFile("test1.xml");
@@ -56,23 +64,16 @@ public final class LZMATestCase extends AbstractTestCase {
     }
 
     @Test
-    public void testLZMAUnarchive() throws Exception {
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.lzma");
-        final File output = new File(dir, "bla.tar");
+        final byte[] buf = new byte[2];
         try (InputStream is = Files.newInputStream(input.toPath())) {
-            final CompressorInputStream in = new LZMACompressorInputStream(is);
-            copy(in, output);
-        }
-    }
-
-    @Test
-    public void testLZMAUnarchiveWithAutodetection() throws Exception {
-        final File input = getFile("bla.tar.lzma");
-        final File output = new File(dir, "bla.tar");
-        try (InputStream is = new BufferedInputStream(Files.newInputStream(input.toPath()))) {
-            final CompressorInputStream in = new CompressorStreamFactory()
-                    .createCompressorInputStream(is);
-            copy(in, output);
+            final LZMACompressorInputStream in =
+                    new LZMACompressorInputStream(is);
+            IOUtils.toByteArray(in);
+            Assert.assertEquals(-1, in.read(buf));
+            Assert.assertEquals(-1, in.read(buf));
+            in.close();
         }
     }
 
@@ -90,24 +91,23 @@ public final class LZMATestCase extends AbstractTestCase {
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testLZMAUnarchive() throws Exception {
         final File input = getFile("bla.tar.lzma");
-        final byte[] buf = new byte[2];
+        final File output = new File(dir, "bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
-            final LZMACompressorInputStream in =
-                    new LZMACompressorInputStream(is);
-            IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read(buf));
-            Assert.assertEquals(-1, in.read(buf));
-            in.close();
+            final CompressorInputStream in = new LZMACompressorInputStream(is);
+            copy(in, output);
         }
     }
 
-    private void copy(final InputStream in, final File output) throws IOException {
-        try (OutputStream out = Files.newOutputStream(output.toPath())) {
-            IOUtils.copy(in, out);
-        } finally {
-            in.close();
+    @Test
+    public void testLZMAUnarchiveWithAutodetection() throws Exception {
+        final File input = getFile("bla.tar.lzma");
+        final File output = new File(dir, "bla.tar");
+        try (InputStream is = new BufferedInputStream(Files.newInputStream(input.toPath()))) {
+            final CompressorInputStream in = new CompressorStreamFactory()
+                    .createCompressorInputStream(is);
+            copy(in, output);
         }
     }
 }

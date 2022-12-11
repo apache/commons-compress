@@ -59,24 +59,6 @@ public class SegmentTest extends TestCase {
         file.delete();
     }
 
-    public void testJustResources() throws Exception {
-        in = Segment.class
-                .getResourceAsStream("/pack200/JustResources.pack");
-        file = File.createTempFile("just", "resources.jar");
-        out = new JarOutputStream(new FileOutputStream(file));
-        Segment segment = new Segment();
-        segment.unpack(in, out);
-    }
-
-    public void testInterfaceOnly() throws Exception {
-        in = Segment.class
-                .getResourceAsStream("/pack200/InterfaceOnly.pack");
-        file = File.createTempFile("Interface", "Only.jar");
-        out = new JarOutputStream(new FileOutputStream(file));
-        Segment segment = new Segment();
-        segment.unpack(in, out);
-    }
-
     public void testHelloWorld() throws Exception {
         in = Segment.class
                 .getResourceAsStream("/pack200/HelloWorld.pack");
@@ -115,6 +97,24 @@ public class SegmentTest extends TestCase {
         }
         reader1.close();
         reader2.close();
+    }
+
+    public void testInterfaceOnly() throws Exception {
+        in = Segment.class
+                .getResourceAsStream("/pack200/InterfaceOnly.pack");
+        file = File.createTempFile("Interface", "Only.jar");
+        out = new JarOutputStream(new FileOutputStream(file));
+        Segment segment = new Segment();
+        segment.unpack(in, out);
+    }
+
+    public void testJustResources() throws Exception {
+        in = Segment.class
+                .getResourceAsStream("/pack200/JustResources.pack");
+        file = File.createTempFile("just", "resources.jar");
+        out = new JarOutputStream(new FileOutputStream(file));
+        Segment segment = new Segment();
+        segment.unpack(in, out);
     }
 
 }

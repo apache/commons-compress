@@ -42,6 +42,10 @@ public class ScatterZipOutputStreamTest {
         tryHardToDelete(target);
     }
 
+    private InputStreamSupplier createPayloadSupplier(final ByteArrayInputStream payload) {
+        return () -> payload;
+    }
+
     @Test
     public void putArchiveEntry() throws Exception {
         scatterFile = File.createTempFile("scattertest", ".notzip");
@@ -74,9 +78,5 @@ public class ScatterZipOutputStreamTest {
         assertEquals(4, a_entry.getSize());
         assertArrayEquals(A_PAYLOAD, IOUtils.toByteArray(zf.getInputStream(a_entry)));
         zf.close();
-    }
-
-    private InputStreamSupplier createPayloadSupplier(final ByteArrayInputStream payload) {
-        return () -> payload;
     }
 }

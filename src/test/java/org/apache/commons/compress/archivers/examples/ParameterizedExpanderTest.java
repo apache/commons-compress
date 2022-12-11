@@ -56,29 +56,36 @@ public class ParameterizedExpanderTest extends AbstractTestCase {
 
     private File archive;
 
-    public void setUp(final String format) throws Exception {
-        super.setUp();
-        archive = new File(dir, "test." + format);
-        final File dummy = new File(dir, "x");
-        try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
-            o.write(new byte[14]);
+    @ParameterizedTest
+    @MethodSource("data")
+    public void archiveInputStreamVersion(final String format) throws Exception {
+        // TODO How to parameterize a BeforeEach method?
+        setUp(format);
+        try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()));
+             ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, i)) {
+            new Expander().expand(ais, resultDir);
         }
-        try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
-             .createArchiveOutputStream(format, Files.newOutputStream(archive.toPath()))) {
-            aos.putArchiveEntry(aos.createArchiveEntry(dir.toPath(), "a"));
-            aos.closeArchiveEntry();
-            aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b"));
-            aos.closeArchiveEntry();
-            aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b/c"));
-            aos.closeArchiveEntry();
-            aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/d.txt"));
-            aos.write("Hello, world 1".getBytes(UTF_8));
-            aos.closeArchiveEntry();
-            aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/c/e.txt"));
-            aos.write("Hello, world 2".getBytes(UTF_8));
-            aos.closeArchiveEntry();
-            aos.finish();
+        verifyTargetDir();
+    }
+
+    private void assertHelloWorld(final String fileName, final String suffix) throws IOException {
+        Assert.assertTrue(fileName + " does not exist", new File(resultDir, fileName).isFile());
+        final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
+        try (InputStream is = Files.newInputStream(new File(resultDir, fileName).toPath())) {
+            final byte[] actual = IOUtils.toByteArray(is);
+            Assert.assertArrayEquals(expected, actual);
         }
+    }
+
+    @ParameterizedTest
+    @MethodSource("data")
+    public void channelVersion(final String format) throws Exception {
+        // TODO How to parameterize a BeforeEach method?
+        setUp(format);
+        try (SeekableByteChannel c = FileChannel.open(archive.toPath(), StandardOpenOption.READ)) {
+            new Expander().expand(format, c, resultDir);
+        }
+        verifyTargetDir();
     }
 
     @ParameterizedTest
@@ -121,27 +128,29 @@ public class ParameterizedExpanderTest extends AbstractTestCase {
         verifyTargetDir();
     }
 
-    @ParameterizedTest
-    @MethodSource("data")
-    public void channelVersion(final String format) throws Exception {
-        // TODO How to parameterize a BeforeEach method?
-        setUp(format);
-        try (SeekableByteChannel c = FileChannel.open(archive.toPath(), StandardOpenOption.READ)) {
-            new Expander().expand(format, c, resultDir);
+    public void setUp(final String format) throws Exception {
+        super.setUp();
+        archive = new File(dir, "test." + format);
+        final File dummy = new File(dir, "x");
+        try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
+            o.write(new byte[14]);
         }
-        verifyTargetDir();
-    }
-
-    @ParameterizedTest
-    @MethodSource("data")
-    public void archiveInputStreamVersion(final String format) throws Exception {
-        // TODO How to parameterize a BeforeEach method?
-        setUp(format);
-        try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()));
-             ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, i)) {
-            new Expander().expand(ais, resultDir);
+        try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
+             .createArchiveOutputStream(format, Files.newOutputStream(archive.toPath()))) {
+            aos.putArchiveEntry(aos.createArchiveEntry(dir.toPath(), "a"));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b"));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b/c"));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/d.txt"));
+            aos.write("Hello, world 1".getBytes(UTF_8));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/c/e.txt"));
+            aos.write("Hello, world 2".getBytes(UTF_8));
+            aos.closeArchiveEntry();
+            aos.finish();
         }
-        verifyTargetDir();
     }
 
     private void verifyTargetDir() throws IOException {
@@ -150,15 +159,6 @@ public class ParameterizedExpanderTest extends AbstractTestCase {
         Assert.assertTrue("a/b/c has not been created", new File(resultDir, "a/b/c").isDirectory());
         assertHelloWorld("a/b/d.txt", "1");
         assertHelloWorld("a/b/c/e.txt", "2");
-    }
-
-    private void assertHelloWorld(final String fileName, final String suffix) throws IOException {
-        Assert.assertTrue(fileName + " does not exist", new File(resultDir, fileName).isFile());
-        final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
-        try (InputStream is = Files.newInputStream(new File(resultDir, fileName).toPath())) {
-            final byte[] actual = IOUtils.toByteArray(is);
-            Assert.assertArrayEquals(expected, actual);
-        }
     }
 
 }

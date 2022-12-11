@@ -54,6 +54,16 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
     }
 
     @Override
+    public long getCompressedCount() {
+        return compressedCount;
+    }
+
+    @Override
+    public long getUncompressedCount() {
+        return uncompressedCount;
+    }
+
+    @Override
     public int read() throws IOException {
         final int b = super.read();
         if (b > -1) {
@@ -69,15 +79,5 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
             uncompressedCount += bytes;
         }
         return bytes;
-    }
-
-    @Override
-    public long getCompressedCount() {
-        return compressedCount;
-    }
-
-    @Override
-    public long getUncompressedCount() {
-        return uncompressedCount;
     }
 }

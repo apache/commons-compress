@@ -187,30 +187,100 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      */
     public static final String SEVEN_Z = "7z";
 
-    /**
-     * Entry encoding, null for the platform default.
-     */
-    private final String encoding;
-
-    /**
-     * Entry encoding, null for the default.
-     */
-    private volatile String entryEncoding;
-
-    private SortedMap<String, ArchiveStreamProvider> archiveInputStreamProviders;
-
-    private SortedMap<String, ArchiveStreamProvider> archiveOutputStreamProviders;
-
-    static void putAll(final Set<String> names, final ArchiveStreamProvider provider, final TreeMap<String, ArchiveStreamProvider> map) {
-        names.forEach(name -> map.put(toKey(name), provider));
-    }
-
     private static Iterable<ArchiveStreamProvider> archiveStreamProviderIterable() {
         return ServiceLoader.load(ArchiveStreamProvider.class, ClassLoader.getSystemClassLoader());
     }
 
-    private static String toKey(final String name) {
-        return name.toUpperCase(Locale.ROOT);
+    /**
+     * Try to determine the type of Archiver
+     * @param in input stream
+     * @return type of archiver if found
+     * @throws ArchiveException if an archiver cannot be detected in the stream
+     * @since 1.14
+     */
+    public static String detect(final InputStream in) throws ArchiveException {
+        if (in == null) {
+            throw new IllegalArgumentException("Stream must not be null.");
+        }
+
+        if (!in.markSupported()) {
+            throw new IllegalArgumentException("Mark is not supported.");
+        }
+
+        final byte[] signature = new byte[SIGNATURE_SIZE];
+        in.mark(signature.length);
+        int signatureLength = -1;
+        try {
+            signatureLength = IOUtils.readFully(in, signature);
+            in.reset();
+        } catch (final IOException e) {
+            throw new ArchiveException("IOException while reading signature.", e);
+        }
+
+        if (ZipArchiveInputStream.matches(signature, signatureLength)) {
+            return ZIP;
+        }
+        if (JarArchiveInputStream.matches(signature, signatureLength)) {
+            return JAR;
+        }
+        if (ArArchiveInputStream.matches(signature, signatureLength)) {
+            return AR;
+        }
+        if (CpioArchiveInputStream.matches(signature, signatureLength)) {
+            return CPIO;
+        }
+        if (ArjArchiveInputStream.matches(signature, signatureLength)) {
+            return ARJ;
+        }
+        if (SevenZFile.matches(signature, signatureLength)) {
+            return SEVEN_Z;
+        }
+
+        // Dump needs a bigger buffer to check the signature;
+        final byte[] dumpsig = new byte[DUMP_SIGNATURE_SIZE];
+        in.mark(dumpsig.length);
+        try {
+            signatureLength = IOUtils.readFully(in, dumpsig);
+            in.reset();
+        } catch (final IOException e) {
+            throw new ArchiveException("IOException while reading dump signature", e);
+        }
+        if (DumpArchiveInputStream.matches(dumpsig, signatureLength)) {
+            return DUMP;
+        }
+
+        // Tar needs an even bigger buffer to check the signature; read the first block
+        final byte[] tarHeader = new byte[TAR_HEADER_SIZE];
+        in.mark(tarHeader.length);
+        try {
+            signatureLength = IOUtils.readFully(in, tarHeader);
+            in.reset();
+        } catch (final IOException e) {
+            throw new ArchiveException("IOException while reading tar signature", e);
+        }
+        if (TarArchiveInputStream.matches(tarHeader, signatureLength)) {
+            return TAR;
+        }
+
+        // COMPRESS-117 - improve auto-recognition
+        if (signatureLength >= TAR_HEADER_SIZE) {
+            TarArchiveInputStream tais = null;
+            try {
+                tais = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader));
+                // COMPRESS-191 - verify the header checksum
+                if (tais.getNextTarEntry().isCheckSumOK()) {
+                    return TAR;
+                }
+            } catch (final Exception e) { // NOPMD NOSONAR
+                // can generate IllegalArgumentException as well
+                // as IOException
+                // autodetection, simply not a TAR
+                // ignored
+            } finally {
+                IOUtils.closeQuietly(tais);
+            }
+        }
+        throw new ArchiveException("No Archiver found for the stream signature");
     }
 
     /**
@@ -285,6 +355,28 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         });
     }
 
+    static void putAll(final Set<String> names, final ArchiveStreamProvider provider, final TreeMap<String, ArchiveStreamProvider> map) {
+        names.forEach(name -> map.put(toKey(name), provider));
+    }
+
+    private static String toKey(final String name) {
+        return name.toUpperCase(Locale.ROOT);
+    }
+
+    /**
+     * Entry encoding, null for the platform default.
+     */
+    private final String encoding;
+
+    /**
+     * Entry encoding, null for the default.
+     */
+    private volatile String entryEncoding;
+
+    private SortedMap<String, ArchiveStreamProvider> archiveInputStreamProviders;
+
+    private SortedMap<String, ArchiveStreamProvider> archiveOutputStreamProviders;
+
     /**
      * Create an instance using the platform default encoding.
      */
@@ -306,32 +398,20 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     }
 
     /**
-     * Returns the encoding to use for arj, jar, zip, dump, cpio and tar
-     * files, or null for the archiver default.
+     * Create an archive input stream from an input stream, autodetecting
+     * the archive type from the first few bytes of the stream. The InputStream
+     * must support marks, like BufferedInputStream.
      *
-     * @return entry encoding, or null for the archiver default
-     * @since 1.5
+     * @param in the input stream
+     * @return the archive input stream
+     * @throws ArchiveException if the archiver name is not known
+     * @throws StreamingNotSupportedException if the format cannot be
+     * read from a stream
+     * @throws IllegalArgumentException if the stream is null or does not support mark
      */
-    public String getEntryEncoding() {
-        return entryEncoding;
-    }
-
-    /**
-     * Sets the encoding to use for arj, jar, zip, dump, cpio and tar files. Use null for the archiver default.
-     *
-     * @param entryEncoding the entry encoding, null uses the archiver default.
-     * @since 1.5
-     * @deprecated 1.10 use {@link #ArchiveStreamFactory(String)} to specify the encoding
-     * @throws IllegalStateException if the constructor {@link #ArchiveStreamFactory(String)}
-     * was used to specify the factory encoding.
-     */
-    @Deprecated
-    public void setEntryEncoding(final String entryEncoding) {
-        // Note: this does not detect new ArchiveStreamFactory(null) but that does not set the encoding anyway
-        if (encoding != null) {
-            throw new IllegalStateException("Cannot overide encoding set by the constructor");
-        }
-        this.entryEncoding = entryEncoding;
+    public ArchiveInputStream createArchiveInputStream(final InputStream in)
+            throws ArchiveException {
+        return createArchiveInputStream(detect(in), in);
     }
 
     /**
@@ -481,115 +561,6 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         throw new ArchiveException("Archiver: " + archiverName + " not found.");
     }
 
-    /**
-     * Create an archive input stream from an input stream, autodetecting
-     * the archive type from the first few bytes of the stream. The InputStream
-     * must support marks, like BufferedInputStream.
-     *
-     * @param in the input stream
-     * @return the archive input stream
-     * @throws ArchiveException if the archiver name is not known
-     * @throws StreamingNotSupportedException if the format cannot be
-     * read from a stream
-     * @throws IllegalArgumentException if the stream is null or does not support mark
-     */
-    public ArchiveInputStream createArchiveInputStream(final InputStream in)
-            throws ArchiveException {
-        return createArchiveInputStream(detect(in), in);
-    }
-
-    /**
-     * Try to determine the type of Archiver
-     * @param in input stream
-     * @return type of archiver if found
-     * @throws ArchiveException if an archiver cannot be detected in the stream
-     * @since 1.14
-     */
-    public static String detect(final InputStream in) throws ArchiveException {
-        if (in == null) {
-            throw new IllegalArgumentException("Stream must not be null.");
-        }
-
-        if (!in.markSupported()) {
-            throw new IllegalArgumentException("Mark is not supported.");
-        }
-
-        final byte[] signature = new byte[SIGNATURE_SIZE];
-        in.mark(signature.length);
-        int signatureLength = -1;
-        try {
-            signatureLength = IOUtils.readFully(in, signature);
-            in.reset();
-        } catch (final IOException e) {
-            throw new ArchiveException("IOException while reading signature.", e);
-        }
-
-        if (ZipArchiveInputStream.matches(signature, signatureLength)) {
-            return ZIP;
-        }
-        if (JarArchiveInputStream.matches(signature, signatureLength)) {
-            return JAR;
-        }
-        if (ArArchiveInputStream.matches(signature, signatureLength)) {
-            return AR;
-        }
-        if (CpioArchiveInputStream.matches(signature, signatureLength)) {
-            return CPIO;
-        }
-        if (ArjArchiveInputStream.matches(signature, signatureLength)) {
-            return ARJ;
-        }
-        if (SevenZFile.matches(signature, signatureLength)) {
-            return SEVEN_Z;
-        }
-
-        // Dump needs a bigger buffer to check the signature;
-        final byte[] dumpsig = new byte[DUMP_SIGNATURE_SIZE];
-        in.mark(dumpsig.length);
-        try {
-            signatureLength = IOUtils.readFully(in, dumpsig);
-            in.reset();
-        } catch (final IOException e) {
-            throw new ArchiveException("IOException while reading dump signature", e);
-        }
-        if (DumpArchiveInputStream.matches(dumpsig, signatureLength)) {
-            return DUMP;
-        }
-
-        // Tar needs an even bigger buffer to check the signature; read the first block
-        final byte[] tarHeader = new byte[TAR_HEADER_SIZE];
-        in.mark(tarHeader.length);
-        try {
-            signatureLength = IOUtils.readFully(in, tarHeader);
-            in.reset();
-        } catch (final IOException e) {
-            throw new ArchiveException("IOException while reading tar signature", e);
-        }
-        if (TarArchiveInputStream.matches(tarHeader, signatureLength)) {
-            return TAR;
-        }
-
-        // COMPRESS-117 - improve auto-recognition
-        if (signatureLength >= TAR_HEADER_SIZE) {
-            TarArchiveInputStream tais = null;
-            try {
-                tais = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader));
-                // COMPRESS-191 - verify the header checksum
-                if (tais.getNextTarEntry().isCheckSumOK()) {
-                    return TAR;
-                }
-            } catch (final Exception e) { // NOPMD NOSONAR
-                // can generate IllegalArgumentException as well
-                // as IOException
-                // autodetection, simply not a TAR
-                // ignored
-            } finally {
-                IOUtils.closeQuietly(tais);
-            }
-        }
-        throw new ArchiveException("No Archiver found for the stream signature");
-    }
-
     public SortedMap<String, ArchiveStreamProvider> getArchiveInputStreamProviders() {
         if (archiveInputStreamProviders == null) {
             archiveInputStreamProviders = Collections
@@ -606,6 +577,17 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         return archiveOutputStreamProviders;
     }
 
+    /**
+     * Returns the encoding to use for arj, jar, zip, dump, cpio and tar
+     * files, or null for the archiver default.
+     *
+     * @return entry encoding, or null for the archiver default
+     * @since 1.5
+     */
+    public String getEntryEncoding() {
+        return entryEncoding;
+    }
+
     @Override
     public Set<String> getInputStreamArchiveNames() {
         return Sets.newHashSet(AR, ARJ, ZIP, TAR, JAR, CPIO, DUMP, SEVEN_Z);
@@ -614,6 +596,24 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     @Override
     public Set<String> getOutputStreamArchiveNames() {
         return Sets.newHashSet(AR, ZIP, TAR, JAR, CPIO, SEVEN_Z);
+    }
+
+    /**
+     * Sets the encoding to use for arj, jar, zip, dump, cpio and tar files. Use null for the archiver default.
+     *
+     * @param entryEncoding the entry encoding, null uses the archiver default.
+     * @since 1.5
+     * @deprecated 1.10 use {@link #ArchiveStreamFactory(String)} to specify the encoding
+     * @throws IllegalStateException if the constructor {@link #ArchiveStreamFactory(String)}
+     * was used to specify the factory encoding.
+     */
+    @Deprecated
+    public void setEntryEncoding(final String entryEncoding) {
+        // Note: this does not detect new ArchiveStreamFactory(null) but that does not set the encoding anyway
+        if (encoding != null) {
+            throw new IllegalStateException("Cannot overide encoding set by the constructor");
+        }
+        this.entryEncoding = entryEncoding;
     }
 
 }

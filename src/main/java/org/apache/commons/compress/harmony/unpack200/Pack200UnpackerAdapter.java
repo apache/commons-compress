@@ -36,6 +36,24 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
     /*
      * (non-Javadoc)
      *
+     * @see org.apache.commons.compress.java.util.jar.Pack200.Unpacker#unpack(java.io.File,
+     * java.util.jar.JarOutputStream)
+     */
+    @Override
+    public void unpack(final File file, final JarOutputStream out) throws IOException {
+        if (file == null || out == null) {
+            throw new IllegalArgumentException("Must specify both input and output streams");
+        }
+        final int size = (int) file.length();
+        final int bufferSize = size > 0 && size < DEFAULT_BUFFER_SIZE ? size : DEFAULT_BUFFER_SIZE;
+        try (final InputStream in = new BufferedInputStream(Files.newInputStream(file.toPath()), bufferSize)) {
+            unpack(in, out);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
      * @see org.apache.commons.compress.java.util.jar.Pack200.Unpacker#unpack(java.io.InputStream,
      * java.util.jar.JarOutputStream)
      */
@@ -51,23 +69,5 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
             throw new IOException("Failed to unpack Jar:" + e);
         }
         completed(1);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.apache.commons.compress.java.util.jar.Pack200.Unpacker#unpack(java.io.File,
-     * java.util.jar.JarOutputStream)
-     */
-    @Override
-    public void unpack(final File file, final JarOutputStream out) throws IOException {
-        if (file == null || out == null) {
-            throw new IllegalArgumentException("Must specify both input and output streams");
-        }
-        final int size = (int) file.length();
-        final int bufferSize = size > 0 && size < DEFAULT_BUFFER_SIZE ? size : DEFAULT_BUFFER_SIZE;
-        try (final InputStream in = new BufferedInputStream(Files.newInputStream(file.toPath()), bufferSize)) {
-            unpack(in, out);
-        }
     }
 }

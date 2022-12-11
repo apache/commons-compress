@@ -63,6 +63,19 @@ class LZMADecoder extends AbstractCoder {
         return new FlushShieldFilterOutputStream(new LZMAOutputStream(out, getOptions(opts), false));
     }
 
+    private int getDictionarySize(final Coder coder) throws IllegalArgumentException {
+        return (int) ByteUtils.fromLittleEndian(coder.properties, 1, 4);
+    }
+
+    private LZMA2Options getOptions(final Object opts) throws IOException {
+        if (opts instanceof LZMA2Options) {
+            return (LZMA2Options) opts;
+        }
+        final LZMA2Options options = new LZMA2Options();
+        options.setDictSize(numberOptionOrDefault(opts));
+        return options;
+    }
+
     @Override
     byte[] getOptionsAsProperties(final Object opts) throws IOException {
         final LZMA2Options options = getOptions(opts);
@@ -93,19 +106,6 @@ class LZMADecoder extends AbstractCoder {
         opts.setLcLp(lc, lp);
         opts.setDictSize(getDictionarySize(coder));
         return opts;
-    }
-
-    private int getDictionarySize(final Coder coder) throws IllegalArgumentException {
-        return (int) ByteUtils.fromLittleEndian(coder.properties, 1, 4);
-    }
-
-    private LZMA2Options getOptions(final Object opts) throws IOException {
-        if (opts instanceof LZMA2Options) {
-            return (LZMA2Options) opts;
-        }
-        final LZMA2Options options = new LZMA2Options();
-        options.setDictSize(numberOptionOrDefault(opts));
-        return options;
     }
 
     private int numberOptionOrDefault(final Object opts) {

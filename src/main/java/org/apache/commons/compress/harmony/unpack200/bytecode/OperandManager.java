@@ -105,115 +105,18 @@ public class OperandManager {
         this.wideByteCodes = wideByteCodes;
     }
 
-    public int nextCaseCount() {
-        return bcCaseCount[bcCaseCountIndex++];
-    }
-
-    public int nextCaseValues() {
-        return bcCaseValue[bcCaseValueIndex++];
-    }
-
-    public int nextByte() {
-        return bcByte[bcByteIndex++];
-    }
-
-    public int nextShort() {
-        return bcShort[bcShortIndex++];
-    }
-
-    public int nextLocal() {
-        return bcLocal[bcLocalIndex++];
-    }
-
-    public int nextLabel() {
-        return bcLabel[bcLabelIndex++];
-    }
-
-    public int nextIntRef() {
-        return bcIntRef[bcIntRefIndex++];
-    }
-
-    public int nextFloatRef() {
-        return bcFloatRef[bcFloatRefIndex++];
-    }
-
-    public int nextLongRef() {
-        return bcLongRef[bcLongRefIndex++];
-    }
-
-    public int nextDoubleRef() {
-        return bcDoubleRef[bcDoubleRefIndex++];
-    }
-
-    public int nextStringRef() {
-        return bcStringRef[bcStringRefIndex++];
-    }
-
-    public int nextClassRef() {
-        return bcClassRef[bcClassRefIndex++];
-    }
-
-    public int nextFieldRef() {
-        return bcFieldRef[bcFieldRefIndex++];
-    }
-
-    public int nextMethodRef() {
-        return bcMethodRef[bcMethodRefIndex++];
-    }
-
-    public int nextIMethodRef() {
-        return bcIMethodRef[bcIMethodRefIndex++];
-    }
-
-    public int nextThisFieldRef() {
-        return bcThisField[bcThisFieldIndex++];
-    }
-
-    public int nextSuperFieldRef() {
-        return bcSuperField[bcSuperFieldIndex++];
-    }
-
-    public int nextThisMethodRef() {
-        return bcThisMethod[bcThisMethodIndex++];
-    }
-
-    public int nextSuperMethodRef() {
-        return bcSuperMethod[bcSuperMethodIndex++];
-    }
-
-    public int nextInitRef() {
-        return bcInitRef[bcInitRefIndex++];
-    }
-
-    public int nextWideByteCode() {
-        return wideByteCodes[wideByteCodeIndex++];
-    }
-
-    public void setSegment(final Segment segment) {
-        this.segment = segment;
-    }
-
-    public SegmentConstantPool globalConstantPool() {
-        return segment.getConstantPool();
-    }
-
-    public void setCurrentClass(final String string) {
-        currentClass = string;
-    }
-
-    public void setSuperClass(final String string) {
-        superClass = string;
-    }
-
-    public void setNewClass(final String string) {
-        newClass = string;
-    }
-
     public String getCurrentClass() {
         if (null == currentClass) {
             throw new Error("Current class not set yet");
         }
         return currentClass;
+    }
+
+    public String getNewClass() {
+        if (null == newClass) {
+            throw new Error("New class not set yet");
+        }
+        return newClass;
     }
 
     public String getSuperClass() {
@@ -223,10 +126,107 @@ public class OperandManager {
         return superClass;
     }
 
-    public String getNewClass() {
-        if (null == newClass) {
-            throw new Error("New class not set yet");
-        }
-        return newClass;
+    public SegmentConstantPool globalConstantPool() {
+        return segment.getConstantPool();
+    }
+
+    public int nextByte() {
+        return bcByte[bcByteIndex++];
+    }
+
+    public int nextCaseCount() {
+        return bcCaseCount[bcCaseCountIndex++];
+    }
+
+    public int nextCaseValues() {
+        return bcCaseValue[bcCaseValueIndex++];
+    }
+
+    public int nextClassRef() {
+        return bcClassRef[bcClassRefIndex++];
+    }
+
+    public int nextDoubleRef() {
+        return bcDoubleRef[bcDoubleRefIndex++];
+    }
+
+    public int nextFieldRef() {
+        return bcFieldRef[bcFieldRefIndex++];
+    }
+
+    public int nextFloatRef() {
+        return bcFloatRef[bcFloatRefIndex++];
+    }
+
+    public int nextIMethodRef() {
+        return bcIMethodRef[bcIMethodRefIndex++];
+    }
+
+    public int nextInitRef() {
+        return bcInitRef[bcInitRefIndex++];
+    }
+
+    public int nextIntRef() {
+        return bcIntRef[bcIntRefIndex++];
+    }
+
+    public int nextLabel() {
+        return bcLabel[bcLabelIndex++];
+    }
+
+    public int nextLocal() {
+        return bcLocal[bcLocalIndex++];
+    }
+
+    public int nextLongRef() {
+        return bcLongRef[bcLongRefIndex++];
+    }
+
+    public int nextMethodRef() {
+        return bcMethodRef[bcMethodRefIndex++];
+    }
+
+    public int nextShort() {
+        return bcShort[bcShortIndex++];
+    }
+
+    public int nextStringRef() {
+        return bcStringRef[bcStringRefIndex++];
+    }
+
+    public int nextSuperFieldRef() {
+        return bcSuperField[bcSuperFieldIndex++];
+    }
+
+    public int nextSuperMethodRef() {
+        return bcSuperMethod[bcSuperMethodIndex++];
+    }
+
+    public int nextThisFieldRef() {
+        return bcThisField[bcThisFieldIndex++];
+    }
+
+    public int nextThisMethodRef() {
+        return bcThisMethod[bcThisMethodIndex++];
+    }
+
+    public int nextWideByteCode() {
+        return wideByteCodes[wideByteCodeIndex++];
+    }
+
+    public void setCurrentClass(final String string) {
+        currentClass = string;
+    }
+
+    public void setNewClass(final String string) {
+        newClass = string;
+    }
+
+    public void setSegment(final Segment segment) {
+        this.segment = segment;
+    }
+
+    public void setSuperClass(final String string) {
+        superClass = string;
     }
 }

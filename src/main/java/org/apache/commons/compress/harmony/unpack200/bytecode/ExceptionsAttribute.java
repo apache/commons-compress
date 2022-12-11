@@ -39,6 +39,10 @@ public class ExceptionsAttribute extends Attribute {
         return result;
     }
 
+    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
+        attributeName = cpUTF8Value;
+    }
+
     private transient int[] exceptionIndexes;
 
     private final CPClass[] exceptions;
@@ -114,10 +118,6 @@ public class ExceptionsAttribute extends Attribute {
         for (int element : exceptionIndexes) {
             dos.writeShort(element);
         }
-    }
-
-    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
-        attributeName = cpUTF8Value;
     }
 
 }

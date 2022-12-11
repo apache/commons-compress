@@ -41,6 +41,14 @@ public class ChecksumCalculatingInputStream extends InputStream {
     }
 
     /**
+     * Returns the calculated checksum.
+     * @return the calculated checksum.
+     */
+    public long getValue() {
+        return checksum.getValue();
+    }
+
+    /**
      * Reads a single byte from the stream
      * @throws IOException if the underlying stream throws or the
      * stream is exhausted and the Checksum doesn't match the expected
@@ -91,14 +99,6 @@ public class ChecksumCalculatingInputStream extends InputStream {
             return 1;
         }
         return 0;
-    }
-
-    /**
-     * Returns the calculated checksum.
-     * @return the calculated checksum.
-     */
-    public long getValue() {
-        return checksum.getValue();
     }
 
 }

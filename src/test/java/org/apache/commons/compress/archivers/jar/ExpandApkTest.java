@@ -31,16 +31,16 @@ import org.junit.jupiter.api.Test;
 
 public class ExpandApkTest {
 
+    private <T> T println(final T object) {
+        // System.out.println(object);
+        return object;
+    }
+
     @Test
     public void test() throws IOException {
         Streams
             .stream(
                 PathUtils.walk(Paths.get("src/test/resources/android"), new SuffixFileFilter("." + ArchiveStreamFactory.APK, IOCase.INSENSITIVE), 100, false))
             .forEach(path -> new Expander().expand(ArchiveStreamFactory.APK, println(path), null));
-    }
-
-    private <T> T println(final T object) {
-        // System.out.println(object);
-        return object;
     }
 }

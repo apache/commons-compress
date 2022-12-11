@@ -63,17 +63,90 @@ public final class ZipEightByteInteger implements Serializable {
     private static final int LEFTMOST_BIT_SHIFT = 63;
     private static final byte LEFTMOST_BIT = (byte) 0x80;
 
-    private final BigInteger value;
-
     public static final ZipEightByteInteger ZERO = new ZipEightByteInteger(0);
 
     /**
-     * Create instance from a number.
-     * @param value the long to store as a ZipEightByteInteger
+     * Get value as eight bytes in big endian byte order.
+     * @param value the value to convert
+     * @return value as eight bytes in big endian byte order
      */
-    public ZipEightByteInteger(final long value) {
-        this(BigInteger.valueOf(value));
+    public static byte[] getBytes(final BigInteger value) {
+        final byte[] result = new byte[8];
+        final long val = value.longValue();
+        result[0] = (byte) ((val & BYTE_MASK));
+        result[BYTE_1] = (byte) ((val & BYTE_1_MASK) >> BYTE_1_SHIFT);
+        result[BYTE_2] = (byte) ((val & BYTE_2_MASK) >> BYTE_2_SHIFT);
+        result[BYTE_3] = (byte) ((val & BYTE_3_MASK) >> BYTE_3_SHIFT);
+        result[BYTE_4] = (byte) ((val & BYTE_4_MASK) >> BYTE_4_SHIFT);
+        result[BYTE_5] = (byte) ((val & BYTE_5_MASK) >> BYTE_5_SHIFT);
+        result[BYTE_6] = (byte) ((val & BYTE_6_MASK) >> BYTE_6_SHIFT);
+        result[BYTE_7] = (byte) ((val & BYTE_7_MASK) >> BYTE_7_SHIFT);
+        if (value.testBit(LEFTMOST_BIT_SHIFT)) {
+            result[BYTE_7] |= LEFTMOST_BIT;
+        }
+        return result;
     }
+
+    /**
+     * Get value as eight bytes in big endian byte order.
+     * @param value the value to convert
+     * @return value as eight bytes in big endian byte order
+     */
+    public static byte[] getBytes(final long value) {
+        return getBytes(BigInteger.valueOf(value));
+    }
+
+    /**
+     * Helper method to get the value as a Java long from an eight-byte array
+     * @param bytes the array of bytes
+     * @return the corresponding Java long value
+     */
+    public static long getLongValue(final byte[] bytes) {
+        return getLongValue(bytes, 0);
+    }
+
+    /**
+     * Helper method to get the value as a Java long from eight bytes
+     * starting at given array offset
+     * @param bytes the array of bytes
+     * @param offset the offset to start
+     * @return the corresponding Java long value
+     */
+    public static long getLongValue(final byte[] bytes, final int offset) {
+        return getValue(bytes, offset).longValue();
+    }
+
+    /**
+     * Helper method to get the value as a Java long from an eight-byte array
+     * @param bytes the array of bytes
+     * @return the corresponding Java BigInteger value
+     */
+    public static BigInteger getValue(final byte[] bytes) {
+        return getValue(bytes, 0);
+    }
+
+    /**
+     * Helper method to get the value as a Java BigInteger from eight
+     * bytes starting at given array offset
+     * @param bytes the array of bytes
+     * @param offset the offset to start
+     * @return the corresponding Java BigInteger value
+     */
+    public static BigInteger getValue(final byte[] bytes, final int offset) {
+        long value = ((long) bytes[offset + BYTE_7] << BYTE_7_SHIFT) & BYTE_7_MASK;
+        value += ((long) bytes[offset + BYTE_6] << BYTE_6_SHIFT) & BYTE_6_MASK;
+        value += ((long) bytes[offset + BYTE_5] << BYTE_5_SHIFT) & BYTE_5_MASK;
+        value += ((long) bytes[offset + BYTE_4] << BYTE_4_SHIFT) & BYTE_4_MASK;
+        value += ((long) bytes[offset + BYTE_3] << BYTE_3_SHIFT) & BYTE_3_MASK;
+        value += ((long) bytes[offset + BYTE_2] << BYTE_2_SHIFT) & BYTE_2_MASK;
+        value += ((long) bytes[offset + BYTE_1] << BYTE_1_SHIFT) & BYTE_1_MASK;
+        value += ((long) bytes[offset] & BYTE_MASK);
+        final BigInteger val = BigInteger.valueOf(value);
+        return (bytes[offset + BYTE_7] & LEFTMOST_BIT) == LEFTMOST_BIT
+            ? val.setBit(LEFTMOST_BIT_SHIFT) : val;
+    }
+
+    private final BigInteger value;
 
     /**
      * Create instance from a number.
@@ -101,6 +174,27 @@ public final class ZipEightByteInteger implements Serializable {
     }
 
     /**
+     * Create instance from a number.
+     * @param value the long to store as a ZipEightByteInteger
+     */
+    public ZipEightByteInteger(final long value) {
+        this(BigInteger.valueOf(value));
+    }
+
+    /**
+     * Override to make two instances with same value equal.
+     * @param o an object to compare
+     * @return true if the objects are equal
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (!(o instanceof ZipEightByteInteger)) {
+            return false;
+        }
+        return value.equals(((ZipEightByteInteger) o).getValue());
+    }
+
+    /**
      * Get value as eight bytes in big endian byte order.
      * @return value as eight bytes in big endian order
      */
@@ -122,100 +216,6 @@ public final class ZipEightByteInteger implements Serializable {
      */
     public BigInteger getValue() {
         return value;
-    }
-
-    /**
-     * Get value as eight bytes in big endian byte order.
-     * @param value the value to convert
-     * @return value as eight bytes in big endian byte order
-     */
-    public static byte[] getBytes(final long value) {
-        return getBytes(BigInteger.valueOf(value));
-    }
-
-    /**
-     * Get value as eight bytes in big endian byte order.
-     * @param value the value to convert
-     * @return value as eight bytes in big endian byte order
-     */
-    public static byte[] getBytes(final BigInteger value) {
-        final byte[] result = new byte[8];
-        final long val = value.longValue();
-        result[0] = (byte) ((val & BYTE_MASK));
-        result[BYTE_1] = (byte) ((val & BYTE_1_MASK) >> BYTE_1_SHIFT);
-        result[BYTE_2] = (byte) ((val & BYTE_2_MASK) >> BYTE_2_SHIFT);
-        result[BYTE_3] = (byte) ((val & BYTE_3_MASK) >> BYTE_3_SHIFT);
-        result[BYTE_4] = (byte) ((val & BYTE_4_MASK) >> BYTE_4_SHIFT);
-        result[BYTE_5] = (byte) ((val & BYTE_5_MASK) >> BYTE_5_SHIFT);
-        result[BYTE_6] = (byte) ((val & BYTE_6_MASK) >> BYTE_6_SHIFT);
-        result[BYTE_7] = (byte) ((val & BYTE_7_MASK) >> BYTE_7_SHIFT);
-        if (value.testBit(LEFTMOST_BIT_SHIFT)) {
-            result[BYTE_7] |= LEFTMOST_BIT;
-        }
-        return result;
-    }
-
-    /**
-     * Helper method to get the value as a Java long from eight bytes
-     * starting at given array offset
-     * @param bytes the array of bytes
-     * @param offset the offset to start
-     * @return the corresponding Java long value
-     */
-    public static long getLongValue(final byte[] bytes, final int offset) {
-        return getValue(bytes, offset).longValue();
-    }
-
-    /**
-     * Helper method to get the value as a Java BigInteger from eight
-     * bytes starting at given array offset
-     * @param bytes the array of bytes
-     * @param offset the offset to start
-     * @return the corresponding Java BigInteger value
-     */
-    public static BigInteger getValue(final byte[] bytes, final int offset) {
-        long value = ((long) bytes[offset + BYTE_7] << BYTE_7_SHIFT) & BYTE_7_MASK;
-        value += ((long) bytes[offset + BYTE_6] << BYTE_6_SHIFT) & BYTE_6_MASK;
-        value += ((long) bytes[offset + BYTE_5] << BYTE_5_SHIFT) & BYTE_5_MASK;
-        value += ((long) bytes[offset + BYTE_4] << BYTE_4_SHIFT) & BYTE_4_MASK;
-        value += ((long) bytes[offset + BYTE_3] << BYTE_3_SHIFT) & BYTE_3_MASK;
-        value += ((long) bytes[offset + BYTE_2] << BYTE_2_SHIFT) & BYTE_2_MASK;
-        value += ((long) bytes[offset + BYTE_1] << BYTE_1_SHIFT) & BYTE_1_MASK;
-        value += ((long) bytes[offset] & BYTE_MASK);
-        final BigInteger val = BigInteger.valueOf(value);
-        return (bytes[offset + BYTE_7] & LEFTMOST_BIT) == LEFTMOST_BIT
-            ? val.setBit(LEFTMOST_BIT_SHIFT) : val;
-    }
-
-    /**
-     * Helper method to get the value as a Java long from an eight-byte array
-     * @param bytes the array of bytes
-     * @return the corresponding Java long value
-     */
-    public static long getLongValue(final byte[] bytes) {
-        return getLongValue(bytes, 0);
-    }
-
-    /**
-     * Helper method to get the value as a Java long from an eight-byte array
-     * @param bytes the array of bytes
-     * @return the corresponding Java BigInteger value
-     */
-    public static BigInteger getValue(final byte[] bytes) {
-        return getValue(bytes, 0);
-    }
-
-    /**
-     * Override to make two instances with same value equal.
-     * @param o an object to compare
-     * @return true if the objects are equal
-     */
-    @Override
-    public boolean equals(final Object o) {
-        if (!(o instanceof ZipEightByteInteger)) {
-            return false;
-        }
-        return value.equals(((ZipEightByteInteger) o).getValue());
     }
 
     /**

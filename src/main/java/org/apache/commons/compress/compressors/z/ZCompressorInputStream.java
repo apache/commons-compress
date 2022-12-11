@@ -34,9 +34,29 @@ public class ZCompressorInputStream extends LZWInputStream {
     private static final int MAGIC_2 = 0x9d;
     private static final int BLOCK_MODE_MASK = 0x80;
     private static final int MAX_CODE_SIZE_MASK = 0x1f;
+    /**
+     * Checks if the signature matches what is expected for a Unix compress file.
+     *
+     * @param signature
+     *            the bytes to check
+     * @param length
+     *            the number of bytes to check
+     * @return true, if this stream is a Unix compress compressed
+     * stream, false otherwise
+     *
+     * @since 1.9
+     */
+    public static boolean matches(final byte[] signature, final int length) {
+        return length > 3 && signature[0] == MAGIC_1 && signature[1] == (byte) MAGIC_2;
+    }
     private final boolean blockMode;
     private final int maxCodeSize;
+
     private long totalCodesRead;
+
+    public ZCompressorInputStream(final InputStream inputStream) throws IOException {
+        this(inputStream, -1);
+    }
 
     public ZCompressorInputStream(final InputStream inputStream, final int memoryLimitInKb)
             throws IOException {
@@ -56,44 +76,6 @@ public class ZCompressorInputStream extends LZWInputStream {
         clearEntries();
     }
 
-    public ZCompressorInputStream(final InputStream inputStream) throws IOException {
-        this(inputStream, -1);
-    }
-
-    private void clearEntries() {
-        setTableSize((1 << 8) + (blockMode ? 1 : 0));
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p><strong>This method is only protected for technical reasons
-     * and is not part of Commons Compress' published API.  It may
-     * change or disappear without warning.</strong></p>
-     */
-    @Override
-    protected int readNextCode() throws IOException {
-        final int code = super.readNextCode();
-        if (code >= 0) {
-            ++totalCodesRead;
-        }
-        return code;
-    }
-
-    private void reAlignReading() throws IOException {
-        // "compress" works in multiples of 8 symbols, each codeBits bits long.
-        // When codeBits changes, the remaining unused symbols in the current
-        // group of 8 are still written out, in the old codeSize,
-        // as garbage values (usually zeroes) that need to be skipped.
-        long codeReadsToThrowAway = 8 - (totalCodesRead % 8);
-        if (codeReadsToThrowAway == 8) {
-            codeReadsToThrowAway = 0;
-        }
-        for (long i = 0; i < codeReadsToThrowAway; i++) {
-            readNextCode();
-        }
-        in.clearBitCache();
-    }
-
     /**
      * {@inheritDoc}
      * <p><strong>This method is only protected for technical reasons
@@ -109,6 +91,10 @@ public class ZCompressorInputStream extends LZWInputStream {
             incrementCodeSize();
         }
         return r;
+    }
+
+    private void clearEntries() {
+        setTableSize((1 << 8) + (blockMode ? 1 : 0));
     }
 
     /**
@@ -153,19 +139,33 @@ public class ZCompressorInputStream extends LZWInputStream {
     }
 
     /**
-     * Checks if the signature matches what is expected for a Unix compress file.
-     *
-     * @param signature
-     *            the bytes to check
-     * @param length
-     *            the number of bytes to check
-     * @return true, if this stream is a Unix compress compressed
-     * stream, false otherwise
-     *
-     * @since 1.9
+     * {@inheritDoc}
+     * <p><strong>This method is only protected for technical reasons
+     * and is not part of Commons Compress' published API.  It may
+     * change or disappear without warning.</strong></p>
      */
-    public static boolean matches(final byte[] signature, final int length) {
-        return length > 3 && signature[0] == MAGIC_1 && signature[1] == (byte) MAGIC_2;
+    @Override
+    protected int readNextCode() throws IOException {
+        final int code = super.readNextCode();
+        if (code >= 0) {
+            ++totalCodesRead;
+        }
+        return code;
+    }
+
+    private void reAlignReading() throws IOException {
+        // "compress" works in multiples of 8 symbols, each codeBits bits long.
+        // When codeBits changes, the remaining unused symbols in the current
+        // group of 8 are still written out, in the old codeSize,
+        // as garbage values (usually zeroes) that need to be skipped.
+        long codeReadsToThrowAway = 8 - (totalCodesRead % 8);
+        if (codeReadsToThrowAway == 8) {
+            codeReadsToThrowAway = 0;
+        }
+        for (long i = 0; i < codeReadsToThrowAway; i++) {
+            readNextCode();
+        }
+        in.clearBitCache();
     }
 
 }

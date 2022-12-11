@@ -59,17 +59,44 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
 
     private File target;
 
-    public void setUp(final String format) throws Exception {
-        super.setUp();
-        final File c = new File(dir, "a/b/c");
-        c.mkdirs();
-        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/d.txt").toPath())) {
-            os.write("Hello, world 1".getBytes(UTF_8));
+    @ParameterizedTest
+    @MethodSource("data")
+    public void archiveStreamVersion(final String format) throws Exception {
+        // TODO How to parameterize a BeforeEach method?
+        setUp(format);
+        try (OutputStream os = Files.newOutputStream(target.toPath());
+             ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, os)) {
+            new Archiver().create(aos, dir);
         }
-        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/c/e.txt").toPath())) {
-            os.write("Hello, world 2".getBytes(UTF_8));
+        verifyContent(format);
+    }
+
+    private void assertDir(final String expectedName, final ArchiveEntry entry) {
+        assertNotNull(entry, () -> expectedName + " does not exists");
+        Assert.assertEquals(expectedName + "/", entry.getName());
+        Assert.assertTrue(expectedName + " is not a directory", entry.isDirectory());
+    }
+
+    private void assertHelloWorld(final String expectedName, final String suffix, final ArchiveEntry entry, final InputStream is)
+        throws IOException {
+        assertNotNull(entry, () -> expectedName + " does not exists");
+        Assert.assertEquals(expectedName, entry.getName());
+        Assert.assertFalse(expectedName + " is a directory", entry.isDirectory());
+        final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
+        final byte[] actual = IOUtils.toByteArray(is);
+        Assert.assertArrayEquals(expected, actual);
+    }
+
+    @ParameterizedTest
+    @MethodSource("data")
+    public void channelVersion(final String format) throws Exception {
+        // TODO How to parameterize a BeforeEach method?
+        setUp(format);
+        try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
+            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+            new Archiver().create(format, c, dir);
         }
-        target = new File(resultDir, "test." + format);
+        verifyContent(format);
     }
 
     @ParameterizedTest
@@ -92,28 +119,17 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
         verifyContent(format);
     }
 
-    @ParameterizedTest
-    @MethodSource("data")
-    public void channelVersion(final String format) throws Exception {
-        // TODO How to parameterize a BeforeEach method?
-        setUp(format);
-        try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
-            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-            new Archiver().create(format, c, dir);
+    public void setUp(final String format) throws Exception {
+        super.setUp();
+        final File c = new File(dir, "a/b/c");
+        c.mkdirs();
+        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/d.txt").toPath())) {
+            os.write("Hello, world 1".getBytes(UTF_8));
         }
-        verifyContent(format);
-    }
-
-    @ParameterizedTest
-    @MethodSource("data")
-    public void archiveStreamVersion(final String format) throws Exception {
-        // TODO How to parameterize a BeforeEach method?
-        setUp(format);
-        try (OutputStream os = Files.newOutputStream(target.toPath());
-             ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, os)) {
-            new Archiver().create(aos, dir);
+        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/c/e.txt").toPath())) {
+            os.write("Hello, world 2".getBytes(UTF_8));
         }
-        verifyContent(format);
+        target = new File(resultDir, "test." + format);
     }
 
     private void verifyContent(final String format) throws IOException, ArchiveException {
@@ -135,21 +151,5 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
                 assertHelloWorld("a/b/c/e.txt", "2", ais.getNextEntry(), ais);
             }
         }
-    }
-
-    private void assertDir(final String expectedName, final ArchiveEntry entry) {
-        assertNotNull(entry, () -> expectedName + " does not exists");
-        Assert.assertEquals(expectedName + "/", entry.getName());
-        Assert.assertTrue(expectedName + " is not a directory", entry.isDirectory());
-    }
-
-    private void assertHelloWorld(final String expectedName, final String suffix, final ArchiveEntry entry, final InputStream is)
-        throws IOException {
-        assertNotNull(entry, () -> expectedName + " does not exists");
-        Assert.assertEquals(expectedName, entry.getName());
-        Assert.assertFalse(expectedName + " is a directory", entry.isDirectory());
-        final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
-        final byte[] actual = IOUtils.toByteArray(is);
-        Assert.assertArrayEquals(expected, actual);
     }
 }

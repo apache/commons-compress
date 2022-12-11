@@ -25,6 +25,7 @@ import java.util.LinkedList;
  * The unit of solid compression.
  */
 class Folder {
+    static final Folder[] EMPTY_FOLDER_ARRAY = {};
     /// List of coders used in this folder, eg. one for compression, one for encryption.
     Coder[] coders;
     /// Total number of input streams across all coders.
@@ -46,7 +47,28 @@ class Folder {
     /// output streams and the number of non-empty files in this
     /// folder.
     int numUnpackSubStreams;
-    static final Folder[] EMPTY_FOLDER_ARRAY = {};
+
+    int findBindPairForInStream(final int index) {
+        if (bindPairs != null) {
+            for (int i = 0; i < bindPairs.length; i++) {
+                if (bindPairs[i].inIndex == index) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    int findBindPairForOutStream(final int index) {
+        if (bindPairs != null) {
+            for (int i = 0; i < bindPairs.length; i++) {
+                if (bindPairs[i].outIndex == index) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
 
     /**
      * Sorts Coders using bind pairs.
@@ -69,28 +91,6 @@ class Folder {
             current = pair != -1 ? (int) bindPairs[pair].inIndex : -1;
         }
         return l;
-    }
-
-    int findBindPairForInStream(final int index) {
-        if (bindPairs != null) {
-            for (int i = 0; i < bindPairs.length; i++) {
-                if (bindPairs[i].inIndex == index) {
-                    return i;
-                }
-            }
-        }
-        return -1;
-    }
-
-    int findBindPairForOutStream(final int index) {
-        if (bindPairs != null) {
-            for (int i = 0; i < bindPairs.length; i++) {
-                if (bindPairs[i].outIndex == index) {
-                    return i;
-                }
-            }
-        }
-        return -1;
     }
 
     long getUnpackSize() {

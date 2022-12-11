@@ -31,6 +31,10 @@ public class CPClass extends ConstantPoolEntry {
 
     private final CPUTF8 utf8;
 
+    private boolean hashcodeComputed;
+
+    private int cachedHashCode;
+
     /**
      * Creates a new CPClass
      *
@@ -58,18 +62,18 @@ public class CPClass extends ConstantPoolEntry {
         final CPClass other = (CPClass) obj;
         return utf8.equals(other.utf8);
     }
+    private void generateHashCode() {
+        hashcodeComputed = true;
+        cachedHashCode = utf8.hashCode();
+    }
+
+    public String getName() {
+        return name;
+    }
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         return new ClassFileEntry[] {utf8,};
-    }
-
-    private boolean hashcodeComputed;
-    private int cachedHashCode;
-
-    private void generateHashCode() {
-        hashcodeComputed = true;
-        cachedHashCode = utf8.hashCode();
     }
 
     @Override
@@ -89,10 +93,6 @@ public class CPClass extends ConstantPoolEntry {
     @Override
     public String toString() {
         return "Class: " + getName();
-    }
-
-    public String getName() {
-        return name;
     }
 
     @Override

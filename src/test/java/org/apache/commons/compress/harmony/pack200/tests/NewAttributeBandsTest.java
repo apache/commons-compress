@@ -47,6 +47,72 @@ import junit.framework.TestCase;
  */
 public class NewAttributeBandsTest extends TestCase {
 
+    private class MockNewAttributeBands extends NewAttributeBands {
+
+        public MockNewAttributeBands(final int effort, final CpBands cpBands,
+                final SegmentHeader header, final AttributeDefinition def)
+                throws IOException {
+            super(effort, cpBands, header, def);
+        }
+
+        public List<AttributeLayoutElement> getLayoutElements() {
+            return attributeLayoutElements;
+        }
+    }
+
+    public void testAddAttributes() throws IOException, Pack200Exception {
+        CPUTF8 name = new CPUTF8("TestAttribute");
+        CPUTF8 layout = new CPUTF8("B");
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
+                null, null, new AttributeDefinition(35,
+                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
+                "B", new byte[] { 27 }, null, 0, null));
+        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
+                "B", new byte[] { 56 }, null, 0, null));
+        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
+                "B", new byte[] { 3 }, null, 0, null));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        newAttributeBands.pack(out);
+        // BYTE1 is used for B layouts so we don't need to unpack to test the
+        // results
+        byte[] bytes = out.toByteArray();
+        assertEquals(3, bytes.length);
+        assertEquals(27, bytes[0]);
+        assertEquals(56, bytes[1]);
+        assertEquals(3, bytes[2]);
+    }
+
+    public void testAddAttributesWithReplicationLayout() throws IOException,
+            Pack200Exception {
+        CPUTF8 name = new CPUTF8("TestAttribute");
+        CPUTF8 layout = new CPUTF8("NB[SH]");
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
+                null, null, new AttributeDefinition(35,
+                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
+                "B", new byte[] { 1, 0, 100 }, null, 0, null));
+        short s = -50;
+        byte b1 = (byte) (s >>> 8);
+        byte b2 = (byte) s;
+        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
+                "B", new byte[] { 3, 0, 5, 0, 25, b1, b2 }, null, 0, null));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        newAttributeBands.pack(out);
+        byte[] bytes = out.toByteArray();
+        assertEquals(1, bytes[0]);
+        assertEquals(3, bytes[1]);
+        byte[] band = new byte[bytes.length - 2];
+        System.arraycopy(bytes, 2, band, 0, band.length);
+        int[] decoded = Codec.SIGNED5.decodeInts(4, new ByteArrayInputStream(
+                band));
+        assertEquals(4, decoded.length);
+        assertEquals(100, decoded[0]);
+        assertEquals(5, decoded[1]);
+        assertEquals(25, decoded[2]);
+        assertEquals(-50, decoded[3]);
+    }
+
     public void testEmptyLayout() throws IOException {
         CPUTF8 name = new CPUTF8("TestAttribute");
         CPUTF8 layout = new CPUTF8("");
@@ -79,132 +145,6 @@ public class NewAttributeBandsTest extends TestCase {
         tryIntegral("OI");
         tryIntegral("OSI");
         tryIntegral("POI");
-    }
-
-    private void tryIntegral(final String layoutStr) throws IOException {
-        CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8(layoutStr);
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
-        assertEquals(1, layoutElements.size());
-        Integral element = (Integral) layoutElements.get(0);
-        assertEquals(layoutStr, element.getTag());
-    }
-
-    public void testReplicationLayouts() throws IOException {
-        CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8("NH[PHOHRUHRSHH]");
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
-        assertEquals(1, layoutElements.size());
-        Replication element = (Replication) layoutElements.get(0);
-        Integral countElement = element.getCountElement();
-        assertEquals("H", countElement.getTag());
-        List<LayoutElement> replicatedElements = element.getLayoutElements();
-        assertEquals(5, replicatedElements.size());
-        Integral firstElement = (Integral) replicatedElements.get(0);
-        assertEquals("PH", firstElement.getTag());
-        Integral secondElement = (Integral) replicatedElements.get(1);
-        assertEquals("OH", secondElement.getTag());
-        Reference thirdElement = (Reference) replicatedElements.get(2);
-        assertEquals("RUH", thirdElement.getTag());
-        Reference fourthElement = (Reference) replicatedElements.get(3);
-        assertEquals("RSH", fourthElement.getTag());
-        Integral fifthElement = (Integral) replicatedElements.get(4);
-        assertEquals("H", fifthElement.getTag());
-    }
-
-    public void testReferenceLayouts() throws IOException {
-        tryReference("KIB");
-        tryReference("KIH");
-        tryReference("KII");
-        tryReference("KINH");
-        tryReference("KJH");
-        tryReference("KDH");
-        tryReference("KSH");
-        tryReference("KQH");
-        tryReference("RCH");
-        tryReference("RSH");
-        tryReference("RDH");
-        tryReference("RFH");
-        tryReference("RMH");
-        tryReference("RIH");
-        tryReference("RUH");
-        tryReference("RQH");
-        tryReference("RQNH");
-        tryReference("RQNI");
-    }
-
-    private void tryReference(final String layoutStr) throws IOException {
-        CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8(layoutStr);
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
-        assertEquals(1, layoutElements.size());
-        Reference element = (Reference) layoutElements.get(0);
-        assertEquals(layoutStr, element.getTag());
-    }
-
-    public void testUnionLayout() throws IOException {
-        CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8("TB(55)[FH](23)[]()[RSH]");
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
-        assertEquals(1, layoutElements.size());
-        Union element = (Union) layoutElements.get(0);
-        Integral tag = element.getUnionTag();
-        assertEquals("B", tag.getTag());
-        List<UnionCase> unionCases = element.getUnionCases();
-        assertEquals(2, unionCases.size());
-        UnionCase firstCase = unionCases.get(0);
-        assertTrue(firstCase.hasTag(55));
-        assertFalse(firstCase.hasTag(23));
-        List<LayoutElement> body = firstCase.getBody();
-        assertEquals(1, body.size());
-        Integral bodyElement = (Integral) body.get(0);
-        assertEquals("FH", bodyElement.getTag());
-        UnionCase secondCase = unionCases.get(1);
-        assertTrue(secondCase.hasTag(23));
-        assertFalse(secondCase.hasTag(55));
-        body = secondCase.getBody();
-        assertEquals(0, body.size());
-        List<LayoutElement> defaultBody = element.getDefaultCaseBody();
-        assertEquals(1, defaultBody.size());
-        Reference ref = (Reference) defaultBody.get(0);
-        assertEquals("RSH", ref.getTag());
-    }
-
-    public void testLayoutWithCalls() throws IOException {
-        CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8(
-                "[NH[(1)]][RSH NH[RUH(1)]][TB(66,67,73,83,90)[KIH](68)[KDH](70)[KFH](74)[KJH](99)[RSH](101)[RSH RUH](115)[RUH](91)[NH[(0)]](64)[RSH[RUH(0)]]()[]]");
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
-        assertEquals(3, layoutElements.size());
-        Callable firstCallable = (Callable) layoutElements.get(0);
-        Callable secondCallable = (Callable) layoutElements.get(1);
-        Callable thirdCallable = (Callable) layoutElements.get(2);
-        List<LayoutElement> firstBody = firstCallable.getBody();
-        assertEquals(1, firstBody.size());
-        Replication rep = (Replication) firstBody.get(0);
-        List<LayoutElement> repBody = rep.getLayoutElements();
-        assertEquals(1, repBody.size());
-        Call call = (Call) repBody.get(0);
-        assertEquals(1, call.getCallableIndex());
-        assertEquals(secondCallable, call.getCallable());
-        assertFalse(firstCallable.isBackwardsCallable());
-        assertFalse(secondCallable.isBackwardsCallable());
-        assertFalse(thirdCallable.isBackwardsCallable());
     }
 
     public void testLayoutWithBackwardsCalls() throws Exception {
@@ -263,70 +203,130 @@ public class NewAttributeBandsTest extends TestCase {
         assertFalse(secondCallable.isBackwardsCallable());
     }
 
-    public void testAddAttributes() throws IOException, Pack200Exception {
+    public void testLayoutWithCalls() throws IOException {
         CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8("B");
+        CPUTF8 layout = new CPUTF8(
+                "[NH[(1)]][RSH NH[RUH(1)]][TB(66,67,73,83,90)[KIH](68)[KDH](70)[KFH](74)[KJH](99)[RSH](101)[RSH RUH](115)[RUH](91)[NH[(0)]](64)[RSH[RUH(0)]]()[]]");
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
                 null, null, new AttributeDefinition(35,
                         AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
-                "B", new byte[] { 27 }, null, 0, null));
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
-                "B", new byte[] { 56 }, null, 0, null));
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
-                "B", new byte[] { 3 }, null, 0, null));
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        newAttributeBands.pack(out);
-        // BYTE1 is used for B layouts so we don't need to unpack to test the
-        // results
-        byte[] bytes = out.toByteArray();
-        assertEquals(3, bytes.length);
-        assertEquals(27, bytes[0]);
-        assertEquals(56, bytes[1]);
-        assertEquals(3, bytes[2]);
+        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
+        assertEquals(3, layoutElements.size());
+        Callable firstCallable = (Callable) layoutElements.get(0);
+        Callable secondCallable = (Callable) layoutElements.get(1);
+        Callable thirdCallable = (Callable) layoutElements.get(2);
+        List<LayoutElement> firstBody = firstCallable.getBody();
+        assertEquals(1, firstBody.size());
+        Replication rep = (Replication) firstBody.get(0);
+        List<LayoutElement> repBody = rep.getLayoutElements();
+        assertEquals(1, repBody.size());
+        Call call = (Call) repBody.get(0);
+        assertEquals(1, call.getCallableIndex());
+        assertEquals(secondCallable, call.getCallable());
+        assertFalse(firstCallable.isBackwardsCallable());
+        assertFalse(secondCallable.isBackwardsCallable());
+        assertFalse(thirdCallable.isBackwardsCallable());
     }
 
-    public void testAddAttributesWithReplicationLayout() throws IOException,
-            Pack200Exception {
+    public void testReferenceLayouts() throws IOException {
+        tryReference("KIB");
+        tryReference("KIH");
+        tryReference("KII");
+        tryReference("KINH");
+        tryReference("KJH");
+        tryReference("KDH");
+        tryReference("KSH");
+        tryReference("KQH");
+        tryReference("RCH");
+        tryReference("RSH");
+        tryReference("RDH");
+        tryReference("RFH");
+        tryReference("RMH");
+        tryReference("RIH");
+        tryReference("RUH");
+        tryReference("RQH");
+        tryReference("RQNH");
+        tryReference("RQNI");
+    }
+
+    public void testReplicationLayouts() throws IOException {
         CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8("NB[SH]");
+        CPUTF8 layout = new CPUTF8("NH[PHOHRUHRSHH]");
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
                 null, null, new AttributeDefinition(35,
                         AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
-                "B", new byte[] { 1, 0, 100 }, null, 0, null));
-        short s = -50;
-        byte b1 = (byte) (s >>> 8);
-        byte b2 = (byte) s;
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
-                "B", new byte[] { 3, 0, 5, 0, 25, b1, b2 }, null, 0, null));
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        newAttributeBands.pack(out);
-        byte[] bytes = out.toByteArray();
-        assertEquals(1, bytes[0]);
-        assertEquals(3, bytes[1]);
-        byte[] band = new byte[bytes.length - 2];
-        System.arraycopy(bytes, 2, band, 0, band.length);
-        int[] decoded = Codec.SIGNED5.decodeInts(4, new ByteArrayInputStream(
-                band));
-        assertEquals(4, decoded.length);
-        assertEquals(100, decoded[0]);
-        assertEquals(5, decoded[1]);
-        assertEquals(25, decoded[2]);
-        assertEquals(-50, decoded[3]);
+        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
+        assertEquals(1, layoutElements.size());
+        Replication element = (Replication) layoutElements.get(0);
+        Integral countElement = element.getCountElement();
+        assertEquals("H", countElement.getTag());
+        List<LayoutElement> replicatedElements = element.getLayoutElements();
+        assertEquals(5, replicatedElements.size());
+        Integral firstElement = (Integral) replicatedElements.get(0);
+        assertEquals("PH", firstElement.getTag());
+        Integral secondElement = (Integral) replicatedElements.get(1);
+        assertEquals("OH", secondElement.getTag());
+        Reference thirdElement = (Reference) replicatedElements.get(2);
+        assertEquals("RUH", thirdElement.getTag());
+        Reference fourthElement = (Reference) replicatedElements.get(3);
+        assertEquals("RSH", fourthElement.getTag());
+        Integral fifthElement = (Integral) replicatedElements.get(4);
+        assertEquals("H", fifthElement.getTag());
     }
 
-    private class MockNewAttributeBands extends NewAttributeBands {
+    public void testUnionLayout() throws IOException {
+        CPUTF8 name = new CPUTF8("TestAttribute");
+        CPUTF8 layout = new CPUTF8("TB(55)[FH](23)[]()[RSH]");
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
+                null, null, new AttributeDefinition(35,
+                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
+        assertEquals(1, layoutElements.size());
+        Union element = (Union) layoutElements.get(0);
+        Integral tag = element.getUnionTag();
+        assertEquals("B", tag.getTag());
+        List<UnionCase> unionCases = element.getUnionCases();
+        assertEquals(2, unionCases.size());
+        UnionCase firstCase = unionCases.get(0);
+        assertTrue(firstCase.hasTag(55));
+        assertFalse(firstCase.hasTag(23));
+        List<LayoutElement> body = firstCase.getBody();
+        assertEquals(1, body.size());
+        Integral bodyElement = (Integral) body.get(0);
+        assertEquals("FH", bodyElement.getTag());
+        UnionCase secondCase = unionCases.get(1);
+        assertTrue(secondCase.hasTag(23));
+        assertFalse(secondCase.hasTag(55));
+        body = secondCase.getBody();
+        assertEquals(0, body.size());
+        List<LayoutElement> defaultBody = element.getDefaultCaseBody();
+        assertEquals(1, defaultBody.size());
+        Reference ref = (Reference) defaultBody.get(0);
+        assertEquals("RSH", ref.getTag());
+    }
 
-        public MockNewAttributeBands(final int effort, final CpBands cpBands,
-                final SegmentHeader header, final AttributeDefinition def)
-                throws IOException {
-            super(effort, cpBands, header, def);
-        }
+    private void tryIntegral(final String layoutStr) throws IOException {
+        CPUTF8 name = new CPUTF8("TestAttribute");
+        CPUTF8 layout = new CPUTF8(layoutStr);
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
+                null, null, new AttributeDefinition(35,
+                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
+        assertEquals(1, layoutElements.size());
+        Integral element = (Integral) layoutElements.get(0);
+        assertEquals(layoutStr, element.getTag());
+    }
 
-        public List<AttributeLayoutElement> getLayoutElements() {
-            return attributeLayoutElements;
-        }
+    private void tryReference(final String layoutStr) throws IOException {
+        CPUTF8 name = new CPUTF8("TestAttribute");
+        CPUTF8 layout = new CPUTF8(layoutStr);
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
+                null, null, new AttributeDefinition(35,
+                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
+        assertEquals(1, layoutElements.size());
+        Reference element = (Reference) layoutElements.get(0);
+        assertEquals(layoutStr, element.getTag());
     }
 
 }

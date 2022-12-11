@@ -37,6 +37,10 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
     private long compressedBytesRead;
     private final byte[] oneByte = new byte[1];
 
+    Deflate64CompressorInputStream(final HuffmanDecoder decoder) {
+        this.decoder = decoder;
+    }
+
     /**
      * Constructs a Deflate64CompressorInputStream.
      *
@@ -47,8 +51,34 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
         originalStream = in;
     }
 
-    Deflate64CompressorInputStream(final HuffmanDecoder decoder) {
-        this.decoder = decoder;
+    @Override
+    public int available() throws IOException {
+        return decoder != null ? decoder.available() : 0;
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            closeDecoder();
+        } finally {
+            if (originalStream != null) {
+                originalStream.close();
+                originalStream = null;
+            }
+        }
+    }
+
+    private void closeDecoder() {
+        closeQuietly(decoder);
+        decoder = null;
+    }
+
+    /**
+     * @since 1.17
+     */
+    @Override
+    public long getCompressedCount() {
+        return compressedBytesRead;
     }
 
     /**
@@ -93,35 +123,5 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
             }
         }
         return read;
-    }
-
-    @Override
-    public int available() throws IOException {
-        return decoder != null ? decoder.available() : 0;
-    }
-
-    @Override
-    public void close() throws IOException {
-        try {
-            closeDecoder();
-        } finally {
-            if (originalStream != null) {
-                originalStream.close();
-                originalStream = null;
-            }
-        }
-    }
-
-    /**
-     * @since 1.17
-     */
-    @Override
-    public long getCompressedCount() {
-        return compressedBytesRead;
-    }
-
-    private void closeDecoder() {
-        closeQuietly(decoder);
-        decoder = null;
     }
 }

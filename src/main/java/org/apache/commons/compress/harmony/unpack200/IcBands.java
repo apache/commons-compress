@@ -55,6 +55,90 @@ public class IcBands extends BandSet {
         this.cpUTF8 = segment.getCpBands().getCpUTF8();
     }
 
+    public IcTuple[] getIcTuples() {
+        return icAll;
+    }
+
+    /**
+     * Answer the relevant IcTuples for the specified className and class constant pool.
+     *
+     * @param className String name of the class X for ic_relevant(X)
+     * @param cp ClassConstantPool used to generate ic_relevant(X)
+     * @return array of IcTuple
+     */
+    public IcTuple[] getRelevantIcTuples(final String className, final ClassConstantPool cp) {
+        final Set<IcTuple> relevantTuplesContains = new HashSet<>();
+        final List<IcTuple> relevantTuples = new ArrayList<>();
+
+        final List<IcTuple> relevantCandidates = outerClassToTuples.get(className);
+        if (relevantCandidates != null) {
+            for (int index = 0; index < relevantCandidates.size(); index++) {
+                final IcTuple tuple = relevantCandidates.get(index);
+                relevantTuplesContains.add(tuple);
+                relevantTuples.add(tuple);
+            }
+        }
+
+        final List<ClassFileEntry> entries = cp.entries();
+
+        // For every class constant in both ic_this_class and cp,
+        // add it to ic_relevant. Repeat until no more
+        // changes to ic_relevant.
+
+        for (int eIndex = 0; eIndex < entries.size(); eIndex++) {
+            final ConstantPoolEntry entry = (ConstantPoolEntry) entries.get(eIndex);
+            if (entry instanceof CPClass) {
+                final CPClass clazz = (CPClass) entry;
+                final IcTuple relevant = thisClassToTuple.get(clazz.name);
+                if (relevant != null && relevantTuplesContains.add(relevant)) {
+                    relevantTuples.add(relevant);
+                }
+            }
+        }
+
+        // Not part of spec: fix up by adding to relevantTuples the parents
+        // of inner classes which are themselves inner classes.
+        // i.e., I think that if Foo$Bar$Baz gets added, Foo$Bar needs to be
+        // added
+        // as well.
+
+        final List<IcTuple> tuplesToScan = new ArrayList<>(relevantTuples);
+        final List<IcTuple> tuplesToAdd = new ArrayList<>();
+
+        while (tuplesToScan.size() > 0) {
+
+            tuplesToAdd.clear();
+            for (int index = 0; index < tuplesToScan.size(); index++) {
+                final IcTuple aRelevantTuple = tuplesToScan.get(index);
+                final IcTuple relevant = thisClassToTuple.get(aRelevantTuple.outerClassString());
+                if (relevant != null && !aRelevantTuple.outerIsAnonymous()) {
+                    tuplesToAdd.add(relevant);
+                }
+            }
+
+            tuplesToScan.clear();
+            for (int index = 0; index < tuplesToAdd.size(); index++) {
+                final IcTuple tuple = tuplesToAdd.get(index);
+                if (relevantTuplesContains.add(tuple)) {
+                    relevantTuples.add(tuple);
+                    tuplesToScan.add(tuple);
+                }
+            }
+
+        }
+
+        // End not part of the spec. Ugh.
+
+        // Now order the result as a subsequence of ic_all
+        relevantTuples.sort((arg0, arg1) -> {
+            final Integer index1 = Integer.valueOf(arg0.getTupleIndex());
+            final Integer index2 = Integer.valueOf(arg1.getTupleIndex());
+            return index1.compareTo(index2);
+        });
+
+        return relevantTuples.toArray(IcTuple.EMPTY_ARRAY);
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -141,90 +225,6 @@ public class IcBands extends BandSet {
                 bucket.add(tuple);
             }
         }
-    }
-
-    public IcTuple[] getIcTuples() {
-        return icAll;
-    }
-
-    /**
-     * Answer the relevant IcTuples for the specified className and class constant pool.
-     *
-     * @param className String name of the class X for ic_relevant(X)
-     * @param cp ClassConstantPool used to generate ic_relevant(X)
-     * @return array of IcTuple
-     */
-    public IcTuple[] getRelevantIcTuples(final String className, final ClassConstantPool cp) {
-        final Set<IcTuple> relevantTuplesContains = new HashSet<>();
-        final List<IcTuple> relevantTuples = new ArrayList<>();
-
-        final List<IcTuple> relevantCandidates = outerClassToTuples.get(className);
-        if (relevantCandidates != null) {
-            for (int index = 0; index < relevantCandidates.size(); index++) {
-                final IcTuple tuple = relevantCandidates.get(index);
-                relevantTuplesContains.add(tuple);
-                relevantTuples.add(tuple);
-            }
-        }
-
-        final List<ClassFileEntry> entries = cp.entries();
-
-        // For every class constant in both ic_this_class and cp,
-        // add it to ic_relevant. Repeat until no more
-        // changes to ic_relevant.
-
-        for (int eIndex = 0; eIndex < entries.size(); eIndex++) {
-            final ConstantPoolEntry entry = (ConstantPoolEntry) entries.get(eIndex);
-            if (entry instanceof CPClass) {
-                final CPClass clazz = (CPClass) entry;
-                final IcTuple relevant = thisClassToTuple.get(clazz.name);
-                if (relevant != null && relevantTuplesContains.add(relevant)) {
-                    relevantTuples.add(relevant);
-                }
-            }
-        }
-
-        // Not part of spec: fix up by adding to relevantTuples the parents
-        // of inner classes which are themselves inner classes.
-        // i.e., I think that if Foo$Bar$Baz gets added, Foo$Bar needs to be
-        // added
-        // as well.
-
-        final List<IcTuple> tuplesToScan = new ArrayList<>(relevantTuples);
-        final List<IcTuple> tuplesToAdd = new ArrayList<>();
-
-        while (tuplesToScan.size() > 0) {
-
-            tuplesToAdd.clear();
-            for (int index = 0; index < tuplesToScan.size(); index++) {
-                final IcTuple aRelevantTuple = tuplesToScan.get(index);
-                final IcTuple relevant = thisClassToTuple.get(aRelevantTuple.outerClassString());
-                if (relevant != null && !aRelevantTuple.outerIsAnonymous()) {
-                    tuplesToAdd.add(relevant);
-                }
-            }
-
-            tuplesToScan.clear();
-            for (int index = 0; index < tuplesToAdd.size(); index++) {
-                final IcTuple tuple = tuplesToAdd.get(index);
-                if (relevantTuplesContains.add(tuple)) {
-                    relevantTuples.add(tuple);
-                    tuplesToScan.add(tuple);
-                }
-            }
-
-        }
-
-        // End not part of the spec. Ugh.
-
-        // Now order the result as a subsequence of ic_all
-        relevantTuples.sort((arg0, arg1) -> {
-            final Integer index1 = Integer.valueOf(arg0.getTupleIndex());
-            final Integer index2 = Integer.valueOf(arg1.getTupleIndex());
-            return index1.compareTo(index2);
-        });
-
-        return relevantTuples.toArray(IcTuple.EMPTY_ARRAY);
     }
 
 }

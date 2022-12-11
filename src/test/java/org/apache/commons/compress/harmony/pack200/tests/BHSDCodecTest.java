@@ -32,6 +32,16 @@ import junit.framework.TestCase;
  */
 public class BHSDCodecTest extends TestCase {
 
+    public void testDeltaEncodings() throws IOException, Pack200Exception {
+        Codec c = Codec.UDELTA5;
+        int[] sequence = {0, 2, 4, 2, 2, 4};
+        byte[] encoded = c.encode(sequence);
+        int[] decoded = c.decodeInts(6, new ByteArrayInputStream(encoded));
+        for (int i = 0; i < decoded.length; i++) {
+            assertEquals(sequence[i], decoded[i]);
+        }
+    }
+
     public void testEncodeDecode() throws IOException, Pack200Exception {
         for (int i = 1; i < 116; i++) {
 
@@ -68,16 +78,6 @@ public class BHSDCodecTest extends TestCase {
             // Test encode-decode with 0
             assertEquals(0, codec.decode(new ByteArrayInputStream(codec.encode(
                     0, 0)), 0));
-        }
-    }
-
-    public void testDeltaEncodings() throws IOException, Pack200Exception {
-        Codec c = Codec.UDELTA5;
-        int[] sequence = {0, 2, 4, 2, 2, 4};
-        byte[] encoded = c.encode(sequence);
-        int[] decoded = c.decodeInts(6, new ByteArrayInputStream(encoded));
-        for (int i = 0; i < decoded.length; i++) {
-            assertEquals(sequence[i], decoded[i]);
         }
     }
 

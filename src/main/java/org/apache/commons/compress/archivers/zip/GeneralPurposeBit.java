@@ -69,40 +69,106 @@ public final class GeneralPurposeBit implements Cloneable {
      */
     public static final int UFT8_NAMES_FLAG = 1 << 11;
 
+    /**
+     * Parses the supported flags from the given archive data.
+     *
+     * @param data local file header or a central directory entry.
+     * @param offset offset at which the general purpose bit starts
+     * @return parsed flags
+     */
+    public static GeneralPurposeBit parse(final byte[] data, final int offset) {
+        final int generalPurposeFlag = ZipShort.getValue(data, offset);
+        final GeneralPurposeBit b = new GeneralPurposeBit();
+        b.useDataDescriptor((generalPurposeFlag & DATA_DESCRIPTOR_FLAG) != 0);
+        b.useUTF8ForNames((generalPurposeFlag & UFT8_NAMES_FLAG) != 0);
+        b.useStrongEncryption((generalPurposeFlag & STRONG_ENCRYPTION_FLAG) != 0);
+        b.useEncryption((generalPurposeFlag & ENCRYPTION_FLAG) != 0);
+        b.slidingDictionarySize = (generalPurposeFlag & SLIDING_DICTIONARY_SIZE_FLAG) != 0 ? 8192 : 4096;
+        b.numberOfShannonFanoTrees = (generalPurposeFlag & NUMBER_OF_SHANNON_FANO_TREES_FLAG) != 0 ? 3 : 2;
+        return b;
+    }
     private boolean languageEncodingFlag;
     private boolean dataDescriptorFlag;
     private boolean encryptionFlag;
     private boolean strongEncryptionFlag;
     private int slidingDictionarySize;
+
     private int numberOfShannonFanoTrees;
 
     public GeneralPurposeBit() {
     }
 
-    /**
-     * whether the current entry uses UTF8 for file name and comment.
-     * @return whether the current entry uses UTF8 for file name and comment.
-     */
-    public boolean usesUTF8ForNames() {
-        return languageEncodingFlag;
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (final CloneNotSupportedException ex) {
+            // impossible
+            throw new IllegalStateException("GeneralPurposeBit is not Cloneable?", ex); //NOSONAR
+        }
     }
 
     /**
-     * whether the current entry will use UTF8 for file name and comment.
-     * @param b whether the current entry will use UTF8 for file name and comment.
+     * Encodes the set bits in a form suitable for ZIP archives.
+     * @return the encoded general purpose bits
      */
-    public void useUTF8ForNames(final boolean b) {
-        languageEncodingFlag = b;
+    public byte[] encode() {
+        final byte[] result = new byte[2];
+        encode(result, 0);
+        return result;
     }
 
     /**
-     * whether the current entry uses the data descriptor to store CRC
-     * and size information.
-     * @return whether the current entry uses the data descriptor to store CRC
-     * and size information
+     * Encodes the set bits in a form suitable for ZIP archives.
+     *
+     * @param buf the output buffer
+     * @param  offset
+     *         The offset within the output buffer of the first byte to be written.
+     *         must be non-negative and no larger than {@code buf.length-2}
      */
-    public boolean usesDataDescriptor() {
-        return dataDescriptorFlag;
+    public void encode(final byte[] buf, final int offset) {
+                ZipShort.putShort((dataDescriptorFlag ? DATA_DESCRIPTOR_FLAG : 0)
+                        |
+                        (languageEncodingFlag ? UFT8_NAMES_FLAG : 0)
+                        |
+                        (encryptionFlag ? ENCRYPTION_FLAG : 0)
+                        |
+                        (strongEncryptionFlag ? STRONG_ENCRYPTION_FLAG : 0)
+                        , buf, offset);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (!(o instanceof GeneralPurposeBit)) {
+            return false;
+        }
+        final GeneralPurposeBit g = (GeneralPurposeBit) o;
+        return g.encryptionFlag == encryptionFlag
+            && g.strongEncryptionFlag == strongEncryptionFlag
+            && g.languageEncodingFlag == languageEncodingFlag
+            && g.dataDescriptorFlag == dataDescriptorFlag;
+    }
+
+    /**
+     * Returns the number of trees used by the compression method 6 (imploding).
+     */
+    int getNumberOfShannonFanoTrees() {
+        return numberOfShannonFanoTrees;
+    }
+
+    /**
+     * Returns the sliding dictionary size used by the compression method 6 (imploding).
+     */
+    int getSlidingDictionarySize() {
+        return slidingDictionarySize;
+    }
+
+    @Override
+    public int hashCode() {
+        return 3 * (7 * (13 * (17 * (encryptionFlag ? 1 : 0)
+                               + (strongEncryptionFlag ? 1 : 0))
+                         + (languageEncodingFlag ? 1 : 0))
+                    + (dataDescriptorFlag ? 1 : 0));
     }
 
     /**
@@ -116,19 +182,30 @@ public final class GeneralPurposeBit implements Cloneable {
     }
 
     /**
-     * whether the current entry is encrypted.
-     * @return whether the current entry is encrypted
-     */
-    public boolean usesEncryption() {
-        return encryptionFlag;
-    }
-
-    /**
      * whether the current entry will be encrypted.
      * @param b whether the current entry will be encrypted
      */
     public void useEncryption(final boolean b) {
         encryptionFlag = b;
+    }
+
+    /**
+     * whether the current entry uses the data descriptor to store CRC
+     * and size information.
+     * @return whether the current entry uses the data descriptor to store CRC
+     * and size information
+     */
+    public boolean usesDataDescriptor() {
+        return dataDescriptorFlag;
+    }
+
+
+    /**
+     * whether the current entry is encrypted.
+     * @return whether the current entry is encrypted
+     */
+    public boolean usesEncryption() {
+        return encryptionFlag;
     }
 
     /**
@@ -151,95 +228,18 @@ public final class GeneralPurposeBit implements Cloneable {
     }
 
     /**
-     * Returns the sliding dictionary size used by the compression method 6 (imploding).
+     * whether the current entry uses UTF8 for file name and comment.
+     * @return whether the current entry uses UTF8 for file name and comment.
      */
-    int getSlidingDictionarySize() {
-        return slidingDictionarySize;
+    public boolean usesUTF8ForNames() {
+        return languageEncodingFlag;
     }
 
     /**
-     * Returns the number of trees used by the compression method 6 (imploding).
+     * whether the current entry will use UTF8 for file name and comment.
+     * @param b whether the current entry will use UTF8 for file name and comment.
      */
-    int getNumberOfShannonFanoTrees() {
-        return numberOfShannonFanoTrees;
-    }
-
-    /**
-     * Encodes the set bits in a form suitable for ZIP archives.
-     * @return the encoded general purpose bits
-     */
-    public byte[] encode() {
-        final byte[] result = new byte[2];
-        encode(result, 0);
-        return result;
-    }
-
-
-    /**
-     * Encodes the set bits in a form suitable for ZIP archives.
-     *
-     * @param buf the output buffer
-     * @param  offset
-     *         The offset within the output buffer of the first byte to be written.
-     *         must be non-negative and no larger than {@code buf.length-2}
-     */
-    public void encode(final byte[] buf, final int offset) {
-                ZipShort.putShort((dataDescriptorFlag ? DATA_DESCRIPTOR_FLAG : 0)
-                        |
-                        (languageEncodingFlag ? UFT8_NAMES_FLAG : 0)
-                        |
-                        (encryptionFlag ? ENCRYPTION_FLAG : 0)
-                        |
-                        (strongEncryptionFlag ? STRONG_ENCRYPTION_FLAG : 0)
-                        , buf, offset);
-    }
-
-    /**
-     * Parses the supported flags from the given archive data.
-     *
-     * @param data local file header or a central directory entry.
-     * @param offset offset at which the general purpose bit starts
-     * @return parsed flags
-     */
-    public static GeneralPurposeBit parse(final byte[] data, final int offset) {
-        final int generalPurposeFlag = ZipShort.getValue(data, offset);
-        final GeneralPurposeBit b = new GeneralPurposeBit();
-        b.useDataDescriptor((generalPurposeFlag & DATA_DESCRIPTOR_FLAG) != 0);
-        b.useUTF8ForNames((generalPurposeFlag & UFT8_NAMES_FLAG) != 0);
-        b.useStrongEncryption((generalPurposeFlag & STRONG_ENCRYPTION_FLAG) != 0);
-        b.useEncryption((generalPurposeFlag & ENCRYPTION_FLAG) != 0);
-        b.slidingDictionarySize = (generalPurposeFlag & SLIDING_DICTIONARY_SIZE_FLAG) != 0 ? 8192 : 4096;
-        b.numberOfShannonFanoTrees = (generalPurposeFlag & NUMBER_OF_SHANNON_FANO_TREES_FLAG) != 0 ? 3 : 2;
-        return b;
-    }
-
-    @Override
-    public int hashCode() {
-        return 3 * (7 * (13 * (17 * (encryptionFlag ? 1 : 0)
-                               + (strongEncryptionFlag ? 1 : 0))
-                         + (languageEncodingFlag ? 1 : 0))
-                    + (dataDescriptorFlag ? 1 : 0));
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (!(o instanceof GeneralPurposeBit)) {
-            return false;
-        }
-        final GeneralPurposeBit g = (GeneralPurposeBit) o;
-        return g.encryptionFlag == encryptionFlag
-            && g.strongEncryptionFlag == strongEncryptionFlag
-            && g.languageEncodingFlag == languageEncodingFlag
-            && g.dataDescriptorFlag == dataDescriptorFlag;
-    }
-
-    @Override
-    public Object clone() {
-        try {
-            return super.clone();
-        } catch (final CloneNotSupportedException ex) {
-            // impossible
-            throw new IllegalStateException("GeneralPurposeBit is not Cloneable?", ex); //NOSONAR
-        }
+    public void useUTF8ForNames(final boolean b) {
+        languageEncodingFlag = b;
     }
 }

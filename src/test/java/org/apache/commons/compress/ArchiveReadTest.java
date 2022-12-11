@@ -58,6 +58,15 @@ public class ArchiveReadTest extends AbstractTestCase {
         }
     }
 
+    public static Stream<Arguments> data() {
+        assertTrue(ARCDIR.exists());
+        final Collection<Arguments> params = new ArrayList<>();
+        for (final String fileName : ARCDIR.list((dir, name) -> !name.endsWith(".txt"))) {
+            params.add(Arguments.of(new File(ARCDIR, fileName)));
+        }
+        return params.stream();
+    }
+
     @BeforeAll
     public static void setUpFileList() throws Exception {
         assertTrue(ARCDIR.exists());
@@ -71,15 +80,6 @@ public class ArchiveReadTest extends AbstractTestCase {
                 }
             }
         }
-    }
-
-    public static Stream<Arguments> data() {
-        assertTrue(ARCDIR.exists());
-        final Collection<Arguments> params = new ArrayList<>();
-        for (final String fileName : ARCDIR.list((dir, name) -> !name.endsWith(".txt"))) {
-            params.add(Arguments.of(new File(ARCDIR, fileName)));
-        }
-        return params.stream();
     }
 
     // files.txt contains size and filename

@@ -28,6 +28,10 @@ import org.apache.commons.compress.harmony.pack200.Pack200Exception;
  */
 public class LocalVariableTableAttribute extends BCIRenumberedAttribute {
 
+    private static CPUTF8 attributeName;
+    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
+        attributeName = cpUTF8Value;
+    }
     private final int local_variable_table_length;
     private final int[] start_pcs;
     private final int[] lengths;
@@ -36,12 +40,8 @@ public class LocalVariableTableAttribute extends BCIRenumberedAttribute {
     private final int[] indexes;
     private final CPUTF8[] names;
     private final CPUTF8[] descriptors;
-    private int codeLength;
-    private static CPUTF8 attributeName;
 
-    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
-        attributeName = cpUTF8Value;
-    }
+    private int codeLength;
 
     public LocalVariableTableAttribute(final int local_variable_table_length, final int[] start_pcs,
         final int[] lengths, final CPUTF8[] names, final CPUTF8[] descriptors, final int[] indexes) {
@@ -54,25 +54,9 @@ public class LocalVariableTableAttribute extends BCIRenumberedAttribute {
         this.indexes = indexes;
     }
 
-    public void setCodeLength(final int length) {
-        codeLength = length;
-    }
-
     @Override
     protected int getLength() {
         return 2 + (10 * local_variable_table_length);
-    }
-
-    @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeShort(local_variable_table_length);
-        for (int i = 0; i < local_variable_table_length; i++) {
-            dos.writeShort(start_pcs[i]);
-            dos.writeShort(lengths[i]);
-            dos.writeShort(name_indexes[i]);
-            dos.writeShort(descriptor_indexes[i]);
-            dos.writeShort(indexes[i]);
-        }
     }
 
     @Override
@@ -84,24 +68,6 @@ public class LocalVariableTableAttribute extends BCIRenumberedAttribute {
             nestedEntries.add(descriptors[i]);
         }
         return nestedEntries.toArray(ClassFileEntry.NONE);
-    }
-
-    @Override
-    protected void resolve(final ClassConstantPool pool) {
-        super.resolve(pool);
-        name_indexes = new int[local_variable_table_length];
-        descriptor_indexes = new int[local_variable_table_length];
-        for (int i = 0; i < local_variable_table_length; i++) {
-            names[i].resolve(pool);
-            descriptors[i].resolve(pool);
-            name_indexes[i] = pool.indexOf(names[i]);
-            descriptor_indexes[i] = pool.indexOf(descriptors[i]);
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "LocalVariableTable: " + +local_variable_table_length + " variables";
     }
 
     @Override
@@ -161,6 +127,40 @@ public class LocalVariableTableAttribute extends BCIRenumberedAttribute {
                 revisedLength = stopValue - start_pc;
             }
             lengths[index] = revisedLength;
+        }
+    }
+
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
+        super.resolve(pool);
+        name_indexes = new int[local_variable_table_length];
+        descriptor_indexes = new int[local_variable_table_length];
+        for (int i = 0; i < local_variable_table_length; i++) {
+            names[i].resolve(pool);
+            descriptors[i].resolve(pool);
+            name_indexes[i] = pool.indexOf(names[i]);
+            descriptor_indexes[i] = pool.indexOf(descriptors[i]);
+        }
+    }
+
+    public void setCodeLength(final int length) {
+        codeLength = length;
+    }
+
+    @Override
+    public String toString() {
+        return "LocalVariableTable: " + +local_variable_table_length + " variables";
+    }
+
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        dos.writeShort(local_variable_table_length);
+        for (int i = 0; i < local_variable_table_length; i++) {
+            dos.writeShort(start_pcs[i]);
+            dos.writeShort(lengths[i]);
+            dos.writeShort(name_indexes[i]);
+            dos.writeShort(descriptor_indexes[i]);
+            dos.writeShort(indexes[i]);
         }
     }
 }

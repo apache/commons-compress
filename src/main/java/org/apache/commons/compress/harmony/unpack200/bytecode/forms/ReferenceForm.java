@@ -33,19 +33,9 @@ public abstract class ReferenceForm extends ByteCodeForm {
         super(opcode, name, rewrite);
     }
 
-    protected abstract int getPoolID();
-
     protected abstract int getOffset(OperandManager operandManager);
 
-    protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset)
-        throws Pack200Exception {
-        final SegmentConstantPool globalPool = operandManager.globalConstantPool();
-        ClassFileEntry[] nested = null;
-        nested = new ClassFileEntry[] {globalPool.getConstantPoolEntry(getPoolID(), offset)};
-        Objects.requireNonNull(nested[0], "Null nested entries are not allowed");
-        byteCode.setNested(nested);
-        byteCode.setNestedPositions(new int[][] {{0, 2}});
-    }
+    protected abstract int getPoolID();
 
     /*
      * (non-Javadoc)
@@ -65,5 +55,15 @@ public abstract class ReferenceForm extends ByteCodeForm {
         } catch (final Pack200Exception ex) {
             throw new Error("Got a pack200 exception. What to do?");
         }
+    }
+
+    protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset)
+        throws Pack200Exception {
+        final SegmentConstantPool globalPool = operandManager.globalConstantPool();
+        ClassFileEntry[] nested = null;
+        nested = new ClassFileEntry[] {globalPool.getConstantPoolEntry(getPoolID(), offset)};
+        Objects.requireNonNull(nested[0], "Null nested entries are not allowed");
+        byteCode.setNested(nested);
+        byteCode.setNestedPositions(new int[][] {{0, 2}});
     }
 }

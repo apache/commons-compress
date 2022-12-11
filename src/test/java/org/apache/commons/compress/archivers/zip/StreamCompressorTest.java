@@ -34,19 +34,6 @@ import org.junit.jupiter.api.Test;
 public class StreamCompressorTest {
 
     @Test
-    public void storedEntries() throws Exception {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final StreamCompressor sc = StreamCompressor.create( baos);
-        sc.deflate(new ByteArrayInputStream("A".getBytes()), ZipEntry.STORED);
-        sc.deflate(new ByteArrayInputStream("BAD".getBytes()), ZipEntry.STORED);
-        assertEquals(3, sc.getBytesRead());
-        assertEquals(3, sc.getBytesWrittenForLastEntry());
-        assertEquals(344750961, sc.getCrc32());
-        sc.deflate(new ByteArrayInputStream("CAFE".getBytes()), ZipEntry.STORED);
-        assertEquals("ABADCAFE", baos.toString());
-   }
-
-    @Test
     public void deflatedEntries() throws Exception {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final StreamCompressor sc = StreamCompressor.create( baos);
@@ -60,6 +47,19 @@ public class StreamCompressorTest {
         // Note that this test really asserts stuff about the java Deflater, which might be a little bit brittle
         assertArrayEquals(expected, actuals);
     }
+
+    @Test
+    public void storedEntries() throws Exception {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final StreamCompressor sc = StreamCompressor.create( baos);
+        sc.deflate(new ByteArrayInputStream("A".getBytes()), ZipEntry.STORED);
+        sc.deflate(new ByteArrayInputStream("BAD".getBytes()), ZipEntry.STORED);
+        assertEquals(3, sc.getBytesRead());
+        assertEquals(3, sc.getBytesWrittenForLastEntry());
+        assertEquals(344750961, sc.getCrc32());
+        sc.deflate(new ByteArrayInputStream("CAFE".getBytes()), ZipEntry.STORED);
+        assertEquals("ABADCAFE", baos.toString());
+   }
 
     @Test
     public void testCreateDataOutputCompressor() throws IOException {

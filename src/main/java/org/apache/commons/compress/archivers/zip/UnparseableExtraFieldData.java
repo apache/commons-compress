@@ -37,23 +37,14 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
     private byte[] centralDirectoryData;
 
     /**
-     * The Header-ID.
+     * The actual data to put into central directory.
      *
-     * @return a completely arbitrary value that should be ignored.
+     * @return The CentralDirectoryData value
      */
     @Override
-    public ZipShort getHeaderId() {
-        return HEADER_ID;
-    }
-
-    /**
-     * Length of the complete extra field in the local file data.
-     *
-     * @return The LocalFileDataLength value
-     */
-    @Override
-    public ZipShort getLocalFileDataLength() {
-        return new ZipShort(localFileData == null ? 0 : localFileData.length);
+    public byte[] getCentralDirectoryData() {
+        return centralDirectoryData == null
+            ? getLocalFileDataData() : ZipUtil.copy(centralDirectoryData);
     }
 
     /**
@@ -69,6 +60,16 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
     }
 
     /**
+     * The Header-ID.
+     *
+     * @return a completely arbitrary value that should be ignored.
+     */
+    @Override
+    public ZipShort getHeaderId() {
+        return HEADER_ID;
+    }
+
+    /**
      * The actual data to put into local file data.
      *
      * @return The LocalFileDataData value
@@ -79,26 +80,13 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
     }
 
     /**
-     * The actual data to put into central directory.
+     * Length of the complete extra field in the local file data.
      *
-     * @return The CentralDirectoryData value
+     * @return The LocalFileDataLength value
      */
     @Override
-    public byte[] getCentralDirectoryData() {
-        return centralDirectoryData == null
-            ? getLocalFileDataData() : ZipUtil.copy(centralDirectoryData);
-    }
-
-    /**
-     * Populate data from this array as if it was in local file data.
-     *
-     * @param buffer the buffer to read data from
-     * @param offset offset into buffer to read data
-     * @param length the length of data
-     */
-    @Override
-    public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length) {
-        localFileData = Arrays.copyOfRange(buffer, offset, offset + length);
+    public ZipShort getLocalFileDataLength() {
+        return new ZipShort(localFileData == null ? 0 : localFileData.length);
     }
 
     /**
@@ -115,6 +103,18 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
         if (localFileData == null) {
             parseFromLocalFileData(buffer, offset, length);
         }
+    }
+
+    /**
+     * Populate data from this array as if it was in local file data.
+     *
+     * @param buffer the buffer to read data from
+     * @param offset offset into buffer to read data
+     * @param length the length of data
+     */
+    @Override
+    public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length) {
+        localFileData = Arrays.copyOfRange(buffer, offset, offset + length);
     }
 
 }

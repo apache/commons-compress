@@ -31,6 +31,11 @@ public class ThisFieldRefForm extends ClassSpecificReferenceForm {
     }
 
     @Override
+    protected String context(final OperandManager operandManager) {
+        return operandManager.getCurrentClass();
+    }
+
+    @Override
     protected int getOffset(final OperandManager operandManager) {
         return operandManager.nextThisFieldRef();
     }
@@ -38,10 +43,5 @@ public class ThisFieldRefForm extends ClassSpecificReferenceForm {
     @Override
     protected int getPoolID() {
         return SegmentConstantPool.CP_FIELD;
-    }
-
-    @Override
-    protected String context(final OperandManager operandManager) {
-        return operandManager.getCurrentClass();
     }
 }

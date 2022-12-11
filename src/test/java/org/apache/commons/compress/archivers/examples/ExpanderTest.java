@@ -49,70 +49,13 @@ public class ExpanderTest extends AbstractTestCase {
 
     private File archive;
 
-    @Test
-    public void sevenZTwoFileVersion() throws IOException, ArchiveException {
-        setup7z();
-        new Expander().expand("7z", archive, resultDir);
-        verifyTargetDir();
-    }
-
-    @Test
-    public void sevenZTwoFileVersionWithAutoDetection() throws IOException, ArchiveException {
-        setup7z();
-        new Expander().expand(archive, resultDir);
-        verifyTargetDir();
-    }
-
-    @Test
-    public void sevenZInputStreamVersion() throws IOException {
-        setup7z();
-        try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
-            assertThrows(StreamingNotSupportedException.class, () -> new Expander().expand("7z", i, resultDir));
+    private void assertHelloWorld(final String fileName, final String suffix) throws IOException {
+        Assert.assertTrue(fileName + " does not exist", new File(resultDir, fileName).isFile());
+        final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
+        try (InputStream is = Files.newInputStream(new File(resultDir, fileName).toPath())) {
+            final byte[] actual = IOUtils.toByteArray(is);
+            Assert.assertArrayEquals(expected, actual);
         }
-    }
-
-    @Test
-    public void sevenZInputStreamVersionWithAutoDetection() throws IOException {
-        setup7z();
-        try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
-            assertThrows(StreamingNotSupportedException.class, () -> new Expander().expand(i, resultDir));
-        }
-    }
-
-    @Test
-    public void sevenZChannelVersion() throws IOException, ArchiveException {
-        setup7z();
-        try (SeekableByteChannel c = FileChannel.open(archive.toPath(), StandardOpenOption.READ)) {
-            new Expander().expand("7z", c, resultDir);
-        }
-        verifyTargetDir();
-    }
-
-    @Test
-    public void sevenZFileVersion() throws IOException {
-        setup7z();
-        try (SevenZFile f = new SevenZFile(archive)) {
-            new Expander().expand(f, resultDir);
-        }
-        verifyTargetDir();
-    }
-
-    @Test
-    public void zipFileVersion() throws IOException, ArchiveException {
-        setupZip();
-        try (ZipFile f = new ZipFile(archive)) {
-            new Expander().expand(f, resultDir);
-        }
-        verifyTargetDir();
-    }
-
-    @Test
-    public void fileCantEscapeViaAbsolutePath() throws IOException, ArchiveException {
-        setupZip("/tmp/foo");
-        try (ZipFile f = new ZipFile(archive)) {
-            assertThrows(IOException.class, () -> new Expander().expand(f, resultDir));
-        }
-        Assert.assertFalse(new File(resultDir, "tmp/foo").isFile());
     }
 
     @Test
@@ -142,21 +85,12 @@ public class ExpanderTest extends AbstractTestCase {
     }
 
     @Test
-    public void tarFileVersion() throws IOException, ArchiveException {
-        setupTar();
-        try (TarFile f = new TarFile(archive)) {
-            new Expander().expand(f, resultDir);
+    public void fileCantEscapeViaAbsolutePath() throws IOException, ArchiveException {
+        setupZip("/tmp/foo");
+        try (ZipFile f = new ZipFile(archive)) {
+            assertThrows(IOException.class, () -> new Expander().expand(f, resultDir));
         }
-        verifyTargetDir();
-    }
-
-    @Test
-    public void testCompress603Tar() throws IOException, ArchiveException {
-        setupTarForCompress603();
-        try (TarFile f = new TarFile(archive)) {
-            new Expander().expand(f, resultDir);
-        }
-        verifyTargetDir();
+        Assert.assertFalse(new File(resultDir, "tmp/foo").isFile());
     }
 
     private void setup7z() throws IOException {
@@ -166,30 +100,6 @@ public class ExpanderTest extends AbstractTestCase {
             o.write(new byte[14]);
         }
         try (SevenZOutputFile aos = new SevenZOutputFile(archive)) {
-            aos.putArchiveEntry(aos.createArchiveEntry(dir, "a"));
-            aos.closeArchiveEntry();
-            aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b"));
-            aos.closeArchiveEntry();
-            aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b/c"));
-            aos.closeArchiveEntry();
-            aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/d.txt"));
-            aos.write("Hello, world 1".getBytes(UTF_8));
-            aos.closeArchiveEntry();
-            aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/c/e.txt"));
-            aos.write("Hello, world 2".getBytes(UTF_8));
-            aos.closeArchiveEntry();
-            aos.finish();
-        }
-    }
-
-    private void setupZip() throws IOException, ArchiveException {
-        archive = new File(dir, "test.zip");
-        final File dummy = new File(dir, "x");
-        try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
-            o.write(new byte[14]);
-        }
-        try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
-             .createArchiveOutputStream("zip", Files.newOutputStream(archive.toPath()))) {
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "a"));
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b"));
@@ -256,6 +166,30 @@ public class ExpanderTest extends AbstractTestCase {
         }
     }
 
+    private void setupZip() throws IOException, ArchiveException {
+        archive = new File(dir, "test.zip");
+        final File dummy = new File(dir, "x");
+        try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
+            o.write(new byte[14]);
+        }
+        try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
+             .createArchiveOutputStream("zip", Files.newOutputStream(archive.toPath()))) {
+            aos.putArchiveEntry(aos.createArchiveEntry(dir, "a"));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b"));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b/c"));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/d.txt"));
+            aos.write("Hello, world 1".getBytes(UTF_8));
+            aos.closeArchiveEntry();
+            aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/c/e.txt"));
+            aos.write("Hello, world 2".getBytes(UTF_8));
+            aos.closeArchiveEntry();
+            aos.finish();
+        }
+    }
+
     private void setupZip(final String entry) throws IOException, ArchiveException {
         archive = new File(dir, "test.zip");
         final File dummy = new File(dir, "x");
@@ -271,6 +205,72 @@ public class ExpanderTest extends AbstractTestCase {
         }
     }
 
+    @Test
+    public void sevenZChannelVersion() throws IOException, ArchiveException {
+        setup7z();
+        try (SeekableByteChannel c = FileChannel.open(archive.toPath(), StandardOpenOption.READ)) {
+            new Expander().expand("7z", c, resultDir);
+        }
+        verifyTargetDir();
+    }
+
+    @Test
+    public void sevenZFileVersion() throws IOException {
+        setup7z();
+        try (SevenZFile f = new SevenZFile(archive)) {
+            new Expander().expand(f, resultDir);
+        }
+        verifyTargetDir();
+    }
+
+    @Test
+    public void sevenZInputStreamVersion() throws IOException {
+        setup7z();
+        try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
+            assertThrows(StreamingNotSupportedException.class, () -> new Expander().expand("7z", i, resultDir));
+        }
+    }
+
+    @Test
+    public void sevenZInputStreamVersionWithAutoDetection() throws IOException {
+        setup7z();
+        try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
+            assertThrows(StreamingNotSupportedException.class, () -> new Expander().expand(i, resultDir));
+        }
+    }
+
+    @Test
+    public void sevenZTwoFileVersion() throws IOException, ArchiveException {
+        setup7z();
+        new Expander().expand("7z", archive, resultDir);
+        verifyTargetDir();
+    }
+
+    @Test
+    public void sevenZTwoFileVersionWithAutoDetection() throws IOException, ArchiveException {
+        setup7z();
+        new Expander().expand(archive, resultDir);
+        verifyTargetDir();
+    }
+
+    @Test
+    public void tarFileVersion() throws IOException, ArchiveException {
+        setupTar();
+        try (TarFile f = new TarFile(archive)) {
+            new Expander().expand(f, resultDir);
+        }
+        verifyTargetDir();
+    }
+
+    @Test
+    public void testCompress603Tar() throws IOException, ArchiveException {
+        setupTarForCompress603();
+        try (TarFile f = new TarFile(archive)) {
+            new Expander().expand(f, resultDir);
+        }
+        verifyTargetDir();
+    }
+
     private void verifyTargetDir() throws IOException {
         Assert.assertTrue("a has not been created", new File(resultDir, "a").isDirectory());
         Assert.assertTrue("a/b has not been created", new File(resultDir, "a/b").isDirectory());
@@ -279,13 +279,13 @@ public class ExpanderTest extends AbstractTestCase {
         assertHelloWorld("a/b/c/e.txt", "2");
     }
 
-    private void assertHelloWorld(final String fileName, final String suffix) throws IOException {
-        Assert.assertTrue(fileName + " does not exist", new File(resultDir, fileName).isFile());
-        final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
-        try (InputStream is = Files.newInputStream(new File(resultDir, fileName).toPath())) {
-            final byte[] actual = IOUtils.toByteArray(is);
-            Assert.assertArrayEquals(expected, actual);
+    @Test
+    public void zipFileVersion() throws IOException, ArchiveException {
+        setupZip();
+        try (ZipFile f = new ZipFile(archive)) {
+            new Expander().expand(f, resultDir);
         }
+        verifyTargetDir();
     }
 
 }

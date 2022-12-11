@@ -45,6 +45,13 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     private int position, size;
 
     /**
+     * Parameterless constructor - allocates internal buffer by itself.
+     */
+    public SeekableInMemoryByteChannel() {
+        this(ByteUtils.EMPTY_BYTE_ARRAY);
+    }
+
+    /**
      * Constructor taking a byte array.
      *
      * <p>This constructor is intended to be used with pre-allocated buffer or when
@@ -58,13 +65,6 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     }
 
     /**
-     * Parameterless constructor - allocates internal buffer by itself.
-     */
-    public SeekableInMemoryByteChannel() {
-        this(ByteUtils.EMPTY_BYTE_ARRAY);
-    }
-
-    /**
      * Constructor taking a size of storage to be allocated.
      *
      * <p>Creates a channel and allocates internal storage of a given size.</p>
@@ -73,6 +73,35 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
      */
     public SeekableInMemoryByteChannel(final int size) {
         this(new byte[size]);
+    }
+
+    /**
+     * Obtains the array backing this channel.
+     *
+     * <p>NOTE:
+     * The returned buffer is not aligned with containing data, use
+     * {@link #size()} to obtain the size of data stored in the buffer.</p>
+     *
+     * @return internal byte array.
+     */
+    public byte[] array() {
+        return data;
+    }
+
+    @Override
+    public void close() {
+        closed.set(true);
+    }
+
+    private void ensureOpen() throws ClosedChannelException {
+        if (!isOpen()) {
+            throw new ClosedChannelException();
+        }
+    }
+
+    @Override
+    public boolean isOpen() {
+        return !closed.get();
     }
 
     /**
@@ -95,6 +124,37 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         }
         position = (int) newPosition;
         return this;
+    }
+
+    @Override
+    public int read(final ByteBuffer buf) throws IOException {
+        ensureOpen();
+        int wanted = buf.remaining();
+        final int possible = size - position;
+        if (possible <= 0) {
+            return -1;
+        }
+        if (wanted > possible) {
+            wanted = possible;
+        }
+        buf.put(data, position, wanted);
+        position += wanted;
+        return wanted;
+    }
+
+    private void resize(final int newLength) {
+        int len = data.length;
+        if (len <= 0) {
+            len = 1;
+        }
+        if (newLength < NAIVE_RESIZE_LIMIT) {
+            while (len < newLength) {
+                len <<= 1;
+            }
+        } else { // avoid overflow
+            len = newLength;
+        }
+        data = Arrays.copyOf(data, len);
     }
 
     /**
@@ -131,32 +191,6 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     }
 
     @Override
-    public int read(final ByteBuffer buf) throws IOException {
-        ensureOpen();
-        int wanted = buf.remaining();
-        final int possible = size - position;
-        if (possible <= 0) {
-            return -1;
-        }
-        if (wanted > possible) {
-            wanted = possible;
-        }
-        buf.put(data, position, wanted);
-        position += wanted;
-        return wanted;
-    }
-
-    @Override
-    public void close() {
-        closed.set(true);
-    }
-
-    @Override
-    public boolean isOpen() {
-        return !closed.get();
-    }
-
-    @Override
     public int write(final ByteBuffer b) throws IOException {
         ensureOpen();
         int wanted = b.remaining();
@@ -176,40 +210,6 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
             size = position;
         }
         return wanted;
-    }
-
-    /**
-     * Obtains the array backing this channel.
-     *
-     * <p>NOTE:
-     * The returned buffer is not aligned with containing data, use
-     * {@link #size()} to obtain the size of data stored in the buffer.</p>
-     *
-     * @return internal byte array.
-     */
-    public byte[] array() {
-        return data;
-    }
-
-    private void resize(final int newLength) {
-        int len = data.length;
-        if (len <= 0) {
-            len = 1;
-        }
-        if (newLength < NAIVE_RESIZE_LIMIT) {
-            while (len < newLength) {
-                len <<= 1;
-            }
-        } else { // avoid overflow
-            len = newLength;
-        }
-        data = Arrays.copyOf(data, len);
-    }
-
-    private void ensureOpen() throws ClosedChannelException {
-        if (!isOpen()) {
-            throw new ClosedChannelException();
-        }
     }
 
 }

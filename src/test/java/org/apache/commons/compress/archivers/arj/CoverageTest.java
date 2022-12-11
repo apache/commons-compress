@@ -26,9 +26,9 @@ import org.junit.jupiter.api.Test;
 public class CoverageTest {
 
     @Test
-    public void testHostOsInstance() {
-        final HostOs hostOs = new HostOs();
-        assertNotNull(hostOs);
+    public void testCallLFHToString() {
+        final LocalFileHeader lfh = new LocalFileHeader();
+        assertNotNull(lfh.toString());
     }
     @Test
     public void testHeaderInstances() {
@@ -38,9 +38,9 @@ public class CoverageTest {
         assertNotNull(new MainHeader.Flags());
     }
     @Test
-    public void testCallLFHToString() {
-        final LocalFileHeader lfh = new LocalFileHeader();
-        assertNotNull(lfh.toString());
+    public void testHostOsInstance() {
+        final HostOs hostOs = new HostOs();
+        assertNotNull(hostOs);
     }
 
 }

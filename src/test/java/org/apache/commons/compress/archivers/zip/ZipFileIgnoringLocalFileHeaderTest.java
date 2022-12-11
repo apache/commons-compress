@@ -33,7 +33,27 @@ import org.junit.jupiter.api.Test;
 
 public class ZipFileIgnoringLocalFileHeaderTest {
 
+    private static ZipFile openZipWithoutLFH(final String fileName) throws IOException {
+        return new ZipFile(AbstractTestCase.getFile(fileName), ZipEncodingHelper.UTF8, true, true);
+    }
+
     private File dir;
+
+    @Test
+    public void getEntryWorks() throws IOException {
+        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
+            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
+            Assert.assertEquals(610, ze.getSize());
+        }
+    }
+
+    @Test
+    public void getRawInputStreamReturnsNotNull() throws IOException {
+        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
+            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
+            Assert.assertNotNull(zf.getRawInputStream(ze));
+        }
+    }
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -43,6 +63,30 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     @AfterEach
     public void tearDown() {
         AbstractTestCase.rmdir(dir);
+    }
+
+    @Test
+    public void testDuplicateEntry() throws Exception {
+        try (final ZipFile zf = openZipWithoutLFH("COMPRESS-227.zip")) {
+            int numberOfEntries = 0;
+            for (final ZipArchiveEntry entry : zf.getEntries("test1.txt")) {
+                numberOfEntries++;
+                Assert.assertNotNull(zf.getInputStream(entry));
+            }
+            Assert.assertEquals(2, numberOfEntries);
+        }
+    }
+
+    @Test
+    public void testPhysicalOrder() throws IOException {
+        try (final ZipFile zf = openZipWithoutLFH("ordertest.zip")) {
+            final Enumeration<ZipArchiveEntry> e = zf.getEntriesInPhysicalOrder();
+            ZipArchiveEntry ze = null;
+            do {
+                ze = e.nextElement();
+            } while (e.hasMoreElements());
+            Assert.assertEquals("src/main/java/org/apache/commons/compress/archivers/zip/ZipUtil.java", ze.getName());
+        }
     }
 
     /**
@@ -59,49 +103,5 @@ public class ZipFileIgnoringLocalFileHeaderTest {
                 }
             }
         }
-    }
-
-    @Test
-    public void getEntryWorks() throws IOException {
-        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
-            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
-            Assert.assertEquals(610, ze.getSize());
-        }
-    }
-
-    @Test
-    public void testDuplicateEntry() throws Exception {
-        try (final ZipFile zf = openZipWithoutLFH("COMPRESS-227.zip")) {
-            int numberOfEntries = 0;
-            for (final ZipArchiveEntry entry : zf.getEntries("test1.txt")) {
-                numberOfEntries++;
-                Assert.assertNotNull(zf.getInputStream(entry));
-            }
-            Assert.assertEquals(2, numberOfEntries);
-        }
-    }
-
-    @Test
-    public void getRawInputStreamReturnsNotNull() throws IOException {
-        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
-            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
-            Assert.assertNotNull(zf.getRawInputStream(ze));
-        }
-    }
-
-    @Test
-    public void testPhysicalOrder() throws IOException {
-        try (final ZipFile zf = openZipWithoutLFH("ordertest.zip")) {
-            final Enumeration<ZipArchiveEntry> e = zf.getEntriesInPhysicalOrder();
-            ZipArchiveEntry ze = null;
-            do {
-                ze = e.nextElement();
-            } while (e.hasMoreElements());
-            Assert.assertEquals("src/main/java/org/apache/commons/compress/archivers/zip/ZipUtil.java", ze.getName());
-        }
-    }
-
-    private static ZipFile openZipWithoutLFH(final String fileName) throws IOException {
-        return new ZipFile(AbstractTestCase.getFile(fileName), ZipEncodingHelper.UTF8, true, true);
     }
 }

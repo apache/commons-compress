@@ -34,13 +34,13 @@ public class CPString extends CPConstant<CPString> {
         return string.compareTo(arg0.string);
     }
 
+    public int getIndexInCpUtf8() {
+        return utf8.getIndex();
+    }
+
     @Override
     public String toString() {
         return string;
-    }
-
-    public int getIndexInCpUtf8() {
-        return utf8.getIndex();
     }
 
 }

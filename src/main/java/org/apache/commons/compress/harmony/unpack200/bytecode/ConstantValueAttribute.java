@@ -25,15 +25,15 @@ import java.util.Objects;
  */
 public class ConstantValueAttribute extends Attribute {
 
-    private int constantIndex;
-
-    private final ClassFileEntry entry;
-
     private static CPUTF8 attributeName;
 
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
+
+    private int constantIndex;
+
+    private final ClassFileEntry entry;
 
     public ConstantValueAttribute(final ClassFileEntry entry) {
         super(attributeName);

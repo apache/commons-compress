@@ -32,18 +32,21 @@ import org.junit.jupiter.api.Test;
  */
 public class AsiExtraFieldTest implements UnixStat {
 
-    /**
-     * Test file mode magic.
-     */
     @Test
-    public void testModes() {
-        final AsiExtraField a = new AsiExtraField();
-        a.setMode(0123);
-        assertEquals("plain file", 0100123, a.getMode());
-        a.setDirectory(true);
-        assertEquals("directory", 040123, a.getMode());
-        a.setLinkedFile("test");
-        assertEquals("symbolic link", 0120123, a.getMode());
+    public void testClone() {
+        final AsiExtraField s1 = new AsiExtraField();
+        s1.setUserId(42);
+        s1.setGroupId(12);
+        s1.setLinkedFile("foo");
+        s1.setMode(0644);
+        s1.setDirectory(true);
+        final AsiExtraField s2 = (AsiExtraField) s1.clone();
+        assertNotSame(s1, s2);
+        assertEquals(s1.getUserId(), s2.getUserId());
+        assertEquals(s1.getGroupId(), s2.getGroupId());
+        assertEquals(s1.getLinkedFile(), s2.getLinkedFile());
+        assertEquals(s1.getMode(), s2.getMode());
+        assertEquals(s1.isDirectory(), s2.isDirectory());
     }
 
     /**
@@ -79,6 +82,20 @@ public class AsiExtraFieldTest implements UnixStat {
             assertEquals("no link, byte "+i, expect[i], b[i]);
         }
 
+    }
+
+    /**
+     * Test file mode magic.
+     */
+    @Test
+    public void testModes() {
+        final AsiExtraField a = new AsiExtraField();
+        a.setMode(0123);
+        assertEquals("plain file", 0100123, a.getMode());
+        a.setDirectory(true);
+        assertEquals("directory", 040123, a.getMode());
+        a.setLinkedFile("test");
+        assertEquals("symbolic link", 0120123, a.getMode());
     }
 
     /**
@@ -143,22 +160,5 @@ public class AsiExtraFieldTest implements UnixStat {
             assertEquals("Bad CRC checksum, expected 0 instead of ebf018e",
                          e.getMessage());
         }
-    }
-
-    @Test
-    public void testClone() {
-        final AsiExtraField s1 = new AsiExtraField();
-        s1.setUserId(42);
-        s1.setGroupId(12);
-        s1.setLinkedFile("foo");
-        s1.setMode(0644);
-        s1.setDirectory(true);
-        final AsiExtraField s2 = (AsiExtraField) s1.clone();
-        assertNotSame(s1, s2);
-        assertEquals(s1.getUserId(), s2.getUserId());
-        assertEquals(s1.getGroupId(), s2.getGroupId());
-        assertEquals(s1.getLinkedFile(), s2.getLinkedFile());
-        assertEquals(s1.getMode(), s2.getMode());
-        assertEquals(s1.isDirectory(), s2.isDirectory());
     }
 }

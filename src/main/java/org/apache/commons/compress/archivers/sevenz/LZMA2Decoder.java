@@ -53,29 +53,6 @@ class LZMA2Decoder extends AbstractCoder {
         return getOptions(opts).getOutputStream(new FinishableWrapperOutputStream(out));
     }
 
-    @Override
-    byte[] getOptionsAsProperties(final Object opts) {
-        final int dictSize = getDictSize(opts);
-        final int lead = Integer.numberOfLeadingZeros(dictSize);
-        final int secondBit = (dictSize >>> (30 - lead)) - 2;
-        return new byte[] {
-            (byte) ((19 - lead) * 2 + secondBit)
-        };
-    }
-
-    @Override
-    Object getOptionsFromCoder(final Coder coder, final InputStream in)
-        throws IOException {
-        return getDictionarySize(coder);
-    }
-
-    private int getDictSize(final Object opts) {
-        if (opts instanceof LZMA2Options) {
-            return ((LZMA2Options) opts).getDictSize();
-        }
-        return numberOptionOrDefault(opts);
-    }
-
     private int getDictionarySize(final Coder coder) throws IOException {
         if (coder.properties == null) {
             throw new IOException("Missing LZMA2 properties");
@@ -96,6 +73,13 @@ class LZMA2Decoder extends AbstractCoder {
         return (2 | (dictionarySizeBits & 0x1)) << (dictionarySizeBits / 2 + 11);
     }
 
+    private int getDictSize(final Object opts) {
+        if (opts instanceof LZMA2Options) {
+            return ((LZMA2Options) opts).getDictSize();
+        }
+        return numberOptionOrDefault(opts);
+    }
+
     private LZMA2Options getOptions(final Object opts) throws IOException {
         if (opts instanceof LZMA2Options) {
             return (LZMA2Options) opts;
@@ -103,6 +87,22 @@ class LZMA2Decoder extends AbstractCoder {
         final LZMA2Options options = new LZMA2Options();
         options.setDictSize(numberOptionOrDefault(opts));
         return options;
+    }
+
+    @Override
+    byte[] getOptionsAsProperties(final Object opts) {
+        final int dictSize = getDictSize(opts);
+        final int lead = Integer.numberOfLeadingZeros(dictSize);
+        final int secondBit = (dictSize >>> (30 - lead)) - 2;
+        return new byte[] {
+            (byte) ((19 - lead) * 2 + secondBit)
+        };
+    }
+
+    @Override
+    Object getOptionsFromCoder(final Coder coder, final InputStream in)
+        throws IOException {
+        return getDictionarySize(coder);
     }
 
     private int numberOptionOrDefault(final Object opts) {

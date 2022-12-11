@@ -31,6 +31,10 @@ import org.apache.commons.compress.utils.OsgiUtils;
  */
 public class LZMAUtils {
 
+    enum CachedAvailability {
+        DONT_CACHE, CACHED_AVAILABLE, CACHED_UNAVAILABLE
+    }
+
     private static final FileNameUtil fileNameUtil;
 
     /**
@@ -39,10 +43,6 @@ public class LZMAUtils {
     private static final byte[] HEADER_MAGIC = {
         (byte) 0x5D, 0, 0
     };
-
-    enum CachedAvailability {
-        DONT_CACHE, CACHED_AVAILABLE, CACHED_UNAVAILABLE
-    }
 
     private static volatile CachedAvailability cachedLZMAAvailability;
 
@@ -55,8 +55,67 @@ public class LZMAUtils {
         setCacheLZMAAvailablity(!OsgiUtils.isRunningInOsgiEnvironment());
     }
 
-    /** Private constructor to prevent instantiation of this utility class. */
-    private LZMAUtils() {
+    // only exists to support unit tests
+    static CachedAvailability getCachedLZMAAvailability() {
+        return cachedLZMAAvailability;
+    }
+
+    /**
+     * Maps the given file name to the name that the file should have after
+     * compression with lzma.
+     *
+     * @param fileName name of a file
+     * @return name of the corresponding compressed file
+     */
+    public static String getCompressedFilename(final String fileName) {
+        return fileNameUtil.getCompressedFilename(fileName);
+    }
+
+    /**
+     * Maps the given name of a lzma-compressed file to the name that
+     * the file should have after uncompression.  Any file names with
+     * the generic ".lzma" suffix (or any other generic lzma suffix)
+     * is mapped to a name without that suffix. If no lzma suffix is
+     * detected, then the file name is returned unmapped.
+     *
+     * @param fileName name of a file
+     * @return name of the corresponding uncompressed file
+     */
+    public static String getUncompressedFilename(final String fileName) {
+        return fileNameUtil.getUncompressedFilename(fileName);
+    }
+
+    private static boolean internalIsLZMACompressionAvailable() {
+        try {
+            LZMACompressorInputStream.matches(null, 0);
+            return true;
+        } catch (final NoClassDefFoundError error) { // NOSONAR
+            return false;
+        }
+    }
+
+    /**
+     * Detects common lzma suffixes in the given file name.
+     *
+     * @param fileName name of a file
+     * @return {@code true} if the file name has a common lzma suffix,
+     *         {@code false} otherwise
+     */
+    public static boolean isCompressedFilename(final String fileName) {
+        return fileNameUtil.isCompressedFilename(fileName);
+    }
+
+    /**
+     * Are the classes required to support LZMA compression available?
+     * @return true if the classes required to support LZMA
+     * compression are available
+     */
+    public static boolean isLZMACompressionAvailable() {
+        final CachedAvailability cachedResult = cachedLZMAAvailability;
+        if (cachedResult != CachedAvailability.DONT_CACHE) {
+            return cachedResult == CachedAvailability.CACHED_AVAILABLE;
+        }
+        return internalIsLZMACompressionAvailable();
     }
 
     /**
@@ -81,64 +140,6 @@ public class LZMAUtils {
     }
 
     /**
-     * Are the classes required to support LZMA compression available?
-     * @return true if the classes required to support LZMA
-     * compression are available
-     */
-    public static boolean isLZMACompressionAvailable() {
-        final CachedAvailability cachedResult = cachedLZMAAvailability;
-        if (cachedResult != CachedAvailability.DONT_CACHE) {
-            return cachedResult == CachedAvailability.CACHED_AVAILABLE;
-        }
-        return internalIsLZMACompressionAvailable();
-    }
-
-    private static boolean internalIsLZMACompressionAvailable() {
-        try {
-            LZMACompressorInputStream.matches(null, 0);
-            return true;
-        } catch (final NoClassDefFoundError error) { // NOSONAR
-            return false;
-        }
-    }
-
-    /**
-     * Detects common lzma suffixes in the given file name.
-     *
-     * @param fileName name of a file
-     * @return {@code true} if the file name has a common lzma suffix,
-     *         {@code false} otherwise
-     */
-    public static boolean isCompressedFilename(final String fileName) {
-        return fileNameUtil.isCompressedFilename(fileName);
-    }
-
-    /**
-     * Maps the given name of a lzma-compressed file to the name that
-     * the file should have after uncompression.  Any file names with
-     * the generic ".lzma" suffix (or any other generic lzma suffix)
-     * is mapped to a name without that suffix. If no lzma suffix is
-     * detected, then the file name is returned unmapped.
-     *
-     * @param fileName name of a file
-     * @return name of the corresponding uncompressed file
-     */
-    public static String getUncompressedFilename(final String fileName) {
-        return fileNameUtil.getUncompressedFilename(fileName);
-    }
-
-    /**
-     * Maps the given file name to the name that the file should have after
-     * compression with lzma.
-     *
-     * @param fileName name of a file
-     * @return name of the corresponding compressed file
-     */
-    public static String getCompressedFilename(final String fileName) {
-        return fileNameUtil.getCompressedFilename(fileName);
-    }
-
-    /**
      * Whether to cache the result of the LZMA check.
      *
      * <p>This defaults to {@code false} in an OSGi environment and {@code true} otherwise.</p>
@@ -154,8 +155,7 @@ public class LZMAUtils {
         }
     }
 
-    // only exists to support unit tests
-    static CachedAvailability getCachedLZMAAvailability() {
-        return cachedLZMAAvailability;
+    /** Private constructor to prevent instantiation of this utility class. */
+    private LZMAUtils() {
     }
 }

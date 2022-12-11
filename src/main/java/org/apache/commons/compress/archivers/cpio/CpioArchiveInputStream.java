@@ -67,6 +67,66 @@ import org.apache.commons.compress.utils.IOUtils;
 public class CpioArchiveInputStream extends ArchiveInputStream implements
         CpioConstants {
 
+    /**
+     * Checks if the signature matches one of the following magic values:
+     *
+     * Strings:
+     *
+     * "070701" - MAGIC_NEW
+     * "070702" - MAGIC_NEW_CRC
+     * "070707" - MAGIC_OLD_ASCII
+     *
+     * Octal Binary value:
+     *
+     * 070707 - MAGIC_OLD_BINARY (held as a short) = 0x71C7 or 0xC771
+     * @param signature data to match
+     * @param length length of data
+     * @return whether the buffer seems to contain CPIO data
+     */
+    public static boolean matches(final byte[] signature, final int length) {
+        if (length < 6) {
+            return false;
+        }
+
+        // Check binary values
+        if (signature[0] == 0x71 && (signature[1] & 0xFF) == 0xc7) {
+            return true;
+        }
+        if (signature[1] == 0x71 && (signature[0] & 0xFF) == 0xc7) {
+            return true;
+        }
+
+        // Check Ascii (String) values
+        // 3037 3037 30nn
+        if (signature[0] != 0x30) {
+            return false;
+        }
+        if (signature[1] != 0x37) {
+            return false;
+        }
+        if (signature[2] != 0x30) {
+            return false;
+        }
+        if (signature[3] != 0x37) {
+            return false;
+        }
+        if (signature[4] != 0x30) {
+            return false;
+        }
+        // Check last byte
+        if (signature[5] == 0x31) {
+            return true;
+        }
+        if (signature[5] == 0x32) {
+            return true;
+        }
+        if (signature[5] == 0x37) {
+            return true;
+        }
+
+        return false;
+    }
+
     private boolean closed;
 
     private CpioArchiveEntry entry;
@@ -80,10 +140,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     private long crc;
 
     private final InputStream in;
-
     // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
     private final byte[] twoBytesBuf = new byte[2];
     private final byte[] fourBytesBuf = new byte[4];
+
     private final byte[] sixBytesBuf = new byte[6];
 
     private final int blockSize;
@@ -106,21 +166,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      */
     public CpioArchiveInputStream(final InputStream in) {
         this(in, BLOCK_SIZE, CharsetNames.US_ASCII);
-    }
-
-    /**
-     * Construct the cpio input stream with a blocksize of {@link
-     * CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
-     *
-     * @param in
-     *            The cpio stream
-     * @param encoding
-     *            The encoding of file names to expect - use null for
-     *            the platform's default.
-     * @since 1.6
-     */
-    public CpioArchiveInputStream(final InputStream in, final String encoding) {
-        this(in, BLOCK_SIZE, encoding);
     }
 
     /**
@@ -159,6 +204,21 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         this.blockSize = blockSize;
         this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
+    }
+
+    /**
+     * Construct the cpio input stream with a blocksize of {@link
+     * CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
+     *
+     * @param in
+     *            The cpio stream
+     * @param encoding
+     *            The encoding of file names to expect - use null for
+     *            the platform's default.
+     * @since 1.6
+     */
+    public CpioArchiveInputStream(final InputStream in, final String encoding) {
+        this(in, BLOCK_SIZE, encoding);
     }
 
     /**
@@ -277,11 +337,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         return this.entry;
     }
 
-    private void skip(final int bytes) throws IOException{
-        // bytes cannot be more than 3 bytes
-        if (bytes > 0) {
-            readFully(fourBytesBuf, 0, bytes);
-        }
+    @Override
+    public ArchiveEntry getNextEntry() throws IOException {
+        return getNextCPIOEntry();
     }
 
     /**
@@ -344,24 +402,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         return tmpread;
     }
 
-    private final int readFully(final byte[] b, final int off, final int len)
+    private long readAsciiLong(final int length, final int radix)
             throws IOException {
-        final int count = IOUtils.readFully(in, b, off, len);
-        count(count);
-        if (count < len) {
-            throw new EOFException();
-        }
-        return count;
-    }
-
-    private final byte[] readRange(final int len)
-            throws IOException {
-        final byte[] b = IOUtils.readRange(in, len);
-        count(b.length);
-        if (b.length < len) {
-            throw new EOFException();
-        }
-        return b;
+        final byte[] tmpBuffer = readRange(length);
+        return Long.parseLong(ArchiveUtils.toAsciiString(tmpBuffer), radix);
     }
 
     private long readBinaryLong(final int length, final boolean swapHalfWord)
@@ -370,10 +414,23 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         return CpioUtil.byteArray2long(tmp, swapHalfWord);
     }
 
-    private long readAsciiLong(final int length, final int radix)
+    private String readCString(final int length) throws IOException {
+        // don't include trailing NUL in file name to decode
+        final byte[] tmpBuffer = readRange(length - 1);
+        if (this.in.read() == -1) {
+            throw new EOFException();
+        }
+        return zipEncoding.decode(tmpBuffer);
+    }
+
+    private final int readFully(final byte[] b, final int off, final int len)
             throws IOException {
-        final byte[] tmpBuffer = readRange(length);
-        return Long.parseLong(ArchiveUtils.toAsciiString(tmpBuffer), radix);
+        final int count = IOUtils.readFully(in, b, off, len);
+        count(count);
+        if (count < len) {
+            throw new EOFException();
+        }
+        return count;
     }
 
     private CpioArchiveEntry readNewEntry(final boolean hasCrc)
@@ -487,13 +544,21 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         return ret;
     }
 
-    private String readCString(final int length) throws IOException {
-        // don't include trailing NUL in file name to decode
-        final byte[] tmpBuffer = readRange(length - 1);
-        if (this.in.read() == -1) {
+    private final byte[] readRange(final int len)
+            throws IOException {
+        final byte[] b = IOUtils.readRange(in, len);
+        count(b.length);
+        if (b.length < len) {
             throw new EOFException();
         }
-        return zipEncoding.decode(tmpBuffer);
+        return b;
+    }
+
+    private void skip(final int bytes) throws IOException{
+        // bytes cannot be more than 3 bytes
+        if (bytes > 0) {
+            readFully(fourBytesBuf, 0, bytes);
+        }
     }
 
     /**
@@ -531,11 +596,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         return total;
     }
 
-    @Override
-    public ArchiveEntry getNextEntry() throws IOException {
-        return getNextCPIOEntry();
-    }
-
     /**
      * Skips the padding zeros written after the TRAILER!!! entry.
      */
@@ -550,65 +610,5 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
             }
             remainingBytes -= skipped;
         }
-    }
-
-    /**
-     * Checks if the signature matches one of the following magic values:
-     *
-     * Strings:
-     *
-     * "070701" - MAGIC_NEW
-     * "070702" - MAGIC_NEW_CRC
-     * "070707" - MAGIC_OLD_ASCII
-     *
-     * Octal Binary value:
-     *
-     * 070707 - MAGIC_OLD_BINARY (held as a short) = 0x71C7 or 0xC771
-     * @param signature data to match
-     * @param length length of data
-     * @return whether the buffer seems to contain CPIO data
-     */
-    public static boolean matches(final byte[] signature, final int length) {
-        if (length < 6) {
-            return false;
-        }
-
-        // Check binary values
-        if (signature[0] == 0x71 && (signature[1] & 0xFF) == 0xc7) {
-            return true;
-        }
-        if (signature[1] == 0x71 && (signature[0] & 0xFF) == 0xc7) {
-            return true;
-        }
-
-        // Check Ascii (String) values
-        // 3037 3037 30nn
-        if (signature[0] != 0x30) {
-            return false;
-        }
-        if (signature[1] != 0x37) {
-            return false;
-        }
-        if (signature[2] != 0x30) {
-            return false;
-        }
-        if (signature[3] != 0x37) {
-            return false;
-        }
-        if (signature[4] != 0x30) {
-            return false;
-        }
-        // Check last byte
-        if (signature[5] == 0x31) {
-            return true;
-        }
-        if (signature[5] == 0x32) {
-            return true;
-        }
-        if (signature[5] == 0x37) {
-            return true;
-        }
-
-        return false;
     }
 }

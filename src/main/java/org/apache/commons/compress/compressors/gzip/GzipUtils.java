@@ -51,19 +51,19 @@ public class GzipUtils {
         fileNameUtil = new FileNameUtil(uncompressSuffix, ".gz");
     }
 
-    /** Private constructor to prevent instantiation of this utility class. */
-    private GzipUtils() {
-    }
-
     /**
-     * Detects common gzip suffixes in the given file name.
+     * Maps the given file name to the name that the file should have after
+     * compression with gzip. Common file types with custom suffixes for
+     * compressed versions are automatically detected and correctly mapped.
+     * For example the name "package.tar" is mapped to "package.tgz". If no
+     * custom mapping is applicable, then the default ".gz" suffix is appended
+     * to the file name.
      *
      * @param fileName name of a file
-     * @return {@code true} if the file name has a common gzip suffix,
-     *         {@code false} otherwise
+     * @return name of the corresponding compressed file
      */
-    public static boolean isCompressedFilename(final String fileName) {
-        return fileNameUtil.isCompressedFilename(fileName);
+    public static String getCompressedFilename(final String fileName) {
+        return fileNameUtil.getCompressedFilename(fileName);
     }
 
     /**
@@ -84,18 +84,18 @@ public class GzipUtils {
     }
 
     /**
-     * Maps the given file name to the name that the file should have after
-     * compression with gzip. Common file types with custom suffixes for
-     * compressed versions are automatically detected and correctly mapped.
-     * For example the name "package.tar" is mapped to "package.tgz". If no
-     * custom mapping is applicable, then the default ".gz" suffix is appended
-     * to the file name.
+     * Detects common gzip suffixes in the given file name.
      *
      * @param fileName name of a file
-     * @return name of the corresponding compressed file
+     * @return {@code true} if the file name has a common gzip suffix,
+     *         {@code false} otherwise
      */
-    public static String getCompressedFilename(final String fileName) {
-        return fileNameUtil.getCompressedFilename(fileName);
+    public static boolean isCompressedFilename(final String fileName) {
+        return fileNameUtil.isCompressedFilename(fileName);
+    }
+
+    /** Private constructor to prevent instantiation of this utility class. */
+    private GzipUtils() {
     }
 
 }

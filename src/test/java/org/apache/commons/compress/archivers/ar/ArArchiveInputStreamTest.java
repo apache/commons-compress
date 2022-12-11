@@ -40,13 +40,20 @@ import org.junit.jupiter.api.Test;
 public class ArArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
-    public void testReadLongNamesGNU() throws Exception {
-        checkLongNameEntry("longfile_gnu.ar");
+    public void cantReadAfterClose() throws Exception {
+        try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
+             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+            archive.close();
+            assertThrows(IllegalStateException.class, () -> archive.read());
+        }
     }
 
     @Test
-    public void testReadLongNamesBSD() throws Exception {
-        checkLongNameEntry("longfile_bsd.ar");
+    public void cantReadWithoutOpeningAnEntry() throws Exception {
+        try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
+             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+            assertThrows(IllegalStateException.class, () -> archive.read());
+        }
     }
 
     private void checkLongNameEntry(final String archive) throws Exception {
@@ -65,17 +72,6 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
             s.read(bye);
             assertEquals("Bye\n", ArchiveUtils.toAsciiString(bye));
             assertNull(s.getNextEntry());
-        }
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
-             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
-            IOUtils.toByteArray(archive);
-            assertEquals(-1, archive.read());
-            assertEquals(-1, archive.read());
         }
     }
 
@@ -121,19 +117,23 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void cantReadWithoutOpeningAnEntry() throws Exception {
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            assertThrows(IllegalStateException.class, () -> archive.read());
+            final ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read());
+            assertEquals(-1, archive.read());
         }
     }
 
     @Test
-    public void cantReadAfterClose() throws Exception {
-        try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
-             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            archive.close();
-            assertThrows(IllegalStateException.class, () -> archive.read());
-        }
+    public void testReadLongNamesBSD() throws Exception {
+        checkLongNameEntry("longfile_bsd.ar");
+    }
+
+    @Test
+    public void testReadLongNamesGNU() throws Exception {
+        checkLongNameEntry("longfile_gnu.ar");
     }
 }

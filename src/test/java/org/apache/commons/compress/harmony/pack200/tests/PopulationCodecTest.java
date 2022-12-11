@@ -28,29 +28,6 @@ import junit.framework.TestCase;
 
 public class PopulationCodecTest extends TestCase {
 
-    public void testPopulationCodec() throws IOException, Pack200Exception {
-        checkDecode(new byte[] { 4, 5, 6, 4, 2, 1, 3, 0, 7 }, new long[] { 5,
-                4, 6, 7 }, Codec.BYTE1);
-        // Codec.SIGNED5 can be trivial for small n, because the encoding is 2n
-        // if even, 2n-1 if odd
-        // Therefore they're left here to explain what the values are :-)
-        checkDecode(new byte[] { 4 * 2, 4 * 2 - 1, 6 * 2, 4 * 2, 2 * 2, 1 * 2,
-                3 * 2, 0, 7 * 2 }, new long[] { -4, 4, 6, 7 }, Codec.SIGNED5);
-        checkDecode(new byte[] { 4 * 2 - 1, 4 * 2, 6 * 2, 4 * 2, 2 * 2, 1 * 2,
-                3 * 2, 0, 7 * 2 }, new long[] { 4, -4, 6, 7 }, Codec.SIGNED5);
-        checkDecode(new byte[] { 1, 1, 1 }, new long[] { 1 }, Codec.BYTE1);
-        checkDecode(new byte[] { 2, 2, 1 }, new long[] { 2 }, Codec.BYTE1);
-        checkDecode(new byte[] { 1, 1, 2 }, new long[] { -1 }, Codec.SIGNED5);
-        checkDecode(new byte[] { 2, 2, 0, 1, 3 }, new long[] { 3, 2 },
-                Codec.BYTE1);
-        checkDecode(new byte[] { 1, 2, 3, 4, 4, 2, 3, 4, 0, 1 }, new long[] {
-                2, 3, 4, 1 }, Codec.BYTE1);
-        checkDecode(new byte[] { 3, 2, 1, 4, 4, 2, 3, 4, 0, 1 }, new long[] {
-                2, 1, 4, 1 }, Codec.BYTE1);
-        checkDecode(new byte[] { 3, 2, 1, 4, 1, 2, 3, 4, 0, 1 }, new long[] {
-                2, 1, 4, 1 }, Codec.BYTE1);
-    }
-
     private void checkDecode(final byte[] data, final long[] expectedResult, final Codec codec)
             throws IOException, Pack200Exception {
         InputStream in = new ByteArrayInputStream(data);
@@ -77,6 +54,29 @@ public class PopulationCodecTest extends TestCase {
         } catch (Pack200Exception e) {
             // pass
         }
+    }
+
+    public void testPopulationCodec() throws IOException, Pack200Exception {
+        checkDecode(new byte[] { 4, 5, 6, 4, 2, 1, 3, 0, 7 }, new long[] { 5,
+                4, 6, 7 }, Codec.BYTE1);
+        // Codec.SIGNED5 can be trivial for small n, because the encoding is 2n
+        // if even, 2n-1 if odd
+        // Therefore they're left here to explain what the values are :-)
+        checkDecode(new byte[] { 4 * 2, 4 * 2 - 1, 6 * 2, 4 * 2, 2 * 2, 1 * 2,
+                3 * 2, 0, 7 * 2 }, new long[] { -4, 4, 6, 7 }, Codec.SIGNED5);
+        checkDecode(new byte[] { 4 * 2 - 1, 4 * 2, 6 * 2, 4 * 2, 2 * 2, 1 * 2,
+                3 * 2, 0, 7 * 2 }, new long[] { 4, -4, 6, 7 }, Codec.SIGNED5);
+        checkDecode(new byte[] { 1, 1, 1 }, new long[] { 1 }, Codec.BYTE1);
+        checkDecode(new byte[] { 2, 2, 1 }, new long[] { 2 }, Codec.BYTE1);
+        checkDecode(new byte[] { 1, 1, 2 }, new long[] { -1 }, Codec.SIGNED5);
+        checkDecode(new byte[] { 2, 2, 0, 1, 3 }, new long[] { 3, 2 },
+                Codec.BYTE1);
+        checkDecode(new byte[] { 1, 2, 3, 4, 4, 2, 3, 4, 0, 1 }, new long[] {
+                2, 3, 4, 1 }, Codec.BYTE1);
+        checkDecode(new byte[] { 3, 2, 1, 4, 4, 2, 3, 4, 0, 1 }, new long[] {
+                2, 1, 4, 1 }, Codec.BYTE1);
+        checkDecode(new byte[] { 3, 2, 1, 4, 1, 2, 3, 4, 0, 1 }, new long[] {
+                2, 1, 4, 1 }, Codec.BYTE1);
     }
 
 }

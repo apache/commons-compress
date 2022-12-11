@@ -45,59 +45,6 @@ import org.junit.jupiter.api.Test;
 
 public final class Pack200TestCase extends AbstractTestCase {
 
-    @Test
-    public void testJarUnarchiveAllInMemory() throws Exception {
-        jarUnarchiveAll(false, Pack200Strategy.IN_MEMORY);
-    }
-
-    @Test
-    public void testJarUnarchiveAllFileArgInMemory() throws Exception {
-        jarUnarchiveAll(true, Pack200Strategy.IN_MEMORY);
-    }
-
-    @Test
-    public void testJarUnarchiveAllTempFile() throws Exception {
-        jarUnarchiveAll(false, Pack200Strategy.TEMP_FILE);
-    }
-
-    @Test
-    public void testJarUnarchiveAllFileTempFile() throws Exception {
-        jarUnarchiveAll(true, Pack200Strategy.TEMP_FILE);
-    }
-
-    private void jarUnarchiveAll(final boolean useFile, final Pack200Strategy mode)
-        throws Exception {
-        final File input = getFile("bla.pack");
-        try (
-            InputStream is = useFile ? new Pack200CompressorInputStream(input, mode)
-                : new Pack200CompressorInputStream(Files.newInputStream(input.toPath()), mode);
-            ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
-
-            ArchiveEntry entry = in.getNextEntry();
-            while (entry != null) {
-                final File archiveEntry = new File(dir, entry.getName());
-                archiveEntry.getParentFile().mkdirs();
-                if (entry.isDirectory()) {
-                    archiveEntry.mkdir();
-                    entry = in.getNextEntry();
-                    continue;
-                }
-                Files.copy(in, archiveEntry.toPath());
-                entry = in.getNextEntry();
-            }
-        }
-    }
-
-    @Test
-    public void testJarArchiveCreationInMemory() throws Exception {
-        jarArchiveCreation(Pack200Strategy.IN_MEMORY);
-    }
-
-    @Test
-    public void testJarArchiveCreationTempFile() throws Exception {
-        jarArchiveCreation(Pack200Strategy.TEMP_FILE);
-    }
-
     private void jarArchiveCreation(final Pack200Strategy mode) throws Exception {
         final File output = new File(dir, "bla.pack");
 
@@ -129,13 +76,66 @@ public final class Pack200TestCase extends AbstractTestCase {
         }
     }
 
-    @Test
-    public void testGoodSignature() throws Exception {
-        try (InputStream is = Files.newInputStream(getFile("bla.pack").toPath())) {
-            final byte[] sig = new byte[4];
-            is.read(sig);
-            assertTrue(Pack200CompressorInputStream.matches(sig, 4));
+    private void jarUnarchiveAll(final boolean useFile, final Pack200Strategy mode)
+        throws Exception {
+        final File input = getFile("bla.pack");
+        try (
+            InputStream is = useFile ? new Pack200CompressorInputStream(input, mode)
+                : new Pack200CompressorInputStream(Files.newInputStream(input.toPath()), mode);
+            ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
+
+            ArchiveEntry entry = in.getNextEntry();
+            while (entry != null) {
+                final File archiveEntry = new File(dir, entry.getName());
+                archiveEntry.getParentFile().mkdirs();
+                if (entry.isDirectory()) {
+                    archiveEntry.mkdir();
+                    entry = in.getNextEntry();
+                    continue;
+                }
+                Files.copy(in, archiveEntry.toPath());
+                entry = in.getNextEntry();
+            }
         }
+    }
+
+    private void multiByteReadConsistentlyReturnsMinusOneAtEof(final Pack200Strategy s) throws Exception {
+        final File input = getFile("bla.pack");
+        final byte[] buf = new byte[2];
+        try (final Pack200CompressorInputStream in = new Pack200CompressorInputStream(input, s)) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+        }
+    }
+
+    @Test
+    public void multiByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
+    }
+
+    @Test
+    public void multiByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
+    }
+
+    private void singleByteReadConsistentlyReturnsMinusOneAtEof(final Pack200Strategy s) throws Exception {
+        final File input = getFile("bla.pack");
+        try (final Pack200CompressorInputStream in = new Pack200CompressorInputStream(input, s)) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+        }
+    }
+
+    @Test
+    public void singleByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
+    }
+
+    @Test
+    public void singleByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
     }
 
     @Test
@@ -148,11 +148,11 @@ public final class Pack200TestCase extends AbstractTestCase {
     }
 
     @Test
-    public void testShortSignature() throws Exception {
+    public void testGoodSignature() throws Exception {
         try (InputStream is = Files.newInputStream(getFile("bla.pack").toPath())) {
-            final byte[] sig = new byte[2];
+            final byte[] sig = new byte[4];
             is.read(sig);
-            assertFalse(Pack200CompressorInputStream.matches(sig, 2));
+            assertTrue(Pack200CompressorInputStream.matches(sig, 4));
         }
     }
 
@@ -180,6 +180,36 @@ public final class Pack200TestCase extends AbstractTestCase {
     }
 
     @Test
+    public void testJarArchiveCreationInMemory() throws Exception {
+        jarArchiveCreation(Pack200Strategy.IN_MEMORY);
+    }
+
+    @Test
+    public void testJarArchiveCreationTempFile() throws Exception {
+        jarArchiveCreation(Pack200Strategy.TEMP_FILE);
+    }
+
+    @Test
+    public void testJarUnarchiveAllFileArgInMemory() throws Exception {
+        jarUnarchiveAll(true, Pack200Strategy.IN_MEMORY);
+    }
+
+    @Test
+    public void testJarUnarchiveAllFileTempFile() throws Exception {
+        jarUnarchiveAll(true, Pack200Strategy.TEMP_FILE);
+    }
+
+    @Test
+    public void testJarUnarchiveAllInMemory() throws Exception {
+        jarUnarchiveAll(false, Pack200Strategy.IN_MEMORY);
+    }
+
+    @Test
+    public void testJarUnarchiveAllTempFile() throws Exception {
+        jarUnarchiveAll(false, Pack200Strategy.TEMP_FILE);
+    }
+
+    @Test
     public void testOutputStreamMethods() throws Exception {
         final File output = new File(dir, "bla.pack");
         final Map<String, String> m = new HashMap<>();
@@ -192,41 +222,11 @@ public final class Pack200TestCase extends AbstractTestCase {
     }
 
     @Test
-    public void singleByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
-    }
-
-    @Test
-    public void singleByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
-    }
-
-    private void singleByteReadConsistentlyReturnsMinusOneAtEof(final Pack200Strategy s) throws Exception {
-        final File input = getFile("bla.pack");
-        try (final Pack200CompressorInputStream in = new Pack200CompressorInputStream(input, s)) {
-            IOUtils.toByteArray(in);
-            assertEquals(-1, in.read());
-            assertEquals(-1, in.read());
-        }
-    }
-
-    @Test
-    public void multiByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
-    }
-
-    @Test
-    public void multiByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
-    }
-
-    private void multiByteReadConsistentlyReturnsMinusOneAtEof(final Pack200Strategy s) throws Exception {
-        final File input = getFile("bla.pack");
-        final byte[] buf = new byte[2];
-        try (final Pack200CompressorInputStream in = new Pack200CompressorInputStream(input, s)) {
-            IOUtils.toByteArray(in);
-            assertEquals(-1, in.read(buf));
-            assertEquals(-1, in.read(buf));
+    public void testShortSignature() throws Exception {
+        try (InputStream is = Files.newInputStream(getFile("bla.pack").toPath())) {
+            final byte[] sig = new byte[2];
+            is.read(sig);
+            assertFalse(Pack200CompressorInputStream.matches(sig, 2));
         }
     }
 

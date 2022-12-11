@@ -29,13 +29,13 @@ public class CPFloat extends CPConstantNumber {
     }
 
     @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeFloat(getNumber().floatValue());
+    public String toString() {
+        return "Float: " + getValue();
     }
 
     @Override
-    public String toString() {
-        return "Float: " + getValue();
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        dos.writeFloat(getNumber().floatValue());
     }
 
 }

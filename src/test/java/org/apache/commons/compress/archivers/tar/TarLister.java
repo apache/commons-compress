@@ -33,30 +33,6 @@ import java.nio.file.Files;
  */
 public final class TarLister {
 
-    public static void main(final String[] args) throws Exception {
-        if (args.length == 0) {
-            usage();
-            return;
-        }
-        System.out.println("Analysing " + args[0]);
-        final File f = new File(args[0]);
-        if (!f.isFile()) {
-            System.err.println(f + " doesn't exist or is a directory");
-        }
-        try (InputStream fis = new BufferedInputStream(Files.newInputStream(f.toPath()));
-                TarArchiveInputStream ais = args.length > 1 ? new TarArchiveInputStream(fis, args[1]) : new TarArchiveInputStream(fis)) {
-            System.out.println("Created " + ais);
-            TarArchiveEntry ae;
-            while ((ae = ais.getNextTarEntry()) != null) {
-                log(ae);
-            }
-        }
-    }
-
-    private static void usage() {
-        System.out.println("Parameters: archive-name [encoding]");
-    }
-
     private static void log(final TarArchiveEntry ae) {
         final StringBuilder sb = new StringBuilder(Integer.toOctalString(ae.getMode()))
             .append(" ");
@@ -95,6 +71,30 @@ public final class TarLister {
             sb.append(" (sparse)");
         }
         System.out.println(sb);
+    }
+
+    public static void main(final String[] args) throws Exception {
+        if (args.length == 0) {
+            usage();
+            return;
+        }
+        System.out.println("Analysing " + args[0]);
+        final File f = new File(args[0]);
+        if (!f.isFile()) {
+            System.err.println(f + " doesn't exist or is a directory");
+        }
+        try (InputStream fis = new BufferedInputStream(Files.newInputStream(f.toPath()));
+                TarArchiveInputStream ais = args.length > 1 ? new TarArchiveInputStream(fis, args[1]) : new TarArchiveInputStream(fis)) {
+            System.out.println("Created " + ais);
+            TarArchiveEntry ae;
+            while ((ae = ais.getNextTarEntry()) != null) {
+                log(ae);
+            }
+        }
+    }
+
+    private static void usage() {
+        System.out.println("Parameters: archive-name [encoding]");
     }
 
 }

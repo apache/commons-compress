@@ -45,19 +45,18 @@ public abstract class BZip2Utils {
         fileNameUtil = new FileNameUtil(uncompressSuffix, ".bz2");
     }
 
-    /** Private constructor to prevent instantiation of this utility class. */
-    private BZip2Utils() {
-    }
-
     /**
-     * Detects common bzip2 suffixes in the given file name.
+     * Maps the given file name to the name that the file should have after
+     * compression with bzip2. Currently this method simply appends the suffix
+     * ".bz2" to the file name based on the standard behavior of the "bzip2"
+     * program, but a future version may implement a more complex mapping if
+     * a new widely used naming pattern emerges.
      *
      * @param fileName name of a file
-     * @return {@code true} if the file name has a common bzip2 suffix,
-     *         {@code false} otherwise
+     * @return name of the corresponding compressed file
      */
-    public static boolean isCompressedFilename(final String fileName) {
-        return fileNameUtil.isCompressedFilename(fileName);
+    public static String getCompressedFilename(final String fileName) {
+        return fileNameUtil.getCompressedFilename(fileName);
     }
 
     /**
@@ -78,17 +77,18 @@ public abstract class BZip2Utils {
     }
 
     /**
-     * Maps the given file name to the name that the file should have after
-     * compression with bzip2. Currently this method simply appends the suffix
-     * ".bz2" to the file name based on the standard behavior of the "bzip2"
-     * program, but a future version may implement a more complex mapping if
-     * a new widely used naming pattern emerges.
+     * Detects common bzip2 suffixes in the given file name.
      *
      * @param fileName name of a file
-     * @return name of the corresponding compressed file
+     * @return {@code true} if the file name has a common bzip2 suffix,
+     *         {@code false} otherwise
      */
-    public static String getCompressedFilename(final String fileName) {
-        return fileNameUtil.getCompressedFilename(fileName);
+    public static boolean isCompressedFilename(final String fileName) {
+        return fileNameUtil.isCompressedFilename(fileName);
+    }
+
+    /** Private constructor to prevent instantiation of this utility class. */
+    private BZip2Utils() {
     }
 
 }

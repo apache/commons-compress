@@ -27,23 +27,6 @@ import org.apache.commons.compress.parallel.InputStreamSupplier;
  * @since 1.10
  */
 public class ZipArchiveEntryRequest {
-    /*
-     The zipArchiveEntry is not thread safe, and cannot be safely accessed by the getters of this class.
-     It is safely accessible during the construction part of this class and also after the
-     thread pools have been shut down.
-     */
-    private final ZipArchiveEntry zipArchiveEntry;
-    private final InputStreamSupplier payloadSupplier;
-    private final int method;
-
-
-    private ZipArchiveEntryRequest(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier payloadSupplier) {
-        // this constructor has "safe" access to all member variables on zipArchiveEntry
-        this.zipArchiveEntry = zipArchiveEntry;
-        this.payloadSupplier = payloadSupplier;
-        this.method = zipArchiveEntry.getMethod();
-    }
-
     /**
      * Create a ZipArchiveEntryRequest
      * @param zipArchiveEntry The entry to use
@@ -53,13 +36,22 @@ public class ZipArchiveEntryRequest {
     public static ZipArchiveEntryRequest createZipArchiveEntryRequest(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier payloadSupplier) {
         return new ZipArchiveEntryRequest(zipArchiveEntry, payloadSupplier);
     }
-
-    /**
-     * The payload that will be added to this zip entry
-     * @return The input stream.
+    /*
+     The zipArchiveEntry is not thread safe, and cannot be safely accessed by the getters of this class.
+     It is safely accessible during the construction part of this class and also after the
+     thread pools have been shut down.
      */
-    public InputStream getPayloadStream() {
-        return payloadSupplier.get();
+    private final ZipArchiveEntry zipArchiveEntry;
+    private final InputStreamSupplier payloadSupplier;
+
+
+    private final int method;
+
+    private ZipArchiveEntryRequest(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier payloadSupplier) {
+        // this constructor has "safe" access to all member variables on zipArchiveEntry
+        this.zipArchiveEntry = zipArchiveEntry;
+        this.payloadSupplier = payloadSupplier;
+        this.method = zipArchiveEntry.getMethod();
     }
 
     /**
@@ -68,6 +60,14 @@ public class ZipArchiveEntryRequest {
      */
     public int getMethod(){
        return method;
+    }
+
+    /**
+     * The payload that will be added to this zip entry
+     * @return The input stream.
+     */
+    public InputStream getPayloadStream() {
+        return payloadSupplier.get();
     }
 
 

@@ -108,6 +108,25 @@ public class ClassConstantPool {
         }
     }
 
+    public ClassFileEntry addWithNestedEntries(final ClassFileEntry entry) {
+        add(entry);
+        for (ClassFileEntry nestedEntry : entry.getNestedClassFileEntries()) {
+            addWithNestedEntries(nestedEntry);
+        }
+        return entry;
+    }
+
+    public List<ClassFileEntry> entries() {
+        return Collections.unmodifiableList(entries);
+    }
+
+    public ClassFileEntry get(int i) {
+        if (!resolved) {
+            throw new IllegalStateException("Constant pool is not yet resolved; this does not make any sense");
+        }
+        return entries.get(--i);
+    }
+
     public int indexOf(final ClassFileEntry entry) {
         if (!resolved) {
             throw new IllegalStateException("Constant pool is not yet resolved; this does not make any sense");
@@ -121,27 +140,6 @@ public class ClassConstantPool {
             return entryIndex.intValue() + 1;
         }
         return -1;
-    }
-
-    public int size() {
-        return entries.size();
-    }
-
-    public ClassFileEntry get(int i) {
-        if (!resolved) {
-            throw new IllegalStateException("Constant pool is not yet resolved; this does not make any sense");
-        }
-        return entries.get(--i);
-    }
-
-    public void resolve(final Segment segment) {
-        initialSort();
-        sortClassPool();
-
-        resolved = true;
-
-        entries.forEach(entry -> entry.resolve(this));
-        others.forEach(entry -> entry.resolve(this));
     }
 
     private void initialSort() {
@@ -172,8 +170,18 @@ public class ClassConstantPool {
         entries.addAll(cpClassesNotInCpAll);
     }
 
-    public List<ClassFileEntry> entries() {
-        return Collections.unmodifiableList(entries);
+    public void resolve(final Segment segment) {
+        initialSort();
+        sortClassPool();
+
+        resolved = true;
+
+        entries.forEach(entry -> entry.resolve(this));
+        others.forEach(entry -> entry.resolve(this));
+    }
+
+    public int size() {
+        return entries.size();
     }
 
     protected void sortClassPool() {
@@ -226,13 +234,5 @@ public class ClassConstantPool {
             }
         }
 
-    }
-
-    public ClassFileEntry addWithNestedEntries(final ClassFileEntry entry) {
-        add(entry);
-        for (ClassFileEntry nestedEntry : entry.getNestedClassFileEntries()) {
-            addWithNestedEntries(nestedEntry);
-        }
-        return entry;
     }
 }

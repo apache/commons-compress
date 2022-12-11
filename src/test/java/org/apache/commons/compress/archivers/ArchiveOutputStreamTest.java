@@ -38,6 +38,100 @@ import org.junit.jupiter.api.Test;
 
 public class ArchiveOutputStreamTest extends AbstractTestCase {
 
+    private ArchiveOutputStream createArchiveWithDummyEntry(final String archiveType, final OutputStream out1, final File dummy)
+        throws Exception {
+        final ArchiveOutputStream aos1 = factory.createArchiveOutputStream(archiveType, out1);
+        aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
+        try (InputStream is = Files.newInputStream(dummy.toPath())) {
+            IOUtils.copy(is, aos1);
+        }
+        return aos1;
+    }
+
+    private void doCallSequence(final String archiveType) throws Exception {
+        final OutputStream out1 = new ByteArrayOutputStream();
+        final File dummy = getFile("test1.xml"); // need a real file
+
+        ArchiveOutputStream aos1;
+        aos1 = factory.createArchiveOutputStream(archiveType, out1);
+        aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
+        try (InputStream is = Files.newInputStream(dummy.toPath())) {
+            IOUtils.copy(is, aos1);
+        }
+        aos1.closeArchiveEntry();
+        aos1.close(); // omitted finish
+
+        // TODO - check if archives ensure that data has been written to the stream?
+
+        aos1 = factory.createArchiveOutputStream(archiveType, out1);
+        try {
+            aos1.closeArchiveEntry();
+            fail("Should have raised IOException - closeArchiveEntry() called before putArchiveEntry()");
+        } catch (final IOException expected) {
+        }
+
+        aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
+        try (InputStream is = Files.newInputStream(dummy.toPath())) {
+            IOUtils.copy(is, aos1);
+        }
+
+        // TODO check if second putArchiveEntry() can follow without closeAE?
+
+        try {
+            aos1.finish();
+            fail("Should have raised IOException - finish() called before closeArchiveEntry()");
+        } catch (final IOException expected) {
+        }
+        try {
+            aos1.close();
+            fail("Should have raised IOException - close() called before closeArchiveEntry()");
+        } catch (final IOException expected) {
+        }
+
+        aos1 = createArchiveWithDummyEntry(archiveType, out1, dummy);
+        aos1.closeArchiveEntry();
+        try {
+            aos1.closeArchiveEntry();
+            fail("Should have raised IOException - closeArchiveEntry() called with no open entry");
+        } catch (final IOException expected) {
+        }
+
+        aos1 = createArchiveWithDummyEntry(archiveType, out1, dummy);
+        aos1.closeArchiveEntry();
+        aos1.finish();
+        aos1.close();
+        try {
+            aos1.finish();
+            fail("Should have raised IOException - finish() called after close()");
+        } catch (final IOException expected) {
+        }
+    }
+
+    @Test
+    public void testCallSequenceAr() throws Exception{
+        doCallSequence("Ar");
+    }
+
+    @Test
+    public void testCallSequenceCpio() throws Exception{
+        doCallSequence("Cpio");
+    }
+
+    @Test
+    public void testCallSequenceJar() throws Exception{
+        doCallSequence("Jar");
+    }
+
+    @Test
+    public void testCallSequenceTar() throws Exception{
+        doCallSequence("Tar");
+    }
+
+    @Test
+    public void testCallSequenceZip() throws Exception{
+        doCallSequence("Zip");
+    }
+
     @Test
     public void testFinish() throws Exception {
         final OutputStream out1 = new ByteArrayOutputStream();
@@ -110,99 +204,5 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
             // Exception expected
         }
         finishTest.close();
-    }
-
-    @Test
-    public void testCallSequenceAr() throws Exception{
-        doCallSequence("Ar");
-    }
-
-    @Test
-    public void testCallSequenceCpio() throws Exception{
-        doCallSequence("Cpio");
-    }
-
-    @Test
-    public void testCallSequenceJar() throws Exception{
-        doCallSequence("Jar");
-    }
-
-    @Test
-    public void testCallSequenceTar() throws Exception{
-        doCallSequence("Tar");
-    }
-
-    @Test
-    public void testCallSequenceZip() throws Exception{
-        doCallSequence("Zip");
-    }
-
-    private void doCallSequence(final String archiveType) throws Exception {
-        final OutputStream out1 = new ByteArrayOutputStream();
-        final File dummy = getFile("test1.xml"); // need a real file
-
-        ArchiveOutputStream aos1;
-        aos1 = factory.createArchiveOutputStream(archiveType, out1);
-        aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
-        try (InputStream is = Files.newInputStream(dummy.toPath())) {
-            IOUtils.copy(is, aos1);
-        }
-        aos1.closeArchiveEntry();
-        aos1.close(); // omitted finish
-
-        // TODO - check if archives ensure that data has been written to the stream?
-
-        aos1 = factory.createArchiveOutputStream(archiveType, out1);
-        try {
-            aos1.closeArchiveEntry();
-            fail("Should have raised IOException - closeArchiveEntry() called before putArchiveEntry()");
-        } catch (final IOException expected) {
-        }
-
-        aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
-        try (InputStream is = Files.newInputStream(dummy.toPath())) {
-            IOUtils.copy(is, aos1);
-        }
-
-        // TODO check if second putArchiveEntry() can follow without closeAE?
-
-        try {
-            aos1.finish();
-            fail("Should have raised IOException - finish() called before closeArchiveEntry()");
-        } catch (final IOException expected) {
-        }
-        try {
-            aos1.close();
-            fail("Should have raised IOException - close() called before closeArchiveEntry()");
-        } catch (final IOException expected) {
-        }
-
-        aos1 = createArchiveWithDummyEntry(archiveType, out1, dummy);
-        aos1.closeArchiveEntry();
-        try {
-            aos1.closeArchiveEntry();
-            fail("Should have raised IOException - closeArchiveEntry() called with no open entry");
-        } catch (final IOException expected) {
-        }
-
-        aos1 = createArchiveWithDummyEntry(archiveType, out1, dummy);
-        aos1.closeArchiveEntry();
-        aos1.finish();
-        aos1.close();
-        try {
-            aos1.finish();
-            fail("Should have raised IOException - finish() called after close()");
-        } catch (final IOException expected) {
-        }
-    }
-
-    private ArchiveOutputStream createArchiveWithDummyEntry(final String archiveType, final OutputStream out1, final File dummy)
-        throws Exception {
-        final ArchiveOutputStream aos1 = factory.createArchiveOutputStream(archiveType, out1);
-        aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
-        try (InputStream is = Files.newInputStream(dummy.toPath())) {
-            IOUtils.copy(is, aos1);
-        }
-        return aos1;
     }
 }

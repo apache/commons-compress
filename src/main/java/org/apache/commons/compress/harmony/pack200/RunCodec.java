@@ -61,6 +61,41 @@ public class RunCodec extends Codec {
         return normalise(this.last, bCodec);
     }
 
+    @Override
+    public int[] decodeInts(final int n, final InputStream in) throws IOException, Pack200Exception {
+        final int[] band = new int[n];
+        final int[] aValues = aCodec.decodeInts(k, in);
+        normalise(aValues, aCodec);
+        final int[] bValues = bCodec.decodeInts(n - k, in);
+        normalise(bValues, bCodec);
+        System.arraycopy(aValues, 0, band, 0, k);
+        System.arraycopy(bValues, 0, band, k, n - k);
+        lastBandLength = aCodec.lastBandLength + bCodec.lastBandLength;
+        return band;
+    }
+
+    @Override
+    public byte[] encode(final int value) throws Pack200Exception {
+        throw new Pack200Exception("Must encode entire band at once with a RunCodec");
+    }
+
+    @Override
+    public byte[] encode(final int value, final int last) throws Pack200Exception {
+        throw new Pack200Exception("Must encode entire band at once with a RunCodec");
+    }
+
+    public Codec getACodec() {
+        return aCodec;
+    }
+
+    public Codec getBCodec() {
+        return bCodec;
+    }
+
+    public int getK() {
+        return k;
+    }
+
     private int normalise(int value, final Codec codecUsed) {
         if (codecUsed instanceof BHSDCodec) {
             final BHSDCodec bhsd = (BHSDCodec) codecUsed;
@@ -75,19 +110,6 @@ public class RunCodec extends Codec {
             }
         }
         return value;
-    }
-
-    @Override
-    public int[] decodeInts(final int n, final InputStream in) throws IOException, Pack200Exception {
-        final int[] band = new int[n];
-        final int[] aValues = aCodec.decodeInts(k, in);
-        normalise(aValues, aCodec);
-        final int[] bValues = bCodec.decodeInts(n - k, in);
-        normalise(bValues, bCodec);
-        System.arraycopy(aValues, 0, band, 0, k);
-        System.arraycopy(bValues, 0, band, k, n - k);
-        lastBandLength = aCodec.lastBandLength + bCodec.lastBandLength;
-        return band;
     }
 
     private void normalise(final int[] band, final Codec codecUsed) {
@@ -130,27 +152,5 @@ public class RunCodec extends Codec {
     @Override
     public String toString() {
         return "RunCodec[k=" + k + ";aCodec=" + aCodec + "bCodec=" + bCodec + "]";
-    }
-
-    @Override
-    public byte[] encode(final int value, final int last) throws Pack200Exception {
-        throw new Pack200Exception("Must encode entire band at once with a RunCodec");
-    }
-
-    @Override
-    public byte[] encode(final int value) throws Pack200Exception {
-        throw new Pack200Exception("Must encode entire band at once with a RunCodec");
-    }
-
-    public int getK() {
-        return k;
-    }
-
-    public Codec getACodec() {
-        return aCodec;
-    }
-
-    public Codec getBCodec() {
-        return bCodec;
     }
 }

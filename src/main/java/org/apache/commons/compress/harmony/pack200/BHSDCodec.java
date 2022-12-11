@@ -171,6 +171,44 @@ public final class BHSDCodec extends Codec {
         Arrays.setAll(powers, c -> (long) Math.pow(h, c));
     }
 
+    private long calculateLargest() {
+        long result;
+        // TODO This can probably be optimized into a better mathematical
+        // statement
+        if (d == 1) {
+            final BHSDCodec bh0 = new BHSDCodec(b, h);
+            return bh0.largest();
+        }
+        switch (s) {
+        case 0:
+            result = cardinality() - 1;
+            break;
+        case 1:
+            result = cardinality() / 2 - 1;
+            break;
+        case 2:
+            result = (3L * cardinality()) / 4 - 1;
+            break;
+        default:
+            throw new Error("Unknown s value");
+        }
+        return Math.min((s == 0 ? ((long) Integer.MAX_VALUE) << 1 : Integer.MAX_VALUE) - 1, result);
+    }
+
+    private long calculateSmallest() {
+        long result;
+        if (d == 1 || !isSigned()) {
+            if (cardinality >= 4294967296L) { // 2^32
+                result = Integer.MIN_VALUE;
+            } else {
+                result = 0;
+            }
+        } else {
+            result = Math.max(Integer.MIN_VALUE, -cardinality() / (1 << s));
+        }
+        return result;
+    }
+
     /**
      * Returns the cardinality of this codec; that is, the number of distinct values that it can contain.
      *
@@ -235,6 +273,12 @@ public final class BHSDCodec extends Codec {
         return (int) z;
     }
 
+    // private long cast32(long u) {
+    // u = (long) ((long) ((u + Math.pow(2, 31)) % Math.pow(2, 32)) -
+    // Math.pow(2, 31));
+    // return u;
+    // }
+
     @Override
     public int[] decodeInts(final int n, final InputStream in) throws IOException, Pack200Exception {
         final int[] band = super.decodeInts(n, in);
@@ -268,20 +312,9 @@ public final class BHSDCodec extends Codec {
         return band;
     }
 
-    // private long cast32(long u) {
-    // u = (long) ((long) ((u + Math.pow(2, 31)) % Math.pow(2, 32)) -
-    // Math.pow(2, 31));
-    // return u;
-    // }
-
-    /**
-     * True if this encoding can code the given value
-     *
-     * @param value the value to check
-     * @return {@code true} if the encoding can encode this value
-     */
-    public boolean encodes(final long value) {
-        return value >= smallest && value <= largest;
+    @Override
+    public byte[] encode(final int value) throws Pack200Exception {
+        return encode(value, 0);
     }
 
     @Override
@@ -341,9 +374,56 @@ public final class BHSDCodec extends Codec {
         return bytes;
     }
 
+    /**
+     * True if this encoding can code the given value
+     *
+     * @param value the value to check
+     * @return {@code true} if the encoding can encode this value
+     */
+    public boolean encodes(final long value) {
+        return value >= smallest && value <= largest;
+    }
+
     @Override
-    public byte[] encode(final int value) throws Pack200Exception {
-        return encode(value, 0);
+    public boolean equals(final Object o) {
+        if (o instanceof BHSDCodec) {
+            final BHSDCodec codec = (BHSDCodec) o;
+            return codec.b == b && codec.h == h && codec.s == s && codec.d == d;
+        }
+        return false;
+    }
+
+    /**
+     * @return the b
+     */
+    public int getB() {
+        return b;
+    }
+
+    /**
+     * @return the h
+     */
+    public int getH() {
+        return h;
+    }
+
+    /**
+     * @return the l
+     */
+    public int getL() {
+        return l;
+    }
+
+    /**
+     * @return the s
+     */
+    public int getS() {
+        return s;
+    }
+
+    @Override
+    public int hashCode() {
+        return ((b * 37 + h) * 37 + s) * 37 + d;
     }
 
     /**
@@ -373,30 +453,6 @@ public final class BHSDCodec extends Codec {
         return largest;
     }
 
-    private long calculateLargest() {
-        long result;
-        // TODO This can probably be optimized into a better mathematical
-        // statement
-        if (d == 1) {
-            final BHSDCodec bh0 = new BHSDCodec(b, h);
-            return bh0.largest();
-        }
-        switch (s) {
-        case 0:
-            result = cardinality() - 1;
-            break;
-        case 1:
-            result = cardinality() / 2 - 1;
-            break;
-        case 2:
-            result = (3L * cardinality()) / 4 - 1;
-            break;
-        default:
-            throw new Error("Unknown s value");
-        }
-        return Math.min((s == 0 ? ((long) Integer.MAX_VALUE) << 1 : Integer.MAX_VALUE) - 1, result);
-    }
-
     /**
      * Returns the smallest value that this codec can represent.
      *
@@ -404,20 +460,6 @@ public final class BHSDCodec extends Codec {
      */
     public long smallest() {
         return smallest;
-    }
-
-    private long calculateSmallest() {
-        long result;
-        if (d == 1 || !isSigned()) {
-            if (cardinality >= 4294967296L) { // 2^32
-                result = Integer.MIN_VALUE;
-            } else {
-                result = 0;
-            }
-        } else {
-            result = Math.max(Integer.MIN_VALUE, -cardinality() / (1 << s));
-        }
-        return result;
     }
 
     /**
@@ -440,47 +482,5 @@ public final class BHSDCodec extends Codec {
         }
         buffer.append(')');
         return buffer.toString();
-    }
-
-    /**
-     * @return the b
-     */
-    public int getB() {
-        return b;
-    }
-
-    /**
-     * @return the h
-     */
-    public int getH() {
-        return h;
-    }
-
-    /**
-     * @return the s
-     */
-    public int getS() {
-        return s;
-    }
-
-    /**
-     * @return the l
-     */
-    public int getL() {
-        return l;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (o instanceof BHSDCodec) {
-            final BHSDCodec codec = (BHSDCodec) o;
-            return codec.b == b && codec.h == h && codec.s == s && codec.d == d;
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return ((b * 37 + h) * 37 + s) * 37 + d;
     }
 }

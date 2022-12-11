@@ -70,6 +70,11 @@ public class Maven221MultiVolumeTest {
         "apache-maven-2.2.1/lib/maven-2.2.1-uber.jar";
 
     @Test
+    public void testRead7ZipMultiVolumeArchiveForFile() {
+        assertThrows(IOException.class, () -> new ZipFile(getFile("apache-maven-2.2.1.zip.001")));
+    }
+
+    @Test
     public void testRead7ZipMultiVolumeArchiveForStream() throws IOException {
 
         try (final InputStream archive = Files.newInputStream(getFile("apache-maven-2.2.1.zip.001").toPath());
@@ -115,10 +120,5 @@ public class Maven221MultiVolumeTest {
                 // this is to be expected
             }
         }
-    }
-
-    @Test
-    public void testRead7ZipMultiVolumeArchiveForFile() {
-        assertThrows(IOException.class, () -> new ZipFile(getFile("apache-maven-2.2.1.zip.001")));
     }
 }

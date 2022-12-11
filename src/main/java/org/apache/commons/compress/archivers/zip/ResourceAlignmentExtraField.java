@@ -76,16 +76,6 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
     }
 
     /**
-     * Gets requested alignment.
-     *
-     * @return
-     *      requested alignment.
-     */
-    public short getAlignment() {
-        return alignment;
-    }
-
-    /**
      * Indicates whether method change is allowed when re-compressing the zip file.
      *
      * @return
@@ -95,19 +85,29 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
         return allowMethodChange;
     }
 
-    @Override
-    public ZipShort getHeaderId() {
-        return ID;
+    /**
+     * Gets requested alignment.
+     *
+     * @return
+     *      requested alignment.
+     */
+    public short getAlignment() {
+        return alignment;
     }
 
     @Override
-    public ZipShort getLocalFileDataLength() {
-        return new ZipShort(BASE_SIZE + padding);
+    public byte[] getCentralDirectoryData() {
+        return ZipShort.getBytes(alignment | (allowMethodChange ? ALLOW_METHOD_MESSAGE_CHANGE_FLAG : 0));
     }
 
     @Override
     public ZipShort getCentralDirectoryLength() {
         return new ZipShort(BASE_SIZE);
+    }
+
+    @Override
+    public ZipShort getHeaderId() {
+        return ID;
     }
 
     @Override
@@ -119,14 +119,8 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
     }
 
     @Override
-    public byte[] getCentralDirectoryData() {
-        return ZipShort.getBytes(alignment | (allowMethodChange ? ALLOW_METHOD_MESSAGE_CHANGE_FLAG : 0));
-    }
-
-    @Override
-    public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length) throws ZipException {
-        parseFromCentralDirectoryData(buffer, offset, length);
-        this.padding = length - BASE_SIZE;
+    public ZipShort getLocalFileDataLength() {
+        return new ZipShort(BASE_SIZE + padding);
     }
 
     @Override
@@ -137,5 +131,11 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
         final int alignmentValue = ZipShort.getValue(buffer, offset);
         this.alignment = (short) (alignmentValue & (ALLOW_METHOD_MESSAGE_CHANGE_FLAG - 1));
         this.allowMethodChange = (alignmentValue & ALLOW_METHOD_MESSAGE_CHANGE_FLAG) != 0;
+    }
+
+    @Override
+    public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length) throws ZipException {
+        parseFromCentralDirectoryData(buffer, offset, length);
+        this.padding = length - BASE_SIZE;
     }
 }

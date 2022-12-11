@@ -82,21 +82,6 @@ public class SevenZArchiveEntryTest {
     }
 
     @Test
-    public void shouldThrowIfNoAccessDateIsSet() {
-        assertThrows(UnsupportedOperationException.class, () -> new SevenZArchiveEntry().getAccessDate());
-    }
-
-    @Test
-    public void shouldThrowIfNoCreationDateIsSet() {
-        assertThrows(UnsupportedOperationException.class, () -> new SevenZArchiveEntry().getCreationDate());
-    }
-
-    @Test
-    public void shouldThrowIfNoLastModifiedDateIsSet() {
-        assertThrows(UnsupportedOperationException.class, () -> new SevenZArchiveEntry().getLastModifiedDate());
-    }
-
-    @Test
     public void shouldThrowIfAccessDateIsSetToNull() {
         assertThrows(UnsupportedOperationException.class, () -> {
             SevenZArchiveEntry entry = new SevenZArchiveEntry();
@@ -121,6 +106,21 @@ public class SevenZArchiveEntryTest {
             entry.setLastModifiedDate(null);
             entry.getLastModifiedDate();
         });
+    }
+
+    @Test
+    public void shouldThrowIfNoAccessDateIsSet() {
+        assertThrows(UnsupportedOperationException.class, () -> new SevenZArchiveEntry().getAccessDate());
+    }
+
+    @Test
+    public void shouldThrowIfNoCreationDateIsSet() {
+        assertThrows(UnsupportedOperationException.class, () -> new SevenZArchiveEntry().getCreationDate());
+    }
+
+    @Test
+    public void shouldThrowIfNoLastModifiedDateIsSet() {
+        assertThrows(UnsupportedOperationException.class, () -> new SevenZArchiveEntry().getLastModifiedDate());
     }
 
 

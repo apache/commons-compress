@@ -139,8 +139,8 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
 
     /** {@inheritDoc} */
     @Override
-    public int read() throws IOException {
-        return read(oneByte, 0, 1) == -1 ? -1 : oneByte[0] & 0xFF;
+    public int available() {
+        return writeIndex - readIndex;
     }
 
     /** {@inheritDoc} */
@@ -149,10 +149,12 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
         in.close();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @since 1.17
+     */
     @Override
-    public int available() {
-        return writeIndex - readIndex;
+    public long getCompressedCount() {
+        return in.getBytesRead();
     }
 
     /**
@@ -162,6 +164,14 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      */
     public int getSize() {
         return size;
+    }
+
+    /**
+     * Is there still data remaining inside the current block?
+     * @return true if there is still data remaining inside the current block.
+     */
+    protected final boolean hasMoreDataInBlock() {
+        return bytesRemaining > 0;
     }
 
     /**
@@ -187,33 +197,43 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
         readIndex += len;
     }
 
-    /**
-     * @since 1.17
-     */
+    /** {@inheritDoc} */
     @Override
-    public long getCompressedCount() {
-        return in.getBytesRead();
+    public int read() throws IOException {
+        return read(oneByte, 0, 1) == -1 ? -1 : oneByte[0] & 0xFF;
     }
 
     /**
-     * Used by subclasses to signal the next block contains the given
-     * amount of literal data.
-     * @param length the length of the block
-     * @throws IllegalArgumentException if length is negative
+     * Reads data from the current back-reference.
+     * @param b buffer to write data to
+     * @param off offset to start writing to
+     * @param len maximum amount of data to read
+     * @return number of bytes read, may be 0. Will never return -1 as
+     * EOF-detection is the responsibility of the subclass
+     * @throws NullPointerException if {@code b} is null
+     * @throws IndexOutOfBoundsException if {@code off} is
+     * negative, {@code len} is negative, or {@code len} is
+     * greater than {@code b.length - off}
      */
-    protected final void startLiteral(final long length) {
-        if (length < 0) {
-            throw new IllegalArgumentException("length must not be negative");
+    protected final int readBackReference(final byte[] b, final int off, final int len) {
+        final int avail = available();
+        if (len > avail) {
+            tryToCopy(len - avail);
         }
-        bytesRemaining = length;
+        return readFromBuffer(b, off, len);
     }
 
-    /**
-     * Is there still data remaining inside the current block?
-     * @return true if there is still data remaining inside the current block.
-     */
-    protected final boolean hasMoreDataInBlock() {
-        return bytesRemaining > 0;
+    private int readFromBuffer(final byte[] b, final int off, final int len) {
+        final int readable = Math.min(len, available());
+        if (readable > 0) {
+            System.arraycopy(buf, readIndex, b, off, readable);
+            readIndex += readable;
+            if (readIndex > 2 * windowSize) {
+                slideBuffer();
+            }
+        }
+        size += readable;
+        return readable;
     }
 
     /**
@@ -239,32 +259,19 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
         return readFromBuffer(b, off, len);
     }
 
-    private void tryToReadLiteral(final int bytesToRead) throws IOException {
-        // min of "what is still inside the literal", "what does the user want" and "how much can fit into the buffer"
-        final int reallyTryToRead = Math.min((int) Math.min(bytesToRead, bytesRemaining),
-                                             buf.length - writeIndex);
-        final int bytesRead = reallyTryToRead > 0
-            ? IOUtils.readFully(in, buf, writeIndex, reallyTryToRead)
-            : 0 /* happens for bytesRemaining == 0 */;
-        count(bytesRead);
-        if (reallyTryToRead != bytesRead) {
-            throw new IOException("Premature end of stream reading literal");
+    /**
+     * Reads a single byte from the real input stream and ensures the data is accounted for.
+     *
+     * @return the byte read as value between 0 and 255 or -1 if EOF has been reached.
+     * @throws IOException if the underlying stream throws
+     */
+    protected final int readOneByte() throws IOException {
+        final int b = in.read();
+        if (b != -1) {
+            count(1);
+            return b & 0xFF;
         }
-        writeIndex += reallyTryToRead;
-        bytesRemaining -= reallyTryToRead;
-    }
-
-    private int readFromBuffer(final byte[] b, final int off, final int len) {
-        final int readable = Math.min(len, available());
-        if (readable > 0) {
-            System.arraycopy(buf, readIndex, b, off, readable);
-            readIndex += readable;
-            if (readIndex > 2 * windowSize) {
-                slideBuffer();
-            }
-        }
-        size += readable;
-        return readable;
+        return -1;
     }
 
     private void slideBuffer() {
@@ -294,23 +301,16 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     }
 
     /**
-     * Reads data from the current back-reference.
-     * @param b buffer to write data to
-     * @param off offset to start writing to
-     * @param len maximum amount of data to read
-     * @return number of bytes read, may be 0. Will never return -1 as
-     * EOF-detection is the responsibility of the subclass
-     * @throws NullPointerException if {@code b} is null
-     * @throws IndexOutOfBoundsException if {@code off} is
-     * negative, {@code len} is negative, or {@code len} is
-     * greater than {@code b.length - off}
+     * Used by subclasses to signal the next block contains the given
+     * amount of literal data.
+     * @param length the length of the block
+     * @throws IllegalArgumentException if length is negative
      */
-    protected final int readBackReference(final byte[] b, final int off, final int len) {
-        final int avail = available();
-        if (len > avail) {
-            tryToCopy(len - avail);
+    protected final void startLiteral(final long length) {
+        if (length < 0) {
+            throw new IllegalArgumentException("length must not be negative");
         }
-        return readFromBuffer(b, off, len);
+        bytesRemaining = length;
     }
 
     private void tryToCopy(final int bytesToCopy) {
@@ -346,18 +346,18 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
         bytesRemaining -= copy;
     }
 
-    /**
-     * Reads a single byte from the real input stream and ensures the data is accounted for.
-     *
-     * @return the byte read as value between 0 and 255 or -1 if EOF has been reached.
-     * @throws IOException if the underlying stream throws
-     */
-    protected final int readOneByte() throws IOException {
-        final int b = in.read();
-        if (b != -1) {
-            count(1);
-            return b & 0xFF;
+    private void tryToReadLiteral(final int bytesToRead) throws IOException {
+        // min of "what is still inside the literal", "what does the user want" and "how much can fit into the buffer"
+        final int reallyTryToRead = Math.min((int) Math.min(bytesToRead, bytesRemaining),
+                                             buf.length - writeIndex);
+        final int bytesRead = reallyTryToRead > 0
+            ? IOUtils.readFully(in, buf, writeIndex, reallyTryToRead)
+            : 0 /* happens for bytesRemaining == 0 */;
+        count(bytesRead);
+        if (reallyTryToRead != bytesRead) {
+            throw new IOException("Premature end of stream reading literal");
         }
-        return -1;
+        writeIndex += reallyTryToRead;
+        bytesRemaining -= reallyTryToRead;
     }
 }
