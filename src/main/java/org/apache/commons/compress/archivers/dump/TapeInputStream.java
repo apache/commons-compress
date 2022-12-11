@@ -44,7 +44,9 @@ class TapeInputStream extends FilterInputStream {
     private long bytesRead;
 
     /**
-     * Constructor
+     * Constructs a new instance.
+     *
+     * @param in the underlying input stream.
      */
     public TapeInputStream(final InputStream in) {
         super(in);
@@ -363,7 +365,9 @@ class TapeInputStream extends FilterInputStream {
     }
 
     /**
-     * Get number of bytes read.
+     * Gets number of bytes read.
+     *
+     * @return number of bytes read.
      */
     public long getBytesRead() {
         return bytesRead;

@@ -38,7 +38,7 @@ class DumpArchiveUtil {
      * Calculate checksum for buffer.
      *
      * @param buffer buffer containing tape segment header
-     * @returns checksum
+     * @return checksum
      */
     public static int calculateChecksum(final byte[] buffer) {
         int calc = 0;
@@ -52,9 +52,10 @@ class DumpArchiveUtil {
     }
 
     /**
-     * Verify that the buffer contains a tape segment header.
+     * Verifies that the buffer contains a tape segment header.
      *
      * @param buffer
+     * @return Whether the buffer contains a tape segment header.
      */
     public static final boolean verify(final byte[] buffer) {
         // verify magic. for now only accept NFS_MAGIC.
@@ -71,9 +72,10 @@ class DumpArchiveUtil {
     }
 
     /**
-     * Get the ino associated with this buffer.
+     * Gets the ino associated with this buffer.
      *
      * @param buffer
+     * @return the ino associated with this buffer.
      */
     public static final int getIno(final byte[] buffer) {
         return convert32(buffer, 20);
