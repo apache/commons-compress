@@ -36,32 +36,18 @@ public class CpioArchiveOutputStreamTest extends AbstractTestCase {
     public void testWriteOldBinary() throws Exception {
         final File f = getFile("test1.xml");
         final File output = new File(dir, "test.cpio");
-        final OutputStream out = Files.newOutputStream(output.toPath());
-        InputStream in = null;
-        try {
-            final CpioArchiveOutputStream os = new CpioArchiveOutputStream(out, CpioConstants.FORMAT_OLD_BINARY);
+        try (final OutputStream out = Files.newOutputStream(output.toPath());
+                CpioArchiveOutputStream os = new CpioArchiveOutputStream(out, CpioConstants.FORMAT_OLD_BINARY)) {
             os.putArchiveEntry(new CpioArchiveEntry(CpioConstants.FORMAT_OLD_BINARY, f, "test1.xml"));
-            IOUtils.copy(in = Files.newInputStream(f.toPath()), os);
-            in.close();
-            in = null;
+            Files.copy(f.toPath(), os);
             os.closeArchiveEntry();
-            os.close();
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-            out.close();
         }
 
-        try {
-            in = new CpioArchiveInputStream(Files.newInputStream(output.toPath()));
+        try (CpioArchiveInputStream in = new CpioArchiveInputStream(Files.newInputStream(output.toPath()))) {
             final CpioArchiveEntry e = ((CpioArchiveInputStream) in).getNextCPIOEntry();
             assertEquals("test1.xml", e.getName());
             assertNull(((CpioArchiveInputStream) in).getNextEntry());
         } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 }

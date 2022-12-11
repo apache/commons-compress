@@ -85,15 +85,13 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
             expected = IOUtils.toByteArray(is);
         }
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try (FramedLZ4CompressorOutputStream los = new FramedLZ4CompressorOutputStream(bos,
-            params)) {
+        try (FramedLZ4CompressorOutputStream los = new FramedLZ4CompressorOutputStream(bos, params)) {
             IOUtils.copy(new ByteArrayInputStream(expected), los);
         }
         // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-        //    + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        // + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
-        try (FramedLZ4CompressorInputStream sis = new FramedLZ4CompressorInputStream(
-            new ByteArrayInputStream(bos.toByteArray()))) {
+        try (FramedLZ4CompressorInputStream sis = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
             final byte[] actual = IOUtils.toByteArray(sis);
             Assert.assertArrayEquals(expected, actual);
         }

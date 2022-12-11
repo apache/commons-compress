@@ -60,20 +60,18 @@ public final class FramedSnappyTestCase
         testRoundtrip(getFile("COMPRESS-256.7z"));
     }
 
-    private void testRoundtrip(final File input)  throws Exception {
+    private void testRoundtrip(final File input) throws Exception {
         final long start = System.currentTimeMillis();
         final File outputSz = new File(dir, input.getName() + ".sz");
-        try (InputStream is = Files.newInputStream(input.toPath());
-             OutputStream os = Files.newOutputStream(outputSz.toPath());
-             CompressorOutputStream sos = new CompressorStreamFactory()
-                 .createCompressorOutputStream("snappy-framed", os)) {
-            IOUtils.copy(is, sos);
+        try (OutputStream os = Files.newOutputStream(outputSz.toPath());
+                CompressorOutputStream sos = new CompressorStreamFactory().createCompressorOutputStream("snappy-framed", os)) {
+            Files.copy(input.toPath(), sos);
         }
         // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-        //    + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        // + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         try (InputStream is = Files.newInputStream(input.toPath());
-             CompressorInputStream sis = new CompressorStreamFactory()
-                 .createCompressorInputStream("snappy-framed", Files.newInputStream(outputSz.toPath()))) {
+                CompressorInputStream sis = new CompressorStreamFactory().createCompressorInputStream("snappy-framed",
+                        Files.newInputStream(outputSz.toPath()))) {
             final byte[] expected = IOUtils.toByteArray(is);
             final byte[] actual = IOUtils.toByteArray(sis);
             assertArrayEquals(expected, actual);
@@ -116,9 +114,8 @@ public final class FramedSnappyTestCase
         try (InputStream is = Files.newInputStream(input.toPath())) {
             // the intermediate BufferedInputStream is there for mark
             // support in the autodetection test
-            try (CompressorInputStream in = wrapper.wrap(new BufferedInputStream(is));
-                    OutputStream out = Files.newOutputStream(output.toPath())) {
-                IOUtils.copy(in, out);
+            try (CompressorInputStream in = wrapper.wrap(new BufferedInputStream(is))) {
+                Files.copy(in, output.toPath());
                 assertEquals(995, in.getBytesRead());
             }
         }

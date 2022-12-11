@@ -2055,8 +2055,7 @@ public class Zip64SupportIT {
 
             zipArchiveOutputStream.putArchiveEntry(new ZipArchiveEntry("input.bin"));
 
-            final InputStream inputStream = new FileInputStream(inputFile);
-            IOUtils.copy(inputStream, zipArchiveOutputStream);
+            Files.copy(inputFile.toPath(), zipArchiveOutputStream);
 
             zipArchiveOutputStream.closeArchiveEntry();
         }

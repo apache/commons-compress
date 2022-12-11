@@ -42,11 +42,11 @@ public final class JarTestCase extends AbstractTestCase {
         final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("jar", out);
 
         os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
-        IOUtils.copy(Files.newInputStream(file1.toPath()), os);
+        Files.copy(file1.toPath(), os);
         os.closeArchiveEntry();
 
         os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
-        IOUtils.copy(Files.newInputStream(file2.toPath()), os);
+        Files.copy(file2.toPath(), os);
         os.closeArchiveEntry();
 
         os.close();
@@ -56,32 +56,24 @@ public final class JarTestCase extends AbstractTestCase {
     @Test
     public void testJarUnarchive() throws Exception {
         final File input = getFile("bla.jar");
-        final InputStream is = Files.newInputStream(input.toPath());
-        final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
 
-        ZipArchiveEntry entry = (ZipArchiveEntry)in.getNextEntry();
-        File o = new File(dir, entry.getName());
-        o.getParentFile().mkdirs();
-        OutputStream out = Files.newOutputStream(o.toPath());
-        IOUtils.copy(in, out);
-        out.close();
+            ZipArchiveEntry entry = (ZipArchiveEntry) in.getNextEntry();
+            File o = new File(dir, entry.getName());
+            o.getParentFile().mkdirs();
+            Files.copy(in, o.toPath());
 
-        entry = (ZipArchiveEntry)in.getNextEntry();
-        o = new File(dir, entry.getName());
-        o.getParentFile().mkdirs();
-        out = Files.newOutputStream(o.toPath());
-        IOUtils.copy(in, out);
-        out.close();
+            entry = (ZipArchiveEntry) in.getNextEntry();
+            o = new File(dir, entry.getName());
+            o.getParentFile().mkdirs();
+            Files.copy(in, o.toPath());
 
-        entry = (ZipArchiveEntry)in.getNextEntry();
-        o = new File(dir, entry.getName());
-        o.getParentFile().mkdirs();
-        out = Files.newOutputStream(o.toPath());
-        IOUtils.copy(in, out);
-        out.close();
-
-        in.close();
-        is.close();
+            entry = (ZipArchiveEntry) in.getNextEntry();
+            o = new File(dir, entry.getName());
+            o.getParentFile().mkdirs();
+            Files.copy(in, o.toPath());
+        }
     }
 
     @Test
@@ -99,9 +91,7 @@ public final class JarTestCase extends AbstractTestCase {
                 entry = in.getNextEntry();
                 continue;
             }
-            final OutputStream out = Files.newOutputStream(archiveEntry.toPath());
-            IOUtils.copy(in, out);
-            out.close();
+            Files.copy(in, archiveEntry.toPath());
             entry = in.getNextEntry();
         }
 

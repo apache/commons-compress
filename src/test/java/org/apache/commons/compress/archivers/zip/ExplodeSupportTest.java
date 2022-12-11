@@ -39,20 +39,20 @@ import org.junit.jupiter.api.Test;
 public class ExplodeSupportTest {
 
     private void testArchiveWithImplodeCompression(final String filename, final String entryName) throws IOException {
-        final ZipFile zip = new ZipFile(new File(filename));
-        final ZipArchiveEntry entry = zip.getEntries().nextElement();
-        assertEquals("entry name", entryName, entry.getName());
-        assertTrue("entry can't be read", zip.canReadEntryData(entry));
-        assertEquals("method", ZipMethod.IMPLODING.getCode(), entry.getMethod());
+        try (ZipFile zip = new ZipFile(new File(filename))) {
+            final ZipArchiveEntry entry = zip.getEntries().nextElement();
+            assertEquals("entry name", entryName, entry.getName());
+            assertTrue("entry can't be read", zip.canReadEntryData(entry));
+            assertEquals("method", ZipMethod.IMPLODING.getCode(), entry.getMethod());
 
-        final ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        final CheckedOutputStream out = new CheckedOutputStream(bout, new CRC32());
-        IOUtils.copy(zip.getInputStream(entry), out);
+            final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            final CheckedOutputStream out = new CheckedOutputStream(bout, new CRC32());
+            IOUtils.copy(zip.getInputStream(entry), out);
 
-        out.flush();
+            out.flush();
 
-        assertEquals("CRC32", entry.getCrc(), out.getChecksum().getValue());
-        zip.close();
+            assertEquals("CRC32", entry.getCrc(), out.getChecksum().getValue());
+        }
     }
 
     @Test

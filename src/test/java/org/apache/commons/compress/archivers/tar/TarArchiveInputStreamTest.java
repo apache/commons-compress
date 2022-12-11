@@ -183,9 +183,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
                 TarArchiveEntry entry = is.getNextTarEntry();
                 int count = 0;
                 while (entry != null) {
-                    try (OutputStream out = Files.newOutputStream(new File(dir, String.valueOf(count)).toPath())) {
-                        IOUtils.copy(is, out);
-                    }
+                    Files.copy(is, new File(dir, String.valueOf(count)).toPath());
                     count++;
                     entry = is.getNextTarEntry();
                 }

@@ -36,40 +36,33 @@ public final class BZip2TestCase extends AbstractTestCase {
     public void testBzip2Unarchive() throws Exception {
         final File input = getFile("bla.txt.bz2");
         final File output = new File(dir, "bla.txt");
-        final InputStream is = Files.newInputStream(input.toPath());
-        final CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
-        final OutputStream os = Files.newOutputStream(output.toPath());
-        IOUtils.copy(in, os);
-        is.close();
-        os.close();
+        try (final InputStream is = Files.newInputStream(input.toPath());
+                CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("bzip2", is)) {
+            Files.copy(in, output.toPath());
+        }
     }
 
     @Test
-    public void testBzipCreation()  throws Exception {
+    public void testBzipCreation() throws Exception {
         File output = null;
         final File input = getFile("test.txt");
         {
             output = new File(dir, "test.txt.bz2");
-            final OutputStream out = Files.newOutputStream(output.toPath());
-            final CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("bzip2", out);
-            final InputStream in = Files.newInputStream(input.toPath());
-            IOUtils.copy(in, cos);
-            cos.close();
-            in.close();
+            try (OutputStream out = Files.newOutputStream(output.toPath());
+                    final CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("bzip2", out)) {
+                Files.copy(input.toPath(), cos);
+            }
         }
 
         final File decompressed = new File(dir, "decompressed.txt");
         {
-            final InputStream is = Files.newInputStream(output.toPath());
-            final CompressorInputStream in =
-                new CompressorStreamFactory().createCompressorInputStream("bzip2", is);
-            final OutputStream os = Files.newOutputStream(decompressed.toPath());
-            IOUtils.copy(in, os);
-            is.close();
-            os.close();
+            try (InputStream is = Files.newInputStream(output.toPath());
+                    CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("bzip2", is)) {
+                Files.copy(in, decompressed.toPath());
+            }
         }
 
-        assertEquals(input.length(),decompressed.length());
+        assertEquals(input.length(), decompressed.length());
     }
 
     @Test

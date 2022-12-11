@@ -79,8 +79,8 @@ public final class ZipTestCase extends AbstractTestCase {
             zipArchiveEntry.setMethod(ZipEntry.DEFLATED);
 
             zipArchiveOutputStream.putArchiveEntry(zipArchiveEntry);
-            try (final InputStream input = Files.newInputStream(fileToAdd.toPath())) {
-                IOUtils.copy(input, zipArchiveOutputStream);
+            try {
+                Files.copy(fileToAdd.toPath(), zipArchiveOutputStream);
             } finally {
                 zipArchiveOutputStream.closeArchiveEntry();
             }
@@ -725,15 +725,11 @@ public final class ZipTestCase extends AbstractTestCase {
         try (final OutputStream out = Files.newOutputStream(output.toPath())) {
             try (ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("zip", out)) {
                 os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
-                try (final InputStream input = Files.newInputStream(file1.toPath())) {
-                    IOUtils.copy(input, os);
-                }
+                Files.copy(file1.toPath(), os);
                 os.closeArchiveEntry();
 
                 os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
-                try (final InputStream input = Files.newInputStream(file2.toPath())) {
-                    IOUtils.copy(input, os);
-                }
+                Files.copy(file2.toPath(), os);
                 os.closeArchiveEntry();
             }
         }
@@ -748,9 +744,7 @@ public final class ZipTestCase extends AbstractTestCase {
                 while ((entry = (ZipArchiveEntry) archiveInputStream.getNextEntry()) != null) {
                     final File outfile = new File(resultDir.getCanonicalPath() + "/result/" + entry.getName());
                     outfile.getParentFile().mkdirs();
-                    try (OutputStream o = Files.newOutputStream(outfile.toPath())) {
-                        IOUtils.copy(archiveInputStream, o);
-                    }
+                    Files.copy(archiveInputStream, outfile.toPath());
                     results.add(outfile);
                 }
             }
@@ -865,9 +859,7 @@ public final class ZipTestCase extends AbstractTestCase {
         try (final InputStream is = Files.newInputStream(input.toPath());
                 final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", is)) {
             final ZipArchiveEntry entry = (ZipArchiveEntry) in.getNextEntry();
-            try (final OutputStream out = Files.newOutputStream(new File(dir, entry.getName()).toPath())) {
-                IOUtils.copy(in, out);
-            }
+            Files.copy(in, new File(dir, entry.getName()).toPath());
         }
     }
 }

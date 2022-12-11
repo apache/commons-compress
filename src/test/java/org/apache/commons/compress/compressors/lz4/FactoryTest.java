@@ -45,17 +45,15 @@ public class FactoryTest extends AbstractTestCase {
         final File input = getFile("bla.tar");
         long start = System.currentTimeMillis();
         final File outputSz = new File(dir, input.getName() + "." + format + ".lz4");
-        try (InputStream is = Files.newInputStream(input.toPath());
-             OutputStream os = Files.newOutputStream(outputSz.toPath());
-             OutputStream los = new CompressorStreamFactory().createCompressorOutputStream(format, os)) {
-            IOUtils.copy(is, los);
+        try (OutputStream os = Files.newOutputStream(outputSz.toPath());
+                OutputStream los = new CompressorStreamFactory().createCompressorOutputStream(format, os)) {
+            Files.copy(input.toPath(), los);
         }
         // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-        //    + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        // + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
         try (InputStream is = Files.newInputStream(input.toPath());
-             InputStream sis = new CompressorStreamFactory()
-                 .createCompressorInputStream(format, Files.newInputStream(outputSz.toPath()))) {
+                InputStream sis = new CompressorStreamFactory().createCompressorInputStream(format, Files.newInputStream(outputSz.toPath()))) {
             final byte[] expected = IOUtils.toByteArray(is);
             final byte[] actual = IOUtils.toByteArray(sis);
             Assert.assertArrayEquals(expected, actual);

@@ -104,22 +104,20 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
     private void roundTripTest(final File input, final Parameters params) throws IOException {
         long start = System.currentTimeMillis();
         final File outputSz = new File(dir, input.getName() + ".raw.sz");
-        try (InputStream is = Files.newInputStream(input.toPath());
-             OutputStream os = Files.newOutputStream(outputSz.toPath());
-             SnappyCompressorOutputStream sos = new SnappyCompressorOutputStream(os, input.length(), params)) {
-            IOUtils.copy(is, sos);
+        try (OutputStream os = Files.newOutputStream(outputSz.toPath());
+                SnappyCompressorOutputStream sos = new SnappyCompressorOutputStream(os, input.length(), params)) {
+            Files.copy(input.toPath(), sos);
         }
         // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-        //    + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        // + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
         try (InputStream is = Files.newInputStream(input.toPath());
-             SnappyCompressorInputStream sis = new SnappyCompressorInputStream(Files.newInputStream(outputSz.toPath()),
-                 params.getWindowSize())) {
+                SnappyCompressorInputStream sis = new SnappyCompressorInputStream(Files.newInputStream(outputSz.toPath()), params.getWindowSize())) {
             final byte[] expected = IOUtils.toByteArray(is);
             final byte[] actual = IOUtils.toByteArray(sis);
             Assert.assertArrayEquals(expected, actual);
         }
-        //System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
+        // System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
     private void roundTripTest(final String testFile) throws IOException {

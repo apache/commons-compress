@@ -48,16 +48,14 @@ public class ZstdRoundtripTest extends AbstractTestCase {
         final File input = getFile("bla.tar");
         long start = System.currentTimeMillis();
         final File output = new File(dir, input.getName() + ".zstd");
-        try (InputStream is = Files.newInputStream(input.toPath());
-             OutputStream os = Files.newOutputStream(output.toPath());
-             CompressorOutputStream zos = new CompressorStreamFactory().createCompressorOutputStream("zstd", os)) {
-            IOUtils.copy(is, zos);
+        try (OutputStream os = Files.newOutputStream(output.toPath());
+                CompressorOutputStream zos = new CompressorStreamFactory().createCompressorOutputStream("zstd", os)) {
+            Files.copy(input.toPath(), zos);
         }
         start = System.currentTimeMillis();
-        try (InputStream is = Files.newInputStream(input.toPath());
-             CompressorInputStream zis = new CompressorStreamFactory()
-             .createCompressorInputStream("zstd", Files.newInputStream(output.toPath()))) {
-            final byte[] expected = IOUtils.toByteArray(is);
+        try (final InputStream inputStream = Files.newInputStream(output.toPath());
+                CompressorInputStream zis = new CompressorStreamFactory().createCompressorInputStream("zstd", inputStream)) {
+            final byte[] expected = Files.readAllBytes(input.toPath());
             final byte[] actual = IOUtils.toByteArray(zis);
             Assert.assertArrayEquals(expected, actual);
         }
@@ -67,10 +65,9 @@ public class ZstdRoundtripTest extends AbstractTestCase {
         final File input = getFile("bla.tar");
         long start = System.currentTimeMillis();
         final File output = new File(dir, input.getName() + ".zstd");
-        try (InputStream is = Files.newInputStream(input.toPath());
-             FileOutputStream os = new FileOutputStream(output);
+        try (FileOutputStream os = new FileOutputStream(output);
              ZstdCompressorOutputStream zos = oc.wrap(os)) {
-            IOUtils.copy(is, zos);
+            Files.copy(input.toPath(), zos);
         }
         //System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
         //    + ", compressed bytes: " + output.length() + " after " + (System.currentTimeMillis() - start) + "ms");

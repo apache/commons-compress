@@ -38,13 +38,12 @@ public final class DeflateTestCase extends AbstractTestCase {
      * @throws Exception
      */
     @Test
-    public void testDeflateCreation()  throws Exception {
+    public void testDeflateCreation() throws Exception {
         final File input = getFile("test1.xml");
         final File output = new File(dir, "test1.xml.deflatez");
         try (OutputStream out = Files.newOutputStream(output.toPath())) {
-            try (CompressorOutputStream cos = new CompressorStreamFactory()
-                    .createCompressorOutputStream("deflate", out)) {
-                IOUtils.copy(Files.newInputStream(input.toPath()), cos);
+            try (CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("deflate", out)) {
+                Files.copy(input.toPath(), cos);
             }
         }
     }
@@ -59,11 +58,9 @@ public final class DeflateTestCase extends AbstractTestCase {
         final File input = getFile("bla.tar.deflatez");
         final File output = new File(dir, "bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
-             // zlib header is expected by default
-            try (CompressorInputStream in = new CompressorStreamFactory()
-                    .createCompressorInputStream("deflate", is);
-                    OutputStream out = Files.newOutputStream(output.toPath())) {
-                IOUtils.copy(in, out);
+            // zlib header is expected by default
+            try (CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("deflate", is)) {
+                Files.copy(in, output.toPath());
             }
         }
     }
@@ -81,7 +78,7 @@ public final class DeflateTestCase extends AbstractTestCase {
             final DeflateParameters params = new DeflateParameters();
             params.setWithZlibHeader(false);
             try (CompressorOutputStream cos = new DeflateCompressorOutputStream(out, params)) {
-                IOUtils.copy(Files.newInputStream(input.toPath()), cos);
+                Files.copy(input.toPath(), cos);
             }
         }
     }
@@ -98,9 +95,8 @@ public final class DeflateTestCase extends AbstractTestCase {
         try (InputStream is = Files.newInputStream(input.toPath())) {
             final DeflateParameters params = new DeflateParameters();
             params.setWithZlibHeader(false);
-            try (CompressorInputStream in = new DeflateCompressorInputStream(is, params);
-                    OutputStream out = Files.newOutputStream(output.toPath())) {
-                IOUtils.copy(in, out);
+            try (CompressorInputStream in = new DeflateCompressorInputStream(is, params)) {
+                Files.copy(in, output.toPath());
             }
         }
     }

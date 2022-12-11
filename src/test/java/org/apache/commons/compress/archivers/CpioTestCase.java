@@ -50,11 +50,11 @@ public final class CpioTestCase extends AbstractTestCase {
         final OutputStream out = Files.newOutputStream(output.toPath());
         final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("cpio", out);
         os.putArchiveEntry(new CpioArchiveEntry("test1.xml", file1.length()));
-        IOUtils.copy(Files.newInputStream(file1.toPath()), os);
+        Files.copy(file1.toPath(), os);
         os.closeArchiveEntry();
 
         os.putArchiveEntry(new CpioArchiveEntry("test2.xml", file2.length()));
-        IOUtils.copy(Files.newInputStream(file2.toPath()), os);
+        Files.copy(file2.toPath(), os);
         os.closeArchiveEntry();
 
         os.close();
@@ -75,13 +75,13 @@ public final class CpioTestCase extends AbstractTestCase {
             CpioArchiveEntry entry = new CpioArchiveEntry("test1.xml", file1Length);
             entry.setMode(CpioConstants.C_ISREG);
             os.putArchiveEntry(entry);
-            IOUtils.copy(Files.newInputStream(file1.toPath()), os);
+            Files.copy(file1.toPath(), os);
             os.closeArchiveEntry();
 
             entry = new CpioArchiveEntry("test2.xml", file2Length);
             entry.setMode(CpioConstants.C_ISREG);
             os.putArchiveEntry(entry);
-            IOUtils.copy(Files.newInputStream(file2.toPath()), os);
+            Files.copy(file2.toPath(), os);
             os.closeArchiveEntry();
             os.finish();
             os.close();
@@ -97,9 +97,7 @@ public final class CpioTestCase extends AbstractTestCase {
         ArchiveEntry entry = null;
         while ((entry = in.getNextEntry()) != null) {
             final File cpioget = new File(dir, entry.getName());
-            final OutputStream out = Files.newOutputStream(cpioget.toPath());
-            IOUtils.copy(in, out);
-            out.close();
+            Files.copy(in, cpioget.toPath());
             result.put(entry.getName(), cpioget);
         }
         in.close();

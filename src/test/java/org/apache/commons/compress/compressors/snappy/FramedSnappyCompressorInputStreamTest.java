@@ -65,10 +65,8 @@ public final class FramedSnappyCompressorInputStreamTest
     public void readIWAFile() throws Exception {
         try (ZipFile zip = new ZipFile(getFile("testNumbersNew.numbers"))) {
             try (InputStream is = zip.getInputStream(zip.getEntry("Index/Document.iwa"))) {
-                try (FramedSnappyCompressorInputStream in =
-                        new FramedSnappyCompressorInputStream(is, FramedSnappyDialect.IWORK_ARCHIVE);
-                        OutputStream out = Files.newOutputStream(new File(dir, "snappyIWATest.raw").toPath())) {
-                    IOUtils.copy(in, out);
+                try (FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is, FramedSnappyDialect.IWORK_ARCHIVE)) {
+                    Files.copy(in, new File(dir, "snappyIWATest.raw").toPath());
                 }
             }
         }
@@ -81,13 +79,10 @@ public final class FramedSnappyCompressorInputStreamTest
     public void readIWAFileWithBiggerOffset() throws Exception {
         final File o = new File(dir, "COMPRESS-358.raw");
         try (InputStream is = Files.newInputStream(getFile("COMPRESS-358.iwa").toPath());
-             FramedSnappyCompressorInputStream in =
-                 new FramedSnappyCompressorInputStream(is, 1<<16, FramedSnappyDialect.IWORK_ARCHIVE);
-            OutputStream out = Files.newOutputStream(o.toPath())) {
-            IOUtils.copy(in, out);
+                FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is, 1 << 16, FramedSnappyDialect.IWORK_ARCHIVE);) {
+            Files.copy(in, o.toPath());
         }
-        try (InputStream a = Files.newInputStream(o.toPath());
-             InputStream e = Files.newInputStream(getFile("COMPRESS-358.uncompressed").toPath())) {
+        try (InputStream a = Files.newInputStream(o.toPath()); InputStream e = Files.newInputStream(getFile("COMPRESS-358.uncompressed").toPath())) {
             final byte[] expected = IOUtils.toByteArray(e);
             final byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(expected, actual);
@@ -143,37 +138,15 @@ public final class FramedSnappyCompressorInputStreamTest
         final File outputSz = new File(dir, "lorem-ipsum.1");
         final File outputGz = new File(dir, "lorem-ipsum.2");
         try (InputStream isSz = Files.newInputStream(getFile("lorem-ipsum.txt.sz").toPath())) {
-            InputStream in = new FramedSnappyCompressorInputStream(isSz);
-            OutputStream out = null;
-            try {
-                out = Files.newOutputStream(outputSz.toPath());
-                IOUtils.copy(in, out);
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-                in.close();
+            try (InputStream in = new FramedSnappyCompressorInputStream(isSz)) {
+                Files.copy(in, outputSz.toPath());
             }
-            try (InputStream isGz = Files.newInputStream(getFile("lorem-ipsum.txt.gz").toPath())) {
-                in = new GzipCompressorInputStream(isGz);
-                try {
-                    out = Files.newOutputStream(outputGz.toPath());
-                    IOUtils.copy(in, out);
-                } finally {
-                    if (out != null) {
-                        out.close();
-                    }
-                    in.close();
-                }
+            try (InputStream isGz = Files.newInputStream(getFile("lorem-ipsum.txt.gz").toPath()); InputStream in = new GzipCompressorInputStream(isGz)) {
+                Files.copy(in, outputGz.toPath());
             }
         }
 
-        try (InputStream sz = Files.newInputStream(outputSz.toPath())) {
-            try (InputStream gz = Files.newInputStream(outputGz.toPath())) {
-                assertArrayEquals(IOUtils.toByteArray(sz),
-                        IOUtils.toByteArray(gz));
-            }
-        }
+        assertArrayEquals(Files.readAllBytes(outputSz.toPath()), Files.readAllBytes(outputGz.toPath()));
     }
 
     @Test

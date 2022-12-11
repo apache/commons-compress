@@ -52,9 +52,7 @@ public final class Lister {
         if (!f.getParentFile().exists()) {
             f.getParentFile().mkdirs();
         }
-        try (OutputStream fos = Files.newOutputStream(f.toPath())) {
-            IOUtils.copy(is, fos);
-        }
+        Files.copy(is, f.toPath());
     }
 
     private static void list(final ZipArchiveEntry entry) {

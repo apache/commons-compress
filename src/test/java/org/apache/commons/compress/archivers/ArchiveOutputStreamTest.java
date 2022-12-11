@@ -42,9 +42,7 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         throws Exception {
         final ArchiveOutputStream aos1 = factory.createArchiveOutputStream(archiveType, out1);
         aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
-        try (InputStream is = Files.newInputStream(dummy.toPath())) {
-            IOUtils.copy(is, aos1);
-        }
+        Files.copy(dummy.toPath(), aos1);
         return aos1;
     }
 
@@ -55,9 +53,7 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         ArchiveOutputStream aos1;
         aos1 = factory.createArchiveOutputStream(archiveType, out1);
         aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
-        try (InputStream is = Files.newInputStream(dummy.toPath())) {
-            IOUtils.copy(is, aos1);
-        }
+        Files.copy(dummy.toPath(), aos1);
         aos1.closeArchiveEntry();
         aos1.close(); // omitted finish
 
@@ -71,9 +67,7 @@ public class ArchiveOutputStreamTest extends AbstractTestCase {
         }
 
         aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
-        try (InputStream is = Files.newInputStream(dummy.toPath())) {
-            IOUtils.copy(is, aos1);
-        }
+        Files.copy(dummy.toPath(), aos1);
 
         // TODO check if second putArchiveEntry() can follow without closeAE?
 

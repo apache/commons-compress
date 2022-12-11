@@ -67,17 +67,15 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
         final File input = getFile(testFile);
         long start = System.currentTimeMillis();
         final File outputSz = new File(dir, input.getName() + ".block.lz4");
-        try (InputStream is = Files.newInputStream(input.toPath());
-             final OutputStream os = Files.newOutputStream(outputSz.toPath());
-             BlockLZ4CompressorOutputStream los = new BlockLZ4CompressorOutputStream(os, params)) {
-            IOUtils.copy(is, los);
+        try (OutputStream os = Files.newOutputStream(outputSz.toPath()); BlockLZ4CompressorOutputStream los = new BlockLZ4CompressorOutputStream(os, params)) {
+            Files.copy(input.toPath(), los);
         }
         // System.err.println("Configuration: " + config);
         // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-        //    + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        // + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
         try (InputStream is = Files.newInputStream(input.toPath());
-             BlockLZ4CompressorInputStream sis = new BlockLZ4CompressorInputStream(Files.newInputStream(outputSz.toPath()))) {
+                BlockLZ4CompressorInputStream sis = new BlockLZ4CompressorInputStream(Files.newInputStream(outputSz.toPath()))) {
             final byte[] expected = IOUtils.toByteArray(is);
             final byte[] actual = IOUtils.toByteArray(sis);
             Assert.assertArrayEquals(expected, actual);

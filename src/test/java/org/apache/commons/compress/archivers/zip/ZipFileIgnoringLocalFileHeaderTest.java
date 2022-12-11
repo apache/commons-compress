@@ -96,11 +96,9 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     @Test
     public void testZipUnarchive() throws Exception {
         try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
-            for (final Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements(); ) {
+            for (final Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements();) {
                 final ZipArchiveEntry entry = e.nextElement();
-                try (final OutputStream out = Files.newOutputStream(new File(dir, entry.getName()).toPath())) {
-                    IOUtils.copy(zf.getInputStream(entry), out);
-                }
+                Files.copy(zf.getInputStream(entry), new File(dir, entry.getName()).toPath());
             }
         }
     }

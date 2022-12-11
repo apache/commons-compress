@@ -47,17 +47,16 @@ public final class ArTestCase extends AbstractTestCase {
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
 
-        final OutputStream out = Files.newOutputStream(output.toPath());
-        final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out);
-        os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
-        IOUtils.copy(Files.newInputStream(file1.toPath()), os);
-        os.closeArchiveEntry();
+        try (final OutputStream out = Files.newOutputStream(output.toPath());
+                ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out)) {
+            os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
+            Files.copy(file1.toPath(), os);
+            os.closeArchiveEntry();
 
-        os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
-        IOUtils.copy(Files.newInputStream(file2.toPath()), os);
-        os.closeArchiveEntry();
-
-        os.close();
+            os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
+            Files.copy(file2.toPath(), os);
+            os.closeArchiveEntry();
+        }
     }
 
     @Test
@@ -68,18 +67,16 @@ public final class ArTestCase extends AbstractTestCase {
         final File file2 = getFile("test2.xml");
         {
             // create
+            try (OutputStream out = Files.newOutputStream(output.toPath());
+                    ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out)) {
+                os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
+                Files.copy(file1.toPath(), os);
+                os.closeArchiveEntry();
 
-            final OutputStream out = Files.newOutputStream(output.toPath());
-            final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out);
-            os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
-            IOUtils.copy(Files.newInputStream(file1.toPath()), os);
-            os.closeArchiveEntry();
-
-            os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
-            IOUtils.copy(Files.newInputStream(file2.toPath()), os);
-            os.closeArchiveEntry();
-            os.close();
-            out.close();
+                os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
+                Files.copy(file2.toPath(), os);
+                os.closeArchiveEntry();
+            }
         }
 
         assertEquals(8 + 60 + file1.length() + (file1.length() % 2) + 60 + file2.length() + (file2.length() % 2), output.length());
@@ -122,26 +119,24 @@ public final class ArTestCase extends AbstractTestCase {
         long sum = 0;
 
         {
-            final InputStream is = Files.newInputStream(output2.toPath());
-            final ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is));
-            while (true) {
-                final ArArchiveEntry entry = (ArArchiveEntry) ais.getNextEntry();
-                if (entry == null) {
-                    break;
+            try (InputStream is = Files.newInputStream(output2.toPath());
+                    ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is))) {
+                while (true) {
+                    final ArArchiveEntry entry = (ArArchiveEntry) ais.getNextEntry();
+                    if (entry == null) {
+                        break;
+                    }
+
+                    IOUtils.copy(ais, new ByteArrayOutputStream());
+
+                    sum += entry.getLength();
+                    files++;
                 }
-
-                IOUtils.copy(ais, new ByteArrayOutputStream());
-
-                sum += entry.getLength();
-                files++;
             }
-            ais.close();
-            is.close();
         }
 
         assertEquals(1, files);
         assertEquals(file1.length(), sum);
-
     }
 
     @Test
@@ -151,17 +146,16 @@ public final class ArTestCase extends AbstractTestCase {
             final File file1 = getFile("test1.xml");
             final File file2 = getFile("test2.xml");
 
-            final OutputStream out = Files.newOutputStream(output.toPath());
-            final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out);
-            os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
-            IOUtils.copy(Files.newInputStream(file1.toPath()), os);
-            os.closeArchiveEntry();
+            try (OutputStream out = Files.newOutputStream(output.toPath());
+                    ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out)) {
+                os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
+                Files.copy(file1.toPath(), os);
+                os.closeArchiveEntry();
 
-            os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
-            IOUtils.copy(Files.newInputStream(file2.toPath()), os);
-            os.closeArchiveEntry();
-            os.close();
-            out.close();
+                os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
+                Files.copy(file2.toPath(), os);
+                os.closeArchiveEntry();
+            }
         }
 
         // UnArArchive Operation
@@ -171,9 +165,7 @@ public final class ArTestCase extends AbstractTestCase {
             final ArArchiveEntry entry = (ArArchiveEntry) in.getNextEntry();
 
             final File target = new File(dir, entry.getName());
-            try (final OutputStream out = Files.newOutputStream(target.toPath())) {
-                IOUtils.copy(in, out);
-            }
+            Files.copy(in, target.toPath());
         }
     }
 

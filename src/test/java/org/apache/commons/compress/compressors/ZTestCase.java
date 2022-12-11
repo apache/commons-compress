@@ -38,21 +38,17 @@ public final class ZTestCase extends AbstractTestCase {
     public void testMatches() {
         assertFalse(ZCompressorInputStream.matches(new byte[] { 1, 2, 3, 4 }, 4));
         assertFalse(ZCompressorInputStream.matches(new byte[] { 0x1f, 2, 3, 4 }, 4));
-        assertFalse(ZCompressorInputStream.matches(new byte[] { 1, (byte)0x9d, 3, 4 },
-                                                   4));
-        assertFalse(ZCompressorInputStream.matches(new byte[] { 0x1f, (byte) 0x9d, 3, 4 },
-                                                   3));
-        assertTrue(ZCompressorInputStream.matches(new byte[] { 0x1f, (byte) 0x9d, 3, 4 },
-                                                  4));
+        assertFalse(ZCompressorInputStream.matches(new byte[] { 1, (byte) 0x9d, 3, 4 }, 4));
+        assertFalse(ZCompressorInputStream.matches(new byte[] { 0x1f, (byte) 0x9d, 3, 4 }, 3));
+        assertTrue(ZCompressorInputStream.matches(new byte[] { 0x1f, (byte) 0x9d, 3, 4 }, 4));
     }
 
     private void testUnarchive(final StreamWrapper<CompressorInputStream> wrapper) throws Exception {
         final File input = getFile("bla.tar.Z");
         final File output = new File(dir, "bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
-            try (InputStream in = wrapper.wrap(is);
-                    OutputStream out = Files.newOutputStream(output.toPath())) {
-                IOUtils.copy(in, out);
+            try (InputStream in = wrapper.wrap(is)) {
+                Files.copy(in, output.toPath());
             }
         }
     }
@@ -64,14 +60,12 @@ public final class ZTestCase extends AbstractTestCase {
 
     @Test
     public void testZUnarchiveViaAutoDetection() throws Exception {
-        testUnarchive(is -> new CompressorStreamFactory()
-            .createCompressorInputStream(new BufferedInputStream(is)));
+        testUnarchive(is -> new CompressorStreamFactory().createCompressorInputStream(new BufferedInputStream(is)));
     }
 
     @Test
     public void testZUnarchiveViaFactory() throws Exception {
-        testUnarchive(is -> new CompressorStreamFactory()
-            .createCompressorInputStream(CompressorStreamFactory.Z, is));
+        testUnarchive(is -> new CompressorStreamFactory().createCompressorInputStream(CompressorStreamFactory.Z, is));
     }
 
 }

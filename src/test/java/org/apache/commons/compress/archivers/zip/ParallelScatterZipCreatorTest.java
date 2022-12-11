@@ -68,17 +68,18 @@ public class ParallelScatterZipCreatorTest {
     }
 
     private void callableApi(final CallableConsumerSupplier consumerSupplier, final int compressionLevel) throws Exception {
-        final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result);
-        zos.setEncoding("UTF-8");
-        final ExecutorService es = Executors.newFixedThreadPool(1);
+        final Map<String, byte[]> entries;
+        final ParallelScatterZipCreator zipCreator;
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result)) {
+            zos.setEncoding("UTF-8");
+            final ExecutorService es = Executors.newFixedThreadPool(1);
 
-        final ScatterGatherBackingStoreSupplier supp = () -> new FileBasedScatterGatherBackingStore(tmp = File.createTempFile("parallelscatter", "n1"));
+            final ScatterGatherBackingStoreSupplier supp = () -> new FileBasedScatterGatherBackingStore(tmp = File.createTempFile("parallelscatter", "n1"));
 
-        final ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator(es, supp, compressionLevel);
-        final Map<String, byte[]> entries = writeEntriesAsCallable(zipCreator, consumerSupplier.apply(zipCreator));
-        zipCreator.writeTo(zos);
-        zos.close();
-
+            zipCreator = new ParallelScatterZipCreator(es, supp, compressionLevel);
+            entries = writeEntriesAsCallable(zipCreator, consumerSupplier.apply(zipCreator));
+            zipCreator.writeTo(zos);
+        }
 
         removeEntriesFoundInZipFile(result, entries);
         assertTrue(entries.isEmpty());

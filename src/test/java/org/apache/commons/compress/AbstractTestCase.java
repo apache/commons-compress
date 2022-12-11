@@ -141,7 +141,7 @@ public abstract class AbstractTestCase {
             throws IOException, FileNotFoundException {
         final ArchiveEntry entry = out.createArchiveEntry(infile, filename);
         out.putArchiveEntry(entry);
-        IOUtils.copy(infile, out);
+        Files.copy(infile.toPath(), out);
         out.closeArchiveEntry();
         archiveList.add(filename);
     }
@@ -175,20 +175,17 @@ public abstract class AbstractTestCase {
         try {
             ArchiveEntry entry = null;
             while ((entry = in.getNextEntry()) != null) {
-                final File outfile = new File(result.getCanonicalPath() + "/result/"
-                        + entry.getName());
-                long copied=0;
-                if (entry.isDirectory()){
+                final File outfile = new File(result.getCanonicalPath() + "/result/" + entry.getName());
+                long copied = 0;
+                if (entry.isDirectory()) {
                     outfile.mkdirs();
                 } else {
                     outfile.getParentFile().mkdirs();
-                    try (OutputStream out = Files.newOutputStream(outfile.toPath())) {
-                        copied = IOUtils.copy(in, out);
-                    }
+                    copied = Files.copy(in, outfile.toPath());
                 }
                 final long size = entry.getSize();
                 if (size != ArchiveEntry.SIZE_UNKNOWN) {
-                    assertEquals("Entry.size should equal bytes read.",size, copied);
+                    assertEquals("Entry.size should equal bytes read.", size, copied);
                 }
 
                 if (!outfile.exists()) {

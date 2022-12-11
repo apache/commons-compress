@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -39,9 +40,8 @@ public final class Pack200UtilsTest extends AbstractTestCase {
         final File[] output = createTempDirAndFile();
         try {
             Pack200Utils.normalize(input, output[1], new HashMap<>());
-            try (InputStream is = Files.newInputStream(output[1].toPath())) {
-                final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT
-                        .createArchiveInputStream("jar", is);
+            try (InputStream is = Files.newInputStream(output[1].toPath());
+                    ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
 
                 ArchiveEntry entry = in.getNextEntry();
                 while (entry != null) {
@@ -52,9 +52,7 @@ public final class Pack200UtilsTest extends AbstractTestCase {
                         entry = in.getNextEntry();
                         continue;
                     }
-                    final OutputStream out = Files.newOutputStream(archiveEntry.toPath());
-                    IOUtils.copy(in, out);
-                    out.close();
+                    Files.copy(in, archiveEntry.toPath());
                     entry = in.getNextEntry();
                 }
 
@@ -71,23 +69,14 @@ public final class Pack200UtilsTest extends AbstractTestCase {
         final File input = getFile("bla.jar");
         final File[] output = createTempDirAndFile();
         try {
-            InputStream is = Files.newInputStream(input.toPath());
-            OutputStream os = null;
-            try {
-                os = Files.newOutputStream(output[1].toPath());
-                IOUtils.copy(is, os);
-            } finally {
-                is.close();
-                if (os != null) {
-                    os.close();
-                }
+            try (InputStream is = Files.newInputStream(input.toPath())) {
+                Files.copy(is, output[1].toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
 
             Pack200Utils.normalize(output[1]);
-            is = Files.newInputStream(output[1].toPath());
-            try {
-                final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT
-                    .createArchiveInputStream("jar", is);
+
+            try (InputStream is = Files.newInputStream(output[1].toPath());
+                    ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
 
                 ArchiveEntry entry = in.getNextEntry();
                 while (entry != null) {
@@ -98,15 +87,9 @@ public final class Pack200UtilsTest extends AbstractTestCase {
                         entry = in.getNextEntry();
                         continue;
                     }
-                    final OutputStream out = Files.newOutputStream(archiveEntry.toPath());
-                    IOUtils.copy(in, out);
-                    out.close();
+                    Files.copy(in, archiveEntry.toPath());
                     entry = in.getNextEntry();
                 }
-
-                in.close();
-            } finally {
-                is.close();
             }
         } finally {
             output[1].delete();
