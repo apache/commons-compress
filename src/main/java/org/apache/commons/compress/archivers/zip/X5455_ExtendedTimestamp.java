@@ -113,8 +113,9 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * @return ZipLong
      */
     private static ZipLong dateToZipLong(final Date d) {
-        if (d == null) { return null; }
-
+        if (d == null) {
+            return null;
+        }
         return unixTimeToZipLong(d.getTime() / 1000);
     }
 
@@ -124,9 +125,11 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
         }
         return new ZipLong(l);
     }
+
     private static Date zipLongToDate(final ZipLong unixTime) {
         return unixTime != null ? new Date(unixTime.getIntValue() * 1000L) : null;
     }
+
     // The 3 boolean fields (below) come from this flags byte.  The remaining 5 bits
     // are ignored according to the current version of the spec (December 2012).
     private byte flags;
@@ -189,7 +192,9 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      *
      * @return access time (seconds since epoch) or null.
      */
-    public ZipLong getAccessTime() { return accessTime; }
+    public ZipLong getAccessTime() {
+        return accessTime;
+    }
 
     /**
      * The actual data to put into central directory data - without Header-ID
@@ -216,9 +221,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      */
     @Override
     public ZipShort getCentralDirectoryLength() {
-        return new ZipShort(1 +
-                (bit0_modifyTimePresent ? 4 : 0)
-        );
+        return new ZipShort(1 + (bit0_modifyTimePresent ? 4 : 0));
     }
 
     /**
@@ -252,7 +255,9 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      *
      * @return create time (seconds since epoch) or null.
      */
-    public ZipLong getCreateTime() { return createTime; }
+    public ZipLong getCreateTime() {
+        return createTime;
+    }
 
     /**
      * Gets flags byte.  The flags byte tells us which of the
@@ -369,7 +374,9 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      *
      * @return true if bit0 of the flags byte is set.
      */
-    public boolean isBit0_modifyTimePresent() { return bit0_modifyTimePresent; }
+    public boolean isBit0_modifyTimePresent() {
+        return bit0_modifyTimePresent;
+    }
 
     /**
      * Returns whether bit1 of the flags byte is set or not,
@@ -378,7 +385,9 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      *
      * @return true if bit1 of the flags byte is set.
      */
-    public boolean isBit1_accessTimePresent() { return bit1_accessTimePresent; }
+    public boolean isBit1_accessTimePresent() {
+        return bit1_accessTimePresent;
+    }
 
     /**
      * Returns whether bit2 of the flags byte is set or not,
@@ -387,16 +396,16 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      *
      * @return true if bit2 of the flags byte is set.
      */
-    public boolean isBit2_createTimePresent() { return bit2_createTimePresent; }
+    public boolean isBit2_createTimePresent() {
+        return bit2_createTimePresent;
+    }
 
     /**
      * Doesn't do anything special since this class always uses the
      * same parsing logic for both central directory and local file data.
      */
     @Override
-    public void parseFromCentralDirectoryData(
-            final byte[] buffer, final int offset, final int length
-    ) throws ZipException {
+    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset, final int length) throws ZipException {
         reset();
         parseFromLocalFileData(buffer, offset, length);
     }
@@ -410,9 +419,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * @throws java.util.zip.ZipException on error
      */
     @Override
-    public void parseFromLocalFileData(
-            final byte[] data, int offset, final int length
-    ) throws ZipException {
+    public void parseFromLocalFileData(final byte[] data, int offset, final int length) throws ZipException {
         reset();
         if (length < 1) {
             throw new ZipException("X5455_ExtendedTimestamp too short, only " + length + " bytes");
@@ -463,7 +470,9 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      *
      * @param d access time as java.util.Date
      */
-    public void setAccessJavaTime(final Date d) { setAccessTime(dateToZipLong(d)); }
+    public void setAccessJavaTime(final Date d) {
+        setAccessTime(dateToZipLong(d));
+    }
 
     /**
      * <p>
@@ -479,8 +488,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      */
     public void setAccessTime(final ZipLong l) {
         bit1_accessTimePresent = l != null;
-        flags = (byte) (l != null ? (flags | ACCESS_TIME_BIT)
-                        : (flags & ~ACCESS_TIME_BIT));
+        flags = (byte) (l != null ? (flags | ACCESS_TIME_BIT) : (flags & ~ACCESS_TIME_BIT));
         this.accessTime = l;
     }
 
@@ -513,8 +521,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      */
     public void setCreateTime(final ZipLong l) {
         bit2_createTimePresent = l != null;
-        flags = (byte) (l != null ? (flags | CREATE_TIME_BIT)
-                        : (flags & ~CREATE_TIME_BIT));
+        flags = (byte) (l != null ? (flags | CREATE_TIME_BIT) : (flags & ~CREATE_TIME_BIT));
         this.createTime = l;
     }
 
@@ -552,7 +559,9 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      *
      * @param d modify time as java.util.Date
      */
-    public void setModifyJavaTime(final Date d) { setModifyTime(dateToZipLong(d)); }
+    public void setModifyJavaTime(final Date d) {
+        setModifyTime(dateToZipLong(d));
+    }
 
     /**
      * <p>
@@ -568,8 +577,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      */
     public void setModifyTime(final ZipLong l) {
         bit0_modifyTimePresent = l != null;
-        flags = (byte) (l != null ? (flags | MODIFY_TIME_BIT)
-                        : (flags & ~MODIFY_TIME_BIT));
+        flags = (byte) (l != null ? (flags | MODIFY_TIME_BIT) : (flags & ~MODIFY_TIME_BIT));
         this.modifyTime = l;
     }
 
