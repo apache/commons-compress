@@ -17,12 +17,12 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.utils.TimeUtils;
-
 import java.nio.file.attribute.FileTime;
 import java.util.Date;
 import java.util.Objects;
 import java.util.zip.ZipException;
+
+import org.apache.commons.compress.utils.TimeUtils;
 
 /**
  * NTFS extra field that was thought to store various attributes but

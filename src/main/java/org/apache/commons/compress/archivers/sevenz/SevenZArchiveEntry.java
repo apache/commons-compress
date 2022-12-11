@@ -17,8 +17,8 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import java.util.Arrays;
 import java.nio.file.attribute.FileTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;

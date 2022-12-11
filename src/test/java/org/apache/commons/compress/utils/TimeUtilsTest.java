@@ -17,20 +17,26 @@
  */
 package org.apache.commons.compress.utils;
 
-import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import static org.apache.commons.compress.utils.TimeUtils.HUNDRED_NANOS_PER_MILLISECOND;
+import static org.apache.commons.compress.utils.TimeUtils.WINDOWS_EPOCH_OFFSET;
+import static org.apache.commons.compress.utils.TimeUtils.ntfsTimeToDate;
+import static org.apache.commons.compress.utils.TimeUtils.ntfsTimeToFileTime;
+import static org.apache.commons.compress.utils.TimeUtils.toDate;
+import static org.apache.commons.compress.utils.TimeUtils.toFileTime;
+import static org.apache.commons.compress.utils.TimeUtils.toNtfsTime;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.Date;
 import java.util.stream.Stream;
 
-import static org.apache.commons.compress.utils.TimeUtils.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class TimeUtilsTest {
 

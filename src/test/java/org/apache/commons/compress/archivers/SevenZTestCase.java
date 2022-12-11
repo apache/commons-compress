@@ -17,6 +17,10 @@
  */
 package org.apache.commons.compress.archivers;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,8 +39,6 @@ import org.apache.commons.compress.utils.TimeUtils;
 import org.junit.Assume;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.Assert.*;
 
 public class SevenZTestCase extends AbstractTestCase {
 
