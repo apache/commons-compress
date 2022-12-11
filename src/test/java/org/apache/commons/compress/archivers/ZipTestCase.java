@@ -269,53 +269,46 @@ public final class ZipTestCase extends AbstractTestCase {
 
     @Test
     public void inputStreamStatisticsForBzip2Entry() throws IOException, ArchiveException {
-        final Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
-            put("lots-of-as", Arrays.asList(42L, 39L));
-        }};
+        final Map<String, List<Long>> expected = new HashMap<>();
+        expected.put("lots-of-as", Arrays.asList(42L, 39L));
         testInputStreamStatistics("bzip2-zip.zip", expected);
     }
 
     @Test
     public void inputStreamStatisticsForDeflate64Entry() throws IOException, ArchiveException {
-        final Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
-            put("input2", Arrays.asList(3072L, 2111L));
-        }};
+        final Map<String, List<Long>> expected = new HashMap<>();
+        expected.put("input2", Arrays.asList(3072L, 2111L));
         testInputStreamStatistics("COMPRESS-380/COMPRESS-380.zip", expected);
     }
 
 
     @Test
     public void inputStreamStatisticsForImplodedEntry() throws IOException, ArchiveException {
-        final Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
-            put("LICENSE.TXT", Arrays.asList(11560L, 4131L));
-        }};
+        final Map<String, List<Long>> expected = new HashMap<>();
+        expected.put("LICENSE.TXT", Arrays.asList(11560L, 4131L));
         testInputStreamStatistics("imploding-8Kdict-3trees.zip", expected);
     }
 
-
     @Test
     public void inputStreamStatisticsForShrunkEntry() throws IOException, ArchiveException {
-        final Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
-            put("TEST1.XML", Arrays.asList(76L, 66L));
-            put("TEST2.XML", Arrays.asList(81L, 76L));
-        }};
+        final Map<String, List<Long>> expected = new HashMap<>();
+        expected.put("TEST1.XML", Arrays.asList(76L, 66L));
+        expected.put("TEST2.XML", Arrays.asList(81L, 76L));
         testInputStreamStatistics("SHRUNK.ZIP", expected);
     }
 
     @Test
     public void inputStreamStatisticsForStoredEntry() throws IOException, ArchiveException {
-        final Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
-            put("test.txt", Arrays.asList(5L, 5L));
-        }};
+        final Map<String, List<Long>> expected = new HashMap<>();
+        expected.put("test.txt", Arrays.asList(5L, 5L));
         testInputStreamStatistics("COMPRESS-264.zip", expected);
     }
 
     @Test
     public void inputStreamStatisticsOfZipBombExcel() throws IOException, ArchiveException {
-        final Map<String, List<Long>> expected = new HashMap<String, List<Long>>() {{
-            put("[Content_Types].xml", Arrays.asList(8390036L, 8600L));
-            put("xl/worksheets/sheet1.xml", Arrays.asList(1348L, 508L));
-        }};
+        final Map<String, List<Long>> expected = new HashMap<>();
+        expected.put("[Content_Types].xml", Arrays.asList(8390036L, 8600L));
+        expected.put("xl/worksheets/sheet1.xml", Arrays.asList(1348L, 508L));
         testInputStreamStatistics("zipbomb.xlsx", expected);
     }
 
