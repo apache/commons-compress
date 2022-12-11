@@ -56,7 +56,6 @@ class LZMADecoder extends AbstractCoder {
         return lzmaIn;
     }
 
-    @SuppressWarnings("resource")
     @Override
     OutputStream encode(final OutputStream out, final Object opts)
         throws IOException {
