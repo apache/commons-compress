@@ -21,14 +21,15 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * This is an inputstream that always return 0,
+ * This is an InputStream that always return 0,
  * this is used when reading the "holes" of a sparse file
  */
 class TarArchiveSparseZeroInputStream extends InputStream {
 
     /**
-     * Just return 0
-     * @return
+     * Returns 0.
+     *
+     * @return 0
      * @throws IOException
      */
     @Override
@@ -37,7 +38,7 @@ class TarArchiveSparseZeroInputStream extends InputStream {
     }
 
     /**
-     * these's nothing need to do when skipping
+     * Returns the input.
      *
      * @param n bytes to skip
      * @return bytes actually skipped

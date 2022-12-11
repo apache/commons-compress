@@ -44,14 +44,18 @@ class CircularBuffer {
     }
 
     /**
-     * Tells if a new byte can be read from the buffer.
+     * Tests whether a new byte can be read from the buffer.
+     *
+     * @return Whether a new byte can be read from the buffer.
      */
     public boolean available() {
         return readIndex != writeIndex;
     }
 
     /**
-     * Writes a byte to the buffer.
+     * Puts a byte to the buffer.
+     *
+     * @param value the value to put.
      */
     public void put(final int value) {
         buffer[writeIndex] = (byte) value;
@@ -60,6 +64,8 @@ class CircularBuffer {
 
     /**
      * Reads a byte from the buffer.
+     *
+     * @return a byte from the buffer.
      */
     public int get() {
         if (available()) {
@@ -71,7 +77,7 @@ class CircularBuffer {
     }
 
     /**
-     * Copy a previous interval in the buffer to the current position.
+     * Copies a previous interval in the buffer to the current position.
      *
      * @param distance the distance from the current write position
      * @param length   the number of bytes to copy
