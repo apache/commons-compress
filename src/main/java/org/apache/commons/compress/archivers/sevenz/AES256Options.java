@@ -33,9 +33,27 @@ import javax.crypto.spec.SecretKeySpec;
  */
 class AES256Options {
 
+    static final String ALGORITHM = "AES";
+
+    static final String TRANSFORMATION = "AES/CBC/NoPadding";
+
+    static SecretKeySpec newSecretKeySpec(final byte[] bytes) {
+        return new SecretKeySpec(bytes, ALGORITHM);
+    }
+    private static byte[] randomBytes(int size) {
+        byte[] bytes = new byte[size];
+        try {
+            SecureRandom.getInstanceStrong().nextBytes(bytes);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("No strong secure random available to generate strong AES key", e);
+        }
+        return bytes;
+    }
     private final byte[] salt;
     private final byte[] iv;
+
     private final int numCyclesPower;
+
     private final Cipher cipher;
 
     /**
@@ -59,10 +77,10 @@ class AES256Options {
 
         // NOTE: for security purposes, password is wrapped in a Cipher as soon as possible to not stay in memory
         final byte[] aesKeyBytes = AES256SHA256Decoder.sha256Password(password, numCyclesPower, salt);
-        final SecretKey aesKey = new SecretKeySpec(aesKeyBytes, "AES");
+        final SecretKey aesKey = newSecretKeySpec(aesKeyBytes);
 
         try {
-            cipher = Cipher.getInstance("AES/CBC/NoPadding");
+            cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(Cipher.ENCRYPT_MODE, aesKey, new IvParameterSpec(iv));
         } catch (final GeneralSecurityException generalSecurityException) {
             throw new IllegalStateException(
@@ -70,6 +88,10 @@ class AES256Options {
                 generalSecurityException
             );
         }
+    }
+
+    Cipher getCipher() {
+        return cipher;
     }
 
     byte[] getIv() {
@@ -82,19 +104,5 @@ class AES256Options {
 
     byte[] getSalt() {
         return salt;
-    }
-
-    Cipher getCipher() {
-        return cipher;
-    }
-
-    private static byte[] randomBytes(int size) {
-        byte[] bytes = new byte[size];
-        try {
-            SecureRandom.getInstanceStrong().nextBytes(bytes);
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("No strong secure random available to generate strong AES key", e);
-        }
-        return bytes;
     }
 }

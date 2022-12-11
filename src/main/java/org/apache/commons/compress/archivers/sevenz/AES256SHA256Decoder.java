@@ -34,7 +34,6 @@ import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.compress.PasswordRequiredException;
 
@@ -87,9 +86,9 @@ class AES256SHA256Decoder extends AbstractCoder {
                     aesKeyBytes = sha256Password(passwordBytes, numCyclesPower, salt);
                 }
 
-                final SecretKey aesKey = new SecretKeySpec(aesKeyBytes, "AES");
+                final SecretKey aesKey = AES256Options.newSecretKeySpec(aesKeyBytes);
                 try {
-                    final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+                    final Cipher cipher = Cipher.getInstance(AES256Options.TRANSFORMATION);
                     cipher.init(Cipher.DECRYPT_MODE, aesKey, new IvParameterSpec(iv));
                     cipherInputStream = new CipherInputStream(in, cipher);
                     isInitialized = true;
