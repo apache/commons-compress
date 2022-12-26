@@ -196,10 +196,7 @@ public abstract class ZipUtil {
 
     /**
      * Converts DOS time to Java time (number of milliseconds since
-     * epoch). Accepts the extended DOS format used by {@link ZipEntry},
-     * where up to 1999 milliseconds can be stored in the upper
-     * 32 bits of the DOS time.
-     *
+     * epoch).
      * @param dosTime time to convert
      * @return converted time
      */
@@ -214,7 +211,7 @@ public abstract class ZipUtil {
         cal.set(Calendar.SECOND, (int) (dosTime << 1) & 0x3e);
         cal.set(Calendar.MILLISECOND, 0);
         // CheckStyle:MagicNumberCheck ON
-        return cal.getTime().getTime() + (dosTime >> 32);
+        return cal.getTime().getTime();
     }
 
     /**
@@ -372,15 +369,6 @@ public abstract class ZipUtil {
             || entry.getMethod() == ZipMethod.BZIP2.getCode();
     }
 
-    /**
-     * Converts Java time to DOS time, encoding any milliseconds lost in the conversion
-     * into the upper 32 bits of the returned long.
-     *
-     * @param c the calendar object used for data conversion
-     * @param t milliseconds since epoch
-     * @param buf the byte buffer where to put the resulting long
-     * @param offset the offset in the buffer from which to start writing
-     */
     static void toDosTime(final Calendar c, final long t, final byte[] buf, final int offset) {
         c.setTimeInMillis(t);
 
@@ -389,15 +377,13 @@ public abstract class ZipUtil {
             copy(DOSTIME_BEFORE_1980_BYTES, buf, offset); // stop callers from changing the array
             return;
         }
-        long value =  ((year - 1980) << 25)
-                |     ((c.get(Calendar.MONTH) + 1) << 21)
-                |     (c.get(Calendar.DAY_OF_MONTH) << 16)
-                |     (c.get(Calendar.HOUR_OF_DAY) << 11)
-                |     (c.get(Calendar.MINUTE) << 5)
-                |     (c.get(Calendar.SECOND) >> 1);
-        if (value != DOSTIME_BEFORE_1980) {
-            value += ((t % 2000) << 32);
-        }
+        final int month = c.get(Calendar.MONTH) + 1;
+        final long value =  ((year - 1980) << 25)
+                |         (month << 21)
+                |         (c.get(Calendar.DAY_OF_MONTH) << 16)
+                |         (c.get(Calendar.HOUR_OF_DAY) << 11)
+                |         (c.get(Calendar.MINUTE) << 5)
+                |         (c.get(Calendar.SECOND) >> 1);
         ZipLong.putLong(value, buf, offset);
     }
 

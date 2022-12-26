@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
@@ -470,7 +471,12 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
 
     @Override
     public void setTime(long time) {
-        super.setTime(time);
+        /*
+        Truncate to seconds.
+        Milliseconds are never written to a ZIP file anyway, even though java.util.ZipEntry
+        converts the data to an extended DOS date format which supports them.
+         */
+        super.setTime((time / 1000) * 1000);
         setExtraTimeFields();
     }
 
@@ -1054,14 +1060,11 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     private void setExtraTimeFields() {
-        boolean modified = false;
         if (getExtraField(X5455_ExtendedTimestamp.HEADER_ID) != null) {
             internalRemoveExtraField(X5455_ExtendedTimestamp.HEADER_ID);
-            modified = true;
         }
         if (getExtraField(X000A_NTFS.HEADER_ID) != null) {
             internalRemoveExtraField(X000A_NTFS.HEADER_ID);
-            modified = true;
         }
         if (requiresExtraTimeFields()) {
             final X000A_NTFS ntfsTimestamp = new X000A_NTFS();
@@ -1078,11 +1081,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
                 ntfsTimestamp.setCreateFileTime(creationTime);
             }
             internalAddExtraField(ntfsTimestamp);
-            modified = true;
         }
-        if (modified) {
-            setExtra();
-        }
+        setExtra();
     }
 
     private boolean requiresExtraTimeFields() {
@@ -1093,11 +1093,11 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
         return modifyTime != null && (exceedsMaximumTimeLimits(modifyTime) || isHighPrecision(modifyTime));
     }
 
-    private static boolean exceedsMaximumTimeLimits(FileTime time) {
+    private static boolean exceedsMaximumTimeLimits(final FileTime time) {
         return ZipUtil.exceedsDosTime(time) || TimeUtils.exceedsUnixTime(time);
     }
 
-    private static boolean isHighPrecision(FileTime time) {
+    private static boolean isHighPrecision(final FileTime time) {
         return time.toInstant().getNano() != 0;
     }
 
@@ -1157,9 +1157,9 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      * help - we need to modify super's data directly and on every update.
      */
     protected void setExtra() {
-        // ZipEntry will update the time fields here
+        // ZipEntry will update the time fields here, so we need to reprocess them afterwards
         super.setExtra(ExtraFieldUtils.mergeLocalFileDataData(getAllExtraFieldsNoCopy()));
-        // Let ZipEntry process the times, but overwrite the modifications afterwards
+        // Reprocess and overwrite the modifications made by ZipEntry#setExtra(byte[])
         updateTimeFieldsFromExtraFields();
     }
 

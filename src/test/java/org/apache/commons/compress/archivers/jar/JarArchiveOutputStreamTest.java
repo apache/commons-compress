@@ -53,15 +53,13 @@ public class JarArchiveOutputStreamTest {
             ZipArchiveEntry ze = zf.getEntry("foo/");
             assertNotNull(ze);
             ZipExtraField[] fes = ze.getExtraFields();
-            assertEquals(2, fes.length);
+            assertEquals(1, fes.length);
             assertTrue(fes[0] instanceof JarMarker);
-            assertTrue(fes[1] instanceof X000A_NTFS);
 
             ze = zf.getEntry("bar/");
             assertNotNull(ze);
             fes = ze.getExtraFields();
-            assertEquals(1, fes.length);
-            assertTrue(fes[0] instanceof X000A_NTFS);
+            assertEquals(0, fes.length);
         } finally {
             if (out != null) {
                 try {
