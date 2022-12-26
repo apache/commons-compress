@@ -20,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -115,12 +115,8 @@ public class PackingOptionsTest {
         assertEquals("true", options.getDeflateHint());
         options.setDeflateHint("false");
         assertEquals("false", options.getDeflateHint());
-        try {
-            options.setDeflateHint("hello");
-            fail("Should throw IllegalArgumentException for incorrect deflate hint");
-        } catch (IllegalArgumentException iae) {
-            // pass
-        }
+        assertThrows(IllegalArgumentException.class, () -> options.setDeflateHint("hello"),
+                "Should throw IllegalArgumentException for incorrect deflate hint");
     }
 
     @Test
@@ -157,15 +153,12 @@ public class PackingOptionsTest {
         PackingOptions options = new PackingOptions();
         options.addClassAttributeAction("Pack200", "error");
         Archive ar = new Archive(in, out, options);
-        try {
+        Error error = assertThrows(Error.class, () -> {
             ar.pack();
             in.close();
             out.close();
-            fail("fail");
-        } catch (Error e) {
-            // pass
-            assertEquals("Attribute Pack200 was found", e.getMessage());
-        }
+        });
+        assertEquals("Attribute Pack200 was found", error.getMessage());
     }
 
     @Test
@@ -318,12 +311,11 @@ public class PackingOptionsTest {
         assertEquals("keep", options.getModificationTime());
         options.setModificationTime("latest");
         assertEquals("latest", options.getModificationTime());
-        try {
-            options.setModificationTime("true");
-            fail("Should throw IllegalArgumentException for incorrect mod time");
-        } catch (IllegalArgumentException iae) {
-            // pass
-        }
+        assertThrows(IllegalArgumentException.class, () -> {
+                    PackingOptions illegalOption = new PackingOptions();
+                    illegalOption.setModificationTime("true");
+                },
+                "Should throw IllegalArgumentException for incorrect mod time");
 
         // Test option works correctly. Test 'keep'.
         in = new JarFile(new File(Archive.class.getResource(

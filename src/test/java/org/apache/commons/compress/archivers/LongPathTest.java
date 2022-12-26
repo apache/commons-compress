@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -139,9 +140,7 @@ public class LongPathTest extends AbstractTestCase {
             fail("Unexpected file type: "+name);
         }
         try {
-            checkArchiveContent(ais, expected);
-        } catch (final Exception e) {
-            fail("Error processing "+file.getName()+" "+e);
+            assertDoesNotThrow(() -> checkArchiveContent(ais, expected), "Error processing " + file.getName());
         } finally {
             ais.close();
         }

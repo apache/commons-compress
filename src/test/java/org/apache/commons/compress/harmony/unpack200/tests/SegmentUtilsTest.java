@@ -22,6 +22,11 @@ import org.apache.commons.compress.harmony.unpack200.IMatcher;
 import org.apache.commons.compress.harmony.unpack200.SegmentUtils;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 public class SegmentUtilsTest {
 
@@ -43,32 +48,43 @@ public class SegmentUtilsTest {
     public static final IMatcher even = new MultipleMatches(2);
     public static final IMatcher five = new MultipleMatches(5);
 
-    @Test
-    public void testCountArgs() {
-        assertEquals(0, SegmentUtils.countArgs("()V"));
-        assertEquals(1, SegmentUtils.countArgs("(D)V"));
-        assertEquals(1, SegmentUtils.countArgs("([D)V"));
-        assertEquals(1, SegmentUtils.countArgs("([[D)V"));
-        assertEquals(2, SegmentUtils.countArgs("(DD)V"));
-        assertEquals(3, SegmentUtils.countArgs("(DDD)V"));
-        assertEquals(2, SegmentUtils.countArgs("(Lblah/blah;D)V"));
-        assertEquals(3, SegmentUtils.countArgs("(Lblah/blah;DLbLah;)V"));
+    static Stream<Arguments> countArgs() {
+        return Stream.of(
+                Arguments.of("()V", 0),
+                Arguments.of("(D)V", 1),
+                Arguments.of("([D)V", 1),
+                Arguments.of("([[D)V", 1),
+                Arguments.of("(DD)V", 2),
+                Arguments.of("(DDD)V", 3),
+                Arguments.of("(Lblah/blah;D)V", 2),
+                Arguments.of("(Lblah/blah;DLbLah;)V", 3)
+        );
     }
 
-    @Test
-    public void testCountInvokeInterfaceArgs() {
-        assertEquals(1, SegmentUtils.countInvokeInterfaceArgs("(Z)V"));
-        assertEquals(2, SegmentUtils.countInvokeInterfaceArgs("(D)V"));
-        assertEquals(2, SegmentUtils.countInvokeInterfaceArgs("(J)V"));
-        assertEquals(1, SegmentUtils.countInvokeInterfaceArgs("([D)V"));
-        assertEquals(1, SegmentUtils.countInvokeInterfaceArgs("([[D)V"));
-        assertEquals(4, SegmentUtils.countInvokeInterfaceArgs("(DD)V"));
-        assertEquals(3, SegmentUtils
-                .countInvokeInterfaceArgs("(Lblah/blah;D)V"));
-        assertEquals(4, SegmentUtils
-                .countInvokeInterfaceArgs("(Lblah/blah;DLbLah;)V"));
-        assertEquals(4, SegmentUtils
-                .countInvokeInterfaceArgs("([Lblah/blah;DLbLah;)V"));
+    @ParameterizedTest
+    @MethodSource("countArgs")
+    public void testCountArgs(final String descriptor, final int expectedArgsCount) {
+        assertEquals(expectedArgsCount, SegmentUtils.countArgs(descriptor));
+    }
+
+    static Stream<Arguments> countInvokeInterfaceArgs() {
+        return Stream.of(
+                Arguments.of("(Z)V", 1),
+                Arguments.of("(D)V", 2),
+                Arguments.of("(J)V", 2),
+                Arguments.of("([D)V", 1),
+                Arguments.of("([[D)V", 1),
+                Arguments.of("(DD)V", 4),
+                Arguments.of("(Lblah/blah;D)V", 3),
+                Arguments.of("(Lblah/blah;DLbLah;)V", 4),
+                Arguments.of("([Lblah/blah;DLbLah;)V", 4)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("countInvokeInterfaceArgs")
+    public void testCountInvokeInterfaceArgs(final String descriptor, final int expectedCountInvokeInterfaceArgs) {
+        assertEquals(expectedCountInvokeInterfaceArgs, SegmentUtils.countInvokeInterfaceArgs(descriptor));
     }
 
     @Test

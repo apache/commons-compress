@@ -20,14 +20,25 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 public class ByteCodeTest {
 
-    @Test
-    public void testByteCode() {
-        assertEquals("nop", ByteCode.getByteCode(0).getName());
-        assertEquals("return", ByteCode.getByteCode(-79).getName());
-        assertEquals("return", ByteCode.getByteCode(177).getName());
+    static Stream<Arguments> byteCode() {
+        return Stream.of(
+                Arguments.of(0, "nop"),
+                Arguments.of(-79, "return"),
+                Arguments.of(177, "return")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("byteCode")
+    public void testByteCode(final int opCode, final String expectedName) {
+        assertEquals(expectedName, ByteCode.getByteCode(opCode).getName());
     }
 }
