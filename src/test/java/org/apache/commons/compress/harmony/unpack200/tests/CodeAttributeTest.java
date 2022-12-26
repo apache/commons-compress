@@ -16,6 +16,8 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,12 +33,12 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ExceptionTableEntr
 import org.apache.commons.compress.harmony.unpack200.bytecode.LocalVariableTableAttribute;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for CodeAttribute
  */
-public class CodeAttributeTest extends TestCase {
+public class CodeAttributeTest {
 
 	public class MockCodeAttribute extends CodeAttribute {
 
@@ -140,6 +142,7 @@ public class CodeAttributeTest extends TestCase {
             -49, // return 4
     };
 
+    @Test
     public void testLength() {
         OperandManager operandManager = new MockOperandManager();
         operandManager.setSegment(segment);
@@ -158,6 +161,7 @@ public class CodeAttributeTest extends TestCase {
         assertEquals(37, attribute.getLength());
     }
 
+    @Test
     public void testMixedByteCodes() {
         OperandManager operandManager = new MockOperandManager();
         operandManager.setSegment(segment);
@@ -181,6 +185,7 @@ public class CodeAttributeTest extends TestCase {
         }
     }
 
+    @Test
     public void testSingleByteCodes() {
         OperandManager operandManager = new MockOperandManager();
         operandManager.setSegment(segment);

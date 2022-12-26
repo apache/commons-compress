@@ -21,10 +21,13 @@ import java.util.List;
 
 import org.apache.commons.compress.harmony.unpack200.SegmentConstantPoolArrayCache;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class SegmentConstantPoolArrayCacheTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+public class SegmentConstantPoolArrayCacheTest {
+
+    @Test
     public void testMultipleArrayMultipleHit() {
         SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
         String arrayOne[] = {"Zero", "Shared", "Two", "Shared", "Shared"};
@@ -57,6 +60,7 @@ public class SegmentConstantPoolArrayCacheTest extends TestCase {
         assertEquals(0, listThree.size());
     }
 
+    @Test
     public void testSingleMultipleHitArray() {
         SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
         String array[] = {"Zero", "OneThreeFour", "Two", "OneThreeFour", "OneThreeFour"};
@@ -67,6 +71,7 @@ public class SegmentConstantPoolArrayCacheTest extends TestCase {
         assertEquals(4, ((Integer)list.get(2)).intValue());
     }
 
+    @Test
     public void testSingleSimpleArray() {
         SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
         String array[] = {"Zero", "One", "Two", "Three", "Four"};

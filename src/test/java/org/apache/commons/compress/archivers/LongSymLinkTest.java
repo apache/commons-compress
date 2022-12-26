@@ -41,8 +41,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import junit.framework.AssertionFailedError;
-
 /**
  * Test that can read various tar file examples.
  *
@@ -143,7 +141,7 @@ public class LongSymLinkTest extends AbstractTestCase {
         }
         try {
             checkArchiveContent(ais, expected);
-        } catch (final AssertionFailedError e) {
+        } catch (final Exception e) {
             fail("Error processing "+file.getName()+" "+e);
         } finally {
             ais.close();

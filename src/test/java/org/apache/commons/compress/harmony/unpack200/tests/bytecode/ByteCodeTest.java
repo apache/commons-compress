@@ -18,10 +18,13 @@ package org.apache.commons.compress.harmony.unpack200.tests.bytecode;
 
 import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ByteCodeTest extends TestCase {
+import org.junit.jupiter.api.Test;
 
+public class ByteCodeTest {
+
+    @Test
     public void testByteCode() {
         assertEquals("nop", ByteCode.getByteCode(0).getName());
         assertEquals("return", ByteCode.getByteCode(-79).getName());

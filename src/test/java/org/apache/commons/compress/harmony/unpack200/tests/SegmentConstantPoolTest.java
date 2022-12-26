@@ -16,16 +16,19 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.commons.compress.harmony.unpack200.CpBands;
 import org.apache.commons.compress.harmony.unpack200.Segment;
 import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for org.apache.commons.compress.harmony.unpack200.SegmentConstantPool.
  */
-public class SegmentConstantPoolTest extends TestCase {
+public class SegmentConstantPoolTest {
 
     public class MockSegmentConstantPool extends SegmentConstantPool {
 
@@ -60,6 +63,7 @@ public class SegmentConstantPoolTest extends TestCase {
     String[] testMethodArray = { "<init>()", "clone()", "equals()", "<init>",
             "isNull()", "Other" };
 
+    @Test
     public void testMatchSpecificPoolEntryIndex_DoubleArray() {
         MockSegmentConstantPool mockInstance = new MockSegmentConstantPool();
         // Elements should be found at the proper position.
@@ -84,6 +88,7 @@ public class SegmentConstantPoolTest extends TestCase {
                 "^<init>.*", 1));
     }
 
+    @Test
     public void testMatchSpecificPoolEntryIndex_SingleArray() {
         MockSegmentConstantPool mockInstance = new MockSegmentConstantPool();
         // Elements should be found at the proper position.
@@ -110,6 +115,7 @@ public class SegmentConstantPoolTest extends TestCase {
                 testClassArray, "java/lang/String", 2));
     }
 
+    @Test
     public void testRegexReplacement() {
         MockSegmentConstantPool mockPool = new MockSegmentConstantPool();
         assertTrue(mockPool.regexMatchesVisible(".*", "anything"));

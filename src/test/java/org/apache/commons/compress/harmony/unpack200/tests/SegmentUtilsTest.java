@@ -16,12 +16,14 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.commons.compress.harmony.unpack200.IMatcher;
 import org.apache.commons.compress.harmony.unpack200.SegmentUtils;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class SegmentUtilsTest extends TestCase {
+public class SegmentUtilsTest {
 
     private static class MultipleMatches implements IMatcher {
 
@@ -41,6 +43,7 @@ public class SegmentUtilsTest extends TestCase {
     public static final IMatcher even = new MultipleMatches(2);
     public static final IMatcher five = new MultipleMatches(5);
 
+    @Test
     public void testCountArgs() {
         assertEquals(0, SegmentUtils.countArgs("()V"));
         assertEquals(1, SegmentUtils.countArgs("(D)V"));
@@ -52,6 +55,7 @@ public class SegmentUtilsTest extends TestCase {
         assertEquals(3, SegmentUtils.countArgs("(Lblah/blah;DLbLah;)V"));
     }
 
+    @Test
     public void testCountInvokeInterfaceArgs() {
         assertEquals(1, SegmentUtils.countInvokeInterfaceArgs("(Z)V"));
         assertEquals(2, SegmentUtils.countInvokeInterfaceArgs("(D)V"));
@@ -67,6 +71,7 @@ public class SegmentUtilsTest extends TestCase {
                 .countInvokeInterfaceArgs("([Lblah/blah;DLbLah;)V"));
     }
 
+    @Test
     public void testMatches() {
         long[] oneToTen = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         assertEquals(6, SegmentUtils.countMatches(new long[][] { oneToTen,

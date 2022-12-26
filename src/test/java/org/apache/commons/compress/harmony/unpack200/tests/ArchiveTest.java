@@ -16,6 +16,11 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -34,21 +39,21 @@ import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.harmony.unpack200.Archive;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for org.apache.commons.compress.harmony.unpack200.Archive, which is the main class for
  * unpack200.
  */
-public class ArchiveTest extends TestCase {
+public class ArchiveTest {
 
     InputStream in;
     JarOutputStream out;
     File file;
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @AfterEach
+    public void tearDown() throws Exception {
         if (in != null) {
             try {
                 in.close();
@@ -66,6 +71,7 @@ public class ArchiveTest extends TestCase {
         file.delete();
     }
 
+    @Test
     public void testAlternativeConstructor() throws Exception {
         String inputFile = new File(Archive.class
                 .getResource("/pack200/sql.pack.gz").toURI()).getPath();
@@ -76,6 +82,7 @@ public class ArchiveTest extends TestCase {
         archive.unpack();
     }
 
+    @Test
     public void testDeflateHint() throws Exception {
         in = Archive.class
                 .getResourceAsStream("/pack200/sql.pack.gz");
@@ -101,6 +108,7 @@ public class ArchiveTest extends TestCase {
 
     }
 
+    @Test
     public void testJustResourcesGZip() throws Exception {
         in = Archive.class
                 .getResourceAsStream("/pack200/JustResources.pack.gz");
@@ -111,6 +119,7 @@ public class ArchiveTest extends TestCase {
     }
 
     // Test verbose, quiet and log file options.
+    @Test
     public void testLoggingOptions() throws Exception {
         // test default option, which is quiet (no output at all)
         in = Archive.class
@@ -189,6 +198,7 @@ public class ArchiveTest extends TestCase {
         reader.close();
     }
 
+    @Test
     public void testRemovePackFile() throws Exception {
         File original = new File(Archive.class.getResource(
                 "/pack200/sql.pack.gz").toURI());
@@ -216,6 +226,7 @@ public class ArchiveTest extends TestCase {
     }
 
     // Test with an archive containing Annotations
+    @Test
     public void testWithAnnotations() throws Exception {
         in = Archive.class
                 .getResourceAsStream("/pack200/annotations.pack.gz");
@@ -226,6 +237,7 @@ public class ArchiveTest extends TestCase {
     }
 
     // Test with an archive packed with the -E0 option
+    @Test
     public void testWithE0() throws Exception {
         in = Archive.class
                 .getResourceAsStream("/pack200/simple-E0.pack.gz");
@@ -236,6 +248,7 @@ public class ArchiveTest extends TestCase {
     }
 
     // Test with an archive containing Harmony's JNDI module
+    @Test
     public void testWithJNDIE1() throws Exception {
         in = Archive.class
                 .getResourceAsStream("/pack200/jndi-e1.pack.gz");
@@ -247,6 +260,7 @@ public class ArchiveTest extends TestCase {
 
     // Test with a class containing lots of local variables (regression test for
     // HARMONY-5470)
+    @Test
     public void testWithLargeClass() throws Exception {
         in = Archive.class
                 .getResourceAsStream("/pack200/LargeClass.pack.gz");
@@ -259,6 +273,7 @@ public class ArchiveTest extends TestCase {
 
 
     // Test with an archive containing Harmony's Pack200 module
+    @Test
     public void testWithPack200() throws Exception {
         in = Archive.class
                 .getResourceAsStream("/pack200/pack200.pack.gz");
@@ -269,6 +284,7 @@ public class ArchiveTest extends TestCase {
     }
 
     // Test with an archive containing Harmony's Pack200 module, packed with -E1
+    @Test
     public void testWithPack200E1() throws Exception {
         in = Archive.class
                 .getResourceAsStream("/pack200/pack200-e1.pack.gz");
@@ -279,6 +295,7 @@ public class ArchiveTest extends TestCase {
     }
 
     // Test with an archive containing Harmony's SQL module
+    @Test
     public void testWithSql() throws Exception {
         in = Archive.class
                 .getResourceAsStream("/pack200/sql.pack.gz");
@@ -297,8 +314,8 @@ public class ArchiveTest extends TestCase {
         long differenceInJarSizes = Math.abs(compareFile.length()
                 - file.length());
 
-        assertTrue("Expected jar files to be a similar size, difference was "
-                + differenceInJarSizes + " bytes", differenceInJarSizes < 100);
+        assertTrue(differenceInJarSizes < 100, "Expected jar files to be a similar size, difference was "
+                + differenceInJarSizes + " bytes");
 
         Enumeration<JarEntry> entries = jarFile.entries();
         Enumeration<JarEntry> entries2 = jarFile2.entries();
@@ -324,7 +341,7 @@ public class ArchiveTest extends TestCase {
             String line2 = reader2.readLine();
             int i = 1;
             while (line1 != null || line2 != null) {
-                assertEquals("Unpacked class files differ for " + name, line2, line1);
+                assertEquals(line2, line1, "Unpacked class files differ for " + name);
                 line1 = reader1.readLine();
                 line2 = reader2.readLine();
                 i++;
@@ -335,6 +352,7 @@ public class ArchiveTest extends TestCase {
     }
 
     // Test with an archive containing Harmony's SQL module, packed with -E1
+    @Test
     public void testWithSqlE1() throws Exception {
         in = Archive.class
                 .getResourceAsStream("/pack200/sql-e1.pack.gz");

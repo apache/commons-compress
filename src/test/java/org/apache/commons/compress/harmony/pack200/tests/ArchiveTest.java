@@ -16,6 +16,9 @@
  */
 package org.apache.commons.compress.harmony.pack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,20 +28,27 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.harmony.pack200.Archive;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PackingOptions;
 import org.apache.commons.compress.harmony.unpack200.Segment;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-public class ArchiveTest extends TestCase {
+public class ArchiveTest {
 
     JarFile in;
     OutputStream out;
@@ -54,7 +64,7 @@ public class ArchiveTest extends TestCase {
 
             String name = entry.getName();
             JarEntry entry2 = jarFile2.getJarEntry(name);
-            assertNotNull("Missing Entry: " + name, entry2);
+            assertNotNull(entry2, "Missing Entry: " + name);
 //            assertEquals(entry.getTime(), entry2.getTime());
             if (!name.equals("META-INF/MANIFEST.MF")) { // Manifests aren't
                                                         // necessarily
@@ -72,8 +82,7 @@ public class ArchiveTest extends TestCase {
                 String line2 = reader2.readLine();
                 int i = 1;
                 while (line1 != null || line2 != null) {
-                    assertEquals("Unpacked files differ for " + name, line2,
-                            line1);
+                    assertEquals(line2, line1, "Unpacked files differ for " + name);
                     line1 = reader1.readLine();
                     line2 = reader2.readLine();
                     i++;
@@ -95,10 +104,11 @@ public class ArchiveTest extends TestCase {
 
             String name = entry.getName();
             JarEntry entry2 = jarFile2.getJarEntry(name);
-            assertNotNull("Missing Entry: " + name, entry2);
+            assertNotNull(entry2, "Missing Entry: " + name);
         }
     }
 
+    @Test
     public void testAlternativeConstructor() throws IOException, URISyntaxException, Pack200Exception {
         JarInputStream inStream = new JarInputStream(new FileInputStream(
                 new File(Archive.class.getResource(
@@ -111,6 +121,7 @@ public class ArchiveTest extends TestCase {
         out.close();
     }
 
+    @Test
     public void testAnnotations() throws IOException, Pack200Exception,
             URISyntaxException {
         in = new JarFile(new File(Archive.class.getResource(
@@ -140,6 +151,7 @@ public class ArchiveTest extends TestCase {
         compareFiles(jarFile, jarFile2);
     }
 
+    @Test
     public void testAnnotations2() throws IOException, Pack200Exception,
             URISyntaxException {
 
@@ -171,6 +183,7 @@ public class ArchiveTest extends TestCase {
         compareFiles(jarFile, jarFile2);
     }
 
+    @Test
     public void testHelloWorld() throws IOException, Pack200Exception, URISyntaxException {
         in = new JarFile(new File(Archive.class.getResource(
                 "/pack200/hw.jar").toURI()));
@@ -213,7 +226,7 @@ public class ArchiveTest extends TestCase {
         String line2 = reader2.readLine();
         int i = 1;
         while (line1 != null || line2 != null) {
-            assertEquals("Unpacked class files differ", line2, line1);
+            assertEquals(line2, line1, "Unpacked class files differ");
             line1 = reader1.readLine();
             line2 = reader2.readLine();
             i++;
@@ -222,6 +235,7 @@ public class ArchiveTest extends TestCase {
         reader2.close();
     }
 
+    @Test
     public void testJNDI() throws IOException, Pack200Exception, URISyntaxException {
         in = new JarFile(new File(Archive.class.getResource(
                 "/pack200/jndi.jar").toURI()));
@@ -248,7 +262,8 @@ public class ArchiveTest extends TestCase {
         compareFiles(jarFile, jarFile2);
     }
 
-public void testLargeClass() throws IOException, Pack200Exception,
+    @Test
+    public void testLargeClass() throws IOException, Pack200Exception,
             URISyntaxException {
         in = new JarFile(new File(Archive.class.getResource(
                 "/pack200/largeClassUnpacked.jar")
@@ -280,28 +295,33 @@ public void testLargeClass() throws IOException, Pack200Exception,
         compareFiles(jarFile, jarFile2);
     }
 
-    public void testMultipleJars() throws URISyntaxException, IOException, Pack200Exception {
-    	File folder = new File(Archive.class
-    			.getResource("/pack200/jars").toURI());
-    	String[] children = folder.list();
-    	for (String child : children) {
-			if(child.endsWith(".jar") && !child.endsWith("Unpacked.jar")) {
-				File inputFile = new File(folder, child);
-				in = new JarFile(inputFile);
-				file = File.createTempFile("temp", ".pack.gz");
-		        file.deleteOnExit();
-		        out = new FileOutputStream(file);
-//		        System.out.println("packing " + children[i]);
-		        new Archive(in, out, null).pack();
-		        in.close();
-		        out.close();
-
-		        // unpack and compare
-
-			}
-		}
+    static Stream<Arguments> loadMultipleJars() throws URISyntaxException, IOException {
+        return Files.list(Paths.get(Archive.class.getResource("/pack200/jars").toURI()))
+                .filter(child -> {
+                    String fileName = child.getFileName().toString();
+                    return fileName.endsWith(".jar") && !fileName.endsWith("Unpacked.jar");
+                })
+                .map(Arguments::of);
     }
 
+    @ParameterizedTest
+    @MethodSource("loadMultipleJars")
+    public void testMultipleJars(final Path path) throws URISyntaxException, IOException, Pack200Exception {
+        File inputFile = path.toFile();
+        in = new JarFile(inputFile);
+        file = File.createTempFile("temp", ".pack.gz");
+        file.deleteOnExit();
+        out = new FileOutputStream(file);
+//		System.out.println("packing " + children[i]);
+        new Archive(in, out, null).pack();
+        in.close();
+        out.close();
+
+        // unpack and compare
+
+    }
+
+    @Test
     public void testSQL() throws IOException, Pack200Exception, URISyntaxException {
         in = new JarFile(new File(Archive.class.getResource(
                 "/pack200/sqlUnpacked.jar").toURI()));
@@ -334,6 +354,7 @@ public void testLargeClass() throws IOException, Pack200Exception,
     }
 
     //     Test with an archive containing Annotations
+    @Test
     public void testWithAnnotations2() throws Exception {
         InputStream i = Archive.class
                 .getResourceAsStream("/pack200/annotationsRI.pack.gz");

@@ -16,6 +16,9 @@
  */
 package org.apache.commons.compress.harmony.pack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,26 +31,27 @@ import org.apache.commons.compress.harmony.pack200.CodecEncoding;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PopulationCodec;
 import org.apache.commons.compress.harmony.pack200.RunCodec;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  */
-public class CodecEncodingTest extends TestCase {
+public class CodecEncodingTest {
 
+    @Test
     public void testArbitraryCodec() throws IOException, Pack200Exception {
-        assertEquals("(1,256)", CodecEncoding.getCodec(116,
+        assertEquals(CodecEncoding.getCodec(116,
                 new ByteArrayInputStream(new byte[] { 0x00, (byte) 0xFF }),
-                null).toString());
-        assertEquals("(5,128,2,1)", CodecEncoding.getCodec(116,
+                null).toString(), "(1,256)");
+        assertEquals(CodecEncoding.getCodec(116,
                 new ByteArrayInputStream(new byte[] { 0x25, (byte) 0x7F }),
-                null).toString());
-        assertEquals("(2,128,1,1)", CodecEncoding.getCodec(116,
+                null).toString(), "(5,128,2,1)");
+        assertEquals(CodecEncoding.getCodec(116,
                 new ByteArrayInputStream(new byte[] { 0x0B, (byte) 0x7F }),
-                null).toString());
+                null).toString(), "(2,128,1,1)");
     }
 
+    @Test
     public void testCanonicalEncodings() throws IOException, Pack200Exception {
         Codec defaultCodec = new BHSDCodec(2, 16, 0, 0);
         assertEquals(defaultCodec, CodecEncoding
@@ -175,6 +179,7 @@ public class CodecEncodingTest extends TestCase {
         }
     }
 
+    @Test
     public void testGetSpeciferForPopulationCodec() throws IOException, Pack200Exception {
         PopulationCodec pCodec = new PopulationCodec(Codec.BYTE1, Codec.CHAR3, Codec.UNSIGNED5);
         int[] specifiers = CodecEncoding.getSpecifier(pCodec, null);
@@ -191,6 +196,7 @@ public class CodecEncodingTest extends TestCase {
         assertEquals(pCodec.getUnfavouredCodec(), pCodec2.getUnfavouredCodec());
     }
 
+    @Test
     public void testGetSpeciferForRunCodec() throws Pack200Exception, IOException {
         RunCodec runCodec = new RunCodec(25, Codec.DELTA5, Codec.BYTE1);
         int[] specifiers = CodecEncoding.getSpecifier(runCodec, null);
@@ -260,6 +266,7 @@ public class CodecEncodingTest extends TestCase {
         assertEquals(bCodec.getBCodec(), bCodec2.getBCodec());
     }
 
+    @Test
     public void testGetSpecifier() throws IOException, Pack200Exception {
         // Test canonical codecs
         for (int i = 1; i <= 115; i++) {

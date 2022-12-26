@@ -16,12 +16,15 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.commons.compress.harmony.unpack200.IcTuple;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class ICTupleTest extends TestCase {
+public class ICTupleTest {
 
+    @Test
     public void testExplicitClassTupleParsing() {
         IcTuple tuple = new IcTuple("Foo$$2$Local", IcTuple.NESTED_CLASS_FLAG,
                 null, "$2$Local", -1, -1, -1, -1);
@@ -39,6 +42,7 @@ public class ICTupleTest extends TestCase {
         assertEquals("X$1", tuple.outerClassString());
     }
 
+    @Test
     public void testPredictedClassTupleParsing() {
         IcTuple tuple = new IcTuple(
                 "orw/SimpleHelloWorld$SimpleHelloWorldInner", 0, null, null,

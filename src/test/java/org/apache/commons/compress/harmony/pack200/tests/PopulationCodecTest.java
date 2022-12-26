@@ -16,6 +16,9 @@
  */
 package org.apache.commons.compress.harmony.pack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,23 +27,24 @@ import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PopulationCodec;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class PopulationCodecTest extends TestCase {
+public class PopulationCodecTest {
 
     private void checkDecode(final byte[] data, final long[] expectedResult, final Codec codec)
             throws IOException, Pack200Exception {
-        InputStream in = new ByteArrayInputStream(data);
-
-        int[] result = new PopulationCodec(codec, codec, codec).decodeInts(
-                expectedResult.length, in);
-        assertEquals(expectedResult.length, result.length);
-        for (int i = 0; i < expectedResult.length; i++) {
-            assertEquals(expectedResult[i], result[i]);
+        try (InputStream in = new ByteArrayInputStream(data)) {
+            int[] result = new PopulationCodec(codec, codec, codec).decodeInts(
+                    expectedResult.length, in);
+            assertEquals(expectedResult.length, result.length);
+            for (int i = 0; i < expectedResult.length; i++) {
+                assertEquals(expectedResult[i], result[i]);
+            }
+            assertEquals(0, in.available());
         }
-        assertEquals(0, in.available());
     }
 
+    @Test
     public void testEncodeSingleValue() {
         try {
             new PopulationCodec(Codec.SIGNED5, Codec.SIGNED5, Codec.UDELTA5).encode(5);
@@ -56,6 +60,7 @@ public class PopulationCodecTest extends TestCase {
         }
     }
 
+    @Test
     public void testPopulationCodec() throws IOException, Pack200Exception {
         checkDecode(new byte[] { 4, 5, 6, 4, 2, 1, 3, 0, 7 }, new long[] { 5,
                 4, 6, 7 }, Codec.BYTE1);

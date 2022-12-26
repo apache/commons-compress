@@ -16,6 +16,8 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,6 +28,7 @@ import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.ClassBands;
 import org.apache.commons.compress.harmony.unpack200.CpBands;
 import org.apache.commons.compress.harmony.unpack200.Segment;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -91,7 +94,7 @@ public class ClassBandsTest extends AbstractBandsTestCase {
 
     ClassBands classBands = new ClassBands(new MockSegment());
 
-    public byte[] encodeBandInt(final int[] data, final BHSDCodec codec)
+    private byte[] encodeBandInt(final int[] data, final BHSDCodec codec)
             throws IOException, Pack200Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (int i = 0; i < data.length; i++) {
@@ -100,6 +103,7 @@ public class ClassBandsTest extends AbstractBandsTestCase {
         return baos.toByteArray();
     }
 
+    @Test
     public void testSimple() throws IOException, Pack200Exception {
         cpClasses = new String[] { "Class1", "Class2", "Class3", "Interface1",
                 "Interface2" };
@@ -139,6 +143,7 @@ public class ClassBandsTest extends AbstractBandsTestCase {
         cpClasses = null;
     }
 
+    @Test
     public void testWithMethods() throws Pack200Exception, IOException {
         cpClasses = new String[] { "Class1", "Class2", "Class3" };
         cpDescriptor = new String[] { "method1", "method2", "method3" };

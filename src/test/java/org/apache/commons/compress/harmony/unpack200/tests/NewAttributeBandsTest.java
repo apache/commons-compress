@@ -16,6 +16,10 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -30,6 +34,9 @@ import org.apache.commons.compress.harmony.unpack200.NewAttributeBands.Replicati
 import org.apache.commons.compress.harmony.unpack200.NewAttributeBands.Union;
 import org.apache.commons.compress.harmony.unpack200.NewAttributeBands.UnionCase;
 import org.apache.commons.compress.harmony.unpack200.Segment;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Tests for unpack200 support for non-predefined attributes
@@ -48,6 +55,7 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
         }
     }
 
+    @Test
     public void testEmptyLayout() throws IOException, Pack200Exception {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
                 new MockSegment(), new AttributeLayout("test",
@@ -56,30 +64,22 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
         assertEquals(0, layoutElements.size());
     }
 
-    public void testIntegralLayout() throws IOException, Pack200Exception {
-        tryIntegral("B");
-        tryIntegral("FB");
-        tryIntegral("SB");
-        tryIntegral("H");
-        tryIntegral("FH");
-        tryIntegral("SH");
-        tryIntegral("I");
-        tryIntegral("FI");
-        tryIntegral("SI");
-        tryIntegral("PB");
-        tryIntegral("OB");
-        tryIntegral("OSB");
-        tryIntegral("POB");
-        tryIntegral("PH");
-        tryIntegral("OH");
-        tryIntegral("OSH");
-        tryIntegral("POH");
-        tryIntegral("PI");
-        tryIntegral("OI");
-        tryIntegral("OSI");
-        tryIntegral("POI");
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "B", "FB", "SB", "H", "FH", "SH", "I", "FI", "SI", "PB", "OB",
+            "OSB", "POB", "PH", "OH", "OSH", "POH", "PI", "OI", "OSI", "POI"
+    })
+    public void testIntegralLayout(final String layoutStr) throws IOException, Pack200Exception {
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
+                new MockSegment(), new AttributeLayout("test",
+                        AttributeLayout.CONTEXT_CLASS, layoutStr, 25));
+        List layoutElements = newAttributeBands.getLayoutElements();
+        assertEquals(1, layoutElements.size());
+        Integral element = (Integral) layoutElements.get(0);
+        assertEquals(layoutStr, element.getTag());
     }
 
+    @Test
     public void testLayoutWithBackwardsCall() throws IOException,
             Pack200Exception {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
@@ -133,6 +133,7 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
         assertFalse(firstCallable.isBackwardsCallable());
     }
 
+    @Test
     public void testLayoutWithCalls() throws IOException, Pack200Exception {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
                 new MockSegment(),
@@ -159,27 +160,22 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
         assertFalse(thirdCallable.isBackwardsCallable());
     }
 
-    public void testReferenceLayouts() throws IOException, Pack200Exception {
-        tryReference("KIB");
-        tryReference("KIH");
-        tryReference("KII");
-        tryReference("KINH");
-        tryReference("KJH");
-        tryReference("KDH");
-        tryReference("KSH");
-        tryReference("KQH");
-        tryReference("RCH");
-        tryReference("RSH");
-        tryReference("RDH");
-        tryReference("RFH");
-        tryReference("RMH");
-        tryReference("RIH");
-        tryReference("RUH");
-        tryReference("RQH");
-        tryReference("RQNH");
-        tryReference("RQNI");
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "KIB", "KIH", "KII", "KINH", "KJH", "KDH", "KSH", "KQH", "RCH",
+            "RSH", "RDH", "RFH", "RMH", "RIH", "RUH", "RQH", "RQNH", "RQNI"
+    })
+    public void testReferenceLayouts(final String layout) throws IOException, Pack200Exception {
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
+                new MockSegment(), new AttributeLayout("test",
+                        AttributeLayout.CONTEXT_CODE, layout, 26));
+        List layoutElements = newAttributeBands.getLayoutElements();
+        assertEquals(1, layoutElements.size());
+        Reference element = (Reference) layoutElements.get(0);
+        assertEquals(layout, element.getTag());
     }
 
+    @Test
     public void testReplicationLayout() throws IOException, Pack200Exception {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
                 new MockSegment(), new AttributeLayout("test",
@@ -203,6 +199,7 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
         assertEquals("H", fifthElement.getTag());
     }
 
+    @Test
     public void testUnionLayout() throws IOException, Pack200Exception {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
                 new MockSegment(), new AttributeLayout("test",
@@ -233,24 +230,4 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
         assertEquals("RSH", ref.getTag());
     }
 
-    public void tryIntegral(final String layout) throws IOException, Pack200Exception {
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
-                new MockSegment(), new AttributeLayout("test",
-                        AttributeLayout.CONTEXT_CLASS, layout, 25));
-        List layoutElements = newAttributeBands.getLayoutElements();
-        assertEquals(1, layoutElements.size());
-        Integral element = (Integral) layoutElements.get(0);
-        assertEquals(layout, element.getTag());
-    }
-
-    private void tryReference(final String layout) throws IOException,
-            Pack200Exception {
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
-                new MockSegment(), new AttributeLayout("test",
-                        AttributeLayout.CONTEXT_CODE, layout, 26));
-        List layoutElements = newAttributeBands.getLayoutElements();
-        assertEquals(1, layoutElements.size());
-        Reference element = (Reference) layoutElements.get(0);
-        assertEquals(layout, element.getTag());
-    }
 }

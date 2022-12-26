@@ -16,6 +16,11 @@
  */
 package org.apache.commons.compress.harmony.pack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
@@ -24,13 +29,12 @@ import org.apache.commons.compress.harmony.pack200.BHSDCodec;
 import org.apache.commons.compress.harmony.pack200.CanonicalCodecFamilies;
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  */
-public class CodecTest extends TestCase {
+public class CodecTest {
 
     private void checkAscendingCardinalities(final BHSDCodec[] family) {
         for (int i = 1; i < family.length; i++) {
@@ -59,12 +63,14 @@ public class CodecTest extends TestCase {
         }
     }
 
+    @Test
     public void testByte1() throws Exception {
         for (int i = 0; i < 255; i++) {
             decode(Codec.BYTE1, new byte[] { (byte) i }, i, 0);
         }
     }
 
+    @Test
     public void testByte1Delta() throws Exception {
         Codec BYTE1D = new BHSDCodec(1, 256, 0, 1);
         long last = 0;
@@ -73,6 +79,7 @@ public class CodecTest extends TestCase {
         }
     }
 
+    @Test
     public void testByte1DeltaException() throws Exception {
         Codec BYTE1D = new BHSDCodec(1, 256, 0, 1);
         try {
@@ -83,6 +90,7 @@ public class CodecTest extends TestCase {
         }
     }
 
+    @Test
     public void testByte1Signed() throws Exception {
         Codec BYTE1S2 = new BHSDCodec(1, 256, 2);
         decode(BYTE1S2, new byte[] { 0 }, 0, 0);
@@ -99,6 +107,7 @@ public class CodecTest extends TestCase {
         decode(BYTE1S2, new byte[] { 11 }, -3, 0);
     }
 
+    @Test
     public void testCardinality() {
         BHSDCodec byte1 = Codec.BYTE1;
         assertEquals(256, byte1.cardinality());
@@ -155,6 +164,7 @@ public class CodecTest extends TestCase {
         assertFalse(byte2s.encodes(192));
         assertFalse(byte2s.encodes(256));
     }
+    @Test
     public void testCodecFamilies() {
         checkAscendingCardinalities(CanonicalCodecFamilies.nonDeltaUnsignedCodecs1);
         checkAscendingCardinalities(CanonicalCodecFamilies.nonDeltaUnsignedCodecs2);
@@ -177,6 +187,7 @@ public class CodecTest extends TestCase {
         checkAscendingCardinalities(CanonicalCodecFamilies.deltaDoubleSignedCodecs1);
     }
 
+    @Test
     public void testCodecToString() {
         assertEquals("(1,256)", Codec.BYTE1.toString());
         assertEquals("(3,128)", Codec.CHAR3.toString());
@@ -193,6 +204,7 @@ public class CodecTest extends TestCase {
         assertEquals("(5,64,2,1)", Codec.MDELTA5.toString());
     }
 
+    @Test
     public void testInvalidCodings() {
         for (int i = 0; i < 256; i++) {
             try {
@@ -215,6 +227,7 @@ public class CodecTest extends TestCase {
 
     }
 
+    @Test
     public void testUnsigned5() throws Exception {
         decode(Codec.UNSIGNED5, new byte[] { 1 }, 1, 0);
         decode(Codec.UNSIGNED5, new byte[] { (byte) 191 }, 191, 0);
