@@ -16,6 +16,8 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,8 +43,6 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPString;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests for Pack200 bytecode bands

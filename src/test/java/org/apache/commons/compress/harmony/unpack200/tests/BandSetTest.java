@@ -28,7 +28,6 @@ import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.BandSet;
 import org.apache.commons.compress.harmony.unpack200.Segment;
 import org.apache.commons.compress.harmony.unpack200.SegmentHeader;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

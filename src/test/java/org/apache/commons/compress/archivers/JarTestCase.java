@@ -25,7 +25,6 @@ import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public final class JarTestCase extends AbstractTestCase {

@@ -27,7 +27,6 @@ import java.util.stream.Stream;
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PopulationCodec;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

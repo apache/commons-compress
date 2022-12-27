@@ -24,12 +24,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.z.ZCompressorInputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public final class ZTestCase extends AbstractTestCase {

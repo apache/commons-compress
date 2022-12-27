@@ -30,7 +30,6 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,7 +40,6 @@ import java.util.Random;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTestCase;
-import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public class Zip64SupportIT {

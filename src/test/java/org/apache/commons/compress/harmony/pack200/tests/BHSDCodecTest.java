@@ -29,7 +29,6 @@ import org.apache.commons.compress.harmony.pack200.BHSDCodec;
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.CodecEncoding;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

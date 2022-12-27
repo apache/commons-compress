@@ -32,7 +32,6 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ExceptionTableEntry;
 import org.apache.commons.compress.harmony.unpack200.bytecode.LocalVariableTableAttribute;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
-
 import org.junit.jupiter.api.Test;
 
 /**

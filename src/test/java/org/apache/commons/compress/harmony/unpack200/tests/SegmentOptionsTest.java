@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.SegmentOptions;
-
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 

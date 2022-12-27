@@ -42,7 +42,6 @@ import org.apache.commons.compress.harmony.pack200.Archive;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PackingOptions;
 import org.apache.commons.compress.harmony.unpack200.Segment;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

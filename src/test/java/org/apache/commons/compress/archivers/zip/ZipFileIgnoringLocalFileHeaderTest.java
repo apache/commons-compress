@@ -20,12 +20,10 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Enumeration;
 
 import org.apache.commons.compress.AbstractTestCase;
-import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

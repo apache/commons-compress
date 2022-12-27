@@ -22,12 +22,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.io.File;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
-import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public class CpioArchiveOutputStreamTest extends AbstractTestCase {

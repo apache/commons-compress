@@ -24,7 +24,6 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPClass;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPMember;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ClassConstantPool;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

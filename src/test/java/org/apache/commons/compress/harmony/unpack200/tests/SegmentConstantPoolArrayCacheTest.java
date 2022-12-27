@@ -17,13 +17,12 @@
 
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import org.apache.commons.compress.harmony.unpack200.SegmentConstantPoolArrayCache;
-
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SegmentConstantPoolArrayCacheTest {
 

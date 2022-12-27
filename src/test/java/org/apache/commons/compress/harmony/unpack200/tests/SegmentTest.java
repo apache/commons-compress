@@ -30,7 +30,6 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 
 import org.apache.commons.compress.harmony.unpack200.Segment;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 

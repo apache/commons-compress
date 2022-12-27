@@ -38,7 +38,6 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.harmony.unpack200.Archive;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 

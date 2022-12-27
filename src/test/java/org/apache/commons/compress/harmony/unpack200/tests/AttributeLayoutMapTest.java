@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.AttributeLayout;
 import org.apache.commons.compress.harmony.unpack200.AttributeLayoutMap;
-
 import org.junit.jupiter.api.Test;
 
 public class AttributeLayoutMapTest {
