@@ -267,6 +267,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     private byte[] vData;
 
     private byte[] vCRC32;
+
     public X0017_StrongEncryptionHeader() {
         super(new ZipShort(0x0017));
     }

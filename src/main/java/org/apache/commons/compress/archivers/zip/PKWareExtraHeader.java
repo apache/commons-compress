@@ -123,6 +123,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
             return code;
         }
     }
+
     /**
      * Hash Algorithm
      *

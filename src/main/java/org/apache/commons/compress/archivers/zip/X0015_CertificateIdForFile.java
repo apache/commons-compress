@@ -48,6 +48,7 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader {
     private int rcount;
 
     private HashAlgorithm hashAlg;
+
     public X0015_CertificateIdForFile() {
         super(new ZipShort(0x0015));
     }
