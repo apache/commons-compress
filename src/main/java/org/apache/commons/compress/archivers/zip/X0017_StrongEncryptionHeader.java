@@ -384,13 +384,11 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
                 throw new ZipException("Invalid X0017_StrongEncryptionHeader: resize " + resize
                     + " is too small to hold hashSize" + this.hashSize);
             }
-            this.recipientKeyHash = new byte[this.hashSize];
-            this.keyBlob = new byte[resize - this.hashSize];
             // TODO: this looks suspicious, 26 rather than 24 would be "after" resize
             assertDynamicLengthFits("resize", resize, ivSize + 24 + erdSize, length);
-            // TODO use Arrays.copyOfRange
-            System.arraycopy(data, offset + ivSize + 24 + erdSize, this.recipientKeyHash, 0, this.hashSize);
-            System.arraycopy(data, offset + ivSize + 24 + erdSize + this.hashSize, this.keyBlob, 0, resize - this.hashSize);
+            //
+            this.recipientKeyHash = Arrays.copyOfRange(data, offset + ivSize + 24 + erdSize, this.hashSize);
+            this.keyBlob = Arrays.copyOfRange(data, offset + ivSize + 24 + erdSize + this.hashSize, resize - this.hashSize);
 
             assertMinimalLength(ivSize + 26 + erdSize + resize + 2, length);
             final int vSize = ZipShort.getValue(data, offset + ivSize + 26 + erdSize + resize);
@@ -400,11 +398,9 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
             }
             // TODO: these offsets look even more suspicious, the constant should likely be 28 rather than 22
             assertDynamicLengthFits("vSize", vSize, ivSize + 22 + erdSize + resize, length);
-            // TODO: use Arrays.copyOfRange
-            this.vData = new byte[vSize - 4];
-            this.vCRC32 = new byte[4];
-            System.arraycopy(data, offset + ivSize + 22 + erdSize + resize, this.vData, 0, vSize - 4);
-            System.arraycopy(data, offset + ivSize + 22 + erdSize + resize + vSize - 4, vCRC32, 0, 4);
+            //
+            this.vData = Arrays.copyOfRange(data, offset + ivSize + 22 + erdSize + resize, vSize - 4);
+            this.vCRC32 = Arrays.copyOfRange(data, offset + ivSize + 22 + erdSize + resize + vSize - 4, 4);
         }
 
         // validate values?
