@@ -85,10 +85,7 @@ public final class DumpTestCase extends AbstractTestCase {
 
     private void unarchiveAll(final File input) throws Exception {
         final InputStream is = Files.newInputStream(input.toPath());
-        ArchiveInputStream in = null;
-        try {
-            in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("dump", is);
-
+        try (ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("dump", is)) {
             ArchiveEntry entry = in.getNextEntry();
             while (entry != null) {
                 final File archiveEntry = new File(dir, entry.getName());
@@ -102,9 +99,6 @@ public final class DumpTestCase extends AbstractTestCase {
                 entry = in.getNextEntry();
             }
         } finally {
-            if (in != null) {
-                in.close();
-            }
             is.close();
         }
     }

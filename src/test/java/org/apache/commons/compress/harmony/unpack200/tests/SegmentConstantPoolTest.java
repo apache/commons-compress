@@ -65,7 +65,7 @@ public class SegmentConstantPoolTest {
 
     @Test
     public void testMatchSpecificPoolEntryIndex_DoubleArray() {
-        MockSegmentConstantPool mockInstance = new MockSegmentConstantPool();
+        final MockSegmentConstantPool mockInstance = new MockSegmentConstantPool();
         // Elements should be found at the proper position.
         assertEquals(0, mockInstance.matchSpecificPoolEntryIndex(
                 testClassArray, testMethodArray, "Object", "^<init>.*", 0));
@@ -90,7 +90,7 @@ public class SegmentConstantPoolTest {
 
     @Test
     public void testMatchSpecificPoolEntryIndex_SingleArray() {
-        MockSegmentConstantPool mockInstance = new MockSegmentConstantPool();
+        final MockSegmentConstantPool mockInstance = new MockSegmentConstantPool();
         // Elements should be found at the proper position.
         assertEquals(0, mockInstance.matchSpecificPoolEntryIndex(
                 testClassArray, "Object", 0));
@@ -117,7 +117,7 @@ public class SegmentConstantPoolTest {
 
     @Test
     public void testRegexReplacement() {
-        MockSegmentConstantPool mockPool = new MockSegmentConstantPool();
+        final MockSegmentConstantPool mockPool = new MockSegmentConstantPool();
         assertTrue(mockPool.regexMatchesVisible(".*", "anything"));
         assertTrue(mockPool.regexMatchesVisible(".*", ""));
         assertTrue(mockPool.regexMatchesVisible("^<init>.*", "<init>"));

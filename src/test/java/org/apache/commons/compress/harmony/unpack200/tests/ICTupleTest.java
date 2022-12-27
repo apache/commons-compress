@@ -39,7 +39,7 @@ public class ICTupleTest {
     @ParameterizedTest
     @MethodSource("explicit")
     public void testExplicitClassTupleParsing(final String c, final String c2, final String n, final String expectedSimpleClassName, final String expectedOuterClass) {
-        IcTuple tuple = new IcTuple(c, IcTuple.NESTED_CLASS_FLAG, c2, n, -1, -1, -1, -1);
+        final IcTuple tuple = new IcTuple(c, IcTuple.NESTED_CLASS_FLAG, c2, n, -1, -1, -1, -1);
         assertAll(
                 () -> assertEquals(expectedSimpleClassName, tuple.simpleClassName()),
                 () -> assertEquals(expectedOuterClass, tuple.outerClassString())
@@ -58,7 +58,7 @@ public class ICTupleTest {
     @ParameterizedTest
     @MethodSource("predicted")
     public void testPredictedClassTupleParsing(final String c, final String expectedSimpleClass, final String expectedOuterClass) {
-        IcTuple tuple = new IcTuple(c, 0, null, null, -1, -1, -1, -1);
+        final IcTuple tuple = new IcTuple(c, 0, null, null, -1, -1, -1, -1);
         assertAll(
                 () -> assertEquals(expectedSimpleClass, tuple.simpleClassName()),
                 () -> assertEquals(expectedOuterClass, tuple.outerClassString())

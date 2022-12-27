@@ -84,7 +84,7 @@ public class SevenZArchiveEntryTest {
     @Test
     public void shouldThrowIfAccessDateIsSetToNull() {
         assertThrows(UnsupportedOperationException.class, () -> {
-            SevenZArchiveEntry entry = new SevenZArchiveEntry();
+            final SevenZArchiveEntry entry = new SevenZArchiveEntry();
             entry.setAccessDate(null);
             entry.getAccessDate();
         });
@@ -93,7 +93,7 @@ public class SevenZArchiveEntryTest {
     @Test
     public void shouldThrowIfCreationDateIsSetToNull() {
         assertThrows(UnsupportedOperationException.class, () -> {
-            SevenZArchiveEntry entry = new SevenZArchiveEntry();
+            final SevenZArchiveEntry entry = new SevenZArchiveEntry();
             entry.setCreationDate(null);
             entry.getCreationDate();
         });
@@ -102,7 +102,7 @@ public class SevenZArchiveEntryTest {
     @Test
     public void shouldThrowIfLastModifiedDateIsSetToNull() {
         assertThrows(UnsupportedOperationException.class, () -> {
-            SevenZArchiveEntry entry = new SevenZArchiveEntry();
+            final SevenZArchiveEntry entry = new SevenZArchiveEntry();
             entry.setLastModifiedDate(null);
             entry.getLastModifiedDate();
         });

@@ -40,7 +40,7 @@ public abstract class AbstractBandsTestCase {
         public AttributeLayoutMap getAttributeDefinitionMap() {
             try {
                 return new AttributeLayoutMap();
-            } catch (Pack200Exception e) {
+            } catch (final Pack200Exception e) {
                 fail(e.getLocalizedMessage());
             }
             return null;
@@ -75,7 +75,7 @@ public abstract class AbstractBandsTestCase {
         public SegmentOptions getOptions() {
             try {
                 return new SegmentOptions(0);
-            } catch (Pack200Exception e) {
+            } catch (final Pack200Exception e) {
                 return null;
             }
         }

@@ -61,7 +61,7 @@ public class FileBands extends BandSet {
         final int archiveModtime = segmentHeader.getArchive_modtime();
 
         final Set<String> classNames = new HashSet<>();
-        for (ClassReader reader : segmentUnit.getClassList()) {
+        for (final ClassReader reader : segmentUnit.getClassList()) {
             classNames.add(reader.getClassName());
         }
         final CPUTF8 emptyString = cpBands.getCPUtf8("");
@@ -125,13 +125,13 @@ public class FileBands extends BandSet {
 
     private int[] flatten(final byte[][] bytes) {
         int total = 0;
-        for (byte[] element : bytes) {
+        for (final byte[] element : bytes) {
             total += element.length;
         }
         final int[] band = new int[total];
         int index = 0;
-        for (byte[] element : bytes) {
-            for (byte element2 : element) {
+        for (final byte[] element : bytes) {
+            for (final byte element2 : element) {
                 band[index++] = element2 & 0xFF;
             }
         }

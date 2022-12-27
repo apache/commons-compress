@@ -56,10 +56,10 @@ public class BandSetTest {
 
     @Test
     public void testDecodeBandInt() throws IOException, Pack200Exception {
-        BHSDCodec codec = Codec.BYTE1;
-        byte[] bytes = { (byte) 3, (byte) 56, (byte) 122, (byte) 78 };
-        InputStream in = new ByteArrayInputStream(bytes);
-        int[] ints = bandSet.decodeBandInt("Test Band", in, codec, 4);
+        final BHSDCodec codec = Codec.BYTE1;
+        final byte[] bytes = { (byte) 3, (byte) 56, (byte) 122, (byte) 78 };
+        final InputStream in = new ByteArrayInputStream(bytes);
+        final int[] ints = bandSet.decodeBandInt("Test Band", in, codec, 4);
         for (int i = 0; i < ints.length; i++) {
             assertEquals(ints[i], bytes[i], "Wrong value in position " + i);
         }

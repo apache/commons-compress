@@ -65,7 +65,7 @@ public class CodecTest {
 
     @Test
     public void testByte1Delta() throws Exception {
-        Codec BYTE1D = new BHSDCodec(1, 256, 0, 1);
+        final Codec BYTE1D = new BHSDCodec(1, 256, 0, 1);
         long last = 0;
         for (int i = 1; i < 255; i++) {
             last = decode(BYTE1D, new byte[] { (byte) 1 }, i, last);
@@ -74,14 +74,14 @@ public class CodecTest {
 
     @Test
     public void testByte1DeltaException() throws Exception {
-        Codec BYTE1D = new BHSDCodec(1, 256, 0, 1);
+        final Codec BYTE1D = new BHSDCodec(1, 256, 0, 1);
         assertThrows(Pack200Exception.class, () -> BYTE1D.decode(new ByteArrayInputStream(new byte[]{(byte) 1})),
                 "Decoding with a delta stream and not passing a last value should throw an exception");
     }
 
     @Test
     public void testByte1Signed() throws Exception {
-        Codec BYTE1S2 = new BHSDCodec(1, 256, 2);
+        final Codec BYTE1S2 = new BHSDCodec(1, 256, 2);
         decode(BYTE1S2, new byte[] { 0 }, 0, 0);
         decode(BYTE1S2, new byte[] { 1 }, 1, 0);
         decode(BYTE1S2, new byte[] { 2 }, 2, 0);
@@ -98,7 +98,7 @@ public class CodecTest {
 
     @Test
     public void testCardinality() {
-        BHSDCodec byte1 = Codec.BYTE1;
+        final BHSDCodec byte1 = Codec.BYTE1;
         assertEquals(256, byte1.cardinality());
         assertEquals(0, byte1.smallest());
         assertEquals(255, byte1.largest());
@@ -113,7 +113,7 @@ public class CodecTest {
         assertTrue(byte1.encodes(1));
         assertTrue(byte1.encodes(255));
         assertFalse(byte1.encodes(256));
-        BHSDCodec byte1s = new BHSDCodec(1, 256, 1);
+        final BHSDCodec byte1s = new BHSDCodec(1, 256, 1);
         assertEquals(256, byte1s.cardinality());
         assertEquals(-128, byte1s.smallest());
         assertEquals(127, byte1s.largest());
@@ -131,7 +131,7 @@ public class CodecTest {
         assertFalse(byte1s.encodes(129));
         assertFalse(byte1s.encodes(255));
         assertFalse(byte1s.encodes(256));
-        BHSDCodec byte2s = new BHSDCodec(1, 256, 2);
+        final BHSDCodec byte2s = new BHSDCodec(1, 256, 2);
         assertEquals(256, byte2s.cardinality());
         assertEquals(-64, byte2s.smallest());
         assertEquals(191, byte2s.largest());
@@ -182,8 +182,8 @@ public class CodecTest {
     @MethodSource("codecFamily")
     public void testCodecFamilies(final BHSDCodec[] family) {
         for (int i = 1; i < family.length; i++) {
-            BHSDCodec previous = family[i-1];
-            BHSDCodec codec = family[i];
+            final BHSDCodec previous = family[i-1];
+            final BHSDCodec codec = family[i];
             assertTrue(codec.largest() >= previous.largest());
             assertTrue(codec.smallest() <= previous.smallest());
         }

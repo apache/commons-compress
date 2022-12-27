@@ -56,7 +56,7 @@ public class ArchiveTest {
         if (in != null) {
             try {
                 in.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         }
@@ -64,7 +64,7 @@ public class ArchiveTest {
             if (out != null) {
                 out.close();
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
         file.delete();
@@ -72,12 +72,12 @@ public class ArchiveTest {
 
     @Test
     public void testAlternativeConstructor() throws Exception {
-        String inputFile = new File(Archive.class
+        final String inputFile = new File(Archive.class
                 .getResource("/pack200/sql.pack.gz").toURI()).getPath();
         file = File.createTempFile("sql", ".jar");
         file.deleteOnExit();
-        String outputFile = file.getPath();
-        Archive archive = new Archive(inputFile, outputFile);
+        final String outputFile = file.getPath();
+        final Archive archive = new Archive(inputFile, outputFile);
         archive.unpack();
     }
 
@@ -113,7 +113,7 @@ public class ArchiveTest {
                 .getResourceAsStream("/pack200/JustResources.pack.gz");
         file = File.createTempFile("Just", "ResourcesGz.jar");
         out = new JarOutputStream(new FileOutputStream(file));
-        Archive archive = new Archive(in, out);
+        final Archive archive = new Archive(in, out);
         archive.unpack();
     }
 
@@ -156,7 +156,7 @@ public class ArchiveTest {
         reader.close();
 
         // test append option
-        long length = logFile.length();
+        final long length = logFile.length();
         in = Archive.class
                 .getResourceAsStream("/pack200/sql.pack.gz");
         file = File.createTempFile("logtest", ".jar");
@@ -199,14 +199,14 @@ public class ArchiveTest {
 
     @Test
     public void testRemovePackFile() throws Exception {
-        File original = new File(Archive.class.getResource(
+        final File original = new File(Archive.class.getResource(
                 "/pack200/sql.pack.gz").toURI());
-        File copy = File.createTempFile("sqlcopy", ".pack.gz");
-        BufferedInputStream inputStream = new BufferedInputStream(
+        final File copy = File.createTempFile("sqlcopy", ".pack.gz");
+        final BufferedInputStream inputStream = new BufferedInputStream(
                 new FileInputStream(original));
-        BufferedOutputStream outputStream = new BufferedOutputStream(
+        final BufferedOutputStream outputStream = new BufferedOutputStream(
                 new FileOutputStream(copy));
-        byte[] bytes = new byte[256];
+        final byte[] bytes = new byte[256];
         int read = inputStream.read(bytes);
         while (read > 0) {
             outputStream.write(bytes, 0, read);
@@ -214,11 +214,11 @@ public class ArchiveTest {
         }
         inputStream.close();
         outputStream.close();
-        String inputFile = copy.getPath();
+        final String inputFile = copy.getPath();
         file = File.createTempFile("sqlout", ".jar");
         file.deleteOnExit();
-        String outputFile = file.getPath();
-        Archive archive = new Archive(inputFile, outputFile);
+        final String outputFile = file.getPath();
+        final Archive archive = new Archive(inputFile, outputFile);
         archive.setRemovePackFile(true);
         archive.unpack();
         assertFalse(copy.exists());
@@ -231,7 +231,7 @@ public class ArchiveTest {
                 .getResourceAsStream("/pack200/annotations.pack.gz");
         file = File.createTempFile("annotations", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
-        Archive archive = new Archive(in, out);
+        final Archive archive = new Archive(in, out);
         archive.unpack();
     }
 
@@ -242,7 +242,7 @@ public class ArchiveTest {
                 .getResourceAsStream("/pack200/simple-E0.pack.gz");
         file = File.createTempFile("simple-e0", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
-        Archive archive = new Archive(in, out);
+        final Archive archive = new Archive(in, out);
         archive.unpack();
     }
 
@@ -253,7 +253,7 @@ public class ArchiveTest {
                 .getResourceAsStream("/pack200/jndi-e1.pack.gz");
         file = File.createTempFile("jndi-e1", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
-        Archive archive = new Archive(in, out);
+        final Archive archive = new Archive(in, out);
         archive.unpack();
     }
 
@@ -266,7 +266,7 @@ public class ArchiveTest {
         file = File.createTempFile("largeClass", ".jar");
         file.deleteOnExit();
         out = new JarOutputStream(new FileOutputStream(file));
-        Archive archive = new Archive(in, out);
+        final Archive archive = new Archive(in, out);
         archive.unpack();
     }
 
@@ -278,7 +278,7 @@ public class ArchiveTest {
                 .getResourceAsStream("/pack200/pack200.pack.gz");
         file = File.createTempFile("p200", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
-        Archive archive = new Archive(in, out);
+        final Archive archive = new Archive(in, out);
         archive.unpack();
     }
 
@@ -289,7 +289,7 @@ public class ArchiveTest {
                 .getResourceAsStream("/pack200/pack200-e1.pack.gz");
         file = File.createTempFile("p200-e1", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
-        Archive archive = new Archive(in, out);
+        final Archive archive = new Archive(in, out);
         archive.unpack();
     }
 
@@ -301,40 +301,40 @@ public class ArchiveTest {
         file = File.createTempFile("sql", ".jar");
         file.deleteOnExit();
         out = new JarOutputStream(new FileOutputStream(file));
-        Archive archive = new Archive(in, out);
+        final Archive archive = new Archive(in, out);
         archive.unpack();
-        JarFile jarFile = new JarFile(file);
+        final JarFile jarFile = new JarFile(file);
 
-        File compareFile = new File(Archive.class.getResource(
+        final File compareFile = new File(Archive.class.getResource(
                 "/pack200/sqlUnpacked.jar").toURI());
 
-        JarFile jarFile2 = new JarFile(compareFile);
+        final JarFile jarFile2 = new JarFile(compareFile);
 
-        long differenceInJarSizes = Math.abs(compareFile.length()
+        final long differenceInJarSizes = Math.abs(compareFile.length()
                 - file.length());
 
         assertTrue(differenceInJarSizes < 100, "Expected jar files to be a similar size, difference was "
                 + differenceInJarSizes + " bytes");
 
-        Enumeration<JarEntry> entries = jarFile.entries();
-        Enumeration<JarEntry> entries2 = jarFile2.entries();
+        final Enumeration<JarEntry> entries = jarFile.entries();
+        final Enumeration<JarEntry> entries2 = jarFile2.entries();
         while(entries.hasMoreElements() && entries2.hasMoreElements()) {
 
-            JarEntry entry = entries.nextElement();
+            final JarEntry entry = entries.nextElement();
             assertNotNull(entry);
-            String name = entry.getName();
+            final String name = entry.getName();
 
-            JarEntry entry2 = entries2.nextElement();
+            final JarEntry entry2 = entries2.nextElement();
             assertNotNull(entry2);
-            String name2 = entry2.getName();
+            final String name2 = entry2.getName();
 
             assertEquals(name, name2);
 
-            InputStream ours = jarFile.getInputStream(entry);
-            InputStream expected = jarFile2.getInputStream(entry2);
+            final InputStream ours = jarFile.getInputStream(entry);
+            final InputStream expected = jarFile2.getInputStream(entry2);
 
-            BufferedReader reader1 = new BufferedReader(new InputStreamReader(ours));
-            BufferedReader reader2 = new BufferedReader(new InputStreamReader(
+            final BufferedReader reader1 = new BufferedReader(new InputStreamReader(ours));
+            final BufferedReader reader2 = new BufferedReader(new InputStreamReader(
                     expected));
             String line1 = reader1.readLine();
             String line2 = reader2.readLine();
@@ -357,7 +357,7 @@ public class ArchiveTest {
                 .getResourceAsStream("/pack200/sql-e1.pack.gz");
         file = File.createTempFile("sql-e1", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
-        Archive archive = new Archive(in, out);
+        final Archive archive = new Archive(in, out);
         archive.unpack();
     }
 

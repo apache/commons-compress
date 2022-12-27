@@ -73,7 +73,7 @@ public class DumpArchiveSummary {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        DumpArchiveSummary other = (DumpArchiveSummary) obj;
+        final DumpArchiveSummary other = (DumpArchiveSummary) obj;
         return Objects.equals(devname, other.devname) && dumpDate == other.dumpDate && Objects.equals(hostname, other.hostname);
     }
 

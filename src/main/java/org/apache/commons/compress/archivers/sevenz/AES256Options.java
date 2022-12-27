@@ -28,7 +28,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Options for {@link SevenZMethod#AES256SHA256} encoder
- * 
+ *
  * @since 1.23
  * @see AES256SHA256Decoder
  */
@@ -41,11 +41,11 @@ class AES256Options {
     static SecretKeySpec newSecretKeySpec(final byte[] bytes) {
         return new SecretKeySpec(bytes, ALGORITHM);
     }
-    private static byte[] randomBytes(int size) {
-        byte[] bytes = new byte[size];
+    private static byte[] randomBytes(final int size) {
+        final byte[] bytes = new byte[size];
         try {
             SecureRandom.getInstanceStrong().nextBytes(bytes);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (final NoSuchAlgorithmException e) {
             throw new IllegalStateException("No strong secure random available to generate strong AES key", e);
         }
         return bytes;
@@ -60,7 +60,7 @@ class AES256Options {
     /**
      * @param password password used for encryption
      */
-    public AES256Options(char[] password) {
+    public AES256Options(final char[] password) {
         this(password, new byte[0], randomBytes(16), 19);
     }
 
@@ -71,7 +71,7 @@ class AES256Options {
      * @param numCyclesPower another password security enforcer parameter that controls the cycles of password hashing. More the
      *                       this number is high, more security you'll have but also high CPU usage
      */
-    public AES256Options(char[] password, byte[] salt, byte[] iv, int numCyclesPower) {
+    public AES256Options(final char[] password, final byte[] salt, final byte[] iv, final int numCyclesPower) {
         this.salt = salt;
         this.iv = iv;
         this.numCyclesPower = numCyclesPower;

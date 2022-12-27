@@ -139,7 +139,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
     @Test
     public void testBlockSizes() throws Exception {
         final String fileName = "/test1.xml";
-        byte[] contents = getResourceContents(fileName);
+        final byte[] contents = getResourceContents(fileName);
         testPadding(TarConstants.DEFAULT_BLKSIZE, fileName, contents); // USTAR / pre-pax
         testPadding(5120, fileName, contents); // PAX default
         testPadding(1<<15, fileName, contents); //PAX max
@@ -152,7 +152,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         assertThrows(IllegalArgumentException.class, () -> testPadding(0, fileName, contents));
 
         // test with "content" that is an exact multiple of record length
-        byte[] contents2 = new byte[2048];
+        final byte[] contents2 = new byte[2048];
         java.util.Arrays.fill(contents2, (byte) 42);
         testPadding(TarConstants.DEFAULT_BLKSIZE, fileName, contents2);
     }
@@ -551,7 +551,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
     @Test
     public void testWriteLongFileNamePosixMode() throws Exception {
         // @formatter:off
-        final String n = "01234567890123456789012345678901234567890123456789" 
+        final String n = "01234567890123456789012345678901234567890123456789"
                 + "01234567890123456789012345678901234567890123456789"
                 + "01234567890123456789012345678901234567890123456789";
         // @formatter:on

@@ -130,7 +130,7 @@ public class Segment {
         // Get the source file attribute
         final List<Attribute> classAttributes = classBands.getClassAttributes()[classNum];
         SourceFileAttribute sourceFileAttribute = null;
-        for (Attribute classAttribute : classAttributes) {
+        for (final Attribute classAttribute : classAttributes) {
             if (classAttribute.isSourceFileAttribute()) {
                 sourceFileAttribute = ((SourceFileAttribute) classAttribute);
             }
@@ -226,7 +226,7 @@ public class Segment {
         final InnerClassesAttribute innerClassesAttribute = new InnerClassesAttribute("InnerClasses");
         final IcTuple[] ic_relevant = getIcBands().getRelevantIcTuples(fullName, cp);
         final List<IcTuple> ic_stored = computeIcStored(ic_local, ic_relevant);
-        for (IcTuple icStored : ic_stored) {
+        for (final IcTuple icStored : ic_stored) {
             final int innerClassIndex = icStored.thisClassIndex();
             final int outerClassIndex = icStored.outerClassIndex();
             final int simpleClassNameIndex = icStored.simpleClassNameIndex();
@@ -311,7 +311,7 @@ public class Segment {
 
         // add ic_local
         if (ic_local != null) {
-            for (IcTuple element : ic_local) {
+            for (final IcTuple element : ic_local) {
                 if (isInResult.add(element)) {
                     result.add(element);
                 }
@@ -319,7 +319,7 @@ public class Segment {
         }
 
         // add ic_relevant
-        for (IcTuple element : ic_relevant) {
+        for (final IcTuple element : ic_relevant) {
             if (isInResult.add(element)) {
                 result.add(element);
             } else {

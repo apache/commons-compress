@@ -84,7 +84,7 @@ public class CpBands extends BandSet {
     }
 
     private void addCharacters(final List<Character> chars, final char[] charArray) {
-        for (char element : charArray) {
+        for (final char element : charArray) {
             chars.add(Character.valueOf(element));
         }
     }
@@ -98,7 +98,7 @@ public class CpBands extends BandSet {
     }
 
     private void addIndices() {
-		for (Set<? extends ConstantPoolEntry> set : Arrays.asList(cp_Utf8, cp_Int, cp_Float, cp_Long, cp_Double,
+		for (final Set<? extends ConstantPoolEntry> set : Arrays.asList(cp_Utf8, cp_Int, cp_Float, cp_Long, cp_Double,
 				cp_String, cp_Class, cp_Signature, cp_Descr, cp_Field, cp_Method, cp_Imethod)) {
 			int j = 0;
 			for (final ConstantPoolEntry entry : set) {

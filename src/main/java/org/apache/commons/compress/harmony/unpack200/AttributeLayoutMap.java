@@ -134,7 +134,7 @@ public class AttributeLayoutMap {
     private final Map<AttributeLayout, NewAttributeBands> layoutsToBands = new HashMap<>();
 
     public AttributeLayoutMap() throws Pack200Exception {
-        for (AttributeLayout defaultAttributeLayout : getDefaultAttributeLayouts()) {
+        for (final AttributeLayout defaultAttributeLayout : getDefaultAttributeLayouts()) {
             add(defaultAttributeLayout);
         }
     }
@@ -186,7 +186,7 @@ public class AttributeLayoutMap {
 
     public AttributeLayout getAttributeLayout(final String name, final int context) {
         final Map<Integer, AttributeLayout> map = getLayout(context);
-        for (AttributeLayout layout : map.values()) {
+        for (final AttributeLayout layout : map.values()) {
             if (layout.getName().equals(name)) {
                 return layout;
             }

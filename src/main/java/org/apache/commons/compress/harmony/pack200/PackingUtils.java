@@ -93,7 +93,7 @@ public class PackingUtils {
 			final byte[] bytes = new byte[16384];
 			final Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {
-				JarEntry jarEntry = entries.nextElement();
+				final JarEntry jarEntry = entries.nextElement();
 				jarOutputStream.putNextEntry(jarEntry);
 				try (InputStream inputStream = jarFile.getInputStream(jarEntry)) {
 					int bytesRead;

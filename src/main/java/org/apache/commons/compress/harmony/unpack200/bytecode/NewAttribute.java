@@ -117,7 +117,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
     @Override
     protected int getLength() {
         int length = 0;
-        for (Integer len : lengths) {
+        for (final Integer len : lengths) {
             length += len.intValue();
         }
         return length;
@@ -153,7 +153,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
     public void renumber(final List<Integer> byteCodeOffsets) {
         if (!renumbered) {
             Object previous = null;
-            for (Object obj : body) {
+            for (final Object obj : body) {
                 if (obj instanceof BCIndex) {
                     final BCIndex bcIndex = (BCIndex) obj;
                     bcIndex.setActualValue(byteCodeOffsets.get(bcIndex.index).intValue());

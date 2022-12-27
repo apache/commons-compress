@@ -295,7 +295,7 @@ public abstract class BandSet {
             System.out.print("");
         }
 
-        for (BHSDCodec[] family : codecFamiliesToTry) {
+        for (final BHSDCodec[] family : codecFamiliesToTry) {
             tryCodecs(name, band, defaultCodec, bandData, results, encoded, family);
             if (timeToStop(results)) {
                 break;
@@ -668,13 +668,13 @@ public abstract class BandSet {
      */
     private long[] flatten(final long[][] flags) {
         int totalSize = 0;
-        for (long[] flag : flags) {
+        for (final long[] flag : flags) {
             totalSize += flag.length;
         }
         final long[] flatArray = new long[totalSize];
         int index = 0;
-        for (long[] flag : flags) {
-            for (long element : flag) {
+        for (final long[] flag : flags) {
+            for (final long element : flag) {
                 flatArray[index] = element;
                 index++;
             }

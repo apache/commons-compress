@@ -64,7 +64,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
                                                    final Iterable<? extends SevenZMethodConfiguration> actual) {
         assertNotNull(actual);
         final Iterator<? extends SevenZMethodConfiguration> actualIter = actual.iterator();
-        for (SevenZMethodConfiguration expConfig : expected) {
+        for (final SevenZMethodConfiguration expConfig : expected) {
             assertTrue(actualIter.hasNext());
             final SevenZMethodConfiguration actConfig = actualIter.next();
             assertEquals(expConfig.getMethod(), actConfig.getMethod());
@@ -122,8 +122,8 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         }
     }
 
-    private byte[] generateFileData(int size) {
-        byte[] data = new byte[size];
+    private byte[] generateFileData(final int size) {
+        final byte[] data = new byte[size];
         for (int i = 0; i < size; i++) {
             data[i] = (byte) ('A' + (i % 26));
         }
@@ -480,13 +480,13 @@ public class SevenZOutputFileTest extends AbstractTestCase {
 
     /**
      * Test password-based encryption
-     * 
+     *
      * <p>
      * As AES/CBC Cipher requires a minimum of 16 bytes file data to be encrypted, some padding logic has been implemented.
      * This test checks different file sizes (1, 16..) to ensure code coverage
      * </p>
      */
-    @Test 
+    @Test
     public void testEncrypt() throws Exception {
         output = new File(dir, "encrypted.7z");
         try (SevenZOutputFile outArchive = new SevenZOutputFile(output, "foo".toCharArray())) {
@@ -500,10 +500,10 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         // Is archive really password-based encrypted ?
         try (SevenZFile archive = new SevenZFile(output)) {
             assertThrows(
-                "A password should be needed", 
-                PasswordRequiredException.class, 
+                "A password should be needed",
+                PasswordRequiredException.class,
                 () -> verifyFile(archive, 0));
-        } 
+        }
 
         try (SevenZFile archive = new SevenZFile(output, "foo".toCharArray())) {
             assertEquals(Boolean.TRUE, verifyFile(archive, 0, 1, null));
@@ -668,11 +668,11 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             return Boolean.FALSE;
         }
         assertEquals(size, entry.getSize());
-        
-        byte[] actual = new byte[size];
+
+        final byte[] actual = new byte[size];
         int count = 0;
         while (count < size) {
-            int read = archive.read(actual, count, actual.length - count);
+            final int read = archive.read(actual, count, actual.length - count);
             assertNotEquals(-1, read, "EOF reached before reading all expected data");
             count += read;
         }

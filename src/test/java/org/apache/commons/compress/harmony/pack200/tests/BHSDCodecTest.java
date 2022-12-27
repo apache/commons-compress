@@ -41,10 +41,10 @@ public class BHSDCodecTest {
 
     @Test
     public void testDeltaEncodings() throws IOException, Pack200Exception {
-        Codec c = Codec.UDELTA5;
-        int[] sequence = {0, 2, 4, 2, 2, 4};
-        byte[] encoded = c.encode(sequence);
-        int[] decoded = c.decodeInts(6, new ByteArrayInputStream(encoded));
+        final Codec c = Codec.UDELTA5;
+        final int[] sequence = {0, 2, 4, 2, 2, 4};
+        final byte[] encoded = c.encode(sequence);
+        final int[] decoded = c.decodeInts(6, new ByteArrayInputStream(encoded));
         for (int i = 0; i < decoded.length; i++) {
             assertEquals(sequence[i], decoded[i]);
         }
@@ -57,27 +57,27 @@ public class BHSDCodecTest {
     @ParameterizedTest
     @MethodSource("encodeDecodeRange")
     public void testEncodeDecode(final int i) throws IOException, Pack200Exception {
-        BHSDCodec codec = (BHSDCodec) CodecEncoding.getCodec(i, null, null);
+        final BHSDCodec codec = (BHSDCodec) CodecEncoding.getCodec(i, null, null);
 
         if (!codec.isDelta()) {
             // Test encode-decode with a selection of numbers within the
             // range of the codec
-            long largest = codec.largest();
+            final long largest = codec.largest();
             long smallest = codec.isSigned() ? codec.smallest() : 0;
             if (smallest < Integer.MIN_VALUE) {
                 smallest = Integer.MIN_VALUE;
             }
-            long difference = (largest - smallest) / 4;
+            final long difference = (largest - smallest) / 4;
             for (long j = smallest; j <= largest; j += difference) {
                 if (j > Integer.MAX_VALUE) {
                     break;
                 }
-                byte[] encoded = codec.encode((int) j, 0);
+                final byte[] encoded = codec.encode((int) j, 0);
                 long decoded = 0;
                 try {
                     decoded = codec.decode(
                             new ByteArrayInputStream(encoded), 0);
-                } catch (EOFException e) {
+                } catch (final EOFException e) {
                     System.out.println(e);
                 }
                 if (j != decoded) {

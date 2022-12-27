@@ -38,7 +38,7 @@ public class OsgiUtils {
             if (c.getName().equals("org.osgi.framework.BundleReference")) {
                 return true;
             }
-            for (Class<?> ifc : c.getInterfaces()) {
+            for (final Class<?> ifc : c.getInterfaces()) {
                 if (isBundleReference(ifc)) {
                     return true;
                 }

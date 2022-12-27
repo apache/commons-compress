@@ -106,9 +106,7 @@ public class Archive {
     }
 
     public void setQuiet(final boolean quiet) {
-        if (quiet) {
-            logLevel = Segment.LOG_LEVEL_QUIET;
-        } else if (logLevel == Segment.LOG_LEVEL_QUIET) {
+        if (quiet || (logLevel == Segment.LOG_LEVEL_QUIET)) {
             logLevel = Segment.LOG_LEVEL_QUIET;
         }
     }

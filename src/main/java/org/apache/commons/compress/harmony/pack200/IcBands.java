@@ -113,7 +113,7 @@ public class IcBands extends BandSet {
             outerToInner.put(outerName, tuples);
             tuples.add(icTuple);
         } else {
-            for (IcTuple tuple : tuples) {
+            for (final IcTuple tuple : tuples) {
                 if (icTuple.equals(tuple)) {
                     return;
                 }
@@ -131,7 +131,7 @@ public class IcBands extends BandSet {
     }
 
     public IcTuple getIcTuple(final CPClass inner) {
-        for (IcTuple icTuple : innerClasses) {
+        for (final IcTuple icTuple : innerClasses) {
             if (icTuple.C.equals(inner)) {
                 return icTuple;
             }

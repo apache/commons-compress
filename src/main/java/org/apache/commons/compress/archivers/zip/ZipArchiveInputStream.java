@@ -815,7 +815,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         final byte[] extraData = readRange(extraLen);
         try {
             current.entry.setExtra(extraData);
-        } catch (RuntimeException ex) {
+        } catch (final RuntimeException ex) {
             final ZipException z = new ZipException("Invalid extra data in entry " + current.entry.getName());
             z.initCause(ex);
             throw z;

@@ -88,7 +88,7 @@ public class SegmentUtilsTest {
 
     @Test
     public void testMatches() {
-        long[] oneToTen = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        final long[] oneToTen = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         assertEquals(6, SegmentUtils.countMatches(new long[][] { oneToTen,
                 new long[] { 5, 6, 7 } }, even));
         assertEquals(5, SegmentUtils.countMatches(new long[][] { oneToTen },

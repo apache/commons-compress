@@ -487,7 +487,7 @@ public class CpBands extends BandSet {
         for (int i = 0; i < cpSignatureCount; i++) {
             final String form = cpSignatureForm[i];
             final char[] chars = form.toCharArray();
-            for (char element : chars) {
+            for (final char element : chars) {
                 if (element == 'L') {
                     cpSignatureInts[i] = -1;
                     lCount++;
@@ -547,7 +547,7 @@ public class CpBands extends BandSet {
         int bigSuffixCount = 0;
         final int[] suffix = decodeBandInt("cpUTF8Suffix", in, Codec.UNSIGNED5, cpUTF8Count - 1);
 
-        for (int element : suffix) {
+        for (final int element : suffix) {
             if (element == 0) {
                 bigSuffixCount++;
             } else {

@@ -29,7 +29,7 @@ public class CPClass extends CPConstant<CPClass> {
         this.utf8 = utf8;
         this.className = utf8.getUnderlyingString();
         final char[] chars = className.toCharArray();
-        for (char element : chars) {
+        for (final char element : chars) {
             if (element <= 0x2D) {
                 isInnerClass = true;
                 return;

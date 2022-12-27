@@ -24,13 +24,13 @@ public class Pack200Test {
 
     @Test
     public void testPacker() {
-        Pack200.Packer packer = Pack200.newPacker();
+        final Pack200.Packer packer = Pack200.newPacker();
         assertEquals("org.apache.commons.compress.harmony.pack200.Pack200PackerAdapter", packer.getClass().getName());
     }
 
     @Test
     public void testUnpacker() {
-        Pack200.Unpacker unpacker = Pack200.newUnpacker();
+        final Pack200.Unpacker unpacker = Pack200.newUnpacker();
         assertEquals("org.apache.commons.compress.harmony.unpack200.Pack200UnpackerAdapter", unpacker.getClass().getName());
     }
 

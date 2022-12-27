@@ -694,7 +694,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     public void addPaxHeader(final String name, final String value) {
         try {
             processPaxHeader(name,value);
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new IllegalArgumentException("Invalid input", ex);
         }
     }
@@ -781,7 +781,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         if (headers.containsKey(TarGnuSparseKeys.REALSIZE)) {
             try {
                 realSize = Integer.parseInt(headers.get(TarGnuSparseKeys.REALSIZE));
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 throw new IOException("Corrupted TAR archive. GNU.sparse.realsize header for "
                     + name + " contains non-numeric value");
             }
@@ -793,7 +793,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         if (headers.containsKey("SCHILY.realsize")) {
             try {
                 realSize = Long.parseLong(headers.get("SCHILY.realsize"));
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 throw new IOException("Corrupted TAR archive. SCHILY.realsize header for "
                     + name + " contains non-numeric value");
             }
@@ -855,7 +855,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
         final List<TarArchiveEntry> entries = new ArrayList<>();
         try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(file)) {
-            for (Path p : dirStream) {
+            for (final Path p : dirStream) {
                 entries.add(new TarArchiveEntry(p));
             }
         } catch (final IOException e) {
@@ -1284,15 +1284,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         // prefix[130] is is guaranteed to be '\0' with XSTAR/XUSTAR
         if (header[XSTAR_PREFIX_OFFSET + 130] != 0) {
             // except when typeflag is 'M'
-            if (header[LF_OFFSET] == LF_MULTIVOLUME) {
-                // We come only here if we try to read in a GNU/xstar/xustar multivolume archive starting past volume #0
-                // As of 1.22, commons-compress does not support multivolume tar archives.
-                // If/when it does, this should work as intended.
-                if ((header[XSTAR_MULTIVOLUME_OFFSET] & 0x80) == 0
-                        && header[XSTAR_MULTIVOLUME_OFFSET + 11] != ' ') {
-                    return true;
-                }
-            } else {
+            if (header[LF_OFFSET] != LF_MULTIVOLUME) {
+                return true;
+            }
+            // We come only here if we try to read in a GNU/xstar/xustar multivolume archive starting past volume #0
+            // As of 1.22, commons-compress does not support multivolume tar archives.
+            // If/when it does, this should work as intended.
+            if ((header[XSTAR_MULTIVOLUME_OFFSET] & 0x80) == 0
+                    && header[XSTAR_MULTIVOLUME_OFFSET + 11] != ' ') {
                 return true;
             }
         }
@@ -1505,7 +1504,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         throws IOException {
         try {
             parseTarHeaderUnwrapped(globalPaxHeaders, header, encoding, oldStyle, lenient);
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             throw new IOException("Corrupted TAR archive.", ex);
         }
     }

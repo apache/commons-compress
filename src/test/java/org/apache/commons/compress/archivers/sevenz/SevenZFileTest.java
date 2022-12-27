@@ -166,7 +166,7 @@ public class SevenZFileTest extends AbstractTestCase {
 
     @Test
     public void getEntriesOfUnarchiveInMemoryTest() throws IOException {
-        byte[] data = Files.readAllBytes(getFile("bla.7z").toPath());
+        final byte[] data = Files.readAllBytes(getFile("bla.7z").toPath());
         try (SevenZFile sevenZFile = new SevenZFile(new SeekableInMemoryByteChannel(data))) {
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
             final Iterator<SevenZArchiveEntry> iter = entries.iterator();
@@ -272,7 +272,7 @@ public class SevenZFileTest extends AbstractTestCase {
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             while (entry != null) {
                 if (entry.hasStream()) {
-                    byte[] content = new byte[(int) entry.getSize()];
+                    final byte[] content = new byte[(int) entry.getSize()];
                     sevenZFile.read(content);
                 }
                 entry = sevenZFile.getNextEntry();
@@ -373,7 +373,7 @@ public class SevenZFileTest extends AbstractTestCase {
     @Test
     public void retrieveInputStreamForShuffledEntries() throws IOException {
         try (final SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-348.7z"))) {
-            List<SevenZArchiveEntry> entries = (List<SevenZArchiveEntry>) sevenZFile.getEntries();
+            final List<SevenZArchiveEntry> entries = (List<SevenZArchiveEntry>) sevenZFile.getEntries();
             Collections.shuffle(entries);
             for (final SevenZArchiveEntry entry : entries) {
                 IOUtils.toByteArray(sevenZFile.getInputStream(entry));
@@ -480,7 +480,7 @@ public class SevenZFileTest extends AbstractTestCase {
     @Test
     public void testAllEmptyFilesArchive() throws Exception {
         try (SevenZFile archive = new SevenZFile(getFile("7z-empty-mhc-off.7z"))) {
-            SevenZArchiveEntry e = archive.getNextEntry();
+            final SevenZArchiveEntry e = archive.getNextEntry();
             assertNotNull(e);
             assertEquals("empty", e.getName());
             assertDates(e, "2013-05-14T17:50:19Z", null, null);

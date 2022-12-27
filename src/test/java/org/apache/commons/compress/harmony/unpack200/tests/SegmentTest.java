@@ -47,7 +47,7 @@ public class SegmentTest {
         if (in != null) {
             try {
                 in.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         }
@@ -55,7 +55,7 @@ public class SegmentTest {
             if (out != null) {
                 out.close();
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
         file.delete();
@@ -68,27 +68,27 @@ public class SegmentTest {
         file = File.createTempFile("hello", "world.jar");
         file.deleteOnExit();
         out = new JarOutputStream(new FileOutputStream(file));
-        Segment segment = new Segment();
+        final Segment segment = new Segment();
         segment.unpack(in, out);
         out.close();
         out = null;
-        JarFile jarFile = new JarFile(file);
+        final JarFile jarFile = new JarFile(file);
 
-        JarEntry entry = jarFile
+        final JarEntry entry = jarFile
                 .getJarEntry("org/apache/harmony/archive/tests/internal/pack200/HelloWorld.class");
         assertNotNull(entry);
-        InputStream ours = jarFile.getInputStream(entry);
+        final InputStream ours = jarFile.getInputStream(entry);
 
-        JarFile jarFile2 = new JarFile(new File(Segment.class.getResource(
+        final JarFile jarFile2 = new JarFile(new File(Segment.class.getResource(
                 "/pack200/hw.jar").toURI()));
-        JarEntry entry2 = jarFile2
+        final JarEntry entry2 = jarFile2
                 .getJarEntry("org/apache/harmony/archive/tests/internal/pack200/HelloWorld.class");
         assertNotNull(entry2);
 
-        InputStream expected = jarFile2.getInputStream(entry2);
+        final InputStream expected = jarFile2.getInputStream(entry2);
 
-        BufferedReader reader1 = new BufferedReader(new InputStreamReader(ours));
-        BufferedReader reader2 = new BufferedReader(new InputStreamReader(expected));
+        final BufferedReader reader1 = new BufferedReader(new InputStreamReader(ours));
+        final BufferedReader reader2 = new BufferedReader(new InputStreamReader(expected));
         String line1 = reader1.readLine();
         String line2 = reader2.readLine();
         int i = 1;
@@ -108,7 +108,7 @@ public class SegmentTest {
                 .getResourceAsStream("/pack200/InterfaceOnly.pack");
         file = File.createTempFile("Interface", "Only.jar");
         out = new JarOutputStream(new FileOutputStream(file));
-        Segment segment = new Segment();
+        final Segment segment = new Segment();
         segment.unpack(in, out);
     }
 
@@ -118,7 +118,7 @@ public class SegmentTest {
                 .getResourceAsStream("/pack200/JustResources.pack");
         file = File.createTempFile("just", "resources.jar");
         out = new JarOutputStream(new FileOutputStream(file));
-        Segment segment = new Segment();
+        final Segment segment = new Segment();
         segment.unpack(in, out);
     }
 

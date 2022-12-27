@@ -93,7 +93,7 @@ public class MetadataBandGroup extends BandSet {
 		nameRU.forEach(name -> name_RU.add(cpBands.getCPUtf8(name)));
 
 		final Iterator<Object> valuesIterator = values.iterator();
-		for (String tag : tags) {
+		for (final String tag : tags) {
 			T.add(tag);
             switch (tag) {
                 case "B":
@@ -132,14 +132,14 @@ public class MetadataBandGroup extends BandSet {
             }
 			// do nothing here for [ or @ (handled below)
 		}
-		for (Integer element : caseArrayN) {
+		for (final Integer element : caseArrayN) {
 			final int arraySize = element.intValue();
 			casearray_N.add(arraySize);
 			numBackwardsCalls += arraySize;
 		}
 		nestTypeRS.forEach(element -> nesttype_RS.add(cpBands.getCPSignature(element)));
 		nestNameRU.forEach(element -> nestname_RU.add(cpBands.getCPUtf8(element)));
-		for (Integer numPairs : nestPairN) {
+		for (final Integer numPairs : nestPairN) {
 			nestpair_N.add(numPairs.intValue());
 			numBackwardsCalls += numPairs.intValue();
 		}
@@ -165,14 +165,14 @@ public class MetadataBandGroup extends BandSet {
 			final List<Integer> caseArrayN, final List<String> nestTypeRS, final List<String> nestNameRU,
 			final List<Integer> nestPairN) {
 		param_NB.add(numParams);
-		for (int element : annoN) {
+		for (final int element : annoN) {
 			anno_N.add(element);
 		}
 		pair_N.addAll(pairN);
         typeRS.forEach(desc -> type_RS.add(cpBands.getCPSignature(desc)));
         nameRU.forEach(name -> name_RU.add(cpBands.getCPUtf8(name)));
 		final Iterator<Object> valuesIterator = values.iterator();
-		for (String tag : tags) {
+		for (final String tag : tags) {
 			T.add(tag);
             switch (tag) {
                 case "B":
@@ -211,14 +211,14 @@ public class MetadataBandGroup extends BandSet {
             }
 			// do nothing here for [ or @ (handled below)
 		}
-		for (Integer element : caseArrayN) {
+		for (final Integer element : caseArrayN) {
 			final int arraySize = element.intValue();
 			casearray_N.add(arraySize);
 			numBackwardsCalls += arraySize;
 		}
 		nestTypeRS.forEach(type -> nesttype_RS.add(cpBands.getCPSignature(type)));
 		nestNameRU.forEach(name -> nestname_RU.add(cpBands.getCPUtf8(name)));
-		for (Integer numPairs : nestPairN) {
+		for (final Integer numPairs : nestPairN) {
 			nestpair_N.add(numPairs.intValue());
 			numBackwardsCalls += numPairs.intValue();
 		}

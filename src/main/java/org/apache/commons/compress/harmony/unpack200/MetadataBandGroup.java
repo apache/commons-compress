@@ -165,12 +165,12 @@ public class MetadataBandGroup {
                 } else if (type.equals("RVPA") || type.equals("RIPA")) {
                     anno_N_Index = 0;
                     pair_N_Index = 0;
-                    for (int element : param_NB) {
+                    for (final int element : param_NB) {
                         attributes.add(getParameterAttribute(element, name_RU_Iterator));
                     }
                 }
             } else if (type.equals("AD")) {
-                for (int element : T) {
+                for (final int element : T) {
                     attributes.add(new AnnotationDefaultAttribute(new ElementValue(element, getNextValue(element))));
                 }
             }

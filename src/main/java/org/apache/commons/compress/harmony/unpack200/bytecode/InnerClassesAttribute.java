@@ -163,7 +163,7 @@ public class InnerClassesAttribute extends Attribute {
     @Override
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
-        for (InnerClassesEntry entry : innerClasses) {
+        for (final InnerClassesEntry entry : innerClasses) {
             entry.resolve(pool);
         }
     }
@@ -177,7 +177,7 @@ public class InnerClassesAttribute extends Attribute {
     protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(innerClasses.size());
 
-        for (InnerClassesEntry entry : innerClasses) {
+        for (final InnerClassesEntry entry : innerClasses) {
             entry.write(dos);
         }
     }

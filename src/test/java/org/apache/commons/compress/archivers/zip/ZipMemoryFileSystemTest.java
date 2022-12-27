@@ -75,9 +75,9 @@ public class ZipMemoryFileSystemTest {
         final Path firstFile = getPath("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
         final Path secondFile = getPath("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
         final Path lastFile = getPath("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
-        byte[] firstBytes = Files.readAllBytes(firstFile);
-        byte[] secondBytes = Files.readAllBytes(secondFile);
-        byte[] lastBytes = Files.readAllBytes(lastFile);
+        final byte[] firstBytes = Files.readAllBytes(firstFile);
+        final byte[] secondBytes = Files.readAllBytes(secondFile);
+        final byte[] lastBytes = Files.readAllBytes(lastFile);
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
             Files.write(fileSystem.getPath("split_zip_created_by_zip.z01"), firstBytes);
             Files.write(fileSystem.getPath("split_zip_created_by_zip.z02"), secondBytes);
@@ -99,15 +99,15 @@ public class ZipMemoryFileSystemTest {
         final Path firstFile = getPath("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
         final Path secondFile = getPath("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
         final Path lastFile = getPath("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
-        byte[] firstBytes = Files.readAllBytes(firstFile);
-        byte[] secondBytes = Files.readAllBytes(secondFile);
-        byte[] lastBytes = Files.readAllBytes(lastFile);
+        final byte[] firstBytes = Files.readAllBytes(firstFile);
+        final byte[] secondBytes = Files.readAllBytes(secondFile);
+        final byte[] lastBytes = Files.readAllBytes(lastFile);
         final int firstFileSize = firstBytes.length;
         final int secondFileSize = secondBytes.length;
         final int lastFileSize = lastBytes.length;
 
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
-            Path lastMemoryPath = fileSystem.getPath("split_zip_created_by_zip.zip");
+            final Path lastMemoryPath = fileSystem.getPath("split_zip_created_by_zip.zip");
             Files.write(fileSystem.getPath("split_zip_created_by_zip.z01"), firstBytes);
             Files.write(fileSystem.getPath("split_zip_created_by_zip.z02"), secondBytes);
             Files.write(lastMemoryPath, lastBytes);
@@ -131,7 +131,7 @@ public class ZipMemoryFileSystemTest {
     @Test
     public void scatterFileInMemory() throws IOException {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
-            Path scatterFile = fileSystem.getPath("scattertest.notzip");
+            final Path scatterFile = fileSystem.getPath("scattertest.notzip");
             final ScatterZipOutputStream scatterZipOutputStream = ScatterZipOutputStream.pathBased(scatterFile);
             final byte[] B_PAYLOAD = "RBBBBBBS".getBytes();
             final byte[] A_PAYLOAD = "XAAY".getBytes();
@@ -146,7 +146,7 @@ public class ZipMemoryFileSystemTest {
             final ByteArrayInputStream payload1 = new ByteArrayInputStream(A_PAYLOAD);
             scatterZipOutputStream.addArchiveEntry(createZipArchiveEntryRequest(zae, createPayloadSupplier(payload1)));
 
-            Path target = Files.createTempFile(dir, "scattertest", ".zip");
+            final Path target = Files.createTempFile(dir, "scattertest", ".zip");
             final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(target);
             scatterZipOutputStream.writeTo(outputStream);
             outputStream.close();
@@ -168,7 +168,7 @@ public class ZipMemoryFileSystemTest {
     @Test
     public void scatterFileWithCompressionAndTargetInMemory() throws IOException {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
-            Path scatterFile = fileSystem.getPath("scattertest.notzip");
+            final Path scatterFile = fileSystem.getPath("scattertest.notzip");
             final ScatterZipOutputStream scatterZipOutputStream = ScatterZipOutputStream.pathBased(scatterFile,
                     Deflater.BEST_COMPRESSION);
             final byte[] B_PAYLOAD = "RBBBBBBS".getBytes();
@@ -184,7 +184,7 @@ public class ZipMemoryFileSystemTest {
             final ByteArrayInputStream payload1 = new ByteArrayInputStream(A_PAYLOAD);
             scatterZipOutputStream.addArchiveEntry(createZipArchiveEntryRequest(zae, createPayloadSupplier(payload1)));
 
-            Path target = fileSystem.getPath("scattertest.zip");
+            final Path target = fileSystem.getPath("scattertest.zip");
             final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(target);
             scatterZipOutputStream.writeTo(outputStream);
             outputStream.close();
@@ -206,7 +206,7 @@ public class ZipMemoryFileSystemTest {
     @Test
     public void scatterFileWithCompressionInMemory() throws IOException {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
-            Path scatterFile = fileSystem.getPath("scattertest.notzip");
+            final Path scatterFile = fileSystem.getPath("scattertest.notzip");
             final ScatterZipOutputStream scatterZipOutputStream = ScatterZipOutputStream.pathBased(scatterFile,
                     Deflater.BEST_COMPRESSION);
             final byte[] B_PAYLOAD = "RBBBBBBS".getBytes();
@@ -222,7 +222,7 @@ public class ZipMemoryFileSystemTest {
             final ByteArrayInputStream payload1 = new ByteArrayInputStream(A_PAYLOAD);
             scatterZipOutputStream.addArchiveEntry(createZipArchiveEntryRequest(zae, createPayloadSupplier(payload1)));
 
-            Path target = Files.createTempFile(dir, "scattertest", ".zip");
+            final Path target = Files.createTempFile(dir, "scattertest", ".zip");
             final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(target);
             scatterZipOutputStream.writeTo(outputStream);
             outputStream.close();
@@ -254,7 +254,7 @@ public class ZipMemoryFileSystemTest {
                     .forEach(path -> {
                         try {
                             Files.deleteIfExists(path);
-                        } catch (IOException ignore) {
+                        } catch (final IOException ignore) {
                         }
                     });
         }
@@ -263,7 +263,7 @@ public class ZipMemoryFileSystemTest {
     @Test
     public void zipFileInMemory() throws IOException {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
-            Path scatterFile = fileSystem.getPath("scattertest.notzip");
+            final Path scatterFile = fileSystem.getPath("scattertest.notzip");
             final ScatterZipOutputStream scatterZipOutputStream = ScatterZipOutputStream.pathBased(scatterFile,
                     Deflater.BEST_COMPRESSION);
             final byte[] B_PAYLOAD = "RBBBBBBS".getBytes();
@@ -279,7 +279,7 @@ public class ZipMemoryFileSystemTest {
             final ByteArrayInputStream payload1 = new ByteArrayInputStream(A_PAYLOAD);
             scatterZipOutputStream.addArchiveEntry(createZipArchiveEntryRequest(zae, createPayloadSupplier(payload1)));
 
-            Path target = fileSystem.getPath("scattertest.zip");
+            final Path target = fileSystem.getPath("scattertest.zip");
             final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(target);
             scatterZipOutputStream.writeTo(outputStream);
             outputStream.close();
@@ -301,7 +301,7 @@ public class ZipMemoryFileSystemTest {
     public void zipFromMemoryFileSystemFile() throws IOException, NoSuchAlgorithmException {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
             final Path textFileInMemSys = fileSystem.getPath("test.txt");
-            byte[] bytes = new byte[100 * 1024];
+            final byte[] bytes = new byte[100 * 1024];
             SecureRandom.getInstanceStrong().nextBytes(bytes);
             Files.write(textFileInMemSys, bytes);
 
@@ -343,7 +343,7 @@ public class ZipMemoryFileSystemTest {
     public void zipFromMemoryFileSystemPath() throws IOException, NoSuchAlgorithmException {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
             final Path textFileInMemSys = fileSystem.getPath("test.txt");
-            byte[] bytes = new byte[100 * 1024];
+            final byte[] bytes = new byte[100 * 1024];
             SecureRandom.getInstanceStrong().nextBytes(bytes);
             Files.write(textFileInMemSys, bytes);
 
@@ -365,7 +365,7 @@ public class ZipMemoryFileSystemTest {
     public void zipFromMemoryFileSystemSeekableByteChannel() throws IOException, NoSuchAlgorithmException {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
             final Path textFileInMemSys = fileSystem.getPath("test.txt");
-            byte[] bytes = new byte[100 * 1024];
+            final byte[] bytes = new byte[100 * 1024];
             SecureRandom.getInstanceStrong().nextBytes(bytes);
             Files.write(textFileInMemSys, bytes);
 
@@ -389,7 +389,7 @@ public class ZipMemoryFileSystemTest {
     public void zipFromMemoryFileSystemSplitFile() throws IOException, NoSuchAlgorithmException {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
             final Path textFileInMemSys = fileSystem.getPath("test.txt");
-            byte[] bytes = new byte[100 * 1024];
+            final byte[] bytes = new byte[100 * 1024];
             SecureRandom.getInstanceStrong().nextBytes(bytes);
             Files.write(textFileInMemSys, bytes);
 
@@ -485,7 +485,7 @@ public class ZipMemoryFileSystemTest {
     public void zipToMemoryFileSystemSplitPath() throws IOException, NoSuchAlgorithmException {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
             final Path zipInMemSys = fileSystem.getPath("target.zip");
-            byte[] bytes = new byte[100 * 1024];
+            final byte[] bytes = new byte[100 * 1024];
             SecureRandom.getInstanceStrong().nextBytes(bytes);
 
             try (final ArchiveOutputStream zipOut = new ZipArchiveOutputStream(zipInMemSys, 64 * 1024L)) {

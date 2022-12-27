@@ -61,7 +61,7 @@ public class TarFileTest extends AbstractTestCase {
 
     private void datePriorToEpoch(final String archive) throws Exception {
         try (final TarFile tarFile = new TarFile(getPath(archive))) {
-            TarArchiveEntry entry = tarFile.getEntries().get(0);
+            final TarArchiveEntry entry = tarFile.getEntries().get(0);
             assertEquals("foo", entry.getName());
             final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
             cal.set(1969, 11, 31, 23, 59, 59);
@@ -118,7 +118,7 @@ public class TarFileTest extends AbstractTestCase {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
             tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
-            TarArchiveEntry t = new TarArchiveEntry("name");
+            final TarArchiveEntry t = new TarArchiveEntry("name");
             t.setGroupId(4294967294L);
             t.setSize(1);
             tos.putArchiveEntry(t);
@@ -127,7 +127,7 @@ public class TarFileTest extends AbstractTestCase {
         }
         final byte[] data = bos.toByteArray();
         try (final TarFile tarFile = new TarFile(data)) {
-            List<TarArchiveEntry> entries = tarFile.getEntries();
+            final List<TarArchiveEntry> entries = tarFile.getEntries();
             assertEquals(4294967294L, entries.get(0).getLongGroupId());
         }
     }
@@ -138,7 +138,7 @@ public class TarFileTest extends AbstractTestCase {
     @Test
     public void shouldReadGNULongNameEntryWithWrongName() throws Exception {
         try (final TarFile tarFile = new TarFile(getPath("COMPRESS-324.tar"))) {
-            List<TarArchiveEntry> entries = tarFile.getEntries();
+            final List<TarArchiveEntry> entries = tarFile.getEntries();
             assertEquals("1234567890123456789012345678901234567890123456789012345678901234567890"
                             + "1234567890123456789012345678901234567890123456789012345678901234567890"
                             + "1234567890123456789012345678901234567890123456789012345678901234567890"
@@ -164,7 +164,7 @@ public class TarFileTest extends AbstractTestCase {
                 + "01234567890\u00e4";
         try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, encoding)) {
             tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
-            TarArchiveEntry t = new TarArchiveEntry(name);
+            final TarArchiveEntry t = new TarArchiveEntry(name);
             t.setSize(1);
             tos.putArchiveEntry(t);
             tos.write(30);
@@ -172,7 +172,7 @@ public class TarFileTest extends AbstractTestCase {
         }
         final byte[] data = bos.toByteArray();
         try (final TarFile tarFile = new TarFile(data, encoding)) {
-            List<TarArchiveEntry> entries = tarFile.getEntries();
+            final List<TarArchiveEntry> entries = tarFile.getEntries();
             assertEquals(1, entries.size());
             assertEquals(name, entries.get(0).getName());
         }
@@ -207,7 +207,7 @@ public class TarFileTest extends AbstractTestCase {
     @Test
     public void survivesBlankLinesInPaxHeader() throws Exception {
         try (final TarFile tarFile = new TarFile(getPath("COMPRESS-355.tar"))) {
-            List<TarArchiveEntry> entries = tarFile.getEntries();
+            final List<TarArchiveEntry> entries = tarFile.getEntries();
             assertEquals(1, entries.size());
             assertEquals("package/package.json", entries.get(0).getName());
         }
@@ -241,17 +241,17 @@ public class TarFileTest extends AbstractTestCase {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
             tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
-            TarArchiveEntry rootfolder = new TarArchiveEntry(folderName);
+            final TarArchiveEntry rootfolder = new TarArchiveEntry(folderName);
             tos.putArchiveEntry(rootfolder);
-            TarArchiveEntry consumerJava = new TarArchiveEntry(consumerJavaName);
+            final TarArchiveEntry consumerJava = new TarArchiveEntry(consumerJavaName);
             tos.putArchiveEntry(consumerJava);
-            TarArchiveEntry producerJava = new TarArchiveEntry(producerJavaName);
+            final TarArchiveEntry producerJava = new TarArchiveEntry(producerJavaName);
             tos.putArchiveEntry(producerJava);
             tos.closeArchiveEntry();
         }
         final byte[] data = bos.toByteArray();
         try (final TarFile tarFile = new TarFile(data)) {
-            List<TarArchiveEntry> entries = tarFile.getEntries();
+            final List<TarArchiveEntry> entries = tarFile.getEntries();
             assertEquals(folderName, entries.get(0).getName());
             assertEquals(consumerJavaName, entries.get(1).getName());
             assertEquals(producerJavaName, entries.get(2).getName());
@@ -263,32 +263,32 @@ public class TarFileTest extends AbstractTestCase {
         final String rootPath = dir.getAbsolutePath();
         final String dirDirectory = "COMPRESS-509";
         final int count = 100;
-        File root = new File(rootPath + "/" + dirDirectory);
+        final File root = new File(rootPath + "/" + dirDirectory);
         root.mkdirs();
         for (int i = 1; i < count; i++) {
             // -----------------------
             // create empty dirs with incremental length
             // -----------------------
-            StringBuilder subDirBuilder = new StringBuilder();
+            final StringBuilder subDirBuilder = new StringBuilder();
             for (int j = 0; j < i; j++) {
                 subDirBuilder.append("a");
             }
-            String subDir = subDirBuilder.toString();
-            File dir = new File(rootPath + "/" + dirDirectory, "/" + subDir);
+            final String subDir = subDirBuilder.toString();
+            final File dir = new File(rootPath + "/" + dirDirectory, "/" + subDir);
             dir.mkdir();
 
             // -----------------------
             // tar these dirs
             // -----------------------
-            String fileName = "/" + dirDirectory + "/" + subDir;
-            File tarF = new File(rootPath + "/tar" + i + ".tar");
+            final String fileName = "/" + dirDirectory + "/" + subDir;
+            final File tarF = new File(rootPath + "/tar" + i + ".tar");
             try (OutputStream dest = Files.newOutputStream(tarF.toPath());
                  TarArchiveOutputStream out = new TarArchiveOutputStream(new BufferedOutputStream(dest))) {
                 out.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
                 out.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
 
-                File file = new File(rootPath, fileName);
-                TarArchiveEntry entry = new TarArchiveEntry(file);
+                final File file = new File(rootPath, fileName);
+                final TarArchiveEntry entry = new TarArchiveEntry(file);
                 entry.setName(fileName);
                 out.putArchiveEntry(entry);
                 out.closeArchiveEntry();
@@ -298,7 +298,7 @@ public class TarFileTest extends AbstractTestCase {
             // untar these tars
             // -----------------------
             try (TarFile tarFile = new TarFile(tarF)) {
-                for (TarArchiveEntry entry : tarFile.getEntries()) {
+                for (final TarArchiveEntry entry : tarFile.getEntries()) {
                     assertTrue("Entry name: " + entry.getName(), entry.getName().endsWith("/"));
                 }
             }

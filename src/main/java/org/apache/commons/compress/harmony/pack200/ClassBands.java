@@ -358,7 +358,7 @@ public class ClassBands extends BandSet {
 	public void addClassAttribute(final NewAttribute attribute) {
 		// TODO: backwards calls
 		final String attributeName = attribute.type;
-		for (NewAttributeBands bands : classAttributeBands) {
+		for (final NewAttributeBands bands : classAttributeBands) {
 			if (bands.getAttributeName().equals(attributeName)) {
 				bands.addAttribute(attribute);
 				final int flagIndex = bands.getFlagIndex();
@@ -379,7 +379,7 @@ public class ClassBands extends BandSet {
 
 	public void addCodeAttribute(final NewAttribute attribute) {
 		final String attributeName = attribute.type;
-		for (NewAttributeBands bands : codeAttributeBands) {
+		for (final NewAttributeBands bands : codeAttributeBands) {
 			if (bands.getAttributeName().equals(attributeName)) {
 				bands.addAttribute(attribute);
 				final int flagIndex = bands.getFlagIndex();
@@ -422,7 +422,7 @@ public class ClassBands extends BandSet {
 
 	public void addFieldAttribute(final NewAttribute attribute) {
 		final String attributeName = attribute.type;
-		for (NewAttributeBands bands : fieldAttributeBands) {
+		for (final NewAttributeBands bands : fieldAttributeBands) {
 			if (bands.getAttributeName().equals(attributeName)) {
 				bands.addAttribute(attribute);
 				final int flagIndex = bands.getFlagIndex();
@@ -504,7 +504,7 @@ public class ClassBands extends BandSet {
 		}
 		if (exceptions != null) {
 			methodExceptionNumber.add(exceptions.length);
-			for (String exception : exceptions) {
+			for (final String exception : exceptions) {
 				methodExceptionClasses.add(cpBands.getCPClass(exception));
 			}
 			flags |= (1 << 18);
@@ -524,7 +524,7 @@ public class ClassBands extends BandSet {
 
 	public void addMethodAttribute(final NewAttribute attribute) {
 		final String attributeName = attribute.type;
-		for (NewAttributeBands bands : methodAttributeBands) {
+		for (final NewAttributeBands bands : methodAttributeBands) {
 			if (bands.getAttributeName().equals(attributeName)) {
 				bands.addAttribute(attribute);
 				final int flagIndex = bands.getFlagIndex();
@@ -575,16 +575,16 @@ public class ClassBands extends BandSet {
 	}
 
 	private void createNewAttributeBands() throws IOException {
-		for (AttributeDefinition def : attrBands.getClassAttributeLayouts()) {
+		for (final AttributeDefinition def : attrBands.getClassAttributeLayouts()) {
 			classAttributeBands.add(new NewAttributeBands(effort, cpBands, segment.getSegmentHeader(), def));
 		}
-		for (AttributeDefinition def : attrBands.getMethodAttributeLayouts()) {
+		for (final AttributeDefinition def : attrBands.getMethodAttributeLayouts()) {
 			methodAttributeBands.add(new NewAttributeBands(effort, cpBands, segment.getSegmentHeader(), def));
 		}
-		for (AttributeDefinition def : attrBands.getFieldAttributeLayouts()) {
+		for (final AttributeDefinition def : attrBands.getFieldAttributeLayouts()) {
 			fieldAttributeBands.add(new NewAttributeBands(effort, cpBands, segment.getSegmentHeader(), def));
 		}
-		for (AttributeDefinition def : attrBands.getCodeAttributeLayouts()) {
+		for (final AttributeDefinition def : attrBands.getCodeAttributeLayouts()) {
 			codeAttributeBands.add(new NewAttributeBands(effort, cpBands, segment.getSegmentHeader(), def));
 		}
 	}
@@ -616,16 +616,16 @@ public class ClassBands extends BandSet {
 		renumberDoubleOffsetBci(codeHandlerStartP, codeHandlerEndPO, codeHandlerCatchPO, bciRenumbering,
 				labelsToOffsets);
 
-		for (NewAttributeBands newAttributeBandSet : classAttributeBands) {
+		for (final NewAttributeBands newAttributeBandSet : classAttributeBands) {
 			newAttributeBandSet.renumberBci(bciRenumbering, labelsToOffsets);
 		}
-		for (NewAttributeBands newAttributeBandSet : methodAttributeBands) {
+		for (final NewAttributeBands newAttributeBandSet : methodAttributeBands) {
 			newAttributeBandSet.renumberBci(bciRenumbering, labelsToOffsets);
 		}
-		for (NewAttributeBands newAttributeBandSet : fieldAttributeBands) {
+		for (final NewAttributeBands newAttributeBandSet : fieldAttributeBands) {
 			newAttributeBandSet.renumberBci(bciRenumbering, labelsToOffsets);
 		}
-		for (NewAttributeBands newAttributeBandSet : codeAttributeBands) {
+		for (final NewAttributeBands newAttributeBandSet : codeAttributeBands) {
 			newAttributeBandSet.renumberBci(bciRenumbering, labelsToOffsets);
 		}
 	}
@@ -750,11 +750,11 @@ public class ClassBands extends BandSet {
 				int innerN = 0;
 				final List<IcTuple> innerClasses = segment.getIcBands().getInnerClassesForOuter(cpClass.toString());
 				if (innerClasses != null) {
-					for (IcTuple element : innerClasses) {
+					for (final IcTuple element : innerClasses) {
 						referencedInnerClasses.remove(element.C);
 					}
 				}
-				for (CPClass inner : referencedInnerClasses) {
+				for (final CPClass inner : referencedInnerClasses) {
 					final IcTuple icTuple = segment.getIcBands().getIcTuple(inner);
 					if (icTuple != null && !icTuple.isAnonymous()) {
 						// should transmit an icLocal entry
@@ -829,30 +829,30 @@ public class ClassBands extends BandSet {
 		fieldAttributeBands.sort(comparator);
 		codeAttributeBands.sort(comparator);
 
-		for (NewAttributeBands bands : classAttributeBands) {
+		for (final NewAttributeBands bands : classAttributeBands) {
 			if (bands.isUsedAtLeastOnce()) {
-				for (int backwardsCallCount : bands.numBackwardsCalls()) {
+				for (final int backwardsCallCount : bands.numBackwardsCalls()) {
 					classAttrCalls.add(backwardsCallCount);
 				}
 			}
 		}
-		for (NewAttributeBands bands : methodAttributeBands) {
+		for (final NewAttributeBands bands : methodAttributeBands) {
 			if (bands.isUsedAtLeastOnce()) {
-				for (int backwardsCallCount : bands.numBackwardsCalls()) {
+				for (final int backwardsCallCount : bands.numBackwardsCalls()) {
 					methodAttrCalls.add(backwardsCallCount);
 				}
 			}
 		}
-		for (NewAttributeBands bands : fieldAttributeBands) {
+		for (final NewAttributeBands bands : fieldAttributeBands) {
 			if (bands.isUsedAtLeastOnce()) {
-				for (int backwardsCallCount : bands.numBackwardsCalls()) {
+				for (final int backwardsCallCount : bands.numBackwardsCalls()) {
 					fieldAttrCalls.add(backwardsCallCount);
 				}
 			}
 		}
-		for (NewAttributeBands bands : codeAttributeBands) {
+		for (final NewAttributeBands bands : codeAttributeBands) {
 			if (bands.isUsedAtLeastOnce()) {
-				for (int backwardsCallCount : bands.numBackwardsCalls()) {
+				for (final int backwardsCallCount : bands.numBackwardsCalls()) {
 					codeAttrCalls.add(backwardsCallCount);
 				}
 			}
@@ -925,7 +925,7 @@ public class ClassBands extends BandSet {
 		final int totalInterfaces = sum(class_interface_count);
 		final int[] classInterface = new int[totalInterfaces];
 		int k = 0;
-		for (CPClass[] element : class_interface) {
+		for (final CPClass[] element : class_interface) {
 			if (element != null) {
 				for (final CPClass cpClass : element) {
 					classInterface[k] = cpClass.getIndex();
@@ -1007,7 +1007,7 @@ public class ClassBands extends BandSet {
 		if ((class_flags[index] & (1 << 22)) != 0) {
 			class_RIA_bands.removeLatest();
 		}
-		for (Long flagsL : tempFieldFlags) {
+		for (final Long flagsL : tempFieldFlags) {
 			final long flags = flagsL.longValue();
 			if ((flags & (1 << 19)) != 0) {
 				fieldSignature.remove(fieldSignature.size() - 1);
@@ -1022,7 +1022,7 @@ public class ClassBands extends BandSet {
 				field_RIA_bands.removeLatest();
 			}
 		}
-		for (Long flagsL : tempMethodFlags) {
+		for (final Long flagsL : tempMethodFlags) {
 			final long flags = flagsL.longValue();
 			if ((flags & (1 << 19)) != 0) {
 				methodSignature.remove(methodSignature.size() - 1);
@@ -1160,7 +1160,7 @@ public class ClassBands extends BandSet {
 
 	private int sum(final int[] ints) {
 		int sum = 0;
-		for (int j : ints) {
+		for (final int j : ints) {
 			sum += j;
 		}
 		return sum;
@@ -1246,7 +1246,7 @@ public class ClassBands extends BandSet {
 		PackingUtils.log("Wrote " + encodedBand.length + " bytes from classFileVersionMajor["
 				+ classFileVersionMajor.size() + "]");
 
-		for (NewAttributeBands classAttributeBand : classAttributeBands) {
+		for (final NewAttributeBands classAttributeBand : classAttributeBands) {
 			classAttributeBand.pack(out);
 		}
 	}
@@ -1350,7 +1350,7 @@ public class ClassBands extends BandSet {
 		PackingUtils.log("Wrote " + encodedBand.length + " bytes from code_LocalVariableTypeTable_slot["
 				+ codeLocalVariableTypeTableSlot.size() + "]");
 
-		for (NewAttributeBands bands : codeAttributeBands) {
+		for (final NewAttributeBands bands : codeAttributeBands) {
 			bands.pack(out);
 		}
 	}
@@ -1420,7 +1420,7 @@ public class ClassBands extends BandSet {
 
 		field_RVA_bands.pack(out);
 		field_RIA_bands.pack(out);
-		for (NewAttributeBands bands : fieldAttributeBands) {
+		for (final NewAttributeBands bands : fieldAttributeBands) {
 			bands.pack(out);
 		}
 	}
@@ -1458,7 +1458,7 @@ public class ClassBands extends BandSet {
 		method_RVPA_bands.pack(out);
 		method_RIPA_bands.pack(out);
 		method_AD_bands.pack(out);
-		for (NewAttributeBands bands : methodAttributeBands) {
+		for (final NewAttributeBands bands : methodAttributeBands) {
 			bands.pack(out);
 		}
 	}

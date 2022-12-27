@@ -55,19 +55,19 @@ public class ClassFile {
         dos.writeShort(thisClass);
         dos.writeShort(superClass);
         dos.writeShort(interfaces.length);
-        for (int element : interfaces) {
+        for (final int element : interfaces) {
             dos.writeShort(element);
         }
         dos.writeShort(fields.length);
-        for (ClassFileEntry field : fields) {
+        for (final ClassFileEntry field : fields) {
             field.write(dos);
         }
         dos.writeShort(methods.length);
-        for (ClassFileEntry method : methods) {
+        for (final ClassFileEntry method : methods) {
             method.write(dos);
         }
         dos.writeShort(attributes.length);
-        for (Attribute attribute : attributes) {
+        for (final Attribute attribute : attributes) {
             attribute.write(dos);
         }
     }

@@ -120,7 +120,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
             return false;
         }
         final Iterator<? extends SevenZMethodConfiguration> i2 = c2.iterator();
-        for (SevenZMethodConfiguration element : c1) {
+        for (final SevenZMethodConfiguration element : c1) {
             if (!i2.hasNext()) {
                 return false;
             }

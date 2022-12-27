@@ -82,7 +82,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
         // sizes, fix up the byte code targets
         // At this point, byteCodes may be a different size than
         // codePacked because of wide bytecodes.
-        for (ByteCode byteCode : byteCodes) {
+        for (final ByteCode byteCode : byteCodes) {
             byteCode.applyByteCodeTargetFixup(this);
         }
     }
@@ -100,7 +100,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
     @Override
     protected int getLength() {
         int attributesSize = 0;
-        for (Attribute attribute : attributes) {
+        for (final Attribute attribute : attributes) {
             attributesSize += attribute.getLengthIncludingHeader();
         }
         return 2 + 2 + 4 + codeLength + 2 + exceptionTable.size() * (2 + 2 + 2 + 2) + 2 + attributesSize;
@@ -113,7 +113,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
         nestedEntries.addAll(byteCodes);
         nestedEntries.addAll(attributes);
         // Don't forget to add the ExceptionTable catch_types
-        for (ExceptionTableEntry entry : exceptionTable) {
+        for (final ExceptionTableEntry entry : exceptionTable) {
             final CPClass catchType = entry.getCatchType();
             // If the catch type is null, this is a finally
             // block. If it's not null, we need to add the
@@ -155,17 +155,17 @@ public class CodeAttribute extends BCIRenumberedAttribute {
         dos.writeShort(maxLocals);
 
         dos.writeInt(codeLength);
-        for (ByteCode byteCode : byteCodes) {
+        for (final ByteCode byteCode : byteCodes) {
             byteCode.write(dos);
         }
 
         dos.writeShort(exceptionTable.size());
-        for (ExceptionTableEntry entry : exceptionTable) {
+        for (final ExceptionTableEntry entry : exceptionTable) {
             entry.write(dos);
         }
 
         dos.writeShort(attributes.size());
-        for (Attribute attribute : attributes) {
+        for (final Attribute attribute : attributes) {
             attribute.write(dos);
         }
     }

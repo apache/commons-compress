@@ -143,11 +143,11 @@ public class CodeAttributeTest {
 
     @Test
     public void testLength() {
-        OperandManager operandManager = new MockOperandManager();
+        final OperandManager operandManager = new MockOperandManager();
         operandManager.setSegment(segment);
         operandManager.setCurrentClass("java/lang/Foo");
 
-        MockCodeAttribute attribute = new MockCodeAttribute(3, // maxStack
+        final MockCodeAttribute attribute = new MockCodeAttribute(3, // maxStack
                 2, // maxLocals
                 mixedByteArray, // codePacked
                 segment, // segment
@@ -162,11 +162,11 @@ public class CodeAttributeTest {
 
     @Test
     public void testMixedByteCodes() {
-        OperandManager operandManager = new MockOperandManager();
+        final OperandManager operandManager = new MockOperandManager();
         operandManager.setSegment(segment);
         operandManager.setCurrentClass("java/lang/Foo");
 
-        CodeAttribute attribute = new CodeAttribute(3, // maxStack
+        final CodeAttribute attribute = new CodeAttribute(3, // maxStack
                 2, // maxLocals
                 mixedByteArray, // codePacked
                 segment, // segment
@@ -177,7 +177,7 @@ public class CodeAttributeTest {
         assertEquals("aload_0_putfield_this", attribute.byteCodes
                 .get(4).toString());
 
-        int expectedLabels[] = { 0, 1, 4, 5, 8, 9, 10, 13, 14 };
+        final int expectedLabels[] = { 0, 1, 4, 5, 8, 9, 10, 13, 14 };
         for (int index = 0; index < expectedLabels.length; index++) {
             assertEquals(expectedLabels[index],
                     attribute.byteCodeOffsets.get(index).intValue());
@@ -186,11 +186,11 @@ public class CodeAttributeTest {
 
     @Test
     public void testSingleByteCodes() {
-        OperandManager operandManager = new MockOperandManager();
+        final OperandManager operandManager = new MockOperandManager();
         operandManager.setSegment(segment);
         operandManager.setCurrentClass("java/lang/Foo");
 
-        CodeAttribute attribute = new CodeAttribute(4, // maxStack
+        final CodeAttribute attribute = new CodeAttribute(4, // maxStack
                 3, // maxLocals
                 singleByteArray, // codePacked
                 segment, // segment
@@ -201,7 +201,7 @@ public class CodeAttributeTest {
         assertEquals("invokespecial_this", attribute.byteCodes
                 .get(3).toString());
 
-        int expectedLabels[] = { 0, 1, 2, 4 };
+        final int expectedLabels[] = { 0, 1, 2, 4 };
         for (int index = 0; index < expectedLabels.length; index++) {
             assertEquals(expectedLabels[index],
                     attribute.byteCodeOffsets.get(index).intValue());

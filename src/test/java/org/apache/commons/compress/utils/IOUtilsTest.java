@@ -97,7 +97,7 @@ public class IOUtilsTest {
     @Test
     public void readRangeFromChannelDoesntReadMoreThanAskedFor() throws IOException {
         try (ReadableByteChannel in = new SeekableInMemoryByteChannel(new byte[] { 1, 2, 3, 4, 5 })) {
-            byte[] read = IOUtils.readRange(in, 3);
+            final byte[] read = IOUtils.readRange(in, 3);
             Assert.assertArrayEquals(new byte[] { 1, 2, 3 }, read);
             final ByteBuffer b = ByteBuffer.allocate(1);
             Assert.assertEquals(1, in.read(b));
@@ -127,7 +127,7 @@ public class IOUtilsTest {
     @Test
     public void readRangeFromChannelStopsIfThereIsNothingToReadAnymore() throws IOException {
         try (ReadableByteChannel in = new SeekableInMemoryByteChannel(new byte[] { 1, 2, 3, 4, 5 })) {
-            byte[] read = IOUtils.readRange(in, 10);
+            final byte[] read = IOUtils.readRange(in, 10);
             Assert.assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, read);
             final ByteBuffer b = ByteBuffer.allocate(1);
             Assert.assertEquals(-1, in.read(b));
@@ -137,7 +137,7 @@ public class IOUtilsTest {
     @Test
     public void readRangeFromStreamDoesntReadMoreThanAskedFor() throws IOException {
         try (ByteArrayInputStream in = new ByteArrayInputStream(new byte[] { 1, 2, 3, 4, 5 })) {
-            byte[] read = IOUtils.readRange(in, 3);
+            final byte[] read = IOUtils.readRange(in, 3);
             Assert.assertArrayEquals(new byte[] { 1, 2, 3 }, read);
             Assert.assertEquals(4, in.read());
         }
@@ -146,7 +146,7 @@ public class IOUtilsTest {
     @Test
     public void readRangeFromStreamStopsIfThereIsNothingToReadAnymore() throws IOException {
         try (ByteArrayInputStream in = new ByteArrayInputStream(new byte[] { 1, 2, 3, 4, 5 })) {
-            byte[] read = IOUtils.readRange(in, 10);
+            final byte[] read = IOUtils.readRange(in, 10);
             Assert.assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, read);
             Assert.assertEquals(-1, in.read());
         }

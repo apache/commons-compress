@@ -36,7 +36,7 @@ public class FileNameUtilsTest {
         assertEquals("foo", FileNameUtils.getBaseName(Paths.get("foo")));
         assertEquals("", FileNameUtils.getBaseName(Paths.get("")));
         assertEquals("", FileNameUtils.getBaseName(Paths.get(".")));
-        for (File f : File.listRoots()) {
+        for (final File f : File.listRoots()) {
             assertEquals(null, FileNameUtils.getBaseName(f.toPath()));
         }
         if (SystemUtils.IS_OS_WINDOWS) {
@@ -70,7 +70,7 @@ public class FileNameUtilsTest {
         assertEquals("", FileNameUtils.getExtension(Paths.get("foo")));
         assertEquals("", FileNameUtils.getExtension(Paths.get("")));
         assertEquals("", FileNameUtils.getExtension(Paths.get(".")));
-        for (File f : File.listRoots()) {
+        for (final File f : File.listRoots()) {
             assertEquals(null, FileNameUtils.getExtension(f.toPath()));
         }
         if (SystemUtils.IS_OS_WINDOWS) {

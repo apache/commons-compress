@@ -443,8 +443,8 @@ public class TarUtils {
      */
     protected static List<TarArchiveStructSparse> parseFromPAX01SparseHeaders(final String sparseMap)
         throws IOException {
-        List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
-        String[] sparseHeaderStrings = sparseMap.split(",");
+        final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+        final String[] sparseHeaderStrings = sparseMap.split(",");
         if (sparseHeaderStrings.length % 2 == 1) {
             throw new IOException("Corrupted TAR archive. Bad format in GNU.sparse.map PAX Header");
         }
@@ -453,7 +453,7 @@ public class TarUtils {
             long sparseOffset;
             try {
                 sparseOffset = Long.parseLong(sparseHeaderStrings[i]);
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 throw new IOException("Corrupted TAR archive."
                     + " Sparse struct offset contains a non-numeric value");
             }
@@ -464,7 +464,7 @@ public class TarUtils {
             long sparseNumbytes;
             try {
                 sparseNumbytes = Long.parseLong(sparseHeaderStrings[i + 1]);
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 throw new IOException("Corrupted TAR archive."
                     + " Sparse struct numbytes contains a non-numeric value");
             }
@@ -642,7 +642,7 @@ public class TarUtils {
     protected static List<TarArchiveStructSparse> parsePAX01SparseHeaders(final String sparseMap) {
         try {
             return parseFromPAX01SparseHeaders(sparseMap);
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new UncheckedIOException(ex.getMessage(), ex);
         }
     }
@@ -660,7 +660,7 @@ public class TarUtils {
      */
     protected static List<TarArchiveStructSparse> parsePAX1XSparseHeaders(final InputStream inputStream, final int recordSize) throws IOException {
         // for 1.X PAX Headers
-        List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+        final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         long bytesRead = 0;
 
         long[] readResult = readLineOfNumberForPax1X(inputStream);
@@ -690,7 +690,7 @@ public class TarUtils {
         }
 
         // skip the rest of this record data
-        long bytesToSkip = recordSize - bytesRead % recordSize;
+        final long bytesToSkip = recordSize - bytesRead % recordSize;
         IOUtils.skip(inputStream, bytesToSkip);
         return sparseHeaders;
     }
@@ -812,7 +812,7 @@ public class TarUtils {
                                     }
                                     try {
                                         offset = Long.valueOf(value);
-                                    } catch (NumberFormatException ex) {
+                                    } catch (final NumberFormatException ex) {
                                         throw new IOException("Failed to read Paxheader."
                                             + TarGnuSparseKeys.OFFSET + " contains a non-numeric value");
                                     }
@@ -831,7 +831,7 @@ public class TarUtils {
                                     long numbytes;
                                     try {
                                         numbytes = Long.parseLong(value);
-                                    } catch (NumberFormatException ex) {
+                                    } catch (final NumberFormatException ex) {
                                         throw new IOException("Failed to read Paxheader."
                                             + TarGnuSparseKeys.NUMBYTES + " contains a non-numeric value.");
                                     }
@@ -929,7 +929,7 @@ public class TarUtils {
                     throw new IOException("Corrupted TAR archive, sparse entry with negative numbytes");
                 }
                 sparseHeaders.add(sparseHeader);
-            } catch (IllegalArgumentException ex) {
+            } catch (final IllegalArgumentException ex) {
                 // thrown internally by parseOctalOrBinary
                 throw new IOException("Corrupted TAR archive, sparse entry is invalid", ex);
             }

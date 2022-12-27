@@ -274,11 +274,11 @@ public abstract class Pack200 {
 
     static Object newInstance(final String systemProperty, final String defaultClassName) {
         return AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
-            String className = System.getProperty(systemProperty, defaultClassName);
+            final String className = System.getProperty(systemProperty, defaultClassName);
             try {
                 // TODO Not sure if this will cause problems loading the class
                 return Pack200.class.getClassLoader().loadClass(className).newInstance();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new Error(Messages.getString("archive.3E", className), e); //$NON-NLS-1$
             }
         });

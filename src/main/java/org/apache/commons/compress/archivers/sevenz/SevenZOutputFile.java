@@ -143,7 +143,7 @@ public class SevenZOutputFile implements Closeable {
      * @throws IOException if opening the file fails
      * @since 1.23
      */
-    public SevenZOutputFile(final File fileName, char[] password) throws IOException {
+    public SevenZOutputFile(final File fileName, final char[] password) throws IOException {
         this(
             Files.newByteChannel(
                 fileName.toPath(),
@@ -180,7 +180,7 @@ public class SevenZOutputFile implements Closeable {
      * @throws IOException if the channel cannot be positioned properly
      * @since 1.23
      */
-    public SevenZOutputFile(final SeekableByteChannel channel, char[] password) throws IOException {
+    public SevenZOutputFile(final SeekableByteChannel channel, final char[] password) throws IOException {
         this.channel = channel;
         channel.position(SevenZFile.SIGNATURE_HEADER_SIZE);
         if (password != null) {
@@ -255,7 +255,7 @@ public class SevenZOutputFile implements Closeable {
         entry.setName(entryName);
         try {
             fillDates(inputFile.toPath(), entry);
-        } catch (IOException e) { // NOSONAR
+        } catch (final IOException e) { // NOSONAR
             entry.setLastModifiedDate(new Date(inputFile.lastModified()));
         }
         return entry;
@@ -283,7 +283,7 @@ public class SevenZOutputFile implements Closeable {
 
     private void fillDates(final Path inputPath, final SevenZArchiveEntry entry,
         final LinkOption... options) throws IOException {
-        BasicFileAttributes attributes = Files.readAttributes(inputPath, BasicFileAttributes.class, options);
+        final BasicFileAttributes attributes = Files.readAttributes(inputPath, BasicFileAttributes.class, options);
         entry.setLastModifiedTime(attributes.lastModifiedTime());
         entry.setCreationTime(attributes.creationTime());
         entry.setAccessTime(attributes.lastAccessTime());
@@ -345,7 +345,7 @@ public class SevenZOutputFile implements Closeable {
         Iterable<? extends SevenZMethodConfiguration> iter = ms == null ? contentMethods : ms;
 
         if (aes256Options != null) {
-            // prepend encryption 
+            // prepend encryption
             iter =
                 Stream
                     .concat(

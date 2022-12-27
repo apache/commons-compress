@@ -57,7 +57,7 @@ public abstract class BoundedArchiveInputStream extends InputStream {
         } else {
             singleByteBuffer.rewind();
         }
-        int read = read(loc, singleByteBuffer);
+        final int read = read(loc, singleByteBuffer);
         if (read < 1) {
             return -1;
         }
@@ -78,8 +78,8 @@ public abstract class BoundedArchiveInputStream extends InputStream {
             throw new IndexOutOfBoundsException("offset or len are out of bounds");
         }
 
-        ByteBuffer buf = ByteBuffer.wrap(b, off, (int) maxLen);
-        int ret = read(loc, buf);
+        final ByteBuffer buf = ByteBuffer.wrap(b, off, (int) maxLen);
+        final int ret = read(loc, buf);
         if (ret > 0) {
             loc += ret;
         }

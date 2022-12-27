@@ -763,7 +763,7 @@ public class ZipFileTest {
                 assertArrayEquals(fileHeader, IOUtils.toByteArray(input));
             }
 
-            ZipArchiveEntry e = archive.getEntry(entryName);
+            final ZipArchiveEntry e = archive.getEntry(entryName);
             assertEquals(entryContent.length, e.getSize());
             try (InputStream input = archive.getInputStream(e)) {
                 assertArrayEquals(entryContent, IOUtils.toByteArray(input));

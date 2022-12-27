@@ -145,7 +145,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
             tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
-            TarArchiveEntry t = new TarArchiveEntry("name");
+            final TarArchiveEntry t = new TarArchiveEntry("name");
             t.setGroupId(4294967294L);
             t.setSize(1);
             tos.putArchiveEntry(t);
@@ -155,7 +155,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         final byte[] data = bos.toByteArray();
         final ByteArrayInputStream bis = new ByteArrayInputStream(data);
         try (final TarArchiveInputStream tis = new TarArchiveInputStream(bis)) {
-            TarArchiveEntry t = tis.getNextTarEntry();
+            final TarArchiveEntry t = tis.getNextTarEntry();
             assertEquals(4294967294L, t.getLongGroupId());
         }
     }
@@ -203,7 +203,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
             + "01234567890\u00e4";
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, encoding)) {
             tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
-            TarArchiveEntry t = new TarArchiveEntry(name);
+            final TarArchiveEntry t = new TarArchiveEntry(name);
             t.setSize(1);
             tos.putArchiveEntry(t);
             tos.write(30);
@@ -212,7 +212,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         final byte[] data = bos.toByteArray();
         final ByteArrayInputStream bis = new ByteArrayInputStream(data);
         try (TarArchiveInputStream tis = new TarArchiveInputStream(bis, encoding)) {
-            TarArchiveEntry t = tis.getNextTarEntry();
+            final TarArchiveEntry t = tis.getNextTarEntry();
             assertEquals(name, t.getName());
         }
     }

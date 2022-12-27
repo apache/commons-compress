@@ -64,7 +64,7 @@ public class PopulationCodecTest {
     @MethodSource("populationCodec")
     public void testPopulationCodec(final byte[] data, final long[] expectedResult, final Codec codec) throws IOException, Pack200Exception {
         try (InputStream in = new ByteArrayInputStream(data)) {
-            int[] result = new PopulationCodec(codec, codec, codec).decodeInts(
+            final int[] result = new PopulationCodec(codec, codec, codec).decodeInts(
                     expectedResult.length, in);
             assertEquals(expectedResult.length, result.length);
             for (int i = 0; i < expectedResult.length; i++) {

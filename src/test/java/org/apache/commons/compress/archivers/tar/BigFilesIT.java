@@ -85,15 +85,15 @@ public class BigFilesIT extends AbstractTestCase {
 
     @Test
     public void tarFileReadFileHeadersOfArchiveBiggerThan8GByte() throws Exception {
-        Path file = getPath("8.posix.tar.gz");
-        Path output = resultDir.toPath().resolve("8.posix.tar");
+        final Path file = getPath("8.posix.tar.gz");
+        final Path output = resultDir.toPath().resolve("8.posix.tar");
         try (InputStream in = new BufferedInputStream(Files.newInputStream(file));
              GzipCompressorInputStream gzin = new GzipCompressorInputStream(in)) {
             Files.copy(gzin, output, StandardCopyOption.REPLACE_EXISTING);
         }
 
         try (final TarFile tarFile = new TarFile(output)) {
-            List<TarArchiveEntry> entries = tarFile.getEntries();
+            final List<TarArchiveEntry> entries = tarFile.getEntries();
             assertEquals(1, entries.size());
             assertNotNull(entries.get(0));
         }

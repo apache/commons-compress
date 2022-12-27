@@ -31,7 +31,7 @@ public class AttributeLayoutMapTest {
     @Test
     public void testRepeatable() throws Pack200Exception {
         // Check we can retrieve a default layout
-        AttributeLayoutMap a = new AttributeLayoutMap();
+        final AttributeLayoutMap a = new AttributeLayoutMap();
         AttributeLayout layout = a.getAttributeLayout("SourceFile",
                 AttributeLayout.CONTEXT_CLASS);
         assertNotNull(layout);
@@ -49,7 +49,7 @@ public class AttributeLayoutMapTest {
         assertTrue(layout.matches(-1));
         assertFalse(layout.matches(0));
         // and that changes don't affect subsequent defaults
-        AttributeLayoutMap b = new AttributeLayoutMap();
+        final AttributeLayoutMap b = new AttributeLayoutMap();
         layout = b.getAttributeLayout("SourceFile",
                 AttributeLayout.CONTEXT_CLASS);
         assertNotNull(layout);

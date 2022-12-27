@@ -119,15 +119,15 @@ public class AttributeLayoutTest {
     @ParameterizedTest
     @MethodSource("codec")
     public void testGetCodec(final String name, final int context, final String layout, final Codec expectedCodec) throws Pack200Exception {
-        AttributeLayout attributeLayout = new AttributeLayout(name, context, layout, 1);
+        final AttributeLayout attributeLayout = new AttributeLayout(name, context, layout, 1);
         assertEquals(expectedCodec, attributeLayout.getCodec());
     }
 
     @Test
     public void testLayoutRS() throws Pack200Exception {
-        AttributeLayout layout = new AttributeLayout("RS",
+        final AttributeLayout layout = new AttributeLayout("RS",
                 AttributeLayout.CONTEXT_CLASS, "RS", 1);
-        Segment segment = new TestSegment();
+        final Segment segment = new TestSegment();
         assertNull(layout.getValue(-1, segment.getConstantPool()));
         assertEquals("Eins", ((CPUTF8)layout.getValue(0, segment.getConstantPool())).underlyingString());
         assertEquals("Zwei", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
@@ -135,9 +135,9 @@ public class AttributeLayoutTest {
 
     @Test
     public void testLayoutRSN() throws Pack200Exception {
-        AttributeLayout layout = new AttributeLayout("RSN",
+        final AttributeLayout layout = new AttributeLayout("RSN",
                 AttributeLayout.CONTEXT_CLASS, "RSN", 1);
-        Segment segment = new TestSegment();
+        final Segment segment = new TestSegment();
         assertNull(layout.getValue(0, segment.getConstantPool()));
         assertEquals("Eins", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
         assertEquals("Zwei", ((CPUTF8)layout.getValue(2, segment.getConstantPool())).underlyingString());
@@ -145,9 +145,9 @@ public class AttributeLayoutTest {
 
     @Test
     public void testLayoutRU() throws Pack200Exception {
-        AttributeLayout layout = new AttributeLayout("RU",
+        final AttributeLayout layout = new AttributeLayout("RU",
                 AttributeLayout.CONTEXT_CLASS, "RU", 1);
-        Segment segment = new TestSegment();
+        final Segment segment = new TestSegment();
         assertNull(layout.getValue(-1, segment.getConstantPool()));
         assertEquals("Zero", ((CPUTF8)layout.getValue(0, segment.getConstantPool())).underlyingString());
         assertEquals("One", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
@@ -155,9 +155,9 @@ public class AttributeLayoutTest {
 
     @Test
     public void testLayoutRUN() throws Pack200Exception {
-        AttributeLayout layout = new AttributeLayout("RUN",
+        final AttributeLayout layout = new AttributeLayout("RUN",
                 AttributeLayout.CONTEXT_CLASS, "RUN", 1);
-        Segment segment = new TestSegment();
+        final Segment segment = new TestSegment();
         assertNull(layout.getValue(0, segment.getConstantPool()));
         assertEquals("Zero", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
         assertEquals("One", ((CPUTF8)layout.getValue(2, segment.getConstantPool())).underlyingString());

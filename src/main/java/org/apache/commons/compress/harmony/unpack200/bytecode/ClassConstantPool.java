@@ -110,7 +110,7 @@ public class ClassConstantPool {
 
     public ClassFileEntry addWithNestedEntries(final ClassFileEntry entry) {
         add(entry);
-        for (ClassFileEntry nestedEntry : entry.getNestedClassFileEntries()) {
+        for (final ClassFileEntry nestedEntry : entry.getNestedClassFileEntries()) {
             addWithNestedEntries(nestedEntry);
         }
         return entry;
@@ -150,7 +150,7 @@ public class ClassConstantPool {
         final TreeSet<ClassFileEntry> cpClassesNotInCpAll = new TreeSet<>(
                 Comparator.comparing(arg0 -> ((CPClass) arg0).getName()));
 
-        for (ClassFileEntry entry2 : entries) {
+        for (final ClassFileEntry entry2 : entries) {
             final ConstantPoolEntry entry = (ConstantPoolEntry) entry2;
             if (entry.getGlobalIndex() == -1) {
                 if (entry instanceof CPUTF8) {
@@ -193,7 +193,7 @@ public class ClassConstantPool {
         final List<ClassFileEntry> startOfPool = new ArrayList<>(entries.size());
         final List<ClassFileEntry> finalSort = new ArrayList<>(entries.size());
 
-        for (ClassFileEntry entry : entries) {
+        for (final ClassFileEntry entry : entries) {
             if (mustStartClassPool.contains(entry)) {
                 startOfPool.add(entry);
             } else {
@@ -208,7 +208,7 @@ public class ClassConstantPool {
 
         entries.clear();
 
-        for (ClassFileEntry entry : startOfPool) {
+        for (final ClassFileEntry entry : startOfPool) {
             indexCache.put(entry, Integer.valueOf(index));
 
             if (entry instanceof CPLong || entry instanceof CPDouble) {
@@ -221,7 +221,7 @@ public class ClassConstantPool {
             }
         }
 
-        for (ClassFileEntry entry : finalSort) {
+        for (final ClassFileEntry entry : finalSort) {
             indexCache.put(entry, Integer.valueOf(index));
 
             if (entry instanceof CPLong || entry instanceof CPDouble) {

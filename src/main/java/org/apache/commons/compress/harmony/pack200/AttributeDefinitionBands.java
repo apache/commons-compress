@@ -70,7 +70,7 @@ public class AttributeDefinitionBands extends BandSet {
         final Map<String, String> fieldLayouts = new HashMap<>();
         final Map<String, String> codeLayouts = new HashMap<>();
 
-        for (Attribute attributePrototype : attributePrototypes) {
+        for (final Attribute attributePrototype : attributePrototypes) {
             final NewAttribute newAttribute = (NewAttribute) attributePrototype;
             if (!(newAttribute instanceof NewAttribute.ErrorAttribute)
                 && !(newAttribute instanceof NewAttribute.PassAttribute)

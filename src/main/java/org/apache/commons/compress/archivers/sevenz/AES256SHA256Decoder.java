@@ -38,7 +38,7 @@ import javax.crypto.spec.IvParameterSpec;
 import org.apache.commons.compress.PasswordRequiredException;
 
 class AES256SHA256Decoder extends AbstractCoder {
-    
+
     static byte[] sha256Password(final byte[] password, final int numCyclesPower, final byte[] salt) {
         final MessageDigest digest;
         try {
@@ -166,7 +166,7 @@ class AES256SHA256Decoder extends AbstractCoder {
     }
 
     @Override
-    OutputStream encode(OutputStream out, Object options) throws IOException {
+    OutputStream encode(final OutputStream out, final Object options) throws IOException {
         final AES256Options opts = (AES256Options) options;
 
         return new OutputStream() {
@@ -199,7 +199,7 @@ class AES256SHA256Decoder extends AbstractCoder {
             }
 
             @Override
-            public void write(byte[] b, int off, int len) throws IOException {
+            public void write(final byte[] b, final int off, final int len) throws IOException {
                 int gap = len + count > cipherBlockSize ? cipherBlockSize - count : len;
                 System.arraycopy(b, off, cipherBlockBuffer, count, gap);
                 count += gap;
@@ -209,7 +209,7 @@ class AES256SHA256Decoder extends AbstractCoder {
 
                     if (len - gap >= cipherBlockSize) {
                         // skip buffer to encrypt data chunks big enought to fit cipher block size
-                        int multipleCipherBlockSizeLen = (len - gap) / cipherBlockSize * cipherBlockSize;
+                        final int multipleCipherBlockSizeLen = (len - gap) / cipherBlockSize * cipherBlockSize;
                         cipherOutputStream.write(b, off + gap, multipleCipherBlockSizeLen);
                         gap += multipleCipherBlockSizeLen;
                     }
@@ -219,7 +219,7 @@ class AES256SHA256Decoder extends AbstractCoder {
             }
 
             @Override
-            public void write(int b) throws IOException {
+            public void write(final int b) throws IOException {
                 cipherBlockBuffer[count++] = (byte) b;
                 if (count == cipherBlockSize) {
                     flushBuffer();
@@ -229,7 +229,7 @@ class AES256SHA256Decoder extends AbstractCoder {
     }
 
     @Override
-    byte[] getOptionsAsProperties(Object options) throws IOException {
+    byte[] getOptionsAsProperties(final Object options) throws IOException {
         final AES256Options opts = (AES256Options) options;
         final byte[] props = new byte[2 + opts.getSalt().length + opts.getIv().length];
 

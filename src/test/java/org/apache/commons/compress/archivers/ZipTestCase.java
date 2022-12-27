@@ -165,7 +165,7 @@ public final class ZipTestCase extends AbstractTestCase {
             sameNameFile.createNewFile();
 
             assertThrows(IOException.class, () -> addFilesToZip(zipArchiveOutputStream, directoryToZip));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // Ignore:
             // java.io.IOException: This archive contains unclosed entries.
             //   at org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.finish(ZipArchiveOutputStream.java:563)

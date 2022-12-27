@@ -70,7 +70,7 @@ public final class SegmentUtils {
 
     public static int countBit16(final int[] flags) {
         int count = 0;
-        for (int flag : flags) {
+        for (final int flag : flags) {
             if ((flag & (1 << 16)) != 0) {
                 count++;
             }
@@ -80,7 +80,7 @@ public final class SegmentUtils {
 
     public static int countBit16(final long[] flags) {
         int count = 0;
-        for (long flag : flags) {
+        for (final long flag : flags) {
             if ((flag & (1 << 16)) != 0) {
                 count++;
             }
@@ -90,8 +90,8 @@ public final class SegmentUtils {
 
     public static int countBit16(final long[][] flags) {
         int count = 0;
-        for (long[] flag : flags) {
-            for (long element : flag) {
+        for (final long[] flag : flags) {
+            for (final long element : flag) {
                 if ((element & (1 << 16)) != 0) {
                     count++;
                 }
@@ -106,7 +106,7 @@ public final class SegmentUtils {
 
     public static int countMatches(final long[] flags, final IMatcher matcher) {
         int count = 0;
-        for (long flag : flags) {
+        for (final long flag : flags) {
             if (matcher.matches(flag)) {
                 count++;
             }
@@ -116,7 +116,7 @@ public final class SegmentUtils {
 
     public static int countMatches(final long[][] flags, final IMatcher matcher) {
         int count = 0;
-        for (long[] flag : flags) {
+        for (final long[] flag : flags) {
             count += countMatches(flag, matcher);
         }
         return count;

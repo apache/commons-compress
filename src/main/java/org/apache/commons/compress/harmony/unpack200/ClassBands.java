@@ -133,15 +133,15 @@ public class ClassBands extends BandSet {
 
     private int getCallCount(final int[][] methodAttrIndexes, final long[][] flags, final int context) {
         int callCount = 0;
-        for (int[] element : methodAttrIndexes) {
+        for (final int[] element : methodAttrIndexes) {
             for (final int index : element) {
                 final AttributeLayout layout = attrMap.getAttributeLayout(index, context);
                 callCount += layout.numBackwardsCallables();
             }
         }
         int layoutsUsed = 0;
-        for (long[] flag : flags) {
-            for (long element : flag) {
+        for (final long[] flag : flags) {
+            for (final long element : flag) {
                 layoutsUsed |= element;
             }
         }
@@ -373,8 +373,8 @@ public class ClassBands extends BandSet {
         final int[][] classInnerClassesF = decodeBandInt("class_InnerClasses_F", in, Codec.UNSIGNED5,
             classInnerClassesN);
         int flagsCount = 0;
-        for (int[] element : classInnerClassesF) {
-            for (int element2 : element) {
+        for (final int[] element : classInnerClassesF) {
+            for (final int element2 : element) {
                 if (element2 != 0) {
                     flagsCount++;
                 }
@@ -504,7 +504,7 @@ public class ClassBands extends BandSet {
                         // Get from icBands
                         final IcBands icBands = segment.getIcBands();
                         final IcTuple[] icAll = icBands.getIcTuples();
-                        for (IcTuple element : icAll) {
+                        for (final IcTuple element : icAll) {
                             if (element.getC().equals(icTupleC)) {
                                 icTupleF = element.getF();
                                 icTupleC2 = element.getC2();
@@ -597,7 +597,7 @@ public class ClassBands extends BandSet {
         final int[] codeAttrCounts = decodeBandInt("code_attr_count", in, Codec.UNSIGNED5, codeAttrCount);
         final int[][] codeAttrIndexes = decodeBandInt("code_attr_indexes", in, Codec.UNSIGNED5, codeAttrCounts);
         int callCount = 0;
-        for (int[] element : codeAttrIndexes) {
+        for (final int[] element : codeAttrIndexes) {
             for (final int index : element) {
                 final AttributeLayout layout = attrMap.getAttributeLayout(index, AttributeLayout.CONTEXT_CODE);
                 callCount += layout.numBackwardsCallables();
@@ -958,8 +958,8 @@ public class ClassBands extends BandSet {
                 mbg[i].type_RS = parseCPSignatureReferences(contextName + "_" + rxa + "_type_RS", in, Codec.UNSIGNED5,
                     mbg[i].anno_N);
                 mbg[i].pair_N = decodeBandInt(contextName + "_" + rxa + "_pair_N", in, Codec.UNSIGNED5, mbg[i].anno_N);
-                for (int[] element : mbg[i].pair_N) {
-                    for (int element2 : element) {
+                for (final int[] element : mbg[i].pair_N) {
+                    for (final int element2 : element) {
                         pairCount += element2;
                     }
                 }
@@ -973,7 +973,7 @@ public class ClassBands extends BandSet {
                 pairCount + backwardsCallCounts[i]);
             int ICount = 0, DCount = 0, FCount = 0, JCount = 0, cCount = 0, eCount = 0, sCount = 0, arrayCount = 0,
                 atCount = 0;
-            for (int element : mbg[i].T) {
+            for (final int element : mbg[i].T) {
                 final char c = (char) element;
                 switch (c) {
                 case 'B':
@@ -1028,7 +1028,7 @@ public class ClassBands extends BandSet {
                 atCount);
             mbg[i].nestpair_N = decodeBandInt(contextName + "_" + rxa + "_nestpair_N", in, Codec.UNSIGNED5, atCount);
             int nestPairCount = 0;
-            for (int element : mbg[i].nestpair_N) {
+            for (final int element : mbg[i].nestpair_N) {
                 nestPairCount += element;
             }
             mbg[i].nestname_RU = parseCPUTF8References(contextName + "_" + rxa + "_nestname_RU", in, Codec.UNSIGNED5,

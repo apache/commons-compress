@@ -38,12 +38,12 @@ public class ConstantPoolTest {
 
     @Test
     public void testDuplicateField() {
-        CPMember cp1 = new CPMember(new CPUTF8("name", 1), new CPUTF8("I", 2),
+        final CPMember cp1 = new CPMember(new CPUTF8("name", 1), new CPUTF8("I", 2),
                 0, null);
         pool.add(cp1);
         pool.addNestedEntries();
         assertEquals(2, pool.size());
-        CPMember cp2 = new CPMember(new CPUTF8("name", 1), new CPUTF8("I", 2),
+        final CPMember cp2 = new CPMember(new CPUTF8("name", 1), new CPUTF8("I", 2),
                 0, null);
         pool.add(cp2);
         pool.addNestedEntries();
@@ -52,8 +52,8 @@ public class ConstantPoolTest {
 
     @Test
     public void testDuplicateUTF8() {
-        CPUTF8 u1 = new CPUTF8("thing", 1);
-        CPUTF8 u2 = new CPUTF8("thing", 1);
+        final CPUTF8 u1 = new CPUTF8("thing", 1);
+        final CPUTF8 u2 = new CPUTF8("thing", 1);
         pool.add(u1);
         pool.add(u2);
         assertEquals(1, pool.size());
@@ -69,7 +69,7 @@ public class ConstantPoolTest {
     @Test
     public void testIndex() {
         pool.add(new CPUTF8("OtherThing", 1));
-        CPUTF8 u1 = new CPUTF8("thing", 2);
+        final CPUTF8 u1 = new CPUTF8("thing", 2);
         pool.add(u1);
         pool.resolve(new Segment());
         assertTrue(pool.indexOf(u1) > 0);

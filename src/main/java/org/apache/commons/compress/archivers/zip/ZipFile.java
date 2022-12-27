@@ -802,7 +802,7 @@ public class ZipFile implements Closeable {
             // entries is filled in populateFromCentralDirectory and
             // never modified
             final String name = ze.getName();
-            LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.computeIfAbsent(name, k -> new LinkedList<>());
+            final LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.computeIfAbsent(name, k -> new LinkedList<>());
             entriesOfThatName.addLast(ze);
         });
     }
@@ -1140,7 +1140,7 @@ public class ZipFile implements Closeable {
      */
     private void positionAtCentralDirectory32()
         throws IOException {
-        long endOfCentralDirectoryRecordOffset = archive.position();
+        final long endOfCentralDirectoryRecordOffset = archive.position();
         if (isSplitZipArchive) {
             skipBytes(CFD_DISK_OFFSET);
             shortBbuf.rewind();
@@ -1158,7 +1158,7 @@ public class ZipFile implements Closeable {
             skipBytes(CFD_LENGTH_OFFSET);
             wordBbuf.rewind();
             IOUtils.readFully(archive, wordBbuf);
-            long centralDirectoryLength = ZipLong.getValue(wordBuf);
+            final long centralDirectoryLength = ZipLong.getValue(wordBuf);
 
             wordBbuf.rewind();
             IOUtils.readFully(archive, wordBbuf);
@@ -1352,7 +1352,7 @@ public class ZipFile implements Closeable {
         }
         try {
             ze.setCentralDirectoryExtra(cdExtraData);
-        } catch (RuntimeException ex) {
+        } catch (final RuntimeException ex) {
             final ZipException z = new ZipException("Invalid extra data in entry " + ze.getName());
             z.initCause(ex);
             throw z;
@@ -1398,7 +1398,7 @@ public class ZipFile implements Closeable {
             }
             try {
                 ze.setExtra(localExtraData);
-            } catch (RuntimeException ex) {
+            } catch (final RuntimeException ex) {
                 final ZipException z = new ZipException("Invalid extra data in entry " + ze.getName());
                 z.initCause(ex);
                 throw z;

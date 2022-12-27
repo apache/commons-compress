@@ -57,7 +57,7 @@ public class CodecEncodingTest {
 
     @Test
     public void testDefaultCodec() throws Pack200Exception, IOException {
-        Codec defaultCodec = new BHSDCodec(2, 16, 0, 0);
+        final Codec defaultCodec = new BHSDCodec(2, 16, 0, 0);
         assertEquals(defaultCodec, CodecEncoding.getCodec(0, null, defaultCodec));
     }
 
@@ -190,16 +190,16 @@ public class CodecEncodingTest {
 
     @Test
     public void testGetSpeciferForPopulationCodec() throws IOException, Pack200Exception {
-        PopulationCodec pCodec = new PopulationCodec(Codec.BYTE1, Codec.CHAR3, Codec.UNSIGNED5);
-        int[] specifiers = CodecEncoding.getSpecifier(pCodec, null);
+        final PopulationCodec pCodec = new PopulationCodec(Codec.BYTE1, Codec.CHAR3, Codec.UNSIGNED5);
+        final int[] specifiers = CodecEncoding.getSpecifier(pCodec, null);
         assertTrue(specifiers[0] > 140);
         assertTrue(specifiers[0] < 189);
-        byte[] bytes = new byte[specifiers.length - 1];
+        final byte[] bytes = new byte[specifiers.length - 1];
         for (int i = 0; i < bytes.length; i++) {
             bytes[i] = (byte) specifiers[i+1];
         }
-        InputStream in = new ByteArrayInputStream(bytes);
-        PopulationCodec pCodec2 = (PopulationCodec) CodecEncoding.getCodec(specifiers[0], in, null);
+        final InputStream in = new ByteArrayInputStream(bytes);
+        final PopulationCodec pCodec2 = (PopulationCodec) CodecEncoding.getCodec(specifiers[0], in, null);
         assertEquals(pCodec.getFavouredCodec(), pCodec2.getFavouredCodec());
         assertEquals(pCodec.getTokenCodec(), pCodec2.getTokenCodec());
         assertEquals(pCodec.getUnfavouredCodec(), pCodec2.getUnfavouredCodec());
@@ -299,11 +299,11 @@ public class CodecEncodingTest {
     @ParameterizedTest
     @MethodSource("specifier")
     void testGetSpecifier(final Codec c1) throws IOException, Pack200Exception {
-        int[] specifiers = CodecEncoding.getSpecifier(c1, null);
+        final int[] specifiers = CodecEncoding.getSpecifier(c1, null);
         assertEquals(3, specifiers.length);
         assertEquals(116, specifiers[0]);
-        byte[] bytes = {(byte) specifiers[1], (byte) specifiers[2]};
-        InputStream in = new ByteArrayInputStream(bytes);
+        final byte[] bytes = {(byte) specifiers[1], (byte) specifiers[2]};
+        final InputStream in = new ByteArrayInputStream(bytes);
         assertEquals(c1, CodecEncoding.getCodec(116, in, null));
     }
 

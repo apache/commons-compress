@@ -42,7 +42,7 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
 
         public List<Object> getClassFileEntries() {
             final List<Object> nested = new ArrayList<>();
-            for (Annotation annotation : annotations) {
+            for (final Annotation annotation : annotations) {
                 nested.addAll(annotation.getClassFileEntries());
             }
             return nested;
@@ -50,21 +50,21 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
 
         public int getLength() {
             int length = 2;
-            for (Annotation annotation : annotations) {
+            for (final Annotation annotation : annotations) {
                 length += annotation.getLength();
             }
             return length;
         }
 
         public void resolve(final ClassConstantPool pool) {
-            for (Annotation annotation : annotations) {
+            for (final Annotation annotation : annotations) {
                 annotation.resolve(pool);
             }
         }
 
         public void writeBody(final DataOutputStream dos) throws IOException {
             dos.writeShort(num_annotations);
-            for (Annotation annotation : annotations) {
+            for (final Annotation annotation : annotations) {
                 annotation.writeBody(dos);
             }
         }
@@ -94,7 +94,7 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
     protected ClassFileEntry[] getNestedClassFileEntries() {
         final List<Object> nested = new ArrayList<>();
         nested.add(attributeName);
-        for (ParameterAnnotation parameter_annotation : parameter_annotations) {
+        for (final ParameterAnnotation parameter_annotation : parameter_annotations) {
             nested.addAll(parameter_annotation.getClassFileEntries());
         }
         return nested.toArray(ClassFileEntry.NONE);
@@ -103,7 +103,7 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
     @Override
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
-        for (ParameterAnnotation parameter_annotation : parameter_annotations) {
+        for (final ParameterAnnotation parameter_annotation : parameter_annotations) {
             parameter_annotation.resolve(pool);
         }
     }

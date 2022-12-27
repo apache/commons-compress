@@ -275,7 +275,7 @@ public class SegmentConstantPool {
             return -1;
         }
 
-        for (Integer element : indexList) {
+        for (final Integer element : indexList) {
             final int arrayIndex = element.intValue();
             if (regexMatches(secondaryCompareRegex, secondaryArray[arrayIndex])) {
                 instanceCount++;

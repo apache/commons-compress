@@ -96,7 +96,7 @@ public class ClassBandsTest extends AbstractBandsTestCase {
 
     private byte[] encodeBandInt(final int[] data, final BHSDCodec codec)
             throws IOException, Pack200Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (int i = 0; i < data.length; i++) {
             baos.write(codec.encode(data[i], i == 0 ? 0 : data[i - 1]));
         }
@@ -109,30 +109,30 @@ public class ClassBandsTest extends AbstractBandsTestCase {
                 "Interface2" };
         cpDescriptor = new String[0];
         cpUTF8 = new String[0];
-        byte[] classThis = Codec.DELTA5.encode(1, 0);
-        byte[] classSuper = Codec.DELTA5.encode(2, 0);
-        byte[] classInterfaceCount = Codec.DELTA5.encode(2, 0);
-        byte[] classInterfaceRef1 = encodeBandInt(
+        final byte[] classThis = Codec.DELTA5.encode(1, 0);
+        final byte[] classSuper = Codec.DELTA5.encode(2, 0);
+        final byte[] classInterfaceCount = Codec.DELTA5.encode(2, 0);
+        final byte[] classInterfaceRef1 = encodeBandInt(
                 new int[] { 3, 4 }, Codec.DELTA5);
-        byte[] classFieldCount = Codec.DELTA5.encode(0, 0);
-        byte[] classMethodCount = Codec.DELTA5.encode(0, 0);
-        byte[] classFlags = Codec.UNSIGNED5.encode(0, 0);
-        byte[][] allArrays = { classThis, classSuper,
+        final byte[] classFieldCount = Codec.DELTA5.encode(0, 0);
+        final byte[] classMethodCount = Codec.DELTA5.encode(0, 0);
+        final byte[] classFlags = Codec.UNSIGNED5.encode(0, 0);
+        final byte[][] allArrays = { classThis, classSuper,
                 classInterfaceCount, classInterfaceRef1, classFieldCount,
                 classMethodCount, classFlags };
-        int total = classThis.length + classSuper.length
+        final int total = classThis.length + classSuper.length
                 + classInterfaceCount.length + classInterfaceRef1.length
                 + classFieldCount.length + classMethodCount.length
                 + classFlags.length;
-        byte[] bytes = new byte[total];
+        final byte[] bytes = new byte[total];
         int index = 0;
-        for (byte[] array : allArrays) {
-            for (byte element : array) {
+        for (final byte[] array : allArrays) {
+            for (final byte element : array) {
                 bytes[index] = element;
                 index++;
             }
         }
-        ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+        final ByteArrayInputStream in = new ByteArrayInputStream(bytes);
         classBands.unpack(in);
         assertEquals(1, classBands.getClassThisInts()[0]);
         assertEquals(2, classBands.getClassSuperInts()[0]);
@@ -148,32 +148,32 @@ public class ClassBandsTest extends AbstractBandsTestCase {
         cpClasses = new String[] { "Class1", "Class2", "Class3" };
         cpDescriptor = new String[] { "method1", "method2", "method3" };
         cpUTF8 = new String[0];
-        byte[] classThis = Codec.DELTA5.encode(1, 0);
-        byte[] classSuper = Codec.DELTA5.encode(2, 0);
-        byte[] classInterfaceCount = Codec.DELTA5.encode(0, 0);
-        byte[] classFieldCount = Codec.DELTA5.encode(0, 0);
-        byte[] classMethodCount = Codec.DELTA5.encode(3, 0);
-        byte[] methodDescr = encodeBandInt(new int[] { 0, 1, 2 },
+        final byte[] classThis = Codec.DELTA5.encode(1, 0);
+        final byte[] classSuper = Codec.DELTA5.encode(2, 0);
+        final byte[] classInterfaceCount = Codec.DELTA5.encode(0, 0);
+        final byte[] classFieldCount = Codec.DELTA5.encode(0, 0);
+        final byte[] classMethodCount = Codec.DELTA5.encode(3, 0);
+        final byte[] methodDescr = encodeBandInt(new int[] { 0, 1, 2 },
                 Codec.MDELTA5);
-        byte[] methodFlagsLo = encodeBandInt(
+        final byte[] methodFlagsLo = encodeBandInt(
                 new int[] { 0, 0, 0 }, Codec.UNSIGNED5);
-        byte[] classFlags = Codec.UNSIGNED5.encode(0, 0);
-        byte[][] allArrays = { classThis, classSuper,
+        final byte[] classFlags = Codec.UNSIGNED5.encode(0, 0);
+        final byte[][] allArrays = { classThis, classSuper,
                 classInterfaceCount, classFieldCount, classMethodCount,
                 methodDescr, methodFlagsLo, classFlags, };
         int total = 0;
-        for (byte[] array : allArrays) {
+        for (final byte[] array : allArrays) {
             total += array.length;
         }
-        byte[] bytes = new byte[total];
+        final byte[] bytes = new byte[total];
         int index = 0;
-        for (byte[] array : allArrays) {
-            for (byte element : array) {
+        for (final byte[] array : allArrays) {
+            for (final byte element : array) {
                 bytes[index] = element;
                 index++;
             }
         }
-        ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+        final ByteArrayInputStream in = new ByteArrayInputStream(bytes);
         classBands.unpack(in);
         assertEquals(1, classBands.getClassThisInts()[0]);
         assertEquals(2, classBands.getClassSuperInts()[0]);

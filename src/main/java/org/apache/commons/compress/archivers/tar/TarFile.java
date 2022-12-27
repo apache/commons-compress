@@ -346,7 +346,7 @@ public class TarFile implements Closeable {
         // logical offset into the extracted entry
         long offset = 0;
         long numberOfZeroBytesInSparseEntry = 0;
-        for (TarArchiveStructSparse sparseHeader : sparseHeaders) {
+        for (final TarArchiveStructSparse sparseHeader : sparseHeaders) {
             final long zeroBlockSize = sparseHeader.getOffset() - offset;
             if (zeroBlockSize < 0) {
                 // sparse header says to move backwards inside of the extracted entry
@@ -411,7 +411,7 @@ public class TarFile implements Closeable {
     public InputStream getInputStream(final TarArchiveEntry entry) throws IOException {
         try {
             return new BoundedTarEntryInputStream(entry, archive);
-        } catch (RuntimeException ex) {
+        } catch (final RuntimeException ex) {
             throw new IOException("Corrupted TAR archive. Can't read entry", ex);
         }
     }
@@ -527,7 +527,7 @@ public class TarFile implements Closeable {
             } else if (!globalPaxHeaders.isEmpty()) {
                 applyPaxHeadersToCurrentEntry(globalPaxHeaders, globalSparseHeaders);
             }
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new IOException("Error detected parsing the pax header", e);
         }
 

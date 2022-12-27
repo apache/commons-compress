@@ -54,14 +54,14 @@ public class PackingOptionsTest {
 
     private void compareFiles(final JarFile jarFile, final JarFile jarFile2)
             throws IOException {
-        Enumeration<JarEntry> entries = jarFile.entries();
+        final Enumeration<JarEntry> entries = jarFile.entries();
         while (entries.hasMoreElements()) {
 
-            JarEntry entry = entries.nextElement();
+            final JarEntry entry = entries.nextElement();
             assertNotNull(entry);
 
-            String name = entry.getName();
-            JarEntry entry2 = jarFile2.getJarEntry(name);
+            final String name = entry.getName();
+            final JarEntry entry2 = jarFile2.getJarEntry(name);
             assertNotNull(entry2, "Missing Entry: " + name);
             // assertEquals(entry.getTime(), entry2.getTime());
             if (!name.equals("META-INF/MANIFEST.MF")) { // Manifests aren't
@@ -69,12 +69,12 @@ public class PackingOptionsTest {
                                                         // byte-for-byte
                                                         // identical
 
-                InputStream ours = jarFile.getInputStream(entry);
-                InputStream expected = jarFile2.getInputStream(entry2);
+                final InputStream ours = jarFile.getInputStream(entry);
+                final InputStream expected = jarFile2.getInputStream(entry2);
 
-                BufferedReader reader1 = new BufferedReader(
+                final BufferedReader reader1 = new BufferedReader(
                         new InputStreamReader(ours));
-                BufferedReader reader2 = new BufferedReader(
+                final BufferedReader reader2 = new BufferedReader(
                         new InputStreamReader(expected));
                 String line1 = reader1.readLine();
                 String line2 = reader2.readLine();
@@ -94,14 +94,14 @@ public class PackingOptionsTest {
     }
 
     private void compareJarEntries(final JarFile jarFile, final JarFile jarFile2) {
-        Enumeration<JarEntry> entries = jarFile.entries();
+        final Enumeration<JarEntry> entries = jarFile.entries();
         while (entries.hasMoreElements()) {
 
-            JarEntry entry = entries.nextElement();
+            final JarEntry entry = entries.nextElement();
             assertNotNull(entry);
 
-            String name = entry.getName();
-            JarEntry entry2 = jarFile2.getJarEntry(name);
+            final String name = entry.getName();
+            final JarEntry entry2 = jarFile2.getJarEntry(name);
             assertNotNull(entry2, "Missing Entry: " + name);
         }
     }
@@ -109,7 +109,7 @@ public class PackingOptionsTest {
     @Test
     public void testDeflateHint() {
         // Test default first
-        PackingOptions options = new PackingOptions();
+        final PackingOptions options = new PackingOptions();
         assertEquals("keep", options.getDeflateHint());
         options.setDeflateHint("true");
         assertEquals("true", options.getDeflateHint());
@@ -122,16 +122,16 @@ public class PackingOptionsTest {
     @Test
     public void testE0() throws Pack200Exception, IOException,
             URISyntaxException {
-        File f1 = new File(Archive.class.getResource(
+        final File f1 = new File(Archive.class.getResource(
                 "/pack200/jndi.jar").toURI());
         in = new JarFile(f1);
         file = File.createTempFile("jndiE0", ".pack");
         file.deleteOnExit();
         out = new FileOutputStream(file);
-        PackingOptions options = new PackingOptions();
+        final PackingOptions options = new PackingOptions();
         options.setGzip(false);
         options.setEffort(0);
-        Archive archive = new Archive(in, out, options);
+        final Archive archive = new Archive(in, out, options);
         archive.pack();
         in.close();
         out.close();
@@ -150,10 +150,10 @@ public class PackingOptionsTest {
         file = File.createTempFile("unknown", ".pack");
         file.deleteOnExit();
         out = new FileOutputStream(file);
-        PackingOptions options = new PackingOptions();
+        final PackingOptions options = new PackingOptions();
         options.addClassAttributeAction("Pack200", "error");
-        Archive ar = new Archive(in, out, options);
-        Error error = assertThrows(Error.class, () -> {
+        final Archive ar = new Archive(in, out, options);
+        final Error error = assertThrows(Error.class, () -> {
             ar.pack();
             in.close();
             out.close();
@@ -201,11 +201,11 @@ public class PackingOptionsTest {
         Enumeration<JarEntry> entries2 = jarFile2.entries();
         while (entries.hasMoreElements()) {
 
-            JarEntry entry = entries.nextElement();
+            final JarEntry entry = entries.nextElement();
             assertNotNull(entry);
-            JarEntry entry2 = entries2.nextElement();
-            String name = entry.getName();
-            String name2 = entry2.getName();
+            final JarEntry entry2 = entries2.nextElement();
+            final String name = entry.getName();
+            final String name2 = entry2.getName();
             assertEquals(name, name2);
         }
 
@@ -244,11 +244,11 @@ public class PackingOptionsTest {
         entries2 = jarFile2.entries();
         boolean inOrder = true;
         while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
+            final JarEntry entry = entries.nextElement();
             assertNotNull(entry);
-            JarEntry entry2 = entries2.nextElement();
-            String name = entry.getName();
-            String name2 = entry2.getName();
+            final JarEntry entry2 = entries2.nextElement();
+            final String name = entry.getName();
+            final String name2 = entry2.getName();
             if (!name.equals(name2)) {
                 inOrder = false;
                 break;
@@ -261,7 +261,7 @@ public class PackingOptionsTest {
     @Test
     public void testLoggingOptions() throws Exception {
         // Test defaults
-        PackingOptions options = new PackingOptions();
+        final PackingOptions options = new PackingOptions();
         assertFalse(options.isVerbose());
         assertNull(options.getLogFile());
         options.setVerbose(true);
@@ -269,7 +269,7 @@ public class PackingOptionsTest {
         options.setQuiet(true);
         assertFalse(options.isVerbose());
 
-        File logFile = File.createTempFile("logfile", ".txt");
+        final File logFile = File.createTempFile("logfile", ".txt");
         logFile.deleteOnExit();
         options.setLogFile(logFile.getPath());
         assertEquals(logFile.getPath(), options.getLogFile());
@@ -312,7 +312,7 @@ public class PackingOptionsTest {
         options.setModificationTime("latest");
         assertEquals("latest", options.getModificationTime());
         assertThrows(IllegalArgumentException.class, () -> {
-                    PackingOptions illegalOption = new PackingOptions();
+                    final PackingOptions illegalOption = new PackingOptions();
                     illegalOption.setModificationTime("true");
                 },
                 "Should throw IllegalArgumentException for incorrect mod time");
@@ -349,11 +349,11 @@ public class PackingOptionsTest {
         Enumeration<JarEntry> entries2 = jarFile2.entries();
         while (entries.hasMoreElements()) {
 
-            JarEntry entry = entries.nextElement();
+            final JarEntry entry = entries.nextElement();
             assertNotNull(entry);
-            JarEntry entry2 = entries2.nextElement();
-            String name = entry.getName();
-            String name2 = entry2.getName();
+            final JarEntry entry2 = entries2.nextElement();
+            final String name = entry.getName();
+            final String name2 = entry2.getName();
             assertEquals(name, name2);
             assertEquals(entry.getTime(), entry2.getTime());
         }
@@ -392,10 +392,10 @@ public class PackingOptionsTest {
         long modtime = -1;
         boolean sameAsOriginal = true;
         while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
+            final JarEntry entry = entries.nextElement();
             assertNotNull(entry);
-            JarEntry entry2 = entries2.nextElement();
-            String name = entry.getName();
+            final JarEntry entry2 = entries2.nextElement();
+            final String name = entry.getName();
             if (!name.startsWith("META-INF")) {
                 if (modtime == -1) {
                     modtime = entry.getTime();
@@ -421,28 +421,28 @@ public class PackingOptionsTest {
         file = File.createTempFile("unknown", ".pack");
         file.deleteOnExit();
         out = new FileOutputStream(file);
-        PackingOptions options = new PackingOptions();
+        final PackingOptions options = new PackingOptions();
         options.addClassAttributeAction("Pack200", "I");
-        Archive ar = new Archive(in, out, options);
+        final Archive ar = new Archive(in, out, options);
         ar.pack();
         in.close();
         out.close();
 
         // unpack and check this was done right
-        InputStream in2 = new FileInputStream(file);
-        File file2 = File.createTempFile("unknown", ".jar");
+        final InputStream in2 = new FileInputStream(file);
+        final File file2 = File.createTempFile("unknown", ".jar");
         file2.deleteOnExit();
-        JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
-        org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(
+        final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
+        final org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(
                 in2, out2);
         u2archive.unpack();
 
         // compare with original
-        File compareFile = new File(Archive.class.getResource(
+        final File compareFile = new File(Archive.class.getResource(
                 "/pack200/jndiWithUnknownAttributes.jar").toURI());
-        JarFile jarFile = new JarFile(file2);
+        final JarFile jarFile = new JarFile(file2);
 
-        JarFile jarFile2 = new JarFile(compareFile);
+        final JarFile jarFile2 = new JarFile(compareFile);
         assertEquals(jarFile2.size(), jarFile.size());
         compareJarEntries(jarFile, jarFile2);
 //        compareFiles(jarFile, jarFile2);
@@ -459,30 +459,30 @@ public class PackingOptionsTest {
         file = File.createTempFile("unknown", ".pack");
         file.deleteOnExit();
         out = new FileOutputStream(file);
-        PackingOptions options = new PackingOptions();
+        final PackingOptions options = new PackingOptions();
         options.addFieldAttributeAction("Pack200", "I");
         options.addMethodAttributeAction("Pack200", "I");
         options.addCodeAttributeAction("Pack200", "I");
-        Archive ar = new Archive(in, out, options);
+        final Archive ar = new Archive(in, out, options);
         ar.pack();
         in.close();
         out.close();
 
         // unpack and check this was done right
-        InputStream in2 = new FileInputStream(file);
-        File file2 = File.createTempFile("unknown", ".jar");
+        final InputStream in2 = new FileInputStream(file);
+        final File file2 = File.createTempFile("unknown", ".jar");
         file2.deleteOnExit();
-        JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
-        org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(
+        final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
+        final org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(
                 in2, out2);
         u2archive.unpack();
 
         // compare with original
-        File compareFile = new File(Archive.class.getResource(
+        final File compareFile = new File(Archive.class.getResource(
                 "/pack200/p200WithUnknownAttributes.jar").toURI());
-        JarFile jarFile = new JarFile(file2);
+        final JarFile jarFile = new JarFile(file2);
 
-        JarFile jarFile2 = new JarFile(compareFile);
+        final JarFile jarFile2 = new JarFile(compareFile);
         assertEquals(jarFile2.size(), jarFile.size());
         compareJarEntries(jarFile, jarFile2);
     }
@@ -498,28 +498,28 @@ public class PackingOptionsTest {
         file = File.createTempFile("unknown", ".pack");
         file.deleteOnExit();
         out = new FileOutputStream(file);
-        PackingOptions options = new PackingOptions();
+        final PackingOptions options = new PackingOptions();
         options.addClassAttributeAction("Pack200", "pass");
-        Archive ar = new Archive(in, out, options);
+        final Archive ar = new Archive(in, out, options);
         ar.pack();
         in.close();
         out.close();
 
         // now unpack
-        InputStream in2 = new FileInputStream(file);
-        File file2 = File.createTempFile("unknown", ".jar");
+        final InputStream in2 = new FileInputStream(file);
+        final File file2 = File.createTempFile("unknown", ".jar");
         file2.deleteOnExit();
-        JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
-        org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(
+        final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
+        final org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(
                 in2, out2);
         u2archive.unpack();
 
         // compare with original
-        File compareFile = new File(Archive.class.getResource(
+        final File compareFile = new File(Archive.class.getResource(
                 "/pack200/jndiWithUnknownAttributes.jar").toURI());
-        JarFile jarFile = new JarFile(file2);
+        final JarFile jarFile = new JarFile(file2);
 
-        JarFile jarFile2 = new JarFile(compareFile);
+        final JarFile jarFile2 = new JarFile(compareFile);
         assertEquals(jarFile2.size(), jarFile.size());
         compareJarEntries(jarFile, jarFile2);
     }
@@ -530,7 +530,7 @@ public class PackingOptionsTest {
         // Don't pass any
         in = new JarFile(new File(Archive.class.getResource(
                 "/pack200/sqlUnpacked.jar").toURI()));
-        File file0 = File.createTempFile("sql", ".pack");
+        final File file0 = File.createTempFile("sql", ".pack");
         file0.deleteOnExit();
         out = new FileOutputStream(file0);
         PackingOptions options = new PackingOptions();
@@ -559,7 +559,7 @@ public class PackingOptionsTest {
         // Pass a whole directory
         in = new JarFile(new File(Archive.class.getResource(
                 "/pack200/sqlUnpacked.jar").toURI()));
-        File file2 = File.createTempFile("sql", ".pack");
+        final File file2 = File.createTempFile("sql", ".pack");
         file2.deleteOnExit();
         out = new FileOutputStream(file2);
         options = new PackingOptions();
@@ -580,15 +580,15 @@ public class PackingOptionsTest {
                 "If more files are passed then the pack file should be larger");
 
         // now unpack
-        InputStream in2 = new FileInputStream(file);
-        File file3 = File.createTempFile("sql", ".jar");
+        final InputStream in2 = new FileInputStream(file);
+        final File file3 = File.createTempFile("sql", ".jar");
         file3.deleteOnExit();
-        JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file3));
+        final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file3));
         org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(
                 in2, out2);
         u2archive.unpack();
 
-        File compareFile = new File(Archive.class.getResource(
+        final File compareFile = new File(Archive.class.getResource(
                 "/pack200/sqlUnpacked.jar").toURI());
         JarFile jarFile = new JarFile(file3);
 
@@ -597,10 +597,10 @@ public class PackingOptionsTest {
         compareJarEntries(jarFile, jarFile2);
 
         // now unpack the file with lots of passed files
-        InputStream in3 = new FileInputStream(file2);
-        File file4 = File.createTempFile("sql", ".jar");
+        final InputStream in3 = new FileInputStream(file2);
+        final File file4 = File.createTempFile("sql", ".jar");
         file4.deleteOnExit();
-        JarOutputStream out3 = new JarOutputStream(new FileOutputStream(file4));
+        final JarOutputStream out3 = new JarOutputStream(new FileOutputStream(file4));
         u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(in3, out3);
         u2archive.unpack();
         jarFile = new JarFile(file4);
@@ -672,30 +672,30 @@ public class PackingOptionsTest {
         file = File.createTempFile("sql", ".pack");
         file.deleteOnExit();
         out = new FileOutputStream(file);
-        PackingOptions options = new PackingOptions();
+        final PackingOptions options = new PackingOptions();
         options.setGzip(false);
         options.setStripDebug(true);
-        Archive archive = new Archive(in, out, options);
+        final Archive archive = new Archive(in, out, options);
         archive.pack();
         in.close();
         out.close();
 
         // now unpack
-        InputStream in2 = new FileInputStream(file);
-        File file2 = File.createTempFile("sqloutNoDebug", ".jar");
+        final InputStream in2 = new FileInputStream(file);
+        final File file2 = File.createTempFile("sqloutNoDebug", ".jar");
         file2.deleteOnExit();
-        JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
-        org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(
+        final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
+        final org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(
                 in2, out2);
         u2archive.unpack();
 
-        File compareFile = new File(Archive.class.getResource(
+        final File compareFile = new File(Archive.class.getResource(
                 "/pack200/sqlUnpackedNoDebug.jar")
                 .toURI());
-        JarFile jarFile = new JarFile(file2);
+        final JarFile jarFile = new JarFile(file2);
         assertTrue(file2.length() < 250000);
 
-        JarFile jarFile2 = new JarFile(compareFile);
+        final JarFile jarFile2 = new JarFile(compareFile);
 
         compareFiles(jarFile, jarFile2);
     }

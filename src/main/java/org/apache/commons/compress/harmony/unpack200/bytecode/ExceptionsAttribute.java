@@ -33,7 +33,7 @@ public class ExceptionsAttribute extends Attribute {
             return 0;
         }
         int result = 1;
-        for (Object element : array) {
+        for (final Object element : array) {
             result = prime * result + (element == null ? 0 : element.hashCode());
         }
         return result;
@@ -105,7 +105,7 @@ public class ExceptionsAttribute extends Attribute {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("Exceptions: ");
-        for (CPClass exception : exceptions) {
+        for (final CPClass exception : exceptions) {
             sb.append(exception);
             sb.append(' ');
         }
@@ -115,7 +115,7 @@ public class ExceptionsAttribute extends Attribute {
     @Override
     protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(exceptionIndexes.length);
-        for (int element : exceptionIndexes) {
+        for (final int element : exceptionIndexes) {
             dos.writeShort(element);
         }
     }
