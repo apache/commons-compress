@@ -16,6 +16,10 @@
  */
 package org.apache.commons.compress.harmony.pack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,13 +43,14 @@ import org.apache.commons.compress.harmony.pack200.NewAttributeBands.Union;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.UnionCase;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.SegmentHeader;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Tests for pack200 support for non-predefined attributes
  */
-public class NewAttributeBandsTest extends TestCase {
+public class NewAttributeBandsTest {
 
     private class MockNewAttributeBands extends NewAttributeBands {
 
@@ -60,6 +65,7 @@ public class NewAttributeBandsTest extends TestCase {
         }
     }
 
+    @Test
     public void testAddAttributes() throws IOException, Pack200Exception {
         CPUTF8 name = new CPUTF8("TestAttribute");
         CPUTF8 layout = new CPUTF8("B");
@@ -83,6 +89,7 @@ public class NewAttributeBandsTest extends TestCase {
         assertEquals(3, bytes[2]);
     }
 
+    @Test
     public void testAddAttributesWithReplicationLayout() throws IOException,
             Pack200Exception {
         CPUTF8 name = new CPUTF8("TestAttribute");
@@ -113,6 +120,7 @@ public class NewAttributeBandsTest extends TestCase {
         assertEquals(-50, decoded[3]);
     }
 
+    @Test
     public void testEmptyLayout() throws IOException {
         CPUTF8 name = new CPUTF8("TestAttribute");
         CPUTF8 layout = new CPUTF8("");
@@ -123,30 +131,24 @@ public class NewAttributeBandsTest extends TestCase {
         assertEquals(0, layoutElements.size());
     }
 
-    public void testIntegralLayouts() throws IOException {
-        tryIntegral("B");
-        tryIntegral("FB");
-        tryIntegral("SB");
-        tryIntegral("H");
-        tryIntegral("FH");
-        tryIntegral("SH");
-        tryIntegral("I");
-        tryIntegral("FI");
-        tryIntegral("SI");
-        tryIntegral("PB");
-        tryIntegral("OB");
-        tryIntegral("OSB");
-        tryIntegral("POB");
-        tryIntegral("PH");
-        tryIntegral("OH");
-        tryIntegral("OSH");
-        tryIntegral("POH");
-        tryIntegral("PI");
-        tryIntegral("OI");
-        tryIntegral("OSI");
-        tryIntegral("POI");
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "B", "FB", "SB", "H", "FH", "SH", "I", "FI", "SI", "PB", "OB", "OSB",
+            "POB", "PH", "OH", "OSH", "POH", "PI", "OI", "OSI", "POI"
+    })
+    public void testIntegralLayouts(final String layoutStr) throws IOException {
+        CPUTF8 name = new CPUTF8("TestAttribute");
+        CPUTF8 layout = new CPUTF8(layoutStr);
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
+                null, null, new AttributeDefinition(35,
+                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
+        assertEquals(1, layoutElements.size());
+        Integral element = (Integral) layoutElements.get(0);
+        assertEquals(layoutStr, element.getTag());
     }
 
+    @Test
     public void testLayoutWithBackwardsCalls() throws Exception {
         CPUTF8 name = new CPUTF8("TestAttribute");
         CPUTF8 layout = new CPUTF8("[NH[(1)]][KIH][(-1)]");
@@ -203,6 +205,7 @@ public class NewAttributeBandsTest extends TestCase {
         assertFalse(secondCallable.isBackwardsCallable());
     }
 
+    @Test
     public void testLayoutWithCalls() throws IOException {
         CPUTF8 name = new CPUTF8("TestAttribute");
         CPUTF8 layout = new CPUTF8(
@@ -228,27 +231,24 @@ public class NewAttributeBandsTest extends TestCase {
         assertFalse(thirdCallable.isBackwardsCallable());
     }
 
-    public void testReferenceLayouts() throws IOException {
-        tryReference("KIB");
-        tryReference("KIH");
-        tryReference("KII");
-        tryReference("KINH");
-        tryReference("KJH");
-        tryReference("KDH");
-        tryReference("KSH");
-        tryReference("KQH");
-        tryReference("RCH");
-        tryReference("RSH");
-        tryReference("RDH");
-        tryReference("RFH");
-        tryReference("RMH");
-        tryReference("RIH");
-        tryReference("RUH");
-        tryReference("RQH");
-        tryReference("RQNH");
-        tryReference("RQNI");
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "KIB", "KIH", "KII", "KINH", "KJH", "KDH", "KSH", "KQH", "RCH",
+            "RSH", "RDH", "RFH", "RMH", "RIH", "RUH", "RQH", "RQNH", "RQNI"
+    })
+    public void testReferenceLayouts(final String layoutStr) throws IOException {
+        CPUTF8 name = new CPUTF8("TestAttribute");
+        CPUTF8 layout = new CPUTF8(layoutStr);
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
+                null, null, new AttributeDefinition(35,
+                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
+        assertEquals(1, layoutElements.size());
+        Reference element = (Reference) layoutElements.get(0);
+        assertEquals(layoutStr, element.getTag());
     }
 
+    @Test
     public void testReplicationLayouts() throws IOException {
         CPUTF8 name = new CPUTF8("TestAttribute");
         CPUTF8 layout = new CPUTF8("NH[PHOHRUHRSHH]");
@@ -274,6 +274,7 @@ public class NewAttributeBandsTest extends TestCase {
         assertEquals("H", fifthElement.getTag());
     }
 
+    @Test
     public void testUnionLayout() throws IOException {
         CPUTF8 name = new CPUTF8("TestAttribute");
         CPUTF8 layout = new CPUTF8("TB(55)[FH](23)[]()[RSH]");
@@ -303,30 +304,6 @@ public class NewAttributeBandsTest extends TestCase {
         assertEquals(1, defaultBody.size());
         Reference ref = (Reference) defaultBody.get(0);
         assertEquals("RSH", ref.getTag());
-    }
-
-    private void tryIntegral(final String layoutStr) throws IOException {
-        CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8(layoutStr);
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
-        assertEquals(1, layoutElements.size());
-        Integral element = (Integral) layoutElements.get(0);
-        assertEquals(layoutStr, element.getTag());
-    }
-
-    private void tryReference(final String layoutStr) throws IOException {
-        CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8(layoutStr);
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
-        assertEquals(1, layoutElements.size());
-        Reference element = (Reference) layoutElements.get(0);
-        assertEquals(layoutStr, element.getTag());
     }
 
 }

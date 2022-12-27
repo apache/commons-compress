@@ -16,6 +16,11 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.AttributeLayout;
@@ -23,10 +28,14 @@ import org.apache.commons.compress.harmony.unpack200.Segment;
 import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import junit.framework.TestCase;
+import java.util.stream.Stream;
 
-public class AttributeLayoutTest extends TestCase {
+public class AttributeLayoutTest {
 
     public class TestSegment extends Segment {
 
@@ -66,38 +75,55 @@ public class AttributeLayoutTest extends TestCase {
         }
     }
 
-    public void testBadData() {
-        assertTrue(throwsException(null, AttributeLayout.CONTEXT_CLASS, ""));
-        assertTrue(throwsException("", AttributeLayout.CONTEXT_CLASS, ""));
-        assertTrue(!throwsException("name", AttributeLayout.CONTEXT_CLASS, ""));
-        assertTrue(!throwsException("name", AttributeLayout.CONTEXT_METHOD, ""));
-        assertTrue(!throwsException("name", AttributeLayout.CONTEXT_FIELD, ""));
-        assertTrue(!throwsException("name", AttributeLayout.CONTEXT_CODE, ""));
-        assertTrue(throwsException("name", -1, ""));
-        assertTrue(throwsException("name", 1234, ""));
+    static Stream<Arguments> badData() {
+        return Stream.of(
+                Arguments.of(null, AttributeLayout.CONTEXT_CLASS, ""),
+                Arguments.of("", AttributeLayout.CONTEXT_CLASS, ""),
+                Arguments.of("name", -1, ""),
+                Arguments.of("name", 1234, "")
+        );
     }
 
-    public void testGetCodec() throws Pack200Exception {
-        AttributeLayout layout = new AttributeLayout("O",
-                AttributeLayout.CONTEXT_CLASS, "HOBS", 1);
-        assertEquals(Codec.BRANCH5, layout.getCodec());
-        layout = new AttributeLayout("P", AttributeLayout.CONTEXT_METHOD,
-                "PIN", 1);
-        assertEquals(Codec.BCI5, layout.getCodec());
-        layout = new AttributeLayout("S", AttributeLayout.CONTEXT_FIELD, "HS",
-                1);
-        assertEquals(Codec.SIGNED5, layout.getCodec());
-        layout = new AttributeLayout("RS", AttributeLayout.CONTEXT_CODE,
-                "RRRS", 1);
-        assertEquals(Codec.UNSIGNED5, layout.getCodec());
-        layout = new AttributeLayout("KS", AttributeLayout.CONTEXT_CLASS,
-                "RKS", 1);
-        assertEquals(Codec.UNSIGNED5, layout.getCodec());
-        layout = new AttributeLayout("B", AttributeLayout.CONTEXT_CLASS,
-                "TRKSB", 1);
-        assertEquals(Codec.BYTE1, layout.getCodec());
+    @ParameterizedTest
+    @MethodSource("badData")
+    public void testBadData(final String name, final int context, final String layout) {
+        assertThrows(Pack200Exception.class, () -> new AttributeLayout(name, context, layout, -1));
     }
 
+    static Stream<Arguments> okData() {
+        return Stream.of(
+                Arguments.of("name", AttributeLayout.CONTEXT_CLASS, ""),
+                Arguments.of("name", AttributeLayout.CONTEXT_METHOD, ""),
+                Arguments.of("name", AttributeLayout.CONTEXT_FIELD, ""),
+                Arguments.of("name", AttributeLayout.CONTEXT_CODE, "")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("okData")
+    public void testOkData(final String name, final int context, final String layout) {
+        assertDoesNotThrow(() -> new AttributeLayout(name, context, layout, -1));
+    }
+
+    static Stream<Arguments> codec() {
+        return Stream.of(
+                Arguments.of("O", AttributeLayout.CONTEXT_CLASS, "HOBS", Codec.BRANCH5),
+                Arguments.of("P", AttributeLayout.CONTEXT_METHOD, "PIN", Codec.BCI5),
+                Arguments.of("S", AttributeLayout.CONTEXT_FIELD, "HS", Codec.SIGNED5),
+                Arguments.of("RS", AttributeLayout.CONTEXT_CODE, "RRRS", Codec.UNSIGNED5),
+                Arguments.of("KS", AttributeLayout.CONTEXT_CLASS, "RKS", Codec.UNSIGNED5),
+                Arguments.of("B", AttributeLayout.CONTEXT_CLASS, "TRKSB", Codec.BYTE1)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("codec")
+    public void testGetCodec(final String name, final int context, final String layout, final Codec expectedCodec) throws Pack200Exception {
+        AttributeLayout attributeLayout = new AttributeLayout(name, context, layout, 1);
+        assertEquals(expectedCodec, attributeLayout.getCodec());
+    }
+
+    @Test
     public void testLayoutRS() throws Pack200Exception {
         AttributeLayout layout = new AttributeLayout("RS",
                 AttributeLayout.CONTEXT_CLASS, "RS", 1);
@@ -107,6 +133,7 @@ public class AttributeLayoutTest extends TestCase {
         assertEquals("Zwei", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
     }
 
+    @Test
     public void testLayoutRSN() throws Pack200Exception {
         AttributeLayout layout = new AttributeLayout("RSN",
                 AttributeLayout.CONTEXT_CLASS, "RSN", 1);
@@ -116,6 +143,7 @@ public class AttributeLayoutTest extends TestCase {
         assertEquals("Zwei", ((CPUTF8)layout.getValue(2, segment.getConstantPool())).underlyingString());
     }
 
+    @Test
     public void testLayoutRU() throws Pack200Exception {
         AttributeLayout layout = new AttributeLayout("RU",
                 AttributeLayout.CONTEXT_CLASS, "RU", 1);
@@ -125,6 +153,7 @@ public class AttributeLayoutTest extends TestCase {
         assertEquals("One", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
     }
 
+    @Test
     public void testLayoutRUN() throws Pack200Exception {
         AttributeLayout layout = new AttributeLayout("RUN",
                 AttributeLayout.CONTEXT_CLASS, "RUN", 1);
@@ -132,14 +161,5 @@ public class AttributeLayoutTest extends TestCase {
         assertNull(layout.getValue(0, segment.getConstantPool()));
         assertEquals("Zero", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
         assertEquals("One", ((CPUTF8)layout.getValue(2, segment.getConstantPool())).underlyingString());
-    }
-
-    public boolean throwsException(final String name, final int context, final String layout) {
-        try {
-            new AttributeLayout(name, context, layout, -1);
-            return false;
-        } catch (Pack200Exception e) {
-            return true;
-        }
     }
 }

@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -40,8 +41,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import junit.framework.AssertionFailedError;
 
 /**
  * Test that can read various tar file examples.
@@ -142,9 +141,7 @@ public class LongSymLinkTest extends AbstractTestCase {
             fail("Unexpected file type: "+name);
         }
         try {
-            checkArchiveContent(ais, expected);
-        } catch (final AssertionFailedError e) {
-            fail("Error processing "+file.getName()+" "+e);
+            assertDoesNotThrow(() -> checkArchiveContent(ais, expected), "Error processing " + file.getName());
         } finally {
             ais.close();
         }

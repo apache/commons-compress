@@ -16,22 +16,25 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class CPUTF8Test extends TestCase {
+public class CPUTF8Test {
 
+    @Test
     public void testEquality() {
         CPUTF8 one = new CPUTF8("(III)V", 1);
         CPUTF8 two = new CPUTF8("((I[II)V", 2);
         CPUTF8 three = new CPUTF8("([III)V", 3);
-        assertFalse(one.equals(two));
-        assertFalse(one.equals(three));
-        assertFalse(two.equals(three));
+        assertNotEquals(one, two);
+        assertNotEquals(one, three);
+        assertNotEquals(two, three);
 
-        assertFalse(two.equals(one));
-        assertFalse(three.equals(one));
-        assertFalse(three.equals(two));
+        assertNotEquals(two, one);
+        assertNotEquals(three, one);
+        assertNotEquals(three, two);
     }
 }

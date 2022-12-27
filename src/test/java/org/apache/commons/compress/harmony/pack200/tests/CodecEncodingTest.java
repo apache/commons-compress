@@ -16,11 +16,14 @@
  */
 package org.apache.commons.compress.harmony.pack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.harmony.pack200.BHSDCodec;
 import org.apache.commons.compress.harmony.pack200.Codec;
@@ -28,153 +31,164 @@ import org.apache.commons.compress.harmony.pack200.CodecEncoding;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PopulationCodec;
 import org.apache.commons.compress.harmony.pack200.RunCodec;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  *
  */
-public class CodecEncodingTest extends TestCase {
+public class CodecEncodingTest {
 
-    public void testArbitraryCodec() throws IOException, Pack200Exception {
-        assertEquals("(1,256)", CodecEncoding.getCodec(116,
-                new ByteArrayInputStream(new byte[] { 0x00, (byte) 0xFF }),
-                null).toString());
-        assertEquals("(5,128,2,1)", CodecEncoding.getCodec(116,
-                new ByteArrayInputStream(new byte[] { 0x25, (byte) 0x7F }),
-                null).toString());
-        assertEquals("(2,128,1,1)", CodecEncoding.getCodec(116,
-                new ByteArrayInputStream(new byte[] { 0x0B, (byte) 0x7F }),
-                null).toString());
+    static Stream<Arguments> arbitraryCodec() {
+        return Stream.of(
+                Arguments.of("(1,256)", new byte[] { 0x00, (byte) 0xFF }),
+                Arguments.of("(5,128,2,1)", new byte[] { 0x25, (byte) 0x7F }),
+                Arguments.of("(2,128,1,1)", new byte[] { 0x0B, (byte) 0x7F })
+        );
     }
 
-    public void testCanonicalEncodings() throws IOException, Pack200Exception {
+    @ParameterizedTest
+    @MethodSource("arbitraryCodec")
+    public void testArbitraryCodec(final String expected, final byte[] bytes) throws IOException, Pack200Exception {
+        assertEquals(expected, CodecEncoding.getCodec(116, new ByteArrayInputStream(bytes), null).toString());
+    }
+
+    @Test
+    public void testDefaultCodec() throws Pack200Exception, IOException {
         Codec defaultCodec = new BHSDCodec(2, 16, 0, 0);
-        assertEquals(defaultCodec, CodecEncoding
-                .getCodec(0, null, defaultCodec));
-        Map<Integer, String> map = new HashMap<>();
-        // These are the canonical encodings specified by the Pack200 spec
-        map.put(Integer.valueOf(1), "(1,256)");
-        map.put(Integer.valueOf(2), "(1,256,1)");
-        map.put(Integer.valueOf(3), "(1,256,0,1)");
-        map.put(Integer.valueOf(4), "(1,256,1,1)");
-        map.put(Integer.valueOf(5), "(2,256)");
-        map.put(Integer.valueOf(6), "(2,256,1)");
-        map.put(Integer.valueOf(7), "(2,256,0,1)");
-        map.put(Integer.valueOf(8), "(2,256,1,1)");
-        map.put(Integer.valueOf(9), "(3,256)");
-        map.put(Integer.valueOf(10), "(3,256,1)");
-        map.put(Integer.valueOf(11), "(3,256,0,1)");
-        map.put(Integer.valueOf(12), "(3,256,1,1)");
-        map.put(Integer.valueOf(13), "(4,256)");
-        map.put(Integer.valueOf(14), "(4,256,1)");
-        map.put(Integer.valueOf(15), "(4,256,0,1)");
-        map.put(Integer.valueOf(16), "(4,256,1,1)");
-        map.put(Integer.valueOf(17), "(5,4)");
-        map.put(Integer.valueOf(18), "(5,4,1)");
-        map.put(Integer.valueOf(19), "(5,4,2)");
-        map.put(Integer.valueOf(20), "(5,16)");
-        map.put(Integer.valueOf(21), "(5,16,1)");
-        map.put(Integer.valueOf(22), "(5,16,2)");
-        map.put(Integer.valueOf(23), "(5,32)");
-        map.put(Integer.valueOf(24), "(5,32,1)");
-        map.put(Integer.valueOf(25), "(5,32,2)");
-        map.put(Integer.valueOf(26), "(5,64)");
-        map.put(Integer.valueOf(27), "(5,64,1)");
-        map.put(Integer.valueOf(28), "(5,64,2)");
-        map.put(Integer.valueOf(29), "(5,128)");
-        map.put(Integer.valueOf(30), "(5,128,1)");
-        map.put(Integer.valueOf(31), "(5,128,2)");
-        map.put(Integer.valueOf(32), "(5,4,0,1)");
-        map.put(Integer.valueOf(33), "(5,4,1,1)");
-        map.put(Integer.valueOf(34), "(5,4,2,1)");
-        map.put(Integer.valueOf(35), "(5,16,0,1)");
-        map.put(Integer.valueOf(36), "(5,16,1,1)");
-        map.put(Integer.valueOf(37), "(5,16,2,1)");
-        map.put(Integer.valueOf(38), "(5,32,0,1)");
-        map.put(Integer.valueOf(39), "(5,32,1,1)");
-        map.put(Integer.valueOf(40), "(5,32,2,1)");
-        map.put(Integer.valueOf(41), "(5,64,0,1)");
-        map.put(Integer.valueOf(42), "(5,64,1,1)");
-        map.put(Integer.valueOf(43), "(5,64,2,1)");
-        map.put(Integer.valueOf(44), "(5,128,0,1)");
-        map.put(Integer.valueOf(45), "(5,128,1,1)");
-        map.put(Integer.valueOf(46), "(5,128,2,1)");
-        map.put(Integer.valueOf(47), "(2,192)");
-        map.put(Integer.valueOf(48), "(2,224)");
-        map.put(Integer.valueOf(49), "(2,240)");
-        map.put(Integer.valueOf(50), "(2,248)");
-        map.put(Integer.valueOf(51), "(2,252)");
-        map.put(Integer.valueOf(52), "(2,8,0,1)");
-        map.put(Integer.valueOf(53), "(2,8,1,1)");
-        map.put(Integer.valueOf(54), "(2,16,0,1)");
-        map.put(Integer.valueOf(55), "(2,16,1,1)");
-        map.put(Integer.valueOf(56), "(2,32,0,1)");
-        map.put(Integer.valueOf(57), "(2,32,1,1)");
-        map.put(Integer.valueOf(58), "(2,64,0,1)");
-        map.put(Integer.valueOf(59), "(2,64,1,1)");
-        map.put(Integer.valueOf(60), "(2,128,0,1)");
-        map.put(Integer.valueOf(61), "(2,128,1,1)");
-        map.put(Integer.valueOf(62), "(2,192,0,1)");
-        map.put(Integer.valueOf(63), "(2,192,1,1)");
-        map.put(Integer.valueOf(64), "(2,224,0,1)");
-        map.put(Integer.valueOf(65), "(2,224,1,1)");
-        map.put(Integer.valueOf(66), "(2,240,0,1)");
-        map.put(Integer.valueOf(67), "(2,240,1,1)");
-        map.put(Integer.valueOf(68), "(2,248,0,1)");
-        map.put(Integer.valueOf(69), "(2,248,1,1)");
-        map.put(Integer.valueOf(70), "(3,192)");
-        map.put(Integer.valueOf(71), "(3,224)");
-        map.put(Integer.valueOf(72), "(3,240)");
-        map.put(Integer.valueOf(73), "(3,248)");
-        map.put(Integer.valueOf(74), "(3,252)");
-        map.put(Integer.valueOf(75), "(3,8,0,1)");
-        map.put(Integer.valueOf(76), "(3,8,1,1)");
-        map.put(Integer.valueOf(77), "(3,16,0,1)");
-        map.put(Integer.valueOf(78), "(3,16,1,1)");
-        map.put(Integer.valueOf(79), "(3,32,0,1)");
-        map.put(Integer.valueOf(80), "(3,32,1,1)");
-        map.put(Integer.valueOf(81), "(3,64,0,1)");
-        map.put(Integer.valueOf(82), "(3,64,1,1)");
-        map.put(Integer.valueOf(83), "(3,128,0,1)");
-        map.put(Integer.valueOf(84), "(3,128,1,1)");
-        map.put(Integer.valueOf(85), "(3,192,0,1)");
-        map.put(Integer.valueOf(86), "(3,192,1,1)");
-        map.put(Integer.valueOf(87), "(3,224,0,1)");
-        map.put(Integer.valueOf(88), "(3,224,1,1)");
-        map.put(Integer.valueOf(89), "(3,240,0,1)");
-        map.put(Integer.valueOf(90), "(3,240,1,1)");
-        map.put(Integer.valueOf(91), "(3,248,0,1)");
-        map.put(Integer.valueOf(92), "(3,248,1,1)");
-        map.put(Integer.valueOf(93), "(4,192)");
-        map.put(Integer.valueOf(94), "(4,224)");
-        map.put(Integer.valueOf(95), "(4,240)");
-        map.put(Integer.valueOf(96), "(4,248)");
-        map.put(Integer.valueOf(97), "(4,252)");
-        map.put(Integer.valueOf(98), "(4,8,0,1)");
-        map.put(Integer.valueOf(99), "(4,8,1,1)");
-        map.put(Integer.valueOf(100), "(4,16,0,1)");
-        map.put(Integer.valueOf(101), "(4,16,1,1)");
-        map.put(Integer.valueOf(102), "(4,32,0,1)");
-        map.put(Integer.valueOf(103), "(4,32,1,1)");
-        map.put(Integer.valueOf(104), "(4,64,0,1)");
-        map.put(Integer.valueOf(105), "(4,64,1,1)");
-        map.put(Integer.valueOf(106), "(4,128,0,1)");
-        map.put(Integer.valueOf(107), "(4,128,1,1)");
-        map.put(Integer.valueOf(108), "(4,192,0,1)");
-        map.put(Integer.valueOf(109), "(4,192,1,1)");
-        map.put(Integer.valueOf(110), "(4,224,0,1)");
-        map.put(Integer.valueOf(111), "(4,224,1,1)");
-        map.put(Integer.valueOf(112), "(4,240,0,1)");
-        map.put(Integer.valueOf(113), "(4,240,1,1)");
-        map.put(Integer.valueOf(114), "(4,248,0,1)");
-        map.put(Integer.valueOf(115), "(4,248,1,1)");
-        for (int i = 1; i <= 115; i++) {
-            assertEquals(map.get(Integer.valueOf(i)), CodecEncoding.getCodec(i,
-                    null, null).toString());
-        }
+        assertEquals(defaultCodec, CodecEncoding.getCodec(0, null, defaultCodec));
     }
 
+    // These are the canonical encodings specified by the Pack200 spec
+    static Stream<Arguments> canonicalEncodings() {
+        return Stream.of(
+                Arguments.of(1, "(1,256)"),
+                Arguments.of(2, "(1,256,1)"),
+                Arguments.of(3, "(1,256,0,1)"),
+                Arguments.of(4, "(1,256,1,1)"),
+                Arguments.of(5, "(2,256)"),
+                Arguments.of(6, "(2,256,1)"),
+                Arguments.of(7, "(2,256,0,1)"),
+                Arguments.of(8, "(2,256,1,1)"),
+                Arguments.of(9, "(3,256)"),
+                Arguments.of(10, "(3,256,1)"),
+                Arguments.of(11, "(3,256,0,1)"),
+                Arguments.of(12, "(3,256,1,1)"),
+                Arguments.of(13, "(4,256)"),
+                Arguments.of(14, "(4,256,1)"),
+                Arguments.of(15, "(4,256,0,1)"),
+                Arguments.of(16, "(4,256,1,1)"),
+                Arguments.of(17, "(5,4)"),
+                Arguments.of(18, "(5,4,1)"),
+                Arguments.of(19, "(5,4,2)"),
+                Arguments.of(20, "(5,16)"),
+                Arguments.of(21, "(5,16,1)"),
+                Arguments.of(22, "(5,16,2)"),
+                Arguments.of(23, "(5,32)"),
+                Arguments.of(24, "(5,32,1)"),
+                Arguments.of(25, "(5,32,2)"),
+                Arguments.of(26, "(5,64)"),
+                Arguments.of(27, "(5,64,1)"),
+                Arguments.of(28, "(5,64,2)"),
+                Arguments.of(29, "(5,128)"),
+                Arguments.of(30, "(5,128,1)"),
+                Arguments.of(31, "(5,128,2)"),
+                Arguments.of(32, "(5,4,0,1)"),
+                Arguments.of(33, "(5,4,1,1)"),
+                Arguments.of(34, "(5,4,2,1)"),
+                Arguments.of(35, "(5,16,0,1)"),
+                Arguments.of(36, "(5,16,1,1)"),
+                Arguments.of(37, "(5,16,2,1)"),
+                Arguments.of(38, "(5,32,0,1)"),
+                Arguments.of(39, "(5,32,1,1)"),
+                Arguments.of(40, "(5,32,2,1)"),
+                Arguments.of(41, "(5,64,0,1)"),
+                Arguments.of(42, "(5,64,1,1)"),
+                Arguments.of(43, "(5,64,2,1)"),
+                Arguments.of(44, "(5,128,0,1)"),
+                Arguments.of(45, "(5,128,1,1)"),
+                Arguments.of(46, "(5,128,2,1)"),
+                Arguments.of(47, "(2,192)"),
+                Arguments.of(48, "(2,224)"),
+                Arguments.of(49, "(2,240)"),
+                Arguments.of(50, "(2,248)"),
+                Arguments.of(51, "(2,252)"),
+                Arguments.of(52, "(2,8,0,1)"),
+                Arguments.of(53, "(2,8,1,1)"),
+                Arguments.of(54, "(2,16,0,1)"),
+                Arguments.of(55, "(2,16,1,1)"),
+                Arguments.of(56, "(2,32,0,1)"),
+                Arguments.of(57, "(2,32,1,1)"),
+                Arguments.of(58, "(2,64,0,1)"),
+                Arguments.of(59, "(2,64,1,1)"),
+                Arguments.of(60, "(2,128,0,1)"),
+                Arguments.of(61, "(2,128,1,1)"),
+                Arguments.of(62, "(2,192,0,1)"),
+                Arguments.of(63, "(2,192,1,1)"),
+                Arguments.of(64, "(2,224,0,1)"),
+                Arguments.of(65, "(2,224,1,1)"),
+                Arguments.of(66, "(2,240,0,1)"),
+                Arguments.of(67, "(2,240,1,1)"),
+                Arguments.of(68, "(2,248,0,1)"),
+                Arguments.of(69, "(2,248,1,1)"),
+                Arguments.of(70, "(3,192)"),
+                Arguments.of(71, "(3,224)"),
+                Arguments.of(72, "(3,240)"),
+                Arguments.of(73, "(3,248)"),
+                Arguments.of(74, "(3,252)"),
+                Arguments.of(75, "(3,8,0,1)"),
+                Arguments.of(76, "(3,8,1,1)"),
+                Arguments.of(77, "(3,16,0,1)"),
+                Arguments.of(78, "(3,16,1,1)"),
+                Arguments.of(79, "(3,32,0,1)"),
+                Arguments.of(80, "(3,32,1,1)"),
+                Arguments.of(81, "(3,64,0,1)"),
+                Arguments.of(82, "(3,64,1,1)"),
+                Arguments.of(83, "(3,128,0,1)"),
+                Arguments.of(84, "(3,128,1,1)"),
+                Arguments.of(85, "(3,192,0,1)"),
+                Arguments.of(86, "(3,192,1,1)"),
+                Arguments.of(87, "(3,224,0,1)"),
+                Arguments.of(88, "(3,224,1,1)"),
+                Arguments.of(89, "(3,240,0,1)"),
+                Arguments.of(90, "(3,240,1,1)"),
+                Arguments.of(91, "(3,248,0,1)"),
+                Arguments.of(92, "(3,248,1,1)"),
+                Arguments.of(93, "(4,192)"),
+                Arguments.of(94, "(4,224)"),
+                Arguments.of(95, "(4,240)"),
+                Arguments.of(96, "(4,248)"),
+                Arguments.of(97, "(4,252)"),
+                Arguments.of(98, "(4,8,0,1)"),
+                Arguments.of(99, "(4,8,1,1)"),
+                Arguments.of(100, "(4,16,0,1)"),
+                Arguments.of(101, "(4,16,1,1)"),
+                Arguments.of(102, "(4,32,0,1)"),
+                Arguments.of(103, "(4,32,1,1)"),
+                Arguments.of(104, "(4,64,0,1)"),
+                Arguments.of(105, "(4,64,1,1)"),
+                Arguments.of(106, "(4,128,0,1)"),
+                Arguments.of(107, "(4,128,1,1)"),
+                Arguments.of(108, "(4,192,0,1)"),
+                Arguments.of(109, "(4,192,1,1)"),
+                Arguments.of(110, "(4,224,0,1)"),
+                Arguments.of(111, "(4,224,1,1)"),
+                Arguments.of(112, "(4,240,0,1)"),
+                Arguments.of(113, "(4,240,1,1)"),
+                Arguments.of(114, "(4,248,0,1)"),
+                Arguments.of(115, "(4,248,1,1)")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("canonicalEncodings")
+    void testCanonicalEncodings(final int i, final String expectedCodec) throws IOException, Pack200Exception {
+        assertEquals(expectedCodec, CodecEncoding.getCodec(i, null, null).toString());
+    }
+
+    @Test
     public void testGetSpeciferForPopulationCodec() throws IOException, Pack200Exception {
         PopulationCodec pCodec = new PopulationCodec(Codec.BYTE1, Codec.CHAR3, Codec.UNSIGNED5);
         int[] specifiers = CodecEncoding.getSpecifier(pCodec, null);
@@ -191,6 +205,7 @@ public class CodecEncodingTest extends TestCase {
         assertEquals(pCodec.getUnfavouredCodec(), pCodec2.getUnfavouredCodec());
     }
 
+    @Test
     public void testGetSpeciferForRunCodec() throws Pack200Exception, IOException {
         RunCodec runCodec = new RunCodec(25, Codec.DELTA5, Codec.BYTE1);
         int[] specifiers = CodecEncoding.getSpecifier(runCodec, null);
@@ -260,51 +275,35 @@ public class CodecEncodingTest extends TestCase {
         assertEquals(bCodec.getBCodec(), bCodec2.getBCodec());
     }
 
-    public void testGetSpecifier() throws IOException, Pack200Exception {
-        // Test canonical codecs
-        for (int i = 1; i <= 115; i++) {
-            assertEquals(i, CodecEncoding.getSpecifier(CodecEncoding.getCodec(i, null, null), null)[0]);
-        }
+    // Test canonical codecs
+    static Stream<Arguments> canonicalGetSpecifier() {
+        return IntStream.range(1, 115).mapToObj(Arguments::of);
+    }
 
-        // Test a range of non-canonical codecs
-        Codec c1 = new BHSDCodec(2, 125, 0, 1);
+    @ParameterizedTest
+    @MethodSource("canonicalGetSpecifier")
+    public void testCanonicalGetSpecifier(final int i) throws Pack200Exception, IOException {
+        assertEquals(i, CodecEncoding.getSpecifier(CodecEncoding.getCodec(i, null, null), null)[0]);
+    }
+
+    static Stream<Arguments> specifier() {
+        return Stream.of(
+                Arguments.of(new BHSDCodec(2, 125, 0, 1)),
+                Arguments.of(new BHSDCodec(3, 125, 2, 1)),
+                Arguments.of(new BHSDCodec(4, 125)),
+                Arguments.of(new BHSDCodec(5, 125, 2, 0)),
+                Arguments.of(new BHSDCodec(3, 5, 2, 1))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("specifier")
+    void testGetSpecifier(final Codec c1) throws IOException, Pack200Exception {
         int[] specifiers = CodecEncoding.getSpecifier(c1, null);
         assertEquals(3, specifiers.length);
         assertEquals(116, specifiers[0]);
         byte[] bytes = {(byte) specifiers[1], (byte) specifiers[2]};
         InputStream in = new ByteArrayInputStream(bytes);
-        assertEquals(c1, CodecEncoding.getCodec(116, in, null));
-
-        c1 = new BHSDCodec(3, 125, 2, 1);
-        specifiers = CodecEncoding.getSpecifier(c1, null);
-        assertEquals(3, specifiers.length);
-        assertEquals(116, specifiers[0]);
-        bytes = new byte[] {(byte) specifiers[1], (byte) specifiers[2]};
-        in = new ByteArrayInputStream(bytes);
-        assertEquals(c1, CodecEncoding.getCodec(116, in, null));
-
-        c1 = new BHSDCodec(4, 125);
-        specifiers = CodecEncoding.getSpecifier(c1, null);
-        assertEquals(3, specifiers.length);
-        assertEquals(116, specifiers[0]);
-        bytes = new byte[] {(byte) specifiers[1], (byte) specifiers[2]};
-        in = new ByteArrayInputStream(bytes);
-        assertEquals(c1, CodecEncoding.getCodec(116, in, null));
-
-        c1 = new BHSDCodec(5, 125, 2, 0);
-        specifiers = CodecEncoding.getSpecifier(c1, null);
-        assertEquals(3, specifiers.length);
-        assertEquals(116, specifiers[0]);
-        bytes = new byte[] {(byte) specifiers[1], (byte) specifiers[2]};
-        in = new ByteArrayInputStream(bytes);
-        assertEquals(c1, CodecEncoding.getCodec(116, in, null));
-
-        c1 = new BHSDCodec(3, 5, 2, 1);
-        specifiers = CodecEncoding.getSpecifier(c1, null);
-        assertEquals(3, specifiers.length);
-        assertEquals(116, specifiers[0]);
-        bytes = new byte[] {(byte) specifiers[1], (byte) specifiers[2]};
-        in = new ByteArrayInputStream(bytes);
         assertEquals(c1, CodecEncoding.getCodec(116, in, null));
     }
 

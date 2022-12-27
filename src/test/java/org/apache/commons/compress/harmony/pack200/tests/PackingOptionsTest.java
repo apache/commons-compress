@@ -16,6 +16,13 @@
  */
 package org.apache.commons.compress.harmony.pack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,13 +41,12 @@ import java.util.jar.JarOutputStream;
 import org.apache.commons.compress.harmony.pack200.Archive;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PackingOptions;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test different options for packing a Jar file
  */
-public class PackingOptionsTest extends TestCase {
+public class PackingOptionsTest {
 
     JarFile in;
     OutputStream out;
@@ -56,7 +62,7 @@ public class PackingOptionsTest extends TestCase {
 
             String name = entry.getName();
             JarEntry entry2 = jarFile2.getJarEntry(name);
-            assertNotNull("Missing Entry: " + name, entry2);
+            assertNotNull(entry2, "Missing Entry: " + name);
             // assertEquals(entry.getTime(), entry2.getTime());
             if (!name.equals("META-INF/MANIFEST.MF")) { // Manifests aren't
                                                         // necessarily
@@ -74,8 +80,7 @@ public class PackingOptionsTest extends TestCase {
                 String line2 = reader2.readLine();
                 int i = 1;
                 while (line1 != null || line2 != null) {
-                    assertEquals("Unpacked files differ for " + name, line2,
-                            line1);
+                    assertEquals(line2, line1, "Unpacked files differ for " + name);
                     line1 = reader1.readLine();
                     line2 = reader2.readLine();
                     i++;
@@ -97,10 +102,11 @@ public class PackingOptionsTest extends TestCase {
 
             String name = entry.getName();
             JarEntry entry2 = jarFile2.getJarEntry(name);
-            assertNotNull("Missing Entry: " + name, entry2);
+            assertNotNull(entry2, "Missing Entry: " + name);
         }
     }
 
+    @Test
     public void testDeflateHint() {
         // Test default first
         PackingOptions options = new PackingOptions();
@@ -109,14 +115,11 @@ public class PackingOptionsTest extends TestCase {
         assertEquals("true", options.getDeflateHint());
         options.setDeflateHint("false");
         assertEquals("false", options.getDeflateHint());
-        try {
-            options.setDeflateHint("hello");
-            fail("Should throw IllegalArgumentException for incorrect deflate hint");
-        } catch (IllegalArgumentException iae) {
-            // pass
-        }
+        assertThrows(IllegalArgumentException.class, () -> options.setDeflateHint("hello"),
+                "Should throw IllegalArgumentException for incorrect deflate hint");
     }
 
+    @Test
     public void testE0() throws Pack200Exception, IOException,
             URISyntaxException {
         File f1 = new File(Archive.class.getResource(
@@ -136,6 +139,7 @@ public class PackingOptionsTest extends TestCase {
 
     }
 
+    @Test
     public void testErrorAttributes() throws Exception {
         in = new JarFile(
                 new File(
@@ -149,17 +153,15 @@ public class PackingOptionsTest extends TestCase {
         PackingOptions options = new PackingOptions();
         options.addClassAttributeAction("Pack200", "error");
         Archive ar = new Archive(in, out, options);
-        try {
+        Error error = assertThrows(Error.class, () -> {
             ar.pack();
             in.close();
             out.close();
-            fail("fail");
-        } catch (Error e) {
-            // pass
-            assertEquals("Attribute Pack200 was found", e.getMessage());
-        }
+        });
+        assertEquals("Attribute Pack200 was found", error.getMessage());
     }
 
+    @Test
     public void testKeepFileOrder() throws Exception {
         // Test default first
         PackingOptions options = new PackingOptions();
@@ -252,10 +254,11 @@ public class PackingOptionsTest extends TestCase {
                 break;
             }
         }
-        assertFalse("Files are not expected to be in order", inOrder);
+        assertFalse(inOrder, "Files are not expected to be in order");
     }
 
     // Test verbose, quiet and log file options.
+    @Test
     public void testLoggingOptions() throws Exception {
         // Test defaults
         PackingOptions options = new PackingOptions();
@@ -301,18 +304,18 @@ public class PackingOptionsTest extends TestCase {
         reader.close();
     }
 
+    @Test
     public void testModificationTime() throws Exception {
         // Test default first
         PackingOptions options = new PackingOptions();
         assertEquals("keep", options.getModificationTime());
         options.setModificationTime("latest");
         assertEquals("latest", options.getModificationTime());
-        try {
-            options.setModificationTime("true");
-            fail("Should throw IllegalArgumentException for incorrect mod time");
-        } catch (IllegalArgumentException iae) {
-            // pass
-        }
+        assertThrows(IllegalArgumentException.class, () -> {
+                    PackingOptions illegalOption = new PackingOptions();
+                    illegalOption.setModificationTime("true");
+                },
+                "Should throw IllegalArgumentException for incorrect mod time");
 
         // Test option works correctly. Test 'keep'.
         in = new JarFile(new File(Archive.class.getResource(
@@ -404,9 +407,10 @@ public class PackingOptionsTest extends TestCase {
                 sameAsOriginal = false;
             }
         }
-        assertFalse("Some modtimes should have changed", sameAsOriginal);
+        assertFalse(sameAsOriginal, "Some modtimes should have changed");
     }
 
+    @Test
     public void testNewAttributes() throws Exception {
         in = new JarFile(
                 new File(
@@ -444,6 +448,7 @@ public class PackingOptionsTest extends TestCase {
 //        compareFiles(jarFile, jarFile2);
     }
 
+    @Test
     public void testNewAttributes2() throws Exception {
         in = new JarFile(
                 new File(
@@ -482,6 +487,7 @@ public class PackingOptionsTest extends TestCase {
         compareJarEntries(jarFile, jarFile2);
     }
 
+    @Test
     public void testPassAttributes() throws Exception {
         in = new JarFile(
                 new File(
@@ -518,6 +524,7 @@ public class PackingOptionsTest extends TestCase {
         compareJarEntries(jarFile, jarFile2);
     }
 
+    @Test
     public void testPassFiles() throws IOException, URISyntaxException,
             Pack200Exception {
         // Don't pass any
@@ -567,11 +574,10 @@ public class PackingOptionsTest extends TestCase {
         in.close();
         out.close();
 
-        assertTrue("If files are passed then the pack file should be larger",
-                file.length() > file0.length());
-        assertTrue(
-                "If more files are passed then the pack file should be larger",
-                file2.length() > file.length());
+        assertTrue(file.length() > file0.length(),
+                "If files are passed then the pack file should be larger");
+        assertTrue(file2.length() > file.length(),
+                "If more files are passed then the pack file should be larger");
 
         // now unpack
         InputStream in2 = new FileInputStream(file);
@@ -618,6 +624,7 @@ public class PackingOptionsTest extends TestCase {
     // compareFiles(in, new JarFile(file));
     // }
 
+    @Test
     public void testSegmentLimits() throws IOException, Pack200Exception,
             URISyntaxException {
         in = new JarFile(new File(Archive.class.getResource(
@@ -657,6 +664,7 @@ public class PackingOptionsTest extends TestCase {
         out.close();
     }
 
+    @Test
     public void testStripDebug() throws IOException, Pack200Exception,
             URISyntaxException {
         in = new JarFile(new File(Archive.class.getResource(

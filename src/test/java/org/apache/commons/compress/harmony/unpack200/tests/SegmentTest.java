@@ -16,6 +16,9 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,20 +31,20 @@ import java.util.jar.JarOutputStream;
 
 import org.apache.commons.compress.harmony.unpack200.Segment;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for org.apache.commons.compress.harmony.unpack200.Segment.
  */
-public class SegmentTest extends TestCase {
+public class SegmentTest {
 
     InputStream in;
     JarOutputStream out;
     File file;
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @AfterEach
+    public void tearDown() throws Exception {
         if (in != null) {
             try {
                 in.close();
@@ -59,6 +62,7 @@ public class SegmentTest extends TestCase {
         file.delete();
     }
 
+    @Test
     public void testHelloWorld() throws Exception {
         in = Segment.class
                 .getResourceAsStream("/pack200/HelloWorld.pack");
@@ -90,7 +94,7 @@ public class SegmentTest extends TestCase {
         String line2 = reader2.readLine();
         int i = 1;
         while (line1 != null || line2 != null) {
-            assertEquals("Unpacked class files differ", line2, line1);
+            assertEquals(line2, line1, "Unpacked class files differ");
             line1 = reader1.readLine();
             line2 = reader2.readLine();
             i++;
@@ -99,6 +103,7 @@ public class SegmentTest extends TestCase {
         reader2.close();
     }
 
+    @Test
     public void testInterfaceOnly() throws Exception {
         in = Segment.class
                 .getResourceAsStream("/pack200/InterfaceOnly.pack");
@@ -108,6 +113,7 @@ public class SegmentTest extends TestCase {
         segment.unpack(in, out);
     }
 
+    @Test
     public void testJustResources() throws Exception {
         in = Segment.class
                 .getResourceAsStream("/pack200/JustResources.pack");

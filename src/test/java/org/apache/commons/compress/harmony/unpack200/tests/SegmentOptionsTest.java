@@ -16,28 +16,22 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.SegmentOptions;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  *
  */
-public class SegmentOptionsTest extends TestCase {
+public class SegmentOptionsTest {
 
-    public void testUnused() {
-        int[] unused = { 3, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
-                23, 24, 25, 26, 27, 28, 29, 30, 31 };
-        for (int element : unused) {
-            try {
-                new SegmentOptions(1 << element);
-                fail("Bit "
-                        + element
-                        + " should be unused, but it's not caught during construction");
-            } catch (Pack200Exception e) {
-                assertTrue(true);
-            }
-        }
+    @ParameterizedTest
+    @ValueSource(ints = { 3, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 })
+    public void testUnused(final int element) {
+        assertThrows(Pack200Exception.class, () -> new SegmentOptions(1 << element));
     }
 }

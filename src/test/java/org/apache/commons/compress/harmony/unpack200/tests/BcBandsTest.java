@@ -39,6 +39,10 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPMethodRef;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPNameAndType;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPString;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests for Pack200 bytecode bands
@@ -263,6 +267,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcByteBand() throws IOException, Pack200Exception {
         byte[] bytes = { 16, (byte) 132, (byte) 188, (byte) 197,
                 (byte) 255, 8, 8, 8, 8, // bc_byte band
@@ -287,6 +292,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcCaseBands() throws IOException, Pack200Exception {
         byte[] bytes = { (byte) 170, (byte) 171, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (byte) 255, 2, 5, // bc_case_count
@@ -311,6 +317,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcClassRefBand() throws IOException, Pack200Exception {
         byte[] bytes = { (byte) 233, (byte) 236, (byte) 255, 8, 8 }; // bc_classref
         // band
@@ -327,6 +334,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcDoubleRefBand() throws IOException, Pack200Exception {
         byte[] bytes = { (byte) 239, (byte) 255, 8 }; // bc_doubleref
         // band
@@ -337,10 +345,14 @@ public class BcBandsTest extends AbstractBandsTestCase {
         assertEquals(1, bc_doubleref.length);
     }
 
+    @Test
+    @Disabled("TODO: Implement")
     public void testBcEscBands() {
         // TODO
     }
 
+    @Test
+    @Disabled("TODO: Implement")
     public void testBcEscRefBands() {
         // TODO
     }
@@ -351,6 +363,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcFieldRefBand() throws IOException, Pack200Exception {
         byte[] bytes = { (byte) 178, (byte) 179, (byte) 180,
                 (byte) 181, (byte) 255, 8, 8, 8, 8 }; // bc_fieldref band
@@ -367,6 +380,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcFloatRefBand() throws IOException, Pack200Exception {
         byte[] bytes = { (byte) 235, (byte) 238, (byte) 255, 8, 8 }; // bc_floatref
         // band
@@ -383,6 +397,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcIMethodRefBand() throws IOException, Pack200Exception {
         byte[] bytes = { (byte) 185, (byte) 255, 8 }; // bc_imethodref
         // band
@@ -399,11 +414,9 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
+    @Disabled("TODO: Need to fix this testcase so it has enough data to pass.")
     public void testBcInitRefRefBand() throws IOException, Pack200Exception {
-        // TODO: Need to fix this testcase so it has enough data to pass.
-        if (true) {
-            return;
-        }
         byte[] bytes = { (byte) 230, (byte) 231, (byte) 232,
                 (byte) 255, 8, 8, 8 }; // bc_initrefref band
         InputStream in = new ByteArrayInputStream(bytes);
@@ -419,6 +432,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcIntRefBand() throws IOException, Pack200Exception {
         byte[] bytes = { (byte) 234, (byte) 237, (byte) 255, 8, 8 }; // bc_intref
         // band
@@ -435,6 +449,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcLabelBand() throws IOException, Pack200Exception {
         byte[] bytes = { (byte) 159, (byte) 160, (byte) 161,
                 (byte) 162, (byte) 163, (byte) 164, (byte) 165, (byte) 166,
@@ -466,6 +481,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcLocalBand() throws IOException, Pack200Exception {
         byte[] bytes = { 21, 22, 23, 24, 25, 54, 55, 56, 57, 58,
                 (byte) 169, (byte) 255, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 }; // bc_local
@@ -482,6 +498,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcLongRefBand() throws IOException, Pack200Exception {
         byte[] bytes = { 20, (byte) 255, 8 }; // bc_longref band
         InputStream in = new ByteArrayInputStream(bytes);
@@ -497,6 +514,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcMethodRefBand() throws IOException, Pack200Exception {
         byte[] bytes = { (byte) 182, (byte) 183, (byte) 184,
                 (byte) 255, 8, 8, 8 }; // bc_methodref band
@@ -513,6 +531,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcShortBand() throws IOException, Pack200Exception {
         // TODO: Need to fix this testcase so it has enough data to pass.
         byte[] bytes = { 17, (byte) 196, (byte) 132, (byte) 255, 8,
@@ -531,6 +550,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcStringRefBand() throws IOException, Pack200Exception {
         byte[] bytes = { 18, 19, (byte) 255, 8, 8 }; // bc_stringref
         // band
@@ -547,6 +567,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcSuperFieldBand() throws IOException, Pack200Exception {
         byte[] bytes = { (byte) 216, (byte) 217, (byte) 218,
                 (byte) 219, (byte) 223, (byte) 224, (byte) 225, (byte) 226,
@@ -564,11 +585,9 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
+    @Disabled("TODO: Need to fix this testcase so it has enough data to pass.")
     public void testBcSuperMethodBand() throws IOException, Pack200Exception {
-        // TODO: Need to fix this testcase so it has enough data to pass.
-        if (true) {
-            return;
-        }
         byte[] bytes = { (byte) 220, (byte) 221, (byte) 222,
                 (byte) 227, (byte) 228, (byte) 229, (byte) 255, 8, 8, 8, 8, 8,
                 8 }; // bc_supermethod band
@@ -585,6 +604,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcThisFieldBand() throws IOException, Pack200Exception {
         byte[] bytes = { (byte) 202, (byte) 203, (byte) 204,
                 (byte) 205, (byte) 209, (byte) 210, (byte) 211, (byte) 212,
@@ -602,6 +622,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws Pack200Exception
      * @throws IOException
      */
+    @Test
     public void testBcThisMethodBand() throws IOException, Pack200Exception {
         byte[] bytes = { (byte) 206, (byte) 207, (byte) 208,
                 (byte) 213, (byte) 214, (byte) 215, (byte) 255, 8, 8, 8, 8, 8,
@@ -619,6 +640,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws IOException
      * @throws Pack200Exception
      */
+    @Test
     public void testMultipleClassesSimple() throws IOException,
             Pack200Exception {
         numClasses = 2;
@@ -640,6 +662,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws IOException
      * @throws Pack200Exception
      */
+    @Test
     public void testMultipleMethodsSimple() throws IOException,
             Pack200Exception {
         numClasses = 2;
@@ -662,6 +685,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws IOException
      * @throws Pack200Exception
      */
+    @Test
     public void testSimple() throws IOException, Pack200Exception {
         byte[] bytes = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
                 13, 14, 15, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
@@ -684,6 +708,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
                 bcBands.getMethodByteCodePacked()[0][0].length);
     }
 
+    @Test
     public void testWideForms() throws IOException, Pack200Exception {
         byte[] bytes = { (byte) 196, (byte) 54, // wide istore
                 (byte) 196, (byte) 132, // wide iinc

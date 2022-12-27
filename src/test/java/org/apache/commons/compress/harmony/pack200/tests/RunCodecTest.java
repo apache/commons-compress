@@ -16,20 +16,27 @@
  */
 package org.apache.commons.compress.harmony.pack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.ByteArrayInputStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PopulationCodec;
 import org.apache.commons.compress.harmony.pack200.RunCodec;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Test for RunCodec
  */
-public class RunCodecTest extends TestCase {
+public class RunCodecTest {
 
+    @Test
     public void testDecode() throws Exception {
         RunCodec runCodec = new RunCodec(1, Codec.UNSIGNED5, Codec.BYTE1);
         ByteArrayInputStream bais = new ByteArrayInputStream(new byte[] {
@@ -47,6 +54,7 @@ public class RunCodecTest extends TestCase {
         assertEquals(0, bais.available());
     }
 
+    @Test
     public void testDecodeInts() throws Exception {
         int[] band = { 1, -2, -3, 1000, 55, 5, 10, 20 };
         // first 5 of band to be encoded with DELTA5
@@ -65,21 +73,15 @@ public class RunCodecTest extends TestCase {
         }
     }
 
+    @Test
     public void testEncodeSingleValue() {
-        try {
-            new RunCodec(10, Codec.SIGNED5, Codec.UDELTA5).encode(5);
-            fail("Should not allow a single value to be encoded as we don't know which codec to use");
-        } catch (Pack200Exception e) {
-            // pass
-        }
-        try {
-            new RunCodec(10, Codec.SIGNED5, Codec.UDELTA5).encode(5, 8);
-            fail("Should not allow a single value to be encoded as we don't know which codec to use");
-        } catch (Pack200Exception e) {
-            // pass
-        }
+        assertThrows(Pack200Exception.class, () -> new RunCodec(10, Codec.SIGNED5, Codec.UDELTA5).encode(5),
+                "Should not allow a single value to be encoded as we don't know which codec to use");
+        assertThrows(Pack200Exception.class, () -> new RunCodec(10, Codec.SIGNED5, Codec.UDELTA5).encode(5, 8),
+                "Should not allow a single value to be encoded as we don't know which codec to use");
     }
 
+    @Test
     public void testNestedPopulationCodec() throws Exception {
         int[] band = { 11, 12, 33, 4000, -555, 5, 10, 20, 10, 3, 20,
                 20, 20, 10, 10, 999, 20, 789, 10, 10, 355, 12345 };
@@ -105,6 +107,7 @@ public class RunCodecTest extends TestCase {
         }
     }
 
+    @Test
     public void testNestedRunCodec() throws Exception {
         int[] band = { 1, 2, 3, 10, 20, 30, 100, 200, 300 };
         // first 3 of band to be encoded with UDELTA5
@@ -128,33 +131,22 @@ public class RunCodecTest extends TestCase {
         }
     }
 
-    public void testRunCodec() {
-        try {
-            new RunCodec(0, Codec.SIGNED5, Codec.UDELTA5);
-            fail("Should not allow a k value of 0");
-        } catch (Pack200Exception e) {
-            // pass
-        }
-        try {
-            new RunCodec(10, null, Codec.UDELTA5);
-            fail("Should not allow a null codec");
-        } catch (Pack200Exception e) {
-            // pass
-        }
-        try {
-            new RunCodec(10, Codec.UDELTA5, null);
-            fail("Should not allow a null codec");
-        } catch (Pack200Exception e) {
-            // pass
-        }
-        try {
-            new RunCodec(10, null, null);
-            fail("Should not allow a null codec");
-        } catch (Pack200Exception e) {
-            // pass
-        }
+    static Stream<Arguments> runCodec() {
+        return Stream.of(
+                Arguments.of(0, Codec.SIGNED5, Codec.UDELTA5, "Should not allow a k value of 0"),
+                Arguments.of(10, null, Codec.UDELTA5, "Should not allow a null codec"),
+                Arguments.of(10, Codec.UDELTA5, null, "Should not allow a null codec"),
+                Arguments.of(10, null, null, "Should not allow a null codec")
+        );
     }
 
+    @ParameterizedTest
+    @MethodSource("runCodec")
+    public void testRunCodec(final int k, final Codec aCodec, final Codec bCodec, final String failureMessage) {
+        assertThrows(Pack200Exception.class, () -> new RunCodec(k, aCodec, bCodec), failureMessage);
+    }
+
+    @Test
     public void testToString() throws Pack200Exception {
         RunCodec runCodec = new RunCodec(3, Codec.UNSIGNED5, Codec.BYTE1);
         assertEquals(

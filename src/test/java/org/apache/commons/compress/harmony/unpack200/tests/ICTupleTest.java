@@ -16,49 +16,53 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.commons.compress.harmony.unpack200.IcTuple;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-public class ICTupleTest extends TestCase {
+import java.util.stream.Stream;
 
-    public void testExplicitClassTupleParsing() {
-        IcTuple tuple = new IcTuple("Foo$$2$Local", IcTuple.NESTED_CLASS_FLAG,
-                null, "$2$Local", -1, -1, -1, -1);
-        assertEquals("$2$Local", tuple.simpleClassName());
-        assertEquals("Foo$$2", tuple.outerClassString());
+public class ICTupleTest {
 
-        tuple = new IcTuple("Red$Herring", IcTuple.NESTED_CLASS_FLAG,
-                "Red$Herring", null, -1, -1, -1, -1);
-        assertEquals("Herring", tuple.simpleClassName());
-        assertEquals("Red$Herring", tuple.outerClassString());
-
-        tuple = new IcTuple("X$1$Q", IcTuple.NESTED_CLASS_FLAG, "X$1", "Q", -1,
-                -1, -1, -1);
-        assertEquals("Q", tuple.simpleClassName());
-        assertEquals("X$1", tuple.outerClassString());
+    static Stream<Arguments> explicit() {
+        return Stream.of(
+                Arguments.of("Foo$$2$Local", null, "$2$Local", "$2$Local", "Foo$$2"),
+                Arguments.of("Red$Herring", "Red$Herring", null, "Herring", "Red$Herring"),
+                Arguments.of("X$1$Q", "X$1", "Q", "Q", "X$1")
+        );
     }
 
-    public void testPredictedClassTupleParsing() {
-        IcTuple tuple = new IcTuple(
-                "orw/SimpleHelloWorld$SimpleHelloWorldInner", 0, null, null,
-                -1, -1, -1, -1);
-        assertEquals("SimpleHelloWorldInner", tuple.simpleClassName());
-        assertEquals("orw/SimpleHelloWorld", tuple.outerClassString());
+    @ParameterizedTest
+    @MethodSource("explicit")
+    public void testExplicitClassTupleParsing(final String c, final String c2, final String n, final String expectedSimpleClassName, final String expectedOuterClass) {
+        IcTuple tuple = new IcTuple(c, IcTuple.NESTED_CLASS_FLAG, c2, n, -1, -1, -1, -1);
+        assertAll(
+                () -> assertEquals(expectedSimpleClassName, tuple.simpleClassName()),
+                () -> assertEquals(expectedOuterClass, tuple.outerClassString())
+        );
+    }
 
-        tuple = new IcTuple("java/util/AbstractList$2$Local", 0, null, null,
-                -1, -1, -1, -1);
-        assertEquals("Local", tuple.simpleClassName());
-        assertEquals("java/util/AbstractList$2", tuple.outerClassString());
+    static Stream<Arguments> predicted() {
+        return Stream.of(
+                Arguments.of("orw/SimpleHelloWorld$SimpleHelloWorldInner", "SimpleHelloWorldInner", "orw/SimpleHelloWorld"),
+                Arguments.of("java/util/AbstractList$2$Local", "Local", "java/util/AbstractList$2"),
+                Arguments.of("java/util/AbstractList#2#Local", "Local", "java/util/AbstractList$2"),
+                Arguments.of("java/util/AbstractList$1", "1", "java/util/AbstractList")
+        );
+    }
 
-        tuple = new IcTuple("java/util/AbstractList#2#Local", 0, null, null,
-                -1, -1, -1, -1);
-        assertEquals("Local", tuple.simpleClassName());
-        assertEquals("java/util/AbstractList$2", tuple.outerClassString());
-
-        tuple = new IcTuple("java/util/AbstractList$1", 0, null, null, -1, -1,
-                -1, -1);
-        assertEquals("1", tuple.simpleClassName());
-        assertEquals("java/util/AbstractList", tuple.outerClassString());
+    @ParameterizedTest
+    @MethodSource("predicted")
+    public void testPredictedClassTupleParsing(final String c, final String expectedSimpleClass, final String expectedOuterClass) {
+        IcTuple tuple = new IcTuple(c, 0, null, null, -1, -1, -1, -1);
+        assertAll(
+                () -> assertEquals(expectedSimpleClass, tuple.simpleClassName()),
+                () -> assertEquals(expectedOuterClass, tuple.outerClassString())
+        );
     }
 }

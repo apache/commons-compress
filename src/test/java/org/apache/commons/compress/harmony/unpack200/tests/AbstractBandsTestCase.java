@@ -16,6 +16,8 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.AttrDefinitionBands;
 import org.apache.commons.compress.harmony.unpack200.AttributeLayoutMap;
@@ -23,12 +25,10 @@ import org.apache.commons.compress.harmony.unpack200.Segment;
 import org.apache.commons.compress.harmony.unpack200.SegmentHeader;
 import org.apache.commons.compress.harmony.unpack200.SegmentOptions;
 
-import junit.framework.TestCase;
-
 /**
  *
  */
-public abstract class AbstractBandsTestCase extends TestCase {
+public abstract class AbstractBandsTestCase {
 
     public class MockAttributeDefinitionBands extends AttrDefinitionBands {
 

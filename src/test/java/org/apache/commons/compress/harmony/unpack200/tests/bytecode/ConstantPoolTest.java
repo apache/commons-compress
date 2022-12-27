@@ -16,23 +16,28 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests.bytecode;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.commons.compress.harmony.unpack200.Segment;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPClass;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPMember;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ClassConstantPool;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class ConstantPoolTest extends TestCase {
+public class ConstantPoolTest {
 
     private ClassConstantPool pool;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         pool = new ClassConstantPool();
     }
 
+    @Test
     public void testDuplicateField() {
         CPMember cp1 = new CPMember(new CPUTF8("name", 1), new CPUTF8("I", 2),
                 0, null);
@@ -46,6 +51,7 @@ public class ConstantPoolTest extends TestCase {
         assertEquals(2, pool.size());
     }
 
+    @Test
     public void testDuplicateUTF8() {
         CPUTF8 u1 = new CPUTF8("thing", 1);
         CPUTF8 u2 = new CPUTF8("thing", 1);
@@ -54,12 +60,14 @@ public class ConstantPoolTest extends TestCase {
         assertEquals(1, pool.size());
     }
 
+    @Test
     public void testEntries() {
         pool.add(new CPClass(new CPUTF8("RandomClass", 1), 10));
         pool.add(new CPClass(new CPUTF8("RandomClass2", 2), 20));
         assertEquals(2, pool.entries().size());
     }
 
+    @Test
     public void testIndex() {
         pool.add(new CPUTF8("OtherThing", 1));
         CPUTF8 u1 = new CPUTF8("thing", 2);

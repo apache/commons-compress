@@ -16,30 +16,32 @@
  */
 package org.apache.commons.compress.harmony.pack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.harmony.pack200.BHSDCodec;
 import org.apache.commons.compress.harmony.pack200.CanonicalCodecFamilies;
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  *
  */
-public class CodecTest extends TestCase {
-
-    private void checkAscendingCardinalities(final BHSDCodec[] family) {
-        for (int i = 1; i < family.length; i++) {
-            BHSDCodec previous = family[i-1];
-            BHSDCodec codec = family[i];
-            assertTrue(codec.largest() >= previous.largest());
-            assertTrue(codec.smallest() <= previous.smallest());
-        }
-    }
+public class CodecTest {
 
     private long decode(final Codec codec, final byte[] data, final long value,
             final long last) throws IOException, Pack200Exception {
@@ -51,20 +53,17 @@ public class CodecTest extends TestCase {
 
     private void decodeFail(final Codec codec, final byte[] data)
             throws IOException, Pack200Exception {
-        try {
-            decode(codec, data, 0, 0);
-            fail("Should have detected an EOFException");
-        } catch (EOFException e) {
-            assertTrue(true);
-        }
+        assertThrowsExactly(EOFException.class, () -> decode(codec, data, 0, 0), "Should have detected an EOFException");
     }
 
+    @Test
     public void testByte1() throws Exception {
         for (int i = 0; i < 255; i++) {
             decode(Codec.BYTE1, new byte[] { (byte) i }, i, 0);
         }
     }
 
+    @Test
     public void testByte1Delta() throws Exception {
         Codec BYTE1D = new BHSDCodec(1, 256, 0, 1);
         long last = 0;
@@ -73,16 +72,14 @@ public class CodecTest extends TestCase {
         }
     }
 
+    @Test
     public void testByte1DeltaException() throws Exception {
         Codec BYTE1D = new BHSDCodec(1, 256, 0, 1);
-        try {
-            BYTE1D.decode(new ByteArrayInputStream(new byte[] { (byte) 1 }));
-            fail("Decoding with a delta stream and not passing a last value should throw exception");
-        } catch (Pack200Exception e) {
-            assertTrue(true);
-        }
+        assertThrows(Pack200Exception.class, () -> BYTE1D.decode(new ByteArrayInputStream(new byte[]{(byte) 1})),
+                "Decoding with a delta stream and not passing a last value should throw an exception");
     }
 
+    @Test
     public void testByte1Signed() throws Exception {
         Codec BYTE1S2 = new BHSDCodec(1, 256, 2);
         decode(BYTE1S2, new byte[] { 0 }, 0, 0);
@@ -99,6 +96,7 @@ public class CodecTest extends TestCase {
         decode(BYTE1S2, new byte[] { 11 }, -3, 0);
     }
 
+    @Test
     public void testCardinality() {
         BHSDCodec byte1 = Codec.BYTE1;
         assertEquals(256, byte1.cardinality());
@@ -155,28 +153,43 @@ public class CodecTest extends TestCase {
         assertFalse(byte2s.encodes(192));
         assertFalse(byte2s.encodes(256));
     }
-    public void testCodecFamilies() {
-        checkAscendingCardinalities(CanonicalCodecFamilies.nonDeltaUnsignedCodecs1);
-        checkAscendingCardinalities(CanonicalCodecFamilies.nonDeltaUnsignedCodecs2);
-        checkAscendingCardinalities(CanonicalCodecFamilies.nonDeltaUnsignedCodecs3);
-        checkAscendingCardinalities(CanonicalCodecFamilies.nonDeltaUnsignedCodecs4);
-        checkAscendingCardinalities(CanonicalCodecFamilies.nonDeltaUnsignedCodecs5);
-        checkAscendingCardinalities(CanonicalCodecFamilies.deltaUnsignedCodecs1);
-        checkAscendingCardinalities(CanonicalCodecFamilies.deltaUnsignedCodecs2);
-        checkAscendingCardinalities(CanonicalCodecFamilies.deltaUnsignedCodecs3);
-        checkAscendingCardinalities(CanonicalCodecFamilies.deltaUnsignedCodecs4);
-        checkAscendingCardinalities(CanonicalCodecFamilies.deltaUnsignedCodecs5);
-        checkAscendingCardinalities(CanonicalCodecFamilies.nonDeltaSignedCodecs1);
-        checkAscendingCardinalities(CanonicalCodecFamilies.nonDeltaSignedCodecs2);
-        checkAscendingCardinalities(CanonicalCodecFamilies.nonDeltaDoubleSignedCodecs1);
-        checkAscendingCardinalities(CanonicalCodecFamilies.deltaSignedCodecs1);
-        checkAscendingCardinalities(CanonicalCodecFamilies.deltaSignedCodecs2);
-        checkAscendingCardinalities(CanonicalCodecFamilies.deltaSignedCodecs3);
-        checkAscendingCardinalities(CanonicalCodecFamilies.deltaSignedCodecs4);
-        checkAscendingCardinalities(CanonicalCodecFamilies.deltaSignedCodecs5);
-        checkAscendingCardinalities(CanonicalCodecFamilies.deltaDoubleSignedCodecs1);
+
+    static Stream<Arguments> codecFamily() {
+        return Stream.of(
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs1),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs2),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs3),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs4),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs5),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs1),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs2),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs3),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs4),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs5),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaSignedCodecs1),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaSignedCodecs2),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaDoubleSignedCodecs1),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs1),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs2),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs3),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs4),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs5),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaDoubleSignedCodecs1)
+        );
     }
 
+    @ParameterizedTest
+    @MethodSource("codecFamily")
+    public void testCodecFamilies(final BHSDCodec[] family) {
+        for (int i = 1; i < family.length; i++) {
+            BHSDCodec previous = family[i-1];
+            BHSDCodec codec = family[i];
+            assertTrue(codec.largest() >= previous.largest());
+            assertTrue(codec.smallest() <= previous.smallest());
+        }
+    }
+
+    @Test
     public void testCodecToString() {
         assertEquals("(1,256)", Codec.BYTE1.toString());
         assertEquals("(3,128)", Codec.CHAR3.toString());
@@ -193,28 +206,31 @@ public class CodecTest extends TestCase {
         assertEquals("(5,64,2,1)", Codec.MDELTA5.toString());
     }
 
-    public void testInvalidCodings() {
-        for (int i = 0; i < 256; i++) {
-            try {
-                new BHSDCodec(1, i);
-                fail("b=1 -> h=256");
-            } catch (IllegalArgumentException e) {
-                assertTrue(true);
-            }
-        }
-        for (int i = 1; i <= 5; i++) {
-            try {
-                new BHSDCodec(i, 256);
-                if (i == 5) {
-                    fail("h=256 -> b!=5");
-                }
-            } catch (IllegalArgumentException e) {
-                assertTrue(true);
-            }
-        }
-
+    static Stream<Arguments> hCodings() {
+        return IntStream.range(0, 256).mapToObj(Arguments::of);
     }
 
+    @ParameterizedTest
+    @MethodSource("hCodings")
+    public void testInvalidHCodings(final int i) {
+        assertThrows(IllegalArgumentException.class, () -> new BHSDCodec(1, i), "b=1 -> h=256");
+    }
+
+    static Stream<Arguments> bCodings(){
+        return IntStream.rangeClosed(1, 5).mapToObj(Arguments::of);
+    }
+
+    @ParameterizedTest
+    @MethodSource("bCodings")
+    public void testBCodings(final int i) {
+        if (i == 5) {
+            assertThrows(IllegalArgumentException.class, () -> new BHSDCodec(i, 256));
+        } else {
+            assertDoesNotThrow(() -> new BHSDCodec(i, 256));
+        }
+    }
+
+    @Test
     public void testUnsigned5() throws Exception {
         decode(Codec.UNSIGNED5, new byte[] { 1 }, 1, 0);
         decode(Codec.UNSIGNED5, new byte[] { (byte) 191 }, 191, 0);
