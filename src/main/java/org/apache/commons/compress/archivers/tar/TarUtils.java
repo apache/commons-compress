@@ -18,12 +18,6 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUMLEN;
-import static org.apache.commons.compress.archivers.tar.TarConstants.CHKSUM_OFFSET;
-import static org.apache.commons.compress.archivers.tar.TarConstants.SPARSE_NUMBYTES_LEN;
-import static org.apache.commons.compress.archivers.tar.TarConstants.SPARSE_OFFSET_LEN;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +25,7 @@ import java.io.UncheckedIOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -801,7 +796,7 @@ public class TarUtils {
                                     throw new IOException("Failed to read Paxheader."
                                        + "Value should end with a newline");
                                 }
-                                final String value = new String(rest, 0, restLen - 1, UTF_8);
+                                final String value = new String(rest, 0, restLen - 1, StandardCharsets.UTF_8);
                                 headers.put(keyword, value);
 
                                 // for 0.0 PAX Headers
@@ -877,8 +872,8 @@ public class TarUtils {
      * @return a parsed sparse struct
      */
     public static TarArchiveStructSparse parseSparse(final byte[] buffer, final int offset) {
-        final long sparseOffset = parseOctalOrBinary(buffer, offset, SPARSE_OFFSET_LEN);
-        final long sparseNumbytes = parseOctalOrBinary(buffer, offset + SPARSE_OFFSET_LEN, SPARSE_NUMBYTES_LEN);
+        final long sparseOffset = parseOctalOrBinary(buffer, offset, TarConstants.SPARSE_OFFSET_LEN);
+        final long sparseNumbytes = parseOctalOrBinary(buffer, offset + TarConstants.SPARSE_OFFSET_LEN, TarConstants.SPARSE_NUMBYTES_LEN);
 
         return new TarArchiveStructSparse(sparseOffset, sparseNumbytes);
     }
@@ -920,7 +915,7 @@ public class TarUtils {
         for (int i = 0; i < entries; i++) {
             try {
                 final TarArchiveStructSparse sparseHeader =
-                    parseSparse(buffer, offset + i * (SPARSE_OFFSET_LEN + SPARSE_NUMBYTES_LEN));
+                    parseSparse(buffer, offset + i * (TarConstants.SPARSE_OFFSET_LEN + TarConstants.SPARSE_NUMBYTES_LEN));
 
                 if (sparseHeader.getOffset() < 0) {
                     throw new IOException("Corrupted TAR archive, sparse entry with negative offset");
@@ -963,13 +958,13 @@ public class TarUtils {
      * @since 1.5
      */
     public static boolean verifyCheckSum(final byte[] header) {
-        final long storedSum = parseOctal(header, CHKSUM_OFFSET, CHKSUMLEN);
+        final long storedSum = parseOctal(header, TarConstants.CHKSUM_OFFSET, TarConstants.CHKSUMLEN);
         long unsignedSum = 0;
         long signedSum = 0;
 
         for (int i = 0; i < header.length; i++) {
             byte b = header[i];
-            if (CHKSUM_OFFSET  <= i && i < CHKSUM_OFFSET + CHKSUMLEN) {
+            if (TarConstants.CHKSUM_OFFSET <= i && i < TarConstants.CHKSUM_OFFSET + TarConstants.CHKSUMLEN) {
                 b = ' ';
             }
             unsignedSum += 0xff & b;
