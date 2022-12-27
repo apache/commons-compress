@@ -17,12 +17,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC_SHORT;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
@@ -180,22 +174,22 @@ public class ZipFile implements Closeable {
      * name, extra fields or comment.
      */
     private static final int CFH_LEN =
-        /* version made by                 */ SHORT
-        /* version needed to extract       */ + SHORT
-        /* general purpose bit flag        */ + SHORT
-        /* compression method              */ + SHORT
-        /* last mod file time              */ + SHORT
-        /* last mod file date              */ + SHORT
-        /* crc-32                          */ + WORD
-        /* compressed size                 */ + WORD
-        /* uncompressed size               */ + WORD
-        /* file name length                 */ + SHORT
-        /* extra field length              */ + SHORT
-        /* file comment length             */ + SHORT
-        /* disk number start               */ + SHORT
-        /* internal file attributes        */ + SHORT
-        /* external file attributes        */ + WORD
-        /* relative offset of local header */ + WORD;
+        /* version made by                 */ ZipConstants.SHORT
+        /* version needed to extract       */ + ZipConstants.SHORT
+        /* general purpose bit flag        */ + ZipConstants.SHORT
+        /* compression method              */ + ZipConstants.SHORT
+        /* last mod file time              */ + ZipConstants.SHORT
+        /* last mod file date              */ + ZipConstants.SHORT
+        /* crc-32                          */ + ZipConstants.WORD
+        /* compressed size                 */ + ZipConstants.WORD
+        /* uncompressed size               */ + ZipConstants.WORD
+        /* file name length                */ + ZipConstants. SHORT
+        /* extra field length              */ + ZipConstants.SHORT
+        /* file comment length             */ + ZipConstants.SHORT
+        /* disk number start               */ + ZipConstants.SHORT
+        /* internal file attributes        */ + ZipConstants.SHORT
+        /* external file attributes        */ + ZipConstants.WORD
+        /* relative offset of local header */ + ZipConstants.WORD;
 
     private static final long CFH_SIG =
         ZipLong.getValue(ZipArchiveOutputStream.CFH_SIG);
@@ -206,26 +200,26 @@ public class ZipFile implements Closeable {
      * comment.
      */
     static final int MIN_EOCD_SIZE =
-        /* end of central dir signature    */ WORD
-        /* number of this disk             */ + SHORT
+        /* end of central dir signature    */ ZipConstants.WORD
+        /* number of this disk             */ + ZipConstants.SHORT
         /* number of the disk with the     */
-        /* start of the central directory  */ + SHORT
+        /* start of the central directory  */ + ZipConstants.SHORT
         /* total number of entries in      */
-        /* the central dir on this disk    */ + SHORT
+        /* the central dir on this disk    */ + ZipConstants.SHORT
         /* total number of entries in      */
-        /* the central dir                 */ + SHORT
-        /* size of the central directory   */ + WORD
+        /* the central dir                 */ + ZipConstants.SHORT
+        /* size of the central directory   */ + ZipConstants.WORD
         /* offset of start of central      */
         /* directory with respect to       */
-        /* the starting disk number        */ + WORD
-        /* zipfile comment length          */ + SHORT;
+        /* the starting disk number        */ + ZipConstants.WORD
+        /* zipfile comment length          */ + ZipConstants.SHORT;
 
     /**
      * Maximum length of the "End of central directory record" with a
      * file comment.
      */
     private static final int MAX_EOCD_SIZE = MIN_EOCD_SIZE
-        /* maximum length of zipfile comment */ + ZIP64_MAGIC_SHORT;
+        /* maximum length of zipfile comment */ + ZipConstants.ZIP64_MAGIC_SHORT;
 
     /**
      * Offset of the field that holds the location of the length of
@@ -234,14 +228,14 @@ public class ZipFile implements Closeable {
      * record".
      */
     private static final int CFD_LENGTH_OFFSET =
-        /* end of central dir signature    */ WORD
-        /* number of this disk             */ + SHORT
+        /* end of central dir signature    */ ZipConstants.WORD
+        /* number of this disk             */ + ZipConstants.SHORT
         /* number of the disk with the     */
-        /* start of the central directory  */ + SHORT
+        /* start of the central directory  */ + ZipConstants.SHORT
         /* total number of entries in      */
-        /* the central dir on this disk    */ + SHORT
+        /* the central dir on this disk    */ + ZipConstants.SHORT
         /* total number of entries in      */
-        /* the central dir                 */ + SHORT;
+        /* the central dir                 */ + ZipConstants.SHORT;
 
     /**
      * Offset of the field that holds the disk number of the first
@@ -250,8 +244,8 @@ public class ZipFile implements Closeable {
      * record".
      */
     private static final int CFD_DISK_OFFSET =
-            /* end of central dir signature    */ WORD
-            /* number of this disk             */ + SHORT;
+            /* end of central dir signature    */ ZipConstants.WORD
+            /* number of this disk             */ + ZipConstants.SHORT;
     /**
      * Offset of the field that holds the location of the first
      * central directory entry inside the "End of central directory
@@ -260,23 +254,23 @@ public class ZipFile implements Closeable {
      */
     private static final int CFD_LOCATOR_RELATIVE_OFFSET =
             /* total number of entries in      */
-            /* the central dir on this disk    */ + SHORT
+            /* the central dir on this disk    */ + ZipConstants.SHORT
             /* total number of entries in      */
-            /* the central dir                 */ + SHORT
-            /* size of the central directory   */ + WORD;
+            /* the central dir                 */ + ZipConstants.SHORT
+            /* size of the central directory   */ + ZipConstants.WORD;
     /**
      * Length of the "Zip64 end of central directory locator" - which
      * should be right in front of the "end of central directory
      * record" if one is present at all.
      */
     private static final int ZIP64_EOCDL_LENGTH =
-        /* zip64 end of central dir locator sig */ WORD
+        /* zip64 end of central dir locator sig */ ZipConstants.WORD
         /* number of the disk with the start    */
         /* start of the zip64 end of            */
-        /* central directory                    */ + WORD
+        /* central directory                    */ + ZipConstants.WORD
         /* relative offset of the zip64         */
-        /* end of central directory record      */ + DWORD
-        /* total number of disks                */ + WORD;
+        /* end of central directory record      */ + ZipConstants.DWORD
+        /* total number of disks                */ + ZipConstants.WORD;
     /**
      * Offset of the field that holds the location of the "Zip64 end
      * of central directory record" inside the "Zip64 end of central
@@ -284,10 +278,10 @@ public class ZipFile implements Closeable {
      * central directory locator".
      */
     private static final int ZIP64_EOCDL_LOCATOR_OFFSET =
-        /* zip64 end of central dir locator sig */ WORD
+        /* zip64 end of central dir locator sig */ ZipConstants.WORD
         /* number of the disk with the start    */
         /* start of the zip64 end of            */
-        /* central directory                    */ + WORD;
+        /* central directory                    */ + ZipConstants.WORD;
     /**
      * Offset of the field that holds the location of the first
      * central directory entry inside the "Zip64 end of central
@@ -296,19 +290,19 @@ public class ZipFile implements Closeable {
      */
     private static final int ZIP64_EOCD_CFD_LOCATOR_OFFSET =
         /* zip64 end of central dir        */
-        /* signature                       */ WORD
+        /* signature                       */ ZipConstants.WORD
         /* size of zip64 end of central    */
-        /* directory record                */ + DWORD
-        /* version made by                 */ + SHORT
-        /* version needed to extract       */ + SHORT
-        /* number of this disk             */ + WORD
+        /* directory record                */ + ZipConstants.DWORD
+        /* version made by                 */ + ZipConstants.SHORT
+        /* version needed to extract       */ + ZipConstants.SHORT
+        /* number of this disk             */ + ZipConstants.WORD
         /* number of the disk with the     */
-        /* start of the central directory  */ + WORD
+        /* start of the central directory  */ + ZipConstants.WORD
         /* total number of entries in the  */
-        /* central directory on this disk  */ + DWORD
+        /* central directory on this disk  */ + ZipConstants.DWORD
         /* total number of entries in the  */
-        /* central directory               */ + DWORD
-        /* size of the central directory   */ + DWORD;
+        /* central directory               */ + ZipConstants.DWORD
+        /* size of the central directory   */ + ZipConstants.DWORD;
     /**
      * Offset of the field that holds the disk number of the first
      * central directory entry inside the "Zip64 end of central
@@ -317,12 +311,12 @@ public class ZipFile implements Closeable {
      */
     private static final int ZIP64_EOCD_CFD_DISK_OFFSET =
             /* zip64 end of central dir        */
-            /* signature                       */ WORD
+            /* signature                       */ ZipConstants.WORD
             /* size of zip64 end of central    */
-            /* directory record                */ + DWORD
-            /* version made by                 */ + SHORT
-            /* version needed to extract       */ + SHORT
-            /* number of this disk             */ + WORD;
+            /* directory record                */ + ZipConstants.DWORD
+            /* version made by                 */ + ZipConstants.SHORT
+            /* version needed to extract       */ + ZipConstants.SHORT
+            /* number of this disk             */ + ZipConstants.WORD;
     /**
      * Offset of the field that holds the location of the first
      * central directory entry inside the "Zip64 end of central
@@ -331,24 +325,24 @@ public class ZipFile implements Closeable {
      */
     private static final int ZIP64_EOCD_CFD_LOCATOR_RELATIVE_OFFSET =
             /* total number of entries in the  */
-            /* central directory on this disk  */ DWORD
+            /* central directory on this disk  */ ZipConstants.DWORD
             /* total number of entries in the  */
-            /* central directory               */ + DWORD
-            /* size of the central directory   */ + DWORD;
+            /* central directory               */ + ZipConstants.DWORD
+            /* size of the central directory   */ + ZipConstants.DWORD;
     /**
      * Number of bytes in local file header up to the &quot;length of
      * file name&quot; entry.
      */
     private static final long LFH_OFFSET_FOR_FILENAME_LENGTH =
-        /* local file header signature     */ WORD
-        /* version needed to extract       */ + SHORT
-        /* general purpose bit flag        */ + SHORT
-        /* compression method              */ + SHORT
-        /* last mod file time              */ + SHORT
-        /* last mod file date              */ + SHORT
-        /* crc-32                          */ + WORD
-        /* compressed size                 */ + WORD
-        /* uncompressed size               */ + (long) WORD;
+        /* local file header signature     */ ZipConstants.WORD
+        /* version needed to extract       */ + ZipConstants.SHORT
+        /* general purpose bit flag        */ + ZipConstants.SHORT
+        /* compression method              */ + ZipConstants.SHORT
+        /* last mod file time              */ + ZipConstants.SHORT
+        /* last mod file date              */ + ZipConstants.SHORT
+        /* crc-32                          */ + ZipConstants.WORD
+        /* compressed size                 */ + ZipConstants.WORD
+        /* uncompressed size               */ + (long) ZipConstants.WORD;
 
     /**
      * close a zipfile quietly; throw no io fault, do nothing
@@ -410,13 +404,13 @@ public class ZipFile implements Closeable {
     private final boolean isSplitZipArchive;
 
     // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
-    private final byte[] dwordBuf = new byte[DWORD];
+    private final byte[] dwordBuf = new byte[ZipConstants.DWORD];
 
-    private final byte[] wordBuf = new byte[WORD];
+    private final byte[] wordBuf = new byte[ZipConstants.WORD];
 
     private final byte[] cfhBuf = new byte[CFH_LEN];
 
-    private final byte[] shortBuf = new byte[SHORT];
+    private final byte[] shortBuf = new byte[ZipConstants.SHORT];
 
     private final ByteBuffer dwordBbuf = ByteBuffer.wrap(dwordBuf);
 
@@ -1123,7 +1117,7 @@ public class ZipFile implements Closeable {
         if (!found) {
             // not a ZIP64 archive
             if (searchedForZip64EOCD) {
-                skipBytes(ZIP64_EOCDL_LENGTH - WORD);
+                skipBytes(ZIP64_EOCDL_LENGTH - ZipConstants.WORD);
             }
             positionAtCentralDirectory32();
         } else {
@@ -1195,7 +1189,7 @@ public class ZipFile implements Closeable {
                 .position(diskNumberOfEOCD, relativeOffsetOfEOCD);
         } else {
             skipBytes(ZIP64_EOCDL_LOCATOR_OFFSET
-                    - WORD /* signature has already been read */);
+                    - ZipConstants.WORD /* signature has already been read */);
             dwordBbuf.rewind();
             IOUtils.readFully(archive, dwordBbuf);
             archive.position(ZipEightByteInteger.getLongValue(dwordBuf));
@@ -1210,7 +1204,7 @@ public class ZipFile implements Closeable {
 
         if (isSplitZipArchive) {
             skipBytes(ZIP64_EOCD_CFD_DISK_OFFSET
-                    - WORD /* signature has already been read */);
+                    - ZipConstants.WORD /* signature has already been read */);
             wordBbuf.rewind();
             IOUtils.readFully(archive, wordBbuf);
             centralDirectoryStartDiskNumber = ZipLong.getValue(wordBuf);
@@ -1224,7 +1218,7 @@ public class ZipFile implements Closeable {
                 .position(centralDirectoryStartDiskNumber, centralDirectoryStartRelativeOffset);
         } else {
             skipBytes(ZIP64_EOCD_CFD_LOCATOR_OFFSET
-                    - WORD /* signature has already been read */);
+                    - ZipConstants.WORD /* signature has already been read */);
             dwordBbuf.rewind();
             IOUtils.readFully(archive, dwordBbuf);
             centralDirectoryStartDiskNumber = 0;
@@ -1264,12 +1258,12 @@ public class ZipFile implements Closeable {
         final Entry ze = new Entry();
 
         final int versionMadeBy = ZipShort.getValue(cfhBuf, off);
-        off += SHORT;
+        off += ZipConstants.SHORT;
         ze.setVersionMadeBy(versionMadeBy);
         ze.setPlatform((versionMadeBy >> BYTE_SHIFT) & NIBLET_MASK);
 
         ze.setVersionRequired(ZipShort.getValue(cfhBuf, off));
-        off += SHORT; // version required
+        off += ZipConstants.SHORT; // version required
 
         final GeneralPurposeBit gpFlag = GeneralPurposeBit.parse(cfhBuf, off);
         final boolean hasUTF8Flag = gpFlag.usesUTF8ForNames();
@@ -1281,59 +1275,59 @@ public class ZipFile implements Closeable {
         ze.setGeneralPurposeBit(gpFlag);
         ze.setRawFlag(ZipShort.getValue(cfhBuf, off));
 
-        off += SHORT;
+        off += ZipConstants.SHORT;
 
         //noinspection MagicConstant
         ze.setMethod(ZipShort.getValue(cfhBuf, off));
-        off += SHORT;
+        off += ZipConstants.SHORT;
 
         final long time = ZipUtil.dosToJavaTime(ZipLong.getValue(cfhBuf, off));
         ze.setTime(time);
-        off += WORD;
+        off += ZipConstants.WORD;
 
         ze.setCrc(ZipLong.getValue(cfhBuf, off));
-        off += WORD;
+        off += ZipConstants.WORD;
 
         long size = ZipLong.getValue(cfhBuf, off);
         if (size < 0) {
             throw new IOException("broken archive, entry with negative compressed size");
         }
         ze.setCompressedSize(size);
-        off += WORD;
+        off += ZipConstants.WORD;
 
         size = ZipLong.getValue(cfhBuf, off);
         if (size < 0) {
             throw new IOException("broken archive, entry with negative size");
         }
         ze.setSize(size);
-        off += WORD;
+        off += ZipConstants.WORD;
 
         final int fileNameLen = ZipShort.getValue(cfhBuf, off);
-        off += SHORT;
+        off += ZipConstants.SHORT;
         if (fileNameLen < 0) {
             throw new IOException("broken archive, entry with negative fileNameLen");
         }
 
         final int extraLen = ZipShort.getValue(cfhBuf, off);
-        off += SHORT;
+        off += ZipConstants.SHORT;
         if (extraLen < 0) {
             throw new IOException("broken archive, entry with negative extraLen");
         }
 
         final int commentLen = ZipShort.getValue(cfhBuf, off);
-        off += SHORT;
+        off += ZipConstants.SHORT;
         if (commentLen < 0) {
             throw new IOException("broken archive, entry with negative commentLen");
         }
 
         ze.setDiskNumberStart(ZipShort.getValue(cfhBuf, off));
-        off += SHORT;
+        off += ZipConstants.SHORT;
 
         ze.setInternalAttributes(ZipShort.getValue(cfhBuf, off));
-        off += SHORT;
+        off += ZipConstants.SHORT;
 
         ze.setExternalAttributes(ZipLong.getValue(cfhBuf, off));
-        off += WORD;
+        off += ZipConstants.WORD;
 
         final byte[] fileName = IOUtils.readRange(archive, fileNameLen);
         if (fileName.length < fileNameLen) {
@@ -1450,7 +1444,7 @@ public class ZipFile implements Closeable {
         wordBbuf.get(shortBuf);
         final int extraFieldLen = ZipShort.getValue(shortBuf);
         ze.setDataOffset(offset + LFH_OFFSET_FOR_FILENAME_LENGTH
-                         + SHORT + SHORT + fileNameLen + extraFieldLen);
+                         + ZipConstants.SHORT + ZipConstants.SHORT + fileNameLen + extraFieldLen);
         if (ze.getDataOffset() + ze.getCompressedSize() > centralDirectoryStartOffset) {
             throw new IOException("data for " + ze.getName() + " overlaps with central directory.");
         }
@@ -1479,11 +1473,11 @@ public class ZipFile implements Closeable {
         final Zip64ExtendedInformationExtraField z64 =
             (Zip64ExtendedInformationExtraField) extra;
         if (z64 != null) {
-            final boolean hasUncompressedSize = ze.getSize() == ZIP64_MAGIC;
-            final boolean hasCompressedSize = ze.getCompressedSize() == ZIP64_MAGIC;
+            final boolean hasUncompressedSize = ze.getSize() == ZipConstants.ZIP64_MAGIC;
+            final boolean hasCompressedSize = ze.getCompressedSize() == ZipConstants.ZIP64_MAGIC;
             final boolean hasRelativeHeaderOffset =
-                ze.getLocalHeaderOffset() == ZIP64_MAGIC;
-            final boolean hasDiskStart = ze.getDiskNumberStart() == ZIP64_MAGIC_SHORT;
+                ze.getLocalHeaderOffset() == ZipConstants.ZIP64_MAGIC;
+            final boolean hasDiskStart = ze.getDiskNumberStart() == ZipConstants.ZIP64_MAGIC_SHORT;
             z64.reparseCentralDirectoryData(hasUncompressedSize,
                                             hasCompressedSize,
                                             hasRelativeHeaderOffset,
