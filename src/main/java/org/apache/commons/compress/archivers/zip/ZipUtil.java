@@ -19,7 +19,9 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.file.attribute.FileTime;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -73,16 +75,10 @@ public abstract class ZipUtil {
      *
      * @since 1.23
      */
-    public static final long DOSTIME_BEFORE_1980 = (1 << 21) | (1 << 16); // 0x210000
+    private static final long DOSTIME_BEFORE_1980 = (1 << 21) | (1 << 16); // 0x210000
 
     /**
-     * DOS time constant for representing timestamps before 1980, as a byte array.
-     * Smallest date/time ZIP can handle.
-     */
-    private static final byte[] DOSTIME_BEFORE_1980_BYTES = ZipLong.getBytes(DOSTIME_BEFORE_1980);
-
-    /**
-     * Approximately 128 years, in milliseconds (ignoring leap years etc).
+     * Approximately 128 years, in milliseconds (ignoring leap years, etc.).
      *
      * <p>
      * This establish an approximate high-bound value for DOS times in
@@ -104,19 +100,17 @@ public abstract class ZipUtil {
      *
      * @since 1.23
      */
-    public static final long UPPER_DOSTIME_BOUND = 128L * 365 * 24 * 60 * 60 * 1000;
+    private static final long UPPER_DOSTIME_BOUND = 128L * 365 * 24 * 60 * 60 * 1000;
 
     /**
      * Checks if a given time exceeds the boundaries of a DOS time
      *
-     * @param fileTime the FileTime to be checked
-     * @return true if the FileTime exceeds the boundaries of a DOS time, false otherwise
+     * @param millis time in milliseconds since epoch
+     * @return true if the time exceeds the boundaries of a DOS time, false otherwise
      * @since 1.23
      */
-    public static boolean exceedsDosTime(final FileTime fileTime) {
-        final long millis = fileTime.toMillis();
-        final long dosTime = ZipLong.getValue(toDosTime(millis));
-        return dosTime == DOSTIME_BEFORE_1980 || millis > UPPER_DOSTIME_BOUND;
+    public static boolean exceedsDosTime(final long millis) {
+        return millis > UPPER_DOSTIME_BOUND || javaToDosTime(millis) == DOSTIME_BEFORE_1980;
     }
 
     /**
@@ -201,6 +195,10 @@ public abstract class ZipUtil {
      * @return converted time
      */
     public static long dosToJavaTime(final long dosTime) {
+        return dosToJavaDate(dosTime).getTime();
+    }
+
+    private static Date dosToJavaDate(final long dosTime) {
         final Calendar cal = Calendar.getInstance();
         // CheckStyle:MagicNumberCheck OFF - no point
         cal.set(Calendar.YEAR, (int) ((dosTime >> 25) & 0x7f) + 1980);
@@ -211,7 +209,7 @@ public abstract class ZipUtil {
         cal.set(Calendar.SECOND, (int) (dosTime << 1) & 0x3e);
         cal.set(Calendar.MILLISECOND, 0);
         // CheckStyle:MagicNumberCheck ON
-        return cal.getTime().getTime();
+        return cal.getTime();
     }
 
     /**
@@ -222,7 +220,7 @@ public abstract class ZipUtil {
      */
     public static Date fromDosTime(final ZipLong zipDosTime) {
         final long dosTime = zipDosTime.getValue();
-        return new Date(dosToJavaTime(dosTime));
+        return dosToJavaDate(dosTime);
     }
 
     /**
@@ -369,22 +367,23 @@ public abstract class ZipUtil {
             || entry.getMethod() == ZipMethod.BZIP2.getCode();
     }
 
-    static void toDosTime(final Calendar c, final long t, final byte[] buf, final int offset) {
-        c.setTimeInMillis(t);
-
-        final int year = c.get(Calendar.YEAR);
-        if (year < 1980) {
-            copy(DOSTIME_BEFORE_1980_BYTES, buf, offset); // stop callers from changing the array
-            return;
+    // version with integer overflow fixed - see https://bugs.openjdk.org/browse/JDK-8130914
+    private static long javaToDosTime(final long t) {
+        final LocalDateTime ldt = javaEpochToLocalDateTime(t);
+        if (ldt.getYear() < 1980) {
+            return DOSTIME_BEFORE_1980;
         }
-        final int month = c.get(Calendar.MONTH) + 1;
-        final long value =  ((year - 1980) << 25)
-                |         (month << 21)
-                |         (c.get(Calendar.DAY_OF_MONTH) << 16)
-                |         (c.get(Calendar.HOUR_OF_DAY) << 11)
-                |         (c.get(Calendar.MINUTE) << 5)
-                |         (c.get(Calendar.SECOND) >> 1);
-        ZipLong.putLong(value, buf, offset);
+        return ((ldt.getYear() - 1980) << 25
+                | ldt.getMonthValue() << 21
+                | ldt.getDayOfMonth() << 16
+                | ldt.getHour() << 11
+                | ldt.getMinute() << 5
+                | ldt.getSecond() >> 1) & 0xffffffffL;
+    }
+
+    private static LocalDateTime javaEpochToLocalDateTime(final long time) {
+        final Instant instant = Instant.ofEpochMilli(time);
+        return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
     }
 
 
@@ -421,7 +420,7 @@ public abstract class ZipUtil {
      *         must be non-negative and no larger than {@code buf.length-4}
      */
     public static void toDosTime(final long t, final byte[] buf, final int offset) {
-        toDosTime(Calendar.getInstance(), t, buf, offset);
+        ZipLong.putLong(javaToDosTime(t), buf, offset);
     }
 
     /**

@@ -46,9 +46,6 @@ public final class TimeUtils {
      */
     static final long WINDOWS_EPOCH_OFFSET = -116444736000000000L;
 
-    /** The upper bound of the 32-bit unix time, the "year 2038 problem" */
-    public static final long UPPER_UNIXTIME_BOUND = 0x7fffffff;
-
     /**
      * Converts "standard UNIX time" (in seconds, UTC/GMT) to {@link FileTime}.
      *
@@ -70,14 +67,39 @@ public final class TimeUtils {
     }
 
     /**
-     * Checks whether a FileTime exceeds the maximum for the "standard UNIX time".
+     * Converts Java time (milliseconds since Epoch) to "standard UNIX time".
+     *
+     * @param time the original Java time
+     * @return the UNIX timestamp
+     */
+    public static long javaTimeToUnixTime(final long time) {
+        return time / 1000L;
+    }
+
+    /**
+     * Checks whether a FileTime exceeds the minimum or maximum for the "standard UNIX time".
      * If the FileTime is null, this method always returns false.
      *
      * @param time the FileTime to evaluate, can be null
-     * @return true if the time exceeds the maximum UNIX time, false otherwise
+     * @return true if the time exceeds the minimum or maximum UNIX time, false otherwise
      */
     public static boolean exceedsUnixTime(final FileTime time) {
-        return time != null && fileTimeToUnixTime(time) > UPPER_UNIXTIME_BOUND;
+        if (time == null) {
+            return false;
+        }
+        final long fileTimeToUnixTime = fileTimeToUnixTime(time);
+        return exceedsUnixTime(fileTimeToUnixTime);
+    }
+
+    /**
+     * Checks whether a given number of seconds (since Epoch) exceeds the minimum or
+     * maximum for the "standard UNIX time".
+     *
+     * @param seconds the UNIX seconds to evaluate
+     * @return true if the time exceeds the minimum or maximum UNIX time, false otherwise
+     */
+    public static boolean exceedsUnixTime(final long seconds) {
+        return seconds < Integer.MIN_VALUE || seconds > Integer.MAX_VALUE;
     }
 
     /**
@@ -139,7 +161,17 @@ public final class TimeUtils {
      * @return the NTFS time
      */
     public static long toNtfsTime(final Date date) {
-        final long javaHundredNanos = date.getTime() * HUNDRED_NANOS_PER_MILLISECOND;
+        return toNtfsTime(date.getTime());
+    }
+
+    /**
+     * Converts Java time (milliseconds since Epoch) to NTFS time.
+     *
+     * @param time the Java time
+     * @return the NTFS time
+     */
+    public static long toNtfsTime(final long time) {
+        final long javaHundredNanos = time * HUNDRED_NANOS_PER_MILLISECOND;
         return Math.subtractExact(javaHundredNanos, WINDOWS_EPOCH_OFFSET);
     }
 

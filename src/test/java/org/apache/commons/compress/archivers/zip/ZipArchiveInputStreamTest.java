@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -103,14 +104,14 @@ public class ZipArchiveInputStreamTest {
             entryA.setMethod(ZipEntry.STORED);
             entryA.setSize(4);
             entryA.setCrc(0xb63cfbcdL);
+            // Ensure we won't write extra fields. They are not compatible with the manual edits below.
+            entryA.setTime(Instant.parse("2022-12-26T17:01:00Z").toEpochMilli());
             zo.putArchiveEntry(entryA);
             zo.write(new byte[] { 1, 2, 3, 4 });
             zo.closeArchiveEntry();
             zo.close();
 
             final byte[] zipContent = byteArrayOutputStream.toByteArray();
-            final byte[] old = Arrays.copyOf(zipContent, zipContent.length);
-
             final byte[] zipContentWithDataDescriptor = new byte[zipContent.length + 12];
             System.arraycopy(zipContent, 0, zipContentWithDataDescriptor, 0, 37);
             // modify the general purpose bit flag

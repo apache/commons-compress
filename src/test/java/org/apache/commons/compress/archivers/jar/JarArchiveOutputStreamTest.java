@@ -25,9 +25,13 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.Instant;
 
 import org.apache.commons.compress.AbstractTestCase;
-import org.apache.commons.compress.archivers.zip.*;
+import org.apache.commons.compress.archivers.zip.JarMarker;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipExtraField;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.junit.jupiter.api.Test;
 
 public class JarArchiveOutputStreamTest {
@@ -41,9 +45,15 @@ public class JarArchiveOutputStreamTest {
         try {
 
             out = new JarArchiveOutputStream(Files.newOutputStream(testArchive.toPath()));
-            out.putArchiveEntry(new ZipArchiveEntry("foo/"));
+            ZipArchiveEntry ze1 = new ZipArchiveEntry("foo/");
+            // Ensure we won't accidentally add an Extra field.
+            ze1.setTime(Instant.parse("2022-12-27T12:10:23Z").toEpochMilli());
+            out.putArchiveEntry(ze1);
             out.closeArchiveEntry();
-            out.putArchiveEntry(new ZipArchiveEntry("bar/"));
+            ZipArchiveEntry ze2 = new ZipArchiveEntry("bar/");
+            // Ensure we won't accidentally add an Extra field.
+            ze2.setTime(Instant.parse("2022-12-28T02:56:01Z").toEpochMilli());
+            out.putArchiveEntry(ze2);
             out.closeArchiveEntry();
             out.finish();
             out.close();

@@ -68,6 +68,14 @@ import org.apache.commons.compress.utils.TimeUtils;
  * @NotThreadSafe
  */
 public class X000A_NTFS implements ZipExtraField {
+
+    /**
+     * The header ID for this extra field.
+     *
+     * @since 1.23
+     */
+    public static final ZipShort HEADER_ID = new ZipShort(0x000a);
+
     private static final ZipShort TIME_ATTR_TAG = new ZipShort(0x0001);
     private static final ZipShort TIME_ATTR_SIZE = new ZipShort(3 * 8);
 
@@ -83,6 +91,7 @@ public class X000A_NTFS implements ZipExtraField {
         }
         return new ZipEightByteInteger(TimeUtils.toNtfsTime(time));
     }
+
     private static Date zipToDate(final ZipEightByteInteger z) {
         if (z == null || ZipEightByteInteger.ZERO.equals(z)) {
             return null;
@@ -96,12 +105,12 @@ public class X000A_NTFS implements ZipExtraField {
         }
         return TimeUtils.ntfsTimeToFileTime(z.getLongValue());
     }
-
     private ZipEightByteInteger modifyTime = ZipEightByteInteger.ZERO;
 
     private ZipEightByteInteger accessTime = ZipEightByteInteger.ZERO;
 
     private ZipEightByteInteger createTime = ZipEightByteInteger.ZERO;
+
 
     @Override
     public boolean equals(final Object o) {
@@ -114,13 +123,6 @@ public class X000A_NTFS implements ZipExtraField {
         }
         return false;
     }
-
-    /**
-     * The header ID for this extra field.
-     *
-     * @since 1.23
-     */
-    public static final ZipShort HEADER_ID = new ZipShort(0x000a);
 
     /**
      * Gets the access time as a {@link FileTime}

@@ -25,7 +25,9 @@ import static org.apache.commons.compress.utils.TimeUtils.toDate;
 import static org.apache.commons.compress.utils.TimeUtils.toFileTime;
 import static org.apache.commons.compress.utils.TimeUtils.toNtfsTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
@@ -183,5 +185,34 @@ public class TimeUtilsTest {
         final FileTime originalTime = FileTime.from(Instant.parse(original));
         final FileTime truncatedTime = FileTime.from(Instant.parse(truncated));
         assertEquals(truncatedTime, TimeUtils.truncateToHundredNanos(originalTime));
+    }
+
+    @Test
+    public void shouldCheckWhetherTimeExceedsUnixTime() {
+        assertFalse(TimeUtils.exceedsUnixTime(null));
+        assertFalse(TimeUtils.exceedsUnixTime(FileTime.from(Instant.parse("2022-12-27T12:45:22Z"))));
+        assertFalse(TimeUtils.exceedsUnixTime(FileTime.from(Instant.parse("2038-01-19T03:14:07Z"))));
+        assertTrue(TimeUtils.exceedsUnixTime(FileTime.from(Instant.parse("2038-01-19T03:14:08Z"))));
+        assertTrue(TimeUtils.exceedsUnixTime(FileTime.from(Instant.parse("2099-06-30T12:31:42Z"))));
+    }
+
+    public static Stream<Arguments> fileTimeToUnixTimeArguments() {
+        return Stream.of(
+                Arguments.of(0L, "1970-01-01T00:00:00Z"),
+                Arguments.of(1672141989L, "2022-12-27T11:53:09Z"),
+                Arguments.of(Integer.MAX_VALUE, "2038-01-19T03:14:07Z")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("fileTimeToUnixTimeArguments")
+    public void shouldConvertFileTimeToUnixTime(final long expectedUnixTime, final String instant) {
+        assertEquals(expectedUnixTime, TimeUtils.fileTimeToUnixTime(FileTime.from(Instant.parse(instant))));
+    }
+
+    @ParameterizedTest
+    @MethodSource("fileTimeToUnixTimeArguments")
+    public void shouldConvertUnixTimeToFileTime(final long unixTime, final String expectedInstant) {
+        assertEquals(Instant.parse(expectedInstant), TimeUtils.unixTimeToFileTime(unixTime).toInstant());
     }
 }
