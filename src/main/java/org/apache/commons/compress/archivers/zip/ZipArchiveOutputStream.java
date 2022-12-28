@@ -912,7 +912,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         final int len = LFH_FILENAME_OFFSET + nameLen + extra.length;
         final byte[] buf = new byte[len];
 
-        System.arraycopy(LFH_SIG,  0, buf, LFH_SIG_OFFSET, ZipConstants.WORD);
+        System.arraycopy(LFH_SIG, 0, buf, LFH_SIG_OFFSET, ZipConstants.WORD);
 
         //store method in local variable to prevent multiple method calls
         final int zipMethod = ze.getMethod();
