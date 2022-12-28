@@ -19,6 +19,7 @@
 package org.apache.commons.compress.archivers.jar;
 
 import java.security.cert.Certificate;
+import java.util.Arrays;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.zip.ZipEntry;
@@ -63,9 +64,7 @@ public class JarArchiveEntry extends ZipArchiveEntry {
     @Deprecated
     public Certificate[] getCertificates() {
         if (certificates != null) { // never true currently // NOSONAR
-            final Certificate[] certs = new Certificate[certificates.length];
-            System.arraycopy(certificates, 0, certs, 0, certs.length);
-            return certs;
+            return Arrays.copyOf(certificates, certificates.length);
         }
         /*
          * Note, the method

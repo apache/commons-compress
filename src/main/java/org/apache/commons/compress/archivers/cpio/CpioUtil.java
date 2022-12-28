@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+import java.util.Arrays;
+
 /**
  * Package private utility class for Cpio
  *
@@ -43,8 +45,7 @@ class CpioUtil {
 
         long ret;
         int pos = 0;
-        final byte[] tmp_number = new byte[number.length];
-        System.arraycopy(number, 0, tmp_number, 0, number.length);
+        final byte[] tmp_number = Arrays.copyOf(number, number.length);
 
         if (!swapHalfWord) {
             byte tmp = 0;

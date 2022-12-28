@@ -106,9 +106,6 @@ public enum SevenZMethod {
     }
 
     byte[] getId() {
-        final int idLength = id.length;
-        final byte[] copy = new byte[idLength];
-        System.arraycopy(id, 0, copy, 0, idLength);
-        return copy;
+        return Arrays.copyOf(id, id.length);
     }
 }

@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.zip;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import java.util.Arrays;
 import java.util.zip.CRC32;
 import java.util.zip.ZipException;
 
@@ -86,8 +87,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         }
         byte[] b = null;
         if (data != null) {
-            b = new byte[data.length];
-            System.arraycopy(data, 0, b, 0, b.length);
+            b = Arrays.copyOf(data, data.length);
         }
         return b;
     }

@@ -27,6 +27,7 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -443,9 +444,7 @@ public class TarFile implements Closeable {
             --length;
         }
         if (length != longNameData.length) {
-            final byte[] l = new byte[length];
-            System.arraycopy(longNameData, 0, l, 0, length);
-            longNameData = l;
+            longNameData = Arrays.copyOf(longNameData, length);
         }
         return longNameData;
     }

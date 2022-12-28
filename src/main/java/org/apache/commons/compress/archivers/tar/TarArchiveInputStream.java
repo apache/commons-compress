@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -409,9 +410,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
             --length;
         }
         if (length != longNameData.length) {
-            final byte[] l = new byte[length];
-            System.arraycopy(longNameData, 0, l, 0, length);
-            longNameData = l;
+            longNameData = Arrays.copyOf(longNameData, length);
         }
         return longNameData;
     }
