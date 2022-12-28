@@ -802,7 +802,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         final int len= CFH_FILENAME_OFFSET + nameLen + extraLength + commentLen;
         final byte[] buf = new byte[len];
 
-        System.arraycopy(CFH_SIG,  0, buf, CFH_SIG_OFFSET, ZipConstants.WORD);
+        System.arraycopy(CFH_SIG, 0, buf, CFH_SIG_OFFSET, ZipConstants.WORD);
 
         // version made by
         // CheckStyle:MagicNumber OFF
