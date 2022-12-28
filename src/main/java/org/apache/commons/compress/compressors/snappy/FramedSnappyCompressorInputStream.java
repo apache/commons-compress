@@ -78,8 +78,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
 
         byte[] shortenedSig = signature;
         if (signature.length > SZ_SIGNATURE.length) {
-            shortenedSig = new byte[SZ_SIGNATURE.length];
-            System.arraycopy(signature, 0, shortenedSig, 0, SZ_SIGNATURE.length);
+            shortenedSig = Arrays.copyOf(signature, SZ_SIGNATURE.length);
         }
 
         return Arrays.equals(shortenedSig, SZ_SIGNATURE);

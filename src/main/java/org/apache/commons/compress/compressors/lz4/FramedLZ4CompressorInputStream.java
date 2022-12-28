@@ -89,8 +89,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
 
         byte[] shortenedSig = signature;
         if (signature.length > LZ4_SIGNATURE.length) {
-            shortenedSig = new byte[LZ4_SIGNATURE.length];
-            System.arraycopy(signature, 0, shortenedSig, 0, LZ4_SIGNATURE.length);
+            shortenedSig = Arrays.copyOf(signature, LZ4_SIGNATURE.length);
         }
 
         return Arrays.equals(shortenedSig, LZ4_SIGNATURE);

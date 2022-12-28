@@ -122,12 +122,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
      * @return The UTF-8 encoded name.
      */
     public byte[] getUnicodeName() {
-        byte[] b = null;
-        if (unicodeName != null) {
-            b = new byte[unicodeName.length];
-            System.arraycopy(unicodeName, 0, b, 0, b.length);
-        }
-        return b;
+        return unicodeName != null ? Arrays.copyOf(unicodeName, unicodeName.length) : null;
     }
 
     /**
@@ -176,9 +171,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
      */
     public void setUnicodeName(final byte[] unicodeName) {
         if (unicodeName != null) {
-            this.unicodeName = new byte[unicodeName.length];
-            System.arraycopy(unicodeName, 0, this.unicodeName, 0,
-                             unicodeName.length);
+            this.unicodeName = Arrays.copyOf(unicodeName, unicodeName.length);
         } else {
             this.unicodeName = null;
         }
