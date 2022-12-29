@@ -19,6 +19,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
@@ -84,8 +85,7 @@ public class LocalVariableTableAttribute extends BCIRenumberedAttribute {
     public void renumber(final List<Integer> byteCodeOffsets) throws Pack200Exception {
         // Remember the unrenumbered start_pcs, since that's used later
         // to calculate end position.
-        final int[] unrenumbered_start_pcs = new int[start_pcs.length];
-        System.arraycopy(start_pcs, 0, unrenumbered_start_pcs, 0, start_pcs.length);
+        final int[] unrenumbered_start_pcs = Arrays.copyOf(start_pcs, start_pcs.length);
 
         // Next renumber start_pcs in place
         super.renumber(byteCodeOffsets);

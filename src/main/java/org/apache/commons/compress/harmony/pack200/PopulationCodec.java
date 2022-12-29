@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.pack200;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 /**
  * A PopulationCodec is a Codec that is well suited to encoding data that shows statistical or repetitive patterns,
@@ -132,8 +133,7 @@ public class PopulationCodec extends Codec {
     }
 
     public byte[] encode(final int[] favoured, final int[] tokens, final int[] unfavoured) throws Pack200Exception {
-        final int[] favoured2 = new int[favoured.length + 1];
-        System.arraycopy(favoured, 0, favoured2, 0, favoured.length);
+        final int[] favoured2 = Arrays.copyOf(favoured, favoured.length + 1);
         favoured2[favoured2.length - 1] = favoured[favoured.length - 1]; // repeat last value;
         final byte[] favouredEncoded = favouredCodec.encode(favoured2);
         final byte[] tokensEncoded = tokenCodec.encode(tokens);

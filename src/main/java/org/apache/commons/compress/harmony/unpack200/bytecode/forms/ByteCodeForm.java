@@ -16,6 +16,7 @@
  */
 package org.apache.commons.compress.harmony.unpack200.bytecode.forms;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -394,9 +395,7 @@ public abstract class ByteCodeForm {
     }
 
     public int[] getRewriteCopy() {
-        final int[] result = new int[rewrite.length];
-        System.arraycopy(rewrite, 0, result, 0, rewrite.length);
-        return result;
+        return Arrays.copyOf(rewrite, rewrite.length);
     }
 
     /**

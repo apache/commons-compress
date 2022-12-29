@@ -19,6 +19,7 @@ package org.apache.commons.compress.harmony.pack200;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,8 +147,7 @@ public class AttributeDefinitionBands extends BandSet {
     }
 
     private int[] addHighIndices(final int[] availableIndices) {
-        final int[] temp = new int[availableIndices.length + 32];
-        System.arraycopy(availableIndices, 0, temp, 0, availableIndices.length);
+        final int[] temp = Arrays.copyOf(availableIndices, availableIndices.length + 32);
         int j = 32;
         for (int i = availableIndices.length; i < temp.length; i++) {
             temp[i] = j;
