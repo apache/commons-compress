@@ -19,11 +19,11 @@
 package org.apache.commons.compress.compressors;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.BufferedInputStream;
@@ -212,12 +212,12 @@ public final class DetectCompressorTestCase {
         for(int i=0; i <tests.length; i++) {
             final TestData test = tests[i];
             final CompressorStreamFactory fac = test.factory;
-            assertNotNull("Test entry "+i, fac);
-            assertEquals("Test entry "+i, test.concat, fac.getDecompressConcatenated());
+            assertNotNull(fac, "Test entry " + i);
+            assertEquals(test.concat, fac.getDecompressConcatenated(), "Test entry " + i);
             final CompressorInputStream in = getStreamFor(test.fileName, fac);
-            assertNotNull("Test entry "+i,in);
+            assertNotNull(in, "Test entry " + i);
             for (final char entry : test.entryNames) {
-                assertEquals("Test entry" + i, entry, in.read());
+                assertEquals(entry, in.read(), "Test entry" + i);
             }
             assertEquals(0, in.available());
             assertEquals(-1, in.read());

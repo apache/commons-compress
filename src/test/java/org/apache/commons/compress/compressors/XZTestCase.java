@@ -18,7 +18,7 @@
  */
 package org.apache.commons.compress.compressors;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.InputStream;

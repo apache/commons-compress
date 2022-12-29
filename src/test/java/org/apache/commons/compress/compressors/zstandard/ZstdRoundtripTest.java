@@ -17,6 +17,8 @@
 
 package org.apache.commons.compress.compressors.zstandard;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,7 +31,6 @@ import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public class ZstdRoundtripTest extends AbstractTestCase {
@@ -57,7 +58,7 @@ public class ZstdRoundtripTest extends AbstractTestCase {
                 CompressorInputStream zis = new CompressorStreamFactory().createCompressorInputStream("zstd", inputStream)) {
             final byte[] expected = Files.readAllBytes(input.toPath());
             final byte[] actual = IOUtils.toByteArray(zis);
-            Assert.assertArrayEquals(expected, actual);
+            assertArrayEquals(expected, actual);
         }
     }
 
@@ -76,7 +77,7 @@ public class ZstdRoundtripTest extends AbstractTestCase {
              ZstdCompressorInputStream zis = new ZstdCompressorInputStream(Files.newInputStream(output.toPath()))) {
             final byte[] expected = IOUtils.toByteArray(is);
             final byte[] actual = IOUtils.toByteArray(zis);
-            Assert.assertArrayEquals(expected, actual);
+            assertArrayEquals(expected, actual);
         }
         // System.err.println(output.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }

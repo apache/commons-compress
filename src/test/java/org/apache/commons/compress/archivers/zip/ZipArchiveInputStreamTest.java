@@ -19,14 +19,14 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -47,7 +47,6 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public class ZipArchiveInputStreamTest {
@@ -503,14 +502,14 @@ public class ZipArchiveInputStreamTest {
              ZipArchiveInputStream zipStream =  new ZipArchiveInputStream((archiveStream))
         ) {
             final ZipArchiveEntry inflatedEntry = zipStream.getNextZipEntry();
-            Assert.assertEquals("inflated.txt", inflatedEntry.getName());
-            Assert.assertEquals(0x0000, inflatedEntry.getLocalHeaderOffset());
-            Assert.assertEquals(0x0046, inflatedEntry.getDataOffset());
+            assertEquals("inflated.txt", inflatedEntry.getName());
+            assertEquals(0x0000, inflatedEntry.getLocalHeaderOffset());
+            assertEquals(0x0046, inflatedEntry.getDataOffset());
             final ZipArchiveEntry storedEntry = zipStream.getNextZipEntry();
-            Assert.assertEquals("stored.txt", storedEntry.getName());
-            Assert.assertEquals(0x5892, storedEntry.getLocalHeaderOffset());
-            Assert.assertEquals(0x58d6, storedEntry.getDataOffset());
-            Assert.assertNull(zipStream.getNextZipEntry());
+            assertEquals("stored.txt", storedEntry.getName());
+            assertEquals(0x5892, storedEntry.getLocalHeaderOffset());
+            assertEquals(0x58d6, storedEntry.getDataOffset());
+            assertNull(zipStream.getNextZipEntry());
         }
     }
 
@@ -632,7 +631,7 @@ public class ZipArchiveInputStreamTest {
         final ZipArchiveInputStream in = new ZipArchiveInputStream(Files.newInputStream(getFile("SHRUNK.ZIP").toPath()));
 
         ZipArchiveEntry entry = in.getNextZipEntry();
-        assertEquals("method", ZipMethod.UNSHRINKING.getCode(), entry.getMethod());
+        assertEquals(ZipMethod.UNSHRINKING.getCode(), entry.getMethod(), "method");
         assertTrue(in.canReadEntryData(entry));
 
         InputStream original = Files.newInputStream(getFile("test1.xml").toPath());
@@ -643,7 +642,7 @@ public class ZipArchiveInputStreamTest {
         }
 
         entry = in.getNextZipEntry();
-        assertEquals("method", ZipMethod.UNSHRINKING.getCode(), entry.getMethod());
+        assertEquals(ZipMethod.UNSHRINKING.getCode(), entry.getMethod(), "method");
         assertTrue(in.canReadEntryData(entry));
 
         original = Files.newInputStream(getFile("test2.xml").toPath());

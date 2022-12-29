@@ -17,7 +17,7 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

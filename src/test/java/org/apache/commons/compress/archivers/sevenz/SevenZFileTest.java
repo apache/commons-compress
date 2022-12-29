@@ -19,15 +19,15 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import static java.nio.charset.StandardCharsets.UTF_16LE;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -509,12 +509,12 @@ public class SevenZFileTest extends AbstractTestCase {
             fail("shouldn't decrypt without a password");
         } catch (final PasswordRequiredException ex) {
             final String msg = ex.getMessage();
-            assertTrue("Should start with whining about being unable to decrypt",
-                       msg.startsWith("Cannot read encrypted content from "));
-            assertTrue("Should finish the sentence properly",
-                       msg.endsWith(" without a password."));
-            assertTrue("Should contain archive's name",
-                       msg.contains("bla.encrypted.7z"));
+            assertTrue(msg.startsWith("Cannot read encrypted content from "),
+                    "Should start with whining about being unable to decrypt");
+            assertTrue(msg.endsWith(" without a password."),
+                    "Should finish the sentence properly");
+            assertTrue(msg.contains("bla.encrypted.7z"),
+                    "Should contain archive's name");
         }
     }
 
@@ -816,7 +816,7 @@ public class SevenZFileTest extends AbstractTestCase {
                     if (entry.hasStream()) {
                         assertTrue(entriesByName.containsKey(entry.getName()));
                         final byte[] content = readFully(archive);
-                        assertArrayEquals("Content mismatch on: " + fileName + "!" + entry.getName(), content, entriesByName.get(entry.getName()));
+                        assertArrayEquals(content, entriesByName.get(entry.getName()), "Content mismatch on: " + fileName + "!" + entry.getName());
                     }
                 }
 

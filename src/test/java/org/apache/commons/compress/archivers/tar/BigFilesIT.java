@@ -18,9 +18,9 @@
 
 package org.apache.commons.compress.archivers.tar;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -53,7 +53,7 @@ public class BigFilesIT extends AbstractTestCase {
                 // too long, just pick a few ones randomly
                 for (int i = 0; i < 100; i++) {
                     final int idx = r.nextInt(readNow);
-                    assertEquals("testing byte " + (read + idx), 0, buf[idx]);
+                    assertEquals(0, buf[idx], "testing byte " + (read + idx));
                 }
                 read += readNow;
             }

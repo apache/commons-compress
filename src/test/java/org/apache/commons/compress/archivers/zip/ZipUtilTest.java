@@ -18,11 +18,11 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigInteger;
 import java.util.Calendar;
@@ -194,12 +194,12 @@ public class ZipUtilTest {
         rTest[4] = new byte[]{4, 3, 2, 1};
         rTest[5] = new byte[]{5, 4, 3, 2, 1};
 
-        assertEquals("test and result arrays are same length", bTest.length, rTest.length);
+        assertEquals(bTest.length, rTest.length, "test and result arrays are same length");
 
         for (int i = 0; i < bTest.length; i++) {
             final byte[] result = ZipUtil.reverse(bTest[i]);
-            assertSame("reverse mutates in-place", bTest[i], result);
-            assertArrayEquals("reverse actually reverses", rTest[i], result);
+            assertSame(bTest[i], result, "reverse mutates in-place");
+            assertArrayEquals(rTest[i], result, "reverse actually reverses");
         }
     }
 

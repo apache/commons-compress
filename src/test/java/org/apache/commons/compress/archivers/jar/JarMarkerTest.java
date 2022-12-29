@@ -18,7 +18,7 @@
  */
 package org.apache.commons.compress.archivers.jar;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.zip.ZipException;
 

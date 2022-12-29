@@ -19,6 +19,10 @@
 package org.apache.commons.compress.archivers.examples;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.BufferedInputStream;
@@ -39,7 +43,6 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -73,18 +76,18 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
 
     private void assertDir(final String expectedName, final ArchiveEntry entry) {
         assertNotNull(entry, () -> expectedName + " does not exists");
-        Assert.assertEquals(expectedName + "/", entry.getName());
-        Assert.assertTrue(expectedName + " is not a directory", entry.isDirectory());
+        assertEquals(expectedName + "/", entry.getName());
+        assertTrue(entry.isDirectory(), expectedName + " is not a directory");
     }
 
     private void assertHelloWorld(final String expectedName, final String suffix, final ArchiveEntry entry, final InputStream is)
         throws IOException {
         assertNotNull(entry, () -> expectedName + " does not exists");
-        Assert.assertEquals(expectedName, entry.getName());
-        Assert.assertFalse(expectedName + " is a directory", entry.isDirectory());
+        assertEquals(expectedName, entry.getName());
+        assertFalse(entry.isDirectory(), expectedName + " is a directory");
         final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
         final byte[] actual = IOUtils.toByteArray(is);
-        Assert.assertArrayEquals(expected, actual);
+        assertArrayEquals(expected, actual);
     }
 
     @ParameterizedTest
@@ -139,7 +142,7 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
             assertDir("a", ais.getNextEntry());
             assertDir("a/b", ais.getNextEntry());
             final ArchiveEntry n = ais.getNextEntry();
-            Assert.assertNotNull(n);
+            assertNotNull(n);
             // File.list may return a/b/c or a/b/d.txt first
             if (n.getName().endsWith("/")) {
                 assertDir("a/b/c", n);

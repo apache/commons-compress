@@ -18,8 +18,9 @@
  */
 package org.apache.commons.compress.compressors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,7 +37,6 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipParameters;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public final class GZipTestCase extends AbstractTestCase {
@@ -49,8 +49,8 @@ public final class GZipTestCase extends AbstractTestCase {
             final GzipCompressorInputStream in =
                     new GzipCompressorInputStream(is);
             IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read(buf));
-            Assert.assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
             in.close();
         }
     }
@@ -62,8 +62,8 @@ public final class GZipTestCase extends AbstractTestCase {
             final GzipCompressorInputStream in =
                     new GzipCompressorInputStream(is);
             IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read());
-            Assert.assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
             in.close();
         }
     }
@@ -144,7 +144,7 @@ public final class GZipTestCase extends AbstractTestCase {
             out.flush();
         }
 
-        assertEquals("extra flags (XFL)", flag, bout.toByteArray()[8]);
+        assertEquals(flag, bout.toByteArray()[8], "extra flags (XFL)");
     }
 
     @Test
@@ -207,7 +207,7 @@ public final class GZipTestCase extends AbstractTestCase {
         final GzipCompressorInputStream in = new GzipCompressorInputStream(new ByteArrayInputStream(bout.toByteArray()));
         final byte[] content2 = IOUtils.toByteArray(in);
 
-        Assert.assertArrayEquals("uncompressed content", content, content2);
+        assertArrayEquals(content, content2, "uncompressed content");
     }
 
     @Test
@@ -233,7 +233,7 @@ public final class GZipTestCase extends AbstractTestCase {
         final GZIPInputStream in = new GZIPInputStream(new ByteArrayInputStream(bout.toByteArray()));
         final byte[] content2 = IOUtils.toByteArray(in);
 
-        Assert.assertArrayEquals("uncompressed content", content, content2);
+        assertArrayEquals(content, content2, "uncompressed content");
     }
 
     @Test

@@ -21,10 +21,10 @@ package org.apache.commons.compress.utils;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -71,7 +71,7 @@ public class FixedLengthBlockOutputStreamTest {
         @Override
         public void write(final byte[] b, final int off, int len) throws IOException {
             checkIsOpen();
-            assertEquals("write size", requiredWriteSize, len);
+            assertEquals(requiredWriteSize, len, "write size");
             if (doPartialWrite) {
                 len--;
             }
@@ -81,7 +81,7 @@ public class FixedLengthBlockOutputStreamTest {
         @Override
         public void write(final int b) throws IOException {
             checkIsOpen();
-            assertEquals("write size", requiredWriteSize, 1);
+            assertEquals(requiredWriteSize, 1, "write size");
             bos.write(b);
         }
     }
@@ -111,7 +111,7 @@ public class FixedLengthBlockOutputStreamTest {
 
         @Override
         public int write(final ByteBuffer src) throws IOException {
-            assertEquals("write size", requiredWriteSize, src.remaining());
+            assertEquals(requiredWriteSize, src.remaining(), "write size");
             if (doPartialWrite) {
                 src.limit(src.limit() - 1);
             }
@@ -127,7 +127,7 @@ public class FixedLengthBlockOutputStreamTest {
         final byte[] actual) {
         assertThat(actual.length, greaterThanOrEqualTo(offset + expected.length));
         for (int i = 0; i < expected.length; i++) {
-            assertEquals(String.format("%s ([%d])", msg, i), expected[i], actual[i + offset]);
+            assertEquals(expected[i], actual[i + offset], String.format("%s ([%d])", msg, i));
         }
     }
 
@@ -161,12 +161,12 @@ public class FixedLengthBlockOutputStreamTest {
             out.write(buf);
         }
         final double v = Math.ceil(msg.length / (double) blockSize) * blockSize;
-        assertEquals("wrong size", (long) v, bos.size());
+        assertEquals((long) v, bos.size(), "wrong size");
         final byte[] output = bos.toByteArray();
         final String l = new String(output, 0, msg.length);
         assertEquals(text, l);
         for (int i = msg.length; i < bos.size(); i++) {
-            assertEquals(String.format("output[%d]", i), 0, output[i]);
+            assertEquals(0, output[i], String.format("output[%d]", i));
 
         }
     }
@@ -187,7 +187,7 @@ public class FixedLengthBlockOutputStreamTest {
         }
         final ByteArrayOutputStream bos = mock.bos;
         final double v = Math.ceil((reps * msg.length) / (double) blockSize) * blockSize;
-        assertEquals("wrong size", (long) v, bos.size());
+        assertEquals((long) v, bos.size(), "wrong size");
         final int strLen = msg.length * reps;
         final byte[] output = bos.toByteArray();
         final String l = new String(output, 0, strLen);
@@ -208,8 +208,7 @@ public class FixedLengthBlockOutputStreamTest {
             fail("Exception for partial write not thrown");
         } catch (final IOException e) {
             final String msg = e.getMessage();
-            assertEquals("exception message",
-                "Failed to write 512 bytes atomically. Only wrote  511", msg);
+            assertEquals("Failed to write 512 bytes atomically. Only wrote  511", msg, "exception message");
         }
 
     }
@@ -251,13 +250,13 @@ public class FixedLengthBlockOutputStreamTest {
         }
         final long expectedDataSize = reps * 4L;
         final long expectedFileSize = (long)Math.ceil(expectedDataSize/(double)blockSize)*blockSize;
-        assertEquals("file size",expectedFileSize, Files.size(tempFile));
+        assertEquals(expectedFileSize, Files.size(tempFile), "file size");
         final DataInputStream din = new DataInputStream(Files.newInputStream(tempFile));
-        for(int i=0;i<reps;i++) {
-            assertEquals("file int",i,din.readInt());
+        for (int i = 0; i < reps; i++) {
+            assertEquals(i, din.readInt(), "file int");
         }
-        for(int i=0;i<expectedFileSize - expectedDataSize;i++) {
-            assertEquals(0,din.read());
+        for (int i = 0; i < expectedFileSize - expectedDataSize; i++) {
+            assertEquals(0, din.read());
         }
         assertEquals(-1,din.read());
     }
@@ -271,7 +270,7 @@ public class FixedLengthBlockOutputStreamTest {
         try (FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(mock, blockSize)) {
 
             out.write(msg);
-            assertEquals("no partial write", (msg.length / blockSize) * blockSize, bos.size());
+            assertEquals((msg.length / blockSize) * blockSize, bos.size(), "no partial write");
         }
         validate(blockSize, msg, bos.toByteArray());
     }
@@ -285,7 +284,7 @@ public class FixedLengthBlockOutputStreamTest {
         final ByteArrayOutputStream bos = mock.bos;
         try (FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(mock, blockSize)) {
             out.write(msg);
-            assertEquals("no partial write", (msg.length / blockSize) * blockSize, bos.size());
+            assertEquals((msg.length / blockSize) * blockSize, bos.size(), "no partial write");
         }
         validate(blockSize, msg, bos.toByteArray());
 
@@ -369,10 +368,10 @@ public class FixedLengthBlockOutputStreamTest {
 
     private void validate(final int blockSize, final byte[] expectedBytes, final byte[] actualBytes) {
         final double v = Math.ceil(expectedBytes.length / (double) blockSize) * blockSize;
-        assertEquals("wrong size", (long) v, actualBytes.length);
+        assertEquals((long) v, actualBytes.length, "wrong size");
         assertContainsAtOffset("output", expectedBytes, 0, actualBytes);
         for (int i = expectedBytes.length; i < actualBytes.length; i++) {
-            assertEquals(String.format("output[%d]", i), 0, actualBytes[i]);
+            assertEquals(0, actualBytes[i], String.format("output[%d]", i));
 
         }
     }

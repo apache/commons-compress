@@ -17,7 +17,9 @@
 
 package org.apache.commons.compress.utils;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,7 +31,6 @@ import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public class IOUtilsTest {
@@ -46,9 +47,9 @@ public class IOUtilsTest {
     public void copyRangeDoesntCopyMoreThanAskedFor() throws IOException {
         try (ByteArrayInputStream in = new ByteArrayInputStream(new byte[] { 1, 2, 3, 4, 5 });
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            Assert.assertEquals(3, IOUtils.copyRange(in, 3, out));
+            assertEquals(3, IOUtils.copyRange(in, 3, out));
             out.close();
-            Assert.assertArrayEquals(new byte[] { 1, 2, 3 }, out.toByteArray());
+            assertArrayEquals(new byte[] { 1, 2, 3 }, out.toByteArray());
         }
     }
 
@@ -56,9 +57,9 @@ public class IOUtilsTest {
     public void copyRangeStopsIfThereIsNothingToCopyAnymore() throws IOException {
         try (ByteArrayInputStream in = new ByteArrayInputStream(new byte[] { 1, 2, 3, 4, 5 });
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            Assert.assertEquals(5, IOUtils.copyRange(in, 10, out));
+            assertEquals(5, IOUtils.copyRange(in, 10, out));
             out.close();
-            Assert.assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, out.toByteArray());
+            assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, out.toByteArray());
         }
     }
 
@@ -81,7 +82,7 @@ public class IOUtilsTest {
             source[i] = i;
         }
         readFully(source, b);
-        Assert.assertArrayEquals(source, b.array());
+        assertArrayEquals(source, b.array());
     }
 
     @Test
@@ -98,10 +99,10 @@ public class IOUtilsTest {
     public void readRangeFromChannelDoesntReadMoreThanAskedFor() throws IOException {
         try (ReadableByteChannel in = new SeekableInMemoryByteChannel(new byte[] { 1, 2, 3, 4, 5 })) {
             final byte[] read = IOUtils.readRange(in, 3);
-            Assert.assertArrayEquals(new byte[] { 1, 2, 3 }, read);
+            assertArrayEquals(new byte[] { 1, 2, 3 }, read);
             final ByteBuffer b = ByteBuffer.allocate(1);
-            Assert.assertEquals(1, in.read(b));
-            Assert.assertArrayEquals(new byte[] { 4 }, b.array());
+            assertEquals(1, in.read(b));
+            assertArrayEquals(new byte[] { 4 }, b.array());
         }
     }
 
@@ -120,7 +121,7 @@ public class IOUtilsTest {
             }
         }) {
             final byte[] read = IOUtils.readRange(in, 5);
-            Assert.assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, read);
+            assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, read);
         }
     }
 
@@ -128,9 +129,9 @@ public class IOUtilsTest {
     public void readRangeFromChannelStopsIfThereIsNothingToReadAnymore() throws IOException {
         try (ReadableByteChannel in = new SeekableInMemoryByteChannel(new byte[] { 1, 2, 3, 4, 5 })) {
             final byte[] read = IOUtils.readRange(in, 10);
-            Assert.assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, read);
+            assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, read);
             final ByteBuffer b = ByteBuffer.allocate(1);
-            Assert.assertEquals(-1, in.read(b));
+            assertEquals(-1, in.read(b));
         }
     }
 
@@ -138,8 +139,8 @@ public class IOUtilsTest {
     public void readRangeFromStreamDoesntReadMoreThanAskedFor() throws IOException {
         try (ByteArrayInputStream in = new ByteArrayInputStream(new byte[] { 1, 2, 3, 4, 5 })) {
             final byte[] read = IOUtils.readRange(in, 3);
-            Assert.assertArrayEquals(new byte[] { 1, 2, 3 }, read);
-            Assert.assertEquals(4, in.read());
+            assertArrayEquals(new byte[] { 1, 2, 3 }, read);
+            assertEquals(4, in.read());
         }
     }
 
@@ -147,8 +148,8 @@ public class IOUtilsTest {
     public void readRangeFromStreamStopsIfThereIsNothingToReadAnymore() throws IOException {
         try (ByteArrayInputStream in = new ByteArrayInputStream(new byte[] { 1, 2, 3, 4, 5 })) {
             final byte[] read = IOUtils.readRange(in, 10);
-            Assert.assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, read);
-            Assert.assertEquals(-1, in.read());
+            assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, read);
+            assertEquals(-1, in.read());
         }
     }
 
@@ -165,8 +166,8 @@ public class IOUtilsTest {
             // Ask for less than the input length, but more than the buffer size
             final int toRead = copyBufSize + 1;
             final byte[] read = IOUtils.readRange(in, toRead);
-            Assert.assertEquals(toRead, read.length);
-            Assert.assertEquals(toRead, in.position());
+            assertEquals(toRead, read.length);
+            assertEquals(toRead, in.position());
         }
     }
 
@@ -175,8 +176,8 @@ public class IOUtilsTest {
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
             });
         final InputStream sut = wrapper.wrap(in);
-        Assert.assertEquals(10, IOUtils.skip(sut, 10));
-        Assert.assertEquals(11, sut.read());
+        assertEquals(10, IOUtils.skip(sut, 10));
+        assertEquals(11, sut.read());
     }
 
     @Test

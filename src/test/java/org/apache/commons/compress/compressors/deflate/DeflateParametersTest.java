@@ -18,9 +18,9 @@
  */
 package org.apache.commons.compress.compressors.deflate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public class DeflateParametersTest {
@@ -29,7 +29,7 @@ public class DeflateParametersTest {
     public void shouldBeAbleToSetCompressionLevel() {
         final DeflateParameters p = new DeflateParameters();
         p.setCompressionLevel(5);
-        Assert.assertEquals(5, p.getCompressionLevel());
+        assertEquals(5, p.getCompressionLevel());
     }
 
     @Test

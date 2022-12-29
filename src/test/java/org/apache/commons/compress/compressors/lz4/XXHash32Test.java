@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.compressors.lz4;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +28,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -51,6 +52,6 @@ public class XXHash32Test {
             final byte[] b = IOUtils.toByteArray(s);
             h.update(b, 0, b.length);
         }
-        Assert.assertEquals("checksum for " + file.getName(), expectedChecksum, Long.toHexString(h.getValue()));
+        assertEquals(expectedChecksum, Long.toHexString(h.getValue()), "checksum for " + file.getName());
     }
 }

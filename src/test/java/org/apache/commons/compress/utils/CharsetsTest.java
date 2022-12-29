@@ -17,10 +17,11 @@
 
 package org.apache.commons.compress.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -31,11 +32,11 @@ public class CharsetsTest {
 
     @Test
     public void testToCharset() {
-        Assert.assertEquals(Charset.defaultCharset(), Charsets.toCharset((String) null));
-        Assert.assertEquals(Charset.defaultCharset(), Charsets.toCharset((Charset) null));
-        Assert.assertEquals(Charset.defaultCharset(), Charsets.toCharset(Charset.defaultCharset()));
-        Assert.assertEquals(StandardCharsets.UTF_8, Charsets.toCharset(StandardCharsets.UTF_8));
-        Assert.assertEquals(StandardCharsets.UTF_8, StandardCharsets.UTF_8);
+        assertEquals(Charset.defaultCharset(), Charsets.toCharset((String) null));
+        assertEquals(Charset.defaultCharset(), Charsets.toCharset((Charset) null));
+        assertEquals(Charset.defaultCharset(), Charsets.toCharset(Charset.defaultCharset()));
+        assertEquals(StandardCharsets.UTF_8, Charsets.toCharset(StandardCharsets.UTF_8));
+        assertEquals(StandardCharsets.UTF_8, StandardCharsets.UTF_8);
     }
 
 }

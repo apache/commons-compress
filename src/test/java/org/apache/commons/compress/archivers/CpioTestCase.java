@@ -18,10 +18,10 @@
  */
 package org.apache.commons.compress.archivers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.InputStream;
@@ -103,12 +103,12 @@ public final class CpioTestCase extends AbstractTestCase {
         is.close();
 
         File t = result.get("test1.xml");
-        assertTrue("Expected " + t.getAbsolutePath() + " to exist", t.exists());
-        assertEquals("length of " + t.getAbsolutePath(), file1Length, t.length());
+        assertTrue(t.exists(), "Expected " + t.getAbsolutePath() + " to exist");
+        assertEquals(file1Length, t.length(), "length of " + t.getAbsolutePath());
 
         t = result.get("test2.xml");
-        assertTrue("Expected " + t.getAbsolutePath() + " to exist", t.exists());
-        assertEquals("length of " + t.getAbsolutePath(), file2Length, t.length());
+        assertTrue(t.exists(), "Expected " + t.getAbsolutePath() + " to exist");
+        assertEquals(file2Length, t.length(), "length of " + t.getAbsolutePath());
     }
 
     @Test

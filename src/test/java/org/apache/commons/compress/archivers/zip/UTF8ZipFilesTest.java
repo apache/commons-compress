@@ -20,9 +20,9 @@ package org.apache.commons.compress.archivers.zip;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +50,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         final int len = ASCII_TXT.length();
         assertEquals(len, b.length);
         for (int i = 0; i < len; i++) {
-            assertEquals("Byte " + i, (byte) ASCII_TXT.charAt(i), b[i]);
+            assertEquals((byte) ASCII_TXT.charAt(i), b[i], "Byte " + i);
         }
         assertNotSame(b, ze.getRawName());
     }
@@ -201,9 +201,9 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
 
     private void assertCanRead(final ZipFile zf, final String fileName) throws IOException {
         final ZipArchiveEntry entry = zf.getEntry(fileName);
-        assertNotNull("Entry doesn't exist", entry);
+        assertNotNull(entry, "Entry doesn't exist");
         final InputStream is = zf.getInputStream(entry);
-        assertNotNull("InputStream is null", is);
+        assertNotNull(is, "InputStream is null");
         try {
             is.read();
         } finally {

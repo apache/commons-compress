@@ -18,8 +18,8 @@
 
 package org.apache.commons.compress.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -37,10 +37,10 @@ public class FileNameUtilsTest {
         assertEquals("", FileNameUtils.getBaseName(Paths.get("")));
         assertEquals("", FileNameUtils.getBaseName(Paths.get(".")));
         for (final File f : File.listRoots()) {
-            assertEquals(null, FileNameUtils.getBaseName(f.toPath()));
+            assertNull(FileNameUtils.getBaseName(f.toPath()));
         }
         if (SystemUtils.IS_OS_WINDOWS) {
-            assertEquals(null, FileNameUtils.getBaseName(Paths.get("C:\\")));
+            assertNull(FileNameUtils.getBaseName(Paths.get("C:\\")));
         }
     }
 
@@ -71,10 +71,10 @@ public class FileNameUtilsTest {
         assertEquals("", FileNameUtils.getExtension(Paths.get("")));
         assertEquals("", FileNameUtils.getExtension(Paths.get(".")));
         for (final File f : File.listRoots()) {
-            assertEquals(null, FileNameUtils.getExtension(f.toPath()));
+            assertNull(FileNameUtils.getExtension(f.toPath()));
         }
         if (SystemUtils.IS_OS_WINDOWS) {
-            assertEquals(null, FileNameUtils.getExtension(Paths.get("C:\\")));
+            assertNull(FileNameUtils.getExtension(Paths.get("C:\\")));
         }
     }
 

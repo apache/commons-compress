@@ -18,8 +18,8 @@
  */
 package org.apache.commons.compress;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.Closeable;
@@ -184,7 +184,7 @@ public abstract class AbstractTestCase {
                 }
                 final long size = entry.getSize();
                 if (size != ArchiveEntry.SIZE_UNKNOWN) {
-                    assertEquals("Entry.size should equal bytes read.", size, copied);
+                    assertEquals(size, copied, "Entry.size should equal bytes read.");
                 }
 
                 if (!outfile.exists()) {

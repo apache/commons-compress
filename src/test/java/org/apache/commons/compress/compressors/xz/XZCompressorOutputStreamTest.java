@@ -18,14 +18,13 @@
  */
 package org.apache.commons.compress.compressors.xz;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
-
 
 /**
  * Unit tests for class {@link XZCompressorOutputStream}.

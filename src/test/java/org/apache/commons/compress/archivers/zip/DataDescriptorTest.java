@@ -20,9 +20,9 @@ package org.apache.commons.compress.archivers.zip;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.compress.AbstractTestCase.mkdir;
 import static org.apache.commons.compress.AbstractTestCase.rmdir;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

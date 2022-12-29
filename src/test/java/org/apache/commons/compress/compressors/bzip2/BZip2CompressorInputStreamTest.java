@@ -19,6 +19,7 @@
 package org.apache.commons.compress.compressors.bzip2;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
@@ -32,7 +33,6 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public class BZip2CompressorInputStreamTest {
@@ -58,8 +58,8 @@ public class BZip2CompressorInputStreamTest {
             final BZip2CompressorInputStream in =
                     new BZip2CompressorInputStream(is);
             IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read(buf));
-            Assert.assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
             in.close();
         }
     }
@@ -88,9 +88,9 @@ public class BZip2CompressorInputStreamTest {
         final ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         final BZip2CompressorInputStream bzipIn = new BZip2CompressorInputStream(bais);
         final byte[] buffer = new byte[1024];
-        Assert.assertEquals(1024, bzipIn.read(buffer, 0, 1024));
-        Assert.assertEquals(0, bzipIn.read(buffer, 1024, 0));
-        Assert.assertEquals(1024, bzipIn.read(buffer, 0, 1024));
+        assertEquals(1024, bzipIn.read(buffer, 0, 1024));
+        assertEquals(0, bzipIn.read(buffer, 1024, 0));
+        assertEquals(1024, bzipIn.read(buffer, 0, 1024));
         bzipIn.close();
     }
 
@@ -154,8 +154,8 @@ public class BZip2CompressorInputStreamTest {
             final BZip2CompressorInputStream in =
                     new BZip2CompressorInputStream(is);
             IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read());
-            Assert.assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
             in.close();
         }
     }

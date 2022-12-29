@@ -18,11 +18,11 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
@@ -65,9 +65,9 @@ public class AsiExtraFieldTest implements UnixStat {
                          0123, (byte)0x80,                   // mode
                          0, 0, 0, 0,                         // link length
                          5, 0, 6, 0};                        // uid, gid
-        assertEquals("no link", expect.length, b.length);
+        assertEquals(expect.length, b.length, "no link");
         for (int i=0; i<expect.length; i++) {
-            assertEquals("no link, byte "+i, expect[i], b[i]);
+            assertEquals(expect[i], b[i], "no link, byte " + i);
         }
 
         a.setLinkedFile("test");
@@ -77,9 +77,9 @@ public class AsiExtraFieldTest implements UnixStat {
                              5, 0, 6, 0,                         // uid, gid
                              (byte)'t', (byte)'e', (byte)'s', (byte)'t'};
         b = a.getLocalFileDataData();
-        assertEquals("no link", expect.length, b.length);
+        assertEquals(expect.length, b.length, "no link");
         for (int i=0; i<expect.length; i++) {
-            assertEquals("no link, byte "+i, expect[i], b[i]);
+            assertEquals(expect[i], b[i], "no link, byte "+i);
         }
 
     }
@@ -91,11 +91,11 @@ public class AsiExtraFieldTest implements UnixStat {
     public void testModes() {
         final AsiExtraField a = new AsiExtraField();
         a.setMode(0123);
-        assertEquals("plain file", 0100123, a.getMode());
+        assertEquals(0100123, a.getMode(), "plain file");
         a.setDirectory(true);
-        assertEquals("directory", 040123, a.getMode());
+        assertEquals(040123, a.getMode(), "directory");
         a.setLinkedFile("test");
-        assertEquals("symbolic link", 0120123, a.getMode());
+        assertEquals(0120123, a.getMode(), "symbolic link");
     }
 
     /**
@@ -110,13 +110,12 @@ public class AsiExtraFieldTest implements UnixStat {
                        5, 0, 6, 0};                        // uid, gid
         AsiExtraField a = new AsiExtraField();
         a.parseFromLocalFileData(data, 0, data.length);
-        assertEquals("length plain file", data.length,
-                     a.getLocalFileDataLength().getValue());
-        assertFalse("plain file, no link", a.isLink());
-        assertFalse("plain file, no dir", a.isDirectory());
-        assertEquals("mode plain file", FILE_FLAG | 0123, a.getMode());
-        assertEquals("uid plain file", 5, a.getUserId());
-        assertEquals("gid plain file", 6, a.getGroupId());
+        assertEquals(data.length, a.getLocalFileDataLength().getValue(), "length plain file");
+        assertFalse(a.isLink(), "plain file, no link");
+        assertFalse(a.isDirectory(), "plain file, no dir");
+        assertEquals(FILE_FLAG | 0123, a.getMode(), "mode plain file");
+        assertEquals(5, a.getUserId(), "uid plain file");
+        assertEquals(6, a.getGroupId(), "gid plain file");
 
         data = new byte[] {0x75, (byte)0x8E, 0x41, (byte)0xFD, // CRC
                            0123, (byte)0xA0,                   // mode
@@ -125,13 +124,12 @@ public class AsiExtraFieldTest implements UnixStat {
                            (byte)'t', (byte)'e', (byte)'s', (byte)'t'};
         a = new AsiExtraField();
         a.parseFromLocalFileData(data, 0, data.length);
-        assertEquals("length link", data.length,
-                     a.getLocalFileDataLength().getValue());
-        assertTrue("link, is link", a.isLink());
-        assertFalse("link, no dir", a.isDirectory());
-        assertEquals("mode link", LINK_FLAG | 0123, a.getMode());
-        assertEquals("uid link", 5, a.getUserId());
-        assertEquals("gid link", 6, a.getGroupId());
+        assertEquals(data.length, a.getLocalFileDataLength().getValue(), "length link");
+        assertTrue(a.isLink(), "link, is link");
+        assertFalse(a.isDirectory(), "link, no dir");
+        assertEquals(LINK_FLAG | 0123, a.getMode(), "mode link");
+        assertEquals(5, a.getUserId(), "uid link");
+        assertEquals(6, a.getGroupId(), "gid link");
         assertEquals("test", a.getLinkedFile());
 
         data = new byte[] {(byte)0x8E, 0x01, (byte)0xBF, (byte)0x0E, // CRC
@@ -140,13 +138,12 @@ public class AsiExtraFieldTest implements UnixStat {
                            5, 0, 6, 0};                          // uid, gid
         a = new AsiExtraField();
         a.parseFromLocalFileData(data, 0, data.length);
-        assertEquals("length dir", data.length,
-                     a.getLocalFileDataLength().getValue());
-        assertFalse("dir, no link", a.isLink());
-        assertTrue("dir, is dir", a.isDirectory());
-        assertEquals("mode dir", DIR_FLAG | 0123, a.getMode());
-        assertEquals("uid dir", 5, a.getUserId());
-        assertEquals("gid dir", 6, a.getGroupId());
+        assertEquals(data.length, a.getLocalFileDataLength().getValue(), "length dir");
+        assertFalse(a.isLink(), "dir, no link");
+        assertTrue(a.isDirectory(), "dir, is dir");
+        assertEquals(DIR_FLAG | 0123, a.getMode(), "mode dir");
+        assertEquals(5, a.getUserId(), "uid dir");
+        assertEquals(6, a.getGroupId(), "gid dir");
 
         data = new byte[] {0, 0, 0, 0,                           // bad CRC
                            0123, (byte)0x40,                     // mode

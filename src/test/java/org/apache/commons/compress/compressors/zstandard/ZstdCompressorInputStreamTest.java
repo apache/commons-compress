@@ -17,8 +17,9 @@
 
 package org.apache.commons.compress.compressors.zstandard;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,7 +31,6 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 import com.github.luben.zstd.NoPool;
@@ -46,8 +46,8 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
             final ZstdCompressorInputStream in =
                     new ZstdCompressorInputStream(is);
             IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read(buf));
-            Assert.assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
             in.close();
         }
     }
@@ -58,7 +58,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
         try (InputStream is = Files.newInputStream(input.toPath())) {
             final ZstdCompressorInputStream in =
                     new ZstdCompressorInputStream(is);
-            Assert.assertEquals(1, in.skip(1));
+            assertEquals(1, in.skip(1));
             in.close();
         }
     }
@@ -70,8 +70,8 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
             final ZstdCompressorInputStream in =
                     new ZstdCompressorInputStream(is);
             IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read());
-            Assert.assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
             in.close();
         }
     }
@@ -94,7 +94,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
             final ZstdCompressorInputStream in =
                     new ZstdCompressorInputStream(is);
 
-            Assert.assertEquals(originalFileContent[0], in.read());
+            assertEquals(originalFileContent[0], in.read());
             in.close();
         }
     }
@@ -157,7 +157,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
             while((readByte = zstdInputStream.read()) != -1) {
                 bos.write(readByte);
             }
-            Assert.assertArrayEquals(b, bos.toByteArray());
+            assertArrayEquals(b, bos.toByteArray());
         }
     }
 
@@ -174,7 +174,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
             while((readByte = zstdInputStream.read()) != -1) {
                 bos.write(readByte);
             }
-            Assert.assertArrayEquals(b, bos.toByteArray());
+            assertArrayEquals(b, bos.toByteArray());
         }
     }
 
@@ -191,7 +191,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
             while((readByte = zstdInputStream.read()) != -1) {
                 bos.write(readByte);
             }
-            Assert.assertArrayEquals(b, bos.toByteArray());
+            assertArrayEquals(b, bos.toByteArray());
         }
     }
 

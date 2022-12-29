@@ -19,13 +19,13 @@
 package org.apache.commons.compress.compressors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -65,7 +65,7 @@ public class CompressorStreamFactoryRoundtripTest {
         compressorInputStream.close();
         decompressedOs.flush();
         decompressedOs.close();
-        Assert.assertEquals(fixture, decompressedOs.toString("UTF-8"));
+        assertEquals(fixture, decompressedOs.toString("UTF-8"));
     }
 
 }

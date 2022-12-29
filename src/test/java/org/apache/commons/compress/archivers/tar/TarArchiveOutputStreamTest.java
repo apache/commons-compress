@@ -19,13 +19,14 @@
 package org.apache.commons.compress.archivers.tar;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -48,7 +49,6 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public class TarArchiveOutputStreamTest extends AbstractTestCase {
@@ -206,7 +206,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         // and I would expect the MD5 hash to be the same, but for long names it isn't
         final byte[] digest2 = MessageDigest.getInstance("MD5").digest(archive2);
 
-        Assert.assertArrayEquals(digest1, digest2);
+        assertArrayEquals(digest1, digest2);
 
         // do I still have the correct modification date?
         // let a second elapse so we don't get the current time
@@ -430,11 +430,11 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         }
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(new ByteArrayOutputStream(),
             512, 512)) {
-            assertEquals("recordSize",512,tos.getRecordSize());
+            assertEquals(512, tos.getRecordSize(), "recordSize");
         }
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(new ByteArrayOutputStream(),
             512, 512, null)) {
-            assertEquals("recordSize",512,tos.getRecordSize());
+            assertEquals(512, tos.getRecordSize(), "recordSize");
         }
     }
 
@@ -543,8 +543,8 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         final byte[] data = bos.toByteArray();
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(data))) {
             final TarArchiveEntry e = tin.getNextTarEntry();
-            assertEquals("Entry name", n.substring(0, TarConstants.NAMELEN) + "/", e.getName());
-            assertTrue("The entry is not a directory", e.isDirectory());
+            assertEquals(n.substring(0, TarConstants.NAMELEN) + "/", e.getName(), "Entry name");
+            assertTrue(e.isDirectory(), "The entry is not a directory");
         }
     }
 
@@ -601,9 +601,9 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         final byte[] data = bos.toByteArray();
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(data))) {
             final TarArchiveEntry e = tin.getNextTarEntry();
-            assertEquals("Entry name", "test", e.getName());
-            assertEquals("Link name", linkname, e.getLinkName());
-            assertTrue("The entry is not a symbolic link", e.isSymbolicLink());
+            assertEquals("test", e.getName(), "Entry name");
+            assertEquals(linkname, e.getLinkName(), "Link name");
+            assertTrue(e.isSymbolicLink(), "The entry is not a symbolic link");
         }
     }
 
@@ -666,7 +666,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         final byte[] data = bos.toByteArray();
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(data))) {
             final TarArchiveEntry e = tin.getNextTarEntry();
-            assertEquals("Link name", linkname.substring(0, TarConstants.NAMELEN), e.getLinkName());
+            assertEquals(linkname.substring(0, TarConstants.NAMELEN), e.getLinkName(), "Link name");
         }
     }
 

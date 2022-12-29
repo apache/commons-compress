@@ -19,7 +19,8 @@
 package org.apache.commons.compress.compressors.z;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +30,6 @@ import java.nio.file.Files;
 import java.util.Collections;
 
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -48,8 +48,8 @@ public class ZCompressorInputStreamTest {
             final ZCompressorInputStream in =
                     new ZCompressorInputStream(is);
             IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read(buf));
-            Assert.assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
             in.close();
         }
     }
@@ -61,8 +61,8 @@ public class ZCompressorInputStreamTest {
             final ZCompressorInputStream in =
                     new ZCompressorInputStream(is);
             IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read());
-            Assert.assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
             in.close();
         }
     }

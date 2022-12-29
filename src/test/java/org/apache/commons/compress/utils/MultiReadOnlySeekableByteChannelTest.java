@@ -19,7 +19,13 @@
 package org.apache.commons.compress.utils;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -30,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -113,12 +118,11 @@ public class MultiReadOnlySeekableByteChannelTest {
 
     private void check(final byte[] expected, final SeekableByteChannel channel, final int readBufferSize)
         throws IOException {
-        Assert.assertTrue("readBufferSize " + readBufferSize, channel.isOpen());
-        Assert.assertEquals("readBufferSize " + readBufferSize, expected.length, channel.size());
+        assertTrue(channel.isOpen(), "readBufferSize " + readBufferSize);
+        assertEquals(expected.length, channel.size(), "readBufferSize " + readBufferSize);
         channel.position(0);
-        Assert.assertEquals("readBufferSize " + readBufferSize, 0, channel.position());
-        Assert.assertEquals("readBufferSize " + readBufferSize, 0,
-            channel.read(ByteBuffer.allocate(0)));
+        assertEquals(0, channel.position(), "readBufferSize " + readBufferSize);
+        assertEquals(0, channel.read(ByteBuffer.allocate(0)), "readBufferSize " + readBufferSize);
 
         // Will hold the entire result that we read
         final ByteBuffer resultBuffer = ByteBuffer.allocate(expected.length + 100);
@@ -139,44 +143,44 @@ public class MultiReadOnlySeekableByteChannelTest {
             // If this isn't the last read() then we expect the buf
             // ByteBuffer to be full (i.e. have no remaining)
             if (resultBuffer.position() < expected.length) {
-                Assert.assertEquals("readBufferSize " + readBufferSize, 0, remaining);
+                assertEquals(0, remaining, "readBufferSize " + readBufferSize);
             }
 
             if (bytesRead == -1) {
-                Assert.assertEquals("readBufferSize " + readBufferSize, 0, buf.position());
+                assertEquals(0, buf.position(), "readBufferSize " + readBufferSize);
             } else {
-                Assert.assertEquals("readBufferSize " + readBufferSize, bytesRead, buf.position());
+                assertEquals(bytesRead, buf.position(), "readBufferSize " + readBufferSize);
             }
         }
 
         resultBuffer.flip();
         final byte[] arr = new byte[resultBuffer.remaining()];
         resultBuffer.get(arr);
-        Assert.assertArrayEquals("readBufferSize " + readBufferSize, expected, arr);
+        assertArrayEquals(expected, arr, "readBufferSize " + readBufferSize);
     }
 
     private void checkEmpty(final SeekableByteChannel channel) throws IOException {
         final ByteBuffer buf = ByteBuffer.allocate(10);
 
-        Assert.assertTrue(channel.isOpen());
-        Assert.assertEquals(0, channel.size());
-        Assert.assertEquals(0, channel.position());
-        Assert.assertEquals(-1, channel.read(buf));
+        assertTrue(channel.isOpen());
+        assertEquals(0, channel.size());
+        assertEquals(0, channel.position());
+        assertEquals(-1, channel.read(buf));
 
         channel.position(5);
-        Assert.assertEquals(-1, channel.read(buf));
+        assertEquals(-1, channel.read(buf));
 
         channel.close();
-        Assert.assertFalse(channel.isOpen());
+        assertFalse(channel.isOpen());
 
         try {
             channel.read(buf);
-            Assert.fail("expected a ClosedChannelException");
+            fail("expected a ClosedChannelException");
         } catch (final ClosedChannelException expected) {
         }
         try {
             channel.position(100);
-            Assert.fail("expected a ClosedChannelException");
+            fail("expected a ClosedChannelException");
         } catch (final ClosedChannelException expected) {
         }
     }
@@ -199,9 +203,9 @@ public class MultiReadOnlySeekableByteChannelTest {
     public void closeIsIdempotent() throws Exception {
         try (SeekableByteChannel c = testChannel()) {
             c.close();
-            Assert.assertFalse(c.isOpen());
+            assertFalse(c.isOpen());
             c.close();
-            Assert.assertFalse(c.isOpen());
+            assertFalse(c.isOpen());
         }
     }
 
@@ -214,11 +218,11 @@ public class MultiReadOnlySeekableByteChannelTest {
         final SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(ts);
         try {
             s.close();
-            Assert.fail("IOException expected");
+            fail("IOException expected");
         } catch (final IOException expected) {
         }
-        Assert.assertFalse(ts[0].isOpen());
-        Assert.assertFalse(ts[1].isOpen());
+        assertFalse(ts[0].isOpen());
+        assertFalse(ts[1].isOpen());
     }
 
     @Test
@@ -235,7 +239,7 @@ public class MultiReadOnlySeekableByteChannelTest {
     public void forSeekableByteChannelsReturnsIdentityForSingleElement() {
         final SeekableByteChannel e = makeEmpty();
         final SeekableByteChannel m = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(e);
-        Assert.assertSame(e, m);
+        assertSame(e, m);
     }
 
     @Test
@@ -280,9 +284,9 @@ public class MultiReadOnlySeekableByteChannelTest {
     public void readingFromAPositionAfterEndReturnsEOF() throws Exception {
         try (SeekableByteChannel c = testChannel()) {
             c.position(2);
-            Assert.assertEquals(2, c.position());
+            assertEquals(2, c.position());
             final ByteBuffer readBuffer = ByteBuffer.allocate(5);
-            Assert.assertEquals(-1, c.read(readBuffer));
+            assertEquals(-1, c.read(readBuffer));
         }
     }
 
@@ -357,16 +361,16 @@ public class MultiReadOnlySeekableByteChannelTest {
 
     @Test
     public void verifyGrouped() {
-        Assert.assertArrayEquals(new byte[][] {
+        assertArrayEquals(new byte[][] {
                 new byte[] { 1, 2, 3, },
                 new byte[] { 4, 5, 6, },
                 new byte[] { 7, },
             }, grouped(new byte[] { 1, 2, 3, 4, 5, 6, 7 }, 3));
-        Assert.assertArrayEquals(new byte[][] {
+        assertArrayEquals(new byte[][] {
                 new byte[] { 1, 2, 3, },
                 new byte[] { 4, 5, 6, },
             }, grouped(new byte[] { 1, 2, 3, 4, 5, 6 }, 3));
-        Assert.assertArrayEquals(new byte[][] {
+        assertArrayEquals(new byte[][] {
                 new byte[] { 1, 2, 3, },
                 new byte[] { 4, 5, },
             }, grouped(new byte[] { 1, 2, 3, 4, 5, }, 3));

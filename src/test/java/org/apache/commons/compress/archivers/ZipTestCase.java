@@ -19,14 +19,14 @@
 package org.apache.commons.compress.archivers;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -58,7 +58,6 @@ import org.apache.commons.compress.archivers.zip.ZipSplitReadOnlySeekableByteCha
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public final class ZipTestCase extends AbstractTestCase {
@@ -115,7 +114,7 @@ public final class ZipTestCase extends AbstractTestCase {
                     IOUtils.readFully(expectedIs, expectedBuf);
                     IOUtils.readFully(actualIs, actualBuf);
                 }
-                Assert.assertArrayEquals(expectedBuf, actualBuf); // Buffers are larger than payload. dont care
+                assertArrayEquals(expectedBuf, actualBuf); // Buffers are larger than payload. dont care
             }
 
         }
@@ -579,13 +578,13 @@ public final class ZipTestCase extends AbstractTestCase {
 
         // compare statistics of stream / file access
         for (final Map.Entry<String,List<List<Long>>> me : actualStatistics.entrySet()) {
-            assertEquals("Mismatch of stats for: " + me.getKey(),
-                         me.getValue().get(0), me.getValue().get(1));
+            assertEquals(me.getValue().get(0), me.getValue().get(1),
+                    "Mismatch of stats for: " + me.getKey());
         }
 
         for (final Map.Entry<String, List<Long>> me : expectedStatistics.entrySet()) {
-            assertEquals("Mismatch of stats with expected value for: " + me.getKey(),
-                me.getValue(), actualStatistics.get(me.getKey()).get(0));
+            assertEquals(me.getValue(), actualStatistics.get(me.getKey()).get(0),
+                    "Mismatch of stats with expected value for: " + me.getKey());
         }
     }
 
@@ -646,7 +645,7 @@ public final class ZipTestCase extends AbstractTestCase {
             throws IOException {
         try (ZipArchiveInputStream zip = new ZipArchiveInputStream(Files.newInputStream(getFile("moby.zip").toPath()))) {
             final ZipArchiveEntry entry = zip.getNextZipEntry();
-            assertEquals("method", ZipMethod.TOKENIZATION.getCode(), entry.getMethod());
+            assertEquals(ZipMethod.TOKENIZATION.getCode(), entry.getMethod(), "method");
             assertEquals("README", entry.getName());
             assertFalse(zip.canReadEntryData(entry));
             try {
@@ -683,7 +682,7 @@ public final class ZipTestCase extends AbstractTestCase {
     public void testTokenizationCompressionMethod() throws IOException {
         try (final ZipFile moby = new ZipFile(getFile("moby.zip"))) {
             final ZipArchiveEntry entry = moby.getEntry("README");
-            assertEquals("method", ZipMethod.TOKENIZATION.getCode(), entry.getMethod());
+            assertEquals(ZipMethod.TOKENIZATION.getCode(), entry.getMethod(), "method");
             assertFalse(moby.canReadEntryData(entry));
         }
     }
