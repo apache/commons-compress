@@ -47,7 +47,7 @@ public final class TimeUtils {
     static final long WINDOWS_EPOCH_OFFSET = -116444736000000000L;
 
     /**
-     * Converts "standard UNIX time" (in seconds, UTC/GMT) to {@link FileTime}.
+     * Converts standard UNIX time (in seconds, UTC/GMT) to {@link FileTime}.
      *
      * @param time UNIX timestamp
      * @return the corresponding FileTime
@@ -57,7 +57,7 @@ public final class TimeUtils {
     }
 
     /**
-     * Converts {@link FileTime} to "standard UNIX time".
+     * Converts {@link FileTime} to standard UNIX time.
      *
      * @param time the original FileTime
      * @return the UNIX timestamp
@@ -67,7 +67,7 @@ public final class TimeUtils {
     }
 
     /**
-     * Converts Java time (milliseconds since Epoch) to "standard UNIX time".
+     * Converts Java time (milliseconds since Epoch) to standard UNIX time.
      *
      * @param time the original Java time
      * @return the UNIX timestamp
@@ -77,7 +77,7 @@ public final class TimeUtils {
     }
 
     /**
-     * Checks whether a FileTime exceeds the minimum or maximum for the "standard UNIX time".
+     * Checks whether a FileTime exceeds the minimum or maximum for the standard UNIX time.
      * If the FileTime is null, this method always returns false.
      *
      * @param time the FileTime to evaluate, can be null
@@ -93,7 +93,7 @@ public final class TimeUtils {
 
     /**
      * Checks whether a given number of seconds (since Epoch) exceeds the minimum or
-     * maximum for the "standard UNIX time".
+     * maximum for the standard UNIX time.
      *
      * @param seconds the UNIX seconds to evaluate
      * @return true if the time exceeds the minimum or maximum UNIX time, false otherwise
