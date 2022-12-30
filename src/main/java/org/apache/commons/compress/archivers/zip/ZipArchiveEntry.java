@@ -508,13 +508,13 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      */
     @Override
     public void setTime(final long time) {
-        if (ZipUtil.exceedsDosTime(time)) {
-            setLastModifiedTime(FileTime.fromMillis(time));
-        } else {
+        if (ZipUtil.isDosTime(time)) {
             super.setTime(time);
             this.time = time;
             lastModifiedDateSet = false;
             setExtraTimeFields();
+        } else {
+            setLastModifiedTime(FileTime.fromMillis(time));
         }
     }
 
@@ -1114,7 +1114,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
             final FileTime lastModifiedTime = getLastModifiedTime();
             final FileTime lastAccessTime = getLastAccessTime();
             final FileTime creationTime = getCreationTime();
-            if (fitsInInfoZipExtendedTimestamp(lastModifiedTime, lastAccessTime, creationTime)) {
+            if (canConvertToInfoZipExtendedTimestamp(lastModifiedTime, lastAccessTime, creationTime)) {
                 addInfoZipExtendedTimestamp(lastModifiedTime, lastAccessTime, creationTime);
             }
             addNTFSTimestamp(lastModifiedTime, lastAccessTime, creationTime);
@@ -1163,13 +1163,13 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
         internalAddExtraField(ntfsTimestamp);
     }
 
-    private static boolean fitsInInfoZipExtendedTimestamp(
+    private static boolean canConvertToInfoZipExtendedTimestamp(
             final FileTime lastModifiedTime,
             final FileTime lastAccessTime,
             final FileTime creationTime) {
-        return !TimeUtils.exceedsUnixTime(lastModifiedTime)
-                && !TimeUtils.exceedsUnixTime(lastAccessTime)
-                && !TimeUtils.exceedsUnixTime(creationTime);
+        return TimeUtils.isUnixTime(lastModifiedTime)
+                && TimeUtils.isUnixTime(lastAccessTime)
+                && TimeUtils.isUnixTime(creationTime);
     }
 
     /**

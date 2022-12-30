@@ -413,7 +413,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
         failForBigNumber("entry size", entry.getSize(), TarConstants.MAXSIZE);
         failForBigNumberWithPosixMessage("group id", entry.getLongGroupId(), TarConstants.MAXID);
         failForBigNumber("last modification time",
-            TimeUtils.fileTimeToUnixTime(entry.getLastModifiedTime()),
+            TimeUtils.toUnixTime(entry.getLastModifiedTime()),
             TarConstants.MAXSIZE);
         failForBigNumber("user id", entry.getLongUserId(), TarConstants.MAXID);
         failForBigNumber("mode", entry.getMode(), TarConstants.MAXID);
@@ -682,7 +682,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private void transferModTime(final TarArchiveEntry from, final TarArchiveEntry to) {
-        long fromModTimeSeconds = TimeUtils.fileTimeToUnixTime(from.getLastModifiedTime());
+        long fromModTimeSeconds = TimeUtils.toUnixTime(from.getLastModifiedTime());
         if (fromModTimeSeconds < 0 || fromModTimeSeconds > TarConstants.MAXSIZE) {
             fromModTimeSeconds = 0;
         }

@@ -141,11 +141,11 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
         if (time == null) {
             return null;
         }
-        return unixTimeToZipLong(TimeUtils.fileTimeToUnixTime(time));
+        return unixTimeToZipLong(TimeUtils.toUnixTime(time));
     }
 
     private static ZipLong unixTimeToZipLong(final long l) {
-        if (TimeUtils.exceedsUnixTime(l)) {
+        if (!TimeUtils.isUnixTime(l)) {
             throw new IllegalArgumentException("X5455 timestamps must fit in a signed 32 bit integer: " + l);
         }
         return new ZipLong(l);
@@ -155,7 +155,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
         return unixTime != null ? new Date(unixTime.getIntValue() * 1000L) : null;
     }
 
-    private static FileTime zipLongToFileTime(final ZipLong unixTime) {
+    private static FileTime unixTimeToFileTime(final ZipLong unixTime) {
         return unixTime != null ? TimeUtils.unixTimeToFileTime(unixTime.getIntValue()) : null;
     }
     // The 3 boolean fields (below) come from this flags byte.  The remaining 5 bits
@@ -221,11 +221,10 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * offers only per-second precision.
      *
      * @return modify time as {@link FileTime} or null.
-     *
      * @since 1.23
      */
     public FileTime getAccessFileTime() {
-        return zipLongToFileTime(accessTime);
+        return unixTimeToFileTime(accessTime);
     }
 
     /**
@@ -292,11 +291,10 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * offers only per-second precision.
      *
      * @return modify time as {@link FileTime} or null.
-     *
      * @since 1.23
      */
     public FileTime getCreateFileTime() {
-        return zipLongToFileTime(createTime);
+        return unixTimeToFileTime(createTime);
     }
 
     /**
@@ -405,11 +403,10 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * offers only per-second precision.
      *
      * @return modify time as {@link FileTime} or null.
-     *
      * @since 1.23
      */
     public FileTime getModifyFileTime() {
-        return zipLongToFileTime(modifyTime);
+        return unixTimeToFileTime(modifyTime);
     }
 
     /**
@@ -557,7 +554,6 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * </p>
      *
      * @param time access time as {@link FileTime}
-     *
      * @since 1.23
      */
     public void setAccessFileTime(final FileTime time) {
@@ -609,7 +605,6 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * </p>
      *
      * @param time create time as {@link FileTime}
-     *
      * @since 1.23
      */
     public void setCreateFileTime(final FileTime time) {
@@ -684,7 +679,6 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * </p>
      *
      * @param time modify time as {@link FileTime}
-     *
      * @since 1.23
      */
     public void setModifyFileTime(final FileTime time) {

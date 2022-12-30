@@ -41,7 +41,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -2069,7 +2068,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         offset = writeEntryHeaderField(groupId, outbuf, offset, GIDLEN,
                                        starMode);
         offset = writeEntryHeaderField(size, outbuf, offset, SIZELEN, starMode);
-        offset = writeEntryHeaderField(TimeUtils.fileTimeToUnixTime(mTime), outbuf, offset,
+        offset = writeEntryHeaderField(TimeUtils.toUnixTime(mTime), outbuf, offset,
                                        MODTIMELEN, starMode);
 
         final int csOffset = offset;
@@ -2124,7 +2123,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     private int writeEntryHeaderOptionalTimeField(final FileTime time, int offset, final byte[] outbuf, final int fieldLength) {
         if (time != null) {
-            offset = writeEntryHeaderField(TimeUtils.fileTimeToUnixTime(time), outbuf, offset, fieldLength, true);
+            offset = writeEntryHeaderField(TimeUtils.toUnixTime(time), outbuf, offset, fieldLength, true);
         } else {
             offset = fill(0, offset, outbuf, fieldLength);
         }

@@ -208,11 +208,11 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testExceedsDosTime(){
-        assertTrue(ZipUtil.exceedsDosTime(toLocalInstant("1975-01-31T23:00:00").toEpochMilli()));
-        assertFalse(ZipUtil.exceedsDosTime(toLocalInstant("1980-01-03T00:00:00").toEpochMilli()));
-        assertFalse(ZipUtil.exceedsDosTime(toLocalInstant("2097-11-27T00:00:00").toEpochMilli()));
-        assertTrue(ZipUtil.exceedsDosTime(toLocalInstant("2099-01-01T00:00:00").toEpochMilli()));
+    public void testIsDosTime(){
+        assertFalse(ZipUtil.isDosTime(toLocalInstant("1975-01-31T23:00:00").toEpochMilli()));
+        assertTrue(ZipUtil.isDosTime(toLocalInstant("1980-01-03T00:00:00").toEpochMilli()));
+        assertTrue(ZipUtil.isDosTime(toLocalInstant("2097-11-27T00:00:00").toEpochMilli()));
+        assertFalse(ZipUtil.isDosTime(toLocalInstant("2099-01-01T00:00:00").toEpochMilli()));
     }
 
     static void assertDosDate(

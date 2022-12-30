@@ -977,7 +977,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *            The time to set.
      */
     public void setTime(final FileTime time) {
-        this.mtime = TimeUtils.fileTimeToUnixTime(time);
+        this.mtime = TimeUtils.toUnixTime(time);
     }
 
     /**

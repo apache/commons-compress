@@ -188,12 +188,12 @@ public class TimeUtilsTest {
     }
 
     @Test
-    public void shouldCheckWhetherTimeExceedsUnixTime() {
-        assertFalse(TimeUtils.exceedsUnixTime(null));
-        assertFalse(TimeUtils.exceedsUnixTime(FileTime.from(Instant.parse("2022-12-27T12:45:22Z"))));
-        assertFalse(TimeUtils.exceedsUnixTime(FileTime.from(Instant.parse("2038-01-19T03:14:07Z"))));
-        assertTrue(TimeUtils.exceedsUnixTime(FileTime.from(Instant.parse("2038-01-19T03:14:08Z"))));
-        assertTrue(TimeUtils.exceedsUnixTime(FileTime.from(Instant.parse("2099-06-30T12:31:42Z"))));
+    public void shouldCheckWhetherTimeCanBeRepresentedAsUnixTime() {
+        assertTrue(TimeUtils.isUnixTime(null));
+        assertTrue(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2022-12-27T12:45:22Z"))));
+        assertTrue(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2038-01-19T03:14:07Z"))));
+        assertFalse(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2038-01-19T03:14:08Z"))));
+        assertFalse(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2099-06-30T12:31:42Z"))));
     }
 
     public static Stream<Arguments> fileTimeToUnixTimeArguments() {
@@ -207,7 +207,7 @@ public class TimeUtilsTest {
     @ParameterizedTest
     @MethodSource("fileTimeToUnixTimeArguments")
     public void shouldConvertFileTimeToUnixTime(final long expectedUnixTime, final String instant) {
-        assertEquals(expectedUnixTime, TimeUtils.fileTimeToUnixTime(FileTime.from(Instant.parse(instant))));
+        assertEquals(expectedUnixTime, TimeUtils.toUnixTime(FileTime.from(Instant.parse(instant))));
     }
 
     @ParameterizedTest

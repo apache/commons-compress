@@ -62,7 +62,7 @@ public final class TimeUtils {
      * @param time the original FileTime
      * @return the UNIX timestamp
      */
-    public static long fileTimeToUnixTime(final FileTime time) {
+    public static long toUnixTime(final FileTime time) {
         return time.to(TimeUnit.SECONDS);
     }
 
@@ -77,29 +77,29 @@ public final class TimeUtils {
     }
 
     /**
-     * Checks whether a FileTime exceeds the minimum or maximum for the standard UNIX time.
-     * If the FileTime is null, this method always returns false.
+     * Tests whether a FileTime can be safely represented in the standard UNIX time.
+     *
+     * <p>If the FileTime is null, this method always returns true.</p>
      *
      * @param time the FileTime to evaluate, can be null
      * @return true if the time exceeds the minimum or maximum UNIX time, false otherwise
      */
-    public static boolean exceedsUnixTime(final FileTime time) {
+    public static boolean isUnixTime(final FileTime time) {
         if (time == null) {
-            return false;
+            return true;
         }
-        final long fileTimeToUnixTime = fileTimeToUnixTime(time);
-        return exceedsUnixTime(fileTimeToUnixTime);
+        final long fileTimeToUnixTime = toUnixTime(time);
+        return isUnixTime(fileTimeToUnixTime);
     }
 
     /**
-     * Checks whether a given number of seconds (since Epoch) exceeds the minimum or
-     * maximum for the standard UNIX time.
+     * Tests whether a given number of seconds (since Epoch) can be safely represented in the standard UNIX time.
      *
-     * @param seconds the UNIX seconds to evaluate
-     * @return true if the time exceeds the minimum or maximum UNIX time, false otherwise
+     * @param seconds the number of seconds (since Epoch) to evaluate
+     * @return true if the time can be represented in the standard UNIX time, false otherwise
      */
-    public static boolean exceedsUnixTime(final long seconds) {
-        return seconds < Integer.MIN_VALUE || seconds > Integer.MAX_VALUE;
+    public static boolean isUnixTime(final long seconds) {
+        return Integer.MIN_VALUE <= seconds && seconds <= Integer.MAX_VALUE;
     }
 
     /**

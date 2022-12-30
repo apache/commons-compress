@@ -91,7 +91,6 @@ public class X000A_NTFS implements ZipExtraField {
         }
         return new ZipEightByteInteger(TimeUtils.toNtfsTime(time));
     }
-
     private static Date zipToDate(final ZipEightByteInteger z) {
         if (z == null || ZipEightByteInteger.ZERO.equals(z)) {
             return null;
@@ -105,12 +104,12 @@ public class X000A_NTFS implements ZipExtraField {
         }
         return TimeUtils.ntfsTimeToFileTime(z.getLongValue());
     }
+
     private ZipEightByteInteger modifyTime = ZipEightByteInteger.ZERO;
 
     private ZipEightByteInteger accessTime = ZipEightByteInteger.ZERO;
 
     private ZipEightByteInteger createTime = ZipEightByteInteger.ZERO;
-
 
     @Override
     public boolean equals(final Object o) {

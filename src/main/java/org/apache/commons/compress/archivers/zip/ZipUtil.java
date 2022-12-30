@@ -103,14 +103,14 @@ public abstract class ZipUtil {
     private static final long UPPER_DOSTIME_BOUND = 128L * 365 * 24 * 60 * 60 * 1000;
 
     /**
-     * Checks if a given time exceeds the boundaries of a DOS time
+     * Tests whether a given time (in milliseconds since Epoch) can be safely represented as DOS time
      *
-     * @param millis time in milliseconds since epoch
-     * @return true if the time exceeds the boundaries of a DOS time, false otherwise
+     * @param time time in milliseconds since epoch
+     * @return true if the time can be safely represented as DOS time, false otherwise
      * @since 1.23
      */
-    public static boolean exceedsDosTime(final long millis) {
-        return millis > UPPER_DOSTIME_BOUND || javaToDosTime(millis) == DOSTIME_BEFORE_1980;
+    public static boolean isDosTime(final long time) {
+        return time <= UPPER_DOSTIME_BOUND && javaToDosTime(time) != DOSTIME_BEFORE_1980;
     }
 
     /**
