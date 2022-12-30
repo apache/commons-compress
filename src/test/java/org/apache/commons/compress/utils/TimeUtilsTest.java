@@ -192,6 +192,8 @@ public class TimeUtilsTest {
         assertTrue(TimeUtils.isUnixTime(null));
         assertTrue(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2022-12-27T12:45:22Z"))));
         assertTrue(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2038-01-19T03:14:07Z"))));
+        assertTrue(TimeUtils.isUnixTime(FileTime.from(Instant.parse("1901-12-13T23:14:08Z"))));
+        assertFalse(TimeUtils.isUnixTime(FileTime.from(Instant.parse("1901-12-13T03:14:08Z"))));
         assertFalse(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2038-01-19T03:14:08Z"))));
         assertFalse(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2099-06-30T12:31:42Z"))));
     }
