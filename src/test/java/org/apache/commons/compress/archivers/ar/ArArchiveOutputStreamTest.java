@@ -18,8 +18,8 @@
 
 package org.apache.commons.compress.archivers.ar;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,12 +35,11 @@ import org.junit.jupiter.api.Test;
 public class ArArchiveOutputStreamTest extends AbstractTestCase {
 
     @Test
-    public void testLongFileNamesCauseExceptionByDefault() {
+    public void testLongFileNamesCauseExceptionByDefault() throws IOException {
         try (ArArchiveOutputStream os = new ArArchiveOutputStream(new ByteArrayOutputStream())) {
             final ArArchiveEntry ae = new ArArchiveEntry("this_is_a_long_name.txt", 0);
-            os.putArchiveEntry(ae);
-            fail("Expected an exception");
-        } catch (final IOException ex) {
+            final IOException ex = assertThrows(IOException.class, () -> os.putArchiveEntry(ae),
+                    "Expected an exception");
             assertTrue(ex.getMessage().startsWith("File name too long"));
         }
     }

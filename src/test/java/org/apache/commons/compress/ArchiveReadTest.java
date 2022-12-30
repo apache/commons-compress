@@ -18,8 +18,8 @@
 
 package org.apache.commons.compress;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.ArchiveException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -93,12 +92,6 @@ public class ArchiveReadTest extends AbstractTestCase {
     public void testArchive(final File file) throws Exception {
         @SuppressWarnings("unchecked") // fileList is correct type already
         final ArrayList<String> expected = (ArrayList<String>) FILELIST.clone();
-        try {
-            checkArchiveContent(file, expected);
-        } catch (final ArchiveException e) {
-            fail("Problem checking " + file);
-        } catch (final AssertionError e) { // show error in context
-            fail("Problem checking " + file + " " + e);
-        }
+        assertDoesNotThrow(() -> checkArchiveContent(file, expected), "Problem checking " + file);
     }
 }

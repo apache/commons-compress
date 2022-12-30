@@ -22,8 +22,8 @@ import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,14 +43,11 @@ public class EncryptedArchiveTest {
             assertTrue(zae.getGeneralPurposeBit().usesEncryption());
             assertFalse(zae.getGeneralPurposeBit().usesStrongEncryption());
             assertFalse(zin.canReadEntryData(zae));
-            try {
+            final UnsupportedZipFeatureException ex = assertThrows(UnsupportedZipFeatureException.class, () -> {
                 final byte[] buf = new byte[1024];
                 zin.read(buf, 0, buf.length);
-                fail("expected an exception");
-            } catch (final UnsupportedZipFeatureException ex) {
-                assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION,
-                           ex.getFeature());
-            }
+            }, "expected an exception");
+            assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION, ex.getFeature());
         }
     }
 
@@ -58,22 +55,14 @@ public class EncryptedArchiveTest {
     public void testReadPasswordEncryptedEntryViaZipFile()
         throws IOException {
         final File file = getFile("password-encrypted.zip");
-        ZipFile zf = null;
-        try {
-            zf = new ZipFile(file);
+        try (final ZipFile zf = new ZipFile(file)) {
             final ZipArchiveEntry zae = zf.getEntry("LICENSE.txt");
             assertTrue(zae.getGeneralPurposeBit().usesEncryption());
             assertFalse(zae.getGeneralPurposeBit().usesStrongEncryption());
             assertFalse(zf.canReadEntryData(zae));
-            try {
-                zf.getInputStream(zae);
-                fail("expected an exception");
-            } catch (final UnsupportedZipFeatureException ex) {
-                assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION,
-                           ex.getFeature());
-            }
-        } finally {
-            ZipFile.closeQuietly(zf);
+            final UnsupportedZipFeatureException ex = assertThrows(UnsupportedZipFeatureException.class, () -> zf.getInputStream(zae),
+                    "expected an exception");
+            assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION, ex.getFeature());
         }
     }
 }

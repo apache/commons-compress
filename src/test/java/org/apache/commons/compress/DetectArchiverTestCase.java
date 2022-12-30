@@ -18,10 +18,10 @@
  */
 package org.apache.commons.compress;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -44,20 +44,11 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
     private void checkEmptyArchive(final String type) throws Exception{
         final File ar = createEmptyArchive(type); // will be deleted by tearDown()
         ar.deleteOnExit(); // Just in case file cannot be deleted
-        ArchiveInputStream ais = null;
-        BufferedInputStream in = null;
-        try {
-            in = new BufferedInputStream(Files.newInputStream(ar.toPath()));
-            ais = factory.createArchiveInputStream(in);
-        } catch (final ArchiveException ae) {
-            fail("Should have recognized empty archive for "+type);
-        } finally {
-            if (ais != null) {
-                ais.close(); // will close input as well
-            } else if (in != null){
-                in.close();
+        assertDoesNotThrow(() -> {
+            try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(ar.toPath()));
+                 ArchiveInputStream ais = factory.createArchiveInputStream(in)) {
             }
-        }
+        }, "Should have recognized empty archive for " + type);
     }
 
     private ArchiveInputStream getStreamFor(final String resource)

@@ -19,8 +19,8 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.zip.ZipException;
 
@@ -97,14 +97,8 @@ public class ExtraFieldUtilsTest implements UnixStat {
         System.arraycopy(f.getHeaderId().getBytes(), 0, d, 0, 2);
         System.arraycopy(f.getLocalFileDataLength().getBytes(), 0, d, 2, 2);
         System.arraycopy(f.getLocalFileDataData(), 0, d, 4, AiobThrowingExtraField.LENGTH);
-        try {
-            ExtraFieldUtils.parse(d);
-            fail("data should be invalid");
-        } catch (final ZipException e) {
-            assertEquals("Failed to parse corrupt ZIP extra field of type 1000",
-                    e.getMessage(),
-                    "message");
-        }
+        final ZipException e = assertThrows(ZipException.class, () -> ExtraFieldUtils.parse(d), "data should be invalid");
+        assertEquals("Failed to parse corrupt ZIP extra field of type 1000", e.getMessage(), "message");
     }
 
     @BeforeEach
@@ -204,15 +198,9 @@ public class ExtraFieldUtilsTest implements UnixStat {
 
         final byte[] data2 = new byte[data.length-1];
         System.arraycopy(data, 0, data2, 0, data2.length);
-        try {
-            ExtraFieldUtils.parse(data2);
-            fail("data should be invalid");
-        } catch (final Exception e) {
-            assertEquals("Bad extra field starting at " + (4 + aLocal.length)
-                            + ".  Block length of 1 bytes exceeds remaining data of 0 bytes.",
-                    e.getMessage(),
-                    "message");
-        }
+        final Exception e = assertThrows(Exception.class, () -> ExtraFieldUtils.parse(data2), "data should be invalid");
+        assertEquals("Bad extra field starting at " + (4 + aLocal.length) +
+                ".  Block length of 1 bytes exceeds remaining data of 0 bytes.", e.getMessage(), "message");
     }
 
     @Test

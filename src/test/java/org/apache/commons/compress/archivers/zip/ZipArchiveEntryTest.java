@@ -25,9 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
+import java.util.NoSuchElementException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
@@ -290,11 +290,8 @@ public class ZipArchiveEntryTest {
         assertSame(u3, result[1]);
         assertEquals(data2.length, data3.length, "length fourth pass");
 
-        try {
-            ze.removeExtraField(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-            fail("should be no such element");
-        } catch (final java.util.NoSuchElementException nse) {
-        }
+        assertThrows(NoSuchElementException.class, () -> ze.removeExtraField(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER),
+                "should be no such element");
     }
 
     @Test

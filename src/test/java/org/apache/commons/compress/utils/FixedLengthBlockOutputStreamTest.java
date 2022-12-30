@@ -23,8 +23,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -38,7 +39,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.jupiter.api.Test;
 
 public class FixedLengthBlockOutputStreamTest {
@@ -203,14 +203,10 @@ public class FixedLengthBlockOutputStreamTest {
 
     @Test
     public void testPartialWritingThrowsException() {
-        try {
-            testWriteAndPad(512, "hello world!\n", true);
-            fail("Exception for partial write not thrown");
-        } catch (final IOException e) {
-            final String msg = e.getMessage();
-            assertEquals("Failed to write 512 bytes atomically. Only wrote  511", msg, "exception message");
-        }
-
+        final IOException e = assertThrows(IOException.class, () -> testWriteAndPad(512, "hello world!\n", true),
+                "Exception for partial write not thrown");
+        final String msg = e.getMessage();
+        assertEquals("Failed to write 512 bytes atomically. Only wrote  511", msg, "exception message");
     }
 
     @Test
@@ -306,46 +302,31 @@ public class FixedLengthBlockOutputStreamTest {
         final MockOutputStream mock = new MockOutputStream(blockSize, false);
         final FixedLengthBlockOutputStream out =
             new FixedLengthBlockOutputStream(mock, blockSize);
-        try {
+        assertThrows(IOException.class, () -> {
             out.write(1);
             assertTrue(out.isOpen());
             mock.close();
             out.write(1);
-            fail("expected IO Exception");
-        } catch (final IOException e) {
-            // expected
-        }
+        }, "expected IO Exception");
         assertFalse(out.isOpen());
     }
 
     @Test
     public void testWriteFailsAfterFLClosedThrowsException() {
-        try {
+        assertThrowsExactly(ClosedChannelException.class, () -> {
             final FixedLengthBlockOutputStream out = getClosedFLBOS();
             out.write(1);
-            fail("expected Closed Channel Exception");
-        } catch (final IOException e) {
-            assertThat(e, IsInstanceOf.instanceOf(ClosedChannelException.class));
-            // expected
-        }
-        try {
-            final FixedLengthBlockOutputStream out = getClosedFLBOS();
-            out.write(new byte[] {0,1,2,3});
-            fail("expected Closed Channel Exception");
-        } catch (final IOException e) {
-            assertThat(e, IsInstanceOf.instanceOf(ClosedChannelException.class));
-            // expected
-        }
+        }, "expected Closed Channel Exception");
 
-        try {
+        assertThrowsExactly(ClosedChannelException.class, () -> {
             final FixedLengthBlockOutputStream out = getClosedFLBOS();
-            out.write(ByteBuffer.wrap(new byte[] {0,1,2,3}));
-            fail("expected Closed Channel Exception");
-        } catch (final IOException e) {
-            assertThat(e, IsInstanceOf.instanceOf(ClosedChannelException.class));
-            // expected
-        }
+            out.write(new byte[]{0, 1, 2, 3});
+        }, "expected Closed Channel Exception");
 
+        assertThrowsExactly(ClosedChannelException.class, () -> {
+            final FixedLengthBlockOutputStream out = getClosedFLBOS();
+            out.write(ByteBuffer.wrap(new byte[]{0, 1, 2, 3}));
+        }, "expected Closed Channel Exception");
     }
 
     @Test

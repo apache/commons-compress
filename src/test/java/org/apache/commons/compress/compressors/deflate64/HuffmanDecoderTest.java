@@ -18,6 +18,7 @@
 package org.apache.commons.compress.compressors.deflate64;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
@@ -209,11 +210,10 @@ public class HuffmanDecoderTest {
 
         final HuffmanDecoder decoder = new HuffmanDecoder(new ByteArrayInputStream(data));
         final byte[] result = new byte[100];
-        try {
+        final IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
             final int len = decoder.decode(result);
             fail("Should have failed but returned " + len + " entries: " + Arrays.toString(Arrays.copyOf(result, len)));
-        } catch (final IllegalStateException e) {
-            assertEquals("Illegal LEN / NLEN values", e.getMessage());
-        }
+        });
+        assertEquals("Illegal LEN / NLEN values", e.getMessage());
     }
 }

@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -223,16 +222,13 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
     public void testMaxFileSizeError() throws Exception {
         final TarArchiveEntry t = new TarArchiveEntry("foo");
         t.setSize(077777777777L);
-        TarArchiveOutputStream tos =
+        final TarArchiveOutputStream tos1 =
             new TarArchiveOutputStream(new ByteArrayOutputStream());
-        tos.putArchiveEntry(t);
+        tos1.putArchiveEntry(t);
         t.setSize(0100000000000L);
-        tos = new TarArchiveOutputStream(new ByteArrayOutputStream());
-        try {
-            tos.putArchiveEntry(t);
-            fail("Should have generated RuntimeException");
-        } catch (final RuntimeException expected) {
-        }
+        final TarArchiveOutputStream tos2 = new TarArchiveOutputStream(new ByteArrayOutputStream());
+        assertThrows(RuntimeException.class, () -> tos2.putArchiveEntry(t),
+                "Should have generated RuntimeException");
     }
 
     @Test
@@ -414,20 +410,8 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
 
     @SuppressWarnings("deprecation")
     @Test public void testRecordSize() throws IOException {
-        try {
-            final TarArchiveOutputStream tos =
-                new TarArchiveOutputStream(new ByteArrayOutputStream(),512,511);
-            fail("should have rejected recordSize of 511");
-        } catch(final IllegalArgumentException e) {
-            // expected;
-        }
-        try {
-            final TarArchiveOutputStream tos =
-                new TarArchiveOutputStream(new ByteArrayOutputStream(),512,511,null);
-            fail("should have rejected recordSize of 511");
-        } catch(final IllegalArgumentException e) {
-            // expected;
-        }
+        assertThrows(IllegalArgumentException.class, () -> new TarArchiveOutputStream(new ByteArrayOutputStream(),512,511),
+                "should have rejected recordSize of 511");
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(new ByteArrayOutputStream(),
             512, 512)) {
             assertEquals(512, tos.getRecordSize(), "recordSize");
@@ -497,7 +481,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             + "01234567890123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789/";
 
-        try {
+        assertThrows(RuntimeException.class, () -> {
             final TarArchiveEntry t = new TarArchiveEntry(n);
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII")) {
@@ -505,11 +489,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
                 tos.putArchiveEntry(t);
                 tos.closeArchiveEntry();
             }
-
-            fail("Truncated name didn't throw an exception");
-        } catch (final RuntimeException e) {
-            // expected
-        }
+        }, "Truncated name didn't throw an exception");
     }
 
     /**
@@ -618,18 +598,14 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         final TarArchiveEntry entry = new TarArchiveEntry("test", TarConstants.LF_SYMLINK);
         entry.setLinkName(linkname);
 
-        try {
+        assertThrows(RuntimeException.class, () -> {
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII")) {
                 tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_ERROR);
                 tos.putArchiveEntry(entry);
                 tos.closeArchiveEntry();
             }
-
-            fail("Truncated link name didn't throw an exception");
-        } catch (final RuntimeException e) {
-            // expected
-        }
+        }, "Truncated link name didn't throw an exception");
     }
 
     /**

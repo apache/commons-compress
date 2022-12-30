@@ -20,7 +20,6 @@ package org.apache.commons.compress.compressors.bzip2;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -95,20 +94,16 @@ public class PythonTruncatedBzip2Test {
         //    self.assertRaises(EOFError, f.read, 1)
 
         final int length = TEXT.length();
-        ByteBuffer buffer = ByteBuffer.allocate(length);
-        bz2Channel.read(buffer);
+        final ByteBuffer buffer1 = ByteBuffer.allocate(length);
+        bz2Channel.read(buffer1);
 
         assertArrayEquals(copyOfRange(TEXT.getBytes(), 0, length),
-                buffer.array());
+                buffer1.array());
 
         // subsequent read should throw
-        buffer = ByteBuffer.allocate(1);
-        try {
-            bz2Channel.read(buffer);
-            fail("The read should have thrown.");
-        } catch (final IOException e) {
-            // pass
-        }
+        final ByteBuffer buffer2 = ByteBuffer.allocate(1);
+        assertThrows(IOException.class, () -> bz2Channel.read(buffer2),
+                "The read should have thrown.");
     }
 
     @Test

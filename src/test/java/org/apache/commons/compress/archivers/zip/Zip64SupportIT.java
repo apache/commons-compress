@@ -24,8 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.BufferedOutputStream;
@@ -53,28 +53,21 @@ public class Zip64SupportIT {
     private static final int ONE_HUNDRED_THOUSAND = 100000;
 
     private static final ZipOutputTest write100KFilesModeNever =
-        (f, zos) -> {
-    zos.setUseZip64(Zip64Mode.Never);
-    try {
-        write100KFilesToStream(zos);
-        fail("expected a Zip64RequiredException");
-    } catch (final Zip64RequiredException ex) {
-        assertEquals(Zip64RequiredException.TOO_MANY_ENTRIES_MESSAGE,
-                     ex.getMessage());
-    }
-         };
+            (f, zos) -> {
+                zos.setUseZip64(Zip64Mode.Never);
+                final Zip64RequiredException ex = assertThrows(Zip64RequiredException.class,
+                        () -> write100KFilesToStream(zos), "expected a Zip64RequiredException");
+                assertEquals(Zip64RequiredException.TOO_MANY_ENTRIES_MESSAGE,
+                        ex.getMessage());
+            };
 
     private static final ZipOutputTest write3EntriesCreatingBigArchiveModeNever =
-        (f, zos) -> {
-    zos.setUseZip64(Zip64Mode.Never);
-    try {
-        write3EntriesCreatingBigArchiveToStream(zos);
-        fail("expected a Zip64RequiredException");
-    } catch (final Zip64RequiredException ex) {
-        assertEquals(Zip64RequiredException.ARCHIVE_TOO_BIG_MESSAGE,
-                     ex.getMessage());
-    }
-         };
+            (f, zos) -> {
+                zos.setUseZip64(Zip64Mode.Never);
+                final Zip64RequiredException ex = assertThrows(Zip64RequiredException.class,
+                        () -> write3EntriesCreatingBigArchiveToStream(zos), "expected a Zip64RequiredException");
+                assertEquals(Zip64RequiredException.ARCHIVE_TOO_BIG_MESSAGE, ex.getMessage());
+            };
 
     private static File get100KFileFile() throws Throwable {
         return getFile("100k_Files.zip");
@@ -764,26 +757,22 @@ public class Zip64SupportIT {
     private static ZipOutputTest
         writeBigDeflatedEntryToFileModeNever(final boolean knownSize) {
         return (f, zos) -> {
-        zos.setUseZip64(Zip64Mode.Never);
-        try {
-            final byte[] buf = new byte[ONE_MILLION];
-            final ZipArchiveEntry zae = new ZipArchiveEntry("0");
-            if (knownSize) {
-                zae.setSize(FIVE_BILLION);
-            }
-            zae.setMethod(ZipEntry.DEFLATED);
-            zos.putArchiveEntry(zae);
-            for (int j = 0;
-                 j < FIVE_BILLION / 1000 / 1000;
-                 j++) {
-                zos.write(buf);
-            }
-            zos.closeArchiveEntry();
-            fail("expected a Zip64RequiredException");
-        } catch (final Zip64RequiredException ex) {
+            zos.setUseZip64(Zip64Mode.Never);
+            final Zip64RequiredException ex = assertThrows(Zip64RequiredException.class, () -> {
+                final byte[] buf = new byte[ONE_MILLION];
+                final ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                if (knownSize) {
+                    zae.setSize(FIVE_BILLION);
+                }
+                zae.setMethod(ZipEntry.DEFLATED);
+                zos.putArchiveEntry(zae);
+                for (int j = 0; j < FIVE_BILLION / 1000 / 1000; j++) {
+                    zos.write(buf);
+                }
+                zos.closeArchiveEntry();
+            }, "expected a Zip64RequiredException");
             assertTrue(ex.getMessage().startsWith("0's size"));
-        }
-         };
+        };
     }
 
     /*
@@ -967,23 +956,21 @@ public class Zip64SupportIT {
     private static ZipOutputTest
         writeBigDeflatedEntryUnknownSizeToStream(final Zip64Mode mode) {
         return (f, zos) -> {
-        try {
-            if (mode != Zip64Mode.AsNeeded) {
-                zos.setUseZip64(mode);
-            }
-            final byte[] buf = new byte[ONE_MILLION];
-            final ZipArchiveEntry zae = new ZipArchiveEntry("0");
-            zae.setMethod(ZipEntry.DEFLATED);
-            zos.putArchiveEntry(zae);
-            for (int j = 0; j < FIVE_BILLION / 1000 / 1000; j++) {
-                zos.write(buf);
-            }
-            zos.closeArchiveEntry();
-            fail("expected a Zip64RequiredException");
-        } catch (final Zip64RequiredException ex) {
+            final Zip64RequiredException ex = assertThrows(Zip64RequiredException.class, () -> {
+                if (mode != Zip64Mode.AsNeeded) {
+                    zos.setUseZip64(mode);
+                }
+                final byte[] buf = new byte[ONE_MILLION];
+                final ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                zae.setMethod(ZipEntry.DEFLATED);
+                zos.putArchiveEntry(zae);
+                for (int j = 0; j < FIVE_BILLION / 1000 / 1000; j++) {
+                    zos.write(buf);
+                }
+                zos.closeArchiveEntry();
+            }, "expected a Zip64RequiredException");
             assertTrue(ex.getMessage().startsWith("0's size"));
-        }
-         };
+        };
     }
 
     private static ZipOutputTest writeBigStoredEntry(final boolean knownSize) {
@@ -1150,25 +1137,23 @@ public class Zip64SupportIT {
     private static ZipOutputTest
         writeBigStoredEntryModeNever(final boolean knownSize) {
         return (f, zos) -> {
-        zos.setUseZip64(Zip64Mode.Never);
-        try {
-            final byte[] buf = new byte[ONE_MILLION];
-            final ZipArchiveEntry zae = new ZipArchiveEntry("0");
-            if (knownSize) {
-                zae.setSize(FIVE_BILLION);
-                zae.setCrc(0x5c316f50L);
-            }
-            zae.setMethod(ZipEntry.STORED);
-            zos.putArchiveEntry(zae);
-            for (int j = 0; j < FIVE_BILLION / 1000 / 1000; j++) {
-                zos.write(buf);
-            }
-            zos.closeArchiveEntry();
-            fail("expected a Zip64RequiredException");
-        } catch (final Zip64RequiredException ex) {
+            zos.setUseZip64(Zip64Mode.Never);
+            final Zip64RequiredException ex = assertThrows(Zip64RequiredException.class, () -> {
+                final byte[] buf = new byte[ONE_MILLION];
+                final ZipArchiveEntry zae = new ZipArchiveEntry("0");
+                if (knownSize) {
+                    zae.setSize(FIVE_BILLION);
+                    zae.setCrc(0x5c316f50L);
+                }
+                zae.setMethod(ZipEntry.STORED);
+                zos.putArchiveEntry(zae);
+                for (int j = 0; j < FIVE_BILLION / 1000 / 1000; j++) {
+                    zos.write(buf);
+                }
+                zos.closeArchiveEntry();
+            }, "expected a Zip64RequiredException");
             assertTrue(ex.getMessage().startsWith("0's size"));
-        }
-         };
+        };
     }
 
     private static ZipOutputTest writeSmallDeflatedEntryToFile(final boolean knownSize) {
@@ -2390,22 +2375,17 @@ public class Zip64SupportIT {
     @Test public void writeBigDeflatedEntryKnownSizeToStreamModeNever()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToStreamModeNever",
-                             (f, zos) -> {
-                             zos.setUseZip64(Zip64Mode.Never);
-                             try {
-                                 final ZipArchiveEntry zae =
-                                     new ZipArchiveEntry("0");
-                                 zae.setSize(FIVE_BILLION);
-                                 zae.setMethod(ZipEntry.DEFLATED);
-                                 zos.putArchiveEntry(zae);
-                                 fail("expected a"
-                                      + " Zip64RequiredException");
-                             } catch (final Zip64RequiredException ex) {
-                                 assertTrue(ex.getMessage()
-                                            .startsWith("0's size"));
-                             }
-                         },
-                             false);
+                (f, zos) -> {
+                    zos.setUseZip64(Zip64Mode.Never);
+                    final Zip64RequiredException ex = assertThrows(Zip64RequiredException.class, () -> {
+                        final ZipArchiveEntry zae =
+                                new ZipArchiveEntry("0");
+                        zae.setSize(FIVE_BILLION);
+                        zae.setMethod(ZipEntry.DEFLATED);
+                        zos.putArchiveEntry(zae);
+                    }, "expected a Zip64RequiredException");
+                    assertTrue(ex.getMessage().startsWith("0's size"));
+                }, false);
     }
 
     @Test public void writeBigDeflatedEntryUnknownSizeToFile()

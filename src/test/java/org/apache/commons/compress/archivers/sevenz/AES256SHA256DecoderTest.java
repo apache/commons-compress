@@ -19,9 +19,10 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
@@ -49,16 +50,9 @@ public class AES256SHA256DecoderTest {
         final InputStream inputStream = aES256SHA256Decoder.decode("x", bufferedInputStream, 3138, coder, coder.properties,
                 Integer.MAX_VALUE);
 
-        ObjectInputStream objectInputStream = null;
-
-        try {
-            objectInputStream = new ObjectInputStream(inputStream);
-            fail("Expecting exception: IOException");
-        } catch(final Throwable e) {
-            assertEquals("Salt size + IV size too long in x",e.getMessage());
-            assertEquals("org.apache.commons.compress.archivers.sevenz.AES256SHA256Decoder$1", e.getStackTrace()[0].getClassName());
-        }
-
+        final IOException e = assertThrows(IOException.class, () -> new ObjectInputStream(inputStream), "Expecting exception: IOException");
+        assertEquals("Salt size + IV size too long in x", e.getMessage());
+        assertEquals("org.apache.commons.compress.archivers.sevenz.AES256SHA256Decoder$1", e.getStackTrace()[0].getClassName());
     }
 
 

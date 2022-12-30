@@ -20,8 +20,8 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -67,18 +67,11 @@ public class ExplodeSupportTest {
 
     @Test
     public void testConstructorThrowsExceptions() {
-        try {
-            final ExplodingInputStream eis = new  ExplodingInputStream(4095,2,new ByteArrayInputStream(new byte[] {}));
-            fail("should have failed with illegal argument exception");
-        } catch (final IllegalArgumentException e) {
-        }
+        assertThrows(IllegalArgumentException.class, () -> new ExplodingInputStream(4095, 2, new ByteArrayInputStream(new byte[]{})),
+                "should have failed with illegal argument exception");
 
-        try {
-            final ExplodingInputStream eis = new  ExplodingInputStream(4096,4,new ByteArrayInputStream(new byte[] {}));
-            fail("should have failed with illegal argument exception");
-        } catch (final IllegalArgumentException e) {
-        }
-
+        assertThrows(IllegalArgumentException.class, () -> new ExplodingInputStream(4096, 4, new ByteArrayInputStream(new byte[]{})),
+                "should have failed with illegal argument exception");
     }
 
     @Test

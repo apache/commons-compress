@@ -20,13 +20,13 @@ package org.apache.commons.compress.archivers;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -648,12 +648,8 @@ public final class ZipTestCase extends AbstractTestCase {
             assertEquals(ZipMethod.TOKENIZATION.getCode(), entry.getMethod(), "method");
             assertEquals("README", entry.getName());
             assertFalse(zip.canReadEntryData(entry));
-            try {
-                assertNull(zip.getNextZipEntry());
-            } catch (final IOException e) {
-                e.printStackTrace();
-                fail("COMPRESS-93: Unable to skip an unsupported zip entry");
-            }
+            assertDoesNotThrow(() -> assertNull(zip.getNextZipEntry()),
+                    "COMPRESS-93: Unable to skip an unsupported zip entry");
         }
     }
 

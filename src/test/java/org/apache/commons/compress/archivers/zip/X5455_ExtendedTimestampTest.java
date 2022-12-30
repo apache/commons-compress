@@ -29,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -215,13 +215,9 @@ public class X5455_ExtendedTimestampTest {
         final ZipLong time = new ZipLong(timeMillis / 1000);
 
         // set too big
-        try {
-            // Java time is 1000 x larger (milliseconds).
-            xf.setModifyJavaTime(new Date(1000L * (MAX_TIME_SECONDS.getValue() + 1L)));
-            fail("Time too big for 32 bits!");
-        } catch (final IllegalArgumentException iae) {
-            // All is good.
-        }
+        // Java time is 1000 x larger (milliseconds).
+        assertThrows(IllegalArgumentException.class, () -> xf.setModifyJavaTime(new Date(1000L * (MAX_TIME_SECONDS.getValue() + 1L))),
+                "Time too big for 32 bits!");
 
         // get/set modify time
         xf.setModifyTime(time);

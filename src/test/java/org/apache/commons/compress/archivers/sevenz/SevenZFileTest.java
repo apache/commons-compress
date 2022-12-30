@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -504,18 +503,16 @@ public class SevenZFileTest extends AbstractTestCase {
 
     @Test
     public void testEncryptedArchiveRequiresPassword() throws Exception {
-        try {
-            new SevenZFile(getFile("bla.encrypted.7z")).close();
-            fail("shouldn't decrypt without a password");
-        } catch (final PasswordRequiredException ex) {
-            final String msg = ex.getMessage();
-            assertTrue(msg.startsWith("Cannot read encrypted content from "),
-                    "Should start with whining about being unable to decrypt");
-            assertTrue(msg.endsWith(" without a password."),
-                    "Should finish the sentence properly");
-            assertTrue(msg.contains("bla.encrypted.7z"),
-                    "Should contain archive's name");
-        }
+        final PasswordRequiredException ex = assertThrows(PasswordRequiredException.class,
+                () -> new SevenZFile(getFile("bla.encrypted.7z")).close(),
+                "shouldn't decrypt without a password");
+        final String msg = ex.getMessage();
+        assertTrue(msg.startsWith("Cannot read encrypted content from "),
+                "Should start with whining about being unable to decrypt");
+        assertTrue(msg.endsWith(" without a password."),
+                "Should finish the sentence properly");
+        assertTrue(msg.contains("bla.encrypted.7z"),
+                "Should contain archive's name");
     }
 
     @Test
@@ -537,12 +534,12 @@ public class SevenZFileTest extends AbstractTestCase {
         testFiles.add(getPath("COMPRESS-542-endheadercorrupted2.7z"));
 
         for (final Path file : testFiles) {
-            try (SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(file),
-                     SevenZFileOptions.builder().withTryToRecoverBrokenArchives(true).build())) {
-                fail("Expected IOException: start header corrupt and unable to guess end header");
-            } catch (final IOException e) {
-                assertEquals("Start header corrupt and unable to guess end header", e.getMessage());
-            }
+            final IOException e = assertThrows(IOException.class, () -> {
+                try (SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(file),
+                        SevenZFileOptions.builder().withTryToRecoverBrokenArchives(true).build())) {
+                }
+            }, "Expected IOException: start header corrupt and unable to guess end header");
+            assertEquals("Start header corrupt and unable to guess end header", e.getMessage());
         }
     }
 

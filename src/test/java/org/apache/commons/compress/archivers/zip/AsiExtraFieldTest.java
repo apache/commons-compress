@@ -21,8 +21,8 @@ package org.apache.commons.compress.archivers.zip;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
@@ -104,58 +104,54 @@ public class AsiExtraFieldTest implements UnixStat {
     @Test
     public void testReparse() throws Exception {
         // CRC manually calculated, sorry
-        byte[] data = {(byte)0xC6, 0x02, 0x78, (byte)0xB6, // CRC
-                       0123, (byte)0x80,                   // mode
-                       0, 0, 0, 0,                         // link length
-                       5, 0, 6, 0};                        // uid, gid
-        AsiExtraField a = new AsiExtraField();
-        a.parseFromLocalFileData(data, 0, data.length);
-        assertEquals(data.length, a.getLocalFileDataLength().getValue(), "length plain file");
-        assertFalse(a.isLink(), "plain file, no link");
-        assertFalse(a.isDirectory(), "plain file, no dir");
-        assertEquals(FILE_FLAG | 0123, a.getMode(), "mode plain file");
-        assertEquals(5, a.getUserId(), "uid plain file");
-        assertEquals(6, a.getGroupId(), "gid plain file");
+        final byte[] data1 = {(byte)0xC6, 0x02, 0x78, (byte)0xB6, // CRC
+                              0123, (byte)0x80,                   // mode
+                              0, 0, 0, 0,                         // link length
+                              5, 0, 6, 0};                        // uid, gid
+        final AsiExtraField a1 = new AsiExtraField();
+        a1.parseFromLocalFileData(data1, 0, data1.length);
+        assertEquals(data1.length, a1.getLocalFileDataLength().getValue(), "length plain file");
+        assertFalse(a1.isLink(), "plain file, no link");
+        assertFalse(a1.isDirectory(), "plain file, no dir");
+        assertEquals(FILE_FLAG | 0123, a1.getMode(), "mode plain file");
+        assertEquals(5, a1.getUserId(), "uid plain file");
+        assertEquals(6, a1.getGroupId(), "gid plain file");
 
-        data = new byte[] {0x75, (byte)0x8E, 0x41, (byte)0xFD, // CRC
-                           0123, (byte)0xA0,                   // mode
-                           4, 0, 0, 0,                         // link length
-                           5, 0, 6, 0,                         // uid, gid
-                           (byte)'t', (byte)'e', (byte)'s', (byte)'t'};
-        a = new AsiExtraField();
-        a.parseFromLocalFileData(data, 0, data.length);
-        assertEquals(data.length, a.getLocalFileDataLength().getValue(), "length link");
-        assertTrue(a.isLink(), "link, is link");
-        assertFalse(a.isDirectory(), "link, no dir");
-        assertEquals(LINK_FLAG | 0123, a.getMode(), "mode link");
-        assertEquals(5, a.getUserId(), "uid link");
-        assertEquals(6, a.getGroupId(), "gid link");
-        assertEquals("test", a.getLinkedFile());
+        final byte[] data2 = new byte[] {0x75, (byte)0x8E, 0x41, (byte)0xFD, // CRC
+                                         0123, (byte)0xA0,                   // mode
+                                         4, 0, 0, 0,                         // link length
+                                         5, 0, 6, 0,                         // uid, gid
+                                         (byte)'t', (byte)'e', (byte)'s', (byte)'t'};
+        final AsiExtraField a2 = new AsiExtraField();
+        a2.parseFromLocalFileData(data2, 0, data2.length);
+        assertEquals(data2.length, a2.getLocalFileDataLength().getValue(), "length link");
+        assertTrue(a2.isLink(), "link, is link");
+        assertFalse(a2.isDirectory(), "link, no dir");
+        assertEquals(LINK_FLAG | 0123, a2.getMode(), "mode link");
+        assertEquals(5, a2.getUserId(), "uid link");
+        assertEquals(6, a2.getGroupId(), "gid link");
+        assertEquals("test", a2.getLinkedFile());
 
-        data = new byte[] {(byte)0x8E, 0x01, (byte)0xBF, (byte)0x0E, // CRC
-                           0123, (byte)0x40,                         // mode
-                           0, 0, 0, 0,                               // link
-                           5, 0, 6, 0};                          // uid, gid
-        a = new AsiExtraField();
-        a.parseFromLocalFileData(data, 0, data.length);
-        assertEquals(data.length, a.getLocalFileDataLength().getValue(), "length dir");
-        assertFalse(a.isLink(), "dir, no link");
-        assertTrue(a.isDirectory(), "dir, is dir");
-        assertEquals(DIR_FLAG | 0123, a.getMode(), "mode dir");
-        assertEquals(5, a.getUserId(), "uid dir");
-        assertEquals(6, a.getGroupId(), "gid dir");
+        final byte[] data3 = new byte[] {(byte)0x8E, 0x01, (byte)0xBF, (byte)0x0E, // CRC
+                                         0123, (byte)0x40,                         // mode
+                                         0, 0, 0, 0,                               // link
+                                         5, 0, 6, 0};                              // uid, gid
+        final AsiExtraField a3 = new AsiExtraField();
+        a3.parseFromLocalFileData(data3, 0, data3.length);
+        assertEquals(data3.length, a3.getLocalFileDataLength().getValue(), "length dir");
+        assertFalse(a3.isLink(), "dir, no link");
+        assertTrue(a3.isDirectory(), "dir, is dir");
+        assertEquals(DIR_FLAG | 0123, a3.getMode(), "mode dir");
+        assertEquals(5, a3.getUserId(), "uid dir");
+        assertEquals(6, a3.getGroupId(), "gid dir");
 
-        data = new byte[] {0, 0, 0, 0,                           // bad CRC
-                           0123, (byte)0x40,                     // mode
-                           0, 0, 0, 0,                           // link
-                           5, 0, 6, 0};                          // uid, gid
-        a = new AsiExtraField();
-        try {
-            a.parseFromLocalFileData(data, 0, data.length);
-            fail("should raise bad CRC exception");
-        } catch (final Exception e) {
-            assertEquals("Bad CRC checksum, expected 0 instead of ebf018e",
-                         e.getMessage());
-        }
+        final byte[] data4 = new byte[] {0, 0, 0, 0,                           // bad CRC
+                                         0123, (byte)0x40,                     // mode
+                                         0, 0, 0, 0,                           // link
+                                         5, 0, 6, 0};                          // uid, gid
+        final AsiExtraField a4 = new AsiExtraField();
+        final Exception e = assertThrows(Exception.class, () -> a4.parseFromLocalFileData(data4, 0, data4.length),
+                "should raise bad CRC exception");
+        assertEquals("Bad CRC checksum, expected 0 instead of ebf018e", e.getMessage());
     }
 }

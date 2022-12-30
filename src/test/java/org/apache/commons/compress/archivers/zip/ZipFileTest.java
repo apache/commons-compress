@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.zip;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -532,11 +533,7 @@ public class ZipFileTest {
     public void testDoubleClose() throws Exception {
         readOrderTest();
         zf.close();
-        try {
-            zf.close();
-        } catch (final Exception ex) {
-            fail("Caught exception of second close");
-        }
+        assertDoesNotThrow(zf::close, "Caught exception of second close");
     }
 
     /**

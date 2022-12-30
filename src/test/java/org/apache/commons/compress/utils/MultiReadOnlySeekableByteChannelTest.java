@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -173,16 +172,10 @@ public class MultiReadOnlySeekableByteChannelTest {
         channel.close();
         assertFalse(channel.isOpen());
 
-        try {
-            channel.read(buf);
-            fail("expected a ClosedChannelException");
-        } catch (final ClosedChannelException expected) {
-        }
-        try {
-            channel.position(100);
-            fail("expected a ClosedChannelException");
-        } catch (final ClosedChannelException expected) {
-        }
+        assertThrows(ClosedChannelException.class, () -> channel.read(buf),
+                "expected a ClosedChannelException");
+        assertThrows(ClosedChannelException.class, () -> channel.position(100),
+                "expected a ClosedChannelException");
     }
 
     @Test
@@ -216,11 +209,7 @@ public class MultiReadOnlySeekableByteChannelTest {
             new ThrowingSeekableByteChannel()
         };
         final SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(ts);
-        try {
-            s.close();
-            fail("IOException expected");
-        } catch (final IOException expected) {
-        }
+        assertThrows(IOException.class, s::close, "IOException expected");
         assertFalse(ts[0].isOpen());
         assertFalse(ts[1].isOpen());
     }

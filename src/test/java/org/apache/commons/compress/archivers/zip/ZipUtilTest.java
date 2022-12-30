@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigInteger;
 import java.util.Calendar;
@@ -82,20 +81,12 @@ public class ZipUtilTest {
         assertEquals(Long.MIN_VALUE, ZipUtil.bigToLong(big3));
 
         final BigInteger big4 = big2.add(big1);
-        try {
-            ZipUtil.bigToLong(big4);
-            fail("Should have thrown IllegalArgumentException");
-        } catch (final IllegalArgumentException iae) {
-            // All is good.
-        }
+        assertThrows(IllegalArgumentException.class, () -> ZipUtil.bigToLong(big4),
+                "Should have thrown IllegalArgumentException");
 
         final BigInteger big5 = big3.subtract(big1);
-        try {
-            ZipUtil.bigToLong(big5);
-            fail("ZipUtil.bigToLong(BigInteger) should have thrown IllegalArgumentException");
-        } catch (final IllegalArgumentException iae) {
-            // All is good.
-        }
+        assertThrows(IllegalArgumentException.class, () -> ZipUtil.bigToLong(big5),
+                "ZipUtil.bigToLong(BigInteger) should have thrown IllegalArgumentException");
     }
 
     @Test
@@ -150,12 +141,8 @@ public class ZipUtilTest {
         assertEquals(0x80000000L, big3.longValue());
         assertEquals(Long.MAX_VALUE, big4.longValue());
 
-        try {
-            ZipUtil.longToBig(l5);
-            fail("ZipUtil.longToBig(long) should have thrown IllegalArgumentException");
-        } catch (final IllegalArgumentException iae) {
-
-        }
+        assertThrows(IllegalArgumentException.class, () -> ZipUtil.longToBig(l5),
+                "ZipUtil.longToBig(long) should have thrown IllegalArgumentException");
     }
 
     @Test
@@ -236,20 +223,11 @@ public class ZipUtilTest {
             }
         }
 
-        try {
-            ZipUtil.unsignedIntToSignedByte(-1);
-            fail("ZipUtil.unsignedIntToSignedByte(-1) should have thrown IllegalArgumentException");
-        } catch (final IllegalArgumentException iae) {
-            // All is good.
-        }
+        assertThrows(IllegalArgumentException.class, () -> ZipUtil.unsignedIntToSignedByte(-1),
+                "ZipUtil.unsignedIntToSignedByte(-1) should have thrown IllegalArgumentException");
 
-        try {
-            ZipUtil.unsignedIntToSignedByte(256);
-            fail("ZipUtil.unsignedIntToSignedByte(256) should have thrown IllegalArgumentException");
-        } catch (final IllegalArgumentException iae) {
-            // All is good.
-        }
-
+        assertThrows(IllegalArgumentException.class, () -> ZipUtil.unsignedIntToSignedByte(256),
+                "ZipUtil.unsignedIntToSignedByte(256) should have thrown IllegalArgumentException");
     }
 
     @Test
