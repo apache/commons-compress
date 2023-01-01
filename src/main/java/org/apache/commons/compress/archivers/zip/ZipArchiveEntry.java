@@ -437,7 +437,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
         setExtra();
     }
 
-    private void internalAddExtraField(ZipExtraField ze) {
+    private void internalAddExtraField(final ZipExtraField ze) {
         if (ze instanceof UnparseableExtraFieldData) {
             unparseableExtra = (UnparseableExtraFieldData) ze;
         } else if (extraFields == null) {
@@ -487,11 +487,8 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     public long getTime() {
         if (lastModifiedDateSet) {
             return getLastModifiedTime().toMillis();
-        } else if (time != -1) {
-            return time;
-        } else {
-            return super.getTime();
         }
+        return time != -1 ? time : super.getTime();
     }
 
     /**
@@ -1051,11 +1048,10 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      * @param type the type of extra field to remove
      */
     public void removeExtraField(final ZipShort type) {
-        if (getExtraField(type) != null) {
-            internalRemoveExtraField(type);
-        } else {
+        if (getExtraField(type) == null) {
             throw new NoSuchElementException();
         }
+        internalRemoveExtraField(type);
         setExtra();
     }
 
