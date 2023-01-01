@@ -186,7 +186,7 @@ public final class FramedSnappyCompressorInputStreamTest
         };
         try (final FramedSnappyCompressorInputStream in =
                      new FramedSnappyCompressorInputStream(new ByteArrayInputStream(input))) {
-            IOException exception = assertThrows(IOException.class, () -> in.read());
+            final IOException exception = assertThrows(IOException.class, () -> in.read());
             assertTrue(exception.getMessage().contains("Unskippable chunk"));
         } catch (final IOException ex) {
         }
