@@ -19,9 +19,9 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,25 +40,25 @@ public class CircularBufferTest {
         buffer.copy(6, 8);
 
         for (int i = 2; i < 6; i++) {
-            assertEquals("buffer[" + i + "]", 0, buffer.get());
+            assertEquals(0, buffer.get(), "buffer[" + i + "]");
         }
-        assertEquals("buffer[" + 6 + "]", 1, buffer.get());
-        assertEquals("buffer[" + 7 + "]", 2, buffer.get());
-        assertEquals("buffer[" + 8 + "]", 0, buffer.get());
-        assertEquals("buffer[" + 9 + "]", 0, buffer.get());
+        assertEquals(1, buffer.get(), "buffer[" + 6 + "]");
+        assertEquals(2, buffer.get(), "buffer[" + 7 + "]");
+        assertEquals(0, buffer.get(), "buffer[" + 8 + "]");
+        assertEquals(0, buffer.get(), "buffer[" + 9 + "]");
 
         for (int i = 10; i < 14; i++) {
             buffer.put(i);
             buffer.get();
         }
 
-        assertFalse("available", buffer.available());
+        assertFalse(buffer.available(), "available");
 
         // copy data and wrap
         buffer.copy(2, 8);
 
         for (int i = 14; i < 18; i++) {
-            assertEquals("buffer[" + i + "]", i % 2 == 0 ? 12 : 13, buffer.get());
+            assertEquals(i % 2 == 0 ? 12 : 13, buffer.get(), "buffer[" + i + "]");
         }
     }
 
@@ -70,13 +70,13 @@ public class CircularBufferTest {
             buffer.put(i);
         }
 
-        assertTrue("available", buffer.available());
+        assertTrue(buffer.available(), "available");
 
         for (int i = 0; i < size / 2; i++) {
-            assertEquals("buffer[" + i + "]", i, buffer.get());
+            assertEquals(i, buffer.get(), "buffer[" + i + "]");
         }
 
         assertEquals(-1, buffer.get());
-        assertFalse("available", buffer.available());
+        assertFalse(buffer.available(), "available");
     }
 }

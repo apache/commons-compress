@@ -19,12 +19,11 @@
 package org.apache.commons.compress.compressors;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -156,21 +155,13 @@ public final class DetectCompressorTestCase {
 
         assertThrows(CompressorException.class, () -> CompressorStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))));
 
-        try {
-            CompressorStreamFactory.detect(null);
-            fail("shouldn't be able to detect null stream");
-        } catch (final IllegalArgumentException e) {
-            assertEquals("Stream must not be null.", e.getMessage());
-        }
+        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> CompressorStreamFactory.detect(null),
+                "shouldn't be able to detect null stream");
+        assertEquals("Stream must not be null.", e.getMessage());
 
-        try {
-            CompressorStreamFactory.detect(new BufferedInputStream(new MockEvilInputStream()));
-            fail("Expected IOException");
-        } catch (final CompressorException e) {
-            assertEquals("IOException while reading signature.", e.getMessage());
-        }
-
-
+        final CompressorException ce = assertThrows(CompressorException.class, () -> CompressorStreamFactory.detect(new BufferedInputStream(new MockEvilInputStream())),
+                "Expected IOException");
+        assertEquals("IOException while reading signature.", ce.getMessage());
     }
 
     @Test
@@ -212,12 +203,12 @@ public final class DetectCompressorTestCase {
         for(int i=0; i <tests.length; i++) {
             final TestData test = tests[i];
             final CompressorStreamFactory fac = test.factory;
-            assertNotNull("Test entry "+i, fac);
-            assertEquals("Test entry "+i, test.concat, fac.getDecompressConcatenated());
+            assertNotNull(fac, "Test entry " + i);
+            assertEquals(test.concat, fac.getDecompressConcatenated(), "Test entry " + i);
             final CompressorInputStream in = getStreamFor(test.fileName, fac);
-            assertNotNull("Test entry "+i,in);
+            assertNotNull(in, "Test entry " + i);
             for (final char entry : test.entryNames) {
-                assertEquals("Test entry" + i, entry, in.read());
+                assertEquals(entry, in.read(), "Test entry" + i);
             }
             assertEquals(0, in.available());
             assertEquals(-1, in.read());
@@ -227,28 +218,20 @@ public final class DetectCompressorTestCase {
 
     @Test
     public void testOverride() {
-        CompressorStreamFactory fac = new CompressorStreamFactory();
-        assertFalse(fac.getDecompressConcatenated());
-        fac.setDecompressConcatenated(true);
-        assertTrue(fac.getDecompressConcatenated());
+        final CompressorStreamFactory fac1 = new CompressorStreamFactory();
+        assertFalse(fac1.getDecompressConcatenated());
+        fac1.setDecompressConcatenated(true);
+        assertTrue(fac1.getDecompressConcatenated());
 
-        fac = new CompressorStreamFactory(false);
-        assertFalse(fac.getDecompressConcatenated());
-        try {
-            fac.setDecompressConcatenated(true);
-            fail("Expected IllegalStateException");
-        } catch (final IllegalStateException ise) {
-            // expected
-        }
+        final CompressorStreamFactory fac2 = new CompressorStreamFactory(false);
+        assertFalse(fac2.getDecompressConcatenated());
+        assertThrows(IllegalStateException.class, () -> fac2.setDecompressConcatenated(true),
+                "Expected IllegalStateException");
 
-        fac = new CompressorStreamFactory(true);
-        assertTrue(fac.getDecompressConcatenated());
-        try {
-            fac.setDecompressConcatenated(true);
-            fail("Expected IllegalStateException");
-        } catch (final IllegalStateException ise) {
-            // expected
-        }
+        final CompressorStreamFactory fac3 = new CompressorStreamFactory(true);
+        assertTrue(fac3.getDecompressConcatenated());
+        assertThrows(IllegalStateException.class, () -> fac3.setDecompressConcatenated(true),
+                "Expected IllegalStateException");
     }
 
     @Test

@@ -18,11 +18,11 @@
  */
 package org.apache.commons.compress.compressors.snappy;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -184,14 +184,11 @@ public final class FramedSnappyCompressorInputStreamTest
             (byte) 0xff, 6, 0, 0, 's', 'N', 'a', 'P', 'p', 'Y',
             2, 2, 0, 0, 1, 1
         };
-        try {
-            final FramedSnappyCompressorInputStream in =
-                new FramedSnappyCompressorInputStream(new ByteArrayInputStream(input));
-            in.read();
-            fail("expected an exception");
-            in.close();
+        try (final FramedSnappyCompressorInputStream in =
+                     new FramedSnappyCompressorInputStream(new ByteArrayInputStream(input))) {
+            IOException exception = assertThrows(IOException.class, () -> in.read());
+            assertTrue(exception.getMessage().contains("Unskippable chunk"));
         } catch (final IOException ex) {
-            assertTrue(ex.getMessage().contains("Unskippable chunk"));
         }
     }
 

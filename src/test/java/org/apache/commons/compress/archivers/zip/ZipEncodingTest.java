@@ -20,16 +20,16 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 import org.hamcrest.core.IsInstanceOf;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -48,11 +48,11 @@ public class ZipEncodingTest {
 
     private static void assertEquals(final byte[] expected, final ByteBuffer actual) {
 
-        Assert.assertEquals(expected.length, actual.limit());
+        Assertions.assertEquals(expected.length, actual.limit());
 
         for (final byte anExpected : expected) {
             final byte a = actual.get();
-            Assert.assertEquals(anExpected, a);
+            Assertions.assertEquals(anExpected, a);
         }
 
     }
@@ -105,7 +105,7 @@ public class ZipEncodingTest {
         assertNotNull(ze);
         if (ze instanceof CharsetAccessor) {
             final CharsetAccessor hasCharset = (CharsetAccessor) ze;
-            Assert.assertEquals(Charset.defaultCharset(), hasCharset.getCharset());
+            Assertions.assertEquals(Charset.defaultCharset(), hasCharset.getCharset());
         }
     }
 
@@ -113,7 +113,7 @@ public class ZipEncodingTest {
     public void testIsUTF8() {
        assertTrue(ZipEncodingHelper.isUTF8("UTF-8"));
        assertTrue(ZipEncodingHelper.isUTF8("UTF8"));
-       Assert.assertEquals(Charset.defaultCharset().name().equals("UTF-8"), ZipEncodingHelper.isUTF8(null));
+       Assertions.assertEquals(Charset.defaultCharset().name().equals("UTF-8"), ZipEncodingHelper.isUTF8(null));
     }
 
 

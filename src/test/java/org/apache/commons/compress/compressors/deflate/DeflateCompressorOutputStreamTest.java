@@ -18,10 +18,11 @@
  */
 package org.apache.commons.compress.compressors.deflate;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public class DeflateCompressorOutputStreamTest {
@@ -33,7 +34,7 @@ public class DeflateCompressorOutputStreamTest {
             cos.write(99);
             cos.flush();
             cos.finish();
-            Assert.assertTrue(bos.toByteArray().length > 0);
+            assertTrue(bos.toByteArray().length > 0);
         }
     }
 

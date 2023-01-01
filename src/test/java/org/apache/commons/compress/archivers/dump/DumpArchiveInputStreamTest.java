@@ -18,10 +18,11 @@
  */
 package org.apache.commons.compress.archivers.dump;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -77,10 +78,8 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void testNotADumpArchive() throws Exception {
         try (InputStream is = Files.newInputStream(getFile("bla.zip").toPath())) {
-            new DumpArchiveInputStream(is).close();
-            fail("expected an exception");
-        } catch (final ArchiveException ex) {
-            // expected
+            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(),
+                    "expected an exception");
             assertTrue(ex.getCause() instanceof ShortFileException);
         }
     }
@@ -88,11 +87,9 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void testNotADumpArchiveButBigEnough() throws Exception {
         try (InputStream is = Files.newInputStream(getFile("zip64support.tar.bz2").toPath())) {
-            new DumpArchiveInputStream(is).close();
-            fail("expected an exception");
-        } catch (final ArchiveException ex) {
-            // expected
-            assertTrue(ex.getCause() instanceof UnrecognizedFormatException);
+            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(),
+                    "expected an exception");
+            assertInstanceOf(UnrecognizedFormatException.class, ex.getCause());
         }
     }
 

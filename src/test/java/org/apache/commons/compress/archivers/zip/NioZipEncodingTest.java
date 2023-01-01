@@ -23,11 +23,12 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_16BE;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public class NioZipEncodingTest {
@@ -42,7 +43,7 @@ public class NioZipEncodingTest {
         final ByteBuffer bb = e.encode("\ud83c");
         final int off = bb.arrayOffset();
         final byte[] result = Arrays.copyOfRange(bb.array(), off, off + bb.limit() - bb.position());
-        Assert.assertEquals(0, result.length);
+        assertEquals(0, result.length);
     }
 
     @Test
@@ -51,7 +52,7 @@ public class NioZipEncodingTest {
         final ByteBuffer bb = e.encode(RAINBOW_EMOJI);
         final int off = bb.arrayOffset();
         final byte[] result = Arrays.copyOfRange(bb.array(), off, off + bb.limit() - bb.position());
-        Assert.assertArrayEquals(RAINBOW_EMOJI.getBytes(UTF_16BE), result);
+        assertArrayEquals(RAINBOW_EMOJI.getBytes(UTF_16BE), result);
     }
 
     @Test
@@ -60,7 +61,7 @@ public class NioZipEncodingTest {
         final ByteBuffer bb = e.encode("\u00e4\u00f6\u00fc");
         final int off = bb.arrayOffset();
         final byte[] result = Arrays.copyOfRange(bb.array(), off, off + bb.limit() - bb.position());
-        Assert.assertArrayEquals(UMLAUTS.getBytes(ISO_8859_1), result);
+        assertArrayEquals(UMLAUTS.getBytes(ISO_8859_1), result);
     }
 
     @Test
@@ -69,7 +70,7 @@ public class NioZipEncodingTest {
         final ByteBuffer bb = e.encode(UMLAUTS);
         final int off = bb.arrayOffset();
         final byte[] result = Arrays.copyOfRange(bb.array(), off, off + bb.limit() - bb.position());
-        Assert.assertArrayEquals(UMLAUTS.getBytes(UTF_16BE), result);
+        assertArrayEquals(UMLAUTS.getBytes(UTF_16BE), result);
     }
 
     @Test
@@ -78,7 +79,7 @@ public class NioZipEncodingTest {
         final ByteBuffer bb = e.encode("\u00e4\u00f6\u00fc");
         final int off = bb.arrayOffset();
         final byte[] result = Arrays.copyOfRange(bb.array(), off, off + bb.limit() - bb.position());
-        Assert.assertArrayEquals(UMLAUTS.getBytes(UTF_8), result);
+        assertArrayEquals(UMLAUTS.getBytes(UTF_8), result);
     }
 
     @Test
@@ -87,7 +88,7 @@ public class NioZipEncodingTest {
         final ByteBuffer bb = e.encode(RAINBOW_EMOJI);
         final int off = bb.arrayOffset();
         final byte[] result = Arrays.copyOfRange(bb.array(), off, off + bb.limit() - bb.position());
-        Assert.assertEquals("%UD83C%UDF08", new String(result, US_ASCII));
+        assertEquals("%UD83C%UDF08", new String(result, US_ASCII));
     }
 
     @Test
@@ -96,6 +97,6 @@ public class NioZipEncodingTest {
         final ByteBuffer bb = e.encode("\u00e4\u00f6\u00fc");
         final int off = bb.arrayOffset();
         final byte[] result = Arrays.copyOfRange(bb.array(), off, off + bb.limit() - bb.position());
-        Assert.assertEquals("%U00E4%U00F6%U00FC", new String(result, US_ASCII));
+        assertEquals("%U00E4%U00F6%U00FC", new String(result, US_ASCII));
     }
 }

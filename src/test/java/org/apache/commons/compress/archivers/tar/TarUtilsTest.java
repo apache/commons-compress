@@ -20,11 +20,10 @@ package org.apache.commons.compress.archivers.tar;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -420,11 +419,8 @@ public class TarUtilsTest {
         final byte [] buffer = new byte[8-1]; // a lot of the numbers have 8-byte buffers (nul term)
         TarUtils.formatUnsignedOctalString(07777777L, buffer, 0, buffer.length);
         assertEquals("7777777", new String(buffer, UTF_8));
-        try {
-            TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length);
-            fail("Should have cause IllegalArgumentException");
-        } catch (final IllegalArgumentException expected) {
-        }
+        assertThrows(IllegalArgumentException.class, () -> TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length),
+                "Should have cause IllegalArgumentException");
     }
 
     @Test
@@ -465,37 +461,25 @@ public class TarUtilsTest {
 
     @Test
     public void testParseOctalInvalid() {
-        byte [] buffer;
-        buffer=ByteUtils.EMPTY_BYTE_ARRAY;
-        try {
-            TarUtils.parseOctal(buffer,0, buffer.length);
-            fail("Expected IllegalArgumentException - should be at least 2 bytes long");
-        } catch (final IllegalArgumentException expected) {
-        }
-        buffer=new byte[]{0}; // 1-byte array
-        try {
-            TarUtils.parseOctal(buffer,0, buffer.length);
-            fail("Expected IllegalArgumentException - should be at least 2 bytes long");
-        } catch (final IllegalArgumentException expected) {
-        }
-        buffer = "abcdef ".getBytes(UTF_8); // Invalid input
-        try {
-            TarUtils.parseOctal(buffer,0, buffer.length);
-            fail("Expected IllegalArgumentException");
-        } catch (final IllegalArgumentException expected) {
-        }
-        buffer = " 0 07 ".getBytes(UTF_8); // Invalid - embedded space
-        try {
-            TarUtils.parseOctal(buffer,0, buffer.length);
-            fail("Expected IllegalArgumentException - embedded space");
-        } catch (final IllegalArgumentException expected) {
-        }
-        buffer = " 0\00007 ".getBytes(UTF_8); // Invalid - embedded NUL
-        try {
-            TarUtils.parseOctal(buffer,0, buffer.length);
-            fail("Expected IllegalArgumentException - embedded NUL");
-        } catch (final IllegalArgumentException expected) {
-        }
+        final byte[] buffer1 = ByteUtils.EMPTY_BYTE_ARRAY;
+        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer1, 0, buffer1.length),
+                "Expected IllegalArgumentException - should be at least 2 bytes long");
+
+        final byte[] buffer2 = new byte[]{0}; // 1-byte array
+        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer2, 0, buffer2.length),
+                "Expected IllegalArgumentException - should be at least 2 bytes long");
+
+        final byte[] buffer3 = "abcdef ".getBytes(UTF_8); // Invalid input
+        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer3, 0, buffer3.length),
+                "Expected IllegalArgumentException");
+
+        final byte[] buffer4 = " 0 07 ".getBytes(UTF_8); // Invalid - embedded space
+        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer3, 0, buffer3.length),
+                "Expected IllegalArgumentException - embedded space");
+
+        final byte[] buffer5 = " 0\00007 ".getBytes(UTF_8); // Invalid - embedded NUL
+        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer5, 0, buffer5.length),
+                "Expected IllegalArgumentException - embedded NUL");
     }
 
     @Test
@@ -592,12 +576,9 @@ public class TarUtilsTest {
 
     @Test
     public void testRoundTripOctalOrBinary8_ValueTooBigForBinary() {
-        try {
-            checkRoundTripOctalOrBinary(Long.MAX_VALUE, 8);
-            fail("Should throw exception - value is too long to fit buffer of this len");
-        } catch (final IllegalArgumentException e) {
-            assertEquals("Value 9223372036854775807 is too large for 8 byte field.", e.getMessage());
-        }
+        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> checkRoundTripOctalOrBinary(Long.MAX_VALUE, 8),
+                "Should throw exception - value is too long to fit buffer of this len");
+        assertEquals("Value 9223372036854775807 is too large for 8 byte field.", e.getMessage());
     }
     // Check correct trailing bytes are generated
     @Test

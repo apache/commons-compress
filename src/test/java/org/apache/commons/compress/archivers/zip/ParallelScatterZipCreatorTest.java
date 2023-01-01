@@ -19,11 +19,11 @@ package org.apache.commons.compress.archivers.zip;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.apache.commons.compress.AbstractTestCase.tryHardToDelete;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -124,7 +124,7 @@ public class ParallelScatterZipCreatorTest {
                 try (final InputStream inputStream = zf.getInputStream(zipArchiveEntry)) {
                     final byte[] actual = IOUtils.toByteArray(inputStream);
                     final byte[] expected = entries.remove(zipArchiveEntry.getName());
-                    assertArrayEquals("For " + zipArchiveEntry.getName(), expected, actual);
+                    assertArrayEquals(expected, actual, "For " + zipArchiveEntry.getName());
                 }
             }
         }
@@ -177,10 +177,10 @@ public class ParallelScatterZipCreatorTest {
                 try (InputStream inputStream = zf.getInputStream(zipArchiveEntry)) {
                     final byte[] actual = IOUtils.toByteArray(inputStream);
                     final byte[] expected = entries.remove(zipArchiveEntry.getName());
-                    assertArrayEquals("For " + zipArchiveEntry.getName(), expected, actual);
+                    assertArrayEquals(expected, actual, "For " + zipArchiveEntry.getName());
                 }
                 // check order of zip entries vs order of order of addition to the parallel zip creator
-                assertEquals("For " + zipArchiveEntry.getName(), "file" + i++, zipArchiveEntry.getName());
+                assertEquals("file" + i++, zipArchiveEntry.getName(), "For " + zipArchiveEntry.getName());
             }
         }
     }

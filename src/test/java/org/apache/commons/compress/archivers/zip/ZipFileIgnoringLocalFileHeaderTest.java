@@ -18,13 +18,15 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Enumeration;
 
 import org.apache.commons.compress.AbstractTestCase;
-import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +43,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     public void getEntryWorks() throws IOException {
         try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
             final ZipArchiveEntry ze = zf.getEntry("test1.xml");
-            Assert.assertEquals(610, ze.getSize());
+            assertEquals(610, ze.getSize());
         }
     }
 
@@ -49,7 +51,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     public void getRawInputStreamReturnsNotNull() throws IOException {
         try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
             final ZipArchiveEntry ze = zf.getEntry("test1.xml");
-            Assert.assertNotNull(zf.getRawInputStream(ze));
+            assertNotNull(zf.getRawInputStream(ze));
         }
     }
 
@@ -69,9 +71,9 @@ public class ZipFileIgnoringLocalFileHeaderTest {
             int numberOfEntries = 0;
             for (final ZipArchiveEntry entry : zf.getEntries("test1.txt")) {
                 numberOfEntries++;
-                Assert.assertNotNull(zf.getInputStream(entry));
+                assertNotNull(zf.getInputStream(entry));
             }
-            Assert.assertEquals(2, numberOfEntries);
+            assertEquals(2, numberOfEntries);
         }
     }
 
@@ -83,7 +85,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
             do {
                 ze = e.nextElement();
             } while (e.hasMoreElements());
-            Assert.assertEquals("src/main/java/org/apache/commons/compress/archivers/zip/ZipUtil.java", ze.getName());
+            assertEquals("src/main/java/org/apache/commons/compress/archivers/zip/ZipUtil.java", ze.getName());
         }
     }
 

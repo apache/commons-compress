@@ -18,8 +18,9 @@
  */
 package org.apache.commons.compress.compressors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,8 +37,9 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipParameters;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public final class GZipTestCase extends AbstractTestCase {
 
@@ -49,8 +51,8 @@ public final class GZipTestCase extends AbstractTestCase {
             final GzipCompressorInputStream in =
                     new GzipCompressorInputStream(is);
             IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read(buf));
-            Assert.assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
             in.close();
         }
     }
@@ -62,8 +64,8 @@ public final class GZipTestCase extends AbstractTestCase {
             final GzipCompressorInputStream in =
                     new GzipCompressorInputStream(is);
             IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read());
-            Assert.assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
             in.close();
         }
     }
@@ -98,36 +100,11 @@ public final class GZipTestCase extends AbstractTestCase {
      */
     @Test
     public void testCorruptedInput() throws Exception {
-        InputStream in = null;
-        OutputStream out = null;
-        CompressorInputStream cin = null;
-        try {
-            out = new ByteArrayOutputStream();
-            Files.copy(getFile("bla.tgz").toPath(), out);
-            out.close();
-
-            final byte[] data = ((ByteArrayOutputStream) out).toByteArray();
-            in = new ByteArrayInputStream(data, 0, data.length - 1);
-            cin = new CompressorStreamFactory().createCompressorInputStream("gz", in);
-            out = new ByteArrayOutputStream();
-
-            try {
-                IOUtils.copy(cin, out);
-                fail("Expected an exception");
-            } catch (final IOException ioex) {
-                // the whole point of the test
-            }
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (cin != null) {
-                cin.close();
-            }
-            if (in != null) {
-                in.close();
-            }
+        final byte[] data = Files.readAllBytes(getPath("bla.tgz"));
+        try (InputStream in = new ByteArrayInputStream(data, 0, data.length - 1);
+             CompressorInputStream cin = new CompressorStreamFactory().createCompressorInputStream("gz", in);
+             OutputStream out = new ByteArrayOutputStream()) {
+            assertThrows(IOException.class, () -> IOUtils.copy(cin, out), "Expected an exception");
         }
     }
 
@@ -144,7 +121,7 @@ public final class GZipTestCase extends AbstractTestCase {
             out.flush();
         }
 
-        assertEquals("extra flags (XFL)", flag, bout.toByteArray()[8]);
+        assertEquals(flag, bout.toByteArray()[8], "extra flags (XFL)");
     }
 
     @Test
@@ -207,7 +184,7 @@ public final class GZipTestCase extends AbstractTestCase {
         final GzipCompressorInputStream in = new GzipCompressorInputStream(new ByteArrayInputStream(bout.toByteArray()));
         final byte[] content2 = IOUtils.toByteArray(in);
 
-        Assert.assertArrayEquals("uncompressed content", content, content2);
+        assertArrayEquals(content, content2, "uncompressed content");
     }
 
     @Test
@@ -233,43 +210,23 @@ public final class GZipTestCase extends AbstractTestCase {
         final GZIPInputStream in = new GZIPInputStream(new ByteArrayInputStream(bout.toByteArray()));
         final byte[] content2 = IOUtils.toByteArray(in);
 
-        Assert.assertArrayEquals("uncompressed content", content, content2);
+        assertArrayEquals(content, content2, "uncompressed content");
     }
 
-    @Test
-    public void testInvalidBufferSize() {
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1})
+    public void testInvalidBufferSize(final int bufferSize) {
         final GzipParameters parameters = new GzipParameters();
-        try {
-            parameters.setBufferSize(0);
-            fail("IllegalArgumentException not thrown");
-        } catch (final IllegalArgumentException e) {
-            // expected
-        }
-
-        try {
-            parameters.setBufferSize(-1);
-            fail("IllegalArgumentException not thrown");
-        } catch (final IllegalArgumentException e) {
-            // expected
-        }
+        assertThrows(IllegalArgumentException.class, () -> parameters.setBufferSize(bufferSize),
+                "IllegalArgumentException not thrown");
     }
 
-    @Test
-    public void testInvalidCompressionLevel() {
+    @ParameterizedTest
+    @ValueSource(ints = {10, -5})
+    public void testInvalidCompressionLevel(final int compressionLevel) {
         final GzipParameters parameters = new GzipParameters();
-        try {
-            parameters.setCompressionLevel(10);
-            fail("IllegalArgumentException not thrown");
-        } catch (final IllegalArgumentException e) {
-            // expected
-        }
-
-        try {
-            parameters.setCompressionLevel(-5);
-            fail("IllegalArgumentException not thrown");
-        } catch (final IllegalArgumentException e) {
-            // expected
-        }
+        assertThrows(IllegalArgumentException.class, () -> parameters.setCompressionLevel(compressionLevel),
+                "IllegalArgumentException not thrown");
     }
 
     @Test
@@ -300,11 +257,6 @@ public final class GZipTestCase extends AbstractTestCase {
     public void testOverWrite() throws Exception {
         final GzipCompressorOutputStream out = new GzipCompressorOutputStream(new ByteArrayOutputStream());
         out.close();
-        try {
-            out.write(0);
-            fail("IOException expected");
-        } catch (final IOException e) {
-            // expected
-        }
+        assertThrows(IOException.class, () -> out.write(0), "IOException expected");
     }
 }

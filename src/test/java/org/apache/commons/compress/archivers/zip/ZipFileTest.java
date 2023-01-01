@@ -20,14 +20,16 @@ package org.apache.commons.compress.archivers.zip;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -54,7 +56,6 @@ import java.util.zip.ZipEntry;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
-import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
@@ -138,7 +139,7 @@ public class ZipFileTest {
         for(int i = 0;i < linesOfFile1.size();i++) {
             tempLineInFile1 = linesOfFile1.get(i).replace("\r\n", "\n");
             tempLineInFile2 = linesOfFile2.get(i).replace("\r\n", "\n");
-            Assert.assertEquals(tempLineInFile1, tempLineInFile2);
+            assertEquals(tempLineInFile1, tempLineInFile2);
         }
     }
 
@@ -514,17 +515,17 @@ public class ZipFileTest {
 
         try (ZipFile zf = new ZipFile(new SeekableInMemoryByteChannel(zipContent.toByteArray()))) {
             final ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
-            Assert.assertNotEquals(-1L, inflatedEntry.getLocalHeaderOffset());
-            Assert.assertNotEquals(-1L, inflatedEntry.getDataOffset());
-            Assert.assertTrue(inflatedEntry.isStreamContiguous());
-            Assert.assertNotEquals(-1L, inflatedEntry.getCompressedSize());
-            Assert.assertNotEquals(-1L, inflatedEntry.getSize());
+            assertNotEquals(-1L, inflatedEntry.getLocalHeaderOffset());
+            assertNotEquals(-1L, inflatedEntry.getDataOffset());
+            assertTrue(inflatedEntry.isStreamContiguous());
+            assertNotEquals(-1L, inflatedEntry.getCompressedSize());
+            assertNotEquals(-1L, inflatedEntry.getSize());
             final ZipArchiveEntry storedEntry = zf.getEntry("stored.txt");
-            Assert.assertNotEquals(-1L, storedEntry.getLocalHeaderOffset());
-            Assert.assertNotEquals(-1L, storedEntry.getDataOffset());
-            Assert.assertTrue(inflatedEntry.isStreamContiguous());
-            Assert.assertNotEquals(-1L, storedEntry.getCompressedSize());
-            Assert.assertNotEquals(-1L, storedEntry.getSize());
+            assertNotEquals(-1L, storedEntry.getLocalHeaderOffset());
+            assertNotEquals(-1L, storedEntry.getDataOffset());
+            assertTrue(inflatedEntry.isStreamContiguous());
+            assertNotEquals(-1L, storedEntry.getCompressedSize());
+            assertNotEquals(-1L, storedEntry.getSize());
         }
     }
 
@@ -532,11 +533,7 @@ public class ZipFileTest {
     public void testDoubleClose() throws Exception {
         readOrderTest();
         zf.close();
-        try {
-            zf.close();
-        } catch (final Exception ex) {
-            fail("Caught exception of second close");
-        }
+        assertDoesNotThrow(zf::close, "Caught exception of second close");
     }
 
     /**
@@ -612,7 +609,7 @@ public class ZipFileTest {
                 assertEquals(1024, inflatedAlignmentEx.getAlignment());
                 assertFalse(inflatedAlignmentEx.allowMethodChange());
                 try (InputStream stream = zf.getInputStream(inflatedEntry)) {
-                    Assert.assertEquals("Hello Deflated\n", new String(IOUtils.toByteArray(stream), UTF_8));
+                    assertEquals("Hello Deflated\n", new String(IOUtils.toByteArray(stream), UTF_8));
                 }
                 final ZipArchiveEntry storedEntry = zf.getEntry("stored.txt");
                 final ResourceAlignmentExtraField storedAlignmentEx = (ResourceAlignmentExtraField) storedEntry.getExtraField(ResourceAlignmentExtraField.ID);
@@ -623,7 +620,7 @@ public class ZipFileTest {
                 assertEquals(1024, storedAlignmentEx.getAlignment());
                 assertFalse(storedAlignmentEx.allowMethodChange());
                 try (InputStream stream = zf.getInputStream(storedEntry)) {
-                    Assert.assertEquals("Hello Stored\n", new String(IOUtils.toByteArray(stream), UTF_8));
+                    assertEquals("Hello Stored\n", new String(IOUtils.toByteArray(stream), UTF_8));
                 }
 
                 final ZipArchiveEntry storedEntry2 = zf.getEntry("stored2.txt");
@@ -635,7 +632,7 @@ public class ZipFileTest {
                 assertEquals(1024, stored2AlignmentEx.getAlignment());
                 assertFalse(stored2AlignmentEx.allowMethodChange());
                 try (InputStream stream = zf.getInputStream(storedEntry2)) {
-                    Assert.assertEquals("Hello overload-alignment Stored\n", new String(IOUtils.toByteArray(stream), UTF_8));
+                    assertEquals("Hello overload-alignment Stored\n", new String(IOUtils.toByteArray(stream), UTF_8));
                 }
 
                 final ZipArchiveEntry storedEntry3 = zf.getEntry("stored3.txt");
@@ -647,7 +644,7 @@ public class ZipFileTest {
                 assertEquals(1024, stored3AlignmentEx.getAlignment());
                 assertFalse(stored3AlignmentEx.allowMethodChange());
                 try (InputStream stream = zf.getInputStream(storedEntry3)) {
-                    Assert.assertEquals("Hello copy-alignment Stored\n", new String(IOUtils.toByteArray(stream), UTF_8));
+                    assertEquals("Hello copy-alignment Stored\n", new String(IOUtils.toByteArray(stream), UTF_8));
                 }
             }
         }
@@ -696,13 +693,13 @@ public class ZipFileTest {
         final File archive = getFile("mixed.zip");
         try (ZipFile zf = new ZipFile(archive)) {
             final ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
-            Assert.assertEquals(0x0000, inflatedEntry.getLocalHeaderOffset());
-            Assert.assertEquals(0x0046, inflatedEntry.getDataOffset());
-            Assert.assertTrue(inflatedEntry.isStreamContiguous());
+            assertEquals(0x0000, inflatedEntry.getLocalHeaderOffset());
+            assertEquals(0x0046, inflatedEntry.getDataOffset());
+            assertTrue(inflatedEntry.isStreamContiguous());
             final ZipArchiveEntry storedEntry = zf.getEntry("stored.txt");
-            Assert.assertEquals(0x5892, storedEntry.getLocalHeaderOffset());
-            Assert.assertEquals(0x58d6, storedEntry.getDataOffset());
-            Assert.assertTrue(inflatedEntry.isStreamContiguous());
+            assertEquals(0x5892, storedEntry.getLocalHeaderOffset());
+            assertEquals(0x58d6, storedEntry.getDataOffset());
+            assertTrue(inflatedEntry.isStreamContiguous());
         }
     }
 
@@ -852,14 +849,14 @@ public class ZipFileTest {
             final ProcessBuilder pbChmod = new ProcessBuilder("chmod", "+x", testZip.getPath());
             pbChmod.redirectErrorStream(true);
             final Process processChmod = pbChmod.start();
-            assertEquals(new String(IOUtils.toByteArray(processChmod.getInputStream())), 0, processChmod.waitFor());
+            assertEquals(0, processChmod.waitFor(), new String(IOUtils.toByteArray(processChmod.getInputStream())));
 
             final ProcessBuilder pb = new ProcessBuilder(testZip.getPath());
             pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
             pb.directory(testZip.getParentFile());
             pb.redirectErrorStream(true);
             final Process process = pb.start();
-            assertEquals(new String(IOUtils.toByteArray(process.getInputStream())), 0, process.waitFor());
+            assertEquals(0, process.waitFor(), new String(IOUtils.toByteArray(process.getInputStream())));
 
             if (!extractedFile.exists()) {
                 // fail if extracted file does not exist

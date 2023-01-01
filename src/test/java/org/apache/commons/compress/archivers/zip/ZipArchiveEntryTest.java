@@ -19,21 +19,19 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.apache.commons.compress.archivers.zip.ZipUtilTest.assertDosDate;
-import static org.apache.commons.compress.archivers.zip.ZipUtilTest.toLocalInstant;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
+import java.util.NoSuchElementException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
@@ -149,17 +147,17 @@ public class ZipArchiveEntryTest {
         ze.addAsFirstExtraField(u2);
         final byte[] data2 = ze.getExtra();
         ZipExtraField[] result = ze.getExtraFields();
-        assertEquals("second pass", 2, result.length);
+        assertEquals(2, result.length, "second pass");
         assertSame(u2, result[0]);
         assertSame(a, result[1]);
-        assertEquals("length second pass", data1.length + 1, data2.length);
+        assertEquals(data1.length + 1, data2.length, "length second pass");
 
         final UnrecognizedExtraField u3 = new UnrecognizedExtraField();
         u3.setHeaderId(new ZipShort(2));
         u3.setLocalFileDataData(new byte[] {1});
         ze.addAsFirstExtraField(u3);
         result = ze.getExtraFields();
-        assertEquals("third pass", 3, result.length);
+        assertEquals(3, result.length, "third pass");
         assertSame(u3, result[0]);
         assertSame(u2, result[1]);
         assertSame(a, result[2]);
@@ -224,7 +222,7 @@ public class ZipArchiveEntryTest {
         ze.setCentralDirectoryExtra(new byte[] {b[0], b[1], 1, 0, 127});
 
         ZipExtraField[] result = ze.getExtraFields();
-        assertEquals("first pass", 2, result.length);
+        assertEquals(2, result.length, "first pass");
         assertSame(a, result[0]);
         assertEquals(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER,
                      result[1].getHeaderId());
@@ -236,14 +234,14 @@ public class ZipArchiveEntryTest {
         ze.setCentralDirectoryExtra(new byte[] {2, 0, 0, 0});
 
         result = ze.getExtraFields();
-        assertEquals("second pass", 3, result.length);
+        assertEquals(3, result.length, "second pass");
 
         // merge
         // Header-ID 2 + length 1 + one byte of data
         ze.setExtra(new byte[] {2, 0, 1, 0, 127});
 
         result = ze.getExtraFields();
-        assertEquals("third pass", 3, result.length);
+        assertEquals(3, result.length, "third pass");
         assertSame(a, result[0]);
         assertEquals(new ZipShort(2), result[2].getHeaderId());
         assertEquals(new ZipShort(1), result[2].getLocalFileDataLength());
@@ -266,7 +264,7 @@ public class ZipArchiveEntryTest {
         ze.setExtraFields(new ZipExtraField[] {a, u});
         final byte[] data1 = ze.getExtra();
         ZipExtraField[] result = ze.getExtraFields();
-        assertEquals("first pass", 2, result.length);
+        assertEquals(2, result.length, "first pass");
         assertSame(a, result[0]);
         assertSame(u, result[1]);
 
@@ -277,31 +275,28 @@ public class ZipArchiveEntryTest {
         ze.addExtraField(u2);
         final byte[] data2 = ze.getExtra();
         result = ze.getExtraFields();
-        assertEquals("second pass", 2, result.length);
+        assertEquals(2, result.length, "second pass");
         assertSame(a, result[0]);
         assertSame(u2, result[1]);
-        assertEquals("length second pass", data1.length+1, data2.length);
+        assertEquals(data1.length + 1, data2.length, "length second pass");
 
         final UnrecognizedExtraField u3 = new UnrecognizedExtraField();
         u3.setHeaderId(new ZipShort(2));
         u3.setLocalFileDataData(new byte[] {1});
         ze.addExtraField(u3);
         result = ze.getExtraFields();
-        assertEquals("third pass", 3, result.length);
+        assertEquals(3, result.length, "third pass");
 
         ze.removeExtraField(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
         final byte[] data3 = ze.getExtra();
         result = ze.getExtraFields();
-        assertEquals("fourth pass", 2, result.length);
+        assertEquals(2, result.length, "fourth pass");
         assertSame(a, result[0]);
         assertSame(u3, result[1]);
-        assertEquals("length fourth pass", data2.length, data3.length);
+        assertEquals(data2.length, data3.length, "length fourth pass");
 
-        try {
-            ze.removeExtraField(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-            fail("should be no such element");
-        } catch (final java.util.NoSuchElementException nse) {
-        }
+        assertThrows(NoSuchElementException.class, () -> ze.removeExtraField(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER),
+                "should be no such element");
     }
 
     @Test
@@ -385,7 +380,7 @@ public class ZipArchiveEntryTest {
     @Test
     public void testShouldNotSetExtraDateFieldsIfDateFitsInDosDates() {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
-        final FileTime time = FileTime.from(toLocalInstant("2022-12-28T20:39:33.1234567"));
+        final FileTime time = FileTime.from(ZipUtilTest.toLocalInstant("2022-12-28T20:39:33.1234567"));
         ze.setTime(time);
 
         assertEquals(time.toMillis(), ze.getTime());
@@ -394,13 +389,13 @@ public class ZipArchiveEntryTest {
         assertNull(ze.getExtraField(X000A_NTFS.HEADER_ID));
 
         final long dosTime = ZipLong.getValue(ZipUtil.toDosTime(ze.getTime()));
-        assertDosDate(dosTime, 2022, 12, 28, 20, 39, 32); // DOS dates only store even seconds
+        ZipUtilTest.assertDosDate(dosTime, 2022, 12, 28, 20, 39, 32); // DOS dates only store even seconds
     }
 
     @Test
     public void testShouldSetExtraDateFieldsIfDateExceedsDosDate() {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
-        final FileTime time = FileTime.from(toLocalInstant("1975-11-27T00:00:00"));
+        final FileTime time = FileTime.from(ZipUtilTest.toLocalInstant("1975-11-27T00:00:00"));
         ze.setTime(time.toMillis());
 
         assertEquals(time.toMillis(), ze.getTime());
@@ -420,7 +415,7 @@ public class ZipArchiveEntryTest {
     @Test
     public void testShouldNotSetInfoZipFieldIfDateExceedsUnixTime() {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
-        final FileTime time = FileTime.from(toLocalInstant("2138-11-27T00:00:00"));
+        final FileTime time = FileTime.from(ZipUtilTest.toLocalInstant("2138-11-27T00:00:00"));
         ze.setTime(time.toMillis());
 
         assertEquals(time.toMillis(), ze.getTime());

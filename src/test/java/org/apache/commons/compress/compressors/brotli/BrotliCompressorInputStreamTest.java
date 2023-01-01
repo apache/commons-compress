@@ -17,8 +17,9 @@
 
 package org.apache.commons.compress.compressors.brotli;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,7 +31,6 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public class BrotliCompressorInputStreamTest extends AbstractTestCase {
@@ -54,8 +54,8 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
             final BrotliCompressorInputStream in =
                     new BrotliCompressorInputStream(is);
             IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read(buf));
-            Assert.assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
             in.close();
         }
     }
@@ -66,7 +66,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
         try (InputStream is = Files.newInputStream(input.toPath())) {
             final BrotliCompressorInputStream in =
                     new BrotliCompressorInputStream(is);
-            Assert.assertEquals(1, in.skip(1));
+            assertEquals(1, in.skip(1));
             in.close();
         }
     }
@@ -78,8 +78,8 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
             final BrotliCompressorInputStream in =
                     new BrotliCompressorInputStream(is);
             IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read());
-            Assert.assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
             in.close();
         }
     }
@@ -92,7 +92,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
             final BrotliCompressorInputStream in =
                     new BrotliCompressorInputStream(is);
             //  starts with filename "XXX"
-            Assert.assertEquals('X', in.read());
+            assertEquals('X', in.read());
             in.close();
         }
     }
@@ -114,7 +114,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
             while ((readByte = brotliInputStream.read()) != -1) {
                 bos.write(readByte);
             }
-            Assert.assertArrayEquals(b, bos.toByteArray());
+            assertArrayEquals(b, bos.toByteArray());
         }
     }
 

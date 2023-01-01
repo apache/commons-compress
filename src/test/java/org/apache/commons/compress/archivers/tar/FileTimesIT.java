@@ -18,10 +18,10 @@
 
 package org.apache.commons.compress.archivers.tar;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -36,11 +36,11 @@ public class FileTimesIT extends AbstractTestCase {
 
     private void assertGlobalHeaders(final TarArchiveEntry e) {
         assertEquals(5, e.getExtraPaxHeaders().size());
-        assertEquals("SCHILY.archtype", "exustar", e.getExtraPaxHeader("SCHILY.archtype"));
-        assertEquals("SCHILY.volhdr.dumpdate", "1647478879.579980900", e.getExtraPaxHeader("SCHILY.volhdr.dumpdate"));
-        assertEquals("SCHILY.release", "star 1.6 (x86_64-unknown-linux-gnu) 2019/04/01", e.getExtraPaxHeader("SCHILY.release"));
-        assertEquals("SCHILY.volhdr.blocksize", "20", e.getExtraPaxHeader("SCHILY.volhdr.blocksize"));
-        assertEquals("SCHILY.volhdr.volno", "1", e.getExtraPaxHeader("SCHILY.volhdr.volno"));
+        assertEquals("exustar", e.getExtraPaxHeader("SCHILY.archtype"), "SCHILY.archtype");
+        assertEquals("1647478879.579980900", e.getExtraPaxHeader("SCHILY.volhdr.dumpdate"), "SCHILY.volhdr.dumpdate");
+        assertEquals("star 1.6 (x86_64-unknown-linux-gnu) 2019/04/01", e.getExtraPaxHeader("SCHILY.release"), "SCHILY.release");
+        assertEquals("20", e.getExtraPaxHeader("SCHILY.volhdr.blocksize"), "SCHILY.volhdr.blocksize");
+        assertEquals("1", e.getExtraPaxHeader("SCHILY.volhdr.volno"), "SCHILY.volhdr.volno");
     }
 
     // Extended POSIX.1-2001 standard tar + x-header
@@ -55,19 +55,19 @@ public class FileTimesIT extends AbstractTestCase {
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("name", "test/", e.getName());
             assertTrue(e.isDirectory());
-            assertEquals("mtime", toFileTime("2022-03-17T00:24:44.147126600Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-17T01:02:11.910960100Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-17T00:24:44.147126600Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-17T00:24:44.147126600Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-17T01:02:11.910960100Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-17T00:24:44.147126600Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("name", "test/test-times.txt", e.getName());
             assertTrue(e.isFile());
-            assertEquals("mtime", toFileTime("2022-03-17T00:38:20.470751500Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-17T00:38:20.536752000Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-17T00:38:20.470751500Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-17T00:38:20.470751500Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-17T00:38:20.536752000Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-17T00:38:20.470751500Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -82,18 +82,18 @@ public class FileTimesIT extends AbstractTestCase {
             assertNotNull(e);
             assertEquals("name", "test/", e.getName());
             assertTrue(e.isDirectory());
-            assertEquals("mtime", toFileTime("2022-03-17T00:24:44.147126600Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-17T00:47:00.367783300Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-17T00:24:44.147126600Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-17T00:24:44.147126600Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-17T00:47:00.367783300Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-17T00:24:44.147126600Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertGlobalHeaders(e);
             e = tin.getNextTarEntry();
             assertEquals("name", "test/test-times.txt", e.getName());
             assertTrue(e.isFile());
-            assertEquals("mtime", toFileTime("2022-03-17T00:38:20.470751500Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-17T00:38:20.536752000Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-17T00:38:20.470751500Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-17T00:38:20.470751500Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-17T00:38:20.536752000Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-17T00:38:20.470751500Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertGlobalHeaders(e);
             assertNull(tin.getNextTarEntry());
         }
@@ -109,10 +109,10 @@ public class FileTimesIT extends AbstractTestCase {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("mtime", toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime());
-            assertNull("atime", e.getLastAccessTime());
-            assertNull("ctime", e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime(), "mtime");
+            assertNull(e.getLastAccessTime(), "atime");
+            assertNull(e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -128,18 +128,18 @@ public class FileTimesIT extends AbstractTestCase {
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("name", "test-times.txt", e.getName());
-            assertEquals("mtime", toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime());
-            assertNull("atime", e.getLastAccessTime());
-            assertNull("ctime", e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime(), "mtime");
+            assertNull(e.getLastAccessTime(), "atime");
+            assertNull(e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("name", "test-times.txt", e.getName());
-            assertEquals("mtime", toFileTime("2022-03-14T03:17:05Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-14T03:17:10Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-14T03:17:10Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-14T03:17:05Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-14T03:17:10Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-14T03:17:10Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -154,10 +154,10 @@ public class FileTimesIT extends AbstractTestCase {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("mtime", toFileTime("2022-03-17T01:52:25Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-17T01:52:25Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-17T01:52:25Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-17T01:52:25Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-17T01:52:25Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-17T01:52:25Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -171,10 +171,10 @@ public class FileTimesIT extends AbstractTestCase {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("mtime", toFileTime("2022-03-17T01:52:25Z"), e.getLastModifiedTime());
-            assertNull("atime", e.getLastAccessTime());
-            assertNull("ctime", e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-17T01:52:25Z"), e.getLastModifiedTime(), "mtime");
+            assertNull(e.getLastAccessTime(), "atime");
+            assertNull(e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -189,10 +189,10 @@ public class FileTimesIT extends AbstractTestCase {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("mtime", toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime());
-            assertNull("atime", e.getLastAccessTime());
-            assertNull("ctime", e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime(), "mtime");
+            assertNull(e.getLastAccessTime(), "atime");
+            assertNull(e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -208,18 +208,18 @@ public class FileTimesIT extends AbstractTestCase {
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("name", "test-times.txt", e.getName());
-            assertEquals("mtime", toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime());
-            assertNull("atime", e.getLastAccessTime());
-            assertNull("ctime", e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime(), "mtime");
+            assertNull(e.getLastAccessTime(), "atime");
+            assertNull(e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("name", "test-times.txt", e.getName());
-            assertEquals("mtime", toFileTime("2022-03-14T03:17:05Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-14T03:17:06Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-14T03:17:05Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-14T03:17:05Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-14T03:17:06Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-14T03:17:05Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -236,19 +236,19 @@ public class FileTimesIT extends AbstractTestCase {
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("name", "test/", e.getName());
             assertTrue(e.isDirectory());
-            assertEquals("mtime", toFileTime("2022-03-17T00:24:44.147126600Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-17T01:01:53.369146300Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-17T00:24:44.147126600Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-17T00:24:44.147126600Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-17T01:01:53.369146300Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-17T00:24:44.147126600Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("name", "test/test-times.txt", e.getName());
             assertTrue(e.isFile());
-            assertEquals("mtime", toFileTime("2022-03-17T00:38:20.470751500Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-17T00:38:20.536752000Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-17T00:38:20.470751500Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-17T00:38:20.470751500Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-17T00:38:20.536752000Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-17T00:38:20.470751500Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -263,10 +263,10 @@ public class FileTimesIT extends AbstractTestCase {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("mtime", toFileTime("2022-03-14T01:25:03.599853900Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-14T01:31:00.706927200Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-14T01:28:59.700505300Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-14T01:25:03.599853900Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-14T01:31:00.706927200Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-14T01:28:59.700505300Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -283,19 +283,19 @@ public class FileTimesIT extends AbstractTestCase {
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("name", "test/", e.getName());
             assertTrue(e.isDirectory());
-            assertEquals("mtime", toFileTime("2022-03-16T10:19:43.382883700Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-16T10:21:01.251181000Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-16T10:19:24.105111500Z"), e.getStatusChangeTime());
-            assertEquals("birthtime", toFileTime("2022-03-16T10:19:24.105111500Z"), e.getCreationTime());
+            assertEquals(toFileTime("2022-03-16T10:19:43.382883700Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-16T10:21:01.251181000Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-16T10:19:24.105111500Z"), e.getStatusChangeTime(), "ctime");
+            assertEquals(toFileTime("2022-03-16T10:19:24.105111500Z"), e.getCreationTime(), "birthtime");
             e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("name", "test/test-times.txt", e.getName());
             assertTrue(e.isFile());
-            assertEquals("mtime", toFileTime("2022-03-16T10:21:00.249238500Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-16T10:21:01.251181000Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-14T01:25:03.599853900Z"), e.getStatusChangeTime());
-            assertEquals("birthtime", toFileTime("2022-03-14T01:25:03.599853900Z"), e.getCreationTime());
+            assertEquals(toFileTime("2022-03-16T10:21:00.249238500Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-16T10:21:01.251181000Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-14T01:25:03.599853900Z"), e.getStatusChangeTime(), "ctime");
+            assertEquals(toFileTime("2022-03-14T01:25:03.599853900Z"), e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -310,10 +310,10 @@ public class FileTimesIT extends AbstractTestCase {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("mtime", toFileTime("2022-03-14T01:25:03.599853900Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-14T01:32:13.837251500Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-14T01:31:00.706927200Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-14T01:25:03.599853900Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-14T01:32:13.837251500Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-14T01:31:00.706927200Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -329,18 +329,18 @@ public class FileTimesIT extends AbstractTestCase {
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("name", "test/", e.getName());
             assertTrue(e.isDirectory());
-            assertEquals("mtime", toFileTime("2022-03-17T00:24:44Z"), e.getLastModifiedTime());
-            assertNull("atime", e.getLastAccessTime());
-            assertNull("ctime", e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-17T00:24:44Z"), e.getLastModifiedTime(), "mtime");
+            assertNull(e.getLastAccessTime(), "atime");
+            assertNull(e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             e = tin.getNextTarEntry();
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("name", "test/test-times.txt", e.getName());
             assertTrue(e.isFile());
-            assertEquals("mtime", toFileTime("2022-03-17T00:38:20Z"), e.getLastModifiedTime());
-            assertNull("atime", e.getLastAccessTime());
-            assertNull("ctime", e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-17T00:38:20Z"), e.getLastModifiedTime(), "mtime");
+            assertNull(e.getLastAccessTime(), "atime");
+            assertNull(e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -354,10 +354,10 @@ public class FileTimesIT extends AbstractTestCase {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("mtime", toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime());
-            assertNull("atime", e.getLastAccessTime());
-            assertNull("ctime", e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime(), "mtime");
+            assertNull(e.getLastAccessTime(), "atime");
+            assertNull(e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -371,10 +371,10 @@ public class FileTimesIT extends AbstractTestCase {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("mtime", toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime());
-            assertNull("atime", e.getLastAccessTime());
-            assertNull("ctime", e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime(), "mtime");
+            assertNull(e.getLastAccessTime(), "atime");
+            assertNull(e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -388,10 +388,10 @@ public class FileTimesIT extends AbstractTestCase {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("mtime", toFileTime("2022-03-14T04:11:22Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-14T04:12:48Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-14T04:12:47Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-14T04:11:22Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-14T04:12:48Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-14T04:12:47Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -407,18 +407,18 @@ public class FileTimesIT extends AbstractTestCase {
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("name", "test/", e.getName());
             assertTrue(e.isDirectory());
-            assertEquals("mtime", toFileTime("2022-03-17T00:24:44Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-17T01:01:34Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-17T00:24:44Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-17T00:24:44Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-17T01:01:34Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-17T00:24:44Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             e = tin.getNextTarEntry();
             assertEquals("name", "test/test-times.txt", e.getName());
             assertTrue(e.isFile());
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("mtime", toFileTime("2022-03-17T00:38:20Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-17T00:38:20Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-17T00:38:20Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-17T00:38:20Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-17T00:38:20Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-17T00:38:20Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -433,18 +433,18 @@ public class FileTimesIT extends AbstractTestCase {
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("name", "test-times.txt", e.getName());
-            assertEquals("mtime", toFileTime("2022-03-14T04:03:29Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-14T04:03:29Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-14T04:03:29Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-14T04:03:29Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-14T04:03:29Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-14T04:03:29Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test-times.txt", e.getName());
-            assertEquals("mtime", toFileTime("2022-03-14T04:11:22Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-14T04:11:23Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-14T04:11:22Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals("test-times.txt", e.getName(), "name");
+            assertEquals(toFileTime("2022-03-14T04:11:22Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-14T04:11:23Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-14T04:11:22Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -458,10 +458,10 @@ public class FileTimesIT extends AbstractTestCase {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("mtime", toFileTime("2022-03-17T00:38:20.470751500Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-17T00:38:20.536752000Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-17T00:38:20.470751500Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-17T00:38:20.470751500Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-17T00:38:20.536752000Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-17T00:38:20.470751500Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -477,18 +477,18 @@ public class FileTimesIT extends AbstractTestCase {
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("name", "test/", e.getName());
             assertTrue(e.isDirectory());
-            assertEquals("mtime", toFileTime("2022-03-17T00:24:44.147126600Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-17T01:01:19.581236400Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-17T00:24:44.147126600Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-17T00:24:44.147126600Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-17T01:01:19.581236400Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-17T00:24:44.147126600Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             e = tin.getNextTarEntry();
             assertTrue(e.getExtraPaxHeaders().isEmpty());
             assertEquals("name", "test/test-times.txt", e.getName());
             assertTrue(e.isFile());
-            assertEquals("mtime", toFileTime("2022-03-17T00:38:20.470751500Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-17T00:38:20.536752000Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-17T00:38:20.470751500Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals(toFileTime("2022-03-17T00:38:20.470751500Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-17T00:38:20.536752000Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-17T00:38:20.470751500Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }
@@ -502,19 +502,19 @@ public class FileTimesIT extends AbstractTestCase {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test-times.txt", e.getName());
-            assertEquals("mtime", toFileTime("2022-03-17T00:38:20.470751500Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-17T00:38:20.536752000Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-17T00:38:20.470751500Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals("test-times.txt", e.getName(), "name");
+            assertEquals(toFileTime("2022-03-17T00:38:20.470751500Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-17T00:38:20.536752000Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-17T00:38:20.470751500Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test-times.txt", e.getName());
-            assertEquals("mtime", toFileTime("2022-03-17T01:52:25.592262900Z"), e.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-17T01:52:25.724278500Z"), e.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-17T01:52:25.592262900Z"), e.getStatusChangeTime());
-            assertNull("birthtime", e.getCreationTime());
+            assertEquals("test-times.txt", e.getName(), "name");
+            assertEquals(toFileTime("2022-03-17T01:52:25.592262900Z"), e.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-17T01:52:25.724278500Z"), e.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-17T01:52:25.592262900Z"), e.getStatusChangeTime(), "ctime");
+            assertNull(e.getCreationTime(), "birthtime");
             assertNull(tin.getNextTarEntry());
         }
     }

@@ -18,13 +18,12 @@
 
 package org.apache.commons.compress.archivers.tar;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -37,8 +36,10 @@ import java.util.Locale;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assume;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 public class SparseFilesTest extends AbstractTestCase {
 
@@ -99,7 +100,7 @@ public class SparseFilesTest extends AbstractTestCase {
         pb.redirectErrorStream(true);
         final Process process = pb.start();
         // wait until the extract finishes
-        assertEquals(new String(IOUtils.toByteArray(process.getInputStream())), 0, process.waitFor());
+        assertEquals(0, process.waitFor(), new String(IOUtils.toByteArray(process.getInputStream())));
 
         for (final File file : resultDir.listFiles()) {
             if (file.getName().equals(sparseFileName)) {
@@ -119,9 +120,8 @@ public class SparseFilesTest extends AbstractTestCase {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     public void testExtractExtendedOldGNU() throws IOException, InterruptedException {
-        assumeFalse("This test should be ignored on Windows", isOnWindows);
-
         final File file = getFile("oldgnu_extended_sparse.tar");
         try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparse6");
              TarArchiveInputStream tin = new TarArchiveInputStream(Files.newInputStream(file.toPath()))) {
@@ -158,9 +158,8 @@ public class SparseFilesTest extends AbstractTestCase {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     public void testExtractOldGNU() throws IOException, InterruptedException {
-        assumeFalse("This test should be ignored on Windows", isOnWindows);
-
         try {
             final File file = getFile("oldgnu_sparse.tar");
             try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile");
@@ -177,13 +176,13 @@ public class SparseFilesTest extends AbstractTestCase {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     public void testExtractPaxGNU() throws IOException, InterruptedException {
-        assumeFalse("This test should be ignored on Windows", isOnWindows);
         // GNU tar with version 1.28 has some problems reading sparsefile-0.1,
         // so the test should be skipped then
         // TODO : what about the versions lower than 1.28?
-        assumeFalse("This test should be ignored if GNU tar is version 1.28",
-                getTarBinaryHelp().startsWith("tar (GNU tar) 1.28"));
+        assumeFalse(getTarBinaryHelp().startsWith("tar (GNU tar) 1.28"),
+                "This test should be ignored if GNU tar is version 1.28");
 
         final File file = getFile("pax_gnu_sparse.tar");
         try (TarArchiveInputStream tin = new TarArchiveInputStream(Files.newInputStream(file.toPath()))) {
@@ -212,9 +211,8 @@ public class SparseFilesTest extends AbstractTestCase {
     }
 
     @Test
+    @EnabledOnOs(OS.WINDOWS)
     public void testExtractSparseTarsOnWindows() throws IOException {
-        assumeTrue("This test should be ignored if not running on Windows", isOnWindows);
-
         final File oldGNUSparseTar = getFile("oldgnu_sparse.tar");
         final File paxGNUSparseTar = getFile("pax_gnu_sparse.tar");
         try (TarArchiveInputStream paxGNUSparseInputStream = new TarArchiveInputStream(Files.newInputStream(paxGNUSparseTar.toPath()))) {
@@ -302,9 +300,8 @@ public class SparseFilesTest extends AbstractTestCase {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     public void testTarFileExtractExtendedOldGNU() throws IOException, InterruptedException {
-        Assume.assumeFalse("Don't run test on Windows", isOnWindows);
-
         final File file = getFile("oldgnu_extended_sparse.tar");
         try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparse6");
              TarFile tarFile = new TarFile(file)) {
@@ -341,9 +338,8 @@ public class SparseFilesTest extends AbstractTestCase {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     public void testTarFileExtractOldGNU() throws IOException, InterruptedException {
-        Assume.assumeFalse("Don't run test on Windows", isOnWindows);
-
         final File file = getFile("oldgnu_sparse.tar");
         try (final InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile");
              final TarFile tarFile = new TarFile(file)) {
@@ -355,13 +351,13 @@ public class SparseFilesTest extends AbstractTestCase {
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     public void testTarFileExtractPaxGNU() throws IOException, InterruptedException {
-        Assume.assumeFalse("Don't run test on Windows", isOnWindows);
         // GNU tar with version 1.28 has some problems reading sparsefile-0.1,
         // so the test should be skipped then
         // TODO : what about the versions lower than 1.28?
-        assumeFalse("This test should be ignored if GNU tar is version 1.28",
-                getTarBinaryHelp().startsWith("tar (GNU tar) 1.28"));
+        assumeFalse(getTarBinaryHelp().startsWith("tar (GNU tar) 1.28"),
+                "This test should be ignored if GNU tar is version 1.28");
 
         final File file = getFile("pax_gnu_sparse.tar");
         try (final TarFile paxGnu = new TarFile(file)) {
@@ -388,9 +384,8 @@ public class SparseFilesTest extends AbstractTestCase {
     }
 
     @Test
+    @EnabledOnOs(OS.WINDOWS)
     public void testTarFileExtractSparseTarsOnWindows() throws IOException {
-        Assume.assumeTrue("Only run test on Windows", isOnWindows);
-
         final File oldGNUSparseTar = getFile("oldgnu_sparse.tar");
         final File paxGNUSparseTar = getFile("pax_gnu_sparse.tar");
         try (TarFile paxGnu = new TarFile(paxGNUSparseTar)) {

@@ -17,7 +17,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

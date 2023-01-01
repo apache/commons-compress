@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.compressors.snappy;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,7 +32,6 @@ import java.util.Random;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.lz77support.Parameters;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public final class SnappyRoundtripTest extends AbstractTestCase {
@@ -96,7 +97,7 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
              SnappyCompressorInputStream sis = new SnappyCompressorInputStream(new ByteArrayInputStream(os.toByteArray()),
                  params.getWindowSize())) {
             final byte[] actual = IOUtils.toByteArray(sis);
-            Assert.assertArrayEquals(input, actual);
+            assertArrayEquals(input, actual);
         }
         // System.err.println("byte array" + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
@@ -115,7 +116,7 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
                 SnappyCompressorInputStream sis = new SnappyCompressorInputStream(Files.newInputStream(outputSz.toPath()), params.getWindowSize())) {
             final byte[] expected = IOUtils.toByteArray(is);
             final byte[] actual = IOUtils.toByteArray(sis);
-            Assert.assertArrayEquals(expected, actual);
+            assertArrayEquals(expected, actual);
         }
         // System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }

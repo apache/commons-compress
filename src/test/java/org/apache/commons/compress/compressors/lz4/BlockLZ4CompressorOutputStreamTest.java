@@ -18,12 +18,16 @@
  */
 package org.apache.commons.compress.compressors.lz4;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
 import org.apache.commons.compress.compressors.lz77support.LZ77Compressor;
-import org.junit.Assert;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -33,14 +37,14 @@ public class BlockLZ4CompressorOutputStreamTest {
     public void cantWriteBackReferenceFollowedByLiteralThatIsTooShort() {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
         p.setBackReference(new LZ77Compressor.BackReference(10, 14));
-        Assert.assertFalse(p.canBeWritten(4));
+        assertFalse(p.canBeWritten(4));
     }
 
     @Test
     public void cantWriteBackReferenceIfAccumulatedOffsetIsTooShort() {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
         p.setBackReference(new LZ77Compressor.BackReference(1, 4));
-        Assert.assertFalse(p.canBeWritten(5));
+        assertFalse(p.canBeWritten(5));
     }
 
     @Test
@@ -50,7 +54,7 @@ public class BlockLZ4CompressorOutputStreamTest {
         // a length of 11 would be enough according to the spec, but
         // the algorithm we use for rewriting the last block requires
         // 16 bytes
-        Assert.assertTrue(p.canBeWritten(16));
+        assertTrue(p.canBeWritten(16));
     }
 
     @Test
@@ -58,7 +62,7 @@ public class BlockLZ4CompressorOutputStreamTest {
     public void canWriteBackReferenceFollowedByShortLiteralIfLengthIsBigEnough() {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
         p.setBackReference(new LZ77Compressor.BackReference(1, 10));
-        Assert.assertTrue(p.canBeWritten(5));
+        assertTrue(p.canBeWritten(5));
     }
 
     @Test
@@ -66,7 +70,7 @@ public class BlockLZ4CompressorOutputStreamTest {
     public void canWriteBackReferenceFollowedByShortLiteralIfOffsetIsBigEnough() {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
         p.setBackReference(new LZ77Compressor.BackReference(10, 4));
-        Assert.assertTrue(p.canBeWritten(5));
+        assertTrue(p.canBeWritten(5));
     }
 
     @Test
@@ -76,7 +80,7 @@ public class BlockLZ4CompressorOutputStreamTest {
         p.addLiteral(new LZ77Compressor.LiteralBlock(b, 1, 4));
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         p.writeTo(bos);
-        Assert.assertArrayEquals(new byte[] { 4<<4, 2, 3, 4, 5 }, bos.toByteArray());
+        assertArrayEquals(new byte[] { 4<<4, 2, 3, 4, 5 }, bos.toByteArray());
     }
 
     @Test
@@ -85,7 +89,7 @@ public class BlockLZ4CompressorOutputStreamTest {
         p.setBackReference(new LZ77Compressor.BackReference(1, 4));
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         p.writeTo(bos);
-        Assert.assertArrayEquals(new byte[] { 0, 1, 0 }, bos.toByteArray());
+        assertArrayEquals(new byte[] { 0, 1, 0 }, bos.toByteArray());
     }
 
     private byte[] compress(final byte[] input, final int... lengthOfTrailers) throws IOException {
@@ -119,15 +123,15 @@ public class BlockLZ4CompressorOutputStreamTest {
         final byte[] b = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         p.addLiteral(new LZ77Compressor.LiteralBlock(b, 1, 4));
         p.addLiteral(new LZ77Compressor.LiteralBlock(b, 2, 5));
-        Assert.assertEquals(13, p.length());
+        assertEquals(13, p.length());
     }
 
     @Test
     public void pairSeesBackReferenceWhenSet() {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
-        Assert.assertFalse(p.hasBackReference());
+        assertFalse(p.hasBackReference());
         p.setBackReference(new LZ77Compressor.BackReference(1, 4));
-        Assert.assertTrue(p.hasBackReference());
+        assertTrue(p.hasBackReference());
     }
 
     private byte[] prepareExpected(final int length) {
@@ -147,7 +151,7 @@ public class BlockLZ4CompressorOutputStreamTest {
             final byte[] compressed = compress(i);
             final byte[] expected = prepareExpected(i + 1);
             expected[0] = (byte) (i<<4);
-            Assert.assertArrayEquals("input length is " + i, expected, compressed);
+            assertArrayEquals(expected, compressed, "input length is " + i);
         }
 
         for (int i = 13; i < 17; i++) {
@@ -166,7 +170,7 @@ public class BlockLZ4CompressorOutputStreamTest {
                 expected[0] = (byte) (15<<4);
                 expected[1] = (byte) (i - 15);
             }
-            Assert.assertArrayEquals("input length is " + i, expected, compressed);
+            assertArrayEquals(expected, compressed, "input length is " + i);
         }
 
         for (int i = 17; i < 20; i++) {
@@ -181,7 +185,7 @@ public class BlockLZ4CompressorOutputStreamTest {
             expected[2] = 1;
             expected[3] = 0;
             expected[4] = (byte) (12<<4);
-            Assert.assertArrayEquals("input length is " + i, expected, compressed);
+            assertArrayEquals(expected, compressed, "input length is " + i);
         }
     }
 
@@ -202,7 +206,7 @@ public class BlockLZ4CompressorOutputStreamTest {
             for (int j = 0; j < i; j++) {
                 expected[expected.length - 1 - j] = 1;
             }
-            Assert.assertArrayEquals("trailer length is " + i, expected, compressed);
+            assertArrayEquals(expected, compressed, "trailer length is " + i);
         }
         for (int i = 5; i < 12; i++) {
             // LZ77Compressor will create a single byte literal
@@ -222,7 +226,7 @@ public class BlockLZ4CompressorOutputStreamTest {
             for (int j = 0; j < i; j++) {
                 expected[expected.length - 1 - j] = 1;
             }
-            Assert.assertArrayEquals("trailer length is " + i, expected, compressed);
+            assertArrayEquals(expected, compressed, "trailer length is " + i);
         }
         for (int i = 12; i < 15; i++) {
             // LZ77Compressor will create a single byte literal
@@ -241,7 +245,7 @@ public class BlockLZ4CompressorOutputStreamTest {
             for (int j = 0; j < i; j++) {
                 expected[expected.length - 1 - j] = 1;
             }
-            Assert.assertArrayEquals("trailer length is " + i, expected, compressed);
+            assertArrayEquals(expected, compressed, "trailer length is " + i);
         }
     }
 
@@ -267,7 +271,7 @@ public class BlockLZ4CompressorOutputStreamTest {
             expected[i] = 2;
         }
         expected[16] = 3;
-        Assert.assertArrayEquals(expected, compressed);
+        assertArrayEquals(expected, compressed);
     }
 
     @Test
@@ -290,7 +294,7 @@ public class BlockLZ4CompressorOutputStreamTest {
         for (int i = 11; i < expected.length; i += 4) {
             expected[i] = 1;
         }
-        Assert.assertArrayEquals(expected, compressed);
+        assertArrayEquals(expected, compressed);
     }
 
     @Test
@@ -302,7 +306,7 @@ public class BlockLZ4CompressorOutputStreamTest {
         p.setBackReference(new LZ77Compressor.BackReference(1, 5));
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         p.writeTo(bos);
-        Assert.assertArrayEquals(new byte[] { (4<<4) + 1, 2, 3, 4, 5, 1, 0 },
+        assertArrayEquals(new byte[] { (4<<4) + 1, 2, 3, 4, 5, 1, 0 },
             bos.toByteArray());
     }
 
@@ -314,7 +318,7 @@ public class BlockLZ4CompressorOutputStreamTest {
         p.addLiteral(new LZ77Compressor.LiteralBlock(b, 0, 6));
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         p.writeTo(bos);
-        Assert.assertArrayEquals(new byte[] { (byte) (15<<4), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6 },
+        assertArrayEquals(new byte[] { (byte) (15<<4), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6 },
             bos.toByteArray());
     }
 
@@ -324,7 +328,7 @@ public class BlockLZ4CompressorOutputStreamTest {
         p.setBackReference(new LZ77Compressor.BackReference(1, 19));
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         p.writeTo(bos);
-        Assert.assertArrayEquals(new byte[] { 15, 1, 0, 0 }, bos.toByteArray());
+        assertArrayEquals(new byte[] { 15, 1, 0, 0 }, bos.toByteArray());
     }
 
     @Test
@@ -337,7 +341,7 @@ public class BlockLZ4CompressorOutputStreamTest {
         p.addLiteral(new LZ77Compressor.LiteralBlock(b, 0, 9));
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         p.writeTo(bos);
-        Assert.assertArrayEquals(new byte[] { (byte) (15<<4), (byte) 254, 1 },
+        assertArrayEquals(new byte[] { (byte) (15<<4), (byte) 254, 1 },
             Arrays.copyOfRange(bos.toByteArray(), 0, 3));
     }
 
@@ -350,7 +354,7 @@ public class BlockLZ4CompressorOutputStreamTest {
         }
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         p.writeTo(bos);
-        Assert.assertArrayEquals(new byte[] { (byte) (15<<4), (byte) 255, 0, 1 },
+        assertArrayEquals(new byte[] { (byte) (15<<4), (byte) 255, 0, 1 },
             Arrays.copyOfRange(bos.toByteArray(), 0, 4));
     }
 
@@ -360,7 +364,7 @@ public class BlockLZ4CompressorOutputStreamTest {
         p.setBackReference(new LZ77Compressor.BackReference(1, 273));
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         p.writeTo(bos);
-        Assert.assertArrayEquals(new byte[] { 15, 1, 0, (byte) 254 }, bos.toByteArray());
+        assertArrayEquals(new byte[] { 15, 1, 0, (byte) 254 }, bos.toByteArray());
     }
 
     @Test
@@ -369,6 +373,6 @@ public class BlockLZ4CompressorOutputStreamTest {
         p.setBackReference(new LZ77Compressor.BackReference(1, 274));
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         p.writeTo(bos);
-        Assert.assertArrayEquals(new byte[] { 15, 1, 0, (byte) 255, 0 }, bos.toByteArray());
+        assertArrayEquals(new byte[] { 15, 1, 0, (byte) 255, 0 }, bos.toByteArray());
     }
 }

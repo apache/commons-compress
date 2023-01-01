@@ -19,9 +19,8 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -95,30 +94,21 @@ public class Maven221MultiVolumeTest {
             // subsequent reads thus a client application might enter
             // an infinite loop after the fix, we should get an
             // exception
-            try {
+            final IOException e1 = assertThrows(IOException.class, () -> {
                 while (zi.read(buffer) > 0) {
                     // empty
                 }
-                fail("shouldn't be able to read from truncated entry");
-            } catch (final IOException e) {
-                assertEquals("Truncated ZIP file", e.getMessage());
-            }
+            }, "shouldn't be able to read from truncated entry");
+            assertEquals("Truncated ZIP file", e1.getMessage());
 
-            try {
-                zi.read(buffer);
-                fail("shouldn't be able to read from truncated entry after exception");
-            } catch (final IOException e) {
-                assertEquals("Truncated ZIP file", e.getMessage());
-            }
+            final IOException e2 = assertThrows(IOException.class, () -> zi.read(buffer),
+                    "shouldn't be able to read from truncated entry after exception");
+            assertEquals("Truncated ZIP file", e2.getMessage());
 
             // and now we get another entry, which should also yield
             // an exception
-            try {
-                zi.getNextEntry();
-                fail("shouldn't be able to read another entry from truncated" + " file");
-            } catch (final IOException e) {
-                // this is to be expected
-            }
+            assertThrows(IOException.class, zi::getNextEntry,
+                    "shouldn't be able to read another entry from truncated file");
         }
     }
 }

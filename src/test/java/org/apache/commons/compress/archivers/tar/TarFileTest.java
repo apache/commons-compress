@@ -17,10 +17,10 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -299,7 +299,7 @@ public class TarFileTest extends AbstractTestCase {
             // -----------------------
             try (TarFile tarFile = new TarFile(tarF)) {
                 for (final TarArchiveEntry entry : tarFile.getEntries()) {
-                    assertTrue("Entry name: " + entry.getName(), entry.getName().endsWith("/"));
+                    assertTrue(entry.getName().endsWith("/"), "Entry name: " + entry.getName());
                 }
             }
         }

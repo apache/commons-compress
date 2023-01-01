@@ -17,14 +17,13 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -214,13 +213,12 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void testCantFinishTwice() {
+    public void testCantFinishTwice() throws IOException {
         output = new File(dir, "finish.7z");
         try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
             outArchive.finish();
-            outArchive.finish();
-            fail("shouldn't be able to call finish twice");
-        } catch (final IOException ex) {
+            final IOException ex = assertThrows(IOException.class, outArchive::finish,
+                    "shouldn't be able to call finish twice");
             assertEquals("This archive has already been finished", ex.getMessage());
         }
     }
@@ -500,9 +498,9 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         // Is archive really password-based encrypted ?
         try (SevenZFile archive = new SevenZFile(output)) {
             assertThrows(
-                "A password should be needed",
+
                 PasswordRequiredException.class,
-                () -> verifyFile(archive, 0));
+                () -> verifyFile(archive, 0), "A password should be needed");
         }
 
         try (SevenZFile archive = new SevenZFile(output, "foo".toCharArray())) {

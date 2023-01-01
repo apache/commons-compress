@@ -19,7 +19,12 @@
 package org.apache.commons.compress.archivers.examples;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -41,8 +46,6 @@ import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
 import org.apache.commons.compress.archivers.tar.TarFile;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.jupiter.api.Test;
 
 public class ExpanderTest extends AbstractTestCase {
@@ -50,11 +53,11 @@ public class ExpanderTest extends AbstractTestCase {
     private File archive;
 
     private void assertHelloWorld(final String fileName, final String suffix) throws IOException {
-        Assert.assertTrue(fileName + " does not exist", new File(resultDir, fileName).isFile());
+        assertTrue(new File(resultDir, fileName).isFile(), fileName + " does not exist");
         final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
         try (InputStream is = Files.newInputStream(new File(resultDir, fileName).toPath())) {
             final byte[] actual = IOUtils.toByteArray(is);
-            Assert.assertArrayEquals(expected, actual);
+            assertArrayEquals(expected, actual);
         }
     }
 
@@ -70,9 +73,9 @@ public class ExpanderTest extends AbstractTestCase {
     public void fileCantEscapeDoubleDotPathWithSimilarSibling() throws IOException, ArchiveException {
         final String sibling = resultDir.getName() + "x";
         final File s = new File(resultDir.getParentFile(), sibling);
-        Assume.assumeFalse(s.exists());
+        assumeFalse(s.exists());
         s.mkdirs();
-        Assume.assumeTrue(s.exists());
+        assumeTrue(s.exists());
         s.deleteOnExit();
         try {
             setupZip("../" + sibling + "/a");
@@ -90,7 +93,7 @@ public class ExpanderTest extends AbstractTestCase {
         try (ZipFile f = new ZipFile(archive)) {
             assertThrows(IOException.class, () -> new Expander().expand(f, resultDir));
         }
-        Assert.assertFalse(new File(resultDir, "tmp/foo").isFile());
+        assertFalse(new File(resultDir, "tmp/foo").isFile());
     }
 
     private void setup7z() throws IOException {
@@ -272,9 +275,9 @@ public class ExpanderTest extends AbstractTestCase {
     }
 
     private void verifyTargetDir() throws IOException {
-        Assert.assertTrue("a has not been created", new File(resultDir, "a").isDirectory());
-        Assert.assertTrue("a/b has not been created", new File(resultDir, "a/b").isDirectory());
-        Assert.assertTrue("a/b/c has not been created", new File(resultDir, "a/b/c").isDirectory());
+        assertTrue(new File(resultDir, "a").isDirectory(), "a has not been created");
+        assertTrue(new File(resultDir, "a/b").isDirectory(), "a/b has not been created");
+        assertTrue(new File(resultDir, "a/b/c").isDirectory(), "a/b/c has not been created");
         assertHelloWorld("a/b/d.txt", "1");
         assertHelloWorld("a/b/c/e.txt", "2");
     }

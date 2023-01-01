@@ -20,12 +20,12 @@ package org.apache.commons.compress.compressors.lz4;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -249,14 +249,12 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
             13, 0, 0, (byte) 0x80, // 13 bytes length and uncompressed bit set
             'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', // content
         };
-        try {
+        final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
                 IOUtils.toByteArray(a);
-                fail("expected exception");
             }
-        } catch (final IOException ex) {
-            assertThat(ex.getMessage(), containsString("block checksum"));
-        }
+        }, "expected exception");
+        assertThat(ex.getMessage(), containsString("block checksum"));
     }
 
     @Test
@@ -267,13 +265,11 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
             0x70, // block size 4MB
             0,
         };
-        try {
+        final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
-                fail("expected exception");
             }
-        } catch (final IOException ex) {
-            assertThat(ex.getMessage(), containsString("header checksum mismatch"));
-        }
+        }, "expected exception");
+        assertThat(ex.getMessage(), containsString("header checksum mismatch"));
     }
 
     @Test
@@ -283,13 +279,11 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
             0x6C, // flag - Version 01, block independent, no block checksum, with content size, with content checksum
             0x70, // block size 4MB
         };
-        try {
+        final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
-                fail("expected exception");
             }
-        } catch (final IOException ex) {
-            assertThat(ex.getMessage(), containsString("content size"));
-        }
+        }, "expected exception");
+        assertThat(ex.getMessage(), containsString("content size"));
     }
 
     @Test
@@ -298,13 +292,11 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
             4, 0x22, 0x4d, 0x18, // signature
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
         };
-        try {
+        final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
-                fail("expected exception");
             }
-        } catch (final IOException ex) {
-            assertThat(ex.getMessage(), containsString("BD byte"));
-        }
+        }, "expected exception");
+        assertThat(ex.getMessage(), containsString("BD byte"));
     }
 
     @Test
@@ -312,13 +304,11 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18 // signature
         };
-        try {
+        final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
-                fail("expected exception");
             }
-        } catch (final IOException ex) {
-            assertThat(ex.getMessage(), containsString("frame flags"));
-        }
+        }, "expected exception");
+        assertThat(ex.getMessage(), containsString("frame flags"));
     }
 
     @Test
@@ -328,13 +318,11 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
             0x70, // block size 4MB
         };
-        try {
+        final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
-                fail("expected exception");
             }
-        } catch (final IOException ex) {
-            assertThat(ex.getMessage(), containsString("header checksum"));
-        }
+        }, "expected exception");
+        assertThat(ex.getMessage(), containsString("header checksum"));
     }
 
     @Test
@@ -343,13 +331,11 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
             4, 0x22, 0x4d, 0x18, // signature
             0x24, // flag - Version 00, block independent, no block checksum, no content size, with content checksum
         };
-        try {
+        final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
-                fail("expected exception");
             }
-        } catch (final IOException ex) {
-            assertThat(ex.getMessage(), containsString("version"));
-        }
+        }, "expected exception");
+        assertThat(ex.getMessage(), containsString("version"));
     }
 
     @Test
@@ -372,14 +358,12 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
             1, 2, // content of skippable frame
             1, 0x22, 0x4d, 0x18, // bad signature
         };
-        try {
+        final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
                 IOUtils.toByteArray(a);
-                fail("expected exception");
             }
-        } catch (final IOException ex) {
-            assertThat(ex.getMessage(), containsString("garbage"));
-        }
+        }, "expected exception");
+        assertThat(ex.getMessage(), containsString("garbage"));
     }
 
     @Test
@@ -397,14 +381,12 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
             1, 2, // content of skippable frame
             4, // too short for signature
         };
-        try {
+        final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
                 IOUtils.toByteArray(a);
-                fail("expected exception");
             }
-        } catch (final IOException ex) {
-            assertThat(ex.getMessage(), containsString("garbage"));
-        }
+        }, "expected exception");
+        assertThat(ex.getMessage(), containsString("garbage"));
     }
 
     @Test
@@ -419,14 +401,13 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
             0, 0, 0, 0, // empty block marker
             0x60, 0x2a, 0x4d, 0x18, // broken skippable frame signature
         };
-        try {
+        final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
                 IOUtils.toByteArray(a);
-                fail("expected exception");
+                fail();
             }
-        } catch (final IOException ex) {
-            assertThat(ex.getMessage(), containsString("garbage"));
-        }
+        }, "expected exception");
+        assertThat(ex.getMessage(), containsString("garbage"));
     }
 
     @Test
@@ -441,14 +422,12 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
             0, 0, 0, 0, // empty block marker
             0x51, 0x2a, 0x4d, 0x17, // broken skippable frame signature
         };
-        try {
+        final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
                 IOUtils.toByteArray(a);
-                fail("expected exception");
             }
-        } catch (final IOException ex) {
-            assertThat(ex.getMessage(), containsString("garbage"));
-        }
+        }, "expected exception");
+        assertThat(ex.getMessage(), containsString("garbage"));
     }
 
     @Test
@@ -465,14 +444,12 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
             2, 0, 0, 0, // skippable frame has length 2
             1, // content of skippable frame (should be two bytes)
         };
-        try {
+        final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
                 IOUtils.toByteArray(a);
-                fail("expected exception");
             }
-        } catch (final IOException ex) {
-            assertThat(ex.getMessage(), containsString("Premature end of stream while skipping frame"));
-        }
+        }, "expected exception");
+        assertThat(ex.getMessage(), containsString("Premature end of stream while skipping frame"));
     }
 
     @Test
@@ -488,14 +465,12 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
             0x55, 0x2a, 0x4d, 0x18, // skippable frame signature
             2, 0, 0, // should be four byte length
         };
-        try {
+        final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
                 IOUtils.toByteArray(a);
-                fail("expected exception");
             }
-        } catch (final IOException ex) {
-            assertThat(ex.getMessage(), containsString("Premature end of data"));
-        }
+        }, "expected exception");
+        assertThat(ex.getMessage(), containsString("Premature end of data"));
     }
 
     @Test
@@ -510,14 +485,12 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
             0, 0, 0, 0, // empty block marker
             1, 2, 3, 4,
         };
-        try {
+        final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
                 IOUtils.toByteArray(a);
-                fail("expected exception");
             }
-        } catch (final IOException ex) {
-            assertThat(ex.getMessage(), containsString("content checksum mismatch"));
-        }
+        }, "expected exception");
+        assertThat(ex.getMessage(), containsString("content checksum mismatch"));
     }
 
     @Test
@@ -531,14 +504,12 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
             'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', // content
             0, 0, 0, 0, // empty block marker
         };
-        try {
+        final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
                 IOUtils.toByteArray(a);
-                fail("expected exception");
             }
-        } catch (final IOException ex) {
-            assertThat(ex.getMessage(), containsString("content checksum"));
-        }
+        }, "expected exception");
+        assertThat(ex.getMessage(), containsString("content checksum"));
     }
 
     @Test
@@ -553,14 +524,12 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
             0, 0, 0, 0, // empty block marker
             0x56, 0x2a, 0x4d, // too short for any signature
         };
-        try {
+        final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
                 IOUtils.toByteArray(a);
-                fail("expected exception");
             }
-        } catch (final IOException ex) {
-            assertThat(ex.getMessage(), containsString("garbage"));
-        }
+        }, "expected exception");
+        assertThat(ex.getMessage(), containsString("garbage"));
     }
 
     @Test

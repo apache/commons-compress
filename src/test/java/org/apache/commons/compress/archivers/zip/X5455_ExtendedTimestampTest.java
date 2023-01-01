@@ -23,14 +23,14 @@ import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.ACCESS_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.CREATE_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.MODIFY_TIME_BIT;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +42,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipException;
 
 import org.junit.jupiter.api.AfterEach;
@@ -217,13 +216,9 @@ public class X5455_ExtendedTimestampTest {
         final ZipLong time = new ZipLong(timeMillis / 1000);
 
         // set too big
-        try {
-            // Java time is 1000 x larger (milliseconds).
-            xf.setModifyJavaTime(new Date(1000L * (MAX_TIME_SECONDS.getValue() + 1L)));
-            fail("Time too big for 32 bits!");
-        } catch (final IllegalArgumentException iae) {
-            // All is good.
-        }
+        // Java time is 1000 x larger (milliseconds).
+        assertThrows(IllegalArgumentException.class, () -> xf.setModifyJavaTime(new Date(1000L * (MAX_TIME_SECONDS.getValue() + 1L))),
+                "Time too big for 32 bits!");
 
         // get/set modify time
         xf.setModifyTime(time);

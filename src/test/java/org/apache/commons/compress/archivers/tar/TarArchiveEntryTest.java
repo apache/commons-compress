@@ -21,13 +21,13 @@ package org.apache.commons.compress.archivers.tar;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.apache.commons.compress.AbstractTestCase.getPath;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -45,6 +45,7 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
 
 public class TarArchiveEntryTest implements TarConstants {
 
@@ -174,39 +175,39 @@ public class TarArchiveEntryTest implements TarConstants {
         }
         try (final TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
             final TarArchiveEntry entry = tis.getNextTarEntry();
-            assertNotNull("couldn't get entry", entry);
+            assertNotNull(entry, "couldn't get entry");
 
-            assertEquals("extra header count", 0, entry.getExtraPaxHeaders().size());
-            assertNull("mtime", entry.getExtraPaxHeader("mtime"));
-            assertNull("atime", entry.getExtraPaxHeader("atime"));
-            assertNull("ctime", entry.getExtraPaxHeader("ctime"));
-            assertNull("birthtime", entry.getExtraPaxHeader("LIBARCHIVE.creationtime"));
-            assertEquals("mtime", toFileTime("2022-03-14T01:25:03Z"), entry.getLastModifiedTime());
-            assertNull("atime", entry.getLastAccessTime());
-            assertNull("ctime", entry.getStatusChangeTime());
-            assertNull("birthtime", entry.getCreationTime());
+            assertEquals(0, entry.getExtraPaxHeaders().size(), "extra header count");
+            assertNull(entry.getExtraPaxHeader("mtime"), "mtime");
+            assertNull(entry.getExtraPaxHeader("atime"), "atime");
+            assertNull(entry.getExtraPaxHeader("ctime"), "ctime");
+            assertNull(entry.getExtraPaxHeader("LIBARCHIVE.creationtime"), "birthtime");
+            assertEquals(toFileTime("2022-03-14T01:25:03Z"), entry.getLastModifiedTime(), "mtime");
+            assertNull(entry.getLastAccessTime(), "atime");
+            assertNull(entry.getStatusChangeTime(), "ctime");
+            assertNull(entry.getCreationTime(), "birthtime");
 
             assertEquals('W', tis.read());
-            assertTrue("should be at end of entry", tis.read() < 0);
+            assertTrue(tis.read() < 0, "should be at end of entry");
 
-            assertNull("should be at end of file", tis.getNextTarEntry());
+            assertNull(tis.getNextTarEntry(), "should be at end of file");
         }
     }
 
     @Test
     public void shouldParseTimePaxHeadersAndNotCountAsExtraPaxHeaders() {
         final TarArchiveEntry entry = createEntryForTimeTests();
-        assertEquals("extra header count", 0, entry.getExtraPaxHeaders().size());
-        assertNull("size", entry.getExtraPaxHeader("size"));
-        assertNull("mtime", entry.getExtraPaxHeader("mtime"));
-        assertNull("atime", entry.getExtraPaxHeader("atime"));
-        assertNull("ctime", entry.getExtraPaxHeader("ctime"));
-        assertNull("birthtime", entry.getExtraPaxHeader("LIBARCHIVE.creationtime"));
-        assertEquals("size", entry.getSize(), 1);
-        assertEquals("mtime", toFileTime("2022-03-14T01:25:03.599853900Z"), entry.getLastModifiedTime());
-        assertEquals("atime", toFileTime("2022-03-14T01:31:00.706927200Z"), entry.getLastAccessTime());
-        assertEquals("ctime", toFileTime("2022-03-14T01:28:59.700505300Z"), entry.getStatusChangeTime());
-        assertEquals("birthtime", toFileTime("2022-03-14T01:29:00.723509000Z"), entry.getCreationTime());
+        assertEquals(0, entry.getExtraPaxHeaders().size(), "extra header count");
+        assertNull(entry.getExtraPaxHeader("size"), "size");
+        assertNull(entry.getExtraPaxHeader("mtime"), "mtime");
+        assertNull(entry.getExtraPaxHeader("atime"), "atime");
+        assertNull(entry.getExtraPaxHeader("ctime"), "ctime");
+        assertNull(entry.getExtraPaxHeader("LIBARCHIVE.creationtime"), "birthtime");
+        assertEquals(entry.getSize(), 1, "size");
+        assertEquals(toFileTime("2022-03-14T01:25:03.599853900Z"), entry.getLastModifiedTime(), "mtime");
+        assertEquals(toFileTime("2022-03-14T01:31:00.706927200Z"), entry.getLastAccessTime(), "atime");
+        assertEquals(toFileTime("2022-03-14T01:28:59.700505300Z"), entry.getStatusChangeTime(), "ctime");
+        assertEquals(toFileTime("2022-03-14T01:29:00.723509000Z"), entry.getCreationTime(), "birthtime");
     }
 
     @Test
@@ -221,22 +222,22 @@ public class TarArchiveEntryTest implements TarConstants {
         }
         try (final TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
             final TarArchiveEntry entry = tis.getNextTarEntry();
-            assertNotNull("couldn't get entry", entry);
+            assertNotNull(entry, "couldn't get entry");
 
-            assertEquals("extra header count", 0, entry.getExtraPaxHeaders().size());
-            assertNull("mtime", entry.getExtraPaxHeader("mtime"));
-            assertNull("atime", entry.getExtraPaxHeader("atime"));
-            assertNull("ctime", entry.getExtraPaxHeader("ctime"));
-            assertNull("birthtime", entry.getExtraPaxHeader("LIBARCHIVE.creationtime"));
-            assertEquals("mtime", toFileTime("2022-03-14T01:25:03.599853900Z"), entry.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-14T01:31:00.706927200Z"), entry.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-14T01:28:59.700505300Z"), entry.getStatusChangeTime());
-            assertEquals("birthtime", toFileTime("2022-03-14T01:29:00.723509000Z"), entry.getCreationTime());
+            assertEquals(0, entry.getExtraPaxHeaders().size(), "extra header count");
+            assertNull(entry.getExtraPaxHeader("mtime"), "mtime");
+            assertNull(entry.getExtraPaxHeader("atime"), "atime");
+            assertNull(entry.getExtraPaxHeader("ctime"), "ctime");
+            assertNull(entry.getExtraPaxHeader("LIBARCHIVE.creationtime"), "birthtime");
+            assertEquals(toFileTime("2022-03-14T01:25:03.599853900Z"), entry.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-14T01:31:00.706927200Z"), entry.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-14T01:28:59.700505300Z"), entry.getStatusChangeTime(), "ctime");
+            assertEquals(toFileTime("2022-03-14T01:29:00.723509000Z"), entry.getCreationTime(), "birthtime");
 
             assertEquals('W', tis.read());
-            assertTrue("should be at end of entry", tis.read() < 0);
+            assertTrue(tis.read() < 0, "should be at end of entry");
 
-            assertNull("should be at end of file", tis.getNextTarEntry());
+            assertNull(tis.getNextTarEntry(), "should be at end of file");
         }
     }
 
@@ -253,22 +254,22 @@ public class TarArchiveEntryTest implements TarConstants {
         }
         try (final TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
             final TarArchiveEntry entry = tis.getNextTarEntry();
-            assertNotNull("couldn't get entry", entry);
+            assertNotNull(entry, "couldn't get entry");
 
-            assertEquals("extra header count", 0, entry.getExtraPaxHeaders().size());
-            assertNull("mtime", entry.getExtraPaxHeader("mtime"));
-            assertNull("atime", entry.getExtraPaxHeader("atime"));
-            assertNull("ctime", entry.getExtraPaxHeader("ctime"));
-            assertNull("birthtime", entry.getExtraPaxHeader("LIBARCHIVE.creationtime"));
-            assertEquals("mtime", toFileTime("2022-03-14T01:25:03.599853900Z"), entry.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-14T01:31:00.706927200Z"), entry.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-14T01:29:00.723509000Z"), entry.getStatusChangeTime());
-            assertEquals("birthtime", toFileTime("2022-03-14T01:29:00.723509000Z"), entry.getCreationTime());
+            assertEquals(0, entry.getExtraPaxHeaders().size(), "extra header count");
+            assertNull(entry.getExtraPaxHeader("mtime"), "mtime");
+            assertNull(entry.getExtraPaxHeader("atime"), "atime");
+            assertNull(entry.getExtraPaxHeader("ctime"), "ctime");
+            assertNull(entry.getExtraPaxHeader("LIBARCHIVE.creationtime"), "birthtime");
+            assertEquals(toFileTime("2022-03-14T01:25:03.599853900Z"), entry.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-14T01:31:00.706927200Z"), entry.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-14T01:29:00.723509000Z"), entry.getStatusChangeTime(), "ctime");
+            assertEquals(toFileTime("2022-03-14T01:29:00.723509000Z"), entry.getCreationTime(), "birthtime");
 
             assertEquals('W', tis.read());
-            assertTrue("should be at end of entry", tis.read() < 0);
+            assertTrue(tis.read() < 0, "should be at end of entry");
 
-            assertNull("should be at end of file", tis.getNextTarEntry());
+            assertNull(tis.getNextTarEntry(), "should be at end of file");
         }
     }
 
@@ -284,22 +285,22 @@ public class TarArchiveEntryTest implements TarConstants {
         }
         try (final TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
             final TarArchiveEntry entry = tis.getNextTarEntry();
-            assertNotNull("couldn't get entry", entry);
+            assertNotNull(entry, "couldn't get entry");
 
-            assertEquals("extra header count", 0, entry.getExtraPaxHeaders().size());
-            assertNull("mtime", entry.getExtraPaxHeader("mtime"));
-            assertNull("atime", entry.getExtraPaxHeader("atime"));
-            assertNull("ctime", entry.getExtraPaxHeader("ctime"));
-            assertNull("birthtime", entry.getExtraPaxHeader("LIBARCHIVE.creationtime"));
-            assertEquals("mtime", toFileTime("2022-03-14T01:25:03Z"), entry.getLastModifiedTime());
-            assertEquals("atime", toFileTime("2022-03-14T01:31:00Z"), entry.getLastAccessTime());
-            assertEquals("ctime", toFileTime("2022-03-14T01:28:59Z"), entry.getStatusChangeTime());
-            assertNull("birthtime", entry.getCreationTime());
+            assertEquals(0, entry.getExtraPaxHeaders().size(), "extra header count");
+            assertNull(entry.getExtraPaxHeader("mtime"), "mtime");
+            assertNull(entry.getExtraPaxHeader("atime"), "atime");
+            assertNull(entry.getExtraPaxHeader("ctime"), "ctime");
+            assertNull(entry.getExtraPaxHeader("LIBARCHIVE.creationtime"), "birthtime");
+            assertEquals(toFileTime("2022-03-14T01:25:03Z"), entry.getLastModifiedTime(), "mtime");
+            assertEquals(toFileTime("2022-03-14T01:31:00Z"), entry.getLastAccessTime(), "atime");
+            assertEquals(toFileTime("2022-03-14T01:28:59Z"), entry.getStatusChangeTime(), "ctime");
+            assertNull(entry.getCreationTime(), "birthtime");
 
             assertEquals('W', tis.read());
-            assertTrue("should be at end of entry", tis.read() < 0);
+            assertTrue(tis.read() < 0, "should be at end of entry");
 
-            assertNull("should be at end of file", tis.getNextTarEntry());
+            assertNull(tis.getNextTarEntry(), "should be at end of file");
         }
     }
 
@@ -312,30 +313,30 @@ public class TarArchiveEntryTest implements TarConstants {
         entry.addPaxHeader("APACHE.mustelida", "true");
         entry.addPaxHeader("SCHILY.xattr.user.org.apache.weasels", "maximum weasels");
         entry.addPaxHeader("size", "1");
-        assertEquals("extra header count", 2, entry.getExtraPaxHeaders().size());
-        assertEquals("APACHE.mustelida", "true", entry.getExtraPaxHeader("APACHE.mustelida"));
-        assertEquals("SCHILY.xattr.user.org.apache.weasels", "maximum weasels", entry.getExtraPaxHeader("SCHILY.xattr.user.org.apache.weasels"));
-        assertEquals("size", entry.getSize(), 1);
+        assertEquals(2, entry.getExtraPaxHeaders().size(), "extra header count");
+        assertEquals("true", entry.getExtraPaxHeader("APACHE.mustelida"), "APACHE.mustelida");
+        assertEquals("maximum weasels", entry.getExtraPaxHeader("SCHILY.xattr.user.org.apache.weasels"), "SCHILY.xattr.user.org.apache.weasels");
+        assertEquals(entry.getSize(), 1, "size");
 
         tos.putArchiveEntry(entry);
         tos.write('W');
         tos.closeArchiveEntry();
         tos.close();
-        assertNotEquals("should have extra headers before clear", 0, entry.getExtraPaxHeaders().size());
+        assertNotEquals(0, entry.getExtraPaxHeaders().size(), "should have extra headers before clear");
         entry.clearExtraPaxHeaders();
-        assertEquals("extra headers should be empty after clear", 0, entry.getExtraPaxHeaders().size());
+        assertEquals(0, entry.getExtraPaxHeaders().size(), "extra headers should be empty after clear");
         final TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()));
         entry = tis.getNextTarEntry();
-        assertNotNull("couldn't get entry", entry);
+        assertNotNull(entry, "couldn't get entry");
 
-        assertEquals("extra header count", 2, entry.getExtraPaxHeaders().size());
-        assertEquals("APACHE.mustelida", "true", entry.getExtraPaxHeader("APACHE.mustelida"));
-        assertEquals("user.org.apache.weasels", "maximum weasels", entry.getExtraPaxHeader("SCHILY.xattr.user.org.apache.weasels"));
+        assertEquals(2, entry.getExtraPaxHeaders().size(), "extra header count");
+        assertEquals("true", entry.getExtraPaxHeader("APACHE.mustelida"), "APACHE.mustelida");
+        assertEquals("maximum weasels", entry.getExtraPaxHeader("SCHILY.xattr.user.org.apache.weasels"), "user.org.apache.weasels");
 
         assertEquals('W', tis.read());
-        assertTrue("should be at end of entry", tis.read() < 0);
+        assertTrue(tis.read() < 0, "should be at end of entry");
 
-        assertNull("should be at end of file", tis.getNextTarEntry());
+        assertNull(tis.getNextTarEntry(), "should be at end of file");
         tis.close();
     }
 
@@ -373,8 +374,8 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
+    @EnabledOnOs(org.junit.jupiter.api.condition.OS.LINUX)
     public void testLinuxFileInformationFromFile() throws IOException {
-        assumeTrue("Information is only available on linux", OS.equals("linux"));
         final TarArchiveEntry entry = new TarArchiveEntry(getFile("test1.xml"));
         assertNotEquals(0, entry.getLongUserId());
         assertNotEquals(0, entry.getLongGroupId());
@@ -382,8 +383,8 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
+    @EnabledOnOs(org.junit.jupiter.api.condition.OS.LINUX)
     public void testLinuxFileInformationFromPath() throws IOException {
-        assumeTrue("Information is only available on linux", OS.equals("linux"));
         final TarArchiveEntry entry = new TarArchiveEntry(getPath("test1.xml"));
         assertNotEquals(0, entry.getLongUserId());
         assertNotEquals(0, entry.getLongGroupId());
@@ -461,15 +462,15 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
+    @EnabledOnOs(org.junit.jupiter.api.condition.OS.WINDOWS)
     public void testWindowsFileInformationFromFile() throws IOException {
-        assumeTrue("Information should only be checked on Windows", OS.startsWith("windows"));
         final TarArchiveEntry entry = new TarArchiveEntry(getFile("test1.xml"));
         assertNotEquals("", entry.getUserName());
     }
 
     @Test
+    @EnabledOnOs(org.junit.jupiter.api.condition.OS.WINDOWS)
     public void testWindowsFileInformationFromPath() throws IOException {
-        assumeTrue("Information should only be checked on Windows", OS.startsWith("windows"));
         final TarArchiveEntry entry = new TarArchiveEntry(getPath("test1.xml"));
         assertNotEquals("", entry.getUserName());
     }

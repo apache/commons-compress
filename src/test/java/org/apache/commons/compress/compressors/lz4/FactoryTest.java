@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.compressors.lz4;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,7 +28,6 @@ import java.nio.file.Files;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public class FactoryTest extends AbstractTestCase {
@@ -56,7 +57,7 @@ public class FactoryTest extends AbstractTestCase {
                 InputStream sis = new CompressorStreamFactory().createCompressorInputStream(format, Files.newInputStream(outputSz.toPath()))) {
             final byte[] expected = IOUtils.toByteArray(is);
             final byte[] actual = IOUtils.toByteArray(sis);
-            Assert.assertArrayEquals(expected, actual);
+            assertArrayEquals(expected, actual);
         }
         // System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }

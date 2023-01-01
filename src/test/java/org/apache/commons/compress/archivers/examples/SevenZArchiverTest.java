@@ -19,8 +19,12 @@
 package org.apache.commons.compress.archivers.examples;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +39,6 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.StreamingNotSupportedException;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,20 +47,20 @@ public class SevenZArchiverTest extends AbstractTestCase {
 
     private void assertDir(final String expectedName, final ArchiveEntry entry) {
         assertNotNull(entry, () -> expectedName + " does not exists");
-        Assert.assertEquals(expectedName + "/", entry.getName());
-        Assert.assertTrue(expectedName + " is not a directory", entry.isDirectory());
+        assertEquals(expectedName + "/", entry.getName());
+        assertTrue(entry.isDirectory(), expectedName + " is not a directory");
     }
 
     private void assertHelloWorld(final String expectedName, final String suffix, final ArchiveEntry entry, final SevenZFile z)
         throws IOException {
         assertNotNull(entry, () -> expectedName + " does not exists");
-        Assert.assertEquals(expectedName, entry.getName());
-        Assert.assertFalse(expectedName + " is a directory", entry.isDirectory());
+        assertEquals(expectedName, entry.getName());
+        assertFalse(entry.isDirectory(), expectedName + " is a directory");
         final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
         final byte[] actual = new byte[expected.length];
-        Assert.assertEquals(actual.length, z.read(actual));
-        Assert.assertEquals(-1, z.read());
-        Assert.assertArrayEquals(expected, actual);
+        assertEquals(actual.length, z.read(actual));
+        assertEquals(-1, z.read());
+        assertArrayEquals(expected, actual);
     }
 
     @Test
@@ -111,7 +114,7 @@ public class SevenZArchiverTest extends AbstractTestCase {
             assertDir("a", z.getNextEntry());
             assertDir("a/b", z.getNextEntry());
             final ArchiveEntry n = z.getNextEntry();
-            Assert.assertNotNull(n);
+            assertNotNull(n);
             // File.list may return a/b/c or a/b/d.txt first
             if (n.getName().endsWith("/")) {
                 assertDir("a/b/c", n);

@@ -19,14 +19,13 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -48,7 +47,6 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public class ZipArchiveInputStreamTest {
@@ -199,24 +197,12 @@ public class ZipArchiveInputStreamTest {
         try (ByteArrayInputStream in = new ByteArrayInputStream(content);
              ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
-            try {
-                IOUtils.toByteArray(archive);
-                fail("expected exception");
-            } catch (final IOException ex) {
-                assertEquals("Truncated ZIP file", ex.getMessage());
-            }
-            try {
-                archive.read(buf);
-                fail("expected exception");
-            } catch (final IOException ex) {
-                assertEquals("Truncated ZIP file", ex.getMessage());
-            }
-            try {
-                archive.read(buf);
-                fail("expected exception");
-            } catch (final IOException ex) {
-                assertEquals("Truncated ZIP file", ex.getMessage());
-            }
+            final IOException ex1 = assertThrows(IOException.class, () -> IOUtils.toByteArray(archive), "expected exception");
+            assertEquals("Truncated ZIP file", ex1.getMessage());
+            final IOException ex2 = assertThrows(IOException.class, () -> archive.read(buf), "expected exception");
+            assertEquals("Truncated ZIP file", ex2.getMessage());
+            final IOException ex3 = assertThrows(IOException.class, () -> archive.read(buf), "expected exception");
+            assertEquals("Truncated ZIP file", ex3.getMessage());
         }
     }
 
@@ -454,24 +440,12 @@ public class ZipArchiveInputStreamTest {
         try (ByteArrayInputStream in = new ByteArrayInputStream(content);
              ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
-            try {
-                IOUtils.toByteArray(archive);
-                fail("expected exception");
-            } catch (final IOException ex) {
-                assertEquals("Truncated ZIP file", ex.getMessage());
-            }
-            try {
-                archive.read();
-                fail("expected exception");
-            } catch (final IOException ex) {
-                assertEquals("Truncated ZIP file", ex.getMessage());
-            }
-            try {
-                archive.read();
-                fail("expected exception");
-            } catch (final IOException ex) {
-                assertEquals("Truncated ZIP file", ex.getMessage());
-            }
+            final IOException ex1 = assertThrows(IOException.class, () -> IOUtils.toByteArray(archive), "expected exception");
+            assertEquals("Truncated ZIP file", ex1.getMessage());
+            final IOException ex2 = assertThrows(IOException.class, archive::read, "expected exception");
+            assertEquals("Truncated ZIP file", ex2.getMessage());
+            final IOException ex3 = assertThrows(IOException.class, archive::read, "expected exception");
+            assertEquals("Truncated ZIP file", ex3.getMessage());
         }
     }
 
@@ -483,12 +457,12 @@ public class ZipArchiveInputStreamTest {
     @Test
     public void testMessageWithCorruptFileName() throws Exception {
         try (ZipArchiveInputStream in = new ZipArchiveInputStream(Files.newInputStream(getFile("COMPRESS-351.zip").toPath()))) {
-            ZipArchiveEntry ze = in.getNextZipEntry();
-            while (ze != null) {
-                ze = in.getNextZipEntry();
-            }
-            fail("expected EOFException");
-        } catch (final EOFException ex) {
+            final EOFException ex = assertThrows(EOFException.class, () -> {
+                ZipArchiveEntry ze = in.getNextZipEntry();
+                while (ze != null) {
+                    ze = in.getNextZipEntry();
+                }
+            }, "expected EOFException");
             final String m = ex.getMessage();
             assertTrue(m.startsWith("Truncated ZIP entry: ?2016")); // the first character is not printable
         }
@@ -504,14 +478,14 @@ public class ZipArchiveInputStreamTest {
              ZipArchiveInputStream zipStream =  new ZipArchiveInputStream((archiveStream))
         ) {
             final ZipArchiveEntry inflatedEntry = zipStream.getNextZipEntry();
-            Assert.assertEquals("inflated.txt", inflatedEntry.getName());
-            Assert.assertEquals(0x0000, inflatedEntry.getLocalHeaderOffset());
-            Assert.assertEquals(0x0046, inflatedEntry.getDataOffset());
+            assertEquals("inflated.txt", inflatedEntry.getName());
+            assertEquals(0x0000, inflatedEntry.getLocalHeaderOffset());
+            assertEquals(0x0046, inflatedEntry.getDataOffset());
             final ZipArchiveEntry storedEntry = zipStream.getNextZipEntry();
-            Assert.assertEquals("stored.txt", storedEntry.getName());
-            Assert.assertEquals(0x5892, storedEntry.getLocalHeaderOffset());
-            Assert.assertEquals(0x58d6, storedEntry.getDataOffset());
-            Assert.assertNull(zipStream.getNextZipEntry());
+            assertEquals("stored.txt", storedEntry.getName());
+            assertEquals(0x5892, storedEntry.getLocalHeaderOffset());
+            assertEquals(0x58d6, storedEntry.getDataOffset());
+            assertNull(zipStream.getNextZipEntry());
         }
     }
 
@@ -621,9 +595,7 @@ public class ZipArchiveInputStreamTest {
                 .getResourceAsStream("/invalid-zip.zip");
 
         try (final ZipArchiveInputStream zip = new ZipArchiveInputStream(is)) {
-            zip.getNextZipEntry();
-            fail("IOException expected");
-        } catch (final ZipException expected) {
+            final ZipException expected = assertThrows(ZipException.class, zip::getNextZipEntry, "IOException expected");
             assertTrue(expected.getMessage().contains("Unexpected record signature"));
         }
     }
@@ -633,7 +605,7 @@ public class ZipArchiveInputStreamTest {
         final ZipArchiveInputStream in = new ZipArchiveInputStream(Files.newInputStream(getFile("SHRUNK.ZIP").toPath()));
 
         ZipArchiveEntry entry = in.getNextZipEntry();
-        assertEquals("method", ZipMethod.UNSHRINKING.getCode(), entry.getMethod());
+        assertEquals(ZipMethod.UNSHRINKING.getCode(), entry.getMethod(), "method");
         assertTrue(in.canReadEntryData(entry));
 
         InputStream original = Files.newInputStream(getFile("test1.xml").toPath());
@@ -644,7 +616,7 @@ public class ZipArchiveInputStreamTest {
         }
 
         entry = in.getNextZipEntry();
-        assertEquals("method", ZipMethod.UNSHRINKING.getCode(), entry.getMethod());
+        assertEquals(ZipMethod.UNSHRINKING.getCode(), entry.getMethod(), "method");
         assertTrue(in.canReadEntryData(entry));
 
         original = Files.newInputStream(getFile("test2.xml").toPath());

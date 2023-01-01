@@ -18,9 +18,9 @@
 
 package org.apache.commons.compress.archivers;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -74,7 +74,7 @@ public class LongPathTest extends AbstractTestCase {
     public static void setUpFileList() throws Exception {
         assertTrue(ARCDIR.exists());
         final File listing = new File(ARCDIR, "files.txt");
-        assertTrue("files.txt is readable", listing.canRead());
+        assertTrue(listing.canRead(), "files.txt is readable");
         final BufferedReader br = new BufferedReader(Files.newBufferedReader(listing.toPath()));
         String line;
         while ((line = br.readLine()) != null) {

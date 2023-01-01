@@ -18,6 +18,9 @@
  */
 package org.apache.commons.compress.compressors;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +31,6 @@ import java.nio.file.Files;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public final class LZMATestCase extends AbstractTestCase {
@@ -47,7 +49,7 @@ public final class LZMATestCase extends AbstractTestCase {
         try (InputStream is = Files.newInputStream(compressed.toPath()); CompressorInputStream in = new LZMACompressorInputStream(is)) {
             uncompressed = IOUtils.toByteArray(in);
         }
-        Assert.assertArrayEquals(orig, uncompressed);
+        assertArrayEquals(orig, uncompressed);
     }
 
     @Test
@@ -57,8 +59,8 @@ public final class LZMATestCase extends AbstractTestCase {
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (LZMACompressorInputStream in = new LZMACompressorInputStream(is)) {
                 IOUtils.toByteArray(in);
-                Assert.assertEquals(-1, in.read(buf));
-                Assert.assertEquals(-1, in.read(buf));
+                assertEquals(-1, in.read(buf));
+                assertEquals(-1, in.read(buf));
             }
         }
     }
@@ -69,8 +71,8 @@ public final class LZMATestCase extends AbstractTestCase {
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (LZMACompressorInputStream in = new LZMACompressorInputStream(is)) {
                 IOUtils.toByteArray(in);
-                Assert.assertEquals(-1, in.read());
-                Assert.assertEquals(-1, in.read());
+                assertEquals(-1, in.read());
+                assertEquals(-1, in.read());
             }
         }
     }

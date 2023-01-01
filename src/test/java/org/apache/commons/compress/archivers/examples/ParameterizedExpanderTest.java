@@ -19,6 +19,8 @@
 package org.apache.commons.compress.archivers.examples;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -36,7 +38,6 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -69,11 +70,11 @@ public class ParameterizedExpanderTest extends AbstractTestCase {
     }
 
     private void assertHelloWorld(final String fileName, final String suffix) throws IOException {
-        Assert.assertTrue(fileName + " does not exist", new File(resultDir, fileName).isFile());
+        assertTrue(new File(resultDir, fileName).isFile(), fileName + " does not exist");
         final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
         try (InputStream is = Files.newInputStream(new File(resultDir, fileName).toPath())) {
             final byte[] actual = IOUtils.toByteArray(is);
-            Assert.assertArrayEquals(expected, actual);
+            assertArrayEquals(expected, actual);
         }
     }
 
@@ -154,9 +155,9 @@ public class ParameterizedExpanderTest extends AbstractTestCase {
     }
 
     private void verifyTargetDir() throws IOException {
-        Assert.assertTrue("a has not been created", new File(resultDir, "a").isDirectory());
-        Assert.assertTrue("a/b has not been created", new File(resultDir, "a/b").isDirectory());
-        Assert.assertTrue("a/b/c has not been created", new File(resultDir, "a/b/c").isDirectory());
+        assertTrue(new File(resultDir, "a").isDirectory(), "a has not been created");
+        assertTrue(new File(resultDir, "a/b").isDirectory(), "a/b has not been created");
+        assertTrue(new File(resultDir, "a/b/c").isDirectory(), "a/b/c has not been created");
         assertHelloWorld("a/b/d.txt", "1");
         assertHelloWorld("a/b/c/e.txt", "2");
     }

@@ -18,9 +18,9 @@
 
 package org.apache.commons.compress;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -69,20 +69,20 @@ public class IOMethodsTest extends AbstractTestCase {
         final byte [] buff = new byte[10]; // small so multiple reads are needed;
         final long size = nextEntry.getSize();
         if (size != ArchiveEntry.SIZE_UNKNOWN) {
-            assertTrue("Size should be > 0, found: "+size, size > 0);
+            assertTrue(size > 0, "Size should be > 0, found: " + size);
         }
 
         final InputStream is2 = Files.newInputStream(file.toPath());
         final ArchiveInputStream ais2 = factory.createArchiveInputStream(archiverName, is2);
         final ArchiveEntry nextEntry2 = ais2.getNextEntry();
         assertNotNull(nextEntry2);
-        assertEquals("Expected same entry size", size, nextEntry2.getSize());
+        assertEquals(size, nextEntry2.getSize(), "Expected same entry size");
 
         final InputStream is3 = Files.newInputStream(file.toPath());
         final ArchiveInputStream ais3 = factory.createArchiveInputStream(archiverName, is3);
         final ArchiveEntry nextEntry3 = ais3.getNextEntry();
         assertNotNull(nextEntry3);
-        assertEquals("Expected same entry size", size, nextEntry3.getSize());
+        assertEquals(size, nextEntry3.getSize(), "Expected same entry size");
 
         int b;
         while((b=ais1.read()) != -1){
@@ -101,10 +101,10 @@ public class IOMethodsTest extends AbstractTestCase {
         }
         ais3.close();
 
-        assertEquals("out1Len!=out2Len",out1.toString().length(),out2.toString().length());
-        assertEquals("out1Len!=out3Len",out1.toString().length(),out3.toString().length());
-        assertEquals("out1!=out2",out1.toString(),out2.toString());
-        assertEquals("out1!=out3",out1.toString(),out3.toString());
+        assertEquals(out1.toString().length(), out2.toString().length(), "out1Len!=out2Len");
+        assertEquals(out1.toString().length(), out3.toString().length(), "out1Len!=out3Len");
+        assertEquals(out1.toString(), out2.toString(), "out1!=out2");
+        assertEquals(out1.toString(), out3.toString(), "out1!=out3");
     }
 
     private void compareWrites(final String archiverName, final ArchiveEntry entry) throws Exception {
@@ -130,12 +130,12 @@ public class IOMethodsTest extends AbstractTestCase {
         aos3.write(byteTest, 0, byteTest.length);
         aos3.closeArchiveEntry();
         aos3.close();
-        assertEquals("aos1Bytes!=aos2Bytes",aos1.getBytesWritten(),aos2.getBytesWritten());
-        assertEquals("aos1Bytes!=aos3Bytes",aos1.getBytesWritten(),aos3.getBytesWritten());
-        assertEquals("out1Len!=out2Len",out1.toString().length(),out2.toString().length());
-        assertEquals("out1Len!=out2Len",out1.toString().length(),out3.toString().length());
-        assertEquals("out1!=out2",out1.toString(),out2.toString());
-        assertEquals("out1!=out3",out1.toString(),out3.toString());
+        assertEquals(aos1.getBytesWritten(), aos2.getBytesWritten(), "aos1Bytes!=aos2Bytes");
+        assertEquals(aos1.getBytesWritten(), aos3.getBytesWritten(), "aos1Bytes!=aos3Bytes");
+        assertEquals(out1.toString().length(), out2.toString().length(), "out1Len!=out2Len");
+        assertEquals(out1.toString().length(), out3.toString().length(), "out1Len!=out2Len");
+        assertEquals(out1.toString(), out2.toString(), "out1!=out2");
+        assertEquals(out1.toString(), out3.toString(), "out1!=out3");
     }
 
     @Test

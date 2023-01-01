@@ -17,7 +17,8 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +27,6 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public class ZipSplitOutputStreamTest extends AbstractTestCase {
@@ -40,7 +40,7 @@ public class ZipSplitOutputStreamTest extends AbstractTestCase {
         final byte[] buffer = new byte[4];
         inputStream.read(buffer);
 
-        Assert.assertEquals(ByteBuffer.wrap(ZipArchiveOutputStream.DD_SIG).getInt(), ByteBuffer.wrap(buffer).getInt());
+        assertEquals(ByteBuffer.wrap(ZipArchiveOutputStream.DD_SIG).getInt(), ByteBuffer.wrap(buffer).getInt());
     }
 
     @Test
@@ -62,22 +62,22 @@ public class ZipSplitOutputStreamTest extends AbstractTestCase {
         zipSplitOutputStream.close();
 
         File zipFile = new File(dir.getPath(), "testCreateSplittedFiles.z01");
-        Assert.assertEquals(zipFile.length(), splitSize);
+        assertEquals(zipFile.length(), splitSize);
 
         zipFile = new File(dir.getPath(), "testCreateSplittedFiles.z02");
-        Assert.assertEquals(zipFile.length(), splitSize);
+        assertEquals(zipFile.length(), splitSize);
 
         zipFile = new File(dir.getPath(), "testCreateSplittedFiles.z03");
-        Assert.assertEquals(zipFile.length(), splitSize);
+        assertEquals(zipFile.length(), splitSize);
 
         zipFile = new File(dir.getPath(), "testCreateSplittedFiles.z04");
-        Assert.assertEquals(zipFile.length(), splitSize);
+        assertEquals(zipFile.length(), splitSize);
 
         zipFile = new File(dir.getPath(), "testCreateSplittedFiles.z05");
-        Assert.assertEquals(zipFile.length(), splitSize);
+        assertEquals(zipFile.length(), splitSize);
 
         zipFile = new File(dir.getPath(), "testCreateSplittedFiles.zip");
-        Assert.assertEquals(zipFile.length(), (fileToTest.length() + 4 - splitSize * 5));
+        assertEquals(zipFile.length(), (fileToTest.length() + 4 - splitSize * 5));
     }
 
     @Test

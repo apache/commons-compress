@@ -18,14 +18,15 @@
 
 package org.apache.commons.compress.utils;
 
-import org.junit.Assert;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import org.junit.jupiter.api.Test;
 
 public class OsgiUtilsTest {
 
     @Test
     public void detectsItIsNotRunningInsideOsgiEnv() {
-        Assert.assertFalse(OsgiUtils.isRunningInOsgiEnvironment());
+        assertFalse(OsgiUtils.isRunningInOsgiEnvironment());
     }
 
 }

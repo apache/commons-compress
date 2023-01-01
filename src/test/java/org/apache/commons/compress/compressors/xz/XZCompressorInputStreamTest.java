@@ -19,6 +19,9 @@
 package org.apache.commons.compress.compressors.xz;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +29,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public class XZCompressorInputStreamTest {
@@ -37,8 +39,8 @@ public class XZCompressorInputStreamTest {
             final XZCompressorInputStream in =
                 new XZCompressorInputStream(is, decompressConcatenated);
             IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read(buf));
-            Assert.assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
             in.close();
         }
     }
@@ -58,11 +60,11 @@ public class XZCompressorInputStreamTest {
         final byte[] data = {
             (byte) 0xFD, '7', 'z', 'X', 'Z', '\0'
         };
-        Assert.assertFalse(XZCompressorInputStream.matches(data, 5));
-        Assert.assertTrue(XZCompressorInputStream.matches(data, 6));
-        Assert.assertTrue(XZCompressorInputStream.matches(data, 7));
+        assertFalse(XZCompressorInputStream.matches(data, 5));
+        assertTrue(XZCompressorInputStream.matches(data, 6));
+        assertTrue(XZCompressorInputStream.matches(data, 7));
         data[5] = '0';
-        Assert.assertFalse(XZCompressorInputStream.matches(data, 6));
+        assertFalse(XZCompressorInputStream.matches(data, 6));
     }
 
     private void singleByteReadConsistentlyReturnsMinusOneAtEof(final boolean decompressConcatenated) throws IOException {
@@ -71,8 +73,8 @@ public class XZCompressorInputStreamTest {
             final XZCompressorInputStream in =
                 new XZCompressorInputStream(is, decompressConcatenated);
             IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read());
-            Assert.assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
             in.close();
         }
     }

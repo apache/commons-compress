@@ -18,7 +18,7 @@
  */
 package org.apache.commons.compress.changes;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.PipedInputStream;
 

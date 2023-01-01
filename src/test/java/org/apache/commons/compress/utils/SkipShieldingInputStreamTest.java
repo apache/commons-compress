@@ -17,10 +17,13 @@
  */
 package org.apache.commons.compress.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 public class SkipShieldingInputStreamTest {
@@ -38,11 +41,11 @@ public class SkipShieldingInputStreamTest {
                 }
                 @Override
                 public long skip(long n) {
-                    Assert.fail("skip invoked");
+                    fail("skip invoked");
                     return -1;
                 }
             })) {
-            Assert.assertEquals(100, i.skip(100));
+            assertEquals(100, i.skip(100));
         }
     }
 
@@ -59,11 +62,11 @@ public class SkipShieldingInputStreamTest {
                 }
                 @Override
                 public long skip(long n) {
-                    Assert.fail("skip invoked");
+                    fail("skip invoked");
                     return -1;
                 }
             })) {
-            Assert.assertTrue(Integer.MAX_VALUE > i.skip(Long.MAX_VALUE));
+            assertTrue(Integer.MAX_VALUE > i.skip(Long.MAX_VALUE));
         }
     }
 
@@ -76,16 +79,16 @@ public class SkipShieldingInputStreamTest {
                 }
                 @Override
                 public int read(byte[] b, int off, int len) {
-                    Assert.fail("read invoked");
+                    fail("read invoked");
                     return len;
                 }
                 @Override
                 public long skip(long n) {
-                    Assert.fail("skip invoked");
+                    fail("skip invoked");
                     return -1;
                 }
             })) {
-            Assert.assertEquals(0, i.skip(Long.MIN_VALUE));
+            assertEquals(0, i.skip(Long.MIN_VALUE));
         }
     }
 

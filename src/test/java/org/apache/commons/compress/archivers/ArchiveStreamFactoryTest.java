@@ -19,11 +19,11 @@
 package org.apache.commons.compress.archivers;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -201,13 +201,11 @@ public class ArchiveStreamFactoryTest {
      */
     @Test
     public void aiffFilesAreNoTARs() throws Exception {
-        try (InputStream fis = Files.newInputStream(new File("src/test/resources/testAIFF.aif").toPath())) {
-            try (InputStream is = new BufferedInputStream(fis)) {
-                ArchiveStreamFactory.DEFAULT.createArchiveInputStream(is);
-                fail("created an input stream for a non-archive");
-            } catch (final ArchiveException ae) {
-                assertTrue(ae.getMessage().startsWith("No Archiver found"));
-            }
+        try (final InputStream fis = Files.newInputStream(new File("src/test/resources/testAIFF.aif").toPath());
+             final InputStream is = new BufferedInputStream(fis)) {
+            final ArchiveException ae = assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(is),
+                    "created an input stream for a non-archive");
+            assertTrue(ae.getMessage().startsWith("No Archiver found"));
         }
     }
 
@@ -233,13 +231,11 @@ public class ArchiveStreamFactoryTest {
      */
     @Test
     public void detectsAndThrowsFor7z() throws Exception {
-        try (InputStream fis = Files.newInputStream(new File("src/test/resources/bla.7z").toPath())) {
-            try (InputStream bis = new BufferedInputStream(fis)) {
-                ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis);
-                fail("Expected a StreamingNotSupportedException");
-            } catch (final StreamingNotSupportedException ex) {
-                assertEquals(ArchiveStreamFactory.SEVEN_Z, ex.getFormat());
-            }
+        try (final InputStream fis = Files.newInputStream(new File("src/test/resources/bla.7z").toPath());
+             final InputStream bis = new BufferedInputStream(fis)) {
+            final StreamingNotSupportedException ex = assertThrows(StreamingNotSupportedException.class, () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis),
+                    "Expected a StreamingNotSupportedException");
+            assertEquals(ArchiveStreamFactory.SEVEN_Z, ex.getFormat());
         }
     }
 
@@ -266,13 +262,9 @@ public class ArchiveStreamFactoryTest {
      */
     @Test
     public void shortTextFilesAreNoTARs() {
-        try {
-            ArchiveStreamFactory.DEFAULT
-                .createArchiveInputStream(new ByteArrayInputStream("This certainly is not a tar archive, really, no kidding".getBytes()));
-            fail("created an input stream for a non-archive");
-        } catch (final ArchiveException ae) {
-            assertTrue(ae.getMessage().startsWith("No Archiver found"));
-        }
+        final ArchiveException ae = assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(
+                new ByteArrayInputStream(("This certainly is not a tar archive, really, no kidding").getBytes())), "created an input stream for a non-archive");
+        assertTrue(ae.getMessage().startsWith("No Archiver found"));
     }
 
     /**
@@ -293,13 +285,11 @@ public class ArchiveStreamFactoryTest {
 
     @Test
     public void testCOMPRESS209() throws Exception {
-        try (InputStream fis = Files.newInputStream(new File("src/test/resources/testCompress209.doc").toPath())) {
-            try (InputStream bis = new BufferedInputStream(fis)) {
-                ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis);
-                fail("created an input stream for a non-archive");
-            } catch (final ArchiveException ae) {
-                assertTrue(ae.getMessage().startsWith("No Archiver found"));
-            }
+        try (final InputStream fis = Files.newInputStream(new File("src/test/resources/testCompress209.doc").toPath());
+             final InputStream bis = new BufferedInputStream(fis)) {
+            final ArchiveException ae = assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis),
+                    "created an input stream for a non-archive");
+            assertTrue(ae.getMessage().startsWith("No Archiver found"));
         }
     }
 
@@ -319,26 +309,18 @@ public class ArchiveStreamFactoryTest {
             assertEquals(extension, detect("bla."+extension));
         }
 
-        try {
-            ArchiveStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)));
-            fail("shouldn't be able to detect empty stream");
-        } catch (final ArchiveException e) {
-            assertEquals("No Archiver found for the stream signature", e.getMessage());
-        }
+        final ArchiveException e1 = assertThrows(ArchiveException.class,
+                () -> ArchiveStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))),
+                "shouldn't be able to detect empty stream");
+        assertEquals("No Archiver found for the stream signature", e1.getMessage());
 
-        try {
-            ArchiveStreamFactory.detect(null);
-            fail("shouldn't be able to detect null stream");
-        } catch (final IllegalArgumentException e) {
-            assertEquals("Stream must not be null.", e.getMessage());
-        }
+        final IllegalArgumentException e2 = assertThrows(IllegalArgumentException.class, () -> ArchiveStreamFactory.detect(null),
+                "shouldn't be able to detect null stream");
+        assertEquals("Stream must not be null.", e2.getMessage());
 
-        try {
-            ArchiveStreamFactory.detect(new BufferedInputStream(new MockEvilInputStream()));
-            fail("Expected ArchiveException");
-        } catch (final ArchiveException e) {
-            assertEquals("IOException while reading signature.", e.getMessage());
-        }
+        final ArchiveException e3 = assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.detect(new BufferedInputStream(new MockEvilInputStream())),
+                "Expected ArchiveException");
+        assertEquals("IOException while reading signature.", e3.getMessage());
     }
 
     @Test
@@ -354,20 +336,15 @@ public class ArchiveStreamFactoryTest {
     @Test
     @SuppressWarnings("deprecation")
     public void testEncodingDeprecated() {
-        ArchiveStreamFactory fac = new ArchiveStreamFactory();
-        assertNull(fac.getEntryEncoding());
-        fac.setEntryEncoding("UTF-8");
-        assertEquals("UTF-8", fac.getEntryEncoding());
-        fac.setEntryEncoding("US_ASCII");
-        assertEquals("US_ASCII", fac.getEntryEncoding());
-        fac = new ArchiveStreamFactory("UTF-8");
-        assertEquals("UTF-8", fac.getEntryEncoding());
-        try {
-            fac.setEntryEncoding("US_ASCII");
-            fail("Expected IllegalStateException");
-        } catch (final IllegalStateException ise) {
-            // expected
-        }
+        final ArchiveStreamFactory fac1 = new ArchiveStreamFactory();
+        assertNull(fac1.getEntryEncoding());
+        fac1.setEntryEncoding("UTF-8");
+        assertEquals("UTF-8", fac1.getEntryEncoding());
+        fac1.setEntryEncoding("US_ASCII");
+        assertEquals("US_ASCII", fac1.getEntryEncoding());
+        final ArchiveStreamFactory fac2 = new ArchiveStreamFactory("UTF-8");
+        assertEquals("UTF-8", fac2.getEntryEncoding());
+        assertThrows(IllegalStateException.class, () -> fac2.setEntryEncoding("US_ASCII"), "Expected IllegalStateException");
     }
 
     @Test

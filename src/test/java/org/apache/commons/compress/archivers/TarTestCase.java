@@ -19,12 +19,13 @@
 package org.apache.commons.compress.archivers;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -83,13 +84,9 @@ public final class TarTestCase extends AbstractTestCase {
     public void testCOMPRESS178() throws Exception {
         final File input = getFile("COMPRESS-178.tar");
         try (InputStream is = Files.newInputStream(input.toPath()); ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("tar", is)) {
-            try {
-                in.getNextEntry();
-                fail("Expected IOException");
-            } catch (final IOException e) {
-                final Throwable t = e.getCause();
-                assertTrue("Expected cause = IllegalArgumentException", t instanceof IllegalArgumentException);
-            }
+            final IOException e = assertThrows(IOException.class, in::getNextEntry, "Expected IOException");
+            final Throwable t = e.getCause();
+            assertInstanceOf(IllegalArgumentException.class, t, "Expected cause = IllegalArgumentException");
         }
     }
 
@@ -395,13 +392,13 @@ public final class TarTestCase extends AbstractTestCase {
     @Test
     public void testTarFileCOMPRESS178() throws Exception {
         final File input = getFile("COMPRESS-178.tar");
-        try (final TarFile tarFile = new TarFile(input)) {
-            // Compared to the TarArchiveInputStream all entries are read when instantiating the tar file
-            fail("Expected IOException");
-        } catch (final IOException e) {
-            final Throwable t = e.getCause();
-            assertTrue("Expected cause = IllegalArgumentException", t instanceof IllegalArgumentException);
-        }
+        final IOException e = assertThrows(IOException.class, () -> {
+            try (final TarFile tarFile = new TarFile(input)) {
+                // Compared to the TarArchiveInputStream all entries are read when instantiating the tar file
+            }
+        }, "Expected IOException");
+        final Throwable t = e.getCause();
+        assertInstanceOf(IllegalArgumentException.class, t, "Expected cause = IllegalArgumentException");
     }
 
     @Test

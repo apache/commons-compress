@@ -21,9 +21,9 @@ package org.apache.commons.compress.archivers.zip;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.compress.AbstractTestCase.getPath;
 import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -51,7 +51,6 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -87,10 +86,10 @@ public class ZipMemoryFileSystemTest {
             list.add(secondFile);
 
             SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forPaths(lastFile, list);
-            Assert.assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
+            assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
 
             channel = ZipSplitReadOnlySeekableByteChannel.forPaths(firstFile, secondFile, lastFile);
-            Assert.assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
+            assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
         }
     }
 
@@ -123,7 +122,7 @@ public class ZipMemoryFileSystemTest {
             expectedPosition += randomDiskNumber > 0 ? firstFileSize : 0;
             expectedPosition += randomDiskNumber > 1 ? secondFileSize : 0;
 
-            Assert.assertEquals(expectedPosition, channel.position());
+            assertEquals(expectedPosition, channel.position());
         }
 
     }

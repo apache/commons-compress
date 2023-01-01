@@ -18,12 +18,15 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -52,9 +55,9 @@ public class CpioArchiveTest {
             try (ByteArrayInputStream bin = new ByteArrayInputStream(baos.toByteArray());
                 CpioArchiveInputStream in = new CpioArchiveInputStream(bin, "UTF-16LE")) {
                 final CpioArchiveEntry entry = (CpioArchiveEntry) in.getNextEntry();
-                Assert.assertNotNull(entry);
-                Assert.assertEquals("T\u00e4st.txt", entry.getName());
-                Assert.assertArrayEquals(new byte[] {1, 2, 3, 4}, IOUtils.toByteArray(in));
+                assertNotNull(entry);
+                assertEquals("T\u00e4st.txt", entry.getName());
+                assertArrayEquals(new byte[] {1, 2, 3, 4}, IOUtils.toByteArray(in));
             }
         }
     }
