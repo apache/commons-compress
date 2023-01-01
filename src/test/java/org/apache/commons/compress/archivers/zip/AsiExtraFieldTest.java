@@ -117,7 +117,7 @@ public class AsiExtraFieldTest implements UnixStat {
         assertEquals(5, a1.getUserId(), "uid plain file");
         assertEquals(6, a1.getGroupId(), "gid plain file");
 
-        final byte[] data2 = new byte[] {0x75, (byte)0x8E, 0x41, (byte)0xFD, // CRC
+        final byte[] data2 = {0x75, (byte)0x8E, 0x41, (byte)0xFD,            // CRC
                                          0123, (byte)0xA0,                   // mode
                                          4, 0, 0, 0,                         // link length
                                          5, 0, 6, 0,                         // uid, gid
@@ -132,7 +132,7 @@ public class AsiExtraFieldTest implements UnixStat {
         assertEquals(6, a2.getGroupId(), "gid link");
         assertEquals("test", a2.getLinkedFile());
 
-        final byte[] data3 = new byte[] {(byte)0x8E, 0x01, (byte)0xBF, (byte)0x0E, // CRC
+        final byte[] data3 = {(byte)0x8E, 0x01, (byte)0xBF, (byte)0x0E,            // CRC
                                          0123, (byte)0x40,                         // mode
                                          0, 0, 0, 0,                               // link
                                          5, 0, 6, 0};                              // uid, gid
@@ -145,7 +145,7 @@ public class AsiExtraFieldTest implements UnixStat {
         assertEquals(5, a3.getUserId(), "uid dir");
         assertEquals(6, a3.getGroupId(), "gid dir");
 
-        final byte[] data4 = new byte[] {0, 0, 0, 0,                           // bad CRC
+        final byte[] data4 = {0, 0, 0, 0,                                      // bad CRC
                                          0123, (byte)0x40,                     // mode
                                          0, 0, 0, 0,                           // link
                                          5, 0, 6, 0};                          // uid, gid
