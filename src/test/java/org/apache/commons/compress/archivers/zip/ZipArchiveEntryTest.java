@@ -400,12 +400,12 @@ public class ZipArchiveEntryTest {
 
         assertEquals(time.toMillis(), ze.getTime());
         assertEquals(time, ze.getLastModifiedTime());
-        X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
+        final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
         assertNotNull(extendedTimestamp);
         assertEquals(TimeUtils.toUnixTime(time), extendedTimestamp.getModifyTime().getValue());
         assertNull(extendedTimestamp.getAccessTime());
         assertNull(extendedTimestamp.getCreateTime());
-        X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
+        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
         assertNotNull(ntfs);
         assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
         assertEquals(0L, ntfs.getAccessTime().getLongValue());
@@ -421,7 +421,7 @@ public class ZipArchiveEntryTest {
         assertEquals(time.toMillis(), ze.getTime());
         assertEquals(time, ze.getLastModifiedTime());
         assertNull(ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID));
-        X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
+        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
         assertNotNull(ntfs);
         assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
         assertEquals(0L, ntfs.getAccessTime().getLongValue());
@@ -436,12 +436,12 @@ public class ZipArchiveEntryTest {
 
         assertEquals(time.toMillis(), ze.getTime());
         assertEquals(time, ze.getLastModifiedTime());
-        X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
+        final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
         assertNotNull(extendedTimestamp);
         assertEquals(TimeUtils.toUnixTime(time), extendedTimestamp.getModifyTime().getValue());
         assertNull(extendedTimestamp.getAccessTime());
         assertNull(extendedTimestamp.getCreateTime());
-        X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
+        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
         assertNotNull(ntfs);
         assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
         assertEquals(0L, ntfs.getAccessTime().getLongValue());
@@ -458,11 +458,11 @@ public class ZipArchiveEntryTest {
 
         assertEquals(time, ze.getTime());
         assertEquals(time, ze.getLastModifiedTime().toMillis());
-        X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
+        final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
         assertNotNull(extendedTimestamp);
         assertEquals(TimeUtils.toUnixTime(lastAccessTime), extendedTimestamp.getAccessTime().getValue());
         assertNull(extendedTimestamp.getCreateTime());
-        X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
+        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
         assertNotNull(ntfs);
         assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
         assertEquals(TimeUtils.toNtfsTime(lastAccessTime), ntfs.getAccessTime().getLongValue());
@@ -479,11 +479,11 @@ public class ZipArchiveEntryTest {
 
         assertEquals(time, ze.getTime());
         assertEquals(time, ze.getLastModifiedTime().toMillis());
-        X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
+        final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
         assertNotNull(extendedTimestamp);
         assertNull(extendedTimestamp.getAccessTime());
         assertEquals(TimeUtils.toUnixTime(creationTime), extendedTimestamp.getCreateTime().getValue());
-        X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
+        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
         assertNotNull(ntfs);
         assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
         assertEquals(0L, ntfs.getAccessTime().getLongValue());
@@ -502,11 +502,11 @@ public class ZipArchiveEntryTest {
 
         assertEquals(time, ze.getTime());
         assertEquals(time, ze.getLastModifiedTime().toMillis());
-        X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
+        final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
         assertNotNull(extendedTimestamp);
         assertEquals(TimeUtils.toUnixTime(accessTime), extendedTimestamp.getAccessTime().getValue());
         assertEquals(TimeUtils.toUnixTime(creationTime), extendedTimestamp.getCreateTime().getValue());
-        X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
+        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
         assertNotNull(ntfs);
         assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
         assertEquals(TimeUtils.toNtfsTime(accessTime), ntfs.getAccessTime().getLongValue());
@@ -526,7 +526,7 @@ public class ZipArchiveEntryTest {
         assertEquals(time, ze.getTime());
         assertEquals(time, ze.getLastModifiedTime().toMillis());
         assertNull(ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID));
-        X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
+        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
         assertNotNull(ntfs);
         assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
         assertEquals(TimeUtils.toNtfsTime(accessTime), ntfs.getAccessTime().getLongValue());
