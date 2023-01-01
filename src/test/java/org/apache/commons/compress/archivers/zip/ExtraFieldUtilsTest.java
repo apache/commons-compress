@@ -28,7 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * JUnit testcases for org.apache.commons.compress.archivers.zip.ExtraFieldUtils.
+ * JUnit tests for org.apache.commons.compress.archivers.zip.ExtraFieldUtils.
  *
  */
 public class ExtraFieldUtilsTest implements UnixStat {

@@ -40,7 +40,7 @@ import org.apache.commons.compress.utils.TimeUtils;
 import org.junit.jupiter.api.Test;
 
 /**
- * JUnit testcases for org.apache.commons.compress.archivers.zip.ZipEntry.
+ * JUnit tests for org.apache.commons.compress.archivers.zip.ZipEntry.
  *
  */
 public class ZipArchiveEntryTest {

@@ -26,7 +26,7 @@ import java.math.BigInteger;
 import org.junit.jupiter.api.Test;
 
 /**
- * JUnit testcases for org.apache.commons.compress.archivers.zip.ZipEightByteInteger.
+ * JUnit tests for org.apache.commons.compress.archivers.zip.ZipEightByteInteger.
  *
  */
 public class ZipEightByteIntegerTest {

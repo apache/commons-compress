@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 /**
- * JUnit testcases for org.apache.commons.compress.archivers.zip.AsiExtraField.
+ * JUnit tests for org.apache.commons.compress.archivers.zip.AsiExtraField.
  *
  */
 public class AsiExtraFieldTest implements UnixStat {

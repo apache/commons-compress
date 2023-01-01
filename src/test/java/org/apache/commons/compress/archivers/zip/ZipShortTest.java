@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import org.junit.jupiter.api.Test;
 
 /**
- * JUnit testcases for org.apache.commons.compress.archivers.zip.ZipShort.
+ * JUnit tests for org.apache.commons.compress.archivers.zip.ZipShort.
  *
  */
 public class ZipShortTest {
