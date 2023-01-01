@@ -35,7 +35,9 @@ import org.apache.commons.compress.utils.TimeUtils;
  * @since 1.6
  */
 public class SevenZArchiveEntry implements ArchiveEntry {
+
     static final SevenZArchiveEntry[] EMPTY_SEVEN_Z_ARCHIVE_ENTRY_ARRAY = {};
+
     /**
      * Converts Java time to NTFS time.
      * @param date the Java time
@@ -47,6 +49,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     public static long javaTimeToNtfsTime(final Date date) {
         return TimeUtils.toNtfsTime(date);
     }
+
     /**
      * Converts NTFS time (100 nanosecond units since 1 January 1601)
      * to Java time.
@@ -59,6 +62,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     public static Date ntfsTimeToJavaTime(final long ntfsTime) {
         return TimeUtils.ntfsTimeToDate(ntfsTime);
     }
+
     private String name;
     private boolean hasStream;
     private boolean isDirectory;
