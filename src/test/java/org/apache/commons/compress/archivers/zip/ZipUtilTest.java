@@ -18,19 +18,23 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.fail;
-
-import java.math.BigInteger;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.math.BigInteger;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ZipUtilTest {
 
@@ -120,13 +124,32 @@ public class ZipUtilTest {
 
     @Test
     public void testInsideCalendar(){
-        final TimeZone tz = TimeZone.getDefault();
-        final long date = 476096400000L; // 1.1.1985, 10:00 am GMT
-        final byte[] b1 = ZipUtil.toDosTime(date - tz.getOffset(date));
+        final long date = toLocalInstant("1985-02-01T09:00:00").toEpochMilli();
+        final byte[] b1 = ZipUtil.toDosTime(date);
         assertEquals(0, b1[0]);
         assertEquals(72, b1[1]);
         assertEquals(65, b1[2]);
         assertEquals(10, b1[3]);
+    }
+
+    @Test
+    public void testInsideCalendar_long(){
+        final long date = toLocalInstant("1985-02-01T09:00:00").toEpochMilli();
+        final long value = ZipLong.getValue(ZipUtil.toDosTime(date));
+        assertDosDate(value, 1985, 2, 1, 9, 0, 0);
+    }
+
+    @Test
+    public void testInsideCalendar_modernDate(){
+        final long date = toLocalInstant("2022-12-27T16:18:23").toEpochMilli();
+        final long value = ZipLong.getValue(ZipUtil.toDosTime(date));
+        assertDosDate(value, 2022, 12, 27, 16, 18, 22); // DOS dates only store even seconds
+    }
+    @Test
+    public void testInsideCalendar_bigValue(){
+        final long date = toLocalInstant("2097-11-27T23:59:59").toEpochMilli();
+        final long value = ZipLong.getValue(ZipUtil.toDosTime(date));
+        assertDosDate(value, 2097, 11, 27, 23, 59, 58); // DOS dates only store even seconds
     }
 
     @Test
@@ -169,11 +192,48 @@ public class ZipUtilTest {
 
     @Test
     public void testOutsideCalendar(){
-        final byte[] b1 = ZipUtil.toDosTime(160441200000L); // 1.1..1975
+        final long date = toLocalInstant("1975-01-31T23:00:00").toEpochMilli();
+        final byte[] b1 = ZipUtil.toDosTime(date);
         assertEquals(0, b1[0]);
-        assertEquals(33, b1[1]);
-        assertEquals(0, b1[2]);
+        assertEquals(0, b1[1]);
+        assertEquals(33, b1[2]);
         assertEquals(0, b1[3]);
+    }
+
+    @Test
+    public void testOutsideCalendar_long(){
+        final long date = toLocalInstant("1975-01-31T23:00:00").toEpochMilli();
+        final long value = ZipLong.getValue(ZipUtil.toDosTime(date));
+        assertDosDate(value, 1980, 1, 1, 0, 0, 0);
+    }
+
+    @Test
+    public void testIsDosTime(){
+        assertFalse(ZipUtil.isDosTime(toLocalInstant("1975-01-31T23:00:00").toEpochMilli()));
+        assertTrue(ZipUtil.isDosTime(toLocalInstant("1980-01-03T00:00:00").toEpochMilli()));
+        assertTrue(ZipUtil.isDosTime(toLocalInstant("2097-11-27T00:00:00").toEpochMilli()));
+        assertFalse(ZipUtil.isDosTime(toLocalInstant("2099-01-01T00:00:00").toEpochMilli()));
+    }
+
+    static void assertDosDate(
+            final long value,
+            final int year,
+            final int month,
+            final int day,
+            final int hour,
+            final int minute,
+            final int second) {
+        int pos = 0;
+        assertEquals((year - 1980), ((int) (value << pos)) >>> (32 - 7));
+        assertEquals(month, ((int) (value << (pos += 7))) >>> (32 - 4));
+        assertEquals(day, ((int) (value << (pos += 4))) >>> (32 - 5));
+        assertEquals(hour, ((int) (value << (pos += 5))) >>> (32 - 5));
+        assertEquals(minute, ((int) (value << (pos += 5))) >>> (32 - 6));
+        assertEquals(second, ((int) (value << (pos + 6))) >>> (32 - 5) << 1); // DOS dates only store even seconds
+    }
+
+    static Instant toLocalInstant(final String date) {
+        return LocalDateTime.parse(date).atZone(ZoneId.systemDefault()).toInstant();
     }
 
     @Test

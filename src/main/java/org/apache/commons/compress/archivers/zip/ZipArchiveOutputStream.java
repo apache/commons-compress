@@ -377,8 +377,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
     private final byte[] copyBuffer = new byte[32768];
 
-    private final Calendar calendarInstance = Calendar.getInstance();
-
     /**
      * Whether we are creating a split zip
      */
@@ -820,7 +818,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
 
         // last mod. time and date
-        ZipUtil.toDosTime(calendarInstance, ze.getTime(), buf, CFH_TIME_OFFSET);
+        ZipUtil.toDosTime(ze.getTime(), buf, CFH_TIME_OFFSET);
 
         // CRC
         // compressed length
@@ -926,7 +924,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // compression method
         ZipShort.putShort(zipMethod, buf, LFH_METHOD_OFFSET);
 
-        ZipUtil.toDosTime(calendarInstance, ze.getTime(), buf, LFH_TIME_OFFSET);
+        ZipUtil.toDosTime(ze.getTime(), buf, LFH_TIME_OFFSET);
 
         // CRC
         if (phased || !(zipMethod == DEFLATED || channel != null)){

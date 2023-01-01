@@ -27,10 +27,10 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.Date;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.ExactMath;
+import org.apache.commons.compress.utils.TimeUtils;
 
 /**
  * A cpio archive consists of a sequence of files. There are several types of
@@ -977,7 +977,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *            The time to set.
      */
     public void setTime(final FileTime time) {
-        this.mtime = time.to(TimeUnit.SECONDS);
+        this.mtime = TimeUtils.toUnixTime(time);
     }
 
     /**
