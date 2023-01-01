@@ -141,6 +141,12 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
         return time == null ? null : unixTimeToZipLong(TimeUtils.toUnixTime(time));
     }
 
+    private static FileTime unixTimeToFileTime(final ZipLong unixTime) {
+        return unixTime != null ? TimeUtils.unixTimeToFileTime(unixTime.getIntValue()) : null;
+    }
+    // The 3 boolean fields (below) come from this flags byte.  The remaining 5 bits
+    // are ignored according to the current version of the spec (December 2012).
+
     private static ZipLong unixTimeToZipLong(final long unixTime) {
         if (!TimeUtils.isUnixTime(unixTime)) {
             throw new IllegalArgumentException("X5455 timestamps must fit in a signed 32 bit integer: " + unixTime);
@@ -151,12 +157,6 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     private static Date zipLongToDate(final ZipLong unixTime) {
         return unixTime != null ? new Date(unixTime.getIntValue() * 1000L) : null;
     }
-
-    private static FileTime unixTimeToFileTime(final ZipLong unixTime) {
-        return unixTime != null ? TimeUtils.unixTimeToFileTime(unixTime.getIntValue()) : null;
-    }
-    // The 3 boolean fields (below) come from this flags byte.  The remaining 5 bits
-    // are ignored according to the current version of the spec (December 2012).
 
     private byte flags;
     // Note: even if bit1 and bit2 are set, the Central data will still not contain
@@ -200,18 +200,6 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     }
 
     /**
-     * Gets the access time as a java.util.Date
-     * of this zip entry, or null if no such timestamp exists in the zip entry.
-     * The milliseconds are always zeroed out, since the underlying data
-     * offers only per-second precision.
-     *
-     * @return access time as java.util.Date or null.
-     */
-    public Date getAccessJavaTime() {
-        return zipLongToDate(accessTime);
-    }
-
-    /**
      * Gets the access time as a {@link FileTime}
      * of this zip entry, or null if no such timestamp exists in the zip entry.
      * The milliseconds are always zeroed out, since the underlying data
@@ -222,6 +210,18 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      */
     public FileTime getAccessFileTime() {
         return unixTimeToFileTime(accessTime);
+    }
+
+    /**
+     * Gets the access time as a java.util.Date
+     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     * The milliseconds are always zeroed out, since the underlying data
+     * offers only per-second precision.
+     *
+     * @return access time as java.util.Date or null.
+     */
+    public Date getAccessJavaTime() {
+        return zipLongToDate(accessTime);
     }
 
     /**
@@ -264,6 +264,19 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     }
 
     /**
+     * Gets the create time as a {@link FileTime}
+     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     * The milliseconds are always zeroed out, since the underlying data
+     * offers only per-second precision.
+     *
+     * @return modify time as {@link FileTime} or null.
+     * @since 1.23
+     */
+    public FileTime getCreateFileTime() {
+        return unixTimeToFileTime(createTime);
+    }
+
+    /**
      * <p>
      * Gets the create time as a a java.util.Date
      * of this zip entry, or null if no such timestamp exists in the zip entry.
@@ -281,19 +294,6 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      */
     public Date getCreateJavaTime() {
         return zipLongToDate(createTime);
-    }
-
-    /**
-     * Gets the create time as a {@link FileTime}
-     * of this zip entry, or null if no such timestamp exists in the zip entry.
-     * The milliseconds are always zeroed out, since the underlying data
-     * offers only per-second precision.
-     *
-     * @return modify time as {@link FileTime} or null.
-     * @since 1.23
-     */
-    public FileTime getCreateFileTime() {
-        return unixTimeToFileTime(createTime);
     }
 
     /**
@@ -386,18 +386,6 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     }
 
     /**
-     * Gets the modify time as a java.util.Date
-     * of this zip entry, or null if no such timestamp exists in the zip entry.
-     * The milliseconds are always zeroed out, since the underlying data
-     * offers only per-second precision.
-     *
-     * @return modify time as java.util.Date or null.
-     */
-    public Date getModifyJavaTime() {
-        return zipLongToDate(modifyTime);
-    }
-
-    /**
      * Gets the modify time as a {@link FileTime}
      * of this zip entry, or null if no such timestamp exists in the zip entry.
      * The milliseconds are always zeroed out, since the underlying data
@@ -408,6 +396,18 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      */
     public FileTime getModifyFileTime() {
         return unixTimeToFileTime(modifyTime);
+    }
+
+    /**
+     * Gets the modify time as a java.util.Date
+     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     * The milliseconds are always zeroed out, since the underlying data
+     * offers only per-second precision.
+     *
+     * @return modify time as java.util.Date or null.
+     */
+    public Date getModifyJavaTime() {
+        return zipLongToDate(modifyTime);
     }
 
     /**
@@ -528,23 +528,6 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
 
     /**
      * <p>
-     * Sets the access time as a java.util.Date
-     * of this zip entry.  Supplied value is truncated to per-second
-     * precision (milliseconds zeroed-out).
-     * </p><p>
-     * Note: the setters for flags and timestamps are decoupled.
-     * Even if the timestamp is not-null, it will only be written
-     * out if the corresponding bit in the flags is also set.
-     * </p>
-     *
-     * @param d access time as java.util.Date
-     */
-    public void setAccessJavaTime(final Date d) {
-        setAccessTime(dateToZipLong(d));
-    }
-
-    /**
-     * <p>
      * Sets the acccess time as a {@link FileTime}
      * of this zip entry. Supplied value is truncated to per-second
      * precision (milliseconds zeroed-out).
@@ -559,6 +542,23 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      */
     public void setAccessFileTime(final FileTime time) {
         setAccessTime(fileTimeToZipLong(time));
+    }
+
+    /**
+     * <p>
+     * Sets the access time as a java.util.Date
+     * of this zip entry.  Supplied value is truncated to per-second
+     * precision (milliseconds zeroed-out).
+     * </p><p>
+     * Note: the setters for flags and timestamps are decoupled.
+     * Even if the timestamp is not-null, it will only be written
+     * out if the corresponding bit in the flags is also set.
+     * </p>
+     *
+     * @param d access time as java.util.Date
+     */
+    public void setAccessJavaTime(final Date d) {
+        setAccessTime(dateToZipLong(d));
     }
 
     /**
@@ -581,21 +581,6 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
 
     /**
      * <p>
-     * Sets the create time as a java.util.Date
-     * of this zip entry.  Supplied value is truncated to per-second
-     * precision (milliseconds zeroed-out).
-     * </p><p>
-     * Note: the setters for flags and timestamps are decoupled.
-     * Even if the timestamp is not-null, it will only be written
-     * out if the corresponding bit in the flags is also set.
-     * </p>
-     *
-     * @param d create time as java.util.Date
-     */
-    public void setCreateJavaTime(final Date d) { setCreateTime(dateToZipLong(d)); }
-
-    /**
-     * <p>
      * Sets the create time as a {@link FileTime}
      * of this zip entry. Supplied value is truncated to per-second
      * precision (milliseconds zeroed-out).
@@ -611,6 +596,21 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     public void setCreateFileTime(final FileTime time) {
         setCreateTime(fileTimeToZipLong(time));
     }
+
+    /**
+     * <p>
+     * Sets the create time as a java.util.Date
+     * of this zip entry.  Supplied value is truncated to per-second
+     * precision (milliseconds zeroed-out).
+     * </p><p>
+     * Note: the setters for flags and timestamps are decoupled.
+     * Even if the timestamp is not-null, it will only be written
+     * out if the corresponding bit in the flags is also set.
+     * </p>
+     *
+     * @param d create time as java.util.Date
+     */
+    public void setCreateJavaTime(final Date d) { setCreateTime(dateToZipLong(d)); }
 
     /**
      * <p>
@@ -653,23 +653,6 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
 
     /**
      * <p>
-     * Sets the modify time as a java.util.Date
-     * of this zip entry.  Supplied value is truncated to per-second
-     * precision (milliseconds zeroed-out).
-     * </p><p>
-     * Note: the setters for flags and timestamps are decoupled.
-     * Even if the timestamp is not-null, it will only be written
-     * out if the corresponding bit in the flags is also set.
-     * </p>
-     *
-     * @param d modify time as java.util.Date
-     */
-    public void setModifyJavaTime(final Date d) {
-        setModifyTime(dateToZipLong(d));
-    }
-
-    /**
-     * <p>
      * Sets the modify time as a {@link FileTime}
      * of this zip entry. Supplied value is truncated to per-second
      * precision (milliseconds zeroed-out).
@@ -684,6 +667,23 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      */
     public void setModifyFileTime(final FileTime time) {
         setModifyTime(fileTimeToZipLong(time));
+    }
+
+    /**
+     * <p>
+     * Sets the modify time as a java.util.Date
+     * of this zip entry.  Supplied value is truncated to per-second
+     * precision (milliseconds zeroed-out).
+     * </p><p>
+     * Note: the setters for flags and timestamps are decoupled.
+     * Even if the timestamp is not-null, it will only be written
+     * out if the corresponding bit in the flags is also set.
+     * </p>
+     *
+     * @param d modify time as java.util.Date
+     */
+    public void setModifyJavaTime(final Date d) {
+        setModifyTime(dateToZipLong(d));
     }
 
     /**

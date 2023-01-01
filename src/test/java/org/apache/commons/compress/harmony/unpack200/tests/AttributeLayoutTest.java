@@ -84,10 +84,15 @@ public class AttributeLayoutTest {
         );
     }
 
-    @ParameterizedTest
-    @MethodSource("badData")
-    public void testBadData(final String name, final int context, final String layout) {
-        assertThrows(Pack200Exception.class, () -> new AttributeLayout(name, context, layout, -1));
+    static Stream<Arguments> codec() {
+        return Stream.of(
+                Arguments.of("O", AttributeLayout.CONTEXT_CLASS, "HOBS", Codec.BRANCH5),
+                Arguments.of("P", AttributeLayout.CONTEXT_METHOD, "PIN", Codec.BCI5),
+                Arguments.of("S", AttributeLayout.CONTEXT_FIELD, "HS", Codec.SIGNED5),
+                Arguments.of("RS", AttributeLayout.CONTEXT_CODE, "RRRS", Codec.UNSIGNED5),
+                Arguments.of("KS", AttributeLayout.CONTEXT_CLASS, "RKS", Codec.UNSIGNED5),
+                Arguments.of("B", AttributeLayout.CONTEXT_CLASS, "TRKSB", Codec.BYTE1)
+        );
     }
 
     static Stream<Arguments> okData() {
@@ -100,20 +105,9 @@ public class AttributeLayoutTest {
     }
 
     @ParameterizedTest
-    @MethodSource("okData")
-    public void testOkData(final String name, final int context, final String layout) {
-        assertDoesNotThrow(() -> new AttributeLayout(name, context, layout, -1));
-    }
-
-    static Stream<Arguments> codec() {
-        return Stream.of(
-                Arguments.of("O", AttributeLayout.CONTEXT_CLASS, "HOBS", Codec.BRANCH5),
-                Arguments.of("P", AttributeLayout.CONTEXT_METHOD, "PIN", Codec.BCI5),
-                Arguments.of("S", AttributeLayout.CONTEXT_FIELD, "HS", Codec.SIGNED5),
-                Arguments.of("RS", AttributeLayout.CONTEXT_CODE, "RRRS", Codec.UNSIGNED5),
-                Arguments.of("KS", AttributeLayout.CONTEXT_CLASS, "RKS", Codec.UNSIGNED5),
-                Arguments.of("B", AttributeLayout.CONTEXT_CLASS, "TRKSB", Codec.BYTE1)
-        );
+    @MethodSource("badData")
+    public void testBadData(final String name, final int context, final String layout) {
+        assertThrows(Pack200Exception.class, () -> new AttributeLayout(name, context, layout, -1));
     }
 
     @ParameterizedTest
@@ -161,5 +155,11 @@ public class AttributeLayoutTest {
         assertNull(layout.getValue(0, segment.getConstantPool()));
         assertEquals("Zero", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
         assertEquals("One", ((CPUTF8)layout.getValue(2, segment.getConstantPool())).underlyingString());
+    }
+
+    @ParameterizedTest
+    @MethodSource("okData")
+    public void testOkData(final String name, final int context, final String layout) {
+        assertDoesNotThrow(() -> new AttributeLayout(name, context, layout, -1));
     }
 }

@@ -43,6 +43,38 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class CodecTest {
 
+    static Stream<Arguments> bCodings(){
+        return IntStream.rangeClosed(1, 5).mapToObj(Arguments::of);
+    }
+
+    static Stream<Arguments> codecFamily() {
+        return Stream.of(
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs1),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs2),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs3),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs4),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs5),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs1),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs2),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs3),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs4),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs5),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaSignedCodecs1),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaSignedCodecs2),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaDoubleSignedCodecs1),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs1),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs2),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs3),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs4),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs5),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaDoubleSignedCodecs1)
+        );
+    }
+
+    static Stream<Arguments> hCodings() {
+        return IntStream.range(0, 256).mapToObj(Arguments::of);
+    }
+
     private long decode(final Codec codec, final byte[] data, final long value,
             final long last) throws IOException, Pack200Exception {
         final ByteArrayInputStream in = new ByteArrayInputStream(data);
@@ -54,6 +86,16 @@ public class CodecTest {
     private void decodeFail(final Codec codec, final byte[] data)
             throws IOException, Pack200Exception {
         assertThrowsExactly(EOFException.class, () -> decode(codec, data, 0, 0), "Should have detected an EOFException");
+    }
+
+    @ParameterizedTest
+    @MethodSource("bCodings")
+    public void testBCodings(final int i) {
+        if (i == 5) {
+            assertThrows(IllegalArgumentException.class, () -> new BHSDCodec(i, 256));
+        } else {
+            assertDoesNotThrow(() -> new BHSDCodec(i, 256));
+        }
     }
 
     @Test
@@ -154,30 +196,6 @@ public class CodecTest {
         assertFalse(byte2s.encodes(256));
     }
 
-    static Stream<Arguments> codecFamily() {
-        return Stream.of(
-                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs1),
-                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs2),
-                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs3),
-                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs4),
-                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs5),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs1),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs2),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs3),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs4),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs5),
-                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaSignedCodecs1),
-                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaSignedCodecs2),
-                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaDoubleSignedCodecs1),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs1),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs2),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs3),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs4),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs5),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaDoubleSignedCodecs1)
-        );
-    }
-
     @ParameterizedTest
     @MethodSource("codecFamily")
     public void testCodecFamilies(final BHSDCodec[] family) {
@@ -206,28 +224,10 @@ public class CodecTest {
         assertEquals("(5,64,2,1)", Codec.MDELTA5.toString());
     }
 
-    static Stream<Arguments> hCodings() {
-        return IntStream.range(0, 256).mapToObj(Arguments::of);
-    }
-
     @ParameterizedTest
     @MethodSource("hCodings")
     public void testInvalidHCodings(final int i) {
         assertThrows(IllegalArgumentException.class, () -> new BHSDCodec(1, i), "b=1 -> h=256");
-    }
-
-    static Stream<Arguments> bCodings(){
-        return IntStream.rangeClosed(1, 5).mapToObj(Arguments::of);
-    }
-
-    @ParameterizedTest
-    @MethodSource("bCodings")
-    public void testBCodings(final int i) {
-        if (i == 5) {
-            assertThrows(IllegalArgumentException.class, () -> new BHSDCodec(i, 256));
-        } else {
-            assertDoesNotThrow(() -> new BHSDCodec(i, 256));
-        }
     }
 
     @Test

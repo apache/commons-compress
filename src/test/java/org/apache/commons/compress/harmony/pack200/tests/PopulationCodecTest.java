@@ -34,14 +34,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class PopulationCodecTest {
 
-    @Test
-    public void testEncodeSingleValue() {
-        assertThrows(Pack200Exception.class, () -> new PopulationCodec(Codec.SIGNED5, Codec.SIGNED5, Codec.UDELTA5).encode(5),
-                "Should not allow a single value to be encoded as we don't know which codec to use");
-        assertThrows(Pack200Exception.class, () -> new PopulationCodec(Codec.SIGNED5, Codec.SIGNED5, Codec.UDELTA5).encode(5, 8),
-                "Should not allow a single value to be encoded as we don't know which codec to use");
-    }
-
     static Stream<Arguments> populationCodec() {
         return Stream.of(
                 Arguments.of(new byte[] { 4, 5, 6, 4, 2, 1, 3, 0, 7 }, new long[] { 5, 4, 6, 7 }, Codec.BYTE1),
@@ -58,6 +50,14 @@ public class PopulationCodecTest {
                 Arguments.of(new byte[] { 3, 2, 1, 4, 4, 2, 3, 4, 0, 1 }, new long[] { 2, 1, 4, 1 }, Codec.BYTE1),
                 Arguments.of(new byte[] { 3, 2, 1, 4, 1, 2, 3, 4, 0, 1 }, new long[] { 2, 1, 4, 1 }, Codec.BYTE1)
         );
+    }
+
+    @Test
+    public void testEncodeSingleValue() {
+        assertThrows(Pack200Exception.class, () -> new PopulationCodec(Codec.SIGNED5, Codec.SIGNED5, Codec.UDELTA5).encode(5),
+                "Should not allow a single value to be encoded as we don't know which codec to use");
+        assertThrows(Pack200Exception.class, () -> new PopulationCodec(Codec.SIGNED5, Codec.SIGNED5, Codec.UDELTA5).encode(5, 8),
+                "Should not allow a single value to be encoded as we don't know which codec to use");
     }
 
     @ParameterizedTest

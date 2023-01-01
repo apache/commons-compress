@@ -236,6 +236,15 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
 
     private static final int SHORT_SHIFT = 16;
 
+    private static boolean canConvertToInfoZipExtendedTimestamp(
+            final FileTime lastModifiedTime,
+            final FileTime lastAccessTime,
+            final FileTime creationTime) {
+        return TimeUtils.isUnixTime(lastModifiedTime)
+                && TimeUtils.isUnixTime(lastAccessTime)
+                && TimeUtils.isUnixTime(creationTime);
+    }
+
     /**
      * The {@link java.util.zip.ZipEntry} base class only supports
      * the compression methods STORED and DEFLATED. We override the
@@ -247,7 +256,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      *        >COMPRESS-93</a>
      */
     private int method = ZipMethod.UNKNOWN_CODE;
-
     /**
      * The {@link java.util.zip.ZipEntry#setSize} method in the base
      * class throws an IllegalArgumentException if the size is bigger
@@ -274,6 +282,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     private long dataOffset = OFFSET_UNKNOWN;
     private boolean isStreamContiguous;
     private NameSource nameSource = NameSource.NAME;
+
     private CommentSource commentSource = CommentSource.COMMENT;
 
     private long diskNumberStart;
@@ -355,17 +364,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
         setAttributes(inputPath, options);
     }
 
-    private void setAttributes(final Path inputPath, final LinkOption... options) throws IOException {
-        final BasicFileAttributes attributes = Files.readAttributes(inputPath, BasicFileAttributes.class, options);
-        if (attributes.isRegularFile()) {
-            setSize(attributes.size());
-        }
-        super.setLastModifiedTime(attributes.lastModifiedTime());
-        super.setCreationTime(attributes.creationTime());
-        super.setLastAccessTime(attributes.lastAccessTime());
-        setExtraTimeFields();
-    }
-
     /**
      * Creates a new zip entry with the specified name.
      *
@@ -437,19 +435,38 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
         setExtra();
     }
 
-    private void internalAddExtraField(final ZipExtraField ze) {
-        if (ze instanceof UnparseableExtraFieldData) {
-            unparseableExtra = (UnparseableExtraFieldData) ze;
-        } else if (extraFields == null) {
-            extraFields = new ZipExtraField[]{ze};
-        } else {
-            if (getExtraField(ze.getHeaderId()) != null) {
-                internalRemoveExtraField(ze.getHeaderId());
-            }
-            final ZipExtraField[] zipExtraFields = copyOf(extraFields, extraFields.length + 1);
-            zipExtraFields[zipExtraFields.length - 1] = ze;
-            extraFields = zipExtraFields;
+    private void addInfoZipExtendedTimestamp(
+            final FileTime lastModifiedTime,
+            final FileTime lastAccessTime,
+            final FileTime creationTime) {
+        final X5455_ExtendedTimestamp infoZipTimestamp = new X5455_ExtendedTimestamp();
+        if (lastModifiedTime != null) {
+            infoZipTimestamp.setModifyFileTime(lastModifiedTime);
         }
+        if (lastAccessTime != null) {
+            infoZipTimestamp.setAccessFileTime(lastAccessTime);
+        }
+        if (creationTime != null) {
+            infoZipTimestamp.setCreateFileTime(creationTime);
+        }
+        internalAddExtraField(infoZipTimestamp);
+    }
+
+    private void addNTFSTimestamp(
+            final FileTime lastModifiedTime,
+            final FileTime lastAccessTime,
+            final FileTime creationTime) {
+        final X000A_NTFS ntfsTimestamp = new X000A_NTFS();
+        if (lastModifiedTime != null) {
+            ntfsTimestamp.setModifyFileTime(lastModifiedTime);
+        }
+        if (lastAccessTime != null) {
+            ntfsTimestamp.setAccessFileTime(lastAccessTime);
+        }
+        if (creationTime != null) {
+            ntfsTimestamp.setCreateFileTime(creationTime);
+        }
+        internalAddExtraField(ntfsTimestamp);
     }
 
     /**
@@ -471,79 +488,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
         System.arraycopy(src, 0, cpy, 0, Math.min(src.length, length));
         return cpy;
     }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>Override to work around bug <a href="https://bugs.openjdk.org/browse/JDK-8130914">JDK-8130914</a></p>
-     *
-     * @return  The last modification time of the entry in milliseconds
-     *          since the epoch, or -1 if not specified
-     *
-     * @see #setTime(long)
-     * @see #setLastModifiedTime(FileTime)
-     */
-    @Override
-    public long getTime() {
-        if (lastModifiedDateSet) {
-            return getLastModifiedTime().toMillis();
-        }
-        return time != -1 ? time : super.getTime();
-    }
-
-    /**
-     *
-     * {@inheritDoc}
-     *
-     * <p>Override to work around bug <a href="https://bugs.openjdk.org/browse/JDK-8130914">JDK-8130914</a></p>
-     *
-     * @param time
-     *         The last modification time of the entry in milliseconds
-     *         since the epoch
-     * @see #getTime()
-     * @see #getLastModifiedTime()
-     */
-    @Override
-    public void setTime(final long time) {
-        if (ZipUtil.isDosTime(time)) {
-            super.setTime(time);
-            this.time = time;
-            lastModifiedDateSet = false;
-            setExtraTimeFields();
-        } else {
-            setLastModifiedTime(FileTime.fromMillis(time));
-        }
-    }
-
-    @Override
-    public ZipEntry setLastModifiedTime(final FileTime time) {
-        internalSetLastModifiedTime(time);
-        setExtraTimeFields();
-        return this;
-    }
-
-    private void internalSetLastModifiedTime(final FileTime time) {
-        super.setLastModifiedTime(time);
-        this.time = time.toMillis();
-        lastModifiedDateSet = true;
-    }
-
-    @Override
-    public ZipEntry setLastAccessTime(final FileTime time) {
-        super.setLastAccessTime(time);
-        setExtraTimeFields();
-        return this;
-    }
-
-    @Override
-    public ZipEntry setCreationTime(final FileTime time) {
-        super.setCreationTime(time);
-        setExtraTimeFields();
-        return this;
-    }
-    /* (non-Javadoc)
-     * @see Object#equals(Object)
-     */
 
     @Override
     public boolean equals(final Object obj) {
@@ -912,6 +856,25 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * <p>Override to work around bug <a href="https://bugs.openjdk.org/browse/JDK-8130914">JDK-8130914</a></p>
+     *
+     * @return  The last modification time of the entry in milliseconds
+     *          since the epoch, or -1 if not specified
+     *
+     * @see #setTime(long)
+     * @see #setLastModifiedTime(FileTime)
+     */
+    @Override
+    public long getTime() {
+        if (lastModifiedDateSet) {
+            return getLastModifiedTime().toMillis();
+        }
+        return time != -1 ? time : super.getTime();
+    }
+
+    /**
      * Unix permission.
      * @return the unix permissions
      */
@@ -965,6 +928,43 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
         // the empty string in the current implementation (there's no setter)
         // so it is basically draining the performance of a hashmap lookup
         return getName().hashCode();
+    }
+
+    private void internalAddExtraField(final ZipExtraField ze) {
+        if (ze instanceof UnparseableExtraFieldData) {
+            unparseableExtra = (UnparseableExtraFieldData) ze;
+        } else if (extraFields == null) {
+            extraFields = new ZipExtraField[]{ze};
+        } else {
+            if (getExtraField(ze.getHeaderId()) != null) {
+                internalRemoveExtraField(ze.getHeaderId());
+            }
+            final ZipExtraField[] zipExtraFields = copyOf(extraFields, extraFields.length + 1);
+            zipExtraFields[zipExtraFields.length - 1] = ze;
+            extraFields = zipExtraFields;
+        }
+    }
+
+    private void internalRemoveExtraField(final ZipShort type) {
+        if (extraFields == null) {
+            return;
+        }
+        final List<ZipExtraField> newResult = new ArrayList<>();
+        for (final ZipExtraField extraField : extraFields) {
+            if (!type.equals(extraField.getHeaderId())) {
+                newResult.add(extraField);
+            }
+        }
+        if (extraFields.length == newResult.size()) {
+            return;
+        }
+        extraFields = newResult.toArray(ExtraFieldUtils.EMPTY_ZIP_EXTRA_FIELD_ARRAY);
+    }
+
+    private void internalSetLastModifiedTime(final FileTime time) {
+        super.setLastModifiedTime(time);
+        this.time = time.toMillis();
+        lastModifiedDateSet = true;
     }
 
     /**
@@ -1055,22 +1055,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
         setExtra();
     }
 
-    private void internalRemoveExtraField(final ZipShort type) {
-        if (extraFields == null) {
-            return;
-        }
-        final List<ZipExtraField> newResult = new ArrayList<>();
-        for (final ZipExtraField extraField : extraFields) {
-            if (!type.equals(extraField.getHeaderId())) {
-                newResult.add(extraField);
-            }
-        }
-        if (extraFields.length == newResult.size()) {
-            return;
-        }
-        extraFields = newResult.toArray(ExtraFieldUtils.EMPTY_ZIP_EXTRA_FIELD_ARRAY);
-    }
-
     /**
      * Removes unparseable extra field data.
      *
@@ -1082,6 +1066,13 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
         }
         unparseableExtra = null;
         setExtra();
+    }
+
+    private boolean requiresExtraTimeFields() {
+        if (getLastAccessTime() != null || getCreationTime() != null) {
+            return true;
+        }
+        return lastModifiedDateSet;
     }
 
     /**
@@ -1099,73 +1090,15 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
         this.alignment = alignment;
     }
 
-    private void setExtraTimeFields() {
-        if (getExtraField(X5455_ExtendedTimestamp.HEADER_ID) != null) {
-            internalRemoveExtraField(X5455_ExtendedTimestamp.HEADER_ID);
+    private void setAttributes(final Path inputPath, final LinkOption... options) throws IOException {
+        final BasicFileAttributes attributes = Files.readAttributes(inputPath, BasicFileAttributes.class, options);
+        if (attributes.isRegularFile()) {
+            setSize(attributes.size());
         }
-        if (getExtraField(X000A_NTFS.HEADER_ID) != null) {
-            internalRemoveExtraField(X000A_NTFS.HEADER_ID);
-        }
-        if (requiresExtraTimeFields()) {
-            final FileTime lastModifiedTime = getLastModifiedTime();
-            final FileTime lastAccessTime = getLastAccessTime();
-            final FileTime creationTime = getCreationTime();
-            if (canConvertToInfoZipExtendedTimestamp(lastModifiedTime, lastAccessTime, creationTime)) {
-                addInfoZipExtendedTimestamp(lastModifiedTime, lastAccessTime, creationTime);
-            }
-            addNTFSTimestamp(lastModifiedTime, lastAccessTime, creationTime);
-        }
-        setExtra();
-    }
-
-    private void addInfoZipExtendedTimestamp(
-            final FileTime lastModifiedTime,
-            final FileTime lastAccessTime,
-            final FileTime creationTime) {
-        final X5455_ExtendedTimestamp infoZipTimestamp = new X5455_ExtendedTimestamp();
-        if (lastModifiedTime != null) {
-            infoZipTimestamp.setModifyFileTime(lastModifiedTime);
-        }
-        if (lastAccessTime != null) {
-            infoZipTimestamp.setAccessFileTime(lastAccessTime);
-        }
-        if (creationTime != null) {
-            infoZipTimestamp.setCreateFileTime(creationTime);
-        }
-        internalAddExtraField(infoZipTimestamp);
-    }
-
-    private boolean requiresExtraTimeFields() {
-        if (getLastAccessTime() != null || getCreationTime() != null) {
-            return true;
-        }
-        return lastModifiedDateSet;
-    }
-
-    private void addNTFSTimestamp(
-            final FileTime lastModifiedTime,
-            final FileTime lastAccessTime,
-            final FileTime creationTime) {
-        final X000A_NTFS ntfsTimestamp = new X000A_NTFS();
-        if (lastModifiedTime != null) {
-            ntfsTimestamp.setModifyFileTime(lastModifiedTime);
-        }
-        if (lastAccessTime != null) {
-            ntfsTimestamp.setAccessFileTime(lastAccessTime);
-        }
-        if (creationTime != null) {
-            ntfsTimestamp.setCreateFileTime(creationTime);
-        }
-        internalAddExtraField(ntfsTimestamp);
-    }
-
-    private static boolean canConvertToInfoZipExtendedTimestamp(
-            final FileTime lastModifiedTime,
-            final FileTime lastAccessTime,
-            final FileTime creationTime) {
-        return TimeUtils.isUnixTime(lastModifiedTime)
-                && TimeUtils.isUnixTime(lastAccessTime)
-                && TimeUtils.isUnixTime(creationTime);
+        super.setLastModifiedTime(attributes.lastModifiedTime());
+        super.setCreationTime(attributes.creationTime());
+        super.setLastAccessTime(attributes.lastAccessTime());
+        setExtraTimeFields();
     }
 
     /**
@@ -1189,6 +1122,16 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     public void setCommentSource(final CommentSource commentSource) {
         this.commentSource = commentSource;
     }
+
+    @Override
+    public ZipEntry setCreationTime(final FileTime time) {
+        super.setCreationTime(time);
+        setExtraTimeFields();
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see Object#equals(Object)
+     */
 
     /**
      * Sets the data offset.
@@ -1230,67 +1173,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
         updateTimeFieldsFromExtraFields();
     }
 
-    private void updateTimeFieldsFromExtraFields() {
-        // Update times from X5455_ExtendedTimestamp field
-        updateTimeFromExtendedTimestampField();
-        // Update times from X000A_NTFS field, overriding X5455_ExtendedTimestamp if both are present
-        updateTimeFromNtfsField();
-    }
-
-    /**
-     * Workaround for the fact that, as of Java 17, {@link java.util.zip.ZipEntry} does not properly modify
-     * the entry's {@code xdostime} field, only setting {@code mtime}. While this is not strictly necessary,
-     * it's better to maintain the same behavior between this and the NTFS field.
-     */
-    private void updateTimeFromExtendedTimestampField() {
-        final ZipExtraField extraField = getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
-        if (extraField instanceof X5455_ExtendedTimestamp) {
-            final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) extraField;
-            if (extendedTimestamp.isBit0_modifyTimePresent()) {
-                final FileTime modifyTime = extendedTimestamp.getModifyFileTime();
-                if (modifyTime != null) {
-                    internalSetLastModifiedTime(modifyTime);
-                }
-            }
-            if (extendedTimestamp.isBit1_accessTimePresent()) {
-                final FileTime accessTime = extendedTimestamp.getAccessFileTime();
-                if (accessTime != null) {
-                    super.setLastAccessTime(accessTime);
-                }
-            }
-            if (extendedTimestamp.isBit2_createTimePresent()) {
-                final FileTime creationTime = extendedTimestamp.getCreateFileTime();
-                if (creationTime != null) {
-                    super.setCreationTime(creationTime);
-                }
-            }
-        }
-    }
-
-    /**
-     * Workaround for the fact that, as of Java 17, {@link java.util.zip.ZipEntry} parses NTFS
-     * timestamps with a maximum precision of microseconds, which is lower than the 100ns precision
-     * provided by this extra field.
-     */
-    private void updateTimeFromNtfsField() {
-        final ZipExtraField extraField = getExtraField(X000A_NTFS.HEADER_ID);
-        if (extraField instanceof X000A_NTFS) {
-            final X000A_NTFS ntfsTimestamp = (X000A_NTFS) extraField;
-            final FileTime modifyTime = ntfsTimestamp.getModifyFileTime();
-            if (modifyTime != null) {
-                internalSetLastModifiedTime(modifyTime);
-            }
-            final FileTime accessTime = ntfsTimestamp.getAccessFileTime();
-            if (accessTime != null) {
-                super.setLastAccessTime(accessTime);
-            }
-            final FileTime creationTime = ntfsTimestamp.getCreateFileTime();
-            if (creationTime != null) {
-                super.setCreationTime(creationTime);
-            }
-        }
-    }
-
     /**
      * Parses the given bytes as extra field data and consumes any
      * unparseable data as an {@link UnparseableExtraFieldData}
@@ -1330,6 +1212,25 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
         setExtra();
     }
 
+    private void setExtraTimeFields() {
+        if (getExtraField(X5455_ExtendedTimestamp.HEADER_ID) != null) {
+            internalRemoveExtraField(X5455_ExtendedTimestamp.HEADER_ID);
+        }
+        if (getExtraField(X000A_NTFS.HEADER_ID) != null) {
+            internalRemoveExtraField(X000A_NTFS.HEADER_ID);
+        }
+        if (requiresExtraTimeFields()) {
+            final FileTime lastModifiedTime = getLastModifiedTime();
+            final FileTime lastAccessTime = getLastAccessTime();
+            final FileTime creationTime = getCreationTime();
+            if (canConvertToInfoZipExtendedTimestamp(lastModifiedTime, lastAccessTime, creationTime)) {
+                addInfoZipExtendedTimestamp(lastModifiedTime, lastAccessTime, creationTime);
+            }
+            addNTFSTimestamp(lastModifiedTime, lastAccessTime, creationTime);
+        }
+        setExtra();
+    }
+
     /**
      * The "general purpose bit" field.
      * @param b the general purpose bit
@@ -1345,6 +1246,20 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      */
     public void setInternalAttributes(final int value) {
         internalAttributes = value;
+    }
+
+    @Override
+    public ZipEntry setLastAccessTime(final FileTime time) {
+        super.setLastAccessTime(time);
+        setExtraTimeFields();
+        return this;
+    }
+
+    @Override
+    public ZipEntry setLastModifiedTime(final FileTime time) {
+        internalSetLastModifiedTime(time);
+        setExtraTimeFields();
+        return this;
     }
 
     protected void setLocalHeaderOffset(final long localHeaderOffset) {
@@ -1447,6 +1362,30 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
+     *
+     * {@inheritDoc}
+     *
+     * <p>Override to work around bug <a href="https://bugs.openjdk.org/browse/JDK-8130914">JDK-8130914</a></p>
+     *
+     * @param time
+     *         The last modification time of the entry in milliseconds
+     *         since the epoch
+     * @see #getTime()
+     * @see #getLastModifiedTime()
+     */
+    @Override
+    public void setTime(final long time) {
+        if (ZipUtil.isDosTime(time)) {
+            super.setTime(time);
+            this.time = time;
+            lastModifiedDateSet = false;
+            setExtraTimeFields();
+        } else {
+            setLastModifiedTime(FileTime.fromMillis(time));
+        }
+    }
+
+    /**
      * Sets Unix permissions in a way that is understood by Info-Zip's
      * unzip command.
      * @param mode an {@code int} value
@@ -1478,5 +1417,66 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      */
     public void setVersionRequired(final int versionRequired) {
         this.versionRequired = versionRequired;
+    }
+
+    private void updateTimeFieldsFromExtraFields() {
+        // Update times from X5455_ExtendedTimestamp field
+        updateTimeFromExtendedTimestampField();
+        // Update times from X000A_NTFS field, overriding X5455_ExtendedTimestamp if both are present
+        updateTimeFromNtfsField();
+    }
+
+    /**
+     * Workaround for the fact that, as of Java 17, {@link java.util.zip.ZipEntry} does not properly modify
+     * the entry's {@code xdostime} field, only setting {@code mtime}. While this is not strictly necessary,
+     * it's better to maintain the same behavior between this and the NTFS field.
+     */
+    private void updateTimeFromExtendedTimestampField() {
+        final ZipExtraField extraField = getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
+        if (extraField instanceof X5455_ExtendedTimestamp) {
+            final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) extraField;
+            if (extendedTimestamp.isBit0_modifyTimePresent()) {
+                final FileTime modifyTime = extendedTimestamp.getModifyFileTime();
+                if (modifyTime != null) {
+                    internalSetLastModifiedTime(modifyTime);
+                }
+            }
+            if (extendedTimestamp.isBit1_accessTimePresent()) {
+                final FileTime accessTime = extendedTimestamp.getAccessFileTime();
+                if (accessTime != null) {
+                    super.setLastAccessTime(accessTime);
+                }
+            }
+            if (extendedTimestamp.isBit2_createTimePresent()) {
+                final FileTime creationTime = extendedTimestamp.getCreateFileTime();
+                if (creationTime != null) {
+                    super.setCreationTime(creationTime);
+                }
+            }
+        }
+    }
+
+    /**
+     * Workaround for the fact that, as of Java 17, {@link java.util.zip.ZipEntry} parses NTFS
+     * timestamps with a maximum precision of microseconds, which is lower than the 100ns precision
+     * provided by this extra field.
+     */
+    private void updateTimeFromNtfsField() {
+        final ZipExtraField extraField = getExtraField(X000A_NTFS.HEADER_ID);
+        if (extraField instanceof X000A_NTFS) {
+            final X000A_NTFS ntfsTimestamp = (X000A_NTFS) extraField;
+            final FileTime modifyTime = ntfsTimestamp.getModifyFileTime();
+            if (modifyTime != null) {
+                internalSetLastModifiedTime(modifyTime);
+            }
+            final FileTime accessTime = ntfsTimestamp.getAccessFileTime();
+            if (accessTime != null) {
+                super.setLastAccessTime(accessTime);
+            }
+            final FileTime creationTime = ntfsTimestamp.getCreateFileTime();
+            if (creationTime != null) {
+                super.setCreationTime(creationTime);
+            }
+        }
     }
 }

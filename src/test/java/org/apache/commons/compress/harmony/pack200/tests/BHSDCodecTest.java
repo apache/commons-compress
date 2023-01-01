@@ -39,6 +39,10 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class BHSDCodecTest {
 
+    static Stream<Arguments> encodeDecodeRange() {
+        return IntStream.range(1, 116).mapToObj(Arguments::of);
+    }
+
     @Test
     public void testDeltaEncodings() throws IOException, Pack200Exception {
         final Codec c = Codec.UDELTA5;
@@ -48,10 +52,6 @@ public class BHSDCodecTest {
         for (int i = 0; i < decoded.length; i++) {
             assertEquals(sequence[i], decoded[i]);
         }
-    }
-
-    static Stream<Arguments> encodeDecodeRange() {
-        return IntStream.range(1, 116).mapToObj(Arguments::of);
     }
 
     @ParameterizedTest

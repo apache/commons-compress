@@ -36,6 +36,15 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class RunCodecTest {
 
+    static Stream<Arguments> runCodec() {
+        return Stream.of(
+                Arguments.of(0, Codec.SIGNED5, Codec.UDELTA5, "Should not allow a k value of 0"),
+                Arguments.of(10, null, Codec.UDELTA5, "Should not allow a null codec"),
+                Arguments.of(10, Codec.UDELTA5, null, "Should not allow a null codec"),
+                Arguments.of(10, null, null, "Should not allow a null codec")
+        );
+    }
+
     @Test
     public void testDecode() throws Exception {
         RunCodec runCodec = new RunCodec(1, Codec.UNSIGNED5, Codec.BYTE1);
@@ -129,15 +138,6 @@ public class RunCodecTest {
         for (int i = 0; i < band.length; i++) {
             assertEquals(band[i], bandDecoded[i]);
         }
-    }
-
-    static Stream<Arguments> runCodec() {
-        return Stream.of(
-                Arguments.of(0, Codec.SIGNED5, Codec.UDELTA5, "Should not allow a k value of 0"),
-                Arguments.of(10, null, Codec.UDELTA5, "Should not allow a null codec"),
-                Arguments.of(10, Codec.UDELTA5, null, "Should not allow a null codec"),
-                Arguments.of(10, null, null, "Should not allow a null codec")
-        );
     }
 
     @ParameterizedTest

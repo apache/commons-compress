@@ -103,17 +103,6 @@ public abstract class ZipUtil {
     private static final long UPPER_DOSTIME_BOUND = 128L * 365 * 24 * 60 * 60 * 1000;
 
     /**
-     * Tests whether a given time (in milliseconds since Epoch) can be safely represented as DOS time
-     *
-     * @param time time in milliseconds since epoch
-     * @return true if the time can be safely represented as DOS time, false otherwise
-     * @since 1.23
-     */
-    public static boolean isDosTime(final long time) {
-        return time <= UPPER_DOSTIME_BOUND && javaToDosTime(time) != DOSTIME_BEFORE_1980;
-    }
-
-    /**
      * Assumes a negative integer really is a positive integer that
      * has wrapped around and re-creates the original value.
      *
@@ -170,7 +159,6 @@ public abstract class ZipUtil {
         }
     }
 
-
     /**
      * Create a copy of the given array - or return null if the
      * argument is null.
@@ -182,20 +170,11 @@ public abstract class ZipUtil {
         return null;
     }
 
+
     static void copy(final byte[] from, final byte[] to, final int offset) {
         if (from != null) {
             System.arraycopy(from, 0, to, offset, from.length);
         }
-    }
-
-    /**
-     * Converts DOS time to Java time (number of milliseconds since
-     * epoch).
-     * @param dosTime time to convert
-     * @return converted time
-     */
-    public static long dosToJavaTime(final long dosTime) {
-        return dosToJavaDate(dosTime).getTime();
     }
 
     private static Date dosToJavaDate(final long dosTime) {
@@ -210,6 +189,16 @@ public abstract class ZipUtil {
         cal.set(Calendar.MILLISECOND, 0);
         // CheckStyle:MagicNumberCheck ON
         return cal.getTime();
+    }
+
+    /**
+     * Converts DOS time to Java time (number of milliseconds since
+     * epoch).
+     * @param dosTime time to convert
+     * @return converted time
+     */
+    public static long dosToJavaTime(final long dosTime) {
+        return dosToJavaDate(dosTime).getTime();
     }
 
     /**
@@ -250,6 +239,36 @@ public abstract class ZipUtil {
         }
         // TODO log this anywhere?
         return null;
+    }
+
+    /**
+     * Tests whether a given time (in milliseconds since Epoch) can be safely represented as DOS time
+     *
+     * @param time time in milliseconds since epoch
+     * @return true if the time can be safely represented as DOS time, false otherwise
+     * @since 1.23
+     */
+    public static boolean isDosTime(final long time) {
+        return time <= UPPER_DOSTIME_BOUND && javaToDosTime(time) != DOSTIME_BEFORE_1980;
+    }
+
+    private static LocalDateTime javaEpochToLocalDateTime(final long time) {
+        final Instant instant = Instant.ofEpochMilli(time);
+        return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+    }
+
+    // version with integer overflow fixed - see https://bugs.openjdk.org/browse/JDK-8130914
+    private static long javaToDosTime(final long t) {
+        final LocalDateTime ldt = javaEpochToLocalDateTime(t);
+        if (ldt.getYear() < 1980) {
+            return DOSTIME_BEFORE_1980;
+        }
+        return ((ldt.getYear() - 1980) << 25
+                | ldt.getMonthValue() << 21
+                | ldt.getDayOfMonth() << 16
+                | ldt.getHour() << 11
+                | ldt.getMinute() << 5
+                | ldt.getSecond() >> 1) & 0xffffffffL;
     }
 
     /**
@@ -365,25 +384,6 @@ public abstract class ZipUtil {
             || entry.getMethod() == ZipEntry.DEFLATED
             || entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode()
             || entry.getMethod() == ZipMethod.BZIP2.getCode();
-    }
-
-    // version with integer overflow fixed - see https://bugs.openjdk.org/browse/JDK-8130914
-    private static long javaToDosTime(final long t) {
-        final LocalDateTime ldt = javaEpochToLocalDateTime(t);
-        if (ldt.getYear() < 1980) {
-            return DOSTIME_BEFORE_1980;
-        }
-        return ((ldt.getYear() - 1980) << 25
-                | ldt.getMonthValue() << 21
-                | ldt.getDayOfMonth() << 16
-                | ldt.getHour() << 11
-                | ldt.getMinute() << 5
-                | ldt.getSecond() >> 1) & 0xffffffffL;
-    }
-
-    private static LocalDateTime javaEpochToLocalDateTime(final long time) {
-        final Instant instant = Instant.ofEpochMilli(time);
-        return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
     }
 
 

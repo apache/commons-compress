@@ -36,6 +36,15 @@ public class ICTupleTest {
         );
     }
 
+    static Stream<Arguments> predicted() {
+        return Stream.of(
+                Arguments.of("orw/SimpleHelloWorld$SimpleHelloWorldInner", "SimpleHelloWorldInner", "orw/SimpleHelloWorld"),
+                Arguments.of("java/util/AbstractList$2$Local", "Local", "java/util/AbstractList$2"),
+                Arguments.of("java/util/AbstractList#2#Local", "Local", "java/util/AbstractList$2"),
+                Arguments.of("java/util/AbstractList$1", "1", "java/util/AbstractList")
+        );
+    }
+
     @ParameterizedTest
     @MethodSource("explicit")
     public void testExplicitClassTupleParsing(final String c, final String c2, final String n, final String expectedSimpleClassName, final String expectedOuterClass) {
@@ -43,15 +52,6 @@ public class ICTupleTest {
         assertAll(
                 () -> assertEquals(expectedSimpleClassName, tuple.simpleClassName()),
                 () -> assertEquals(expectedOuterClass, tuple.outerClassString())
-        );
-    }
-
-    static Stream<Arguments> predicted() {
-        return Stream.of(
-                Arguments.of("orw/SimpleHelloWorld$SimpleHelloWorldInner", "SimpleHelloWorldInner", "orw/SimpleHelloWorld"),
-                Arguments.of("java/util/AbstractList$2$Local", "Local", "java/util/AbstractList$2"),
-                Arguments.of("java/util/AbstractList#2#Local", "Local", "java/util/AbstractList$2"),
-                Arguments.of("java/util/AbstractList$1", "1", "java/util/AbstractList")
         );
     }
 

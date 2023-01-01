@@ -37,7 +37,28 @@ import org.junit.jupiter.api.Test;
 
 public class ZipUtilTest {
 
+    static void assertDosDate(
+            final long value,
+            final int year,
+            final int month,
+            final int day,
+            final int hour,
+            final int minute,
+            final int second) {
+        int pos = 0;
+        assertEquals((year - 1980), ((int) (value << pos)) >>> (32 - 7));
+        assertEquals(month, ((int) (value << (pos += 7))) >>> (32 - 4));
+        assertEquals(day, ((int) (value << (pos += 4))) >>> (32 - 5));
+        assertEquals(hour, ((int) (value << (pos += 5))) >>> (32 - 5));
+        assertEquals(minute, ((int) (value << (pos += 5))) >>> (32 - 6));
+        assertEquals(second, ((int) (value << (pos + 6))) >>> (32 - 5) << 1); // DOS dates only store even seconds
+    }
+    static Instant toLocalInstant(final String date) {
+        return LocalDateTime.parse(date).atZone(ZoneId.systemDefault()).toInstant();
+    }
+
     private Date time;
+
     private ZipLong zl;
 
     @BeforeEach
@@ -122,6 +143,12 @@ public class ZipUtilTest {
         assertEquals(65, b1[2]);
         assertEquals(10, b1[3]);
     }
+    @Test
+    public void testInsideCalendar_bigValue(){
+        final long date = toLocalInstant("2097-11-27T23:59:59").toEpochMilli();
+        final long value = ZipLong.getValue(ZipUtil.toDosTime(date));
+        assertDosDate(value, 2097, 11, 27, 23, 59, 58); // DOS dates only store even seconds
+    }
 
     @Test
     public void testInsideCalendar_long(){
@@ -136,11 +163,13 @@ public class ZipUtilTest {
         final long value = ZipLong.getValue(ZipUtil.toDosTime(date));
         assertDosDate(value, 2022, 12, 27, 16, 18, 22); // DOS dates only store even seconds
     }
+
     @Test
-    public void testInsideCalendar_bigValue(){
-        final long date = toLocalInstant("2097-11-27T23:59:59").toEpochMilli();
-        final long value = ZipLong.getValue(ZipUtil.toDosTime(date));
-        assertDosDate(value, 2097, 11, 27, 23, 59, 58); // DOS dates only store even seconds
+    public void testIsDosTime(){
+        assertFalse(ZipUtil.isDosTime(toLocalInstant("1975-01-31T23:00:00").toEpochMilli()));
+        assertTrue(ZipUtil.isDosTime(toLocalInstant("1980-01-03T00:00:00").toEpochMilli()));
+        assertTrue(ZipUtil.isDosTime(toLocalInstant("2097-11-27T00:00:00").toEpochMilli()));
+        assertFalse(ZipUtil.isDosTime(toLocalInstant("2099-01-01T00:00:00").toEpochMilli()));
     }
 
     @Test
@@ -192,35 +221,6 @@ public class ZipUtilTest {
         final long date = toLocalInstant("1975-01-31T23:00:00").toEpochMilli();
         final long value = ZipLong.getValue(ZipUtil.toDosTime(date));
         assertDosDate(value, 1980, 1, 1, 0, 0, 0);
-    }
-
-    @Test
-    public void testIsDosTime(){
-        assertFalse(ZipUtil.isDosTime(toLocalInstant("1975-01-31T23:00:00").toEpochMilli()));
-        assertTrue(ZipUtil.isDosTime(toLocalInstant("1980-01-03T00:00:00").toEpochMilli()));
-        assertTrue(ZipUtil.isDosTime(toLocalInstant("2097-11-27T00:00:00").toEpochMilli()));
-        assertFalse(ZipUtil.isDosTime(toLocalInstant("2099-01-01T00:00:00").toEpochMilli()));
-    }
-
-    static void assertDosDate(
-            final long value,
-            final int year,
-            final int month,
-            final int day,
-            final int hour,
-            final int minute,
-            final int second) {
-        int pos = 0;
-        assertEquals((year - 1980), ((int) (value << pos)) >>> (32 - 7));
-        assertEquals(month, ((int) (value << (pos += 7))) >>> (32 - 4));
-        assertEquals(day, ((int) (value << (pos += 4))) >>> (32 - 5));
-        assertEquals(hour, ((int) (value << (pos += 5))) >>> (32 - 5));
-        assertEquals(minute, ((int) (value << (pos += 5))) >>> (32 - 6));
-        assertEquals(second, ((int) (value << (pos + 6))) >>> (32 - 5) << 1); // DOS dates only store even seconds
-    }
-
-    static Instant toLocalInstant(final String date) {
-        return LocalDateTime.parse(date).atZone(ZoneId.systemDefault()).toInstant();
     }
 
     @Test

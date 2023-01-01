@@ -60,12 +60,6 @@ public class SegmentUtilsTest {
         );
     }
 
-    @ParameterizedTest
-    @MethodSource("countArgs")
-    public void testCountArgs(final String descriptor, final int expectedArgsCount) {
-        assertEquals(expectedArgsCount, SegmentUtils.countArgs(descriptor));
-    }
-
     static Stream<Arguments> countInvokeInterfaceArgs() {
         return Stream.of(
                 Arguments.of("(Z)V", 1),
@@ -78,6 +72,12 @@ public class SegmentUtilsTest {
                 Arguments.of("(Lblah/blah;DLbLah;)V", 4),
                 Arguments.of("([Lblah/blah;DLbLah;)V", 4)
         );
+    }
+
+    @ParameterizedTest
+    @MethodSource("countArgs")
+    public void testCountArgs(final String descriptor, final int expectedArgsCount) {
+        assertEquals(expectedArgsCount, SegmentUtils.countArgs(descriptor));
     }
 
     @ParameterizedTest

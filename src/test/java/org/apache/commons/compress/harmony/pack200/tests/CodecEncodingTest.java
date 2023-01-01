@@ -49,18 +49,6 @@ public class CodecEncodingTest {
         );
     }
 
-    @ParameterizedTest
-    @MethodSource("arbitraryCodec")
-    public void testArbitraryCodec(final String expected, final byte[] bytes) throws IOException, Pack200Exception {
-        assertEquals(expected, CodecEncoding.getCodec(116, new ByteArrayInputStream(bytes), null).toString());
-    }
-
-    @Test
-    public void testDefaultCodec() throws Pack200Exception, IOException {
-        final Codec defaultCodec = new BHSDCodec(2, 16, 0, 0);
-        assertEquals(defaultCodec, CodecEncoding.getCodec(0, null, defaultCodec));
-    }
-
     // These are the canonical encodings specified by the Pack200 spec
     static Stream<Arguments> canonicalEncodings() {
         return Stream.of(
@@ -182,10 +170,43 @@ public class CodecEncodingTest {
         );
     }
 
+    // Test canonical codecs
+    static Stream<Arguments> canonicalGetSpecifier() {
+        return IntStream.range(1, 115).mapToObj(Arguments::of);
+    }
+
+    static Stream<Arguments> specifier() {
+        return Stream.of(
+                Arguments.of(new BHSDCodec(2, 125, 0, 1)),
+                Arguments.of(new BHSDCodec(3, 125, 2, 1)),
+                Arguments.of(new BHSDCodec(4, 125)),
+                Arguments.of(new BHSDCodec(5, 125, 2, 0)),
+                Arguments.of(new BHSDCodec(3, 5, 2, 1))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("arbitraryCodec")
+    public void testArbitraryCodec(final String expected, final byte[] bytes) throws IOException, Pack200Exception {
+        assertEquals(expected, CodecEncoding.getCodec(116, new ByteArrayInputStream(bytes), null).toString());
+    }
+
     @ParameterizedTest
     @MethodSource("canonicalEncodings")
     void testCanonicalEncodings(final int i, final String expectedCodec) throws IOException, Pack200Exception {
         assertEquals(expectedCodec, CodecEncoding.getCodec(i, null, null).toString());
+    }
+
+    @ParameterizedTest
+    @MethodSource("canonicalGetSpecifier")
+    public void testCanonicalGetSpecifier(final int i) throws Pack200Exception, IOException {
+        assertEquals(i, CodecEncoding.getSpecifier(CodecEncoding.getCodec(i, null, null), null)[0]);
+    }
+
+    @Test
+    public void testDefaultCodec() throws Pack200Exception, IOException {
+        final Codec defaultCodec = new BHSDCodec(2, 16, 0, 0);
+        assertEquals(defaultCodec, CodecEncoding.getCodec(0, null, defaultCodec));
     }
 
     @Test
@@ -273,27 +294,6 @@ public class CodecEncodingTest {
         assertEquals(bCodec.getK(), bCodec2.getK());
         assertEquals(bCodec.getACodec(), bCodec2.getACodec());
         assertEquals(bCodec.getBCodec(), bCodec2.getBCodec());
-    }
-
-    // Test canonical codecs
-    static Stream<Arguments> canonicalGetSpecifier() {
-        return IntStream.range(1, 115).mapToObj(Arguments::of);
-    }
-
-    @ParameterizedTest
-    @MethodSource("canonicalGetSpecifier")
-    public void testCanonicalGetSpecifier(final int i) throws Pack200Exception, IOException {
-        assertEquals(i, CodecEncoding.getSpecifier(CodecEncoding.getCodec(i, null, null), null)[0]);
-    }
-
-    static Stream<Arguments> specifier() {
-        return Stream.of(
-                Arguments.of(new BHSDCodec(2, 125, 0, 1)),
-                Arguments.of(new BHSDCodec(3, 125, 2, 1)),
-                Arguments.of(new BHSDCodec(4, 125)),
-                Arguments.of(new BHSDCodec(5, 125, 2, 0)),
-                Arguments.of(new BHSDCodec(3, 5, 2, 1))
-        );
     }
 
     @ParameterizedTest

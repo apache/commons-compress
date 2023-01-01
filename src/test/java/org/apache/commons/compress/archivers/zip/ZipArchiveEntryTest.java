@@ -338,6 +338,162 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
+    public void testShouldNotSetExtraDateFieldsIfDateFitsInDosDates() {
+        final ZipArchiveEntry ze = new ZipArchiveEntry();
+        final FileTime time = FileTime.from(ZipUtilTest.toLocalInstant("2022-12-28T20:39:33.1234567"));
+        ze.setTime(time);
+
+        assertEquals(time.toMillis(), ze.getTime());
+        assertEquals(time.toMillis(), ze.getLastModifiedTime().toMillis());
+        assertNull(ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID));
+        assertNull(ze.getExtraField(X000A_NTFS.HEADER_ID));
+
+        final long dosTime = ZipLong.getValue(ZipUtil.toDosTime(ze.getTime()));
+        ZipUtilTest.assertDosDate(dosTime, 2022, 12, 28, 20, 39, 32); // DOS dates only store even seconds
+    }
+
+    @Test
+    public void testShouldNotSetInfoZipFieldIfAnyDatesExceedUnixTime() {
+        final ZipArchiveEntry ze = new ZipArchiveEntry();
+        final FileTime accessTime = FileTime.from(Instant.parse("2022-12-29T21:40:34.1234567Z"));
+        final FileTime creationTime = FileTime.from(Instant.parse("2038-12-28T20:39:33.1234567Z"));
+        final long time = Instant.parse("2020-03-04T12:34:56.1234567Z").toEpochMilli();
+        ze.setTime(time);
+        ze.setLastAccessTime(accessTime);
+        ze.setCreationTime(creationTime);
+
+        assertEquals(time, ze.getTime());
+        assertEquals(time, ze.getLastModifiedTime().toMillis());
+        assertNull(ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID));
+        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
+        assertNotNull(ntfs);
+        assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
+        assertEquals(TimeUtils.toNtfsTime(accessTime), ntfs.getAccessTime().getLongValue());
+        assertEquals(TimeUtils.toNtfsTime(creationTime), ntfs.getCreateTime().getLongValue());
+    }
+
+    @Test
+    public void testShouldNotSetInfoZipFieldIfDateExceedsUnixTime() {
+        final ZipArchiveEntry ze = new ZipArchiveEntry();
+        final FileTime time = FileTime.from(ZipUtilTest.toLocalInstant("2138-11-27T00:00:00"));
+        ze.setTime(time.toMillis());
+
+        assertEquals(time.toMillis(), ze.getTime());
+        assertEquals(time, ze.getLastModifiedTime());
+        assertNull(ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID));
+        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
+        assertNotNull(ntfs);
+        assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
+        assertEquals(0L, ntfs.getAccessTime().getLongValue());
+        assertEquals(0L, ntfs.getCreateTime().getLongValue());
+    }
+
+    @Test
+    public void testShouldSetExtraDateFieldsIfAccessDateIsSet() {
+        final ZipArchiveEntry ze = new ZipArchiveEntry();
+        final FileTime lastAccessTime = FileTime.from(Instant.parse("2022-12-28T20:39:33.1234567Z"));
+        final long time = Instant.parse("2020-03-04T12:34:56.1234567Z").toEpochMilli();
+        ze.setTime(time);
+        ze.setLastAccessTime(lastAccessTime);
+
+        assertEquals(time, ze.getTime());
+        assertEquals(time, ze.getLastModifiedTime().toMillis());
+        final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
+        assertNotNull(extendedTimestamp);
+        assertEquals(TimeUtils.toUnixTime(lastAccessTime), extendedTimestamp.getAccessTime().getValue());
+        assertNull(extendedTimestamp.getCreateTime());
+        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
+        assertNotNull(ntfs);
+        assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
+        assertEquals(TimeUtils.toNtfsTime(lastAccessTime), ntfs.getAccessTime().getLongValue());
+        assertEquals(0L, ntfs.getCreateTime().getLongValue());
+    }
+
+    @Test
+    public void testShouldSetExtraDateFieldsIfAllDatesAreSet() {
+        final ZipArchiveEntry ze = new ZipArchiveEntry();
+        final FileTime accessTime = FileTime.from(Instant.parse("2022-12-29T21:40:34.1234567Z"));
+        final FileTime creationTime = FileTime.from(Instant.parse("2022-12-28T20:39:33.1234567Z"));
+        final long time = Instant.parse("2020-03-04T12:34:56.1234567Z").toEpochMilli();
+        ze.setTime(time);
+        ze.setLastAccessTime(accessTime);
+        ze.setCreationTime(creationTime);
+
+        assertEquals(time, ze.getTime());
+        assertEquals(time, ze.getLastModifiedTime().toMillis());
+        final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
+        assertNotNull(extendedTimestamp);
+        assertEquals(TimeUtils.toUnixTime(accessTime), extendedTimestamp.getAccessTime().getValue());
+        assertEquals(TimeUtils.toUnixTime(creationTime), extendedTimestamp.getCreateTime().getValue());
+        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
+        assertNotNull(ntfs);
+        assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
+        assertEquals(TimeUtils.toNtfsTime(accessTime), ntfs.getAccessTime().getLongValue());
+        assertEquals(TimeUtils.toNtfsTime(creationTime), ntfs.getCreateTime().getLongValue());
+    }
+
+    @Test
+    public void testShouldSetExtraDateFieldsIfCreationDateIsSet() {
+        final ZipArchiveEntry ze = new ZipArchiveEntry();
+        final FileTime creationTime = FileTime.from(Instant.parse("2022-12-28T20:39:33.1234567Z"));
+        final long time = Instant.parse("2020-03-04T12:34:56.1234567Z").toEpochMilli();
+        ze.setTime(time);
+        ze.setCreationTime(creationTime);
+
+        assertEquals(time, ze.getTime());
+        assertEquals(time, ze.getLastModifiedTime().toMillis());
+        final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
+        assertNotNull(extendedTimestamp);
+        assertNull(extendedTimestamp.getAccessTime());
+        assertEquals(TimeUtils.toUnixTime(creationTime), extendedTimestamp.getCreateTime().getValue());
+        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
+        assertNotNull(ntfs);
+        assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
+        assertEquals(0L, ntfs.getAccessTime().getLongValue());
+        assertEquals(TimeUtils.toNtfsTime(creationTime), ntfs.getCreateTime().getLongValue());
+    }
+
+    @Test
+    public void testShouldSetExtraDateFieldsIfDateExceedsDosDate() {
+        final ZipArchiveEntry ze = new ZipArchiveEntry();
+        final FileTime time = FileTime.from(ZipUtilTest.toLocalInstant("1975-11-27T00:00:00"));
+        ze.setTime(time.toMillis());
+
+        assertEquals(time.toMillis(), ze.getTime());
+        assertEquals(time, ze.getLastModifiedTime());
+        final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
+        assertNotNull(extendedTimestamp);
+        assertEquals(TimeUtils.toUnixTime(time), extendedTimestamp.getModifyTime().getValue());
+        assertNull(extendedTimestamp.getAccessTime());
+        assertNull(extendedTimestamp.getCreateTime());
+        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
+        assertNotNull(ntfs);
+        assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
+        assertEquals(0L, ntfs.getAccessTime().getLongValue());
+        assertEquals(0L, ntfs.getCreateTime().getLongValue());
+    }
+
+    @Test
+    public void testShouldSetExtraDateFieldsIfModifyDateIsExplicitlySet() {
+        final ZipArchiveEntry ze = new ZipArchiveEntry();
+        final FileTime time = FileTime.from(Instant.parse("2022-12-28T20:39:33.1234567Z"));
+        ze.setLastModifiedTime(time);
+
+        assertEquals(time.toMillis(), ze.getTime());
+        assertEquals(time, ze.getLastModifiedTime());
+        final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
+        assertNotNull(extendedTimestamp);
+        assertEquals(TimeUtils.toUnixTime(time), extendedTimestamp.getModifyTime().getValue());
+        assertNull(extendedTimestamp.getAccessTime());
+        assertNull(extendedTimestamp.getCreateTime());
+        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
+        assertNotNull(ntfs);
+        assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
+        assertEquals(0L, ntfs.getAccessTime().getLongValue());
+        assertEquals(0L, ntfs.getCreateTime().getLongValue());
+    }
+
+    @Test
     public void testUnixMode() {
         ZipArchiveEntry ze = new ZipArchiveEntry("foo");
         assertEquals(0, ze.getPlatform());
@@ -375,161 +531,5 @@ public class ZipArchiveEntryTest {
             final ZipArchiveEntry clonedZe = (ZipArchiveEntry) ze.clone();
             assertEquals(ze, clonedZe);
         }
-    }
-
-    @Test
-    public void testShouldNotSetExtraDateFieldsIfDateFitsInDosDates() {
-        final ZipArchiveEntry ze = new ZipArchiveEntry();
-        final FileTime time = FileTime.from(ZipUtilTest.toLocalInstant("2022-12-28T20:39:33.1234567"));
-        ze.setTime(time);
-
-        assertEquals(time.toMillis(), ze.getTime());
-        assertEquals(time.toMillis(), ze.getLastModifiedTime().toMillis());
-        assertNull(ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID));
-        assertNull(ze.getExtraField(X000A_NTFS.HEADER_ID));
-
-        final long dosTime = ZipLong.getValue(ZipUtil.toDosTime(ze.getTime()));
-        ZipUtilTest.assertDosDate(dosTime, 2022, 12, 28, 20, 39, 32); // DOS dates only store even seconds
-    }
-
-    @Test
-    public void testShouldSetExtraDateFieldsIfDateExceedsDosDate() {
-        final ZipArchiveEntry ze = new ZipArchiveEntry();
-        final FileTime time = FileTime.from(ZipUtilTest.toLocalInstant("1975-11-27T00:00:00"));
-        ze.setTime(time.toMillis());
-
-        assertEquals(time.toMillis(), ze.getTime());
-        assertEquals(time, ze.getLastModifiedTime());
-        final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
-        assertNotNull(extendedTimestamp);
-        assertEquals(TimeUtils.toUnixTime(time), extendedTimestamp.getModifyTime().getValue());
-        assertNull(extendedTimestamp.getAccessTime());
-        assertNull(extendedTimestamp.getCreateTime());
-        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
-        assertNotNull(ntfs);
-        assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
-        assertEquals(0L, ntfs.getAccessTime().getLongValue());
-        assertEquals(0L, ntfs.getCreateTime().getLongValue());
-    }
-
-    @Test
-    public void testShouldNotSetInfoZipFieldIfDateExceedsUnixTime() {
-        final ZipArchiveEntry ze = new ZipArchiveEntry();
-        final FileTime time = FileTime.from(ZipUtilTest.toLocalInstant("2138-11-27T00:00:00"));
-        ze.setTime(time.toMillis());
-
-        assertEquals(time.toMillis(), ze.getTime());
-        assertEquals(time, ze.getLastModifiedTime());
-        assertNull(ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID));
-        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
-        assertNotNull(ntfs);
-        assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
-        assertEquals(0L, ntfs.getAccessTime().getLongValue());
-        assertEquals(0L, ntfs.getCreateTime().getLongValue());
-    }
-
-    @Test
-    public void testShouldSetExtraDateFieldsIfModifyDateIsExplicitlySet() {
-        final ZipArchiveEntry ze = new ZipArchiveEntry();
-        final FileTime time = FileTime.from(Instant.parse("2022-12-28T20:39:33.1234567Z"));
-        ze.setLastModifiedTime(time);
-
-        assertEquals(time.toMillis(), ze.getTime());
-        assertEquals(time, ze.getLastModifiedTime());
-        final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
-        assertNotNull(extendedTimestamp);
-        assertEquals(TimeUtils.toUnixTime(time), extendedTimestamp.getModifyTime().getValue());
-        assertNull(extendedTimestamp.getAccessTime());
-        assertNull(extendedTimestamp.getCreateTime());
-        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
-        assertNotNull(ntfs);
-        assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
-        assertEquals(0L, ntfs.getAccessTime().getLongValue());
-        assertEquals(0L, ntfs.getCreateTime().getLongValue());
-    }
-
-    @Test
-    public void testShouldSetExtraDateFieldsIfAccessDateIsSet() {
-        final ZipArchiveEntry ze = new ZipArchiveEntry();
-        final FileTime lastAccessTime = FileTime.from(Instant.parse("2022-12-28T20:39:33.1234567Z"));
-        final long time = Instant.parse("2020-03-04T12:34:56.1234567Z").toEpochMilli();
-        ze.setTime(time);
-        ze.setLastAccessTime(lastAccessTime);
-
-        assertEquals(time, ze.getTime());
-        assertEquals(time, ze.getLastModifiedTime().toMillis());
-        final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
-        assertNotNull(extendedTimestamp);
-        assertEquals(TimeUtils.toUnixTime(lastAccessTime), extendedTimestamp.getAccessTime().getValue());
-        assertNull(extendedTimestamp.getCreateTime());
-        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
-        assertNotNull(ntfs);
-        assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
-        assertEquals(TimeUtils.toNtfsTime(lastAccessTime), ntfs.getAccessTime().getLongValue());
-        assertEquals(0L, ntfs.getCreateTime().getLongValue());
-    }
-
-    @Test
-    public void testShouldSetExtraDateFieldsIfCreationDateIsSet() {
-        final ZipArchiveEntry ze = new ZipArchiveEntry();
-        final FileTime creationTime = FileTime.from(Instant.parse("2022-12-28T20:39:33.1234567Z"));
-        final long time = Instant.parse("2020-03-04T12:34:56.1234567Z").toEpochMilli();
-        ze.setTime(time);
-        ze.setCreationTime(creationTime);
-
-        assertEquals(time, ze.getTime());
-        assertEquals(time, ze.getLastModifiedTime().toMillis());
-        final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
-        assertNotNull(extendedTimestamp);
-        assertNull(extendedTimestamp.getAccessTime());
-        assertEquals(TimeUtils.toUnixTime(creationTime), extendedTimestamp.getCreateTime().getValue());
-        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
-        assertNotNull(ntfs);
-        assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
-        assertEquals(0L, ntfs.getAccessTime().getLongValue());
-        assertEquals(TimeUtils.toNtfsTime(creationTime), ntfs.getCreateTime().getLongValue());
-    }
-
-    @Test
-    public void testShouldSetExtraDateFieldsIfAllDatesAreSet() {
-        final ZipArchiveEntry ze = new ZipArchiveEntry();
-        final FileTime accessTime = FileTime.from(Instant.parse("2022-12-29T21:40:34.1234567Z"));
-        final FileTime creationTime = FileTime.from(Instant.parse("2022-12-28T20:39:33.1234567Z"));
-        final long time = Instant.parse("2020-03-04T12:34:56.1234567Z").toEpochMilli();
-        ze.setTime(time);
-        ze.setLastAccessTime(accessTime);
-        ze.setCreationTime(creationTime);
-
-        assertEquals(time, ze.getTime());
-        assertEquals(time, ze.getLastModifiedTime().toMillis());
-        final X5455_ExtendedTimestamp extendedTimestamp = (X5455_ExtendedTimestamp) ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID);
-        assertNotNull(extendedTimestamp);
-        assertEquals(TimeUtils.toUnixTime(accessTime), extendedTimestamp.getAccessTime().getValue());
-        assertEquals(TimeUtils.toUnixTime(creationTime), extendedTimestamp.getCreateTime().getValue());
-        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
-        assertNotNull(ntfs);
-        assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
-        assertEquals(TimeUtils.toNtfsTime(accessTime), ntfs.getAccessTime().getLongValue());
-        assertEquals(TimeUtils.toNtfsTime(creationTime), ntfs.getCreateTime().getLongValue());
-    }
-
-    @Test
-    public void testShouldNotSetInfoZipFieldIfAnyDatesExceedUnixTime() {
-        final ZipArchiveEntry ze = new ZipArchiveEntry();
-        final FileTime accessTime = FileTime.from(Instant.parse("2022-12-29T21:40:34.1234567Z"));
-        final FileTime creationTime = FileTime.from(Instant.parse("2038-12-28T20:39:33.1234567Z"));
-        final long time = Instant.parse("2020-03-04T12:34:56.1234567Z").toEpochMilli();
-        ze.setTime(time);
-        ze.setLastAccessTime(accessTime);
-        ze.setCreationTime(creationTime);
-
-        assertEquals(time, ze.getTime());
-        assertEquals(time, ze.getLastModifiedTime().toMillis());
-        assertNull(ze.getExtraField(X5455_ExtendedTimestamp.HEADER_ID));
-        final X000A_NTFS ntfs = (X000A_NTFS) ze.getExtraField(X000A_NTFS.HEADER_ID);
-        assertNotNull(ntfs);
-        assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
-        assertEquals(TimeUtils.toNtfsTime(accessTime), ntfs.getAccessTime().getLongValue());
-        assertEquals(TimeUtils.toNtfsTime(creationTime), ntfs.getCreateTime().getLongValue());
     }
 }

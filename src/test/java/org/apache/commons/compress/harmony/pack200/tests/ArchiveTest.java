@@ -49,8 +49,17 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class ArchiveTest {
 
+    static Stream<Arguments> loadMultipleJars() throws URISyntaxException, IOException {
+        return Files.list(Paths.get(Archive.class.getResource("/pack200/jars").toURI()))
+                .filter(child -> {
+                    final String fileName = child.getFileName().toString();
+                    return fileName.endsWith(".jar") && !fileName.endsWith("Unpacked.jar");
+                })
+                .map(Arguments::of);
+    }
     JarFile in;
     OutputStream out;
+
     File file;
 
     private void compareFiles(final JarFile jarFile, final JarFile jarFile2)
@@ -292,15 +301,6 @@ public class ArchiveTest {
         assertEquals(jarFile2.size(), jarFile.size());
 
         compareFiles(jarFile, jarFile2);
-    }
-
-    static Stream<Arguments> loadMultipleJars() throws URISyntaxException, IOException {
-        return Files.list(Paths.get(Archive.class.getResource("/pack200/jars").toURI()))
-                .filter(child -> {
-                    final String fileName = child.getFileName().toString();
-                    return fileName.endsWith(".jar") && !fileName.endsWith("Unpacked.jar");
-                })
-                .map(Arguments::of);
     }
 
     @ParameterizedTest
