@@ -415,7 +415,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws IOException
      */
     @Test
-    @Disabled("TODO: Need to fix this testcase so it has enough data to pass.")
+    @Disabled("TODO: Need to fix this test so it has enough data to pass.")
     public void testBcInitRefRefBand() throws IOException, Pack200Exception {
         final byte[] bytes = { (byte) 230, (byte) 231, (byte) 232,
                 (byte) 255, 8, 8, 8 }; // bc_initrefref band
@@ -533,7 +533,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      */
     @Test
     public void testBcShortBand() throws IOException, Pack200Exception {
-        // TODO: Need to fix this testcase so it has enough data to pass.
+        // TODO: Need to fix this test so it has enough data to pass.
         final byte[] bytes = { 17, (byte) 196, (byte) 132, (byte) 255, 8,
                 8,// bc_short band
                 8 }; // bc_locals band (required by wide iinc (196, 132))
@@ -586,7 +586,7 @@ public class BcBandsTest extends AbstractBandsTestCase {
      * @throws IOException
      */
     @Test
-    @Disabled("TODO: Need to fix this testcase so it has enough data to pass.")
+    @Disabled("TODO: Need to fix this test so it has enough data to pass.")
     public void testBcSuperMethodBand() throws IOException, Pack200Exception {
         final byte[] bytes = { (byte) 220, (byte) 221, (byte) 222,
                 (byte) 227, (byte) 228, (byte) 229, (byte) 255, 8, 8, 8, 8, 8,
