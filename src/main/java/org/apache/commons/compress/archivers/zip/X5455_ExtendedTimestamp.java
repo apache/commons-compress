@@ -18,14 +18,14 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.utils.TimeUtils;
-
 import java.io.Serializable;
 import java.nio.file.attribute.FileTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 import java.util.zip.ZipException;
+
+import org.apache.commons.compress.utils.TimeUtils;
 
 /**
  * <p>An extra field that stores additional file and directory timestamp data
