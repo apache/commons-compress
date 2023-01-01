@@ -50,7 +50,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">LZMA2Decoder.decode() looses original exception.</action>
       <action type="fix" dev="ggregory" due-to="Arturo Bernal">Extract conditions and avoid duplicate code. #297.</action>
       <action type="fix" dev="ggregory" due-to="Arturo Bernal">Remove duplicate conditions. Use switch instead. #298.</action>
-      <action type="fix" dev="ggregory" due-to="Robin Schimpf">Replace JUnit 3 with JUnit 5 #344.</action>
+      <action type="fix" dev="ggregory" due-to="Robin Schimpf">Replace JUnit 3 and 4 with JUnit 5 #344, #346.</action>
       <!-- ADD -->
       <action type="add" issue="COMPRESS-614" dev="ggregory" due-to="Andre Brait, Gary Gregory">Use FileTime for time fields in SevenZipArchiveEntry #256.</action>
       <action type="add" issue="COMPRESS-621" dev="ggregory" due-to="Glavo">Fix calculation the offset of the first zip central directory entry #334.</action>
