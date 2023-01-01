@@ -484,9 +484,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     private ZipExtraField[] copyOf(final ZipExtraField[] src, final int length) {
-        final ZipExtraField[] cpy = new ZipExtraField[length];
-        System.arraycopy(src, 0, cpy, 0, Math.min(src.length, length));
-        return cpy;
+        return Arrays.copyOf(src, length);
     }
 
     @Override
