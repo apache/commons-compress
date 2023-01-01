@@ -36,11 +36,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipException;
 
 import org.junit.jupiter.api.AfterEach;
@@ -222,54 +224,113 @@ public class X5455_ExtendedTimestampTest {
         // get/set modify time
         xf.setModifyTime(time);
         assertEquals(time, xf.getModifyTime());
-        final Date xfModifyJavaTime = xf.getModifyJavaTime();
-        assertEquals(timeMillis, xfModifyJavaTime.getTime());
+        assertEquals(timeMillis, xf.getModifyJavaTime().getTime());
+        assertEquals(timeMillis, xf.getModifyFileTime().toMillis());
+        assertTrue(xf.isBit0_modifyTimePresent());
         xf.setModifyJavaTime(new Date(timeMillis));
         assertEquals(time, xf.getModifyTime());
         assertEquals(timeMillis, xf.getModifyJavaTime().getTime());
+        assertEquals(timeMillis, xf.getModifyFileTime().toMillis());
+        assertTrue(xf.isBit0_modifyTimePresent());
         // Make sure milliseconds get zeroed out:
         xf.setModifyJavaTime(new Date(timeMillis + 123));
         assertEquals(time, xf.getModifyTime());
         assertEquals(timeMillis, xf.getModifyJavaTime().getTime());
+        assertEquals(timeMillis, xf.getModifyFileTime().toMillis());
+        assertTrue(xf.isBit0_modifyTimePresent());
+        // Make sure it works correctly for FileTime
+        xf.setModifyFileTime(FileTime.fromMillis(timeMillis + 123));
+        assertEquals(time, xf.getModifyTime());
+        assertEquals(timeMillis, xf.getModifyJavaTime().getTime());
+        assertEquals(timeMillis, xf.getModifyFileTime().toMillis());
+        assertTrue(xf.isBit0_modifyTimePresent());
         // Null
         xf.setModifyTime(null);
         assertNull(xf.getModifyJavaTime());
+        assertNull(xf.getModifyFileTime());
+        assertFalse(xf.isBit0_modifyTimePresent());
         xf.setModifyJavaTime(null);
         assertNull(xf.getModifyTime());
+        assertNull(xf.getModifyFileTime());
+        assertFalse(xf.isBit0_modifyTimePresent());
+        xf.setModifyFileTime(null);
+        assertNull(xf.getModifyJavaTime());
+        assertNull(xf.getModifyTime());
+        assertFalse(xf.isBit0_modifyTimePresent());
 
         // get/set access time
         xf.setAccessTime(time);
         assertEquals(time, xf.getAccessTime());
         assertEquals(timeMillis, xf.getAccessJavaTime().getTime());
+        assertEquals(timeMillis, xf.getAccessFileTime().toMillis());
+        assertTrue(xf.isBit1_accessTimePresent());
         xf.setAccessJavaTime(new Date(timeMillis));
         assertEquals(time, xf.getAccessTime());
         assertEquals(timeMillis, xf.getAccessJavaTime().getTime());
+        assertEquals(timeMillis, xf.getAccessFileTime().toMillis());
+        assertTrue(xf.isBit1_accessTimePresent());
         // Make sure milliseconds get zeroed out:
         xf.setAccessJavaTime(new Date(timeMillis + 123));
         assertEquals(time, xf.getAccessTime());
         assertEquals(timeMillis, xf.getAccessJavaTime().getTime());
+        assertEquals(timeMillis, xf.getAccessFileTime().toMillis());
+        assertTrue(xf.isBit1_accessTimePresent());
+        // Make sure it works correctly for FileTime
+        xf.setAccessFileTime(FileTime.fromMillis(timeMillis + 123));
+        assertEquals(time, xf.getAccessTime());
+        assertEquals(timeMillis, xf.getAccessJavaTime().getTime());
+        assertEquals(timeMillis, xf.getAccessFileTime().toMillis());
+        assertTrue(xf.isBit1_accessTimePresent());
         // Null
         xf.setAccessTime(null);
         assertNull(xf.getAccessJavaTime());
+        assertNull(xf.getAccessFileTime());
+        assertFalse(xf.isBit1_accessTimePresent());
         xf.setAccessJavaTime(null);
         assertNull(xf.getAccessTime());
+        assertNull(xf.getAccessFileTime());
+        assertFalse(xf.isBit1_accessTimePresent());
+        xf.setAccessFileTime(null);
+        assertNull(xf.getAccessJavaTime());
+        assertNull(xf.getAccessTime());
+        assertFalse(xf.isBit1_accessTimePresent());
 
         // get/set create time
         xf.setCreateTime(time);
         assertEquals(time, xf.getCreateTime());
         assertEquals(timeMillis, xf.getCreateJavaTime().getTime());
+        assertEquals(timeMillis, xf.getCreateFileTime().toMillis());
+        assertTrue(xf.isBit2_createTimePresent());
         xf.setCreateJavaTime(new Date(timeMillis));
         assertEquals(time, xf.getCreateTime());
         assertEquals(timeMillis, xf.getCreateJavaTime().getTime());
+        assertEquals(timeMillis, xf.getCreateFileTime().toMillis());
+        assertTrue(xf.isBit2_createTimePresent());
         // Make sure milliseconds get zeroed out:
         xf.setCreateJavaTime(new Date(timeMillis + 123));
         assertEquals(time, xf.getCreateTime());
         assertEquals(timeMillis, xf.getCreateJavaTime().getTime());
+        assertEquals(timeMillis, xf.getCreateFileTime().toMillis());
+        assertTrue(xf.isBit2_createTimePresent());
+        // Make sure it works correctly for FileTime
+        xf.setCreateFileTime(FileTime.fromMillis(timeMillis + 123));
+        assertEquals(time, xf.getCreateTime());
+        assertEquals(timeMillis, xf.getCreateJavaTime().getTime());
+        assertEquals(timeMillis, xf.getCreateFileTime().toMillis());
+        assertTrue(xf.isBit2_createTimePresent());
         // Null
         xf.setCreateTime(null);
         assertNull(xf.getCreateJavaTime());
+        assertNull(xf.getCreateFileTime());
+        assertFalse(xf.isBit2_createTimePresent());
         xf.setCreateJavaTime(null);
         assertNull(xf.getCreateTime());
+        assertNull(xf.getCreateFileTime());
+        assertFalse(xf.isBit2_createTimePresent());
+        xf.setCreateFileTime(null);
+        assertNull(xf.getCreateJavaTime());
+        assertNull(xf.getCreateTime());
+        assertFalse(xf.isBit2_createTimePresent());
 
 
         // initialize for flags

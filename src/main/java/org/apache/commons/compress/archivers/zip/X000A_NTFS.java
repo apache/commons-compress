@@ -68,7 +68,14 @@ import org.apache.commons.compress.utils.TimeUtils;
  * @NotThreadSafe
  */
 public class X000A_NTFS implements ZipExtraField {
-    private static final ZipShort HEADER_ID = new ZipShort(0x000a);
+
+    /**
+     * The header ID for this extra field.
+     *
+     * @since 1.23
+     */
+    public static final ZipShort HEADER_ID = new ZipShort(0x000a);
+
     private static final ZipShort TIME_ATTR_TAG = new ZipShort(0x0001);
     private static final ZipShort TIME_ATTR_SIZE = new ZipShort(3 * 8);
 
