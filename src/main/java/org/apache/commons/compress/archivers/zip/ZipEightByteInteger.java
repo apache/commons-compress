@@ -220,7 +220,7 @@ public final class ZipEightByteInteger implements Serializable {
 
     /**
      * Override to make two instances with same value equal.
-     * @return the hashCode of the value stored in the ZipEightByteInteger
+     * @return the hash code of the value stored in the ZipEightByteInteger
      */
     @Override
     public int hashCode() {

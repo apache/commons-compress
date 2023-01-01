@@ -213,7 +213,7 @@ public class LZ77Compressor {
     static final int NUMBER_OF_BYTES_IN_HASH = 3;
     private static final int NO_MATCH = -1;
 
-    // we use a 15 bit hashcode as calculated in updateHash
+    // we use a 15 bit hash code as calculated in updateHash
     private static final int HASH_SIZE = 1 << 15;
     private static final int HASH_MASK = HASH_SIZE - 1;
 

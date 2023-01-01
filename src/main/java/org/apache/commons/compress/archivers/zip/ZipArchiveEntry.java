@@ -915,9 +915,9 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Get the hashCode of the entry.
-     * This uses the name as the hashcode.
-     * @return a hashcode.
+     * Get the hash code of the entry.
+     * This uses the name as the hash code.
+     * @return a hash code.
      */
     @Override
     public int hashCode() {
