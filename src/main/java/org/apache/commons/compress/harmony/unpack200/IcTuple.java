@@ -54,7 +54,7 @@ public class IcTuple {
     private boolean member = true;
     private int cachedOuterClassIndex = -1;
     private int cachedSimpleClassNameIndex = -1;
-    private boolean hashcodeComputed;
+    private boolean hashCodeComputed;
 
     private int cachedHashCode;
 
@@ -124,7 +124,7 @@ public class IcTuple {
     }
 
     private void generateHashCode() {
-        hashcodeComputed = true;
+        hashCodeComputed = true;
         cachedHashCode = 17;
         if (C != null) {
             cachedHashCode = +C.hashCode();
@@ -159,7 +159,7 @@ public class IcTuple {
 
     @Override
     public int hashCode() {
-        if (!hashcodeComputed) {
+        if (!hashCodeComputed) {
             generateHashCode();
         }
         return cachedHashCode;

@@ -35,7 +35,7 @@ public class CPNameAndType extends ConstantPoolEntry {
 
     transient int nameIndex;
 
-    private boolean hashcodeComputed;
+    private boolean hashCodeComputed;
 
     private int cachedHashCode;
 
@@ -80,7 +80,7 @@ public class CPNameAndType extends ConstantPoolEntry {
     }
 
     private void generateHashCode() {
-        hashcodeComputed = true;
+        hashCodeComputed = true;
         final int PRIME = 31;
         int result = 1;
         result = PRIME * result + descriptor.hashCode();
@@ -94,7 +94,7 @@ public class CPNameAndType extends ConstantPoolEntry {
     }
     @Override
     public int hashCode() {
-        if (!hashcodeComputed) {
+        if (!hashCodeComputed) {
             generateHashCode();
         }
         return cachedHashCode;

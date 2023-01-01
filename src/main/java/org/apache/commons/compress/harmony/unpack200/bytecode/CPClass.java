@@ -31,7 +31,7 @@ public class CPClass extends ConstantPoolEntry {
 
     private final CPUTF8 utf8;
 
-    private boolean hashcodeComputed;
+    private boolean hashCodeComputed;
 
     private int cachedHashCode;
 
@@ -63,7 +63,7 @@ public class CPClass extends ConstantPoolEntry {
         return utf8.equals(other.utf8);
     }
     private void generateHashCode() {
-        hashcodeComputed = true;
+        hashCodeComputed = true;
         cachedHashCode = utf8.hashCode();
     }
 
@@ -78,7 +78,7 @@ public class CPClass extends ConstantPoolEntry {
 
     @Override
     public int hashCode() {
-        if (!hashcodeComputed) {
+        if (!hashCodeComputed) {
             generateHashCode();
         }
         return cachedHashCode;

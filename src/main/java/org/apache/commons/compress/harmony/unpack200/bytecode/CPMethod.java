@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class CPMethod extends CPMember {
 
-    private boolean hashcodeComputed;
+    private boolean hashCodeComputed;
 
     private int cachedHashCode;
 
@@ -31,7 +31,7 @@ public class CPMethod extends CPMember {
         super(name, descriptor, flags, attributes);
     }
     private void generateHashCode() {
-        hashcodeComputed = true;
+        hashCodeComputed = true;
         final int PRIME = 31;
         int result = 1;
         result = PRIME * result + name.hashCode();
@@ -41,7 +41,7 @@ public class CPMethod extends CPMember {
 
     @Override
     public int hashCode() {
-        if (!hashcodeComputed) {
+        if (!hashCodeComputed) {
             generateHashCode();
         }
         return cachedHashCode;

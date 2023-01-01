@@ -27,7 +27,7 @@ public class CPUTF8 extends ConstantPoolEntry {
 
     private final String utf8;
 
-    private boolean hashcodeComputed;
+    private boolean hashCodeComputed;
 
     private int cachedHashCode;
 
@@ -62,14 +62,14 @@ public class CPUTF8 extends ConstantPoolEntry {
     }
 
     private void generateHashCode() {
-        hashcodeComputed = true;
+        hashCodeComputed = true;
         final int PRIME = 31;
         cachedHashCode = PRIME + utf8.hashCode();
     }
 
     @Override
     public int hashCode() {
-        if (!hashcodeComputed) {
+        if (!hashCodeComputed) {
             generateHashCode();
         }
         return cachedHashCode;

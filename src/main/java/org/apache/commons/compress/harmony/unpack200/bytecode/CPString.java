@@ -27,7 +27,7 @@ public class CPString extends CPConstant {
     private transient int nameIndex;
     private final CPUTF8 name;
 
-    private boolean hashcodeComputed;
+    private boolean hashCodeComputed;
 
     private int cachedHashCode;
 
@@ -37,7 +37,7 @@ public class CPString extends CPConstant {
     }
 
     private void generateHashCode() {
-        hashcodeComputed = true;
+        hashCodeComputed = true;
         final int PRIME = 31;
         int result = 1;
         result = PRIME * result + name.hashCode();
@@ -51,7 +51,7 @@ public class CPString extends CPConstant {
 
     @Override
     public int hashCode() {
-        if (!hashcodeComputed) {
+        if (!hashCodeComputed) {
             generateHashCode();
         }
         return cachedHashCode;

@@ -18,7 +18,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
  */
 public class CPInterfaceMethodRef extends CPRef {
 
-    private boolean hashcodeComputed;
+    private boolean hashCodeComputed;
 
     private int cachedHashCode;
 
@@ -26,7 +26,7 @@ public class CPInterfaceMethodRef extends CPRef {
         super(ConstantPoolEntry.CP_InterfaceMethodref, className, descriptor, globalIndex);
     }
     private void generateHashCode() {
-        hashcodeComputed = true;
+        hashCodeComputed = true;
         final int PRIME = 31;
         int result = 1;
         result = PRIME * result + className.hashCode();
@@ -36,7 +36,7 @@ public class CPInterfaceMethodRef extends CPRef {
 
     @Override
     public int hashCode() {
-        if (!hashcodeComputed) {
+        if (!hashCodeComputed) {
             generateHashCode();
         }
         return cachedHashCode;

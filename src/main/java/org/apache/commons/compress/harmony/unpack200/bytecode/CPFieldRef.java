@@ -30,7 +30,7 @@ public class CPFieldRef extends ConstantPoolEntry {
     private final CPNameAndType nameAndType;
     transient int nameAndTypeIndex;
 
-    private boolean hashcodeComputed;
+    private boolean hashCodeComputed;
 
     private int cachedHashCode;
 
@@ -62,7 +62,7 @@ public class CPFieldRef extends ConstantPoolEntry {
     }
 
     private void generateHashCode() {
-        hashcodeComputed = true;
+        hashCodeComputed = true;
         final int PRIME = 31;
         int result = 1;
         result = PRIME * result + ((className == null) ? 0 : className.hashCode());
@@ -76,7 +76,7 @@ public class CPFieldRef extends ConstantPoolEntry {
     }
     @Override
     public int hashCode() {
-        if (!hashcodeComputed) {
+        if (!hashCodeComputed) {
             generateHashCode();
         }
         return cachedHashCode;
