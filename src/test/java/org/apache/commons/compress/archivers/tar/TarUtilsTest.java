@@ -465,7 +465,7 @@ public class TarUtilsTest {
         assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer1, 0, buffer1.length),
                 "Expected IllegalArgumentException - should be at least 2 bytes long");
 
-        final byte[] buffer2 = new byte[]{0}; // 1-byte array
+        final byte[] buffer2 = {0}; // 1-byte array
         assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer2, 0, buffer2.length),
                 "Expected IllegalArgumentException - should be at least 2 bytes long");
 
