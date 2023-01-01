@@ -45,12 +45,12 @@ public class JarArchiveOutputStreamTest {
         try {
 
             out = new JarArchiveOutputStream(Files.newOutputStream(testArchive.toPath()));
-            ZipArchiveEntry ze1 = new ZipArchiveEntry("foo/");
+            final ZipArchiveEntry ze1 = new ZipArchiveEntry("foo/");
             // Ensure we won't accidentally add an Extra field.
             ze1.setTime(Instant.parse("2022-12-27T12:10:23Z").toEpochMilli());
             out.putArchiveEntry(ze1);
             out.closeArchiveEntry();
-            ZipArchiveEntry ze2 = new ZipArchiveEntry("bar/");
+            final ZipArchiveEntry ze2 = new ZipArchiveEntry("bar/");
             // Ensure we won't accidentally add an Extra field.
             ze2.setTime(Instant.parse("2022-12-28T02:56:01Z").toEpochMilli());
             out.putArchiveEntry(ze2);
