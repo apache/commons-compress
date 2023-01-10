@@ -52,7 +52,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <!-- old version used by japicmp -->
     <commons.bc.version>1.22</commons.bc.version>
     <mockito.version>4.11.0</mockito.version>
-    <commons.pmd.version>3.19.0</commons.pmd.version>
     <commons.pmd-impl.version>6.53.0</commons.pmd-impl.version>
 
     <commons.release.isDistModule>true</commons.release.isDistModule>
