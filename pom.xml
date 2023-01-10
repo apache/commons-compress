@@ -82,7 +82,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.surefire.version>3.0.0-M7</commons.surefire.version>
     <pax.exam.version>4.13.5</pax.exam.version>
     <slf4j.version>2.0.5</slf4j.version>
-    <commons.jacoco.version>0.8.8</commons.jacoco.version>
     <commons.japicmp.version>0.17.1</commons.japicmp.version>
     <commons.javadoc.version>3.4.1</commons.javadoc.version>
     <asm.version>9.4</asm.version>
