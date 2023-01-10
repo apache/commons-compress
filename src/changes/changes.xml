@@ -60,7 +60,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="Dependabot">Bump mockito.version from 4.8.0 to 4.11.0 #328, #331, #340, #348.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump pmd from 6.50.0 to 6.53.0.</action>
       <action type="update" dev="ggregory" due-to="Dependabot">Bump memoryfilesystem from 2.3.0 to 2.4.0 #330.</action>
-      <action type="update" dev="kinow" due-to="Dependabot">Bump slf4j-api from 2.0.3 to 2.0.5 #329, #333.</action>
+      <action type="update" dev="kinow" due-to="Dependabot">Bump slf4j-api from 2.0.3 to 2.0.6 #329, #333, #341.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump japicmp from 0.16.0 to 0.17.1.</action>
       <action type="update" dev="ggregory" due-to="Dependabot">Bump commons-parent from 54 to 56 #339, #349.</action>
     </release>
