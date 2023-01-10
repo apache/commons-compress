@@ -49,6 +49,7 @@ public abstract class AbstractTestCase {
     protected interface StreamWrapper<I extends InputStream> {
         I wrap(InputStream in) throws Exception;
     }
+
     private static final boolean ON_WINDOWS =
             System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows");
 
@@ -65,6 +66,7 @@ public abstract class AbstractTestCase {
         }
         return new File(uri);
     }
+
     public static Path getPath(final String path) throws IOException {
         return getFile(path).toPath();
     }
@@ -78,18 +80,18 @@ public abstract class AbstractTestCase {
         if (s != null) {
             for (final String element : s) {
                 final File file = new File(f, element);
-                if (file.isDirectory()){
+                if (file.isDirectory()) {
                     rmdir(file);
                 }
                 final boolean ok = tryHardToDelete(file);
-                if (!ok && file.exists()){
-                    System.out.println("Failed to delete "+element+" in "+f.getPath());
+                if (!ok && file.exists()) {
+                    System.out.println("Failed to delete " + element + " in " + f.getPath());
                 }
             }
         }
         tryHardToDelete(f); // safer to delete and check
-        if (f.exists()){
-            throw new Error("Failed to delete "+f.getPath());
+        if (f.exists()) {
+            throw new Error("Failed to delete " + f.getPath());
         }
     }
 
@@ -401,7 +403,7 @@ public abstract class AbstractTestCase {
         dir = resultDir = null;
         if (!tryHardToDelete(archive)) {
             // Note: this exception won't be shown if the test has already failed
-            throw new Exception("Could not delete "+archive.getPath());
+            throw new Exception("Could not delete " + archive.getPath());
         }
     }
 }
