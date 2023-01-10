@@ -40,8 +40,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
 
-    <commons.felix.version>5.1.8</commons.felix.version>
-
     <commons.componentid>compress</commons.componentid>
     <commons.module.name>org.apache.commons.compress</commons.module.name>
     <commons.jira.id>COMPRESS</commons.jira.id>
