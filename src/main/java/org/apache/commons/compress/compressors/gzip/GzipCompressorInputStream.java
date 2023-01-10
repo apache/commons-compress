@@ -18,8 +18,6 @@
  */
 package org.apache.commons.compress.compressors.gzip;
 
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
@@ -287,12 +285,12 @@ public class GzipCompressorInputStream extends CompressorInputStream
 
         // Original file name
         if ((flg & FNAME) != 0) {
-            parameters.setFilename(new String(readToNull(inData), ISO_8859_1));
+            parameters.setFilename(new String(readToNull(inData), GzipUtils.GZIP_ENCODING));
         }
 
         // Comment
         if ((flg & FCOMMENT) != 0) {
-            parameters.setComment(new String(readToNull(inData), ISO_8859_1));
+            parameters.setComment(new String(readToNull(inData), GzipUtils.GZIP_ENCODING));
         }
 
         // Header "CRC16" which is actually a truncated CRC32 (which isn't

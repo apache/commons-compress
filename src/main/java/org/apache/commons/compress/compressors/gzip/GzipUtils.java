@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.compressors.gzip;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -50,6 +52,11 @@ public class GzipUtils {
         uncompressSuffix.put("_z", "");
         fileNameUtil = new FileNameUtil(uncompressSuffix, ".gz");
     }
+
+    /**
+     * Encoding for file name and comments per the <a href="https://tools.ietf.org/html/rfc1952">GZIP File Format Specification</a>
+     */
+    static final Charset GZIP_ENCODING = StandardCharsets.ISO_8859_1;
 
     /**
      * Maps the given file name to the name that the file should have after

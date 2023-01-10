@@ -18,8 +18,6 @@
  */
 package org.apache.commons.compress.compressors.gzip;
 
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -197,12 +195,12 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
         out.write(buffer.array());
 
         if (filename != null) {
-            out.write(filename.getBytes(ISO_8859_1));
+            out.write(filename.getBytes(GzipUtils.GZIP_ENCODING));
             out.write(0);
         }
 
         if (comment != null) {
-            out.write(comment.getBytes(ISO_8859_1));
+            out.write(comment.getBytes(GzipUtils.GZIP_ENCODING));
             out.write(0);
         }
     }
