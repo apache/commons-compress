@@ -42,17 +42,19 @@ import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
 /**
  * Creates a zip in parallel by using multiple threadlocal {@link ScatterZipOutputStream} instances.
  * <p>
- * Note that until 1.18, this class generally made no guarantees about the order of things written to
- * the output file. Things that needed to come in a specific order (manifests, directories)
- * had to be handled by the client of this class, usually by writing these things to the
- * {@link ZipArchiveOutputStream} <em>before</em> calling {@link #writeTo writeTo} on this class.</p>
- * <p>
- * The client can supply an {@link java.util.concurrent.ExecutorService}, but for reasons of
- * memory model consistency, this will be shut down by this class prior to completion.
+ * Note that until 1.18, this class generally made no guarantees about the order of things written to the output file. Things that needed to come in a specific
+ * order (manifests, directories) had to be handled by the client of this class, usually by writing these things to the {@link ZipArchiveOutputStream}
+ * <em>before</em> calling {@link #writeTo writeTo} on this class.
  * </p>
+ * <p>
+ * The client can supply an {@link java.util.concurrent.ExecutorService}, but for reasons of memory model consistency, this will be shut down by this class
+ * prior to completion.
+ * </p>
+ *
  * @since 1.10
  */
 public class ParallelScatterZipCreator {
+
     private static class DefaultBackingStoreSupplier implements ScatterGatherBackingStoreSupplier {
         final AtomicInteger storeNum = new AtomicInteger(0);
 
@@ -62,6 +64,7 @@ public class ParallelScatterZipCreator {
             return new FileBasedScatterGatherBackingStore(tempFile);
         }
     }
+
     private final Deque<ScatterZipOutputStream> streams = new ConcurrentLinkedDeque<>();
     private final ExecutorService es;
     private final ScatterGatherBackingStoreSupplier backingStoreSupplier;
@@ -87,7 +90,7 @@ public class ParallelScatterZipCreator {
     };
 
     /**
-     * Create a ParallelScatterZipCreator with default threads, which is set to the number of available
+     * Constructs a ParallelScatterZipCreator with default threads, which is set to the number of available
      * processors, as defined by {@link java.lang.Runtime#availableProcessors}
      */
     public ParallelScatterZipCreator() {
@@ -95,7 +98,7 @@ public class ParallelScatterZipCreator {
     }
 
     /**
-     * Create a ParallelScatterZipCreator
+     * Constructs a ParallelScatterZipCreator
      *
      * @param executorService The executorService to use for parallel scheduling. For technical reasons,
      *                        this will be shut down by this class.
@@ -105,7 +108,7 @@ public class ParallelScatterZipCreator {
     }
 
     /**
-     * Create a ParallelScatterZipCreator
+     * Constructs a ParallelScatterZipCreator
      *
      * @param executorService The executorService to use. For technical reasons, this will be shut down
      *                        by this class.
@@ -117,7 +120,7 @@ public class ParallelScatterZipCreator {
     }
 
     /**
-     * Create a ParallelScatterZipCreator
+     * Constructs a ParallelScatterZipCreator
      *
      * @param executorService      The executorService to use. For technical reasons, this will be shut down
      *                             by this class.
@@ -178,7 +181,7 @@ public class ParallelScatterZipCreator {
     }
 
     /**
-     * Create a callable that will compress the given archive entry.
+     * Creates a callable that will compress the given archive entry.
      *
      * <p>This method is expected to be called from a single client thread.</p>
      *
@@ -210,7 +213,7 @@ public class ParallelScatterZipCreator {
     }
 
     /**
-     * Create a callable that will compress archive entry supplied by {@link ZipArchiveEntryRequestSupplier}.
+     * Creates a callable that will compress archive entry supplied by {@link ZipArchiveEntryRequestSupplier}.
      *
      * <p>This method is expected to be called from a single client thread.</p>
      *
@@ -242,7 +245,7 @@ public class ParallelScatterZipCreator {
     }
 
     /**
-     * Returns a message describing the overall statistics of the compression run
+     * Gets a message describing the overall statistics of the compression run
      *
      * @return A string
      */
@@ -251,7 +254,7 @@ public class ParallelScatterZipCreator {
     }
 
     /**
-     * Submit a callable for compression.
+     * Submits a callable for compression.
      *
      * @see ParallelScatterZipCreator#createCallable for details of if/when to use this.
      *
@@ -265,7 +268,7 @@ public class ParallelScatterZipCreator {
     }
 
     /**
-     * Submit a callable for compression.
+     * Submits a callable for compression.
      *
      * @see ParallelScatterZipCreator#createCallable for details of if/when to use this.
      *
@@ -277,15 +280,14 @@ public class ParallelScatterZipCreator {
     }
 
     /**
-     * Write the contents this to the target {@link ZipArchiveOutputStream}.
+     * Writes the contents this to the target {@link ZipArchiveOutputStream}.
      * <p>
-     * It may be beneficial to write things like directories and manifest files to the targetStream
-     * before calling this method.
+     * It may be beneficial to write things like directories and manifest files to the targetStream before calling this method.
      * </p>
-     *
-     * <p>Calling this method will shut down the {@link ExecutorService} used by this class. If any of the {@link
-     * Callable}s {@link #submitStreamAwareCallable submit}ted to this instance throws an exception, the archive can not be created properly and
-     * this method will throw an exception.</p>
+     * <p>
+     * Calling this method will shut down the {@link ExecutorService} used by this class. If any of the {@link Callable}s {@link #submitStreamAwareCallable
+     * submit}ted to this instance throws an exception, the archive can not be created properly and this method will throw an exception.
+     * </p>
      *
      * @param targetStream The {@link ZipArchiveOutputStream} to receive the contents of the scatter streams
      * @throws IOException          If writing fails
