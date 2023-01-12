@@ -30,6 +30,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -144,7 +146,30 @@ public class ParallelScatterZipCreatorTest {
     }
 
     @Test
-    public void concurrent()
+    public void concurrentCustomTempFolder()
+            throws Exception {
+        result = File.createTempFile("parallelScatterGather1", "");
+        final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result);
+        zos.setEncoding("UTF-8");
+
+        // Formatter:off
+        final Path dir = Paths.get("target/custom-temp-dir");
+        Files.createDirectories(dir);
+        final ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator(
+                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()),
+                new DefaultBackingStoreSupplier(dir));
+        // Formatter:on
+
+        final Map<String, byte[]> entries = writeEntries(zipCreator);
+        zipCreator.writeTo(zos);
+        zos.close();
+        removeEntriesFoundInZipFile(result, entries);
+        assertTrue(entries.isEmpty());
+        assertNotNull( zipCreator.getStatisticsMessage());
+    }
+
+    @Test
+    public void concurrentDefaultTempFolder()
             throws Exception {
         result = File.createTempFile("parallelScatterGather1", "");
         final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result);

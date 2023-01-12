@@ -21,8 +21,6 @@ import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.c
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Deque;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -31,10 +29,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.Deflater;
 
-import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
 import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
 import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
@@ -54,16 +50,6 @@ import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
  * @since 1.10
  */
 public class ParallelScatterZipCreator {
-
-    private static class DefaultBackingStoreSupplier implements ScatterGatherBackingStoreSupplier {
-        final AtomicInteger storeNum = new AtomicInteger(0);
-
-        @Override
-        public ScatterGatherBackingStore get() throws IOException {
-            final Path tempFile = Files.createTempFile("parallelscatter", "n" + storeNum.incrementAndGet());
-            return new FileBasedScatterGatherBackingStore(tempFile);
-        }
-    }
 
     private final Deque<ScatterZipOutputStream> streams = new ConcurrentLinkedDeque<>();
     private final ExecutorService es;
@@ -104,7 +90,7 @@ public class ParallelScatterZipCreator {
      *                        this will be shut down by this class.
      */
     public ParallelScatterZipCreator(final ExecutorService executorService) {
-        this(executorService, new DefaultBackingStoreSupplier());
+        this(executorService, new DefaultBackingStoreSupplier(null));
     }
 
     /**
