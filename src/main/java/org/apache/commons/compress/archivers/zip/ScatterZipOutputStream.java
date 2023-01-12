@@ -37,14 +37,15 @@ import org.apache.commons.compress.utils.BoundedInputStream;
 /**
  * A zip output stream that is optimized for multi-threaded scatter/gather construction of zip files.
  * <p>
- * The internal data format of the entries used by this class are entirely private to this class
- * and are not part of any public api whatsoever.
+ * The internal data format of the entries used by this class are entirely private to this class and are not part of any public api whatsoever.
  * </p>
- * <p>It is possible to extend this class to support different kinds of backing storage, the default
- * implementation only supports file-based backing.
+ * <p>
+ * It is possible to extend this class to support different kinds of backing storage, the default implementation only supports file-based backing.
  * </p>
- * Thread safety: This class supports multiple threads. But the "writeTo" method must be called
- * by the thread that originally created the {@link ZipArchiveEntry}.
+ * <p>
+ * Thread safety: This class supports multiple threads. But the "writeTo" method must be called by the thread that originally created the
+ * {@link ZipArchiveEntry}.
+ * </p>
  *
  * @since 1.10
  */
