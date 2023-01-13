@@ -114,7 +114,7 @@ public final class ZipTestCase extends AbstractTestCase {
                     IOUtils.readFully(expectedIs, expectedBuf);
                     IOUtils.readFully(actualIs, actualBuf);
                 }
-                assertArrayEquals(expectedBuf, actualBuf); // Buffers are larger than payload. dont care
+                assertArrayEquals(expectedBuf, actualBuf); // Buffers are larger than payload. don't care
             }
 
         }
