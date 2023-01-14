@@ -434,7 +434,7 @@ public class ZipFile implements Closeable {
      *
      * @since 1.1
      */
-    private final Comparator<ZipArchiveEntry> offsetComparator =
+    private static final Comparator<ZipArchiveEntry> offsetComparator =
         Comparator.comparingLong(ZipArchiveEntry::getDiskNumberStart)
             .thenComparingLong(ZipArchiveEntry::getLocalHeaderOffset);
 
