@@ -278,7 +278,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
 
     /**
      * <p>
-     * Gets the create time as a a java.util.Date
+     * Gets the create time as a java.util.Date
      * of this zip entry, or null if no such timestamp exists in the zip entry.
      * The milliseconds are always zeroed out, since the underlying data
      * offers only per-second precision.

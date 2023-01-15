@@ -40,7 +40,7 @@ public final class IOUtils {
     private static final int SKIP_BUF_SIZE = 4096;
 
     /**
-     * Empty array of of type {@link LinkOption}.
+     * Empty array of type {@link LinkOption}.
      *
      * @since 1.21
      */

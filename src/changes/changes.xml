@@ -313,7 +313,7 @@ you relied on the recovery attempt.">
         Throw IOException when it encounters a non-number while parsing pax header.
       </action>
       <action issue="COMPRESS-531" type="fix" date="2020-05-31">
-        Throw IOException when a a tar archive contains a PAX header
+        Throw IOException when a tar archive contains a PAX header
         without any normal entry following it.
       </action>
       <action issue="COMPRESS-532" type="fix" date="2020-05-31">

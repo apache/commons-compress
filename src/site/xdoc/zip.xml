@@ -163,7 +163,7 @@
 
         <p>Split archives consist of multiple files that reside in the
         same directory with the same base name (the file name without
-        the file extension). The last file of the the archive has the
+        the file extension). The last file of the archive has the
         extension <code>zip</code> the remaining files conventionally
         use extensions <code>z01</code>, <code>z02</code> and so
         on. Support for splitted archives has been added with Compress

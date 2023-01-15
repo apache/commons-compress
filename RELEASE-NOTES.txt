@@ -191,7 +191,7 @@ o Add the archive name in the exception in the constructor of
 o Throw IOException when it encounters a non-number while parsing pax
   header.
   Issue: COMPRESS-530.
-o Throw IOException when a a tar archive contains a PAX header
+o Throw IOException when a tar archive contains a PAX header
   without any normal entry following it.
   Issue: COMPRESS-531.
 o Added improved checks to detect corrupted IMPLODED streams and

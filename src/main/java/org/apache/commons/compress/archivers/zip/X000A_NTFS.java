@@ -191,7 +191,7 @@ public class X000A_NTFS implements ZipExtraField {
     }
 
     /**
-     * Gets the create time as a a java.util.Date of this zip
+     * Gets the create time as a java.util.Date of this zip
      * entry, or null if no such timestamp exists in the zip entry.
      *
      * @return create time as java.util.Date or null.
@@ -256,7 +256,7 @@ public class X000A_NTFS implements ZipExtraField {
     }
 
     /**
-     * Gets the modify time as as a {@link FileTime}
+     * Gets the modify time as a {@link FileTime}
      * of this zip entry, or null if no such timestamp exists in the zip entry.
      *
      * @return modify time as a {@link FileTime} or null.
