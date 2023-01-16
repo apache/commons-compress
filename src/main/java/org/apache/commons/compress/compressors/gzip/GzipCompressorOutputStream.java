@@ -166,7 +166,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
 
     @Override
     public void write(final int b) throws IOException {
-        write(new byte[]{(byte) (b & 0xff)}, 0, 1);
+        write(new byte[] { (byte) (b & 0xff) }, 0, 1);
     }
 
     private void writeHeader(final GzipParameters parameters) throws IOException {
