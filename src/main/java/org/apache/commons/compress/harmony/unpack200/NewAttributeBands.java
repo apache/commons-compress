@@ -220,16 +220,16 @@ public class NewAttributeBands extends BandSet {
                 // Don't add V's - they shouldn't be written out to the class
                 // file
             } else if (tag.startsWith("PO")) {
-                final char uint_type = tag.substring(2).toCharArray()[0];
-                final int length = getLength(uint_type);
+                final char uintType = tag.substring(2).toCharArray()[0];
+                final int length = getLength(uintType);
                 attribute.addBCOffset(length, value);
             } else if (tag.startsWith("P")) {
-                final char uint_type = tag.substring(1).toCharArray()[0];
-                final int length = getLength(uint_type);
+                final char uintType = tag.substring(1).toCharArray()[0];
+                final int length = getLength(uintType);
                 attribute.addBCIndex(length, value);
             } else if (tag.startsWith("OS")) {
-                final char uint_type = tag.substring(2).toCharArray()[0];
-                final int length = getLength(uint_type);
+                final char uintType = tag.substring(2).toCharArray()[0];
+                final int length = getLength(uintType);
                 switch (length) {
                 case 1:
                     value = (byte) value;
@@ -245,8 +245,8 @@ public class NewAttributeBands extends BandSet {
                 }
                 attribute.addBCLength(length, value);
             } else if (tag.startsWith("O")) {
-                final char uint_type = tag.substring(1).toCharArray()[0];
-                final int length = getLength(uint_type);
+                final char uintType = tag.substring(1).toCharArray()[0];
+                final int length = getLength(uintType);
                 attribute.addBCLength(length, value);
             }
         }
@@ -268,9 +268,9 @@ public class NewAttributeBands extends BandSet {
 
     private abstract static class LayoutElement implements AttributeLayoutElement {
 
-        protected int getLength(final char uint_type) {
+        protected int getLength(final char uintType) {
             int length = 0;
-            switch (uint_type) {
+            switch (uintType) {
             case 'B':
                 length = 1;
                 break;
@@ -775,16 +775,16 @@ public class NewAttributeBands extends BandSet {
 
             // Replication
         case 'N':
-            final char uint_type = (char) stream.read();
+            final char uintType = (char) stream.read();
             stream.read(); // '['
             final String str = readUpToMatchingBracket(stream);
-            return new Replication("" + uint_type, str);
+            return new Replication("" + uintType, str);
 
         // Union
         case 'T':
-            String int_type = "" + (char) stream.read();
-            if (int_type.equals("S")) {
-                int_type += (char) stream.read();
+            String intType = "" + (char) stream.read();
+            if (intType.equals("S")) {
+                intType += (char) stream.read();
             }
             final List<UnionCase> unionCases = new ArrayList<>();
             UnionCase c;
@@ -801,7 +801,7 @@ public class NewAttributeBands extends BandSet {
                 stream.reset();
                 body = readBody(getStreamUpToMatchingBracket(stream));
             }
-            return new Union(int_type, unionCases, body);
+            return new Union(intType, unionCases, body);
 
         // Call
         case '(':

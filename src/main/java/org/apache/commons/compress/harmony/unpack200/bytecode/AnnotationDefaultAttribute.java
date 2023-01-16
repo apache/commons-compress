@@ -32,11 +32,11 @@ public class AnnotationDefaultAttribute extends AnnotationsAttribute {
         attributeName = cpUTF8Value;
     }
 
-    private final ElementValue element_value;
+    private final ElementValue elementValue;
 
-    public AnnotationDefaultAttribute(final ElementValue element_value) {
+    public AnnotationDefaultAttribute(final ElementValue elementValue) {
         super(attributeName);
-        this.element_value = element_value;
+        this.elementValue = elementValue;
     }
 
     @Override
@@ -46,14 +46,14 @@ public class AnnotationDefaultAttribute extends AnnotationsAttribute {
 
     @Override
     protected int getLength() {
-        return element_value.getLength();
+        return elementValue.getLength();
     }
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         final List<Object> nested = new ArrayList<>();
         nested.add(attributeName);
-        nested.addAll(element_value.getClassFileEntries());
+        nested.addAll(elementValue.getClassFileEntries());
         final ClassFileEntry[] nestedEntries = new ClassFileEntry[nested.size()];
         for (int i = 0; i < nestedEntries.length; i++) {
             nestedEntries[i] = (ClassFileEntry) nested.get(i);
@@ -64,17 +64,17 @@ public class AnnotationDefaultAttribute extends AnnotationsAttribute {
     @Override
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
-        element_value.resolve(pool);
+        elementValue.resolve(pool);
     }
 
     @Override
     public String toString() {
-        return "AnnotationDefault: " + element_value;
+        return "AnnotationDefault: " + elementValue;
     }
 
     @Override
     protected void writeBody(final DataOutputStream dos) throws IOException {
-        element_value.writeBody(dos);
+        elementValue.writeBody(dos);
     }
 
 }

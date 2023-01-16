@@ -37,8 +37,8 @@ public class ExceptionTableEntry {
 
     /**
      * Create a new ExceptionTableEntry. Exception tables are of two kinds: either a normal one (with a Throwable as the
-     * catch_type) or a finally clause (which has no catch_type). In the class file, the finally clause is represented
-     * as catch_type == 0.
+     * catchType) or a finally clause (which has no catchType). In the class file, the finally clause is represented
+     * as catchType == 0.
      *
      * To create a finally clause with this method, pass in null for the catchType.
      *

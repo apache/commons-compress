@@ -31,28 +31,28 @@ public abstract class AnnotationsAttribute extends Attribute {
      */
     public static class Annotation {
 
-        private final int num_pairs;
-        private final CPUTF8[] element_names;
-        private final ElementValue[] element_values;
+        private final int numPairs;
+        private final CPUTF8[] elementNames;
+        private final ElementValue[] elementValues;
         private final CPUTF8 type;
 
         // Resolved values
-        private int type_index;
-        private int[] name_indexes;
+        private int typeIndex;
+        private int[] nameIndexes;
 
-        public Annotation(final int num_pairs, final CPUTF8 type, final CPUTF8[] element_names,
-            final ElementValue[] element_values) {
-            this.num_pairs = num_pairs;
+        public Annotation(final int numPairs, final CPUTF8 type, final CPUTF8[] elementNames,
+            final ElementValue[] elementValues) {
+            this.numPairs = numPairs;
             this.type = type;
-            this.element_names = element_names;
-            this.element_values = element_values;
+            this.elementNames = elementNames;
+            this.elementValues = elementValues;
         }
 
         public List<Object> getClassFileEntries() {
             final List<Object> entries = new ArrayList<>();
-            for (int i = 0; i < element_names.length; i++) {
-                entries.add(element_names[i]);
-                entries.addAll(element_values[i].getClassFileEntries());
+            for (int i = 0; i < elementNames.length; i++) {
+                entries.add(elementNames[i]);
+                entries.addAll(elementValues[i].getClassFileEntries());
             }
             entries.add(type);
             return entries;
@@ -60,30 +60,30 @@ public abstract class AnnotationsAttribute extends Attribute {
 
         public int getLength() {
             int length = 4;
-            for (int i = 0; i < num_pairs; i++) {
+            for (int i = 0; i < numPairs; i++) {
                 length += 2;
-                length += element_values[i].getLength();
+                length += elementValues[i].getLength();
             }
             return length;
         }
 
         public void resolve(final ClassConstantPool pool) {
             type.resolve(pool);
-            type_index = pool.indexOf(type);
-            name_indexes = new int[num_pairs];
-            for (int i = 0; i < element_names.length; i++) {
-                element_names[i].resolve(pool);
-                name_indexes[i] = pool.indexOf(element_names[i]);
-                element_values[i].resolve(pool);
+            typeIndex = pool.indexOf(type);
+            nameIndexes = new int[numPairs];
+            for (int i = 0; i < elementNames.length; i++) {
+                elementNames[i].resolve(pool);
+                nameIndexes[i] = pool.indexOf(elementNames[i]);
+                elementValues[i].resolve(pool);
             }
         }
 
         public void writeBody(final DataOutputStream dos) throws IOException {
-            dos.writeShort(type_index);
-            dos.writeShort(num_pairs);
-            for (int i = 0; i < num_pairs; i++) {
-                dos.writeShort(name_indexes[i]);
-                element_values[i].writeBody(dos);
+            dos.writeShort(typeIndex);
+            dos.writeShort(numPairs);
+            for (int i = 0; i < numPairs; i++) {
+                dos.writeShort(nameIndexes[i]);
+                elementValues[i].writeBody(dos);
             }
         }
     }
@@ -94,7 +94,7 @@ public abstract class AnnotationsAttribute extends Attribute {
         private final int tag;
 
         // resolved value index if it's a constant
-        private int constant_value_index = -1;
+        private int constantValueIndex = -1;
 
         public ElementValue(final int tag, final Object value) {
             this.tag = tag;
@@ -152,13 +152,13 @@ public abstract class AnnotationsAttribute extends Attribute {
         public void resolve(final ClassConstantPool pool) {
             if (value instanceof CPConstant) {
                 ((CPConstant) value).resolve(pool);
-                constant_value_index = pool.indexOf((CPConstant) value);
+                constantValueIndex = pool.indexOf((CPConstant) value);
             } else if (value instanceof CPClass) {
                 ((CPClass) value).resolve(pool);
-                constant_value_index = pool.indexOf((CPClass) value);
+                constantValueIndex = pool.indexOf((CPClass) value);
             } else if (value instanceof CPUTF8) {
                 ((CPUTF8) value).resolve(pool);
-                constant_value_index = pool.indexOf((CPUTF8) value);
+                constantValueIndex = pool.indexOf((CPUTF8) value);
             } else if (value instanceof CPNameAndType) {
                 ((CPNameAndType) value).resolve(pool);
             } else if (value instanceof Annotation) {
@@ -173,8 +173,8 @@ public abstract class AnnotationsAttribute extends Attribute {
 
         public void writeBody(final DataOutputStream dos) throws IOException {
             dos.writeByte(tag);
-            if (constant_value_index != -1) {
-                dos.writeShort(constant_value_index);
+            if (constantValueIndex != -1) {
+                dos.writeShort(constantValueIndex);
             } else if (value instanceof CPNameAndType) {
                 ((CPNameAndType) value).writeBody(dos);
             } else if (value instanceof Annotation) {

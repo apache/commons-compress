@@ -28,8 +28,8 @@ public class EnclosingMethodAttribute extends Attribute {
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
-    private int class_index;
-    private int method_index;
+    private int classIndex;
+    private int methodIndex;
     private final CPClass cpClass;
 
     private final CPNameAndType method;
@@ -53,21 +53,21 @@ public class EnclosingMethodAttribute extends Attribute {
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         if (method != null) {
-            return new ClassFileEntry[] {attributeName, cpClass, method};
+            return new ClassFileEntry[] { attributeName, cpClass, method };
         }
-        return new ClassFileEntry[] {attributeName, cpClass};
+        return new ClassFileEntry[] { attributeName, cpClass };
     }
 
     @Override
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         cpClass.resolve(pool);
-        class_index = pool.indexOf(cpClass);
+        classIndex = pool.indexOf(cpClass);
         if (method != null) {
             method.resolve(pool);
-            method_index = pool.indexOf(method);
+            methodIndex = pool.indexOf(method);
         } else {
-            method_index = 0;
+            methodIndex = 0;
         }
     }
 
@@ -88,8 +88,8 @@ public class EnclosingMethodAttribute extends Attribute {
      */
     @Override
     protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeShort(class_index);
-        dos.writeShort(method_index);
+        dos.writeShort(classIndex);
+        dos.writeShort(methodIndex);
     }
 
 }

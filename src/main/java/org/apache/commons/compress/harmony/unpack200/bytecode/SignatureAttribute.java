@@ -29,7 +29,7 @@ public class SignatureAttribute extends Attribute {
         attributeName = cpUTF8Value;
     }
 
-    private int signature_index;
+    private int signatureIndex;
 
     private final CPUTF8 signature;
 
@@ -57,7 +57,7 @@ public class SignatureAttribute extends Attribute {
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         signature.resolve(pool);
-        signature_index = pool.indexOf(signature);
+        signatureIndex = pool.indexOf(signature);
     }
 
     /*
@@ -78,7 +78,7 @@ public class SignatureAttribute extends Attribute {
      */
     @Override
     protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeShort(signature_index);
+        dos.writeShort(signatureIndex);
     }
 
 }

@@ -28,21 +28,21 @@ public class InnerClassesAttribute extends Attribute {
 
     private static class InnerClassesEntry {
 
-        CPClass inner_class_info;
-        CPClass outer_class_info;
-        CPUTF8 inner_class_name;
+        CPClass innerClassInfo;
+        CPClass outerClassInfo;
+        CPUTF8 innerClassName;
 
-        int inner_class_info_index = -1;
-        int outer_class_info_index = -1;
-        int inner_name_index = -1;
-        int inner_class_access_flags = -1;
+        int innerClassInfoIndex = -1;
+        int outerClassInfoIndex = -1;
+        int innerNameIndex = -1;
+        int innerClassAccessFlags = -1;
 
         public InnerClassesEntry(final CPClass innerClass, final CPClass outerClass, final CPUTF8 innerName,
             final int flags) {
-            this.inner_class_info = innerClass;
-            this.outer_class_info = outerClass;
-            this.inner_class_name = innerName;
-            this.inner_class_access_flags = flags;
+            this.innerClassInfo = innerClass;
+            this.outerClassInfo = outerClass;
+            this.innerClassName = innerName;
+            this.innerClassAccessFlags = flags;
         }
 
         /**
@@ -51,33 +51,33 @@ public class InnerClassesAttribute extends Attribute {
          * @param pool ClassConstantPool which holds the CPClass and CPUTF8 objects.
          */
         public void resolve(final ClassConstantPool pool) {
-            if (inner_class_info != null) {
-                inner_class_info.resolve(pool);
-                inner_class_info_index = pool.indexOf(inner_class_info);
+            if (innerClassInfo != null) {
+                innerClassInfo.resolve(pool);
+                innerClassInfoIndex = pool.indexOf(innerClassInfo);
             } else {
-                inner_class_info_index = 0;
+                innerClassInfoIndex = 0;
             }
 
-            if (inner_class_name != null) {
-                inner_class_name.resolve(pool);
-                inner_name_index = pool.indexOf(inner_class_name);
+            if (innerClassName != null) {
+                innerClassName.resolve(pool);
+                innerNameIndex = pool.indexOf(innerClassName);
             } else {
-                inner_name_index = 0;
+                innerNameIndex = 0;
             }
 
-            if (outer_class_info != null) {
-                outer_class_info.resolve(pool);
-                outer_class_info_index = pool.indexOf(outer_class_info);
+            if (outerClassInfo != null) {
+                outerClassInfo.resolve(pool);
+                outerClassInfoIndex = pool.indexOf(outerClassInfo);
             } else {
-                outer_class_info_index = 0;
+                outerClassInfoIndex = 0;
             }
         }
 
         public void write(final DataOutputStream dos) throws IOException {
-            dos.writeShort(inner_class_info_index);
-            dos.writeShort(outer_class_info_index);
-            dos.writeShort(inner_name_index);
-            dos.writeShort(inner_class_access_flags);
+            dos.writeShort(innerClassInfoIndex);
+            dos.writeShort(outerClassInfoIndex);
+            dos.writeShort(innerNameIndex);
+            dos.writeShort(innerClassAccessFlags);
         }
 
     }

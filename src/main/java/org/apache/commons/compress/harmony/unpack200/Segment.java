@@ -221,11 +221,11 @@ public class Segment {
 
         // add inner class attribute (if required)
         boolean addInnerClassesAttr = false;
-        final IcTuple[] ic_local = getClassBands().getIcLocal()[classNum];
-        final boolean ic_local_sent = ic_local != null;
+        final IcTuple[] icLocal = getClassBands().getIcLocal()[classNum];
+        final boolean icLocalSent = icLocal != null;
         final InnerClassesAttribute innerClassesAttribute = new InnerClassesAttribute("InnerClasses");
-        final IcTuple[] ic_relevant = getIcBands().getRelevantIcTuples(fullName, cp);
-        final List<IcTuple> ic_stored = computeIcStored(ic_local, ic_relevant);
+        final IcTuple[] icRelevant = getIcBands().getRelevantIcTuples(fullName, cp);
+        final List<IcTuple> ic_stored = computeIcStored(icLocal, icRelevant);
         for (final IcTuple icStored : ic_stored) {
             final int innerClassIndex = icStored.thisClassIndex();
             final int outerClassIndex = icStored.outerClassIndex();
@@ -256,13 +256,13 @@ public class Segment {
         }
         // If ic_local is sent and it's empty, don't add
         // the inner classes attribute.
-        if (ic_local_sent && (ic_local.length == 0)) {
+        if (icLocalSent && (icLocal.length == 0)) {
             addInnerClassesAttr = false;
         }
 
         // If ic_local is not sent and ic_relevant is empty,
         // don't add the inner class attribute.
-        if (!ic_local_sent && (ic_relevant.length == 0)) {
+        if (!icLocalSent && (icRelevant.length == 0)) {
             addInnerClassesAttr = false;
         }
 
@@ -296,22 +296,22 @@ public class Segment {
     /**
      * Given an ic_local and an ic_relevant, use them to calculate what should be added as ic_stored.
      *
-     * @param ic_local IcTuple[] array of local transmitted tuples
-     * @param ic_relevant IcTuple[] array of relevant tuples
+     * @param icLocal IcTuple[] array of local transmitted tuples
+     * @param icRelevant IcTuple[] array of relevant tuples
      * @return List of tuples to be stored. If ic_local is null or empty, the values returned may not be correct. The
      *         caller will have to determine if this is the case.
      */
-    private List<IcTuple> computeIcStored(final IcTuple[] ic_local, final IcTuple[] ic_relevant) {
-        final List<IcTuple> result = new ArrayList<>(ic_relevant.length);
-        final List<IcTuple> duplicates = new ArrayList<>(ic_relevant.length);
-        final Set<IcTuple> isInResult = new HashSet<>(ic_relevant.length);
+    private List<IcTuple> computeIcStored(final IcTuple[] icLocal, final IcTuple[] icRelevant) {
+        final List<IcTuple> result = new ArrayList<>(icRelevant.length);
+        final List<IcTuple> duplicates = new ArrayList<>(icRelevant.length);
+        final Set<IcTuple> isInResult = new HashSet<>(icRelevant.length);
 
         // need to compute:
         // result = ic_local XOR ic_relevant
 
         // add ic_local
-        if (ic_local != null) {
-            for (final IcTuple element : ic_local) {
+        if (icLocal != null) {
+            for (final IcTuple element : icLocal) {
                 if (isInResult.add(element)) {
                     result.add(element);
                 }
@@ -319,7 +319,7 @@ public class Segment {
         }
 
         // add ic_relevant
-        for (final IcTuple element : ic_relevant) {
+        for (final IcTuple element : icRelevant) {
             if (isInResult.add(element)) {
                 result.add(element);
             } else {

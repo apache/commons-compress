@@ -219,16 +219,16 @@ public class MetadataBandGroup {
     }
 
     private Attribute getParameterAttribute(final int numParameters, final Iterator<CPUTF8> namesIterator) {
-        final ParameterAnnotation[] parameter_annotations = new ParameterAnnotation[numParameters];
+        final ParameterAnnotation[] parameterAnnotations = new ParameterAnnotation[numParameters];
         for (int i = 0; i < numParameters; i++) {
             final int numAnnotations = anno_N[anno_N_Index++];
             final int[] pairCounts = pair_N[pair_N_Index++];
             final Annotation[] annotations = new Annotation[numAnnotations];
             Arrays.setAll(annotations, j -> getAnnotation(type_RS[anno_N_Index - 1][j], pairCounts[j], namesIterator));
-            parameter_annotations[i] = new ParameterAnnotation(annotations);
+            parameterAnnotations[i] = new ParameterAnnotation(annotations);
         }
         return new RuntimeVisibleorInvisibleParameterAnnotationsAttribute(type.equals("RVPA") ? rvpaUTF8 : ripaUTF8,
-            parameter_annotations);
+            parameterAnnotations);
     }
 
 }

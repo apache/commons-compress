@@ -33,10 +33,10 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
     public static class ParameterAnnotation {
 
         private final Annotation[] annotations;
-        private final int num_annotations;
+        private final int numAnnotations;
 
         public ParameterAnnotation(final Annotation[] annotations) {
-            this.num_annotations = annotations.length;
+            this.numAnnotations = annotations.length;
             this.annotations = annotations;
         }
 
@@ -63,29 +63,29 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
         }
 
         public void writeBody(final DataOutputStream dos) throws IOException {
-            dos.writeShort(num_annotations);
+            dos.writeShort(numAnnotations);
             for (final Annotation annotation : annotations) {
                 annotation.writeBody(dos);
             }
         }
 
     }
-    private final int num_parameters;
+    private final int numParameters;
 
-    private final ParameterAnnotation[] parameter_annotations;
+    private final ParameterAnnotation[] parameterAnnotations;
 
     public RuntimeVisibleorInvisibleParameterAnnotationsAttribute(final CPUTF8 name,
-        final ParameterAnnotation[] parameter_annotations) {
+        final ParameterAnnotation[] parameterAnnotations) {
         super(name);
-        this.num_parameters = parameter_annotations.length;
-        this.parameter_annotations = parameter_annotations;
+        this.numParameters = parameterAnnotations.length;
+        this.parameterAnnotations = parameterAnnotations;
     }
 
     @Override
     protected int getLength() {
         int length = 1;
-        for (int i = 0; i < num_parameters; i++) {
-            length += parameter_annotations[i].getLength();
+        for (int i = 0; i < numParameters; i++) {
+            length += parameterAnnotations[i].getLength();
         }
         return length;
     }
@@ -94,8 +94,8 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
     protected ClassFileEntry[] getNestedClassFileEntries() {
         final List<Object> nested = new ArrayList<>();
         nested.add(attributeName);
-        for (final ParameterAnnotation parameter_annotation : parameter_annotations) {
-            nested.addAll(parameter_annotation.getClassFileEntries());
+        for (final ParameterAnnotation parameterAnnotation : parameterAnnotations) {
+            nested.addAll(parameterAnnotation.getClassFileEntries());
         }
         return nested.toArray(ClassFileEntry.NONE);
     }
@@ -103,21 +103,21 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
     @Override
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
-        for (final ParameterAnnotation parameter_annotation : parameter_annotations) {
-            parameter_annotation.resolve(pool);
+        for (final ParameterAnnotation parameterAnnotation : parameterAnnotations) {
+            parameterAnnotation.resolve(pool);
         }
     }
 
     @Override
     public String toString() {
-        return attributeName.underlyingString() + ": " + num_parameters + " parameter annotations";
+        return attributeName.underlyingString() + ": " + numParameters + " parameter annotations";
     }
 
     @Override
     protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeByte(num_parameters);
-        for (int i = 0; i < num_parameters; i++) {
-            parameter_annotations[i].writeBody(dos);
+        dos.writeByte(numParameters);
+        for (int i = 0; i < numParameters; i++) {
+            parameterAnnotations[i].writeBody(dos);
         }
     }
 
