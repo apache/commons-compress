@@ -55,7 +55,7 @@ import org.apache.commons.compress.utils.TimeUtils;
  * it's always equal to modifyTime.
  * </li>
  * <li><b>*createTime:</b>
- * modern linux file systems (e.g., ext2 and newer)
+ * modern Linux file systems (e.g., ext2 and newer)
  * do not appear to store a value like this, and so
  * it's usually omitted altogether in the zip extra
  * field.  Perhaps other Unix systems track this.
@@ -284,7 +284,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * offers only per-second precision.
      * </p>
      * <p>
-     * Note: modern linux file systems (e.g., ext2)
+     * Note: modern Linux file systems (e.g., ext2)
      * do not appear to store a "create time" value, and so
      * it's usually omitted altogether in the zip extra
      * field. Perhaps other Unix systems track this.
@@ -303,7 +303,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * zip entry.
      * </p>
      * <p>
-     * Note: modern linux file systems (e.g., ext2)
+     * Note: modern Linux file systems (e.g., ext2)
      * do not appear to store a "create time" value, and so
      * it's usually omitted altogether in the zip extra
      * field. Perhaps other Unix systems track this.

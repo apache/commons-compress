@@ -200,8 +200,8 @@ public class X7875_NewUnixTest {
                 } else if (name.contains("min_unix")) {
                     expected = 0;
                 } else if (name.contains("max_unix")) {
-                    // 2^32-2 was the biggest UID/GID I could create on my linux!
-                    // (December 2012, linux kernel 3.4)
+                    // 2^32-2 was the biggest UID/GID I could create on my Linux!
+                    // (December 2012, Linux kernel 3.4)
                     expected = 0x100000000L - 2;
                 }
                 assertEquals(expected, xf.getUID());
