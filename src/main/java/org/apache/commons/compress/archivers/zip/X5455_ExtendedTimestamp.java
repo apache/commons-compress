@@ -58,7 +58,7 @@ import org.apache.commons.compress.utils.TimeUtils;
  * modern linux file systems (e.g., ext2 and newer)
  * do not appear to store a value like this, and so
  * it's usually omitted altogether in the zip extra
- * field.  Perhaps other unix systems track this.
+ * field.  Perhaps other Unix systems track this.
  * </li></ul>
  * <p>
  * We're using the field definition given in Info-Zip's source archive:
@@ -287,7 +287,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * Note: modern linux file systems (e.g., ext2)
      * do not appear to store a "create time" value, and so
      * it's usually omitted altogether in the zip extra
-     * field. Perhaps other unix systems track this.
+     * field. Perhaps other Unix systems track this.
      * </p>
      *
      * @return create time as java.util.Date or null.
@@ -306,7 +306,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * Note: modern linux file systems (e.g., ext2)
      * do not appear to store a "create time" value, and so
      * it's usually omitted altogether in the zip extra
-     * field. Perhaps other unix systems track this.
+     * field. Perhaps other Unix systems track this.
      * </p>
      *
      * @return create time (seconds since epoch) or null.

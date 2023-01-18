@@ -1873,7 +1873,7 @@ This also changes the superclass of ZCompressorInputStream.
         </action>
         <action type="update" date="2013-01-14" issue="COMPRESS-214"
                 due-to="Julius Davies">
-            better support for unix symlinks in ZipFile entries
+            better support for Unix symlinks in ZipFile entries
         </action>
         <action type="update" date="2013-01-19" issue="COMPRESS-215"
                 due-to="Robin Power">

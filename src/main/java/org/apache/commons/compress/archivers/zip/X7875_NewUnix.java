@@ -107,7 +107,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
              way too hard about this and no one cares!)
 
         4.)  InfoZip's tool, even though it carefully stores every UID/GID
-             for every file zipped on a unix machine (by default) currently
+             for every file zipped on a Unix machine (by default) currently
              appears unable to ever restore UID/GID.
              unzip -X has no effect on my machine, even when run as root!!!!
 
@@ -340,7 +340,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * parse() calls always generate clean results.
      */
     private void reset() {
-        // Typical UID/GID of the first non-root user created on a unix system.
+        // Typical UID/GID of the first non-root user created on a Unix system.
         uid = ONE_THOUSAND;
         gid = ONE_THOUSAND;
     }

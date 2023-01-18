@@ -1505,7 +1505,7 @@ o handle zip extra field 0x7875 - Info Zip New Unix Extra Field.
 o ZipShort, ZipLong, ZipEightByteInteger should implement Serializable
   Issue: COMPRESS-213.
   Thanks to Julius Davies.
-o better support for unix symlinks in ZipFile entries.
+o better support for Unix symlinks in ZipFile entries.
   Issue: COMPRESS-214.
   Thanks to Julius Davies.
 o ZipFile's initialization has been improved for non-Zip64 archives.
