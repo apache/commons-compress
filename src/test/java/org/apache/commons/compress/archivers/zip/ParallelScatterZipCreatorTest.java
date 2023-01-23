@@ -26,16 +26,20 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -48,6 +52,7 @@ import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class ParallelScatterZipCreatorTest {
@@ -103,6 +108,7 @@ public class ParallelScatterZipCreatorTest {
         result = File.createTempFile("parallelScatterGather3", "");
         callableApi(zipCreator -> zipCreator::submitStreamAwareCallable);
     }
+
 
     @Test
     public void callableApiWithHighestLevelUsingSubmitStreamAwareCallable() throws Exception {
@@ -216,6 +222,32 @@ public class ParallelScatterZipCreatorTest {
                 assertEquals("file" + i++, zipArchiveEntry.getName(), "For " + zipArchiveEntry.getName());
             }
         }
+    }
+
+    @Test
+    @Disabled("[COMPRESS-639] The Javadoc for ZipArchiveOutputStream documents the class as @NotThreadSafe.")
+    public void sameZipArchiveEntryNotThreadSafe() throws IOException, ExecutionException, InterruptedException {
+        final ByteArrayOutputStream testOutputStream = new ByteArrayOutputStream();
+
+        final String fileContent = "A";
+        final int NUM_OF_FILES = 100;
+        final LinkedList<InputStream> inputStreams = new LinkedList<>();
+        for (int i = 0; i < NUM_OF_FILES; i++) {
+            inputStreams.add(new ByteArrayInputStream(fileContent.getBytes(StandardCharsets.UTF_8)));
+        }
+
+        final ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator();
+        try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(testOutputStream)) {
+            zipArchiveOutputStream.setUseZip64(Zip64Mode.Always);
+
+            for (final InputStream inputStream : inputStreams) {
+                final ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry("./dir/myfile.txt");
+                zipArchiveEntry.setMethod(ZipEntry.DEFLATED);
+                zipCreator.addArchiveEntry(zipArchiveEntry, () -> inputStream);
+            }
+
+            zipCreator.writeTo(zipArchiveOutputStream);
+        } // it will throw NullPointerException here
     }
 
     @Test
