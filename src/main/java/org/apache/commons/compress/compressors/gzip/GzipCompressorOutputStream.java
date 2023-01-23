@@ -20,8 +20,11 @@ package org.apache.commons.compress.compressors.gzip;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
@@ -133,6 +136,27 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     }
 
     /**
+     * Gets the bytes encoded in the {@value GzipUtils#GZIP_ENCODING} Charset.
+     * <p>
+     * If the string cannot be encoded directly with {@value GzipUtils#GZIP_ENCODING}, then use URI-style percent encoding.
+     * </p>
+     *
+     * @param string The string to encode.
+     * @return
+     * @throws IOException
+     */
+    private byte[] getBytes(final String string) throws IOException {
+        if (GzipUtils.GZIP_ENCODING.newEncoder().canEncode(string)) {
+            return string.getBytes(GzipUtils.GZIP_ENCODING);
+        }
+        try {
+            return new URI(null, null, string, null).toASCIIString().getBytes(StandardCharsets.US_ASCII);
+        } catch (final URISyntaxException e) {
+            throw new IOException(string, e);
+        }
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @since 1.1
@@ -151,7 +175,6 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     public void write(final byte[] buffer, final int offset, final int length) throws IOException {
         if (deflater.finished()) {
             throw new IOException("Cannot write more data, the end of the compressed data stream has been reached");
-
         }
         if (length > 0) {
             deflater.setInput(buffer, offset, length);
@@ -195,12 +218,12 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
         out.write(buffer.array());
 
         if (filename != null) {
-            out.write(filename.getBytes(GzipUtils.GZIP_ENCODING));
+            out.write(getBytes(filename));
             out.write(0);
         }
 
         if (comment != null) {
-            out.write(comment.getBytes(GzipUtils.GZIP_ENCODING));
+            out.write(getBytes(comment));
             out.write(0);
         }
     }

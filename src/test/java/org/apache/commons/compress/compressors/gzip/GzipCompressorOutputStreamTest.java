@@ -27,7 +27,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -35,7 +34,7 @@ import org.junit.jupiter.api.Test;
  */
 public class GzipCompressorOutputStreamTest {
 
-    private void testFileName(final String sourceFile) throws IOException {
+    private void testFileName(final String expected, final String sourceFile) throws IOException {
         final Path tempSourceFile = Files.createTempFile(sourceFile, sourceFile);
         Files.write(tempSourceFile, "<text>Hello World!</text>".getBytes(StandardCharsets.ISO_8859_1));
         final Path targetFile = Files.createTempFile("test", ".gz");
@@ -45,25 +44,26 @@ public class GzipCompressorOutputStreamTest {
             Files.copy(tempSourceFile, gos);
         }
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
-            assertEquals(sourceFile, gis.getMetaData().getFilename());
+            assertEquals(expected, gis.getMetaData().getFilename());
         }
     }
 
     @Test
     public void testFileNameAscii() throws IOException {
-        testFileName("ASCII.xml");
+        testFileName("ASCII.xml", "ASCII.xml");
     }
 
     /**
      * Tests COMPRESS-638.
      *
+     * GZip RFC requires ISO 8859-1 (LATIN-1).
+     *
      * @throws IOException When the test fails.
      */
     @Test
-    @Disabled("COMPRESS-638")
-    public void testFileNameChinese() throws IOException {
+    public void testFileNameChinesePercentEncoded() throws IOException {
         // "Test Chinese name"
-        testFileName("\u6D4B\u8BD5\u4E2D\u6587\u540D\u79F0.xml");
+        testFileName("%E6%B5%8B%E8%AF%95%E4%B8%AD%E6%96%87%E5%90%8D%E7%A7%B0.xml", "\u6D4B\u8BD5\u4E2D\u6587\u540D\u79F0.xml");
     }
 
 }
