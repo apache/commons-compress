@@ -38,6 +38,8 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 
@@ -50,12 +52,14 @@ import org.junit.jupiter.api.Test;
 
 public class ParallelScatterZipCreatorTest {
 
-    private interface CallableConsumer {
-        void accept(Callable<? extends ScatterZipOutputStream> c);
+    private interface CallableConsumer extends Consumer<Callable<? extends ScatterZipOutputStream>> {
+        // empty
     }
-    private interface CallableConsumerSupplier {
-        CallableConsumer apply(ParallelScatterZipCreator zipCreator);
+    
+    private interface CallableConsumerSupplier extends Function<ParallelScatterZipCreator, CallableConsumer> {
+        // empty
     }
+    
     private static final long EXPECTED_FILE_SIZE = 1024 * 1024; // 1MB
 
     private static final int EXPECTED_FILES_NUMBER = 50;
