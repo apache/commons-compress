@@ -78,28 +78,34 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * currently being written.
      */
     private static final class CurrentEntry {
+
         /**
          * Current ZIP entry.
          */
         private final ZipArchiveEntry entry;
+
         /**
          * Offset for CRC entry in the local file header data for the
          * current entry starts here.
          */
         private long localDataStart;
+
         /**
          * Data for local header data
          */
         private long dataStart;
+
         /**
          * Number of bytes read for the current entry (can't rely on
          * Deflater#getBytesRead) when using DEFLATED.
          */
         private long bytesRead;
+
         /**
          * Whether current entry was the first one using ZIP64 features.
          */
         private boolean causedUseOfZip64;
+
         /**
          * Whether write() has been called at all.
          *
@@ -109,10 +115,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
          * the stream at all.</p>
          */
         private boolean hasWritten;
+
         private CurrentEntry(final ZipArchiveEntry entry) {
             this.entry = entry;
         }
     }
+
     private static final class EntryMetaData {
         private final long offset;
         private final boolean usesDataDescriptor;
@@ -121,35 +129,40 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             this.usesDataDescriptor = usesDataDescriptor;
         }
     }
+
     /**
      * enum that represents the possible policies for creating Unicode
      * extra fields.
      */
     public static final class UnicodeExtraFieldPolicy {
+
         /**
          * Always create Unicode extra fields.
          */
         public static final UnicodeExtraFieldPolicy ALWAYS = new UnicodeExtraFieldPolicy("always");
+
         /**
          * Never create Unicode extra fields.
          */
         public static final UnicodeExtraFieldPolicy NEVER = new UnicodeExtraFieldPolicy("never");
+
         /**
          * Create Unicode extra fields for file names that cannot be
          * encoded using the specified encoding.
          */
-        public static final UnicodeExtraFieldPolicy NOT_ENCODEABLE =
-            new UnicodeExtraFieldPolicy("not encodeable");
+        public static final UnicodeExtraFieldPolicy NOT_ENCODEABLE = new UnicodeExtraFieldPolicy("not encodeable");
 
         private final String name;
         private UnicodeExtraFieldPolicy(final String n) {
             name = n;
         }
+
         @Override
         public String toString() {
             return name;
         }
     }
+
     static final int BUFFER_SIZE = 512;
     private static final int LFH_SIG_OFFSET = 0;
     private static final int LFH_VERSION_NEEDED_OFFSET = 4;
@@ -316,8 +329,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Holds some book-keeping data for each entry.
      */
-    private final Map<ZipArchiveEntry, EntryMetaData> metaData =
-        new HashMap<>();
+    private final Map<ZipArchiveEntry, EntryMetaData> metaData = new HashMap<>();
 
     /**
      * The encoding to use for file names and the file comment.
@@ -334,8 +346,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * This field is of internal use and will be set in {@link
      * #setEncoding(String)}.
      */
-    private ZipEncoding zipEncoding =
-        ZipEncodingHelper.getZipEncoding(DEFAULT_ENCODING);
+    private ZipEncoding zipEncoding = ZipEncodingHelper.getZipEncoding(DEFAULT_ENCODING);
+
     /**
      * This Deflater object is used for output.
      *
@@ -803,7 +815,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // version made by
         // CheckStyle:MagicNumber OFF
-        ZipShort.putShort((ze.getPlatform() << 8) | (!hasUsedZip64 ? ZipConstants.DATA_DESCRIPTOR_MIN_VERSION : ZipConstants.ZIP64_MIN_VERSION),
+        ZipShort.putShort(ze.getPlatform() << 8 | (!hasUsedZip64 ? ZipConstants.DATA_DESCRIPTOR_MIN_VERSION : ZipConstants.ZIP64_MIN_VERSION),
                 buf, CFH_VERSION_MADE_BY_OFFSET);
 
         final int zipMethod = ze.getMethod();
@@ -892,14 +904,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             alignment = oldAlignmentEx.getAlignment();
         }
 
-        if (alignment > 1 || (oldAlignmentEx != null && !oldAlignmentEx.allowMethodChange())) {
+        if (alignment > 1 || oldAlignmentEx != null && !oldAlignmentEx.allowMethodChange()) {
             final int oldLength = LFH_FILENAME_OFFSET +
                             name.limit() - name.position() +
                             ze.getLocalFileDataExtra().length;
 
-            final int padding = (int) ((-archiveOffset - oldLength - ZipExtraField.EXTRAFIELD_HEADER_SIZE
-                            - ResourceAlignmentExtraField.BASE_SIZE) &
-                            (alignment - 1));
+            final int padding = (int) (-archiveOffset - oldLength - ZipExtraField.EXTRAFIELD_HEADER_SIZE
+                            - ResourceAlignmentExtraField.BASE_SIZE &
+                            alignment - 1);
             ze.addExtraField(new ResourceAlignmentExtraField(alignment,
                             oldAlignmentEx != null && oldAlignmentEx.allowMethodChange(), padding));
         }
@@ -1579,8 +1591,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             || mode == Zip64Mode.AlwaysWithCompatibility
             || entry.getSize() >= ZipConstants.ZIP64_MAGIC
             || entry.getCompressedSize() >= ZipConstants.ZIP64_MAGIC
-            || (entry.getSize() == ArchiveEntry.SIZE_UNKNOWN
-                && channel != null && mode != Zip64Mode.Never);
+            || entry.getSize() == ArchiveEntry.SIZE_UNKNOWN
+                && channel != null && mode != Zip64Mode.Never;
     }
 
     /**
@@ -1752,7 +1764,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // total number of entries in the central directory on this disk
         final int numOfEntriesOnThisDisk = isSplitZip
-            ? (numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk))
+            ? numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk)
             : numberOfEntries;
         final byte[] numOfEntriesOnThisDiskData = ZipShort
                 .getBytes(Math.min(numOfEntriesOnThisDisk, ZipConstants.ZIP64_MAGIC_SHORT));
@@ -1974,7 +1986,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // total number of entries in the central directory on this disk
         final int numOfEntriesOnThisDisk = isSplitZip
-            ? (numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk))
+            ? numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk)
             : entries.size();
         final byte[] numOfEntriesOnThisDiskData = ZipEightByteInteger.getBytes(numOfEntriesOnThisDisk);
         writeOut(numOfEntriesOnThisDiskData);
