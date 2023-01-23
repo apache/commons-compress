@@ -44,7 +44,7 @@ import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * Reimplementation of {@link java.util.zip.ZipOutputStream
- * java.util.zip.ZipOutputStream} that does handle the extended
+ * java.util.zip.ZipOutputStream} to handle the extended
  * functionality of this package, especially internal/external file
  * attributes and extra fields with different layouts for local file
  * data and central directory entries.
@@ -56,18 +56,18 @@ import org.apache.commons.compress.utils.IOUtils;
  *
  * <p>If SeekableByteChannel cannot be used, this implementation will use
  * a Data Descriptor to store size and CRC information for {@link
- * #DEFLATED DEFLATED} entries, this means, you don't need to
- * calculate them yourself.  Unfortunately this is not possible for
- * the {@link #STORED STORED} method, here setting the CRC and
+ * #DEFLATED DEFLATED} entries, you don't need to
+ * calculate them yourself.  Unfortunately, this is not possible for
+ * the {@link #STORED STORED} method, where setting the CRC and
  * uncompressed size information is required before {@link
  * #putArchiveEntry(ArchiveEntry)} can be called.</p>
  *
- * <p>As of Apache Commons Compress 1.3 it transparently supports Zip64
+ * <p>As of Apache Commons Compress 1.3, the class transparently supports Zip64
  * extensions and thus individual entries and archives larger than 4
  * GB or with more than 65536 entries in most cases but explicit
  * control is provided via {@link #setUseZip64}.  If the stream can not
  * use SeekableByteChannel and you try to write a ZipArchiveEntry of
- * unknown size then Zip64 extensions will be disabled by default.</p>
+ * unknown size, then Zip64 extensions will be disabled by default.</p>
  *
  * @NotThreadSafe
  */
