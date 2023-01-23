@@ -52,7 +52,7 @@ import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
 public class ParallelScatterZipCreator {
 
     private final Deque<ScatterZipOutputStream> streams = new ConcurrentLinkedDeque<>();
-    private final ExecutorService es;
+    private final ExecutorService executorService;
     private final ScatterGatherBackingStoreSupplier backingStoreSupplier;
 
     private final Deque<Future<? extends ScatterZipOutputStream>> futures = new ConcurrentLinkedDeque<>();
@@ -125,7 +125,7 @@ public class ParallelScatterZipCreator {
         }
 
         this.backingStoreSupplier = backingStoreSupplier;
-        es = executorService;
+        this.executorService = executorService;
         this.compressionLevel = compressionLevel;
     }
 
@@ -262,7 +262,7 @@ public class ParallelScatterZipCreator {
      * @since 1.19
      */
     public final void submitStreamAwareCallable(final Callable<? extends ScatterZipOutputStream> callable) {
-        futures.add(es.submit(callable));
+        futures.add(executorService.submit(callable));
     }
 
     /**
@@ -290,10 +290,10 @@ public class ParallelScatterZipCreator {
                     future.get();
                 }
             } finally {
-                es.shutdown();
+                executorService.shutdown();
             }
 
-            es.awaitTermination(1000 * 60L, TimeUnit.SECONDS);  // == Infinity. We really *must* wait for this to complete
+            executorService.awaitTermination(1000 * 60L, TimeUnit.SECONDS);  // == Infinity. We really *must* wait for this to complete
 
             // It is important that all threads terminate before we go on, ensure happens-before relationship
             compressionDoneAt = System.currentTimeMillis();
