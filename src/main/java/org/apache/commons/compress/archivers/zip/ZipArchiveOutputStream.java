@@ -298,12 +298,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     private int method = java.util.zip.ZipEntry.DEFLATED;
 
-
     /**
      * List of ZipArchiveEntries written so far.
      */
-    private final List<ZipArchiveEntry> entries =
-        new LinkedList<>();
+    private final List<ZipArchiveEntry> entries = new LinkedList<>();
+
     private final StreamCompressor streamCompressor;
 
     /**
