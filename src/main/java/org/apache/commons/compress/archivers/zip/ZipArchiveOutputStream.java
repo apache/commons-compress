@@ -1298,7 +1298,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     @Override
     public void putArchiveEntry(final ArchiveEntry archiveEntry) throws IOException {
-        putArchiveEntry(archiveEntry, false);
+        putArchiveEntry((ZipArchiveEntry) archiveEntry, false);
     }
 
     /**
@@ -1313,7 +1313,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * compressed size is known to exceed 4 GByte and {@link #setUseZip64}
      * is {@link Zip64Mode#Never}.
      */
-    private void putArchiveEntry(final ArchiveEntry archiveEntry, final boolean phased) throws IOException {
+    private void putArchiveEntry(final ZipArchiveEntry archiveEntry, final boolean phased) throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
@@ -1322,7 +1322,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             closeArchiveEntry();
         }
 
-        entry = new CurrentEntry((ZipArchiveEntry) archiveEntry);
+        entry = new CurrentEntry(archiveEntry);
         entries.add(entry.entry);
 
         setDefaults(entry.entry);
@@ -1358,7 +1358,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
             def.setLevel(level);
             hasCompressionLevelChanged = false;
         }
-        writeLocalFileHeader((ZipArchiveEntry) archiveEntry, phased);
+        writeLocalFileHeader(archiveEntry, phased);
     }
 
     /**
