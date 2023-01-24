@@ -225,8 +225,8 @@ public class ParallelScatterZipCreatorTest {
     }
 
     @Test
-    @Disabled("[COMPRESS-639] The Javadoc for ZipArchiveOutputStream documents the class as @NotThreadSafe.")
-    public void sameZipArchiveEntryNotThreadSafe() throws IOException, ExecutionException, InterruptedException {
+    @Disabled("[COMPRESS-639]")
+    public void sameZipArchiveEntryNullPointerException() throws IOException, ExecutionException, InterruptedException {
         final ByteArrayOutputStream testOutputStream = new ByteArrayOutputStream();
 
         final String fileContent = "A";
