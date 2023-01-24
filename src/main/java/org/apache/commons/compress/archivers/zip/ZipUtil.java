@@ -131,7 +131,7 @@ public abstract class ZipUtil {
     }
 
     /**
-     * Whether this library is able to read or write the given entry.
+     * Tests if this library is able to read or write the given entry.
      */
     static boolean canHandleEntryData(final ZipArchiveEntry entry) {
         return supportsEncryptionOf(entry) && supportsMethodOf(entry);
@@ -160,7 +160,7 @@ public abstract class ZipUtil {
     }
 
     /**
-     * Create a copy of the given array - or return null if the
+     * Creates a copy of the given array - or return null if the
      * argument is null.
      */
     static byte[] copy(final byte[] from) {
@@ -202,7 +202,7 @@ public abstract class ZipUtil {
     }
 
     /**
-     * Convert a DOS date/time field to a Date object.
+     * Converts a DOS date/time field to a Date object.
      *
      * @param zipDosTime contains the stored DOS time.
      * @return a Date instance corresponding to the given time.
@@ -362,7 +362,7 @@ public abstract class ZipUtil {
     }
 
     /**
-     * Whether this library supports the encryption used by the given
+     * Tests if this library supports the encryption used by the given
      * entry.
      *
      * @return true if the entry isn't encrypted at all
@@ -372,7 +372,7 @@ public abstract class ZipUtil {
     }
 
     /**
-     * Whether this library supports the compression method used by
+     * Tests if this library supports the compression method used by
      * the given entry.
      *
      * @return true if the compression method is supported
@@ -388,7 +388,8 @@ public abstract class ZipUtil {
 
 
     /**
-     * Convert a Date object to a DOS date/time field.
+     * Converts a Date object to a DOS date/time field.
+     *
      * @param time the {@code Date} to convert
      * @return the date as a {@code ZipLong}
      */
@@ -397,7 +398,7 @@ public abstract class ZipUtil {
     }
 
     /**
-     * Convert a Date object to a DOS date/time field.
+     * Converts a Date object to a DOS date/time field.
      *
      * <p>Stolen from InfoZip's {@code fileio.c}</p>
      * @param t number of milliseconds since the epoch
@@ -410,7 +411,7 @@ public abstract class ZipUtil {
     }
 
     /**
-     * Convert a Date object to a DOS date/time field.
+     * Converts a Date object to a DOS date/time field.
      *
      * <p>Stolen from InfoZip's {@code fileio.c}</p>
      * @param t number of milliseconds since the epoch
