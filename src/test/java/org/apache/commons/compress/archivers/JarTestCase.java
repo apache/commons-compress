@@ -36,19 +36,16 @@ public final class JarTestCase extends AbstractTestCase {
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
 
-        final OutputStream out = Files.newOutputStream(output.toPath());
+        try (OutputStream out = Files.newOutputStream(output.toPath());
+                ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("jar", out)) {
+            os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
+            Files.copy(file1.toPath(), os);
+            os.closeArchiveEntry();
 
-        final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("jar", out);
-
-        os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
-        Files.copy(file1.toPath(), os);
-        os.closeArchiveEntry();
-
-        os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
-        Files.copy(file2.toPath(), os);
-        os.closeArchiveEntry();
-
-        os.close();
+            os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
+            Files.copy(file2.toPath(), os);
+            os.closeArchiveEntry();
+        }
     }
 
 
@@ -78,24 +75,22 @@ public final class JarTestCase extends AbstractTestCase {
     @Test
     public void testJarUnarchiveAll() throws Exception {
         final File input = getFile("bla.jar");
-        final InputStream is = Files.newInputStream(input.toPath());
-        final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
 
-        ArchiveEntry entry = in.getNextEntry();
-        while (entry != null) {
-            final File archiveEntry = new File(dir, entry.getName());
-            archiveEntry.getParentFile().mkdirs();
-            if(entry.isDirectory()){
-                archiveEntry.mkdir();
+            ArchiveEntry entry = in.getNextEntry();
+            while (entry != null) {
+                final File archiveEntry = new File(dir, entry.getName());
+                archiveEntry.getParentFile().mkdirs();
+                if (entry.isDirectory()) {
+                    archiveEntry.mkdir();
+                    entry = in.getNextEntry();
+                    continue;
+                }
+                Files.copy(in, archiveEntry.toPath());
                 entry = in.getNextEntry();
-                continue;
             }
-            Files.copy(in, archiveEntry.toPath());
-            entry = in.getNextEntry();
         }
-
-        in.close();
-        is.close();
     }
 
 }
