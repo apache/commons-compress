@@ -57,6 +57,7 @@ The <action> type attribute can be add,update,fix,remove.
         If the strings contains non-ISO_8859_1 characters, unknown characters are displayed after decompression. 
         Use percent encoding for non ISO_8859_1 characters.
       </action>
+      <action type="fix" dev="ggregory" due-to="Jonathan Leitschuh, Gary Gregory">Port some code from IO to NIO APIs.</action>
       <!-- ADD -->
       <action type="add" issue="COMPRESS-614" dev="ggregory" due-to="Andre Brait, Gary Gregory">Use FileTime for time fields in SevenZipArchiveEntry #256.</action>
       <action type="add" issue="COMPRESS-621" dev="ggregory" due-to="Glavo">Fix calculation the offset of the first zip central directory entry #334.</action>

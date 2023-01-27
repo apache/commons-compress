@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarFile;
@@ -109,9 +110,9 @@ public class Pack200Utils {
             props = new HashMap<>();
         }
         props.put(Pack200.Packer.SEGMENT_LIMIT, "-1");
-        final File tempFile = File.createTempFile("commons-compress", "pack200normalize");
+        final Path tempFile = Files.createTempFile("commons-compress", "pack200normalize");
         try {
-            try (OutputStream fos = Files.newOutputStream(tempFile.toPath());
+            try (OutputStream fos = Files.newOutputStream(tempFile);
                  JarFile jarFile = new JarFile(from)) {
                 final Pack200.Packer packer = Pack200.newPacker();
                 packer.properties().putAll(props);
@@ -119,12 +120,10 @@ public class Pack200Utils {
             }
             final Pack200.Unpacker unpacker = Pack200.newUnpacker();
             try (JarOutputStream jos = new JarOutputStream(Files.newOutputStream(to.toPath()))) {
-                unpacker.unpack(tempFile, jos);
+                unpacker.unpack(tempFile.toFile(), jos);
             }
         } finally {
-            if (!tempFile.delete()) {
-                tempFile.deleteOnExit();
-            }
+            Files.delete(tempFile);
         }
     }
 
