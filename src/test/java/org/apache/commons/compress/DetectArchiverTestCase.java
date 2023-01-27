@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -42,10 +42,10 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
     final ClassLoader classLoader = getClass().getClassLoader();
 
     private void checkEmptyArchive(final String type) throws Exception{
-        final File ar = createEmptyArchive(type); // will be deleted by tearDown()
-        ar.deleteOnExit(); // Just in case file cannot be deleted
+        final Path ar = createEmptyArchive(type); // will be deleted by tearDown()
+        ar.toFile().deleteOnExit(); // Just in case file cannot be deleted
         assertDoesNotThrow(() -> {
-            try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(ar.toPath()));
+            try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(ar));
                  ArchiveInputStream ais = factory.createArchiveInputStream(in)) {
             }
         }, "Should have recognized empty archive for " + type);

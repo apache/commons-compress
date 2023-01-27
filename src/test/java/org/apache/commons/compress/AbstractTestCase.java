@@ -119,11 +119,24 @@ public abstract class AbstractTestCase {
         return true;
     }
 
+    /**
+     * Accommodate Windows bug encountered in both Sun and IBM JDKs.
+     * Others possible. If the delete does not work, call System.gc(),
+     * wait a little and try again.
+     *
+     * Copied from FileUtils in Ant 1.8.0.
+     *
+     * @return whether deletion was successful
+     */
+    public static boolean tryHardToDelete(final Path f) {
+        return tryHardToDelete(f != null ? f.toFile() : null);
+    }
+
     protected File dir;
 
     protected File resultDir;
 
-    private File archive; // used to delete the archive in tearDown
+    private Path archive; // used to delete the archive in tearDown
 
     protected List<String> archiveList; // Lists the content of the archive as originally created
 
@@ -263,15 +276,15 @@ public abstract class AbstractTestCase {
      * @throws Exception
      *             in case something goes wrong
      */
-    protected File createArchive(final String archivename) throws Exception {
+    protected Path createArchive(final String archivename) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
         try {
-            archive = File.createTempFile("test", "." + archivename);
-            archive.deleteOnExit();
+            archive = Files.createTempFile("test", "." + archivename);
+            archive.toFile().deleteOnExit();
             archiveList = new ArrayList<>();
 
-            stream = Files.newOutputStream(archive.toPath());
+            stream = Files.newOutputStream(archive);
             out = factory.createArchiveOutputStream(archivename, stream);
 
             final File file1 = getFile("test1.xml");
@@ -308,14 +321,14 @@ public abstract class AbstractTestCase {
      * @return the archive File
      * @throws Exception
      */
-    protected File createEmptyArchive(final String archivename) throws Exception {
+    protected Path createEmptyArchive(final String archivename) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
         archiveList = new ArrayList<>();
         try {
-            archive = File.createTempFile("empty", "." + archivename);
-            archive.deleteOnExit();
-            stream = Files.newOutputStream(archive.toPath());
+            archive = Files.createTempFile("empty", "." + archivename);
+            archive.toFile().deleteOnExit();
+            stream = Files.newOutputStream(archive);
             out = factory.createArchiveOutputStream(archivename, stream);
             out.finish();
         } finally {
@@ -335,14 +348,14 @@ public abstract class AbstractTestCase {
      * @return the archive File
      * @throws Exception
      */
-    protected File createSingleEntryArchive(final String archivename) throws Exception {
+    protected Path createSingleEntryArchive(final String archivename) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
         archiveList = new ArrayList<>();
         try {
-            archive = File.createTempFile("empty", "." + archivename);
-            archive.deleteOnExit();
-            stream = Files.newOutputStream(archive.toPath());
+            archive = Files.createTempFile("empty", "." + archivename);
+            archive.toFile().deleteOnExit();
+            stream = Files.newOutputStream(archive);
             out = factory.createArchiveOutputStream(archivename, stream);
             // Use short file name so does not cause problems for ar
             addArchiveEntry(out, "test1.xml", getFile("test1.xml"));
@@ -403,7 +416,7 @@ public abstract class AbstractTestCase {
         dir = resultDir = null;
         if (!tryHardToDelete(archive)) {
             // Note: this exception won't be shown if the test has already failed
-            throw new Exception("Could not delete " + archive.getPath());
+            throw new Exception("Could not delete " + archive);
         }
     }
 }

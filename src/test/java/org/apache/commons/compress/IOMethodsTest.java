@@ -23,10 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -58,10 +58,10 @@ public class IOMethodsTest extends AbstractTestCase {
         final OutputStream out1 = new ByteArrayOutputStream();
         final OutputStream out2 = new ByteArrayOutputStream();
         final OutputStream out3 = new ByteArrayOutputStream();
-        final File file = createSingleEntryArchive(archiverName);
-        file.deleteOnExit();
+        final Path file = createSingleEntryArchive(archiverName);
+        file.toFile().deleteOnExit();
 
-        final InputStream is1 = Files.newInputStream(file.toPath());
+        final InputStream is1 = Files.newInputStream(file);
         final ArchiveInputStream ais1 = factory.createArchiveInputStream(archiverName, is1);
         final ArchiveEntry nextEntry = ais1.getNextEntry();
         assertNotNull(nextEntry);
@@ -72,13 +72,13 @@ public class IOMethodsTest extends AbstractTestCase {
             assertTrue(size > 0, "Size should be > 0, found: " + size);
         }
 
-        final InputStream is2 = Files.newInputStream(file.toPath());
+        final InputStream is2 = Files.newInputStream(file);
         final ArchiveInputStream ais2 = factory.createArchiveInputStream(archiverName, is2);
         final ArchiveEntry nextEntry2 = ais2.getNextEntry();
         assertNotNull(nextEntry2);
         assertEquals(size, nextEntry2.getSize(), "Expected same entry size");
 
-        final InputStream is3 = Files.newInputStream(file.toPath());
+        final InputStream is3 = Files.newInputStream(file);
         final ArchiveInputStream ais3 = factory.createArchiveInputStream(archiverName, is3);
         final ArchiveEntry nextEntry3 = ais3.getNextEntry();
         assertNotNull(nextEntry3);
