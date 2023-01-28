@@ -69,16 +69,11 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final String archivename = "zip";
         final Path input = createArchive(archivename);
 
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
-        try {
-
-            final InputStream is = Files.newInputStream(input);
-            ais = factory.createArchiveInputStream(archivename, is);
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
+        try (InputStream is = Files.newInputStream(input);
+                ArchiveInputStream ais = factory.createArchiveInputStream(archivename, is);
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
 
             final ChangeSet changes = new ChangeSet();
 
@@ -91,15 +86,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             assertTrue(results.getAddedFromStream().contains("testdata/test1.xml"));
             assertTrue(results.getAddedFromChangeSet().isEmpty());
             assertTrue(results.getDeleted().isEmpty());
-            is.close();
 
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -116,16 +103,11 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final String archivename = "zip";
         final Path input = createArchive(archivename);
 
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
-        try {
-
-            final InputStream is = Files.newInputStream(input);
-            ais = factory.createArchiveInputStream(archivename, is);
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
+        try (final InputStream is = Files.newInputStream(input);
+                ArchiveInputStream ais = factory.createArchiveInputStream(archivename, is);
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
 
             final ChangeSet changes = new ChangeSet();
 
@@ -136,15 +118,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             final ChangeSetResults results = performer.perform(ais, out);
             assertTrue(results.getAddedFromChangeSet().contains("testdata/test1.xml"));
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -159,11 +132,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      */
     @Test
     public void testAddChangeTwice() throws Exception {
-        InputStream in = null;
-        InputStream in2 = null;
-        try {
-            in = Files.newInputStream(getFile("test.txt").toPath());
-            in2 = Files.newInputStream(getFile("test2.xml").toPath());
+        try (InputStream in = Files.newInputStream(getFile("test.txt").toPath());
+                InputStream in2 = Files.newInputStream(getFile("test2.xml").toPath())) {
 
             final ArchiveEntry e = new ZipArchiveEntry("test.txt");
             final ArchiveEntry e2 = new ZipArchiveEntry("test.txt");
@@ -175,13 +145,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             assertEquals(1, changes.getChanges().size());
             final Change c = changes.getChanges().iterator().next();
             assertEquals(in2, c.getInput());
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-            if (in2 != null) {
-                in2.close();
-            }
         }
     }
 
@@ -194,11 +157,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      */
     @Test
     public void testAddChangeTwiceWithoutReplace() throws Exception {
-        InputStream in = null;
-        InputStream in2 = null;
-        try {
-            in = Files.newInputStream(getFile("test.txt").toPath());
-            in2 = Files.newInputStream(getFile("test2.xml").toPath());
+        try (InputStream in = Files.newInputStream(getFile("test.txt").toPath()); 
+                InputStream in2 = Files.newInputStream(getFile("test2.xml").toPath())) {
 
             final ArchiveEntry e = new ZipArchiveEntry("test.txt");
             final ArchiveEntry e2 = new ZipArchiveEntry("test.txt");
@@ -210,13 +170,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             assertEquals(1, changes.getChanges().size());
             final Change c = changes.getChanges().iterator().next();
             assertEquals(in, c.getInput());
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-            if (in2 != null) {
-                in2.close();
-            }
         }
     }
 
@@ -231,16 +184,11 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final String archivename = "cpio";
         final Path input = createArchive(archivename);
 
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
-        try {
-
-            final InputStream is = Files.newInputStream(input);
-            ais = factory.createArchiveInputStream(archivename, is);
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
+        try (InputStream is = Files.newInputStream(input);
+                ArchiveInputStream ais = factory.createArchiveInputStream(archivename, is);
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
 
             final ChangeSet changes = new ChangeSet();
 
@@ -254,16 +202,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -279,21 +217,14 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final String archivename = "cpio";
         final Path input = this.createSingleEntryArchive(archivename);
 
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        InputStream is = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
         final ChangeSet changes = new ChangeSet();
-        try {
-
-            is = Files.newInputStream(input);
-            ais = factory.createArchiveInputStream(archivename, is);
-
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
+        try (InputStream is = Files.newInputStream(input);
+                ArchiveInputStream ais = factory.createArchiveInputStream(archivename, is);
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
             final File file = getFile("test.txt");
-            final ArchiveEntry entry = out.createArchiveEntry(file,"bla/test.txt");
+            final ArchiveEntry entry = out.createArchiveEntry(file, "bla/test.txt");
             changes.add(entry, Files.newInputStream(file.toPath()));
             archiveList.add("bla/test.txt");
 
@@ -303,16 +234,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
             is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close(); // will close is
-            } else if (is != null){
-                is.close();
-            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -342,19 +263,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final String archivename = "zip";
         final Path input = createEmptyArchive(archivename);
 
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        InputStream is = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
         final ChangeSet changes = new ChangeSet();
-        try {
-
-            is = Files.newInputStream(input);
-            ais = factory.createArchiveInputStream(archivename, is);
-
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
+        try (InputStream is = Files.newInputStream(input);
+                ArchiveInputStream ais = factory.createArchiveInputStream(archivename, is);
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
 
             final File file1 = getFile("test.txt");
             final ArchiveEntry entry = new ZipArchiveEntry("bla/test.txt");
@@ -363,16 +277,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
             is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close(); // will close is
-            } else if (is != null){
-                is.close();
-            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -388,16 +292,11 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final String archivename = "cpio";
         final Path input = createArchive(archivename);
 
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
-        try {
-
-            final InputStream is = Files.newInputStream(input);
-            ais = factory.createArchiveInputStream(archivename, is);
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
+        try (InputStream is = Files.newInputStream(input);
+                ArchiveInputStream ais = factory.createArchiveInputStream(archivename, is);
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
 
             final ChangeSet changes = new ChangeSet();
             changes.deleteDir("bla");
@@ -414,9 +313,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             is.close();
 
             // Checks
-            assertEquals(1,results.getAddedFromChangeSet().size());
-            assertEquals("bla/test.txt",results.getAddedFromChangeSet().iterator().next());
-            assertEquals(3,results.getDeleted().size());
+            assertEquals(1, results.getAddedFromChangeSet().size());
+            assertEquals("bla/test.txt", results.getAddedFromChangeSet().iterator().next());
+            assertEquals(3, results.getDeleted().size());
             assertTrue(results.getDeleted().contains("bla/test4.xml"));
             assertTrue(results.getDeleted().contains("bla/test5.xml"));
             assertTrue(results.getDeleted().contains("bla/blubber/test6.xml"));
@@ -427,14 +326,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             assertTrue(results.getAddedFromStream().contains("test.txt"));
             assertTrue(results.getAddedFromStream().contains("something/bla"));
             assertTrue(results.getAddedFromStream().contains("test with spaces.txt"));
-            assertEquals(6,results.getAddedFromStream().size());
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
+            assertEquals(6, results.getAddedFromStream().size());
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -451,16 +343,11 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final String archivename = "cpio";
         final Path input = createArchive(archivename);
 
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
-        try {
-
-            final InputStream is = Files.newInputStream(input);
-            ais = factory.createArchiveInputStream(archivename, is);
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
+        try (InputStream is = Files.newInputStream(input);
+                ArchiveInputStream ais = factory.createArchiveInputStream(archivename, is);
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
 
             final ChangeSet changes = new ChangeSet();
 
@@ -476,16 +363,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -501,40 +378,22 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final String archivename = "zip";
         final Path input = createSingleEntryArchive(archivename);
 
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        InputStream is = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
         final ChangeSet changes = new ChangeSet();
-        try {
-
-            is = Files.newInputStream(input);
-            ais = factory.createArchiveInputStream(archivename, is);
-
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
+        try (InputStream is = Files.newInputStream(input);
+                ArchiveInputStream ais = factory.createArchiveInputStream(archivename, is);
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
             changes.delete("test1.xml");
             archiveListDelete("test1.xml");
 
             final File file = getFile("test.txt");
-            final ArchiveEntry entry = out.createArchiveEntry(file,"bla/test.txt");
+            final ArchiveEntry entry = out.createArchiveEntry(file, "bla/test.txt");
             changes.add(entry, Files.newInputStream(file.toPath()));
             archiveList.add("bla/test.txt");
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close(); // will close is
-            } else if (is != null){
-                is.close();
-            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -553,32 +412,16 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final String archivename = "cpio";
         final Path input = createArchive(archivename);
 
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
-        try {
-
-            final InputStream is = Files.newInputStream(input);
-            ais = factory.createArchiveInputStream(archivename, is);
-
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
-
+        try (InputStream is = Files.newInputStream(input);
+                ArchiveInputStream ais = factory.createArchiveInputStream(archivename, is);
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
             final ChangeSet changes = new ChangeSet();
             changes.deleteDir("bla");
             archiveListDeleteDir("bla");
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -595,32 +438,17 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final String archivename = "cpio";
         final Path input = createArchive(archivename);
 
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
-        try {
-
-            final InputStream is = Files.newInputStream(input);
-            ais = factory.createArchiveInputStream(archivename, is);
-
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
+        try (InputStream is = Files.newInputStream(input);
+                ArchiveInputStream ais = factory.createArchiveInputStream(archivename, is);
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
 
             final ChangeSet changes = new ChangeSet();
             changes.deleteDir("la");
             archiveListDeleteDir("la");
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -637,32 +465,16 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final String archivename = "cpio";
         final Path input = createArchive(archivename);
 
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
-        try {
-
-            final InputStream is = Files.newInputStream(input);
-            ais = factory.createArchiveInputStream(archivename, is);
-
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
-
+        try (InputStream is = Files.newInputStream(input);
+                ArchiveInputStream ais = factory.createArchiveInputStream(archivename, is);
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
             final ChangeSet changes = new ChangeSet();
             changes.deleteDir("test.txt");
             archiveListDeleteDir("test.txt");
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -679,17 +491,11 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final String archivename = "cpio";
         final Path input = createArchive(archivename);
 
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
-        try {
-
-            final InputStream is = Files.newInputStream(input);
-            ais = factory.createArchiveInputStream(archivename, is);
-
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
+        try (InputStream is = Files.newInputStream(input);
+                ArchiveInputStream ais = factory.createArchiveInputStream(archivename, is);
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
 
             final ChangeSet changes = new ChangeSet();
             changes.delete("bla/test5.xml");
@@ -697,15 +503,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -722,33 +519,18 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final String archivename = "cpio";
         final Path input = createArchive(archivename);
 
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
-        try {
-
-            final InputStream is = Files.newInputStream(input);
-            ais = factory.createArchiveInputStream(archivename, is);
-
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
+        try (final InputStream is = Files.newInputStream(input);
+                ArchiveInputStream ais = factory.createArchiveInputStream(archivename, is);
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
 
             final ChangeSet changes = new ChangeSet();
             changes.delete("bla");
-            //archiveListDelete("bla");
+            // archiveListDelete("bla");
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -761,38 +543,22 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      */
     @Test
     public void testDeleteFromAndAddToAr() throws Exception {
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        File temp = null;
-        try {
-            final ChangeSet changes = new ChangeSet();
-            changes.delete("test2.xml");
+        final ChangeSet changes = new ChangeSet();
+        changes.delete("test2.xml");
 
-            final File file1 = getFile("test.txt");
+        final File file1 = getFile("test.txt");
 
-            final ArArchiveEntry entry = new ArArchiveEntry("test.txt", file1
-                    .length());
+        final ArArchiveEntry entry = new ArArchiveEntry("test.txt", file1.length());
 
-            changes.add(entry, Files.newInputStream(file1.toPath()));
+        changes.add(entry, Files.newInputStream(file1.toPath()));
 
-            final File input = getFile("bla.ar");
-            final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream("ar", is);
-
-            temp = new File(dir, "bla.ar");
-            out = factory.createArchiveOutputStream("ar",
-                    Files.newOutputStream(temp.toPath()));
-
+        final File input = getFile("bla.ar");
+        final InputStream is = Files.newInputStream(input.toPath());
+        final File temp = new File(dir, "bla.ar");
+        try (ArchiveInputStream ais = factory.createArchiveInputStream("ar", is);
+                ArchiveOutputStream out = factory.createArchiveOutputStream("ar", Files.newOutputStream(temp.toPath()))) {
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
         final List<String> expected = new ArrayList<>();
         expected.add("test1.xml");
@@ -807,38 +573,24 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      */
     @Test
     public void testDeleteFromAndAddToJar() throws Exception {
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        File temp = null;
-        try {
-            final ChangeSet changes = new ChangeSet();
-            changes.delete("test2.xml");
-            changes.deleteDir("META-INF");
-            changes.delete(".classpath");
-            changes.delete(".project");
+        final ChangeSet changes = new ChangeSet();
+        changes.delete("test2.xml");
+        changes.deleteDir("META-INF");
+        changes.delete(".classpath");
+        changes.delete(".project");
 
-            final File file1 = getFile("test.txt");
-            final JarArchiveEntry entry = new JarArchiveEntry("testdata/test.txt");
-            changes.add(entry, Files.newInputStream(file1.toPath()));
+        final File file1 = getFile("test.txt");
+        final JarArchiveEntry entry = new JarArchiveEntry("testdata/test.txt");
+        changes.add(entry, Files.newInputStream(file1.toPath()));
 
-            final File input = getFile("bla.jar");
-            final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream("jar", is);
-
-            temp = new File(dir, "bla.jar");
-            out = factory.createArchiveOutputStream("jar",
-                    Files.newOutputStream(temp.toPath()));
+        final File input = getFile("bla.jar");
+        final InputStream is = Files.newInputStream(input.toPath());
+        final File temp = new File(dir, "bla.jar");
+        try (ArchiveInputStream ais = factory.createArchiveInputStream("jar", is);
+                ArchiveOutputStream out = factory.createArchiveOutputStream("jar", Files.newOutputStream(temp.toPath()))) {
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
         final List<String> expected = new ArrayList<>();
         expected.add("test1.xml");
@@ -848,45 +600,28 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
     @Test
     public void testDeleteFromAndAddToTar() throws Exception {
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        File temp = null;
-        try {
-            final ChangeSet changes = new ChangeSet();
-            changes.delete("test2.xml");
+        final ChangeSet changes = new ChangeSet();
+        changes.delete("test2.xml");
 
-            final File file1 = getFile("test.txt");
+        final File file1 = getFile("test.txt");
 
-            final TarArchiveEntry entry = new TarArchiveEntry(
-                    "testdata/test.txt");
-            entry.setModTime(0);
-            entry.setSize(file1.length());
-            entry.setUserId(0);
-            entry.setGroupId(0);
-            entry.setUserName("avalon");
-            entry.setGroupName("excalibur");
-            entry.setMode(0100000);
+        final TarArchiveEntry entry = new TarArchiveEntry("testdata/test.txt");
+        entry.setModTime(0);
+        entry.setSize(file1.length());
+        entry.setUserId(0);
+        entry.setGroupId(0);
+        entry.setUserName("avalon");
+        entry.setGroupName("excalibur");
+        entry.setMode(0100000);
 
-            changes.add(entry, Files.newInputStream(file1.toPath()));
+        changes.add(entry, Files.newInputStream(file1.toPath()));
 
-            final File input = getFile("bla.tar");
-            final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream("tar", is);
-
-            temp = new File(dir, "bla.tar");
-            out = factory.createArchiveOutputStream("tar",
-                    Files.newOutputStream(temp.toPath()));
-
+        final File input = getFile("bla.tar");
+        File temp = new File(dir, "bla.tar");
+        try (ArchiveInputStream ais = factory.createArchiveInputStream("tar", Files.newInputStream(input.toPath()));
+                ArchiveOutputStream out = factory.createArchiveOutputStream("tar", Files.newOutputStream(temp.toPath()))) {
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
         final List<String> expected = new ArrayList<>();
         expected.add("test1.xml");
@@ -904,17 +639,10 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     public void testDeleteFromAndAddToZip() throws Exception {
         final String archivename = "zip";
         final Path input = createArchive(archivename);
-
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
-        try {
-
-            final InputStream is = Files.newInputStream(input);
-            ais = factory.createArchiveInputStream(archivename, is);
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
+        try (ArchiveInputStream ais = factory.createArchiveInputStream(archivename, Files.newInputStream(input));
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
 
             final ChangeSet changes = new ChangeSet();
 
@@ -928,15 +656,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -952,15 +671,10 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final String archivename = "zip";
         final Path input = createArchive(archivename);
 
-        ArchiveOutputStream out = null;
-        ZipFile ais = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
-        try {
-
-            ais = new ZipFile(input);
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
+        try (ZipFile ais = new ZipFile(input);
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
 
             final ChangeSet changes = new ChangeSet();
 
@@ -974,14 +688,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -994,31 +700,15 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      */
     @Test
     public void testDeleteFromAr() throws Exception {
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        File temp = null;
-        try {
-            final ChangeSet changes = new ChangeSet();
-            changes.delete("test2.xml");
+        final ChangeSet changes = new ChangeSet();
+        changes.delete("test2.xml");
 
-            final File input = getFile("bla.ar");
-            final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream("ar", is);
-
-            temp = new File(dir, "bla.ar");
-            out = factory.createArchiveOutputStream("ar",
-                    Files.newOutputStream(temp.toPath()));
-
+        final File input = getFile("bla.ar");
+        final File temp = new File(dir, "bla.ar");
+        try (ArchiveInputStream ais = factory.createArchiveInputStream("ar", Files.newInputStream(input.toPath()));
+                ArchiveOutputStream out = factory.createArchiveOutputStream("ar", Files.newOutputStream(temp.toPath()))) {
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
 
         final List<String> expected = new ArrayList<>();
@@ -1033,34 +723,18 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      */
     @Test
     public void testDeleteFromJar() throws Exception {
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        File temp = null;
-        try {
-            final ChangeSet changes = new ChangeSet();
-            changes.delete("test2.xml");
-            changes.deleteDir("META-INF");
-            changes.delete(".classpath");
-            changes.delete(".project");
+        final ChangeSet changes = new ChangeSet();
+        changes.delete("test2.xml");
+        changes.deleteDir("META-INF");
+        changes.delete(".classpath");
+        changes.delete(".project");
 
-            final File input = getFile("bla.jar");
-            final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream("jar", is);
-
-            temp = new File(dir, "bla.jar");
-            out = factory.createArchiveOutputStream("jar",
-                    Files.newOutputStream(temp.toPath()));
-
+        final File input = getFile("bla.jar");
+        final File temp = new File(dir, "bla.jar");
+        try (ArchiveInputStream ais = factory.createArchiveInputStream("jar", Files.newInputStream(input.toPath()));
+                ArchiveOutputStream out = factory.createArchiveOutputStream("jar", Files.newOutputStream(temp.toPath()))) {
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
         final List<String> expected = new ArrayList<>();
         expected.add("test1.xml");
@@ -1074,31 +748,16 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      */
     @Test
     public void testDeleteFromTar() throws Exception {
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        File temp = null;
-        try {
-            final ChangeSet changes = new ChangeSet();
-            changes.delete("test2.xml");
+        final ChangeSet changes = new ChangeSet();
+        changes.delete("test2.xml");
 
-            final File input = getFile("bla.tar");
-            final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream("tar", is);
-
-            temp = new File(dir, "bla.tar");
-            out = factory.createArchiveOutputStream("tar",
-                    Files.newOutputStream(temp.toPath()));
-
+        final File input = getFile("bla.tar");
+        final InputStream is = Files.newInputStream(input.toPath());
+        final File temp = new File(dir, "bla.tar");
+        try (ArchiveInputStream ais = factory.createArchiveInputStream("tar", is);
+                ArchiveOutputStream out = factory.createArchiveOutputStream("tar", Files.newOutputStream(temp.toPath()))) {
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
         final List<String> expected = new ArrayList<>();
         expected.add("test1.xml");
@@ -1112,32 +771,17 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      */
     @Test
     public void testDeleteFromZip() throws Exception {
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
-        File temp = null;
-        try {
-            final ChangeSet changes = new ChangeSet();
-            changes.delete("test2.xml");
+        final ChangeSet changes = new ChangeSet();
+        changes.delete("test2.xml");
 
-            final File input = getFile("bla.zip");
-            final InputStream is = Files.newInputStream(input.toPath());
-            ais = factory.createArchiveInputStream("zip", is);
-
-            temp = File.createTempFile("test", ".zip");
-            temp.deleteOnExit();
-            out = factory.createArchiveOutputStream("zip",
-                    Files.newOutputStream(temp.toPath()));
+        final File input = getFile("bla.zip");
+        final File temp = File.createTempFile("test", ".zip");
+        temp.deleteOnExit();
+        try (ArchiveInputStream ais = factory.createArchiveInputStream("zip", Files.newInputStream(input.toPath()));
+                ArchiveOutputStream out = factory.createArchiveOutputStream("zip", Files.newOutputStream(temp.toPath()))) {
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
 
         final List<String> expected = new ArrayList<>();
@@ -1158,17 +802,10 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final String archivename = "cpio";
         final Path input = createArchive(archivename);
 
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
-        try {
-
-            final InputStream is = Files.newInputStream(input);
-            ais = factory.createArchiveInputStream(archivename, is);
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
-
+        try (ArchiveInputStream ais = factory.createArchiveInputStream(archivename, Files.newInputStream(input));
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
             final ChangeSet changes = new ChangeSet();
             changes.deleteDir("bla");
             archiveListDeleteDir("bla");
@@ -1181,15 +818,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -1207,18 +835,12 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final String archivename = "zip";
         final Path input = createArchive(archivename);
 
-        ArchiveOutputStream out = null;
-        ArchiveInputStream ais = null;
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
 
         File testtxt = null;
-        try {
-
-            final InputStream is = Files.newInputStream(input);
-            ais = factory.createArchiveInputStream(archivename, is);
-            out = factory.createArchiveOutputStream(archivename,
-                    Files.newOutputStream(result.toPath()));
+        try (ArchiveInputStream ais = factory.createArchiveInputStream(archivename, Files.newInputStream(input));
+                ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
 
             final ChangeSet changes = new ChangeSet();
             changes.delete("test/test3.xml");
@@ -1232,41 +854,25 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-            is.close();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (ais != null) {
-                ais.close();
-            }
         }
 
         // Checks
-        ArchiveInputStream in = null;
         File check = null;
-        try {
-            final InputStream is = Files.newInputStream(result.toPath());
-            final BufferedInputStream buf = new BufferedInputStream(is);
-            in = factory.createArchiveInputStream(buf);
+        try (BufferedInputStream buf = new BufferedInputStream(Files.newInputStream(result.toPath()));
+                ArchiveInputStream in = factory.createArchiveInputStream(buf)) {
             check = this.checkArchiveContent(in, archiveList, false);
-            final File test3xml = new File(check,"result/test/test3.xml");
+            final File test3xml = new File(check, "result/test/test3.xml");
             assertEquals(testtxt.length(), test3xml.length());
 
-            final BufferedReader reader = new BufferedReader(Files.newBufferedReader(test3xml.toPath()));
-            String str;
-            while ((str = reader.readLine()) != null) {
-                // All lines look like this
-                "111111111111111111111111111000101011".equals(str);
+            try (BufferedReader reader = new BufferedReader(Files.newBufferedReader(test3xml.toPath()))) {
+                String str;
+                while ((str = reader.readLine()) != null) {
+                    // All lines look like this
+                    "111111111111111111111111111000101011".equals(str);
+                }
             }
-            reader.close();
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-            rmdir(check);
         }
+        rmdir(check);
     }
 
     /**
