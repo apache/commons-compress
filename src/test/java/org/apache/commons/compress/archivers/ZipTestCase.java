@@ -174,14 +174,25 @@ public final class ZipTestCase extends AbstractTestCase {
     }
 
     @Test
-    public void buildSplitZipWithTooLargeSizeThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> new ZipArchiveOutputStream(File.createTempFile("temp", "zip"), 4294967295L + 1));
+    public void buildSplitZipWithTooLargeSizeThrowsException() throws IOException {
+        final Path file = Files.createTempFile("temp", "zip");
+        try {
+            assertThrows(IllegalArgumentException.class, () -> new ZipArchiveOutputStream(file, 4294967295L + 1));
+        } finally {
+            Files.delete(file);
+        }
     }
 
     @Test
-    public void buildSplitZipWithTooSmallSizeThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> new ZipArchiveOutputStream(File.createTempFile("temp", "zip"), 64 * 1024 - 1));
+    public void buildSplitZipWithTooSmallSizeThrowsException() throws IOException {
+        final Path file = Files.createTempFile("temp", "zip");
+        try {
+            assertThrows(IllegalArgumentException.class, () -> new ZipArchiveOutputStream(File.createTempFile("temp", "zip"), 64 * 1024 - 1));
+        } finally {
+            Files.delete(file);
+        }
     }
+
     private int countNonDirectories(final File file) {
         if (!file.isDirectory()) {
             return 1;
