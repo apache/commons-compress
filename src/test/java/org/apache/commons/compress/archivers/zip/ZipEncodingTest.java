@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test zip encodings.
+ * Test ZIP encodings.
  */
 public class ZipEncodingTest {
 

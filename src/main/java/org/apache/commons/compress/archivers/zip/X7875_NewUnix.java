@@ -31,7 +31,7 @@ import org.apache.commons.compress.utils.ByteUtils;
 
 /**
  * An extra field that stores UNIX UID/GID data (owner &amp; group ownership) for a given
- * zip entry.  We're using the field definition given in Info-Zip's source archive:
+ * ZIP entry.  We're using the field definition given in Info-Zip's source archive:
  * zip-3.0.tar.gz/proginfo/extrafld.txt
  *
  * <pre>
@@ -98,10 +98,10 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         1.)  We are adhering to the spec as far as I can tell, and so
              a consumer that cannot parse this is broken.
 
-        2.)  Fundamentally, zip files are about shrinking things, so
+        2.)  Fundamentally, ZIP files are about shrinking things, so
              let's save a few bytes per entry while we can.
 
-        3.)  Of all the people creating zip files using commons-
+        3.)  Of all the people creating ZIP files using commons-
              compress, how many care about UNIX UID/GID attributes
              of the files they store?   (e.g., I am probably thinking
              way too hard about this and no one cares!)

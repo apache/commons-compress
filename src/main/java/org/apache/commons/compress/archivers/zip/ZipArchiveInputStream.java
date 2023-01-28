@@ -280,13 +280,13 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     }
 
     /**
-     * Checks if the signature matches what is expected for a zip file.
+     * Checks if the signature matches what is expected for a ZIP file.
      * Does not currently handle self-extracting zips which may have arbitrary
      * leading content.
      *
      * @param signature the bytes to check
      * @param length    the number of bytes to check
-     * @return true, if this stream is a zip archive stream, false otherwise
+     * @return true, if this stream is a ZIP archive stream, false otherwise
      */
     public static boolean matches(final byte[] signature, final int length) {
         if (length < ZipArchiveOutputStream.LFH_SIG.length) {
@@ -299,7 +299,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
             || checksig(signature, ZipLong.SINGLE_SEGMENT_SPLIT_MARKER.getBytes());
     }
 
-    /** The zip encoding to use for file names and the file comment. */
+    /** The ZIP encoding to use for file names and the file comment. */
     private final ZipEncoding zipEncoding;
 
     // the provided encoding (for unit tests)
@@ -345,7 +345,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     /** Count decompressed bytes for current entry */
     private long uncompressedCount;
 
-    /** Whether the stream will try to skip the zip split signature(08074B50) at the beginning **/
+    /** Whether the stream will try to skip the ZIP split signature(08074B50) at the beginning **/
     private final boolean skipSplitSig;
 
     // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
@@ -951,7 +951,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
             if (z64 != null // same as current.usesZip64 but avoids NPE warning
                     && (ZipLong.ZIP64_MAGIC.equals(cSize) || ZipLong.ZIP64_MAGIC.equals(size)) ) {
                 if (z64.getCompressedSize() == null || z64.getSize() == null) {
-                    // avoid NPE if it's a corrupted zip archive
+                    // avoid NPE if it's a corrupted ZIP archive
                     throw new ZipException("archive contains corrupted zip64 extra field");
                 }
                 long s = z64.getCompressedSize().getLongValue();
@@ -1114,7 +1114,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
             throw new UnsupportedZipFeatureException(UnsupportedZipFeatureException.Feature.SPLITTING);
         }
 
-        // the split zip signature(08074B50) should only be skipped when the skipSplitSig is set
+        // the split ZIP signature(08074B50) should only be skipped when the skipSplitSig is set
         if (sig.equals(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER) || sig.equals(ZipLong.DD_SIG)) {
             // Just skip over the marker.
             final byte[] missedLfhBytes = new byte[4];

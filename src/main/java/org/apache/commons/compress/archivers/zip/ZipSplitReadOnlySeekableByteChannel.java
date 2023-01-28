@@ -75,10 +75,10 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
     private static final int ZIP_SPLIT_SIGNATURE_LENGTH = 4;
 
     /**
-     * Concatenates zip split files from the last segment(the extension SHOULD be .zip)
+     * Concatenates ZIP split files from the last segment(the extension SHOULD be .zip)
      *
-     * @param lastSegmentFile the last segment of zip split files, note that the extension SHOULD be .zip
-     * @return SeekableByteChannel that concatenates all zip split files
+     * @param lastSegmentFile the last segment of ZIP split files, note that the extension SHOULD be .zip
+     * @return SeekableByteChannel that concatenates all ZIP split files
      * @throws IllegalArgumentException if the lastSegmentFile's extension is NOT .zip
      * @throws IOException if the first channel doesn't seem to hold
      * the beginning of a split archive
@@ -88,9 +88,9 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
     }
 
     /**
-     * Concatenates zip split files from the last segment (the extension MUST be .zip)
-     * @param lastSegmentPath the last segment of zip split files, note that the extension MUST be .zip
-     * @return SeekableByteChannel that concatenates all zip split files
+     * Concatenates ZIP split files from the last segment (the extension MUST be .zip)
+     * @param lastSegmentPath the last segment of ZIP split files, note that the extension MUST be .zip
+     * @return SeekableByteChannel that concatenates all ZIP split files
      * @throws IllegalArgumentException if the lastSegmentPath's extension is NOT .zip
      * @throws IOException if the first channel doesn't seem to hold
      * the beginning of a split archive
@@ -99,7 +99,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
     public static SeekableByteChannel buildFromLastSplitSegment(final Path lastSegmentPath) throws IOException {
         final String extension = FileNameUtils.getExtension(lastSegmentPath);
         if (!extension.equalsIgnoreCase(ArchiveStreamFactory.ZIP)) {
-            throw new IllegalArgumentException("The extension of last zip split segment should be .zip");
+            throw new IllegalArgumentException("The extension of last ZIP split segment should be .zip");
         }
 
         final Path parent = Objects.nonNull(lastSegmentPath.getParent()) ? lastSegmentPath.getParent()
@@ -107,7 +107,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
         final String fileBaseName = FileNameUtils.getBaseName(lastSegmentPath);
         final ArrayList<Path> splitZipSegments;
 
-        // zip split segments should be like z01,z02....z(n-1) based on the zip specification
+        // ZIP split segments should be like z01,z02....z(n-1) based on the ZIP specification
         final Pattern pattern = Pattern.compile(Pattern.quote(fileBaseName) + ".[zZ][0-9]+");
         try (Stream<Path> walk = Files.walk(parent, 1)) {
             splitZipSegments = walk
@@ -143,7 +143,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
     /**
      * Concatenates the given files.
      *
-     * @param lastSegmentFile the last segment of split zip segments, its extension should be .zip
+     * @param lastSegmentFile the last segment of split ZIP segments, its extension should be .zip
      * @param files           the files to concatenate except for the last segment,
      *                        note theses files should be added in correct order (e.g. .z01, .z02... .z99)
      * @return SeekableByteChannel that concatenates all provided files
@@ -180,7 +180,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
     /**
      * Concatenates the given channels.
      *
-     * @param lastSegmentChannel channel of the last segment of split zip segments, its extension should be .zip
+     * @param lastSegmentChannel channel of the last segment of split ZIP segments, its extension should be .zip
      * @param channels           the channels to concatenate except for the last segment,
      *                           note theses channels should be added in correct order (e.g. .z01, .z02... .z99)
      * @return SeekableByteChannel that concatenates all provided channels
@@ -224,7 +224,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
 
     /**
      * Concatenates the given file paths.
-     * @param lastSegmentPath the last segment path of split zip segments, its extension must be .zip
+     * @param lastSegmentPath the last segment path of split ZIP segments, its extension must be .zip
      * @param paths the file paths to concatenate except for the last segment,
      * note these files should be added in correct order (e.g.: .z01, .z02... .z99)
      * @return SeekableByteChannel that concatenates all provided files
@@ -251,7 +251,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * Concatenates the given channels.
      *
      * <p>The channels should be add in ascending order, e.g. z01,
-     * z02, ... z99, zip please note that the .zip file is the last
+     * z02, ... z99, ZIP please note that the .zip file is the last
      * segment and should be added as the last one in the channels</p>
      *
      * @param channels the channels to concatenate
@@ -263,12 +263,12 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
         throws IOException {
         super(channels);
 
-        // the first split zip segment should begin with zip split signature
+        // the first split ZIP segment should begin with ZIP split signature
         assertSplitSignature(channels);
     }
 
     /**
-     * Based on the zip specification:
+     * Based on the ZIP specification:
      *
      * <p>
      * 8.5.3 Spanned/Split archives created using PKZIP for Windows
@@ -280,7 +280,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * the first file in the archive.
      *
      * <p>
-     * the first 4 bytes of the first zip split segment should be the zip split signature(0x08074B50)
+     * the first 4 bytes of the first ZIP split segment should be the ZIP split signature(0x08074B50)
      *
      * @param channels channels to be validated
      * @throws IOException
@@ -288,7 +288,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
     private void assertSplitSignature(final List<SeekableByteChannel> channels)
         throws IOException {
         final SeekableByteChannel channel = channels.get(0);
-        // the zip split file signature is at the beginning of the first split segment
+        // the ZIP split file signature is at the beginning of the first split segment
         channel.position(0L);
 
         zipSplitSignatureByteBuffer.rewind();
@@ -296,7 +296,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
         final ZipLong signature = new ZipLong(zipSplitSignatureByteBuffer.array());
         if (!signature.equals(ZipLong.DD_SIG)) {
             channel.position(0L);
-            throw new IOException("The first zip split segment does not begin with split zip file signature");
+            throw new IOException("The first ZIP split segment does not begin with split ZIP file signature");
         }
 
         channel.position(0L);

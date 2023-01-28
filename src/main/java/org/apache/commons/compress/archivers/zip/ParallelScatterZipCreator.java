@@ -36,7 +36,7 @@ import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
 import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
 
 /**
- * Creates a zip in parallel by using multiple threadlocal {@link ScatterZipOutputStream} instances.
+ * Creates a ZIP in parallel by using multiple threadlocal {@link ScatterZipOutputStream} instances.
  * <p>
  * Note that until 1.18, this class generally made no guarantees about the order of things written to the output file. Things that needed to come in a specific
  * order (manifests, directories) had to be handled by the client of this class, usually by writing these things to the {@link ZipArchiveOutputStream}

@@ -35,7 +35,7 @@ import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
 import org.apache.commons.compress.utils.BoundedInputStream;
 
 /**
- * A zip output stream that is optimized for multi-threaded scatter/gather construction of zip files.
+ * A ZIP output stream that is optimized for multi-threaded scatter/gather construction of ZIP files.
  * <p>
  * The internal data format of the entries used by this class are entirely private to this class and are not part of any public api whatsoever.
  * </p>
@@ -223,7 +223,7 @@ public class ScatterZipOutputStream implements Closeable {
     }
 
     /**
-     * Gets a zip entry writer for this scatter stream.
+     * Gets a ZIP entry writer for this scatter stream.
      * @throws IOException If getting scatter stream input stream
      * @return the ZipEntryWriter created on first call of the method
      */

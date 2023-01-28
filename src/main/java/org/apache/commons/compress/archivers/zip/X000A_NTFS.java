@@ -125,7 +125,7 @@ public class X000A_NTFS implements ZipExtraField {
 
     /**
      * Gets the access time as a {@link FileTime}
-     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     * of this ZIP entry, or null if no such timestamp exists in the ZIP entry.
      *
      * @return access time as a {@link FileTime} or null.
      * @since 1.23
@@ -136,7 +136,7 @@ public class X000A_NTFS implements ZipExtraField {
 
     /**
      * Gets the access time as a java.util.Date
-     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     * of this ZIP entry, or null if no such timestamp exists in the ZIP entry.
      *
      * @return access time as java.util.Date or null.
      */
@@ -145,9 +145,9 @@ public class X000A_NTFS implements ZipExtraField {
     }
 
     /**
-     * Gets the "File last access time" of this zip entry as a
+     * Gets the "File last access time" of this ZIP entry as a
      * ZipEightByteInteger object, or {@link ZipEightByteInteger#ZERO}
-     * if no such timestamp exists in the zip entry.
+     * if no such timestamp exists in the ZIP entry.
      *
      * @return File last access time
      */
@@ -181,7 +181,7 @@ public class X000A_NTFS implements ZipExtraField {
 
     /**
      * Gets the create time as a {@link FileTime}
-     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     * of this ZIP entry, or null if no such timestamp exists in the ZIP entry.
      *
      * @return create time as a {@link FileTime} or null.
      * @since 1.23
@@ -192,7 +192,7 @@ public class X000A_NTFS implements ZipExtraField {
 
     /**
      * Gets the create time as a java.util.Date of this zip
-     * entry, or null if no such timestamp exists in the zip entry.
+     * entry, or null if no such timestamp exists in the ZIP entry.
      *
      * @return create time as java.util.Date or null.
      */
@@ -201,9 +201,9 @@ public class X000A_NTFS implements ZipExtraField {
     }
 
     /**
-     * Gets the "File creation time" of this zip entry as a
+     * Gets the "File creation time" of this ZIP entry as a
      * ZipEightByteInteger object, or {@link ZipEightByteInteger#ZERO}
-     * if no such timestamp exists in the zip entry.
+     * if no such timestamp exists in the ZIP entry.
      *
      * @return File creation time
      */
@@ -257,7 +257,7 @@ public class X000A_NTFS implements ZipExtraField {
 
     /**
      * Gets the modify time as a {@link FileTime}
-     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     * of this ZIP entry, or null if no such timestamp exists in the ZIP entry.
      *
      * @return modify time as a {@link FileTime} or null.
      * @since 1.23
@@ -268,7 +268,7 @@ public class X000A_NTFS implements ZipExtraField {
 
     /**
      * Gets the modify time as a java.util.Date
-     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     * of this ZIP entry, or null if no such timestamp exists in the ZIP entry.
      *
      * @return modify time as java.util.Date or null.
      */
@@ -277,10 +277,10 @@ public class X000A_NTFS implements ZipExtraField {
     }
 
     /**
-     * Gets the "File last modification time" of this zip entry as
+     * Gets the "File last modification time" of this ZIP entry as
      * a ZipEightByteInteger object, or {@link
      * ZipEightByteInteger#ZERO} if no such timestamp exists in the
-     * zip entry.
+     * ZIP entry.
      *
      * @return File last modification time
      */
@@ -380,14 +380,14 @@ public class X000A_NTFS implements ZipExtraField {
 
     /**
      * Sets the access time as a java.util.Date
-     * of this zip entry.
+     * of this ZIP entry.
      *
      * @param d access time as java.util.Date
      */
     public void setAccessJavaTime(final Date d) { setAccessTime(dateToZip(d)); }
 
     /**
-     * Sets the File last access time of this zip entry using a
+     * Sets the File last access time of this ZIP entry using a
      * ZipEightByteInteger object.
      *
      * @param t ZipEightByteInteger of the access time
@@ -409,7 +409,7 @@ public class X000A_NTFS implements ZipExtraField {
     /**
      * <p>
      * Sets the create time as a java.util.Date
-     * of this zip entry.  Supplied value is truncated to per-second
+     * of this ZIP entry.  Supplied value is truncated to per-second
      * precision (milliseconds zeroed-out).
      * </p><p>
      * Note: the setters for flags and timestamps are decoupled.
@@ -422,7 +422,7 @@ public class X000A_NTFS implements ZipExtraField {
     public void setCreateJavaTime(final Date d) { setCreateTime(dateToZip(d)); }
 
     /**
-     * Sets the File creation time of this zip entry using a
+     * Sets the File creation time of this ZIP entry using a
      * ZipEightByteInteger object.
      *
      * @param t ZipEightByteInteger of the create time
@@ -442,14 +442,14 @@ public class X000A_NTFS implements ZipExtraField {
     }
 
     /**
-     * Sets the modify time as a java.util.Date of this zip entry.
+     * Sets the modify time as a java.util.Date of this ZIP entry.
      *
      * @param d modify time as java.util.Date
      */
     public void setModifyJavaTime(final Date d) { setModifyTime(dateToZip(d)); }
 
     /**
-     * Sets the File last modification time of this zip entry using a
+     * Sets the File last modification time of this ZIP entry using a
      * ZipEightByteInteger object.
      *
      * @param t ZipEightByteInteger of the modify time

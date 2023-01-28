@@ -76,7 +76,7 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
     }
 
     /**
-     * Indicates whether method change is allowed when re-compressing the zip file.
+     * Indicates whether method change is allowed when re-compressing the ZIP file.
      *
      * @return
      *      true if method change is allowed, false otherwise.

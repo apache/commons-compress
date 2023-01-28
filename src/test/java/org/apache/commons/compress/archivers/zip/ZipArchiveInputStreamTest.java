@@ -87,7 +87,7 @@ public class ZipArchiveInputStreamTest {
     }
 
     /**
-     * Forge a zip archive in memory, using STORED and
+     * Forge a ZIP archive in memory, using STORED and
      * Data Descriptor, and without signature of Data
      * Descriptor.
      *
@@ -118,7 +118,7 @@ public class ZipArchiveInputStreamTest {
             // copy the crc-32, compressed size and uncompressed size to the data descriptor
             System.arraycopy(zipContent, 14, zipContentWithDataDescriptor, 37, 12);
 
-            // and copy the rest of the zip content
+            // and copy the rest of the ZIP content
             System.arraycopy(zipContent, 37, zipContentWithDataDescriptor, 49, zipContent.length - 37);
 
             return new ByteArrayInputStream(zipContentWithDataDescriptor);

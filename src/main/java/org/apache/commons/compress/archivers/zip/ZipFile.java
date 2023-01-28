@@ -56,7 +56,7 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  * Replacement for {@code java.util.ZipFile}.
  *
  * <p>This class adds support for file name encodings other than UTF-8
- * (which is required to work on ZIP files created by native zip tools
+ * (which is required to work on ZIP files created by native ZIP tools
  * and is able to skip a preamble like the one found in self
  * extracting archives.  Furthermore it returns instances of
  * {@code org.apache.commons.compress.archivers.zip.ZipArchiveEntry}
@@ -374,7 +374,7 @@ public class ZipFile implements Closeable {
     private final String encoding;
 
     /**
-     * The zip encoding to use for file names and the file comment.
+     * The ZIP encoding to use for file names and the file comment.
      */
     private final ZipEncoding zipEncoding;
 
@@ -399,7 +399,7 @@ public class ZipFile implements Closeable {
     private volatile boolean closed = true;
 
     /**
-     * Whether the zip archive is a split zip archive
+     * Whether the ZIP archive is a split ZIP archive
      */
     private final boolean isSplitZipArchive;
 
@@ -760,7 +760,7 @@ public class ZipFile implements Closeable {
     /**
      * Transfer selected entries from this zipfile to a given #ZipArchiveOutputStream.
      * Compression and all other attributes will be as in this file.
-     * <p>This method transfers entries based on the central directory of the zip file.</p>
+     * <p>This method transfers entries based on the central directory of the ZIP file.</p>
      *
      * @param target The zipArchiveOutputStream to write the entries to
      * @param predicate A predicate that selects which entries to write

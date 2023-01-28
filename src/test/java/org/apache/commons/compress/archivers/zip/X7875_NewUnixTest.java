@@ -179,7 +179,7 @@ public class X7875_NewUnixTest {
         try (ZipFile zf = new ZipFile(archive)) {
             final Enumeration<ZipArchiveEntry> en = zf.getEntries();
 
-            // We expect EVERY entry of this zip file (dir & file) to
+            // We expect EVERY entry of this ZIP file (dir & file) to
             // contain extra field 0x7875.
             while (en.hasMoreElements()) {
 
@@ -187,7 +187,7 @@ public class X7875_NewUnixTest {
                 final String name = zae.getName();
                 final X7875_NewUnix xf = (X7875_NewUnix) zae.getExtraField(X7875);
 
-                // The directory entry in the test zip file is uid/gid 1000.
+                // The directory entry in the test ZIP file is uid/gid 1000.
                 long expected = 1000;
                 if (name.contains("uid555_gid555")) {
                     expected = 555;

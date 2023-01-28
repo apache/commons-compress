@@ -29,7 +29,7 @@ import org.apache.commons.compress.utils.TimeUtils;
 
 /**
  * <p>An extra field that stores additional file and directory timestamp data
- * for zip entries.   Each zip entry can include up to three timestamps
+ * for ZIP entries.   Each ZIP entry can include up to three timestamps
  * (modify, access, create*).  The timestamps are stored as 32 bit signed
  * integers representing seconds since UNIX epoch (Jan 1st, 1970, UTC).
  * This field improves on zip's default timestamp granularity, since it
@@ -57,7 +57,7 @@ import org.apache.commons.compress.utils.TimeUtils;
  * <li><b>*createTime:</b>
  * modern Linux file systems (e.g., ext2 and newer)
  * do not appear to store a value like this, and so
- * it's usually omitted altogether in the zip extra
+ * it's usually omitted altogether in the ZIP extra
  * field.  Perhaps other Unix systems track this.
  * </li></ul>
  * <p>
@@ -201,7 +201,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
 
     /**
      * Gets the access time as a {@link FileTime}
-     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     * of this ZIP entry, or null if no such timestamp exists in the ZIP entry.
      * The milliseconds are always zeroed out, since the underlying data
      * offers only per-second precision.
      *
@@ -214,7 +214,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
 
     /**
      * Gets the access time as a java.util.Date
-     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     * of this ZIP entry, or null if no such timestamp exists in the ZIP entry.
      * The milliseconds are always zeroed out, since the underlying data
      * offers only per-second precision.
      *
@@ -225,9 +225,9 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     }
 
     /**
-     * Gets the access time (seconds since epoch) of this zip entry
+     * Gets the access time (seconds since epoch) of this ZIP entry
      * as a ZipLong object, or null if no such timestamp exists in the
-     * zip entry.
+     * ZIP entry.
      *
      * @return access time (seconds since epoch) or null.
      */
@@ -265,7 +265,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
 
     /**
      * Gets the create time as a {@link FileTime}
-     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     * of this ZIP entry, or null if no such timestamp exists in the ZIP entry.
      * The milliseconds are always zeroed out, since the underlying data
      * offers only per-second precision.
      *
@@ -279,14 +279,14 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * <p>
      * Gets the create time as a java.util.Date
-     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     * of this ZIP entry, or null if no such timestamp exists in the ZIP entry.
      * The milliseconds are always zeroed out, since the underlying data
      * offers only per-second precision.
      * </p>
      * <p>
      * Note: modern Linux file systems (e.g., ext2)
      * do not appear to store a "create time" value, and so
-     * it's usually omitted altogether in the zip extra
+     * it's usually omitted altogether in the ZIP extra
      * field. Perhaps other Unix systems track this.
      * </p>
      *
@@ -298,14 +298,14 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
 
     /**
      * <p>
-     * Gets the create time (seconds since epoch) of this zip entry
+     * Gets the create time (seconds since epoch) of this ZIP entry
      * as a ZipLong object, or null if no such timestamp exists in the
-     * zip entry.
+     * ZIP entry.
      * </p>
      * <p>
      * Note: modern Linux file systems (e.g., ext2)
      * do not appear to store a "create time" value, and so
-     * it's usually omitted altogether in the zip extra
+     * it's usually omitted altogether in the ZIP extra
      * field. Perhaps other Unix systems track this.
      * </p>
      *
@@ -387,7 +387,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
 
     /**
      * Gets the modify time as a {@link FileTime}
-     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     * of this ZIP entry, or null if no such timestamp exists in the ZIP entry.
      * The milliseconds are always zeroed out, since the underlying data
      * offers only per-second precision.
      *
@@ -400,7 +400,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
 
     /**
      * Gets the modify time as a java.util.Date
-     * of this zip entry, or null if no such timestamp exists in the zip entry.
+     * of this ZIP entry, or null if no such timestamp exists in the ZIP entry.
      * The milliseconds are always zeroed out, since the underlying data
      * offers only per-second precision.
      *
@@ -411,9 +411,9 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     }
 
     /**
-     * Gets the modify time (seconds since epoch) of this zip entry
+     * Gets the modify time (seconds since epoch) of this ZIP entry
      * as a ZipLong object, or null if no such timestamp exists in the
-     * zip entry.
+     * ZIP entry.
      *
      * @return modify time (seconds since epoch) or null.
      */
@@ -439,7 +439,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * Tests whether bit0 of the flags byte is set or not,
      * which should correspond to the presence or absence of
-     * a modify timestamp in this particular zip entry.
+     * a modify timestamp in this particular ZIP entry.
      *
      * @return true if bit0 of the flags byte is set.
      */
@@ -450,7 +450,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * Tests whether bit1 of the flags byte is set or not,
      * which should correspond to the presence or absence of
-     * a "last access" timestamp in this particular zip entry.
+     * a "last access" timestamp in this particular ZIP entry.
      *
      * @return true if bit1 of the flags byte is set.
      */
@@ -461,7 +461,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * Tests whether bit2 of the flags byte is set or not,
      * which should correspond to the presence or absence of
-     * a create timestamp in this particular zip entry.
+     * a create timestamp in this particular ZIP entry.
      *
      * @return true if bit2 of the flags byte is set.
      */
@@ -529,7 +529,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * <p>
      * Sets the acccess time as a {@link FileTime}
-     * of this zip entry. Supplied value is truncated to per-second
+     * of this ZIP entry. Supplied value is truncated to per-second
      * precision (milliseconds zeroed-out).
      * </p><p>
      * Note: the setters for flags and timestamps are decoupled.
@@ -547,7 +547,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * <p>
      * Sets the access time as a java.util.Date
-     * of this zip entry.  Supplied value is truncated to per-second
+     * of this ZIP entry.  Supplied value is truncated to per-second
      * precision (milliseconds zeroed-out).
      * </p><p>
      * Note: the setters for flags and timestamps are decoupled.
@@ -563,7 +563,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
 
     /**
      * <p>
-     * Sets the access time (seconds since epoch) of this zip entry
+     * Sets the access time (seconds since epoch) of this ZIP entry
      * using a ZipLong object
      * </p><p>
      * Note: the setters for flags and timestamps are decoupled.
@@ -582,7 +582,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * <p>
      * Sets the create time as a {@link FileTime}
-     * of this zip entry. Supplied value is truncated to per-second
+     * of this ZIP entry. Supplied value is truncated to per-second
      * precision (milliseconds zeroed-out).
      * </p><p>
      * Note: the setters for flags and timestamps are decoupled.
@@ -600,7 +600,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * <p>
      * Sets the create time as a java.util.Date
-     * of this zip entry.  Supplied value is truncated to per-second
+     * of this ZIP entry.  Supplied value is truncated to per-second
      * precision (milliseconds zeroed-out).
      * </p><p>
      * Note: the setters for flags and timestamps are decoupled.
@@ -614,7 +614,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
 
     /**
      * <p>
-     * Sets the create time (seconds since epoch) of this zip entry
+     * Sets the create time (seconds since epoch) of this ZIP entry
      * using a ZipLong object
      * </p><p>
      * Note: the setters for flags and timestamps are decoupled.
@@ -654,7 +654,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * <p>
      * Sets the modify time as a {@link FileTime}
-     * of this zip entry. Supplied value is truncated to per-second
+     * of this ZIP entry. Supplied value is truncated to per-second
      * precision (milliseconds zeroed-out).
      * </p><p>
      * Note: the setters for flags and timestamps are decoupled.
@@ -672,7 +672,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * <p>
      * Sets the modify time as a java.util.Date
-     * of this zip entry.  Supplied value is truncated to per-second
+     * of this ZIP entry.  Supplied value is truncated to per-second
      * precision (milliseconds zeroed-out).
      * </p><p>
      * Note: the setters for flags and timestamps are decoupled.
@@ -688,7 +688,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
 
     /**
      * <p>
-     * Sets the modify time (seconds since epoch) of this zip entry
+     * Sets the modify time (seconds since epoch) of this ZIP entry
      * using a ZipLong object.
      * </p><p>
      * Note: the setters for flags and timestamps are decoupled.

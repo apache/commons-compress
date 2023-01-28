@@ -919,7 +919,7 @@ public class ZipFileTest {
         expectedVals.put(entryPrefix + "link5", "../COMPRESS-214_unix_symlinks/././a/b");
         expectedVals.put(entryPrefix + "link6", "../COMPRESS-214_unix_symlinks/././a/b/");
 
-        // I looked into creating a test with hard links, but zip does not appear to
+        // I looked into creating a test with hard links, but ZIP does not appear to
         // support hard links, so nevermind.
 
         final File archive = getFile("COMPRESS-214_unix_symlinks.zip");

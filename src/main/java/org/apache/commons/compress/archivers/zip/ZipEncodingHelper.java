@@ -25,7 +25,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 
 /**
- * Static helper functions for robustly encoding file names in zip files.
+ * Static helper functions for robustly encoding file names in ZIP files.
  */
 public abstract class ZipEncodingHelper {
 
@@ -41,16 +41,16 @@ public abstract class ZipEncodingHelper {
     static final ZipEncoding UTF8_ZIP_ENCODING = getZipEncoding(UTF8);
 
     /**
-     * Instantiates a zip encoding. An NIO based character set encoder/decoder will be returned.
+     * Instantiates a ZIP encoding. An NIO based character set encoder/decoder will be returned.
      * As a special case, if the character set is UTF-8, the nio encoder will be configured  replace malformed and
      * unmappable characters with '?'. This matches existing behavior from the older fallback encoder.
      * <p>
      *     If the requested character set cannot be found, the platform default will
      *     be used instead.
      * </p>
-     * @param name The name of the zip encoding. Specify {@code null} for
+     * @param name The name of the ZIP encoding. Specify {@code null} for
      *             the platform's default encoding.
-     * @return A zip encoding for the given encoding name.
+     * @return A ZIP encoding for the given encoding name.
      */
     public static ZipEncoding getZipEncoding(final String name) {
         Charset cs = Charset.defaultCharset();

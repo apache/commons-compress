@@ -30,7 +30,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.junit.jupiter.api.Test;
 
 /**
- * JUnit test for a multi-volume zip file.
+ * JUnit test for a multi-volume ZIP file.
  *
  * Some tools (like 7-zip) allow users to split a large archives into 'volumes'
  * with a given size to fit them into multiple cds, usb drives, or emails with

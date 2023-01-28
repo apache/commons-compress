@@ -218,7 +218,7 @@ public class ParallelScatterZipCreatorTest {
                     final byte[] expected = entries.remove(zipArchiveEntry.getName());
                     assertArrayEquals(expected, actual, "For " + zipArchiveEntry.getName());
                 }
-                // check order of zip entries vs order of order of addition to the parallel zip creator
+                // check order of ZIP entries vs order of order of addition to the parallel ZIP creator
                 assertEquals("file" + i++, zipArchiveEntry.getName(), "For " + zipArchiveEntry.getName());
             }
         }

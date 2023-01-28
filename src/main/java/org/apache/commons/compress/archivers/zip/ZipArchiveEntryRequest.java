@@ -30,7 +30,7 @@ public class ZipArchiveEntryRequest {
     /**
      * Create a ZipArchiveEntryRequest
      * @param zipArchiveEntry The entry to use
-     * @param payloadSupplier The payload that will be added to the zip entry.
+     * @param payloadSupplier The payload that will be added to the ZIP entry.
      * @return The newly created request
      */
     public static ZipArchiveEntryRequest createZipArchiveEntryRequest(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier payloadSupplier) {
@@ -63,7 +63,7 @@ public class ZipArchiveEntryRequest {
     }
 
     /**
-     * The payload that will be added to this zip entry
+     * The payload that will be added to this ZIP entry
      * @return The input stream.
      */
     public InputStream getPayloadStream() {

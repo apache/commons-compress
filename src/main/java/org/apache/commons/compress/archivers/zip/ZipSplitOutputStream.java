@@ -53,10 +53,10 @@ class ZipSplitOutputStream extends OutputStream {
     private final byte[] singleByte = new byte[1];
 
     /**
-     * Create a split zip. If the zip file is smaller than the split size,
+     * Create a split zip. If the ZIP file is smaller than the split size,
      * then there will only be one split zip, and its suffix is .zip,
      * otherwise the split segments should be like .z01, .z02, ... .z(N-1), .zip
-     * @param zipFile   the zip file to write to
+     * @param zipFile   the ZIP file to write to
      * @param splitSize the split size
      */
     public ZipSplitOutputStream(final File zipFile, final long splitSize) throws IllegalArgumentException, IOException {
@@ -64,10 +64,10 @@ class ZipSplitOutputStream extends OutputStream {
     }
 
     /**
-     * Create a split zip. If the zip file is smaller than the split size,
+     * Create a split zip. If the ZIP file is smaller than the split size,
      * then there will only be one split zip, and its suffix is .zip,
      * otherwise the split segments should be like .z01, .z02, ... .z(N-1), .zip
-     * @param zipFile   the path to zip file to write to
+     * @param zipFile   the path to ZIP file to write to
      * @param splitSize the split size
      * @since 1.22
      */
@@ -78,7 +78,7 @@ class ZipSplitOutputStream extends OutputStream {
         this.zipFile = zipFile;
         this.splitSize = splitSize;
         this.outputStream = Files.newOutputStream(zipFile);
-        // write the zip split signature 0x08074B50 to the zip file
+        // write the ZIP split signature 0x08074B50 to the ZIP file
         writeZipSplitSignature();
     }
 
@@ -90,7 +90,7 @@ class ZipSplitOutputStream extends OutputStream {
     }
 
     /**
-     * Create the new zip split segment, the last zip segment should be .zip, and the zip split segments' suffix should be
+     * Create the new ZIP split segment, the last ZIP segment should be .zip, and the ZIP split segments' suffix should be
      * like .z01, .z02, .z03, ... .z99, .z100, ..., .z(N-1), .zip
      * <p>
      * 8.3.3 Split ZIP files are typically written to the same location
@@ -104,7 +104,7 @@ class ZipSplitOutputStream extends OutputStream {
      * Segment n   = filename.zip
      * <p>
      * NOTE:
-     * The zip split segment begin from 1,2,3,... , and we're creating a new segment,
+     * The ZIP split segment begin from 1,2,3,... , and we're creating a new segment,
      * so the new segment suffix should be (currentSplitSegmentIndex + 2)
      *
      * @param zipSplitSegmentSuffixIndex
@@ -126,13 +126,13 @@ class ZipSplitOutputStream extends OutputStream {
         final Path newFile = zipFile.getFileSystem().getPath(dir, baseName + extension);
 
         if (Files.exists(newFile)) {
-            throw new IOException("split zip segment " + baseName + extension + " already exists");
+            throw new IOException("split ZIP segment " + baseName + extension + " already exists");
         }
         return newFile;
     }
 
     /**
-     * The last zip split segment's suffix should be .zip
+     * The last ZIP split segment's suffix should be .zip
      *
      * @throws IOException
      */
@@ -156,7 +156,7 @@ class ZipSplitOutputStream extends OutputStream {
     }
 
     /**
-     * Create a new zip split segment and prepare to write to the new segment
+     * Create a new ZIP split segment and prepare to write to the new segment
      *
      * @throws IOException
      */
@@ -206,7 +206,7 @@ class ZipSplitOutputStream extends OutputStream {
     }
 
     /**
-     * Write the data to zip split segments, if the remaining space of current split segment
+     * Write the data to ZIP split segments, if the remaining space of current split segment
      * is not enough, then a new split segment should be created
      *
      * @param b   data to write
@@ -241,7 +241,7 @@ class ZipSplitOutputStream extends OutputStream {
     }
 
     /**
-     * Write the zip split signature (0x08074B50) to the head of the first zip split segment
+     * Write the ZIP split signature (0x08074B50) to the head of the first ZIP split segment
      *
      * @throws IOException
      */

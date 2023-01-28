@@ -351,7 +351,7 @@ public final class ZipTestCase extends AbstractTestCase {
                 zipFile1.copyRawEntries(zos2, allFilesPredicate);
                 zipFile2.copyRawEntries(zos2, allFilesPredicate);
             }
-            // copyRawEntries does not add superfluous zip64 header like regular zip output stream
+            // copyRawEntries does not add superfluous zip64 header like regular ZIP output stream
             // does when using Zip64Mode.AsNeeded so all the source material has to be Zip64Mode.Never,
             // if exact binary equality is to be achieved
             assertSameFileContents(reference, fileResult);
@@ -649,7 +649,7 @@ public final class ZipTestCase extends AbstractTestCase {
             assertEquals("README", entry.getName());
             assertFalse(zip.canReadEntryData(entry));
             assertDoesNotThrow(() -> assertNull(zip.getNextZipEntry()),
-                    "COMPRESS-93: Unable to skip an unsupported zip entry");
+                    "COMPRESS-93: Unable to skip an unsupported ZIP entry");
         }
     }
 

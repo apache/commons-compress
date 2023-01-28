@@ -34,7 +34,7 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
 
     /**
      * Checks if the signature matches what is expected for a jar file
-     * (in this case it is the same as for a zip file).
+     * (in this case it is the same as for a ZIP file).
      *
      * @param signature
      *            the bytes to check

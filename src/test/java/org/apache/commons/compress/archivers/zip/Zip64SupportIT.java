@@ -2309,7 +2309,7 @@ public class Zip64SupportIT {
     @Test
     public void write3EntriesCreatingManySplitArchiveFileModeAlways()
             throws Throwable {
-        // about 76,293 zip split segments will be created
+        // about 76,293 ZIP split segments will be created
         withTemporaryArchive("write3EntriesCreatingManySplitArchiveFileModeAlways",
                 write3EntriesCreatingBigArchive(Zip64Mode.Always, true),
                 true, 65536L);

@@ -340,7 +340,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private String encoding = DEFAULT_ENCODING;
 
     /**
-     * The zip encoding to use for file names and the file comment.
+     * The ZIP encoding to use for file names and the file comment.
      *
      * This field is of internal use and will be set in {@link
      * #setEncoding(String)}.
@@ -401,7 +401,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Creates a new ZIP OutputStream writing to a File.  Will use
      * random access if possible.
-     * @param file the file to zip to
+     * @param file the file to ZIP to
      * @throws IOException on error
      */
     public ZipArchiveOutputStream(final File file) throws IOException {
@@ -472,7 +472,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Creates a new ZIP OutputStream writing to a Path.  Will use
      * random access if possible.
-     * @param file the file to zip to
+     * @param file the file to ZIP to
      * @param options options specifying how the file is opened.
      * @throws IOException on error
      * @since 1.21
@@ -509,7 +509,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * allows you to write to an in-memory archive using random
      * access.</p>
      *
-     * @param channel the channel to zip to
+     * @param channel the channel to ZIP to
      * @since 1.13
      */
     public ZipArchiveOutputStream(final SeekableByteChannel channel) {
@@ -539,7 +539,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (hasZip64Extra(ae)) {
             // Will be re-added as required. this may make the file generated with this method
             // somewhat smaller than standard mode,
-            // since standard mode is unable to remove the zip 64 header.
+            // since standard mode is unable to remove the ZIP 64 header.
             ae.removeExtraField(Zip64ExtendedInformationExtraField.HEADER_ID);
         }
         final boolean is2PhaseSource = ae.getCrc() != ZipArchiveEntry.CRC_UNKNOWN
@@ -662,7 +662,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Writes all necessary data for this entry.
      *
-     * @param phased              This entry is second phase of a 2-phase zip creation, size, compressed size and crc
+     * @param phased              This entry is second phase of a 2-phase ZIP creation, size, compressed size and crc
      *                            are known in ZipArchiveEntry
      * @throws IOException            on error
      * @throws Zip64RequiredException if the entry's uncompressed or
@@ -703,7 +703,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Creates a new zip entry taking some information from the given
+     * Creates a new ZIP entry taking some information from the given
      * file and using the provided name.
      *
      * <p>The name will be adjusted to end with a forward slash "/" if
@@ -723,7 +723,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Creates a new zip entry taking some information from the given
+     * Creates a new ZIP entry taking some information from the given
      * file and using the provided name.
      *
      * <p>The name will be adjusted to end with a forward slash "/" if
@@ -1042,8 +1042,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                 + ZipConstants.SHORT /* total number of entries */
                 + ZipConstants.WORD  /* size of central directory */
                 + ZipConstants.WORD  /* offset of start of central directory */
-                + ZipConstants.SHORT /* zip comment length */
-                + commentLength /* zip comment */;
+                + ZipConstants.SHORT /* ZIP comment length */
+                + commentLength /* ZIP comment */;
 
         writeZip64CentralDirectory();
         writeCentralDirectoryEnd();
@@ -2001,7 +2001,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // no "zip64 extensible data sector" for now
 
         if(isSplitZip) {
-            // based on the zip specification, the End Of Central Directory record and
+            // based on the ZIP specification, the End Of Central Directory record and
             // the Zip64 End Of Central Directory locator record must be on the same segment
             final int zip64EOCDLOCLength = ZipConstants.WORD  /* length of ZIP64_EOCD_LOC_SIG */
                     + ZipConstants.WORD  /* disk number of ZIP64_EOCD_SIG */

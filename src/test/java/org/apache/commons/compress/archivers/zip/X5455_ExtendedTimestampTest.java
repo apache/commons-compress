@@ -513,7 +513,7 @@ public class X5455_ExtendedTimestampTest {
         try (ZipFile zf = new ZipFile(archive)) {
             final Enumeration<ZipArchiveEntry> en = zf.getEntries();
 
-            // We expect EVERY entry of this zip file
+            // We expect EVERY entry of this ZIP file
             // to contain extra field 0x5455.
             while (en.hasMoreElements()) {
 

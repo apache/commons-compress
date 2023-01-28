@@ -60,7 +60,7 @@ public interface ZipEncoding {
 
     /**
      * Encode a file name or a comment to a byte array suitable for
-     * storing it to a serialized zip entry.
+     * storing it to a serialized ZIP entry.
      *
      * <p>Examples for CP 437 (in pseudo-notation, right hand side is
      * C-style notation):</p>

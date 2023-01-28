@@ -298,7 +298,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Creates a new zip entry taking some information from the given
+     * Creates a new ZIP entry taking some information from the given
      * file and using the provided name.
      *
      * <p>The name will be adjusted to end with a forward slash "/" if
@@ -322,7 +322,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Creates a new zip entry with fields taken from the specified zip entry.
+     * Creates a new ZIP entry with fields taken from the specified ZIP entry.
      *
      * <p>Assumes the entry represents a directory if and only if the
      * name ends with a forward slash "/".</p>
@@ -345,7 +345,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Creates a new zip entry taking some information from the given
+     * Creates a new ZIP entry taking some information from the given
      * path and using the provided name.
      *
      * <p>The name will be adjusted to end with a forward slash "/" if
@@ -365,7 +365,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Creates a new zip entry with the specified name.
+     * Creates a new ZIP entry with the specified name.
      *
      * <p>Assumes the entry represents a directory if and only if the
      * name ends with a forward slash "/".</p>
@@ -378,7 +378,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Creates a new zip entry with fields taken from the specified zip entry.
+     * Creates a new ZIP entry with fields taken from the specified ZIP entry.
      *
      * <p>Assumes the entry represents a directory if and only if the
      * name ends with a forward slash "/".</p>

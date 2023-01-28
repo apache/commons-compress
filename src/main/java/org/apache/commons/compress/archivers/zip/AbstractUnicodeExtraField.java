@@ -38,7 +38,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
 
     /**
      * Assemble as unicode extension from the name/comment and
-     * encoding of the original zip entry.
+     * encoding of the original ZIP entry.
      *
      * @param text The file name or comment.
      * @param bytes The encoded of the file name or comment in the zip
@@ -50,10 +50,10 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
 
     /**
      * Assemble as unicode extension from the name/comment and
-     * encoding of the original zip entry.
+     * encoding of the original ZIP entry.
      *
      * @param text The file name or comment.
-     * @param bytes The encoded of the file name or comment in the zip
+     * @param bytes The encoded of the file name or comment in the ZIP
      * file.
      * @param off The offset of the encoded file name or comment in
      * {@code bytes}.
@@ -112,7 +112,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
 
     /**
      * @return The CRC32 checksum of the file name or comment as
-     *         encoded in the central directory of the zip file.
+     *         encoded in the central directory of the ZIP file.
      */
     public long getNameCRC32() {
         return nameCRC32;
@@ -159,7 +159,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
 
     /**
      * @param nameCRC32 The CRC32 checksum of the file name as encoded
-     *         in the central directory of the zip file to set.
+     *         in the central directory of the ZIP file to set.
      */
     public void setNameCRC32(final long nameCRC32) {
         this.nameCRC32 = nameCRC32;

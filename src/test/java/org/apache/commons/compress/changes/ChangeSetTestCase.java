@@ -896,7 +896,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     /**
-     * Adds a file to a zip archive. Deletes an other file.
+     * Adds a file to a ZIP archive. Deletes an other file.
      *
      * @throws Exception
      */
@@ -943,7 +943,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     /**
-     * Adds a file to a zip archive. Deletes an other file.
+     * Adds a file to a ZIP archive. Deletes an other file.
      *
      * @throws Exception
      */
@@ -1106,7 +1106,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     /**
-     * Simple Delete from a zip file.
+     * Simple Delete from a ZIP file.
      *
      * @throws Exception
      */
