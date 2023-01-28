@@ -253,12 +253,12 @@ public final class BHSDCodec extends Codec {
         }
         // This algorithm does the same thing, but is probably slower. Leaving
         // in for now for readability
-        // if(isSigned()) {
+        // if (isSigned()) {
         // long u = z;
         // long twoPowS = (long)Math.pow(2, s);
         // double twoPowSMinusOne = twoPowS-1;
-        // if(u % twoPowS < twoPowSMinusOne) {
-        // if(cardinality < Math.pow(2, 32)) {
+        // if (u % twoPowS < twoPowSMinusOne) {
+        // if (cardinality < Math.pow(2, 32)) {
         // z = (long) (u - (Math.floor(u/ twoPowS)));
         // } else {
         // z = cast32((long) (u - (Math.floor(u/ twoPowS))));

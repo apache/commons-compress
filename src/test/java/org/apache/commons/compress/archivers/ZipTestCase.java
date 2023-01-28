@@ -183,7 +183,7 @@ public final class ZipTestCase extends AbstractTestCase {
         assertThrows(IllegalArgumentException.class, () -> new ZipArchiveOutputStream(File.createTempFile("temp", "zip"), 64 * 1024 - 1));
     }
     private int countNonDirectories(final File file) {
-        if(!file.isDirectory()) {
+        if (!file.isDirectory()) {
             return 1;
         }
 

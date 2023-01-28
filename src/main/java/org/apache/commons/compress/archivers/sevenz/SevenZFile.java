@@ -635,7 +635,7 @@ public class SevenZFile implements Closeable {
             // if this is called in a random access, then the content methods of previous entry may be null
             // the content methods should be set to methods of the first entry as it must not be null,
             // and the content methods would only be set if the content methods was not set
-            if(isRandomAccess && file.getContentMethods() == null) {
+            if (isRandomAccess && file.getContentMethods() == null) {
                 final int folderFirstFileIndex = archive.streamMap.folderFirstFileIndex[folderIndex];
                 final SevenZArchiveEntry folderFirstFile = archive.files[folderFirstFileIndex];
                 file.setContentMethods(folderFirstFile.getContentMethods());

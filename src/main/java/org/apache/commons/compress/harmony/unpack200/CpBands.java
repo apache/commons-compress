@@ -515,7 +515,7 @@ public class CpBands extends BandSet {
             mapSignature.put(signature.toString(), Integer.valueOf(i));
         }
 //        for (int i = 0; i < cpSignatureInts.length; i++) {
-//            if(cpSignatureInts[i] == -1) {
+//            if (cpSignatureInts[i] == -1) {
 //                cpSignatureInts[i] = search(cpUTF8, cpSignature[i]);
 //            }
 //        }

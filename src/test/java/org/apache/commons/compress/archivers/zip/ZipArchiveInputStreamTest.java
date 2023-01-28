@@ -517,7 +517,7 @@ public class ZipArchiveInputStreamTest {
 
                 ArchiveEntry entry;
                 while((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
-                    if(entry.isDirectory()) {
+                    if (entry.isDirectory()) {
                         continue;
                     }
                     assertArrayEquals(IOUtils.toByteArray(splitInputStream),
@@ -539,7 +539,7 @@ public class ZipArchiveInputStreamTest {
 
                 ArchiveEntry entry;
                 while((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
-                    if(entry.isDirectory()) {
+                    if (entry.isDirectory()) {
                         continue;
                     }
                     assertArrayEquals(IOUtils.toByteArray(splitInputStream),
@@ -561,7 +561,7 @@ public class ZipArchiveInputStreamTest {
 
                 ArchiveEntry entry;
                 while((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
-                    if(entry.isDirectory()) {
+                    if (entry.isDirectory()) {
                         continue;
                     }
                     assertArrayEquals(IOUtils.toByteArray(splitInputStream),

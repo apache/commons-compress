@@ -72,7 +72,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
 
     @Override
     public void closeArchiveEntry() throws IOException {
-        if(finished) {
+        if (finished) {
             throw new IOException("Stream has already been finished");
         }
         if (prevEntry == null || !haveUnclosedEntry){
@@ -120,10 +120,10 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
 
     @Override
     public void finish() throws IOException {
-        if(haveUnclosedEntry) {
+        if (haveUnclosedEntry) {
             throw new IOException("This archive contains unclosed entries.");
         }
-        if(finished) {
+        if (finished) {
             throw new IOException("This archive has already been finished");
         }
         finished = true;
@@ -131,7 +131,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
 
     @Override
     public void putArchiveEntry(final ArchiveEntry pEntry) throws IOException {
-        if(finished) {
+        if (finished) {
             throw new IOException("Stream has already been finished");
         }
 

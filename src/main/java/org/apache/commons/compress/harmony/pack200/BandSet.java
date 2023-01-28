@@ -354,7 +354,7 @@ public abstract class BandSet {
         throws Pack200Exception {
         byte[] encodedBand = null;
         // Useful for debugging
-//        if(ints.length > 0) {
+//        if (ints.length > 0) {
 //            System.out.println("encoding " + name + " " + ints.length);
 //        }
         if (effort > 1 && (ints.length >= effortThresholds[effort])) {
@@ -467,7 +467,7 @@ public abstract class BandSet {
 //        int specifier = 117;
 //        byte[] specifierEncoded = defaultCodec.encode(new int[] {specifier});
 //        int totalLength = firstResults.encodedBand.length + secondResults.encodedBand.length + specifierEncoded.length + 4; // TODO actual
-//        if(totalLength < results.encodedBand.length) {
+//        if (totalLength < results.encodedBand.length) {
 //            System.out.println("using run codec");
 //            results.saved += results.encodedBand.length - totalLength;
 //            byte[] encodedBand = new byte[specifierEncoded.length + firstResults.encodedBand.length + secondResults.encodedBand.length];

@@ -330,7 +330,7 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     @Override
     public void close() throws IOException {
         // Close all the input streams in sparseInputStreams
-        if(sparseInputStreams != null) {
+        if (sparseInputStreams != null) {
             for (final InputStream inputStream : sparseInputStreams) {
                 inputStream.close();
             }

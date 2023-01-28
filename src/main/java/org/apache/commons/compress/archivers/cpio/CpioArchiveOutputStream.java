@@ -222,7 +222,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      */
     @Override
     public void closeArchiveEntry() throws IOException {
-        if(finished) {
+        if (finished) {
             throw new IOException("Stream has already been finished");
         }
 
@@ -255,7 +255,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     @Override
     public ArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
             throws IOException {
-        if(finished) {
+        if (finished) {
             throw new IOException("Stream has already been finished");
         }
         return new CpioArchiveEntry(inputFile, entryName);
@@ -269,7 +269,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     @Override
     public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options)
             throws IOException {
-        if(finished) {
+        if (finished) {
             throw new IOException("Stream has already been finished");
         }
         return new CpioArchiveEntry(inputPath, entryName, options);
@@ -357,7 +357,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      */
     @Override
     public void putArchiveEntry(final ArchiveEntry entry) throws IOException {
-        if(finished) {
+        if (finished) {
             throw new IOException("Stream has already been finished");
         }
 

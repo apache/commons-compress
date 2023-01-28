@@ -67,7 +67,7 @@ public abstract class BandSet {
         throws IOException, Pack200Exception {
         int[] band;
         // Useful for debugging
-//        if(count > 0) {
+//        if (count > 0) {
 //            System.out.println("decoding " + name + " " + count);
 //        }
         Codec codecUsed = codec;
@@ -92,7 +92,7 @@ public abstract class BandSet {
             band = codec.decodeInts(count - 1, in, first);
         }
         // Useful for debugging -E options:
-        // if(!codecUsed.equals(codec)) {
+        // if (!codecUsed.equals(codec)) {
         // int bytes = codecUsed.lastBandLength;
         // System.out.println(count + " " + name + " encoded with " + codecUsed + " " + bytes);
         // }

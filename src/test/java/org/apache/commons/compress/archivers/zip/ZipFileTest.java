@@ -130,7 +130,7 @@ public class ZipFileTest {
         final List<String> linesOfFile1 = Files.readAllLines(Paths.get(file1.getCanonicalPath()), UTF_8);
         final List<String> linesOfFile2 = Files.readAllLines(Paths.get(file2.getCanonicalPath()), UTF_8);
 
-        if(linesOfFile1.size() != linesOfFile2.size()) {
+        if (linesOfFile1.size() != linesOfFile2.size()) {
             fail("files not equal : " + file1.getName() + " , " + file2.getName());
         }
 

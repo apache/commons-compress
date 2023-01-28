@@ -84,7 +84,7 @@ public final class ChangeSet {
                     final ArchiveEntry entry = change.getEntry();
 
                     if (entry.equals(pChange.getEntry())) {
-                        if(pChange.isReplaceMode()) {
+                        if (pChange.isReplaceMode()) {
                             it.remove();
                             changes.add(pChange);
                         }

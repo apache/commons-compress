@@ -131,7 +131,7 @@ public class SevenZFileTest extends AbstractTestCase {
                     "111111111111111111111111111000101011";
 
             for(final SevenZArchiveEntry entry : sevenZFile.getEntries()) {
-                if(entry.getName().equals("commons-compress-1.7-src/src/test/resources/test.txt")) {
+                if (entry.getName().equals("commons-compress-1.7-src/src/test/resources/test.txt")) {
                     final byte[] contents = new byte[(int) entry.getSize()];
                     int off = 0;
                     final InputStream inputStream = sevenZFile.getInputStream(entry);
@@ -621,7 +621,7 @@ public class SevenZFileTest extends AbstractTestCase {
 
             for(final SevenZArchiveEntry entry : sevenZFile.getEntries()) {
                 // commons-compress-1.7-src/src/test/resources/test.txt
-                if(entry.getName().equals("commons-compress-1.7-src/src/test/resources/longsymlink/files.txt")) {
+                if (entry.getName().equals("commons-compress-1.7-src/src/test/resources/longsymlink/files.txt")) {
                     contents = new byte[(int) entry.getSize()];
                     off = 0;
                     final InputStream inputStream = sevenZFile.getInputStream(entry);
@@ -671,7 +671,7 @@ public class SevenZFileTest extends AbstractTestCase {
             SevenZArchiveEntry entry;
             SevenZArchiveEntry testTxtEntry = null;
             while((entry = sevenZFile.getNextEntry()) != null ) {
-                if(entry.getName().equals("commons-compress-1.7-src/src/test/resources/test.txt")) {
+                if (entry.getName().equals("commons-compress-1.7-src/src/test/resources/test.txt")) {
                     testTxtEntry = entry;
                     break;
                 }
