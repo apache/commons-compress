@@ -22,9 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -38,13 +38,9 @@ public class JarArchiveOutputStreamTest {
 
     @Test
     public void testJarMarker() throws IOException {
-        final File testArchive = File.createTempFile("jar-aostest", ".jar");
-        testArchive.deleteOnExit();
-        JarArchiveOutputStream out = null;
-        ZipFile zf = null;
-        try {
-
-            out = new JarArchiveOutputStream(Files.newOutputStream(testArchive.toPath()));
+        final Path testArchive = Files.createTempFile("jar-aostest", ".jar");
+        testArchive.toFile().deleteOnExit();
+        try (JarArchiveOutputStream out = new JarArchiveOutputStream(Files.newOutputStream(testArchive))) {
             final ZipArchiveEntry ze1 = new ZipArchiveEntry("foo/");
             // Ensure we won't accidentally add an Extra field.
             ze1.setTime(Instant.parse("2022-12-27T12:10:23Z").toEpochMilli());
@@ -56,10 +52,8 @@ public class JarArchiveOutputStreamTest {
             out.putArchiveEntry(ze2);
             out.closeArchiveEntry();
             out.finish();
-            out.close();
-            out = null;
-
-            zf = new ZipFile(testArchive);
+        }
+        try (ZipFile zf = new ZipFile(testArchive)) {
             ZipArchiveEntry ze = zf.getEntry("foo/");
             assertNotNull(ze);
             ZipExtraField[] fes = ze.getExtraFields();
@@ -71,12 +65,6 @@ public class JarArchiveOutputStreamTest {
             fes = ze.getExtraFields();
             assertEquals(0, fes.length);
         } finally {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (final IOException e) { /* swallow */ }
-            }
-            ZipFile.closeQuietly(zf);
             AbstractTestCase.tryHardToDelete(testArchive);
         }
     }
