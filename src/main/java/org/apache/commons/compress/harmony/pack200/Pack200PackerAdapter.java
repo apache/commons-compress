@@ -33,54 +33,15 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
     private final PackingOptions options = new PackingOptions();
 
     @Override
-    protected void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) {
-        super.firePropertyChange(propertyName, oldValue, newValue);
-        if (newValue != null && !newValue.equals(oldValue)) {
-            if (propertyName.startsWith(CLASS_ATTRIBUTE_PFX)) {
-                final String attributeName = propertyName.substring(CLASS_ATTRIBUTE_PFX.length());
-                options.addClassAttributeAction(attributeName, (String) newValue);
-            } else if (propertyName.startsWith(CODE_ATTRIBUTE_PFX)) {
-                final String attributeName = propertyName.substring(CODE_ATTRIBUTE_PFX.length());
-                options.addCodeAttributeAction(attributeName, (String) newValue);
-            } else if (propertyName.equals(DEFLATE_HINT)) {
-                options.setDeflateHint((String) newValue);
-            } else if (propertyName.equals(EFFORT)) {
-                options.setEffort(Integer.parseInt((String) newValue));
-            } else if (propertyName.startsWith(FIELD_ATTRIBUTE_PFX)) {
-                final String attributeName = propertyName.substring(FIELD_ATTRIBUTE_PFX.length());
-                options.addFieldAttributeAction(attributeName, (String) newValue);
-            } else if (propertyName.equals(KEEP_FILE_ORDER)) {
-                options.setKeepFileOrder(Boolean.parseBoolean((String) newValue));
-            } else if (propertyName.startsWith(METHOD_ATTRIBUTE_PFX)) {
-                final String attributeName = propertyName.substring(METHOD_ATTRIBUTE_PFX.length());
-                options.addMethodAttributeAction(attributeName, (String) newValue);
-            } else if (propertyName.equals(MODIFICATION_TIME)) {
-                options.setModificationTime((String) newValue);
-            } else if (propertyName.startsWith(PASS_FILE_PFX)) {
-                if (oldValue != null && !oldValue.equals("")) {
-                    options.removePassFile((String) oldValue);
-                }
-                options.addPassFile((String) newValue);
-            } else if (propertyName.equals(SEGMENT_LIMIT)) {
-                options.setSegmentLimit(Long.parseLong((String) newValue));
-            } else if (propertyName.equals(UNKNOWN_ATTRIBUTE)) {
-                options.setUnknownAttributeAction((String) newValue);
-            }
-        }
-    }
-
-    @Override
     public void pack(final JarFile file, final OutputStream out) throws IOException {
         if (file == null || out == null) {
             throw new IllegalArgumentException("Must specify both input and output streams");
         }
-        completed(0);
         try {
             new org.apache.commons.compress.harmony.pack200.Archive(file, out, options).pack();
         } catch (final Pack200Exception e) {
             throw new IOException("Failed to pack Jar:" + e);
         }
-        completed(1);
     }
 
     @Override
@@ -88,7 +49,6 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
         if (in == null || out == null) {
             throw new IllegalArgumentException("Must specify both input and output streams");
         }
-        completed(0);
         final PackingOptions options = new PackingOptions();
 
         try {
@@ -96,7 +56,6 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
         } catch (final Pack200Exception e) {
             throw new IOException("Failed to pack Jar:" + e);
         }
-        completed(1);
         in.close();
     }
 

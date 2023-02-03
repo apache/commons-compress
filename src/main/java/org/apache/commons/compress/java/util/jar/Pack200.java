@@ -16,7 +16,6 @@
  */
 package org.apache.commons.compress.java.util.jar;
 
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -138,14 +137,6 @@ public abstract class Pack200 {
         String UNKNOWN_ATTRIBUTE = "pack.unknown.attribute";//$NON-NLS-1$
 
         /**
-         * add a listener for PropertyChange events
-         *
-         * @param listener
-         *            the listener to listen if PropertyChange events occurs
-         */
-        void addPropertyChangeListener(PropertyChangeListener listener);
-
-        /**
          * Pack the specified JAR file to the specified output stream.
          *
          * @param in
@@ -176,14 +167,6 @@ public abstract class Pack200 {
          * @return the properties of the packer.
          */
         SortedMap<String, String> properties();
-
-        /**
-         * remove a listener
-         *
-         * @param listener
-         *            listener to remove
-         */
-        void removePropertyChangeListener(PropertyChangeListener listener);
     }
 
     /**
@@ -219,28 +202,11 @@ public abstract class Pack200 {
         String TRUE = "true";//$NON-NLS-1$
 
         /**
-         * add a listener for {@code PropertyChange} events.
-         *
-         * @param listener
-         *            the listener to listen if {@code PropertyChange} events
-         *            occurs.
-         */
-        void addPropertyChangeListener(PropertyChangeListener listener);
-
-        /**
          * Returns a sorted map of the properties of this unpacker.
          *
          * @return the properties of unpacker.
          */
         SortedMap<String, String> properties();
-
-        /**
-         * remove a listener.
-         *
-         * @param listener
-         *            listener to remove.
-         */
-        void removePropertyChangeListener(PropertyChangeListener listener);
 
         /**
          * Unpack the contents of the specified {@code File} to the specified

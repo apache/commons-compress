@@ -62,12 +62,10 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
         if (in == null || out == null) {
             throw new IllegalArgumentException("Must specify both input and output streams");
         }
-        completed(0);
         try {
             new Archive(in, out).unpack();
         } catch (final Pack200Exception e) {
             throw new IOException("Failed to unpack Jar:" + e);
         }
-        completed(1);
     }
 }
