@@ -340,7 +340,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
             <docencoding>${commons.docEncoding}</docencoding>
             <linksource>true</linksource>
             <links>
-              <link>${commons.javadoc.java.link}</link>
+              <link>${commons.javadoc8.java.link}</link>
               <link>${commons.javadoc.javaee.link}</link>
             </links>
             <tags>
@@ -520,7 +520,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           <docencoding>${commons.docEncoding}</docencoding>
           <linksource>true</linksource>
           <links>
-            <link>${commons.javadoc.java.link}</link>
+            <link>${commons.javadoc8.java.link}</link>
             <link>${commons.javadoc.javaee.link}</link>
           </links>
           <tags>
