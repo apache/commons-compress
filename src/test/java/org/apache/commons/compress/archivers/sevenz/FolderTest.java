@@ -26,9 +26,8 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit tests for class {@link Folder}.
  *
- * @date 26.06.2017
  * @see Folder
- **/
+ */
 public class FolderTest {
 
 

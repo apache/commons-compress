@@ -28,9 +28,8 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit tests for class {@link Change}.
  *
- * @date 16.06.2017
  * @see Change
- **/
+ */
 public class ChangeTest {
 
     @Test

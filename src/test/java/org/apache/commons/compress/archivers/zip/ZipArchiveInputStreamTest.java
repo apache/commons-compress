@@ -367,17 +367,14 @@ public class ZipArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void shouldConsumeArchiveCompletely() throws Exception {
-        final InputStream is = ZipArchiveInputStreamTest.class
-            .getResourceAsStream("/archive_with_trailer.zip");
-        final ZipArchiveInputStream zip = new ZipArchiveInputStream(is);
-        getAllZipEntries(zip);
-        final byte[] expected = {
-            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n'
-        };
-        final byte[] actual = new byte[expected.length];
-        is.read(actual);
-        assertArrayEquals(expected, actual);
-        zip.close();
+        try (InputStream is = ZipArchiveInputStreamTest.class.getResourceAsStream("/archive_with_trailer.zip");
+                ZipArchiveInputStream zip = new ZipArchiveInputStream(is)) {
+            getAllZipEntries(zip);
+            final byte[] expected = { 'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n' };
+            final byte[] actual = new byte[expected.length];
+            is.read(actual);
+            assertArrayEquals(expected, actual);
+        }
     }
 
     /**

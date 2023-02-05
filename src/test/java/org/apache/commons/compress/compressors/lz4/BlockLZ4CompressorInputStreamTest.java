@@ -36,20 +36,18 @@ public class BlockLZ4CompressorInputStreamTest extends AbstractTestCase {
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.block_lz4");
         final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final BlockLZ4CompressorInputStream in =
-                    new BlockLZ4CompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                BlockLZ4CompressorInputStream in = new BlockLZ4CompressorInputStream(is)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read(buf));
             assertEquals(-1, in.read(buf));
-            in.close();
         }
     }
 
     @Test
     public void readBlaLz4() throws IOException {
         try (InputStream a = new BlockLZ4CompressorInputStream(newInputStream("bla.tar.block_lz4"));
-            InputStream e = newInputStream("bla.tar")) {
+                InputStream e = newInputStream("bla.tar")) {
             final byte[] expected = IOUtils.toByteArray(e);
             final byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(expected, actual);
@@ -59,13 +57,11 @@ public class BlockLZ4CompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.block_lz4");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final BlockLZ4CompressorInputStream in =
-                    new BlockLZ4CompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                BlockLZ4CompressorInputStream in = new BlockLZ4CompressorInputStream(is)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
-            in.close();
         }
     }
 }

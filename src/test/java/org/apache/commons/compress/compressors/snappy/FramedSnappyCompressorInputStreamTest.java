@@ -37,22 +37,18 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public final class FramedSnappyCompressorInputStreamTest
-    extends AbstractTestCase {
+public final class FramedSnappyCompressorInputStreamTest extends AbstractTestCase {
 
     private long mask(final long x) {
-        return (((x >>> 15) | (x << 17))
-                + FramedSnappyCompressorInputStream.MASK_OFFSET)
-             & 0xffffFFFFL;
+        return (((x >>> 15) | (x << 17)) + FramedSnappyCompressorInputStream.MASK_OFFSET) & 0xffffFFFFL;
     }
 
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.sz");
         final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final FramedSnappyCompressorInputStream in =
-                    new FramedSnappyCompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is);) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read(buf));
             assertEquals(-1, in.read(buf));
@@ -81,7 +77,8 @@ public final class FramedSnappyCompressorInputStreamTest
                 FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is, 1 << 16, FramedSnappyDialect.IWORK_ARCHIVE);) {
             Files.copy(in, o.toPath());
         }
-        try (InputStream a = Files.newInputStream(o.toPath()); InputStream e = newInputStream("COMPRESS-358.uncompressed")) {
+        try (InputStream a = Files.newInputStream(o.toPath());
+                InputStream e = newInputStream("COMPRESS-358.uncompressed")) {
             final byte[] expected = IOUtils.toByteArray(e);
             final byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(expected, actual);
@@ -91,20 +88,18 @@ public final class FramedSnappyCompressorInputStreamTest
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.sz");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final FramedSnappyCompressorInputStream in =
-                    new FramedSnappyCompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is);) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
-            in.close();
         }
     }
 
     @Test
     public void testAvailable() throws Exception {
-        try (InputStream isSz = newInputStream("mixed.txt.sz")) {
-            final FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(isSz);
+        try (InputStream isSz = newInputStream("mixed.txt.sz");
+                FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(isSz)) {
             assertEquals(0, in.available()); // no chunk read so far
             assertEquals('1', in.read());
             assertEquals(3, in.available()); // remainder of first uncompressed block
@@ -113,7 +108,6 @@ public final class FramedSnappyCompressorInputStreamTest
             assertEquals(0, in.available()); // end of chunk, must read next one
             assertEquals(4, in.read(new byte[5], 0, 4));
             assertEquals('5', in.read());
-            in.close();
         }
     }
 
@@ -124,9 +118,7 @@ public final class FramedSnappyCompressorInputStreamTest
     }
 
     private void testChecksumUnmasking(final long x) {
-        assertEquals(Long.toHexString(x),
-                     Long.toHexString(FramedSnappyCompressorInputStream
-                                      .unmask(mask(x))));
+        assertEquals(Long.toHexString(x), Long.toHexString(FramedSnappyCompressorInputStream.unmask(mask(x))));
     }
 
     /**
@@ -140,7 +132,8 @@ public final class FramedSnappyCompressorInputStreamTest
             try (InputStream in = new FramedSnappyCompressorInputStream(isSz)) {
                 Files.copy(in, outputSz.toPath());
             }
-            try (InputStream isGz = newInputStream("lorem-ipsum.txt.gz"); InputStream in = new GzipCompressorInputStream(isGz)) {
+            try (InputStream isGz = newInputStream("lorem-ipsum.txt.gz");
+                    InputStream in = new GzipCompressorInputStream(isGz)) {
                 Files.copy(in, outputGz.toPath());
             }
         }
@@ -167,25 +160,14 @@ public final class FramedSnappyCompressorInputStreamTest
             out.close();
         }
 
-        assertArrayEquals(new byte[] { '1', '2', '3', '4',
-                                       '5', '6', '7', '8', '9',
-                                       '5', '6', '7', '8', '9',
-                                       '5', '6', '7', '8', '9',
-                                       '5', '6', '7', '8', '9',
-                                       '5', '6', '7', '8', '9', 10,
-                                       '1', '2', '3', '4',
-                                       '1', '2', '3', '4',
-            }, out.toByteArray());
+        assertArrayEquals(new byte[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', '5', '6', '7', '8', '9', '5', '6', '7', '8', '9', '5', '6', '7', '8', '9',
+                '5', '6', '7', '8', '9', 10, '1', '2', '3', '4', '1', '2', '3', '4', }, out.toByteArray());
     }
 
     @Test
     public void testUnskippableChunk() {
-        final byte[] input = {
-            (byte) 0xff, 6, 0, 0, 's', 'N', 'a', 'P', 'p', 'Y',
-            2, 2, 0, 0, 1, 1
-        };
-        try (final FramedSnappyCompressorInputStream in =
-                     new FramedSnappyCompressorInputStream(new ByteArrayInputStream(input))) {
+        final byte[] input = { (byte) 0xff, 6, 0, 0, 's', 'N', 'a', 'P', 'p', 'Y', 2, 2, 0, 0, 1, 1 };
+        try (final FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(new ByteArrayInputStream(input))) {
             final IOException exception = assertThrows(IOException.class, () -> in.read());
             assertTrue(exception.getMessage().contains("Unskippable chunk"));
         } catch (final IOException ex) {

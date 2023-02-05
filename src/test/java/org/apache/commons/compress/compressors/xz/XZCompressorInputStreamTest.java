@@ -35,13 +35,11 @@ public class XZCompressorInputStreamTest {
     private void multiByteReadConsistentlyReturnsMinusOneAtEof(final boolean decompressConcatenated) throws IOException {
         final File input = getFile("bla.tar.xz");
         final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final XZCompressorInputStream in =
-                new XZCompressorInputStream(is, decompressConcatenated);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                XZCompressorInputStream in = new XZCompressorInputStream(is, decompressConcatenated);) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read(buf));
             assertEquals(-1, in.read(buf));
-            in.close();
         }
     }
 
@@ -57,9 +55,7 @@ public class XZCompressorInputStreamTest {
 
     @Test
     public void redundantTestOfAlmostDeprecatedMatchesMethod() {
-        final byte[] data = {
-            (byte) 0xFD, '7', 'z', 'X', 'Z', '\0'
-        };
+        final byte[] data = { (byte) 0xFD, '7', 'z', 'X', 'Z', '\0' };
         assertFalse(XZCompressorInputStream.matches(data, 5));
         assertTrue(XZCompressorInputStream.matches(data, 6));
         assertTrue(XZCompressorInputStream.matches(data, 7));
@@ -69,13 +65,11 @@ public class XZCompressorInputStreamTest {
 
     private void singleByteReadConsistentlyReturnsMinusOneAtEof(final boolean decompressConcatenated) throws IOException {
         final File input = getFile("bla.tar.xz");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final XZCompressorInputStream in =
-                new XZCompressorInputStream(is, decompressConcatenated);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                XZCompressorInputStream in = new XZCompressorInputStream(is, decompressConcatenated)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
-            in.close();
         }
     }
 

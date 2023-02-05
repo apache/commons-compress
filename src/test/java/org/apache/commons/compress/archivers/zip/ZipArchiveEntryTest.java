@@ -170,25 +170,24 @@ public class ZipArchiveEntryTest {
      */
     @Test
     public void testCompressionMethod() throws Exception {
-        final ZipArchiveOutputStream zos =
-            new ZipArchiveOutputStream(new ByteArrayOutputStream());
-        final ZipArchiveEntry entry = new ZipArchiveEntry("foo");
-        assertEquals(-1, entry.getMethod());
-        assertFalse(zos.canWriteEntryData(entry));
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(new ByteArrayOutputStream())) {
+            final ZipArchiveEntry entry = new ZipArchiveEntry("foo");
+            assertEquals(-1, entry.getMethod());
+            assertFalse(zos.canWriteEntryData(entry));
 
-        entry.setMethod(ZipEntry.STORED);
-        assertEquals(ZipEntry.STORED, entry.getMethod());
-        assertTrue(zos.canWriteEntryData(entry));
+            entry.setMethod(ZipEntry.STORED);
+            assertEquals(ZipEntry.STORED, entry.getMethod());
+            assertTrue(zos.canWriteEntryData(entry));
 
-        entry.setMethod(ZipEntry.DEFLATED);
-        assertEquals(ZipEntry.DEFLATED, entry.getMethod());
-        assertTrue(zos.canWriteEntryData(entry));
+            entry.setMethod(ZipEntry.DEFLATED);
+            assertEquals(ZipEntry.DEFLATED, entry.getMethod());
+            assertTrue(zos.canWriteEntryData(entry));
 
-        // Test the unsupported "imploded" compression method (6)
-        entry.setMethod(6);
-        assertEquals(6, entry.getMethod());
-        assertFalse(zos.canWriteEntryData(entry));
-        zos.close();
+            // Test the unsupported "imploded" compression method (6)
+            entry.setMethod(6);
+            assertEquals(6, entry.getMethod());
+            assertFalse(zos.canWriteEntryData(entry));
+        }
     }
 
     @Test

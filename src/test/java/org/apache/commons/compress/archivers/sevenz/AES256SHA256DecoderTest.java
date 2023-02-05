@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit tests for class {@link AES256SHA256Decoder}.
  *
- * @date 26.06.2017
  * @see AES256SHA256Decoder
  **/
 public class AES256SHA256DecoderTest {

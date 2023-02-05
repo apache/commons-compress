@@ -35,35 +35,30 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit tests for class {@link ZCompressorInputStream}.
  *
- * @date 16.06.2017
  * @see ZCompressorInputStream
- **/
+ */
 public class ZCompressorInputStreamTest {
 
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.Z");
         final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final ZCompressorInputStream in =
-                    new ZCompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                ZCompressorInputStream in = new ZCompressorInputStream(is)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read(buf));
             assertEquals(-1, in.read(buf));
-            in.close();
         }
     }
 
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.Z");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final ZCompressorInputStream in =
-                    new ZCompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                ZCompressorInputStream in = new ZCompressorInputStream(is)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
-            in.close();
         }
     }
 

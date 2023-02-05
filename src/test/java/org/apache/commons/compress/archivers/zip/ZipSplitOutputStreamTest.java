@@ -50,15 +50,15 @@ public class ZipSplitOutputStreamTest extends AbstractTestCase {
         final ZipSplitOutputStream zipSplitOutputStream = new ZipSplitOutputStream(testOutputFile, splitSize);
 
         final File fileToTest = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
-        final InputStream inputStream = Files.newInputStream(fileToTest.toPath());
-        final byte[] buffer = new byte[4096];
-        int readLen;
+        try (InputStream inputStream = Files.newInputStream(fileToTest.toPath())) {
+            final byte[] buffer = new byte[4096];
+            int readLen;
 
-        while ((readLen = inputStream.read(buffer)) > 0) {
-            zipSplitOutputStream.write(buffer, 0, readLen);
+            while ((readLen = inputStream.read(buffer)) > 0) {
+                zipSplitOutputStream.write(buffer, 0, readLen);
+            }
+
         }
-
-        inputStream.close();
         zipSplitOutputStream.close();
 
         File zipFile = new File(dir.getPath(), "testCreateSplittedFiles.z01");

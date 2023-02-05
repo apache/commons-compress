@@ -69,8 +69,8 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
 
     private void expectIOException(final String fileName) {
         assertThrows(IOException.class, () -> {
-            try (InputStream is = Files.newInputStream(getFile(fileName).toPath())) {
-                final FramedLZ4CompressorInputStream in = new FramedLZ4CompressorInputStream(is);
+            try (InputStream is = Files.newInputStream(getFile(fileName).toPath());
+                    final FramedLZ4CompressorInputStream in = new FramedLZ4CompressorInputStream(is)) {
                 IOUtils.toByteArray(in);
             }
         });
@@ -80,13 +80,11 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.lz4");
         final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final FramedLZ4CompressorInputStream in =
-                    new FramedLZ4CompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                FramedLZ4CompressorInputStream in = new FramedLZ4CompressorInputStream(is)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read(buf));
             assertEquals(-1, in.read(buf));
-            in.close();
         }
     }
 
@@ -535,13 +533,11 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.lz4");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final FramedLZ4CompressorInputStream in =
-                    new FramedLZ4CompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                FramedLZ4CompressorInputStream in = new FramedLZ4CompressorInputStream(is);) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
-            in.close();
         }
     }
 

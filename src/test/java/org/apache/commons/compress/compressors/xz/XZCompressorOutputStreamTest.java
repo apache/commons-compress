@@ -29,9 +29,8 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit tests for class {@link XZCompressorOutputStream}.
  *
- * @date 16.06.2017
  * @see XZCompressorOutputStream
- **/
+ */
 public class XZCompressorOutputStreamTest {
 
 

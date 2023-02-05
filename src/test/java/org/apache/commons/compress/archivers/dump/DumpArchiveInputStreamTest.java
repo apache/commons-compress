@@ -59,19 +59,16 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testConsumesArchiveCompletely() throws Exception {
-        final InputStream is = DumpArchiveInputStreamTest.class
-            .getResourceAsStream("/archive_with_trailer.dump");
-        final DumpArchiveInputStream dump = new DumpArchiveInputStream(is);
-        while (dump.getNextDumpEntry() != null) {
-            // just consume the archive
+        try (final InputStream is = DumpArchiveInputStreamTest.class.getResourceAsStream("/archive_with_trailer.dump");
+                DumpArchiveInputStream dump = new DumpArchiveInputStream(is)) {
+            while (dump.getNextDumpEntry() != null) {
+                // just consume the archive
+            }
+            final byte[] expected = { 'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n' };
+            final byte[] actual = new byte[expected.length];
+            is.read(actual);
+            assertArrayEquals(expected, actual);
         }
-        final byte[] expected = {
-            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n'
-        };
-        final byte[] actual = new byte[expected.length];
-        is.read(actual);
-        assertArrayEquals(expected, actual);
-        dump.close();
     }
 
     @Test

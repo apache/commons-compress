@@ -31,9 +31,8 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit tests for class {@link ChecksumCalculatingInputStream org.apache.commons.compress.utils.ChecksumCalculatingInputStream}.
  *
- * @date 13.06.2017
  * @see ChecksumCalculatingInputStream
- **/
+ */
 public class ChecksumCalculatingInputStreamTest {
 
     @Test

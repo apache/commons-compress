@@ -30,9 +30,8 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit tests for class {@link ChecksumVerifyingInputStream org.apache.commons.compress.utils.ChecksumVerifyingInputStream}.
  *
- * @date 13.06.2017
  * @see ChecksumVerifyingInputStream
- **/
+ */
 public class ChecksumVerifyingInputStreamTest {
 
     @Test

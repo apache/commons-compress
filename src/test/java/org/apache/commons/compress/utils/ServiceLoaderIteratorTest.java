@@ -28,9 +28,8 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit tests for class {@link ServiceLoaderIterator org.apache.commons.compress.utils.ServiceLoaderIterator}.
  *
- * @date 13.06.2017
  * @see ServiceLoaderIterator
- **/
+ */
 public class ServiceLoaderIteratorTest {
 
     @Test
