@@ -178,6 +178,7 @@ class BinaryTree {
      *
      * @param stream
      * @return the value decoded, or -1 if the end of the stream is reached
+     * @throws IOException on error.
      */
     public int read(final BitStream stream) throws IOException {
         int currentIndex = 0;

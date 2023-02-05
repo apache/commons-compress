@@ -32,7 +32,7 @@ import org.apache.commons.compress.utils.TimeUtils;
  * for ZIP entries.   Each ZIP entry can include up to three timestamps
  * (modify, access, create*).  The timestamps are stored as 32 bit signed
  * integers representing seconds since UNIX epoch (Jan 1st, 1970, UTC).
- * This field improves on zip's default timestamp granularity, since it
+ * This field improves on ZIP's default timestamp granularity, since it
  * allows one to store additional timestamps, and, in addition, the timestamps
  * are stored using per-second granularity (zip's default behavior can only store
  * timestamps to the nearest <em>even</em> second).

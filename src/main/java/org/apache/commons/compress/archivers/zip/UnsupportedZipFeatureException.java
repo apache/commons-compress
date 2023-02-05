@@ -22,7 +22,7 @@ import java.io.Serializable;
 import java.util.zip.ZipException;
 
 /**
- * Exception thrown when attempting to read or write data for a zip
+ * Exception thrown when attempting to read or write data for a ZIP
  * entry that uses ZIP features not supported by this library.
  * @since 1.1
  */

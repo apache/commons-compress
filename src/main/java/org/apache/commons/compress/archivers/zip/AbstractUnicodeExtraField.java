@@ -41,7 +41,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
      * encoding of the original ZIP entry.
      *
      * @param text The file name or comment.
-     * @param bytes The encoded of the file name or comment in the zip
+     * @param bytes The encoded of the file name or comment in the ZIP
      * file.
      */
     protected AbstractUnicodeExtraField(final String text, final byte[] bytes) {

@@ -212,14 +212,14 @@ public class ZipFile implements Closeable {
         /* offset of start of central      */
         /* directory with respect to       */
         /* the starting disk number        */ + ZipConstants.WORD
-        /* zipfile comment length          */ + ZipConstants.SHORT;
+        /* ZIP file comment length         */ + ZipConstants.SHORT;
 
     /**
      * Maximum length of the "End of central directory record" with a
      * file comment.
      */
     private static final int MAX_EOCD_SIZE = MIN_EOCD_SIZE
-        /* maximum length of zipfile comment */ + ZipConstants.ZIP64_MAGIC_SHORT;
+        /* maximum length of ZIP file comment */ + ZipConstants.ZIP64_MAGIC_SHORT;
 
     /**
      * Offset of the field that holds the location of the length of
@@ -345,24 +345,24 @@ public class ZipFile implements Closeable {
         /* uncompressed size               */ + (long) ZipConstants.WORD;
 
     /**
-     * close a zipfile quietly; throw no io fault, do nothing
-     * on a null parameter
-     * @param zipfile file to close, can be null
+     * Closes a ZIP file quietly; throwing no IOException, dooes nothing
+     * on null input.
+     * @param zipFile file to close, can be null
      */
-    public static void closeQuietly(final ZipFile zipfile) {
-        IOUtils.closeQuietly(zipfile);
+    public static void closeQuietly(final ZipFile zipFile) {
+        IOUtils.closeQuietly(zipFile);
     }
+
     /**
      * List of entries in the order they appear inside the central
      * directory.
      */
-    private final List<ZipArchiveEntry> entries =
-        new LinkedList<>();
+    private final List<ZipArchiveEntry> entries = new LinkedList<>();
+
     /**
      * Maps String to list of ZipArchiveEntrys, name -> actual entries.
      */
-    private final Map<String, LinkedList<ZipArchiveEntry>> nameMap =
-        new HashMap<>(HASH_SIZE);
+    private final Map<String, LinkedList<ZipArchiveEntry>> nameMap = new HashMap<>(HASH_SIZE);
 
     /**
      * The encoding to use for file names and the file comment.
@@ -758,7 +758,7 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * Transfer selected entries from this zipfile to a given #ZipArchiveOutputStream.
+     * Transfer selected entries from this ZIP file to a given #ZipArchiveOutputStream.
      * Compression and all other attributes will be as in this file.
      * <p>This method transfers entries based on the central directory of the ZIP file.</p>
      *
@@ -802,7 +802,7 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * Ensures that the close method of this zipfile is called when
+     * Ensures that the close method of this ZIP file is called when
      * there are no more references to it.
      * @see #close()
      */
@@ -941,32 +941,32 @@ public class ZipFile implements Closeable {
     /**
      * Gets an InputStream for reading the contents of the given entry.
      *
-     * @param ze the entry to get the stream for.
+     * @param zipEntry the entry to get the stream for.
      * @return a stream to read the entry from. The returned stream
      * implements {@link InputStreamStatistics}.
-     * @throws IOException if unable to create an input stream from the zipentry
+     * @throws IOException if unable to create an input stream from the zipEntry.
      */
-    public InputStream getInputStream(final ZipArchiveEntry ze)
+    public InputStream getInputStream(final ZipArchiveEntry zipEntry)
         throws IOException {
-        if (!(ze instanceof Entry)) {
+        if (!(zipEntry instanceof Entry)) {
             return null;
         }
         // cast validity is checked just above
-        ZipUtil.checkRequestedFeatures(ze);
+        ZipUtil.checkRequestedFeatures(zipEntry);
 
         // doesn't get closed if the method is not supported - which
         // should never happen because of the checkRequestedFeatures
         // call above
-        final InputStream is = new BufferedInputStream(getRawInputStream(ze)); //NOSONAR
-        switch (ZipMethod.getMethodByCode(ze.getMethod())) {
+        final InputStream is = new BufferedInputStream(getRawInputStream(zipEntry)); //NOSONAR
+        switch (ZipMethod.getMethodByCode(zipEntry.getMethod())) {
             case STORED:
                 return new StoredStatisticsStream(is);
             case UNSHRINKING:
                 return new UnshrinkingInputStream(is);
             case IMPLODING:
                 try {
-                    return new ExplodingInputStream(ze.getGeneralPurposeBit().getSlidingDictionarySize(),
-                            ze.getGeneralPurposeBit().getNumberOfShannonFanoTrees(), is);
+                    return new ExplodingInputStream(zipEntry.getGeneralPurposeBit().getSlidingDictionarySize(),
+                            zipEntry.getGeneralPurposeBit().getNumberOfShannonFanoTrees(), is);
                 } catch (final IllegalArgumentException ex) {
                     throw new IOException("bad IMPLODE data", ex);
                 }
@@ -1006,7 +1006,7 @@ public class ZipFile implements Closeable {
             case WAVPACK:
             case XZ:
             default:
-                throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(ze.getMethod()), ze);
+                throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(zipEntry.getMethod()), zipEntry);
         }
     }
 

@@ -27,8 +27,9 @@ import org.apache.commons.compress.parallel.InputStreamSupplier;
  * @since 1.10
  */
 public class ZipArchiveEntryRequest {
+
     /**
-     * Create a ZipArchiveEntryRequest
+     * Creates a ZipArchiveEntryRequest
      * @param zipArchiveEntry The entry to use
      * @param payloadSupplier The payload that will be added to the ZIP entry.
      * @return The newly created request
@@ -36,10 +37,10 @@ public class ZipArchiveEntryRequest {
     public static ZipArchiveEntryRequest createZipArchiveEntryRequest(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier payloadSupplier) {
         return new ZipArchiveEntryRequest(zipArchiveEntry, payloadSupplier);
     }
-    /*
-     The zipArchiveEntry is not thread safe, and cannot be safely accessed by the getters of this class.
-     It is safely accessible during the construction part of this class and also after the
-     thread pools have been shut down.
+
+    /**
+     * The ZIPArchiveEntry is not thread safe, and cannot be safely accessed by the getters of this class. It is safely accessible during the construction part
+     * of this class and also after the thread pools have been shut down.
      */
     private final ZipArchiveEntry zipArchiveEntry;
     private final InputStreamSupplier payloadSupplier;
@@ -55,7 +56,7 @@ public class ZipArchiveEntryRequest {
     }
 
     /**
-     * The compression method to use
+     * Gets the compression method to use
      * @return The compression method to use
      */
     public int getMethod(){
@@ -63,7 +64,7 @@ public class ZipArchiveEntryRequest {
     }
 
     /**
-     * The payload that will be added to this ZIP entry
+     * Gets the payload that will be added to this ZIP entry
      * @return The input stream.
      */
     public InputStream getPayloadStream() {

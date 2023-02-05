@@ -281,7 +281,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
 
     /**
      * Checks if the signature matches what is expected for a ZIP file.
-     * Does not currently handle self-extracting zips which may have arbitrary
+     * Does not currently handle self-extracting ZIPs which may have arbitrary
      * leading content.
      *
      * @param signature the bytes to check

@@ -578,7 +578,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     }
 
     /**
-     * Returns the encoding to use for arj, jar, zip, dump, cpio and tar
+     * Gets the encoding to use for arj, jar, ZIP, dump, cpio and tar
      * files, or null for the archiver default.
      *
      * @return entry encoding, or null for the archiver default
@@ -599,7 +599,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     }
 
     /**
-     * Sets the encoding to use for arj, jar, zip, dump, cpio and tar files. Use null for the archiver default.
+     * Sets the encoding to use for arj, jar, ZIP, dump, cpio and tar files. Use null for the archiver default.
      *
      * @param entryEncoding the entry encoding, null uses the archiver default.
      * @since 1.5

@@ -33,6 +33,7 @@ import org.apache.commons.compress.utils.FileNameUtils;
  * @since 1.20
  */
 class ZipSplitOutputStream extends OutputStream {
+
     /**
      * 8.5.1 Capacities for split archives are as follows:
      * <p>
@@ -53,27 +54,31 @@ class ZipSplitOutputStream extends OutputStream {
     private final byte[] singleByte = new byte[1];
 
     /**
-     * Create a split zip. If the ZIP file is smaller than the split size,
-     * then there will only be one split zip, and its suffix is .zip,
+     * Creates a split ZIP. If the ZIP file is smaller than the split size,
+     * then there will only be one split ZIP, and its suffix is .zip,
      * otherwise the split segments should be like .z01, .z02, ... .z(N-1), .zip
      * @param zipFile   the ZIP file to write to
      * @param splitSize the split size
+     * @throws IllegalArgumentException if arguments are illegal: Zip split segment size should between 64K and 4,294,967,295.
+     * @throws IOException if an I/O error occurs
      */
     public ZipSplitOutputStream(final File zipFile, final long splitSize) throws IllegalArgumentException, IOException {
         this(zipFile.toPath(), splitSize);
     }
 
     /**
-     * Create a split zip. If the ZIP file is smaller than the split size,
-     * then there will only be one split zip, and its suffix is .zip,
+     * Creates a split ZIP. If the ZIP file is smaller than the split size,
+     * then there will only be one split ZIP, and its suffix is .zip,
      * otherwise the split segments should be like .z01, .z02, ... .z(N-1), .zip
      * @param zipFile   the path to ZIP file to write to
      * @param splitSize the split size
+     * @throws IllegalArgumentException if arguments are illegal: Zip split segment size should between 64K and 4,294,967,295.
+     * @throws IOException if an I/O error occurs
      * @since 1.22
      */
     public ZipSplitOutputStream(final Path zipFile, final long splitSize) throws IllegalArgumentException, IOException {
         if (splitSize < ZIP_SEGMENT_MIN_SIZE || splitSize > ZIP_SEGMENT_MAX_SIZE) {
-            throw new IllegalArgumentException("zip split segment size should between 64K and 4,294,967,295");
+            throw new IllegalArgumentException("Zip split segment size should between 64K and 4,294,967,295");
         }
         this.zipFile = zipFile;
         this.splitSize = splitSize;

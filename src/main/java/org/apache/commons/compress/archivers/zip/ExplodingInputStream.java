@@ -101,7 +101,7 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
 
     /**
      * Fill the sliding dictionary with more data.
-     * @throws IOException
+     * @throws IOException on error.
      */
     private void fillBuffer() throws IOException {
         init();

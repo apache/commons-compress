@@ -29,7 +29,7 @@ import java.util.zip.ZipException;
  * when reading a padding field.</p>
  *
  * <p>This enables Commons Compress to create "aligned" archives
- * similar to Android's zipalign command line tool.</p>
+ * similar to Android's {@code zipalign} command line tool.</p>
  *
  * @since 1.14
  * @see "https://developer.android.com/studio/command-line/zipalign.html"
