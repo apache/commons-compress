@@ -328,24 +328,16 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
 
     @Test
     public void testReadWinZipArchiveForStream() throws IOException {
-        final InputStream archive =
-            Files.newInputStream(getFile("utf8-winzip-test.zip").toPath());
-        ZipArchiveInputStream zi = null;
-        try {
-            // fix for test fails on Windows with default charset that is not UTF-8
-            String encoding = null;
-            if (Charset.defaultCharset() != UTF_8) {
-                encoding = UTF_8.name();
-            }
-
-            zi = new ZipArchiveInputStream(archive, encoding, true);
+        // fix for test fails on Windows with default charset that is not UTF-8
+        String encoding = null;
+        if (Charset.defaultCharset() != UTF_8) {
+            encoding = UTF_8.name();
+        }
+        try (InputStream archive = newInputStream("utf8-winzip-test.zip");
+                ZipArchiveInputStream zi = new ZipArchiveInputStream(archive, encoding, true)) {
             assertEquals(EURO_FOR_DOLLAR_TXT, zi.getNextEntry().getName());
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
             assertEquals(ASCII_TXT, zi.getNextEntry().getName());
-        } finally {
-            if (zi != null) {
-                zi.close();
-            }
         }
     }
 
