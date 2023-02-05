@@ -75,6 +75,10 @@ public abstract class AbstractTestCase {
         return Files.createTempDirectory(name).toFile();
     }
 
+    public static InputStream newInputStream(final String path) throws IOException {
+        return Files.newInputStream(getPath(path));
+    }
+
     public static void rmdir(final File f) {
         final String[] s = f.list();
         if (s != null) {
