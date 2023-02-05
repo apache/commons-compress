@@ -56,7 +56,7 @@ import org.apache.commons.compress.utils.ExactMath;
  * run-time error to call the value without the extra parameter, and the previous value should be returned. (It was
  * designed this way to support multi-threaded access without requiring a new instance of the Codec to be cloned for
  * each use.)
- * <dt>
+ * </dd>
  * </dl>
  *
  * Codecs are notated as (B,H,S,D) and either D or S,D may be omitted if zero. Thus {@link #BYTE1} is denoted
