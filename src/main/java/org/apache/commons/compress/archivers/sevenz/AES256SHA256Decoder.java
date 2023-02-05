@@ -153,11 +153,13 @@ class AES256SHA256Decoder extends AbstractCoder {
                     }
             }
 
+            @SuppressWarnings("resource") // Closed in close()
             @Override
             public int read() throws IOException {
                 return init().read();
             }
 
+            @SuppressWarnings("resource") // Closed in close()
             @Override
             public int read(final byte[] b, final int off, final int len) throws IOException {
                 return init().read(b, off, len);
