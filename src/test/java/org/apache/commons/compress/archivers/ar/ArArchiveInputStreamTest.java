@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -41,7 +40,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void cantReadAfterClose() throws Exception {
-        try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
+        try (InputStream in = newInputStream("bla.ar");
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             archive.close();
             assertThrows(IllegalStateException.class, () -> archive.read());
@@ -50,14 +49,14 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void cantReadWithoutOpeningAnEntry() throws Exception {
-        try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
+        try (InputStream in = newInputStream("bla.ar");
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             assertThrows(IllegalStateException.class, () -> archive.read());
         }
     }
 
     private void checkLongNameEntry(final String archive) throws Exception {
-        try (final InputStream fis = Files.newInputStream((getFile(archive).toPath()));
+        try (final InputStream fis = newInputStream(archive);
              final ArArchiveInputStream s = new ArArchiveInputStream(new BufferedInputStream(fis))) {
             ArchiveEntry e = s.getNextEntry();
             assertEquals("this_is_a_long_file_name.txt", e.getName());
@@ -78,7 +77,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
-        try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
+        try (InputStream in = newInputStream("bla.ar");
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
@@ -89,7 +88,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void simpleInputStream() throws IOException {
-        try (final InputStream fileInputStream = Files.newInputStream(getFile("bla.ar").toPath())) {
+        try (final InputStream fileInputStream = newInputStream("bla.ar")) {
 
             // This default implementation of InputStream.available() always returns zero,
             // and there are many streams in practice where the total length of the stream is not known.
@@ -118,7 +117,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
+        try (InputStream in = newInputStream("bla.ar");
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);

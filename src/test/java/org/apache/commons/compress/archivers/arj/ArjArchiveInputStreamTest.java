@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -37,7 +36,7 @@ public class ArjArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
-        try (InputStream in = Files.newInputStream(getFile("bla.arj").toPath());
+        try (InputStream in = newInputStream("bla.arj");
              ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
@@ -48,7 +47,7 @@ public class ArjArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (InputStream in = Files.newInputStream(getFile("bla.arj").toPath());
+        try (InputStream in = newInputStream("bla.arj");
              ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
@@ -65,7 +64,7 @@ public class ArjArchiveInputStreamTest extends AbstractTestCase {
         expected.append("<empty/>\n");
 
         final StringBuilder result = new StringBuilder();
-        try (final ArjArchiveInputStream in = new ArjArchiveInputStream(Files.newInputStream(getFile("bla.arj").toPath()))) {
+        try (final ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
             ArjArchiveEntry entry;
 
             while ((entry = in.getNextEntry()) != null) {
@@ -82,7 +81,7 @@ public class ArjArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testReadingOfAttributesDosVersion() throws Exception {
-        try (final ArjArchiveInputStream in = new ArjArchiveInputStream(Files.newInputStream(getFile("bla.arj").toPath()))) {
+        try (final ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
             final ArjArchiveEntry entry = in.getNextEntry();
             assertEquals("test1.xml", entry.getName());
             assertEquals(30, entry.getSize());
@@ -96,7 +95,7 @@ public class ArjArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testReadingOfAttributesUnixVersion() throws Exception {
-        try (final ArjArchiveInputStream in = new ArjArchiveInputStream(Files.newInputStream(getFile("bla.unix.arj").toPath()))) {
+        try (final ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.unix.arj"))) {
             final ArjArchiveEntry entry = in.getNextEntry();
             assertEquals("test1.xml", entry.getName());
             assertEquals(30, entry.getSize());

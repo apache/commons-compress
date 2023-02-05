@@ -19,7 +19,6 @@
 package org.apache.commons.compress.archivers.tar;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -29,20 +28,20 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.jupiter.api.Test;
 
-public class TarUtilsTest {
+public class TarUtilsTest extends AbstractTestCase {
 
     private void checkName(final String string) {
         final byte[] buff = new byte[100];
@@ -496,7 +495,7 @@ public class TarUtilsTest {
 
     @Test
     public void testParseTarWithSpecialPaxHeaders() throws IOException {
-        try (InputStream in = Files.newInputStream(getFile("COMPRESS-530.tar").toPath());
+        try (InputStream in = newInputStream("COMPRESS-530.tar");
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             assertThrows(IOException.class, () -> archive.getNextEntry());
             // IOUtils.toByteArray(archive);

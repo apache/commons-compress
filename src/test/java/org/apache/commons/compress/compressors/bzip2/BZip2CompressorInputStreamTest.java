@@ -18,7 +18,6 @@
  */
 package org.apache.commons.compress.compressors.bzip2;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -29,13 +28,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
+import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class BZip2CompressorInputStreamTest {
+public class BZip2CompressorInputStreamTest extends AbstractTestCase {
 
     private void fuzzingTest(final int[] bytes) throws IOException, ArchiveException {
         final int len = bytes.length;
@@ -96,7 +96,7 @@ public class BZip2CompressorInputStreamTest {
 
     @Test
     public void shouldThrowAnIOExceptionWhenAppliedToAZipFile() throws Exception {
-        try (InputStream in = Files.newInputStream(getFile("bla.zip").toPath())) {
+        try (InputStream in = newInputStream("bla.zip")) {
             assertThrows(IOException.class, () -> new BZip2CompressorInputStream(in));
         }
     }

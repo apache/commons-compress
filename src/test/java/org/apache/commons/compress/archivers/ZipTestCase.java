@@ -654,7 +654,7 @@ public final class ZipTestCase extends AbstractTestCase {
     @Test
     public void testSkipEntryWithUnsupportedCompressionMethod()
             throws IOException {
-        try (ZipArchiveInputStream zip = new ZipArchiveInputStream(Files.newInputStream(getFile("moby.zip").toPath()))) {
+        try (ZipArchiveInputStream zip = new ZipArchiveInputStream(newInputStream("moby.zip"))) {
             final ZipArchiveEntry entry = zip.getNextZipEntry();
             assertEquals(ZipMethod.TOKENIZATION.getCode(), entry.getMethod(), "method");
             assertEquals("README", entry.getName());

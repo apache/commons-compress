@@ -164,7 +164,7 @@ public final class GZipTestCase extends AbstractTestCase {
     @Test
     public void testInteroperabilityWithGzipCompressorInputStream() throws Exception {
         final byte[] content;
-        try (InputStream fis = Files.newInputStream(getFile("test3.xml").toPath())) {
+        try (InputStream fis = newInputStream("test3.xml")) {
             content = IOUtils.toByteArray(fis);
         }
 
@@ -190,7 +190,7 @@ public final class GZipTestCase extends AbstractTestCase {
     @Test
     public void testInteroperabilityWithGZIPInputStream() throws Exception {
         final byte[] content;
-        try (InputStream fis = Files.newInputStream(getFile("test3.xml").toPath())) {
+        try (InputStream fis = newInputStream("test3.xml")) {
             content = IOUtils.toByteArray(fis);
         }
 

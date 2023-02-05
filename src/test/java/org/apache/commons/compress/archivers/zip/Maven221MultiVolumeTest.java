@@ -18,14 +18,13 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 
+import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +42,7 @@ import org.junit.jupiter.api.Test;
  * yields an exception.
  *
  */
-public class Maven221MultiVolumeTest {
+public class Maven221MultiVolumeTest extends AbstractTestCase {
 
     private static final String[] ENTRIES = {
         // @formatter:off
@@ -76,7 +75,7 @@ public class Maven221MultiVolumeTest {
     @Test
     public void testRead7ZipMultiVolumeArchiveForStream() throws IOException {
 
-        try (final InputStream archive = Files.newInputStream(getFile("apache-maven-2.2.1.zip.001").toPath());
+        try (final InputStream archive = newInputStream("apache-maven-2.2.1.zip.001");
              ZipArchiveInputStream zi = new ZipArchiveInputStream(archive, null, false)) {
 
             // these are the entries that are supposed to be processed

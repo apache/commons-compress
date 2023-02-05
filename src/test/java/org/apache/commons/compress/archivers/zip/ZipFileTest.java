@@ -19,7 +19,6 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,6 +52,7 @@ import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -60,7 +60,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
-public class ZipFileTest {
+public class ZipFileTest extends AbstractTestCase {
+
     private static void assertEntryName(final ArrayList<ZipArchiveEntry> entries,
                                         final int index,
                                         final String expectedName) {
@@ -394,7 +395,7 @@ public class ZipFileTest {
     @Test
     public void testCDOrderInMemory() throws Exception {
         byte[] data = null;
-        try (InputStream fis = Files.newInputStream(getFile("ordertest.zip").toPath())) {
+        try (InputStream fis = newInputStream("ordertest.zip")) {
             data = IOUtils.toByteArray(fis);
         }
 
@@ -460,7 +461,7 @@ public class ZipFileTest {
     public void testConcurrentReadSeekable() throws Exception {
         // mixed.zip contains both inflated and stored files
         byte[] data = null;
-        try (InputStream fis = Files.newInputStream(getFile("mixed.zip").toPath())) {
+        try (InputStream fis = newInputStream("mixed.zip")) {
             data = IOUtils.toByteArray(fis);
         }
         try (final SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(data)) {
@@ -944,12 +945,12 @@ public class ZipFileTest {
     public void testUnshrinking() throws Exception {
         zf = new ZipFile(getFile("SHRUNK.ZIP"));
         ZipArchiveEntry test = zf.getEntry("TEST1.XML");
-        try (InputStream original = Files.newInputStream(getFile("test1.xml").toPath());
+        try (InputStream original = newInputStream("test1.xml");
              InputStream inputStream = zf.getInputStream(test)) {
             assertArrayEquals(IOUtils.toByteArray(original), IOUtils.toByteArray(inputStream));
         }
         test = zf.getEntry("TEST2.XML");
-        try (InputStream original = Files.newInputStream(getFile("test2.xml").toPath());
+        try (InputStream original = newInputStream("test2.xml");
              InputStream inputStream = zf.getInputStream(test)) {
             assertArrayEquals(IOUtils.toByteArray(original), IOUtils.toByteArray(inputStream));
         }

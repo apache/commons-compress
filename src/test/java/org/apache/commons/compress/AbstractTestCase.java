@@ -239,9 +239,8 @@ public abstract class AbstractTestCase {
      */
     protected void checkArchiveContent(final File archive, final List<String> expected)
             throws Exception {
-        try (InputStream is = Files.newInputStream(archive.toPath())) {
-            final BufferedInputStream buf = new BufferedInputStream(is);
-            final ArchiveInputStream in = factory.createArchiveInputStream(buf);
+        try (InputStream is = Files.newInputStream(archive.toPath());
+            final ArchiveInputStream in = factory.createArchiveInputStream(new BufferedInputStream(is))) {
             this.checkArchiveContent(in, expected);
         }
     }

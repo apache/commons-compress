@@ -53,8 +53,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
 
     private ArchiveInputStream getStreamFor(final String resource)
             throws ArchiveException, IOException {
-        return factory.createArchiveInputStream(
-                   new BufferedInputStream(Files.newInputStream(getFile(resource).toPath())));
+        return factory.createArchiveInputStream(new BufferedInputStream(newInputStream(resource)));
     }
 
     @Test

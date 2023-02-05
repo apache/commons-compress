@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
-import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -38,7 +37,7 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
-        try (InputStream in = Files.newInputStream(getFile("bla.dump").toPath());
+        try (InputStream in = newInputStream("bla.dump");
              DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
@@ -49,7 +48,7 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (InputStream in = Files.newInputStream(getFile("bla.dump").toPath());
+        try (InputStream in = newInputStream("bla.dump");
              DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
@@ -77,7 +76,7 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testNotADumpArchive() throws Exception {
-        try (InputStream is = Files.newInputStream(getFile("bla.zip").toPath())) {
+        try (InputStream is = newInputStream("bla.zip")) {
             final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(),
                     "expected an exception");
             assertTrue(ex.getCause() instanceof ShortFileException);
@@ -86,7 +85,7 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testNotADumpArchiveButBigEnough() throws Exception {
-        try (InputStream is = Files.newInputStream(getFile("zip64support.tar.bz2").toPath())) {
+        try (InputStream is = newInputStream("zip64support.tar.bz2")) {
             final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(),
                     "expected an exception");
             assertInstanceOf(UnrecognizedFormatException.class, ex.getCause());

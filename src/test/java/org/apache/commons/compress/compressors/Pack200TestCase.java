@@ -136,7 +136,7 @@ public final class Pack200TestCase extends AbstractTestCase {
 
     @Test
     public void testBadSignature() throws Exception {
-        try (InputStream is = Files.newInputStream(getFile("bla.jar").toPath())) {
+        try (InputStream is = newInputStream("bla.jar")) {
             final byte[] sig = new byte[4];
             is.read(sig);
             assertFalse(Pack200CompressorInputStream.matches(sig, 4));
@@ -145,7 +145,7 @@ public final class Pack200TestCase extends AbstractTestCase {
 
     @Test
     public void testGoodSignature() throws Exception {
-        try (InputStream is = Files.newInputStream(getFile("bla.pack").toPath())) {
+        try (InputStream is = newInputStream("bla.pack")) {
             final byte[] sig = new byte[4];
             is.read(sig);
             assertTrue(Pack200CompressorInputStream.matches(sig, 4));
@@ -156,7 +156,7 @@ public final class Pack200TestCase extends AbstractTestCase {
     public void testInputStreamMethods() throws Exception {
         final Map<String, String> m = new HashMap<>();
         m.put("foo", "bar");
-        try (InputStream is = new Pack200CompressorInputStream(Files.newInputStream(getFile("bla.jar").toPath()),
+        try (InputStream is = new Pack200CompressorInputStream(newInputStream("bla.jar"),
                 m)) {
             // packed file is a jar, which is a ZIP so it starts with
             // a local file header
@@ -219,7 +219,7 @@ public final class Pack200TestCase extends AbstractTestCase {
 
     @Test
     public void testShortSignature() throws Exception {
-        try (InputStream is = Files.newInputStream(getFile("bla.pack").toPath())) {
+        try (InputStream is = newInputStream("bla.pack")) {
             final byte[] sig = new byte[2];
             is.read(sig);
             assertFalse(Pack200CompressorInputStream.matches(sig, 2));

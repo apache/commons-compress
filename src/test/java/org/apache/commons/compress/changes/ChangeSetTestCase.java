@@ -132,8 +132,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      */
     @Test
     public void testAddChangeTwice() throws Exception {
-        try (InputStream in = Files.newInputStream(getFile("test.txt").toPath());
-                InputStream in2 = Files.newInputStream(getFile("test2.xml").toPath())) {
+        try (InputStream in = newInputStream("test.txt");
+                InputStream in2 = newInputStream("test2.xml")) {
 
             final ArchiveEntry e = new ZipArchiveEntry("test.txt");
             final ArchiveEntry e2 = new ZipArchiveEntry("test.txt");
@@ -157,8 +157,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      */
     @Test
     public void testAddChangeTwiceWithoutReplace() throws Exception {
-        try (InputStream in = Files.newInputStream(getFile("test.txt").toPath()); 
-                InputStream in2 = Files.newInputStream(getFile("test2.xml").toPath())) {
+        try (InputStream in = newInputStream("test.txt"); 
+                InputStream in2 = newInputStream("test2.xml")) {
 
             final ArchiveEntry e = new ZipArchiveEntry("test.txt");
             final ArchiveEntry e2 = new ZipArchiveEntry("test.txt");
