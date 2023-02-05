@@ -359,7 +359,7 @@ public class ZipFileTest extends AbstractTestCase {
     }
 
     @AfterEach
-    public void tearDown() {
+    public void tearDownClose() {
         ZipFile.closeQuietly(zf);
     }
 
