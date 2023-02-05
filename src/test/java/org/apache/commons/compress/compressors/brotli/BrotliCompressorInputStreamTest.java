@@ -98,8 +98,8 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     }
 
     /**
-     * Test bridge works fine
-     * @throws {@link IOException}
+     * Test bridge works fine.
+     * @throws IOException
      */
     @Test
     public void testBrotliDecode() throws IOException {
