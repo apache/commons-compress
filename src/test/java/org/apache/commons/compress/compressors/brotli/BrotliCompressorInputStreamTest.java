@@ -38,11 +38,9 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void availableShouldReturnZero() throws IOException {
         final File input = getFile("brotli.testdata.compressed");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final BrotliCompressorInputStream in =
-                    new BrotliCompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
             assertEquals(0, in.available());
-            in.close();
         }
     }
 
@@ -50,55 +48,47 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("brotli.testdata.compressed");
         final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final BrotliCompressorInputStream in =
-                    new BrotliCompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read(buf));
             assertEquals(-1, in.read(buf));
-            in.close();
         }
     }
 
     @Test
     public void shouldBeAbleToSkipAByte() throws IOException {
         final File input = getFile("brotli.testdata.compressed");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final BrotliCompressorInputStream in =
-                    new BrotliCompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
             assertEquals(1, in.skip(1));
-            in.close();
         }
     }
 
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("brotli.testdata.compressed");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final BrotliCompressorInputStream in =
-                    new BrotliCompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
-            in.close();
         }
     }
-
 
     @Test
     public void singleByteReadWorksAsExpected() throws IOException {
         final File input = getFile("brotli.testdata.compressed");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final BrotliCompressorInputStream in =
-                    new BrotliCompressorInputStream(is);
-            //  starts with filename "XXX"
+        try (InputStream is = Files.newInputStream(input.toPath());
+                final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
+            // starts with filename "XXX"
             assertEquals('X', in.read());
-            in.close();
         }
     }
 
     /**
      * Test bridge works fine.
+     * 
      * @throws IOException
      */
     @Test
@@ -106,7 +96,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
         final File input = getFile("brotli.testdata.compressed");
         final File expected = getFile("brotli.testdata.uncompressed");
         try (InputStream inputStream = Files.newInputStream(input.toPath());
-            BrotliCompressorInputStream brotliInputStream = new BrotliCompressorInputStream(inputStream)) {
+                BrotliCompressorInputStream brotliInputStream = new BrotliCompressorInputStream(inputStream)) {
             final byte[] b = new byte[20];
             IOUtils.read(expected, b);
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
