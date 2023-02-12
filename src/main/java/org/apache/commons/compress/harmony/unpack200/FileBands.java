@@ -21,6 +21,7 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * Parses the file band headers (not including the actual bits themselves). At the end of this parse call, the input
@@ -82,7 +83,7 @@ public class FileBands extends BandSet {
             // TODO This breaks if file_size > 2^32. Probably an array is
             // not the right choice, and we should just serialize it here?
             fileBits[i] = new byte[size];
-            final int read = in.read(fileBits[i]);
+            final int read = IOUtils.readFully(in, fileBits[i]);
             if (size != 0 && read < size) {
                 throw new Pack200Exception("Expected to read " + size + " bytes but read " + read);
             }
