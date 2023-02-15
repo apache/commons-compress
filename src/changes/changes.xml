@@ -58,6 +58,7 @@ The <action> type attribute can be add,update,fix,remove.
         Use percent encoding for non ISO_8859_1 characters.
       </action>
       <action type="fix" dev="ggregory" due-to="Jonathan Leitschuh, Gary Gregory">Port some code from IO to NIO APIs.</action>
+      <action type="fix" dev="ggregory" due-to="Una, Gary Gregory, Jochen Wiedmann, quaternary, Bruno P. Kinoshita">pack200: Fix FileBands misusing InputStream#read(byte[]) #360.</action>
       <!-- ADD -->
       <action type="add" issue="COMPRESS-614" dev="ggregory" due-to="Andre Brait, Gary Gregory">Use FileTime for time fields in SevenZipArchiveEntry #256.</action>
       <action type="add" issue="COMPRESS-621" dev="ggregory" due-to="Glavo">Fix calculation the offset of the first ZIP central directory entry #334.</action>
