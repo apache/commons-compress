@@ -395,8 +395,9 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
 		TarArchiveEntry entryIn = in.getNextTarEntry();
 		assertNotNull(entryIn);
 		assertEquals("message", entryIn.getName());
+        assertEquals(TarConstants.LF_NORMAL, entryIn.getLinkFlag());
 		assertEquals("global-weasels", entryIn.getExtraPaxHeader("SCHILLY.xattr.user.org.apache.weasels"));
-		final Reader reader = new InputStreamReader(in);
+        final Reader reader = new InputStreamReader(in);
 		for (int i = 0; i < x.length(); i++) {
 			assertEquals(x.charAt(i), reader.read());
 		}
@@ -524,6 +525,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(data))) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertEquals(n.substring(0, TarConstants.NAMELEN) + "/", e.getName(), "Entry name");
+            assertEquals(TarConstants.LF_DIR, e.getLinkFlag());
             assertTrue(e.isDirectory(), "The entry is not a directory");
         }
     }
@@ -547,6 +549,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             assertEquals("160 path=" + n + "\n", new String(data, 512, 160, UTF_8));
             try (TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(data))) {
                 assertEquals(n, tin.getNextTarEntry().getName());
+                assertEquals(TarConstants.LF_NORMAL, tin.getCurrentEntry().getLinkFlag());
             }
         }
     }
@@ -584,6 +587,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             assertEquals("test", e.getName(), "Entry name");
             assertEquals(linkname, e.getLinkName(), "Link name");
             assertTrue(e.isSymbolicLink(), "The entry is not a symbolic link");
+            assertEquals(TarConstants.LF_SYMLINK, e.getLinkFlag(), "Link flag");
         }
     }
 
@@ -643,6 +647,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(data))) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertEquals(linkname.substring(0, TarConstants.NAMELEN), e.getLinkName(), "Link name");
+            assertEquals(TarConstants.LF_SYMLINK, e.getLinkFlag(), "Link flag");
         }
     }
 
@@ -663,6 +668,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(data))) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertEquals(n, e.getName());
+            assertEquals(TarConstants.LF_DIR, e.getLinkFlag());
             assertTrue(e.isDirectory());
         }
     }
@@ -685,6 +691,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(data))) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertEquals(n, e.getLinkName());
+            assertEquals(TarConstants.LF_LINK, e.getLinkFlag(), "Link flag");
         }
     }
 
@@ -705,6 +712,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(data))) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertEquals(n, e.getName());
+            assertEquals(TarConstants.LF_NORMAL, e.getLinkFlag());
             assertFalse(e.isDirectory());
         }
     }
@@ -726,6 +734,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(data))) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertEquals(n, e.getName());
+            assertEquals(TarConstants.LF_NORMAL, e.getLinkFlag());
         }
     }
 
