@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarConstants;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,7 @@ public class ChainingTestCase extends AbstractTestCase {
             final TarArchiveEntry entry = (TarArchiveEntry) is.getNextEntry();
             assertNotNull(entry);
             assertEquals("test1.xml", entry.getName());
+            assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
         }
     }
 
@@ -44,6 +46,7 @@ public class ChainingTestCase extends AbstractTestCase {
             final TarArchiveEntry entry = (TarArchiveEntry) is.getNextEntry();
             assertNotNull(entry);
             assertEquals("test1.xml", entry.getName());
+            assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
         }
     }
 }

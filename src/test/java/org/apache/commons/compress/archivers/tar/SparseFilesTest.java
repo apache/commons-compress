@@ -47,6 +47,7 @@ public class SparseFilesTest extends AbstractTestCase {
 
     private void assertPaxGNUEntry(final TarArchiveEntry entry, final String suffix) {
         assertEquals("sparsefile-" + suffix, entry.getName());
+        assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
         assertTrue(entry.isGNUSparse());
         assertTrue(entry.isPaxGNUSparse());
         assertFalse(entry.isOldGNUSparse());
@@ -67,6 +68,7 @@ public class SparseFilesTest extends AbstractTestCase {
     private void assertPaxGNUEntry(final TarArchiveInputStream tin, final String suffix) throws Throwable {
         final TarArchiveEntry ae = tin.getNextTarEntry();
         assertEquals("sparsefile-" + suffix, ae.getName());
+        assertEquals(TarConstants.LF_NORMAL, ae.getLinkFlag());
         assertTrue(ae.isGNUSparse());
         assertTrue(ae.isPaxGNUSparse());
         assertFalse(ae.isOldGNUSparse());
@@ -255,6 +257,7 @@ public class SparseFilesTest extends AbstractTestCase {
         try (TarArchiveInputStream tin = new TarArchiveInputStream(Files.newInputStream(file.toPath()))) {
             final TarArchiveEntry ae = tin.getNextTarEntry();
             assertEquals("sparsefile", ae.getName());
+            assertEquals(TarConstants.LF_GNUTYPE_SPARSE, ae.getLinkFlag());
             assertTrue(ae.isOldGNUSparse());
             assertTrue(ae.isGNUSparse());
             assertFalse(ae.isPaxGNUSparse());
@@ -429,6 +432,7 @@ public class SparseFilesTest extends AbstractTestCase {
         try (final TarFile tarFile = new TarFile(file)) {
             final TarArchiveEntry ae = tarFile.getEntries().get(0);
             assertEquals("sparsefile", ae.getName());
+            assertEquals(TarConstants.LF_GNUTYPE_SPARSE, ae.getLinkFlag());
             assertTrue(ae.isOldGNUSparse());
             assertTrue(ae.isGNUSparse());
             assertFalse(ae.isPaxGNUSparse());

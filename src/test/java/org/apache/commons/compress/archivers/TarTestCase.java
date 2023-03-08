@@ -41,6 +41,7 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.compress.archivers.tar.TarConstants;
 import org.apache.commons.compress.archivers.tar.TarFile;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CharsetNames;
@@ -75,8 +76,10 @@ public final class TarTestCase extends AbstractTestCase {
              final ArchiveInputStream in = new TarArchiveInputStream(is, CharsetNames.ISO_8859_1)) {
             TarArchiveEntry entry = (TarArchiveEntry) in.getNextEntry();
             assertEquals("3\u00b1\u00b1\u00b1F06\u00b1W2345\u00b1ZB\u00b1la\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1BLA", entry.getName());
+            assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
             entry = (TarArchiveEntry) in.getNextEntry();
             assertEquals("0302-0601-3\u00b1\u00b1\u00b1F06\u00b1W2345\u00b1ZB\u00b1la\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1BLA", entry.getName());
+            assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
         }
     }
 
@@ -121,6 +124,7 @@ public final class TarTestCase extends AbstractTestCase {
             tis = null;
             assertNotNull(out);
             assertEquals("foo/", out.getName());
+            assertEquals(TarConstants.LF_DIR, out.getLinkFlag());
             assertEquals(0, out.getSize());
             // TAR stores time with a granularity of 1 second
             assertEquals(beforeArchiveWrite / 1000,
@@ -146,6 +150,7 @@ public final class TarTestCase extends AbstractTestCase {
              final TarArchiveInputStream in = new TarArchiveInputStream(is)) {
             final TarArchiveEntry directoryEntry = in.getNextTarEntry();
             assertEquals("directory/", directoryEntry.getName());
+            assertEquals(TarConstants.LF_DIR, directoryEntry.getLinkFlag());
             assertTrue(directoryEntry.isDirectory());
             final byte[] directoryRead = IOUtils.toByteArray(in);
             assertArrayEquals(ByteUtils.EMPTY_BYTE_ARRAY, directoryRead);
@@ -175,6 +180,7 @@ public final class TarTestCase extends AbstractTestCase {
             tis = null;
             assertNotNull(out);
             assertEquals("foo/", out.getName());
+            assertEquals(TarConstants.LF_DIR, in.getLinkFlag());
             assertEquals(0, out.getSize());
             assertEquals(beforeArchiveWrite / 1000,
                          out.getLastModifiedDate().getTime() / 1000);
@@ -223,6 +229,7 @@ public final class TarTestCase extends AbstractTestCase {
             tis = null;
             assertNotNull(out);
             assertEquals("foo", out.getName());
+            assertEquals(TarConstants.LF_NORMAL, out.getLinkFlag());
             assertEquals(tmp[1].length(), out.getSize());
             assertEquals(tmp[1].lastModified() / 1000,
                          out.getLastModifiedDate().getTime() / 1000);
@@ -272,6 +279,7 @@ public final class TarTestCase extends AbstractTestCase {
             tis = null;
             assertNotNull(out);
             assertEquals("foo", out.getName());
+            assertEquals(TarConstants.LF_NORMAL, out.getLinkFlag());
             assertEquals(tmp[1].length(), out.getSize());
             assertEquals(tmp[1].lastModified() / 1000,
                          out.getLastModifiedDate().getTime() / 1000);
@@ -384,8 +392,10 @@ public final class TarTestCase extends AbstractTestCase {
             final List<TarArchiveEntry> entries = tarFile.getEntries();
             TarArchiveEntry entry = entries.get(0);
             assertEquals("3\u00b1\u00b1\u00b1F06\u00b1W2345\u00b1ZB\u00b1la\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1BLA", entry.getName());
+            assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
             entry = entries.get(1);
             assertEquals("0302-0601-3\u00b1\u00b1\u00b1F06\u00b1W2345\u00b1ZB\u00b1la\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1BLA", entry.getName());
+            assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
         }
     }
 
@@ -425,6 +435,7 @@ public final class TarTestCase extends AbstractTestCase {
                 final TarArchiveEntry entry = tarFile.getEntries().get(0);
                 assertNotNull(entry);
                 assertEquals("foo/", entry.getName());
+                assertEquals(TarConstants.LF_DIR, entry.getLinkFlag());
                 assertEquals(0, entry.getSize());
                 // TAR stores time with a granularity of 1 second
                 assertEquals(beforeArchiveWrite / 1000, entry.getLastModifiedDate().getTime() / 1000);
@@ -443,6 +454,7 @@ public final class TarTestCase extends AbstractTestCase {
         try (TarFile tarFile = new TarFile(input)) {
             final TarArchiveEntry directoryEntry = tarFile.getEntries().get(0);
             assertEquals("directory/", directoryEntry.getName());
+            assertEquals(TarConstants.LF_DIR, directoryEntry.getLinkFlag());
             assertTrue(directoryEntry.isDirectory());
             try (InputStream directoryStream = tarFile.getInputStream(directoryEntry)) {
                 final byte[] directoryRead = IOUtils.toByteArray(directoryStream);
@@ -471,6 +483,7 @@ public final class TarTestCase extends AbstractTestCase {
                 final TarArchiveEntry entry = tarFile.getEntries().get(0);
                 assertNotNull(entry);
                 assertEquals("foo", entry.getName());
+                assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
                 assertEquals(tmp[1].length(), entry.getSize());
                 assertEquals(tmp[1].lastModified() / 1000, entry.getLastModifiedDate().getTime() / 1000);
                 assertFalse(entry.isDirectory());
@@ -498,6 +511,7 @@ public final class TarTestCase extends AbstractTestCase {
                 final TarArchiveEntry entry = tarFile.getEntries().get(0);
                 assertNotNull(entry);
                 assertEquals("foo/", entry.getName());
+                assertEquals(TarConstants.LF_DIR, entry.getLinkFlag());
                 assertEquals(0, entry.getSize());
                 assertEquals(beforeArchiveWrite / 1000, entry.getLastModifiedDate().getTime() / 1000);
                 assertTrue(entry.isDirectory());
@@ -531,6 +545,7 @@ public final class TarTestCase extends AbstractTestCase {
                 final TarArchiveEntry entry = tarFile.getEntries().get(0);
                 assertNotNull(entry);
                 assertEquals("foo", entry.getName());
+                assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
                 assertEquals(tmp[1].length(), entry.getSize());
                 assertEquals(tmp[1].lastModified() / 1000, entry.getLastModifiedDate().getTime() / 1000);
                 assertFalse(entry.isDirectory());
@@ -553,6 +568,7 @@ public final class TarTestCase extends AbstractTestCase {
             try (final TarFile tarFile = new TarFile(data)) {
                 final List<TarArchiveEntry> entries = tarFile.getEntries();
                 assertEquals(fileName, entries.get(0).getName());
+                assertEquals(TarConstants.LF_NORMAL, entries.get(0).getLinkFlag());
             }
         }
     }

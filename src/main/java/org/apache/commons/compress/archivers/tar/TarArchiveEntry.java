@@ -2129,5 +2129,15 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
         return offset;
     }
+
+    /**
+     * Get this entry's link flag.
+     *
+     * @since 1.23
+     */
+    public byte getLinkFlag() {
+        return this.linkFlag;
+    }
+
 }
 

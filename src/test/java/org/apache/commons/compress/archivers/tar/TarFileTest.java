@@ -63,6 +63,7 @@ public class TarFileTest extends AbstractTestCase {
         try (final TarFile tarFile = new TarFile(getPath(archive))) {
             final TarArchiveEntry entry = tarFile.getEntries().get(0);
             assertEquals("foo", entry.getName());
+            assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
             final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
             cal.set(1969, 11, 31, 23, 59, 59);
             cal.set(Calendar.MILLISECOND, 0);
@@ -197,7 +198,9 @@ public class TarFileTest extends AbstractTestCase {
             final List<TarArchiveEntry> entries = tarFile.getEntries();
             assertEquals(2, entries.size());
             assertEquals("test1.xml", entries.get(0).getName());
+            assertEquals(TarConstants.LF_NORMAL, entries.get(0).getLinkFlag());
             assertEquals("test2.xml", entries.get(1).getName());
+            assertEquals(TarConstants.LF_NORMAL, entries.get(1).getLinkFlag());
         }
     }
 
@@ -210,6 +213,7 @@ public class TarFileTest extends AbstractTestCase {
             final List<TarArchiveEntry> entries = tarFile.getEntries();
             assertEquals(1, entries.size());
             assertEquals("package/package.json", entries.get(0).getName());
+            assertEquals(TarConstants.LF_NORMAL, entries.get(0).getLinkFlag());
         }
     }
 
@@ -222,6 +226,7 @@ public class TarFileTest extends AbstractTestCase {
             final List<TarArchiveEntry> entries = tarFile.getEntries();
             assertEquals(1, entries.size());
             assertEquals("package/package.json", entries.get(0).getName());
+            assertEquals(TarConstants.LF_NORMAL, entries.get(0).getLinkFlag());
         }
     }
 
@@ -253,8 +258,11 @@ public class TarFileTest extends AbstractTestCase {
         try (final TarFile tarFile = new TarFile(data)) {
             final List<TarArchiveEntry> entries = tarFile.getEntries();
             assertEquals(folderName, entries.get(0).getName());
+            assertEquals(TarConstants.LF_DIR, entries.get(0).getLinkFlag());
             assertEquals(consumerJavaName, entries.get(1).getName());
+            assertEquals(TarConstants.LF_NORMAL, entries.get(1).getLinkFlag());
             assertEquals(producerJavaName, entries.get(2).getName());
+            assertEquals(TarConstants.LF_NORMAL, entries.get(2).getLinkFlag());
         }
     }
 
@@ -342,6 +350,7 @@ public class TarFileTest extends AbstractTestCase {
             assertEquals(3, entries.size());
             final TarArchiveEntry entry = entries.get(1);
             assertEquals("sample/link-to-txt-file.lnk", entry.getName());
+            assertEquals(TarConstants.LF_SYMLINK, entry.getLinkFlag());
             assertEquals(new Date(0), entry.getLastModifiedDate());
             assertTrue(entry.isSymbolicLink());
             assertTrue(entry.isCheckSumOK());

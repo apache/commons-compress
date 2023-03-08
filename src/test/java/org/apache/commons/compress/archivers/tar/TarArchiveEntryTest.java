@@ -154,8 +154,10 @@ public class TarArchiveEntryTest implements TarConstants {
         assumeTrue("C:\\".equals(ROOT));
         TarArchiveEntry t = new TarArchiveEntry(ROOT + "foo.txt", true);
         assertEquals("C:/foo.txt", t.getName());
+        assertEquals(TarConstants.LF_NORMAL, t.getLinkFlag());
         t = new TarArchiveEntry(ROOT + "foo.txt", LF_GNUTYPE_LONGNAME, true);
         assertEquals("C:/foo.txt", t.getName());
+        assertEquals(TarConstants.LF_GNUTYPE_LONGNAME, t.getLinkFlag());
     }
 
     private String readMagic(final TarArchiveEntry t) {
@@ -349,6 +351,7 @@ public class TarArchiveEntryTest implements TarConstants {
     public void testFileSystemRoot() {
         final TarArchiveEntry t = new TarArchiveEntry(new File(ROOT));
         assertEquals("/", t.getName());
+        assertEquals(TarConstants.LF_DIR, t.getLinkFlag());
     }
 
     @Test
@@ -356,6 +359,7 @@ public class TarArchiveEntryTest implements TarConstants {
         final TarArchiveEntry t = new TarArchiveEntry("/foo", LF_GNUTYPE_LONGNAME);
         assertGnuMagic(t);
         assertEquals("foo", t.getName());
+        assertEquals(TarConstants.LF_GNUTYPE_LONGNAME, t.getLinkFlag());
     }
 
     @Test
@@ -363,6 +367,7 @@ public class TarArchiveEntryTest implements TarConstants {
         final TarArchiveEntry t = new TarArchiveEntry("/foo", LF_NORMAL);
         assertPosixMagic(t);
         assertEquals("foo", t.getName());
+        assertEquals(TarConstants.LF_NORMAL, t.getLinkFlag());
     }
 
     @Test
@@ -371,6 +376,7 @@ public class TarArchiveEntryTest implements TarConstants {
                                                 true);
         assertGnuMagic(t);
         assertEquals("/foo", t.getName());
+        assertEquals(TarConstants.LF_GNUTYPE_LONGNAME, t.getLinkFlag());
     }
 
     @Test
@@ -437,18 +443,22 @@ public class TarArchiveEntryTest implements TarConstants {
             t = tin.getNextTarEntry();
             assertNotNull(t);
             assertEquals("/", t.getName());
+            assertEquals(TarConstants.LF_DIR, t.getLinkFlag());
             assertTrue(t.isCheckSumOK());
             t = tin.getNextTarEntry();
             assertNotNull(t);
             assertEquals("foo.txt", t.getName());
+            assertEquals(TarConstants.LF_NORMAL, t.getLinkFlag());
             assertTrue(t.isCheckSumOK());
             t = tin.getNextTarEntry();
             assertNotNull(t);
             assertEquals("bar.txt", t.getName());
+            assertEquals(TarConstants.LF_NORMAL, t.getLinkFlag());
             assertTrue(t.isCheckSumOK());
             t = tin.getNextTarEntry();
             assertNotNull(t);
             assertEquals("baz.txt", t.getName());
+            assertEquals(TarConstants.LF_NORMAL, t.getLinkFlag());
             assertTrue(t.isCheckSumOK());
         } finally {
             if (tin != null) {
