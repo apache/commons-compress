@@ -951,6 +951,16 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
+     * Get this entry's link flag.
+     *
+     * @return this entry's link flag.
+     * @since 1.23
+     */
+    public byte getLinkFlag() {
+        return this.linkFlag;
+    }
+
+    /**
      * Get this entry's link name.
      *
      * @return This entry's link name.
@@ -2128,15 +2138,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             offset = fill(0, offset, outbuf, fieldLength);
         }
         return offset;
-    }
-
-    /**
-     * Get this entry's link flag.
-     *
-     * @since 1.23
-     */
-    public byte getLinkFlag() {
-        return this.linkFlag;
     }
 
 }
