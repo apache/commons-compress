@@ -37,7 +37,9 @@ mvn changes:announcement-generate -Prelease-notes [-Dchanges.version=m.n]
 The <action> type attribute can be add,update,fix,remove.
 -->
 
-<document>
+<document xmlns="http://maven.apache.org/changes/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <properties>
     <title>Apache Commons Compress Release Notes</title>
   </properties>
@@ -2053,7 +2055,7 @@ This also changes the superclass of ZCompressorInputStream.
         message for entries between 2 GByte and 4 GByte in size.
       </action>
       <action issue="COMPRESS-145" type="fix" date="2011-07-23"
-              due-tue="Patrick Dreyer">
+              due-to="Patrick Dreyer">
         TarArchiveInputStream now detects sparse entries using the
         oldgnu format and properly reports it cannot extract their
         contents.
