@@ -345,6 +345,18 @@ public class ZipFile implements Closeable {
         /* uncompressed size               */ + (long) ZipConstants.WORD;
 
     /**
+     * Compares two ZipArchiveEntries based on their offset within the archive.
+     *
+     * <p>Won't return any meaningful results if one of the entries
+     * isn't part of the archive at all.</p>
+     *
+     * @since 1.1
+     */
+    private static final Comparator<ZipArchiveEntry> offsetComparator =
+        Comparator.comparingLong(ZipArchiveEntry::getDiskNumberStart)
+            .thenComparingLong(ZipArchiveEntry::getLocalHeaderOffset);
+
+    /**
      * Closes a ZIP file quietly; throwing no IOException, dooes nothing
      * on null input.
      * @param zipFile file to close, can be null
@@ -425,18 +437,6 @@ public class ZipFile implements Closeable {
     private long centralDirectoryStartOffset;
 
     private long firstLocalFileHeaderOffset;
-
-    /**
-     * Compares two ZipArchiveEntries based on their offset within the archive.
-     *
-     * <p>Won't return any meaningful results if one of the entries
-     * isn't part of the archive at all.</p>
-     *
-     * @since 1.1
-     */
-    private static final Comparator<ZipArchiveEntry> offsetComparator =
-        Comparator.comparingLong(ZipArchiveEntry::getDiskNumberStart)
-            .thenComparingLong(ZipArchiveEntry::getLocalHeaderOffset);
 
     /**
      * Opens the given file for reading, assuming "UTF8" for file names.

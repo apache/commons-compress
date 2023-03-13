@@ -46,6 +46,9 @@ public class DefaultBackingStoreSupplier implements ScatterGatherBackingStoreSup
 
     private static final String PREFIX = "parallelscatter";
 
+    private final AtomicInteger storeNum = new AtomicInteger();
+
+    private final Path dir;
     /**
      * Constructs a new instance. If {@code dir} is null, then use the default temporary-file directory.
      *
@@ -54,9 +57,6 @@ public class DefaultBackingStoreSupplier implements ScatterGatherBackingStoreSup
     public DefaultBackingStoreSupplier(final Path dir) {
         this.dir = dir;
     }
-
-    private final AtomicInteger storeNum = new AtomicInteger();
-    private final Path dir;
 
     @Override
     public ScatterGatherBackingStore get() throws IOException {
