@@ -162,7 +162,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     }
 
     /**
-     * @link "https://issues.apache.org/jira/browse/COMPRESS-324"
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-324">COMPRESS-324</a>
      */
     @Test
     public void shouldReadGNULongNameEntryWithWrongName() throws Exception {
@@ -229,7 +229,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     }
 
     /**
-     * @link "https://issues.apache.org/jira/browse/COMPRESS-417"
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-417">COMPRESS-417</a>
      */
     @Test
     public void skipsDevNumbersWhenEntryIsNoDevice() throws Exception {
@@ -243,7 +243,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     }
 
     /**
-     * @link "https://issues.apache.org/jira/browse/COMPRESS-355"
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-355">COMPRESS-355</a>
      */
     @Test
     public void survivesBlankLinesInPaxHeader() throws Exception {
@@ -256,7 +256,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     }
 
     /**
-     * @link "https://issues.apache.org/jira/browse/COMPRESS-356"
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-356">COMPRESS-356</a>
      */
     @Test
     public void survivesPaxHeaderWithNameEndingInSlash() throws Exception {
