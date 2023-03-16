@@ -34,7 +34,7 @@ public class ChecksumCalculatingInputStream extends InputStream {
     public ChecksumCalculatingInputStream(final Checksum checksum, final InputStream inputStream) {
 
         Objects.requireNonNull(checksum, "checksum");
-        Objects.requireNonNull(inputStream, "in");
+        Objects.requireNonNull(inputStream, "inputStream");
 
         this.checksum = checksum;
         this.in = inputStream;
