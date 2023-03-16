@@ -46,6 +46,7 @@ import java.util.Objects;
 public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
 
     private static final Path[] EMPTY_PATH_ARRAY = {};
+
     /**
      * Concatenates the given files.
      *
@@ -62,6 +63,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
 
         return forPaths(paths.toArray(EMPTY_PATH_ARRAY));
     }
+
     /**
      * Concatenates the given file paths.
      * @param paths the file paths to concatenate, note that the LAST FILE of files should be the LAST SEGMENT(.zip)
@@ -83,6 +85,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
         }
         return new MultiReadOnlySeekableByteChannel(channels);
     }
+
     /**
      * Concatenates the given channels.
      *
@@ -137,7 +140,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     }
 
     /**
-     * Returns this channel's position.
+     * Gets this channel's position.
      *
      * <p>This method violates the contract of {@link SeekableByteChannel#position()} as it will not throw any exception
      * when invoked on a closed channel. Instead it will return the position the channel had when close has been
@@ -190,7 +193,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     }
 
     /**
-     * set the position based on the given channel number and relative offset
+     * Sets the position based on the given channel number and relative offset
      *
      * @param channelNumber  the channel number
      * @param relativeOffset the relative offset in the corresponding channel
