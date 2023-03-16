@@ -107,7 +107,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     private int longFileMode = LONGFILE_ERROR;
     private int bigNumberMode = BIGNUMBER_ERROR;
 
-    private int recordsWritten;
+    private long recordsWritten;
 
     private final int recordsPerBlock;
 
@@ -348,7 +348,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 + "' before the '" + currSize
                 + "' bytes specified in the header were written");
         }
-        recordsWritten = ExactMath.add(recordsWritten, (currSize / RECORD_SIZE));
+        recordsWritten += (currSize / RECORD_SIZE);
 
         if (0 != currSize % RECORD_SIZE) {
             recordsWritten++;
@@ -535,7 +535,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private void padAsNeeded() throws IOException {
-        final int start = recordsWritten % recordsPerBlock;
+        final int start = Math.toIntExact(recordsWritten % recordsPerBlock);
         if (start != 0) {
             for (int i = start; i < recordsPerBlock; i++) {
                 writeEOFRecord();
