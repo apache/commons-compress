@@ -48,6 +48,8 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.output.NullOutputStream;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class TarArchiveOutputStreamTest extends AbstractTestCase {
@@ -766,6 +768,27 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         }
 
         return bos.toByteArray();
+    }
+
+    /**
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-642"
+     */
+    @Disabled("The test needs to write 1.1 TB in chunks of 512 bytes which takes a long time. So it's disabled by default")
+    @Test
+    public void testWritingBigFile() throws Exception {
+        final TarArchiveEntry t = new TarArchiveEntry("foo");
+        t.setSize((Integer.MAX_VALUE + 1L) * TarConstants.DEFAULT_RCDSIZE);
+        final TarArchiveOutputStream tos = new TarArchiveOutputStream(NullOutputStream.NULL_OUTPUT_STREAM);
+        tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
+        tos.putArchiveEntry(t);
+
+        byte[] bytes = new byte[TarConstants.DEFAULT_RCDSIZE];
+        for (int i = 0; i < Integer.MAX_VALUE; i++) {
+            tos.write(bytes);
+        }
+        tos.write(bytes);
+        tos.closeArchiveEntry();
+        tos.close();
     }
 
 }
