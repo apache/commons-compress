@@ -754,22 +754,6 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         assertEquals("6 a=b\n", new String(data, 512, 6, UTF_8));
     }
 
-    private byte[] writePaxHeader(final Map<String, String> m) throws Exception {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII")) {
-            tos.writePaxHeaders(new TarArchiveEntry("x"), "foo", m);
-
-            // add a dummy entry so data gets written
-            final TarArchiveEntry t = new TarArchiveEntry("foo");
-            t.setSize(10 * 1024);
-            tos.putArchiveEntry(t);
-            tos.write(new byte[10 * 1024]);
-            tos.closeArchiveEntry();
-        }
-
-        return bos.toByteArray();
-    }
-
     /**
      * @see "https://issues.apache.org/jira/browse/COMPRESS-642"
      */
@@ -789,6 +773,22 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tos.write(bytes);
         tos.closeArchiveEntry();
         tos.close();
+    }
+
+    private byte[] writePaxHeader(final Map<String, String> m) throws Exception {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII")) {
+            tos.writePaxHeaders(new TarArchiveEntry("x"), "foo", m);
+
+            // add a dummy entry so data gets written
+            final TarArchiveEntry t = new TarArchiveEntry("foo");
+            t.setSize(10 * 1024);
+            tos.putArchiveEntry(t);
+            tos.write(new byte[10 * 1024]);
+            tos.closeArchiveEntry();
+        }
+
+        return bos.toByteArray();
     }
 
 }
