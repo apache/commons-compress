@@ -177,31 +177,32 @@ public class SevenZFile implements Closeable {
         }
         return (int) value;
     }
-    private static void get(final ByteBuffer buf, final byte[] to) throws IOException {
-        if (buf.remaining() < to.length) {
-            throw new EOFException();
+
+    private static ByteBuffer checkEndOfFile(final ByteBuffer buf, final int expectRemaining) throws EOFException {
+        final int remaining = buf.remaining();
+        if (remaining < expectRemaining) {
+            throw new EOFException(String.format("remaining %,d < expectRemaining %,d", remaining, expectRemaining));
         }
-        buf.get(to);
+        return buf;
     }
-    private static char getChar(final ByteBuffer buf) throws IOException {
-        if (buf.remaining() < 2) {
-            throw new EOFException();
-        }
-        return buf.getChar();
+
+    private static void get(final ByteBuffer buf, final byte[] to) throws EOFException {
+        checkEndOfFile(buf, to.length).get(to);
     }
-    private static int getInt(final ByteBuffer buf) throws IOException {
-        if (buf.remaining() < 4) {
-            throw new EOFException();
-        }
-        return buf.getInt();
+
+    private static char getChar(final ByteBuffer buf) throws EOFException {
+        return checkEndOfFile(buf, Character.BYTES).getChar();
     }
-    private static long getLong(final ByteBuffer buf) throws IOException {
-        if (buf.remaining() < 8) {
-            throw new EOFException();
-        }
-        return buf.getLong();
+
+    private static int getInt(final ByteBuffer buf) throws EOFException {
+        return checkEndOfFile(buf, Integer.BYTES).getInt();
     }
-    private static int getUnsignedByte(final ByteBuffer buf) throws IOException {
+
+    private static long getLong(final ByteBuffer buf) throws EOFException {
+        return checkEndOfFile(buf, Long.BYTES).getLong();
+    }
+
+    private static int getUnsignedByte(final ByteBuffer buf) throws EOFException {
         if (!buf.hasRemaining()) {
             throw new EOFException();
         }
