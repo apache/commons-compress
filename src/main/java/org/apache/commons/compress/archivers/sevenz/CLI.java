@@ -20,8 +20,10 @@ package org.apache.commons.compress.archivers.sevenz;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Usage: archive-name [list]
+ */
 public class CLI {
-
 
     private enum Mode {
         LIST("Analysing") {
@@ -47,8 +49,7 @@ public class CLI {
                 if (entry.isDirectory()) {
                     System.out.print(" dir");
                 } else {
-                    System.out.print(" " + entry.getCompressedSize()
-                                     + "/" + entry.getSize());
+                    System.out.print(" " + entry.getCompressedSize() + "/" + entry.getSize());
                 }
                 if (entry.getHasLastModifiedDate()) {
                     System.out.print(" " + entry.getLastModifiedDate());
@@ -64,14 +65,16 @@ public class CLI {
         };
 
         private final String message;
+
         Mode(final String message) {
             this.message = message;
         }
+
         public String getMessage() {
             return message;
         }
-        public abstract void takeAction(SevenZFile archive, SevenZArchiveEntry entry)
-            throws IOException;
+
+        public abstract void takeAction(SevenZFile archive, SevenZArchiveEntry entry) throws IOException;
     }
 
     private static Mode grabMode(final String[] args) {
@@ -94,7 +97,7 @@ public class CLI {
         }
         try (final SevenZFile archive = new SevenZFile(f)) {
             SevenZArchiveEntry ae;
-            while((ae=archive.getNextEntry()) != null) {
+            while ((ae = archive.getNextEntry()) != null) {
                 mode.takeAction(archive, ae);
             }
         }
