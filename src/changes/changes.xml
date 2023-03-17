@@ -63,7 +63,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Una, Gary Gregory, Jochen Wiedmann, quaternary, Bruno P. Kinoshita">pack200: Fix FileBands misusing InputStream#read(byte[]) #360.</action>      
       <action type="fix" issue="COMPRESS-641" dev="ggregory" due-to="XenoAmess, Gary Gregory, Bruno P. Kinoshita">Add TarArchiveEntry.getLinkFlag() #365.</action>
       <action type="fix" issue="COMPRESS-642" dev="ggregory" due-to="Anton Klarén, Gary Gregory">Integer overflow ArithmeticException in TarArchiveOutputStream #368.</action>
-      <action type="fix" issue="COMPRESS-642" dev="ggregory" due-to="Anton Klarén, Gary Gregory">org.apache.commons.compress.archivers.zip.ZipFile.finalize() should not write to the std err.</action>
+      <action type="fix" issue="COMPRESS-642" dev="ggregory" due-to="Dominik Stadler, Stefan Bodewig, Gary Gregory">org.apache.commons.compress.archivers.zip.ZipFile.finalize() should not write to std err.</action>
       <!-- ADD -->
       <action type="add" issue="COMPRESS-614" dev="ggregory" due-to="Andre Brait, Gary Gregory">Use FileTime for time fields in SevenZipArchiveEntry #256.</action>
       <action type="add" issue="COMPRESS-621" dev="ggregory" due-to="Glavo">Fix calculation the offset of the first ZIP central directory entry #334.</action>
@@ -71,6 +71,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" issue="COMPRESS-613" dev="ggregory" due-to="Andre Brait, Gary Gregory, Bruno P. Kinoshita">Support for extra time data in Zip archives #345.</action>      
       <action type="add" issue="COMPRESS-621" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.zip.DefaultBackingStoreSupplier to write to a custom folder instead of the default temporary folder.</action>
       <action type="add" issue="COMPRESS-600" dev="ggregory" due-to="Gary Gregory, Pascal Davoust">Add capability to configure Deflater strategy in GzipCompressorOutputStream: GzipParameters.setDeflateStrategy(int).</action>
+      <!-- REMOVE -->
+      <action type="remove" dev="ggregory" due-to="Gary Gregory">Remove BZip2CompressorOutputStream.finalize() which only wrote to std err.</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot">Bump mockito.version from 4.8.0 to 4.11.0 #328, #331, #340, #348.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump pmd from 6.50.0 to 6.53.0.</action>

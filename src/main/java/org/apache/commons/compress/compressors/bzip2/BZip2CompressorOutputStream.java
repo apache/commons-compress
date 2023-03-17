@@ -571,17 +571,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         bsFinishedWithStream();
     }
 
-    /**
-     * Overridden to warn about an unclosed stream.
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        if (!closed) {
-            System.err.println("Unclosed BZip2CompressorOutputStream detected, will *not* close it");
-        }
-        super.finalize();
-    }
-
     public void finish() throws IOException {
         if (!closed) {
             closed = true;
