@@ -25,6 +25,8 @@ import java.util.zip.Deflater;
 /**
  * Parameters for the GZIP compressor.
  *
+ * @see GzipCompressorInputStream
+ * @see GzipCompressorOutputStream
  * @since 1.7
  */
 public class GzipParameters {
@@ -35,6 +37,7 @@ public class GzipParameters {
     private String comment;
     private int operatingSystem = 255; // Unknown OS by default
     private int bufferSize = 512;
+    private int deflateStrategy = Deflater.DEFAULT_STRATEGY;
 
     /**
      * Gets size of the buffer used to retrieve compressed data.
@@ -52,6 +55,18 @@ public class GzipParameters {
 
     public int getCompressionLevel() {
         return compressionLevel;
+    }
+
+    /**
+     * Gets the deflater strategy.
+     * 
+     * @return the deflater strategy, {@link Deflater#DEFAULT_STRATEGY} by default.
+     * @see #setDeflateStrategy(int)
+     * @see Deflater#setStrategy(int)
+     * @since 1.23
+     */
+    public int getDeflateStrategy() {
+        return deflateStrategy;
     }
 
     public String getFilename() {
@@ -98,6 +113,17 @@ public class GzipParameters {
             throw new IllegalArgumentException("Invalid gzip compression level: " + compressionLevel);
         }
         this.compressionLevel = compressionLevel;
+    }
+
+    /**
+     * Sets the deflater strategy.
+     *
+     * @param deflateStrategy the new compression strategy
+     * @see Deflater#setStrategy(int)
+     * @since 1.23
+     */
+    public void setDeflateStrategy(int deflateStrategy) {
+        this.deflateStrategy = deflateStrategy;
     }
 
     /**

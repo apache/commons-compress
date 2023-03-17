@@ -83,6 +83,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     public GzipCompressorOutputStream(final OutputStream out, final GzipParameters parameters) throws IOException {
         this.out = out;
         this.deflater = new Deflater(parameters.getCompressionLevel(), true);
+        this.deflater.setStrategy(parameters.getDeflateStrategy());
         this.deflateBuffer = new byte[parameters.getBufferSize()];
         writeHeader(parameters);
     }

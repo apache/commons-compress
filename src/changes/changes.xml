@@ -69,6 +69,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" issue="COMPRESS-633" dev="ggregory" due-to="Daniel Santos, Bruno P. Kinoshita, Gary Gregory">Add encryption support for SevenZ #332.</action>
       <action type="add" issue="COMPRESS-613" dev="ggregory" due-to="Andre Brait, Gary Gregory, Bruno P. Kinoshita">Support for extra time data in Zip archives #345.</action>      
       <action type="add" issue="COMPRESS-621" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.zip.DefaultBackingStoreSupplier to write to a custom folder instead of the default temporary folder.</action>
+      <action type="add" issue="COMPRESS-600" dev="ggregory" due-to="Gary Gregory, Pascal Davoust">Add capability to configure Deflater strategy in GzipCompressorOutputStream: GzipParameters.setDeflateStrategy(int).</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot">Bump mockito.version from 4.8.0 to 4.11.0 #328, #331, #340, #348.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump pmd from 6.50.0 to 6.53.0.</action>
