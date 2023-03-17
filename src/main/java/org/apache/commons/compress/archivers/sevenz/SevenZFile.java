@@ -165,10 +165,12 @@ public class SevenZFile implements Closeable {
     static final int SIGNATURE_HEADER_SIZE = 32;
 
     private static final String DEFAULT_FILE_NAME = "unknown archive";
+
     /** Shared with SevenZOutputFile and tests, neither mutates it. */
     static final byte[] sevenZSignature = { //NOSONAR
-        (byte)'7', (byte)'z', (byte)0xBC, (byte)0xAF, (byte)0x27, (byte)0x1C
+            (byte) '7', (byte) 'z', (byte) 0xBC, (byte) 0xAF, (byte) 0x27, (byte) 0x1C
     };
+
     private static int assertFitsIntoNonNegativeInt(final String what, final long value) throws IOException {
         if (value > Integer.MAX_VALUE || value < 0) {
             throw new IOException(String.format("Cannot handle % %,d", what, value));
