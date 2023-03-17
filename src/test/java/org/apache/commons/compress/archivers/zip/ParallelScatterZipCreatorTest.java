@@ -247,7 +247,7 @@ public class ParallelScatterZipCreatorTest {
             }
 
             zipCreator.writeTo(zipArchiveOutputStream);
-        } // it will throw NullPointerException here
+        } // Throws NullPointerException on close()
     }
 
     @Test
