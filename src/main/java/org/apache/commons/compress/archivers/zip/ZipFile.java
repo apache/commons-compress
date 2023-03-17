@@ -810,8 +810,6 @@ public class ZipFile implements Closeable {
     protected void finalize() throws Throwable {
         try {
             if (!closed) {
-                System.err.println("Cleaning up unclosed ZipFile for archive "
-                                   + archiveName);
                 close();
             }
         } finally {

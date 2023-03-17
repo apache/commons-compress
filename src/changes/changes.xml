@@ -62,8 +62,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Jonathan Leitschuh, Gary Gregory">Port some code from IO to NIO APIs.</action>
       <action type="fix" dev="ggregory" due-to="Una, Gary Gregory, Jochen Wiedmann, quaternary, Bruno P. Kinoshita">pack200: Fix FileBands misusing InputStream#read(byte[]) #360.</action>      
       <action type="fix" issue="COMPRESS-641" dev="ggregory" due-to="XenoAmess, Gary Gregory, Bruno P. Kinoshita">Add TarArchiveEntry.getLinkFlag() #365.</action>
-      <action type="fix" issue="COMPRESS-642" dev="ggregory" due-to="Anton Klarén, Gary Gregory">Integer overflow ArithmeticException in TarArchiveOutputStream #368.</action> 
-     <!-- ADD -->
+      <action type="fix" issue="COMPRESS-642" dev="ggregory" due-to="Anton Klarén, Gary Gregory">Integer overflow ArithmeticException in TarArchiveOutputStream #368.</action>
+      <action type="fix" issue="COMPRESS-642" dev="ggregory" due-to="Anton Klarén, Gary Gregory">org.apache.commons.compress.archivers.zip.ZipFile.finalize() should not write to the std err.</action>
+      <!-- ADD -->
       <action type="add" issue="COMPRESS-614" dev="ggregory" due-to="Andre Brait, Gary Gregory">Use FileTime for time fields in SevenZipArchiveEntry #256.</action>
       <action type="add" issue="COMPRESS-621" dev="ggregory" due-to="Glavo">Fix calculation the offset of the first ZIP central directory entry #334.</action>
       <action type="add" issue="COMPRESS-633" dev="ggregory" due-to="Daniel Santos, Bruno P. Kinoshita, Gary Gregory">Add encryption support for SevenZ #332.</action>
