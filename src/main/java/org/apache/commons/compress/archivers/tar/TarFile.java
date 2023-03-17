@@ -42,7 +42,8 @@ import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 
 /**
- * The TarFile provides random access to UNIX archives.
+ * Provides random access to UNIX archives.
+ *
  * @since 1.21
  */
 public class TarFile implements Closeable {
