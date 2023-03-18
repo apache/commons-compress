@@ -49,22 +49,24 @@ import org.apache.commons.compress.utils.IOUtils;
  */
 public class Expander {
 
-    private interface ArchiveEntrySupplier {
-        ArchiveEntry getNextReadableEntry() throws IOException;
+    @FunctionalInterface
+    private interface ArchiveEntrySupplier<T extends ArchiveEntry> {
+        T get() throws IOException;
     }
 
-    private interface EntryWriter {
-        void writeEntryDataTo(ArchiveEntry entry, OutputStream out) throws IOException;
+    @FunctionalInterface
+    private interface ArchiveEntryBiConsumer<T extends ArchiveEntry> {
+        void accept(T entry, OutputStream out) throws IOException;
     }
 
     /**
      * @param targetDirectory May be null to simulate output to dev/null on Linux and NUL on Windows.
      */
-    private void expand(final ArchiveEntrySupplier supplier, final EntryWriter writer, final Path targetDirectory)
+    private <T extends ArchiveEntry> void expand(final ArchiveEntrySupplier<T> supplier, final ArchiveEntryBiConsumer<T> writer, final Path targetDirectory)
         throws IOException {
         final boolean nullTarget = targetDirectory == null;
         final Path targetDirPath = nullTarget ? null : targetDirectory.normalize();
-        ArchiveEntry nextEntry = supplier.getNextReadableEntry();
+        T nextEntry = supplier.get();
         while (nextEntry != null) {
             final Path targetPath = nullTarget ? null : targetDirectory.resolve(nextEntry.getName());
             // check if targetDirectory and f are the same path - this may
@@ -82,14 +84,14 @@ public class Expander {
                     throw new IOException("Failed to create directory " + parent);
                 }
                 if (nullTarget) {
-                    writer.writeEntryDataTo(nextEntry, null);
+                    writer.accept(nextEntry, null);
                 } else {
                     try (OutputStream outputStream = Files.newOutputStream(targetPath)) {
-                        writer.writeEntryDataTo(nextEntry, outputStream);
+                        writer.accept(nextEntry, outputStream);
                     }
                 }
             }
-            nextEntry = supplier.getNextReadableEntry();
+            nextEntry = supplier.get();
         }
     }
 
@@ -454,7 +456,7 @@ public class Expander {
         final Iterator<TarArchiveEntry> entryIterator = archive.getEntries().iterator();
         expand(() -> entryIterator.hasNext() ? entryIterator.next() : null,
             (entry, out) -> {
-            try (InputStream in = archive.getInputStream((TarArchiveEntry) entry)) {
+            try (InputStream in = archive.getInputStream(entry)) {
                 IOUtils.copy(in, out);
             }
         }, targetDirectory);
@@ -489,7 +491,7 @@ public class Expander {
             }
             return next;
         }, (entry, out) -> {
-            try (InputStream in = archive.getInputStream((ZipArchiveEntry) entry)) {
+            try (InputStream in = archive.getInputStream(entry)) {
                 IOUtils.copy(in, out);
             }
         }, targetDirectory);
