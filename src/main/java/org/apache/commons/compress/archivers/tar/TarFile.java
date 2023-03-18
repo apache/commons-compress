@@ -306,7 +306,6 @@ public class TarFile implements Closeable {
      */
     public TarFile(final SeekableByteChannel archive, final int blockSize, final int recordSize, final String encoding, final boolean lenient) throws IOException {
         this.archive = archive;
-        this.hasHitEOF = false;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.recordSize = recordSize;
         this.recordBuffer = ByteBuffer.allocate(this.recordSize);
