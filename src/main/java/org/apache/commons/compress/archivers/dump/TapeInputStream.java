@@ -21,11 +21,11 @@ package org.apache.commons.compress.archivers.dump;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
+import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
@@ -35,57 +35,21 @@ import org.apache.commons.compress.utils.IOUtils;
  * @NotThreadSafe
  */
 class TapeInputStream extends FilterInputStream {
+    private static final int RECORD_SIZE = DumpArchiveConstants.TP_SIZE;
     private byte[] blockBuffer = new byte[DumpArchiveConstants.TP_SIZE];
     private int currBlkIdx = -1;
     private int blockSize = DumpArchiveConstants.TP_SIZE;
-    private static final int RECORD_SIZE = DumpArchiveConstants.TP_SIZE;
     private int readOffset = DumpArchiveConstants.TP_SIZE;
     private boolean isCompressed;
     private long bytesRead;
 
     /**
-     * Constructor
+     * Constructs a new instance.
+     *
+     * @param in the underlying input stream.
      */
     public TapeInputStream(final InputStream in) {
         super(in);
-    }
-
-    /**
-     * Set the DumpArchive Buffer's block size. We need to sync the block size with the
-     * dump archive's actual block size since compression is handled at the
-     * block level.
-     *
-     * @param recsPerBlock
-     *            records per block
-     * @param isCompressed
-     *            true if the archive is compressed
-     * @throws IOException
-     *             more than one block has been read
-     * @throws IOException
-     *             there was an error reading additional blocks.
-     * @throws IOException
-     *             recsPerBlock is smaller than 1
-     */
-    public void resetBlockSize(final int recsPerBlock, final boolean isCompressed)
-        throws IOException {
-        this.isCompressed = isCompressed;
-
-        if (recsPerBlock < 1) {
-            throw new IOException("Block with " + recsPerBlock
-                + " records found, must be at least 1");
-        }
-        blockSize = RECORD_SIZE * recsPerBlock;
-
-        // save first block in case we need it again
-        final byte[] oldBuffer = blockBuffer;
-
-        // read rest of new block
-        blockBuffer = new byte[blockSize];
-        System.arraycopy(oldBuffer, 0, blockBuffer, 0, RECORD_SIZE);
-        readFully(blockBuffer, RECORD_SIZE, blockSize - RECORD_SIZE);
-
-        this.currBlkIdx = 0;
-        this.readOffset = RECORD_SIZE;
     }
 
     /**
@@ -98,6 +62,52 @@ class TapeInputStream extends FilterInputStream {
         }
 
         return in.available();
+    }
+
+    /**
+     * Close the input stream.
+     *
+     * @throws IOException on error
+     */
+    @Override
+    public void close() throws IOException {
+        if (in != null && in != System.in) {
+            in.close();
+        }
+    }
+
+    /**
+     * Gets number of bytes read.
+     *
+     * @return number of bytes read.
+     */
+    public long getBytesRead() {
+        return bytesRead;
+    }
+
+    /**
+     * Peek at the next record from the input stream and return the data.
+     *
+     * @return The record data.
+     * @throws IOException on error
+     */
+    public byte[] peek() throws IOException {
+        // we need to read from the underlying stream. This
+        // isn't a problem since it would be the first step in
+        // any subsequent read() anyway.
+        if (readOffset == blockSize) {
+            try {
+                readBlock(true);
+            } catch (final ShortFileException sfe) { // NOSONAR
+                return null;
+            }
+        }
+
+        // copy data, increment counters.
+        final byte[] b = new byte[RECORD_SIZE];
+        System.arraycopy(blockBuffer, readOffset, b, 0, b.length);
+
+        return b;
     }
 
     /**
@@ -161,110 +171,6 @@ class TapeInputStream extends FilterInputStream {
         }
 
         return bytes;
-    }
-
-    /**
-     * Skip bytes. Same as read but without the arraycopy.
-     *
-     * <p>skips the full given length unless EOF is reached.</p>
-     *
-     * @param len length to read, must be a multiple of the stream's
-     * record size
-     */
-    @Override
-    public long skip(final long len) throws IOException {
-        if ((len % RECORD_SIZE) != 0) {
-            throw new IllegalArgumentException(
-                "All reads must be multiple of record size (" + RECORD_SIZE +
-                " bytes.");
-        }
-
-        long bytes = 0;
-
-        while (bytes < len) {
-            // we need to read from the underlying stream.
-            // this will reset readOffset value. We do not perform
-            // any decompression if we won't eventually read the data.
-            // return -1 if there's a problem.
-            if (readOffset == blockSize) {
-                try {
-                    readBlock((len - bytes) < blockSize);
-                } catch (final ShortFileException sfe) { // NOSONAR
-                    return -1;
-                }
-            }
-
-            long n = 0;
-
-            if ((readOffset + (len - bytes)) <= blockSize) {
-                // we can read entirely from the buffer.
-                n = len - bytes;
-            } else {
-                // copy what we can from the buffer.
-                n = (long) blockSize - readOffset;
-            }
-
-            // do not copy data but still increment counters.
-            readOffset += n;
-            bytes += n;
-        }
-
-        return bytes;
-    }
-
-    /**
-     * Close the input stream.
-     *
-     * @throws IOException on error
-     */
-    @Override
-    public void close() throws IOException {
-        if (in != null && in != System.in) {
-            in.close();
-        }
-    }
-
-    /**
-     * Peek at the next record from the input stream and return the data.
-     *
-     * @return The record data.
-     * @throws IOException on error
-     */
-    public byte[] peek() throws IOException {
-        // we need to read from the underlying stream. This
-        // isn't a problem since it would be the first step in
-        // any subsequent read() anyway.
-        if (readOffset == blockSize) {
-            try {
-                readBlock(true);
-            } catch (final ShortFileException sfe) { // NOSONAR
-                return null;
-            }
-        }
-
-        // copy data, increment counters.
-        final byte[] b = new byte[RECORD_SIZE];
-        System.arraycopy(blockBuffer, readOffset, b, 0, b.length);
-
-        return b;
-    }
-
-    /**
-     * Read a record from the input stream and return the data.
-     *
-     * @return The record data.
-     * @throws IOException on error
-     */
-    public byte[] readRecord() throws IOException {
-        final byte[] result = new byte[RECORD_SIZE];
-
-        // the read implementation will loop internally as long as
-        // input is available
-        if (-1 == read(result, 0, result.length)) {
-            throw new ShortFileException();
-        }
-
-        return result;
     }
 
     /**
@@ -363,9 +269,107 @@ class TapeInputStream extends FilterInputStream {
     }
 
     /**
-     * Get number of bytes read.
+     * Read a record from the input stream and return the data.
+     *
+     * @return The record data.
+     * @throws IOException on error
      */
-    public long getBytesRead() {
-        return bytesRead;
+    public byte[] readRecord() throws IOException {
+        final byte[] result = new byte[RECORD_SIZE];
+
+        // the read implementation will loop internally as long as
+        // input is available
+        if (-1 == read(result, 0, result.length)) {
+            throw new ShortFileException();
+        }
+
+        return result;
+    }
+
+    /**
+     * Set the DumpArchive Buffer's block size. We need to sync the block size with the
+     * dump archive's actual block size since compression is handled at the
+     * block level.
+     *
+     * @param recsPerBlock
+     *            records per block
+     * @param isCompressed
+     *            true if the archive is compressed
+     * @throws IOException
+     *             more than one block has been read
+     * @throws IOException
+     *             there was an error reading additional blocks.
+     * @throws IOException
+     *             recsPerBlock is smaller than 1
+     */
+    public void resetBlockSize(final int recsPerBlock, final boolean isCompressed)
+        throws IOException {
+        this.isCompressed = isCompressed;
+
+        if (recsPerBlock < 1) {
+            throw new IOException("Block with " + recsPerBlock
+                + " records found, must be at least 1");
+        }
+        blockSize = RECORD_SIZE * recsPerBlock;
+
+        // save first block in case we need it again
+        final byte[] oldBuffer = blockBuffer;
+
+        // read rest of new block
+        blockBuffer = new byte[blockSize];
+        System.arraycopy(oldBuffer, 0, blockBuffer, 0, RECORD_SIZE);
+        readFully(blockBuffer, RECORD_SIZE, blockSize - RECORD_SIZE);
+
+        this.currBlkIdx = 0;
+        this.readOffset = RECORD_SIZE;
+    }
+
+    /**
+     * Skip bytes. Same as read but without the arraycopy.
+     *
+     * <p>skips the full given length unless EOF is reached.</p>
+     *
+     * @param len length to read, must be a multiple of the stream's
+     * record size
+     */
+    @Override
+    public long skip(final long len) throws IOException {
+        if ((len % RECORD_SIZE) != 0) {
+            throw new IllegalArgumentException(
+                "All reads must be multiple of record size (" + RECORD_SIZE +
+                " bytes.");
+        }
+
+        long bytes = 0;
+
+        while (bytes < len) {
+            // we need to read from the underlying stream.
+            // this will reset readOffset value. We do not perform
+            // any decompression if we won't eventually read the data.
+            // return -1 if there's a problem.
+            if (readOffset == blockSize) {
+                try {
+                    readBlock((len - bytes) < blockSize);
+                } catch (final ShortFileException sfe) { // NOSONAR
+                    return -1;
+                }
+            }
+
+            long n = 0;
+
+            if ((readOffset + (len - bytes)) <= blockSize) {
+                // we can read entirely from the buffer.
+                n = len - bytes;
+            } else {
+                // copy what we can from the buffer.
+                n = (long) blockSize - readOffset;
+            }
+
+            // do not copy data but still increment counters.
+            readOffset = ExactMath.add(readOffset, n);
+            bytes += n;
+        }
+
+        return bytes;
     }
 }

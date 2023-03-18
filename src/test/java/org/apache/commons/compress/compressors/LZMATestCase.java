@@ -18,6 +18,9 @@
  */
 package org.apache.commons.compress.compressors;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +31,7 @@ import java.nio.file.Files;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public final class LZMATestCase extends AbstractTestCase {
 
@@ -38,21 +40,41 @@ public final class LZMATestCase extends AbstractTestCase {
         final File input = getFile("test1.xml");
         final File compressed = new File(dir, "test1.xml.xz");
         try (OutputStream out = Files.newOutputStream(compressed.toPath())) {
-            try (CompressorOutputStream cos = new CompressorStreamFactory()
-                    .createCompressorOutputStream("lzma", out)) {
-                IOUtils.copy(Files.newInputStream(input.toPath()), cos);
+            try (CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("lzma", out)) {
+                Files.copy(input.toPath(), cos);
             }
         }
-        byte[] orig;
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            orig = IOUtils.toByteArray(is);
-        }
+        final byte[] orig = Files.readAllBytes(input.toPath());
         final byte[] uncompressed;
-        try (InputStream is = Files.newInputStream(compressed.toPath());
-             CompressorInputStream in = new LZMACompressorInputStream(is)) {
+        try (InputStream is = Files.newInputStream(compressed.toPath()); CompressorInputStream in = new LZMACompressorInputStream(is)) {
             uncompressed = IOUtils.toByteArray(in);
         }
-        Assert.assertArrayEquals(orig, uncompressed);
+        assertArrayEquals(orig, uncompressed);
+    }
+
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tar.lzma");
+        final byte[] buf = new byte[2];
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            try (LZMACompressorInputStream in = new LZMACompressorInputStream(is)) {
+                IOUtils.toByteArray(in);
+                assertEquals(-1, in.read(buf));
+                assertEquals(-1, in.read(buf));
+            }
+        }
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tar.lzma");
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            try (LZMACompressorInputStream in = new LZMACompressorInputStream(is)) {
+                IOUtils.toByteArray(in);
+                assertEquals(-1, in.read());
+                assertEquals(-1, in.read());
+            }
+        }
     }
 
     @Test
@@ -60,8 +82,9 @@ public final class LZMATestCase extends AbstractTestCase {
         final File input = getFile("bla.tar.lzma");
         final File output = new File(dir, "bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
-            final CompressorInputStream in = new LZMACompressorInputStream(is);
-            copy(in, output);
+            try (final CompressorInputStream in = new LZMACompressorInputStream(is)) {
+                Files.copy(in, output.toPath());
+            }
         }
     }
 
@@ -70,44 +93,9 @@ public final class LZMATestCase extends AbstractTestCase {
         final File input = getFile("bla.tar.lzma");
         final File output = new File(dir, "bla.tar");
         try (InputStream is = new BufferedInputStream(Files.newInputStream(input.toPath()))) {
-            final CompressorInputStream in = new CompressorStreamFactory()
-                    .createCompressorInputStream(is);
-            copy(in, output);
-        }
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.tar.lzma");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final LZMACompressorInputStream in =
-                    new LZMACompressorInputStream(is);
-            IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read());
-            Assert.assertEquals(-1, in.read());
-            in.close();
-        }
-    }
-
-    @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.tar.lzma");
-        final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final LZMACompressorInputStream in =
-                    new LZMACompressorInputStream(is);
-            IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read(buf));
-            Assert.assertEquals(-1, in.read(buf));
-            in.close();
-        }
-    }
-
-    private void copy(final InputStream in, final File output) throws IOException {
-        try (OutputStream out = Files.newOutputStream(output.toPath())) {
-            IOUtils.copy(in, out);
-        } finally {
-            in.close();
+            try (final CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream(is)) {
+                Files.copy(in, output.toPath());
+            }
         }
     }
 }

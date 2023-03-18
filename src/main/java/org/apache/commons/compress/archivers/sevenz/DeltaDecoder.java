@@ -20,11 +20,12 @@ package org.apache.commons.compress.archivers.sevenz;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import org.tukaani.xz.DeltaOptions;
 import org.tukaani.xz.FinishableWrapperOutputStream;
 import org.tukaani.xz.UnsupportedOptionsException;
 
-class DeltaDecoder extends CoderBase {
+class DeltaDecoder extends AbstractCoder {
     DeltaDecoder() {
         super(Number.class);
     }
@@ -38,7 +39,7 @@ class DeltaDecoder extends CoderBase {
     @SuppressWarnings("resource")
     @Override
     OutputStream encode(final OutputStream out, final Object options) throws IOException {
-        final int distance = numberOptionOrDefault(options, 1);
+        final int distance = toInt(options, 1);
         try {
             return new DeltaOptions(distance).getOutputStream(new FinishableWrapperOutputStream(out));
         } catch (final UnsupportedOptionsException ex) { // NOSONAR
@@ -49,13 +50,8 @@ class DeltaDecoder extends CoderBase {
     @Override
     byte[] getOptionsAsProperties(final Object options) {
         return new byte[] {
-            (byte) (numberOptionOrDefault(options, 1) - 1)
+            (byte) (toInt(options, 1) - 1)
         };
-    }
-
-    @Override
-    Object getOptionsFromCoder(final Coder coder, final InputStream in) {
-        return getOptionsFromCoder(coder);
     }
 
     private int getOptionsFromCoder(final Coder coder) {
@@ -63,5 +59,10 @@ class DeltaDecoder extends CoderBase {
             return 1;
         }
         return (0xff & coder.properties[0]) + 1;
+    }
+
+    @Override
+    Object getOptionsFromCoder(final Coder coder, final InputStream in) {
+        return getOptionsFromCoder(coder);
     }
 }

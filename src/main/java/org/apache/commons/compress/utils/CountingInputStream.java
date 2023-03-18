@@ -34,6 +34,26 @@ public class CountingInputStream extends FilterInputStream {
         super(in);
     }
 
+    /**
+     * Increments the counter of already read bytes.
+     * Doesn't increment if the EOF has been hit (read == -1)
+     *
+     * @param read the number of bytes read
+     */
+    protected final void count(final long read) {
+        if (read != -1) {
+            bytesRead += read;
+        }
+    }
+
+    /**
+     * Returns the current number of bytes read from this stream.
+     * @return the number of read bytes
+     */
+    public long getBytesRead() {
+        return bytesRead;
+    }
+
     @Override
     public int read() throws IOException {
         final int r = in.read();
@@ -58,25 +78,5 @@ public class CountingInputStream extends FilterInputStream {
             count(r);
         }
         return r;
-    }
-
-    /**
-     * Increments the counter of already read bytes.
-     * Doesn't increment if the EOF has been hit (read == -1)
-     *
-     * @param read the number of bytes read
-     */
-    protected final void count(final long read) {
-        if (read != -1) {
-            bytesRead += read;
-        }
-    }
-
-    /**
-     * Returns the current number of bytes read from this stream.
-     * @return the number of read bytes
-     */
-    public long getBytesRead() {
-        return bytesRead;
     }
 }

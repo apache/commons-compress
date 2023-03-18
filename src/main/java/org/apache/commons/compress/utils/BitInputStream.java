@@ -54,52 +54,15 @@ public class BitInputStream implements Closeable {
         this.byteOrder = byteOrder;
     }
 
-    @Override
-    public void close() throws IOException {
-        in.close();
-    }
-
     /**
-     * Clears the cache of bits that have been read from the
-     * underlying stream but not yet provided via {@link #readBits}.
-     */
-    public void clearBitCache() {
-        bitsCached = 0;
-        bitsCachedSize = 0;
-    }
-
-    /**
-     * Returns at most 63 bits read from the underlying stream.
-     *
-     * @param count the number of bits to read, must be a positive
-     * number not bigger than 63.
-     * @return the bits concatenated as a long using the stream's byte order.
-     *         -1 if the end of the underlying stream has been reached before reading
-     *         the requested number of bits
-     * @throws IOException on error
-     */
-    public long readBits(final int count) throws IOException {
-        if (count < 0 || count > MAXIMUM_CACHE_SIZE) {
-            throw new IOException("count must not be negative or greater than " + MAXIMUM_CACHE_SIZE);
-        }
-        if (ensureCache(count)) {
-            return -1;
-        }
-
-        if (bitsCachedSize < count) {
-            return processBitsGreater57(count);
-        }
-        return readCachedBits(count);
-    }
-
-    /**
-     * Returns the number of bits that can be read from this input
-     * stream without reading from the underlying input stream at all.
-     * @return estimate of the number of bits that can be read without reading from the underlying stream
+     * Drops bits until the next bits will be read from a byte boundary.
      * @since 1.16
      */
-    public int bitsCached() {
-        return bitsCachedSize;
+    public void alignWithByteBoundary() {
+        final int toSkip = bitsCachedSize % Byte.SIZE;
+        if (toSkip > 0) {
+            readCachedBits(toSkip);
+        }
     }
 
     /**
@@ -115,14 +78,50 @@ public class BitInputStream implements Closeable {
     }
 
     /**
-     * Drops bits until the next bits will be read from a byte boundary.
+     * Returns the number of bits that can be read from this input
+     * stream without reading from the underlying input stream at all.
+     * @return estimate of the number of bits that can be read without reading from the underlying stream
      * @since 1.16
      */
-    public void alignWithByteBoundary() {
-        final int toSkip = bitsCachedSize % Byte.SIZE;
-        if (toSkip > 0) {
-            readCachedBits(toSkip);
+    public int bitsCached() {
+        return bitsCachedSize;
+    }
+
+    /**
+     * Clears the cache of bits that have been read from the
+     * underlying stream but not yet provided via {@link #readBits}.
+     */
+    public void clearBitCache() {
+        bitsCached = 0;
+        bitsCachedSize = 0;
+    }
+
+    @Override
+    public void close() throws IOException {
+        in.close();
+    }
+
+    /**
+     * Fills the cache up to 56 bits
+     * @param count
+     * @return return true, when EOF
+     * @throws IOException
+     */
+    private boolean ensureCache(final int count) throws IOException {
+        while (bitsCachedSize < count && bitsCachedSize < 57) {
+            final long nextByte = in.read();
+            if (nextByte < 0) {
+                return true;
+            }
+            if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
+                bitsCached |= (nextByte << bitsCachedSize);
+            } else {
+                bitsCached <<= Byte.SIZE;
+                bitsCached |= nextByte;
+            }
+            bitsCachedSize += Byte.SIZE;
         }
+        return false;
     }
 
     /**
@@ -165,6 +164,30 @@ public class BitInputStream implements Closeable {
         return bitsOut;
     }
 
+    /**
+     * Returns at most 63 bits read from the underlying stream.
+     *
+     * @param count the number of bits to read, must be a positive
+     * number not bigger than 63.
+     * @return the bits concatenated as a long using the stream's byte order.
+     *         -1 if the end of the underlying stream has been reached before reading
+     *         the requested number of bits
+     * @throws IOException on error
+     */
+    public long readBits(final int count) throws IOException {
+        if (count < 0 || count > MAXIMUM_CACHE_SIZE) {
+            throw new IOException("count must not be negative or greater than " + MAXIMUM_CACHE_SIZE);
+        }
+        if (ensureCache(count)) {
+            return -1;
+        }
+
+        if (bitsCachedSize < count) {
+            return processBitsGreater57(count);
+        }
+        return readCachedBits(count);
+    }
+
     private long readCachedBits(final int count) {
         final long bitsOut;
         if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
@@ -175,29 +198,6 @@ public class BitInputStream implements Closeable {
         }
         bitsCachedSize -= count;
         return bitsOut;
-    }
-
-    /**
-     * Fills the cache up to 56 bits
-     * @param count
-     * @return return true, when EOF
-     * @throws IOException
-     */
-    private boolean ensureCache(final int count) throws IOException {
-        while (bitsCachedSize < count && bitsCachedSize < 57) {
-            final long nextByte = in.read();
-            if (nextByte < 0) {
-                return true;
-            }
-            if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
-                bitsCached |= (nextByte << bitsCachedSize);
-            } else {
-                bitsCached <<= Byte.SIZE;
-                bitsCached |= nextByte;
-            }
-            bitsCachedSize += Byte.SIZE;
-        }
-        return false;
     }
 
 }

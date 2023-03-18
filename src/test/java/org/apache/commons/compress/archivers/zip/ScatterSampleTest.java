@@ -17,9 +17,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.parallel.InputStreamSupplier;
-import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -28,29 +26,11 @@ import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 
-import static org.junit.Assert.assertEquals;
+import org.apache.commons.compress.parallel.InputStreamSupplier;
+import org.apache.commons.compress.utils.IOUtils;
+import org.junit.jupiter.api.Test;
 
 public class ScatterSampleTest {
-
-    @Test
-    public void testSample() throws Exception {
-        final File result = File.createTempFile("testSample", "fe");
-
-        createFile(result);
-        checkFile(result);
-    }
-
-    private void createFile(final File result) throws IOException, ExecutionException, InterruptedException {
-        final ScatterSample scatterSample = new ScatterSample();
-        final ZipArchiveEntry archiveEntry = new ZipArchiveEntry("test1.xml");
-        archiveEntry.setMethod(ZipEntry.DEFLATED);
-        final InputStreamSupplier supp = () -> new ByteArrayInputStream("Hello".getBytes());
-
-        scatterSample.addEntry(archiveEntry, supp);
-        try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(result)) {
-            scatterSample.writeTo(zipArchiveOutputStream);
-        }
-    }
 
     private void checkFile(final File result) throws IOException {
         try (final ZipFile zipFile = new ZipFile(result)) {
@@ -65,5 +45,25 @@ public class ScatterSampleTest {
             }
         }
         result.delete();
+    }
+
+    private void createFile(final File result) throws IOException, ExecutionException, InterruptedException {
+        final ScatterSample scatterSample = new ScatterSample();
+        final ZipArchiveEntry archiveEntry = new ZipArchiveEntry("test1.xml");
+        archiveEntry.setMethod(ZipEntry.DEFLATED);
+        final InputStreamSupplier supp = () -> new ByteArrayInputStream("Hello".getBytes());
+
+        scatterSample.addEntry(archiveEntry, supp);
+        try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(result)) {
+            scatterSample.writeTo(zipArchiveOutputStream);
+        }
+    }
+
+    @Test
+    public void testSample() throws Exception {
+        final File result = File.createTempFile("testSample", "fe");
+
+        createFile(result);
+        checkFile(result);
     }
 }

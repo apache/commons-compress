@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.pack200;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 /**
  * A PopulationCodec is a Codec that is well suited to encoding data that shows statistical or repetitive patterns,
@@ -61,7 +62,7 @@ public class PopulationCodec extends Codec {
         lastBandLength = 0;
         favoured = new int[n]; // there must be <= n values, but probably a lot
         // less
-        int result[];
+        int[] result;
         // read table of favorites first
         int smallest = Integer.MAX_VALUE, absoluteSmallest;
         int last = 0;
@@ -121,16 +122,9 @@ public class PopulationCodec extends Codec {
         return result;
     }
 
-    public int[] getFavoured() {
-        return favoured;
-    }
-
-    public Codec getFavouredCodec() {
-        return favouredCodec;
-    }
-
-    public Codec getUnfavouredCodec() {
-        return unfavouredCodec;
+    @Override
+    public byte[] encode(final int value) throws Pack200Exception {
+        throw new Pack200Exception("Population encoding does not work unless the number of elements are known");
     }
 
     @Override
@@ -138,14 +132,8 @@ public class PopulationCodec extends Codec {
         throw new Pack200Exception("Population encoding does not work unless the number of elements are known");
     }
 
-    @Override
-    public byte[] encode(final int value) throws Pack200Exception {
-        throw new Pack200Exception("Population encoding does not work unless the number of elements are known");
-    }
-
     public byte[] encode(final int[] favoured, final int[] tokens, final int[] unfavoured) throws Pack200Exception {
-        final int[] favoured2 = new int[favoured.length + 1];
-        System.arraycopy(favoured, 0, favoured2, 0, favoured.length);
+        final int[] favoured2 = Arrays.copyOf(favoured, favoured.length + 1);
         favoured2[favoured2.length - 1] = favoured[favoured.length - 1]; // repeat last value;
         final byte[] favouredEncoded = favouredCodec.encode(favoured2);
         final byte[] tokensEncoded = tokenCodec.encode(tokens);
@@ -158,7 +146,19 @@ public class PopulationCodec extends Codec {
         return band;
     }
 
+    public int[] getFavoured() {
+        return favoured;
+    }
+
+    public Codec getFavouredCodec() {
+        return favouredCodec;
+    }
+
     public Codec getTokenCodec() {
         return tokenCodec;
+    }
+
+    public Codec getUnfavouredCodec() {
+        return unfavouredCodec;
     }
 }

@@ -18,54 +18,46 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
-import java.util.Collection;
-import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameters;
-import org.junit.runners.Parameterized;
+import java.util.stream.Stream;
 
-@RunWith(Parameterized.class)
+import org.apache.commons.compress.utils.IOUtils;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
 public class CpioArchiveTest {
 
-    @Parameters(name = "using {0}")
-    public static Collection<Object[]> factory() {
-        return Arrays.asList(new Object[]  { CpioConstants.FORMAT_NEW },
-                new Object[]  { CpioConstants.FORMAT_NEW_CRC },
-                new Object[]  { CpioConstants.FORMAT_OLD_ASCII },
-                new Object[]  { CpioConstants.FORMAT_OLD_BINARY });
+    public static Stream<Arguments> factory() {
+        return Stream.of(Arguments.of(CpioConstants.FORMAT_NEW), Arguments.of(CpioConstants.FORMAT_NEW_CRC), Arguments.of(CpioConstants.FORMAT_OLD_ASCII),
+            Arguments.of(CpioConstants.FORMAT_OLD_BINARY));
     }
 
-    private final short format;
-
-    public CpioArchiveTest(final short format) {
-        this.format = format;
-    }
-
-    @Test
-    public void utf18RoundtripTest() throws Exception {
+    @ParameterizedTest
+    @MethodSource("factory")
+    public void utf18RoundtripTest(final short format) throws Exception {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            try (CpioArchiveOutputStream os = new CpioArchiveOutputStream(baos, format, CpioConstants.BLOCK_SIZE,
-                "UTF-16LE")) {
+            try (CpioArchiveOutputStream os = new CpioArchiveOutputStream(baos, format, CpioConstants.BLOCK_SIZE, "UTF-16LE")) {
                 final CpioArchiveEntry entry = new CpioArchiveEntry(format, "T\u00e4st.txt", 4);
                 if (format == CpioConstants.FORMAT_NEW_CRC) {
                     entry.setChksum(10);
                 }
                 os.putArchiveEntry(entry);
-                os.write(new byte[] { 1, 2, 3, 4 });
+                os.write(new byte[] {1, 2, 3, 4});
                 os.closeArchiveEntry();
             }
             baos.close();
             try (ByteArrayInputStream bin = new ByteArrayInputStream(baos.toByteArray());
-                 CpioArchiveInputStream in = new CpioArchiveInputStream(bin, "UTF-16LE")) {
+                CpioArchiveInputStream in = new CpioArchiveInputStream(bin, "UTF-16LE")) {
                 final CpioArchiveEntry entry = (CpioArchiveEntry) in.getNextEntry();
-                Assert.assertNotNull(entry);
-                Assert.assertEquals("T\u00e4st.txt", entry.getName());
-                Assert.assertArrayEquals(new byte[] { 1, 2, 3, 4 }, IOUtils.toByteArray(in));
+                assertNotNull(entry);
+                assertEquals("T\u00e4st.txt", entry.getName());
+                assertArrayEquals(new byte[] {1, 2, 3, 4}, IOUtils.toByteArray(in));
             }
         }
     }

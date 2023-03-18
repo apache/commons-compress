@@ -18,19 +18,14 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+import java.util.Arrays;
+
 /**
  * Package private utility class for Cpio
  *
  * @Immutable
  */
 class CpioUtil {
-
-    /**
-     * Extracts the file type bits from a mode.
-     */
-    static long fileType(final long mode) {
-        return mode & CpioConstants.S_IFMT;
-    }
 
     /**
      * Converts a byte array to a long. Halfwords can be swapped by setting
@@ -50,24 +45,30 @@ class CpioUtil {
 
         long ret;
         int pos = 0;
-        final byte[] tmp_number = new byte[number.length];
-        System.arraycopy(number, 0, tmp_number, 0, number.length);
+        final byte[] tmpNumber = Arrays.copyOf(number, number.length);
 
         if (!swapHalfWord) {
             byte tmp = 0;
-            for (pos = 0; pos < tmp_number.length; pos++) {
-                tmp = tmp_number[pos];
-                tmp_number[pos++] = tmp_number[pos];
-                tmp_number[pos] = tmp;
+            for (pos = 0; pos < tmpNumber.length; pos++) {
+                tmp = tmpNumber[pos];
+                tmpNumber[pos++] = tmpNumber[pos];
+                tmpNumber[pos] = tmp;
             }
         }
 
-        ret = tmp_number[0] & 0xFF;
-        for (pos = 1; pos < tmp_number.length; pos++) {
+        ret = tmpNumber[0] & 0xFF;
+        for (pos = 1; pos < tmpNumber.length; pos++) {
             ret <<= 8;
-            ret |= tmp_number[pos] & 0xFF;
+            ret |= tmpNumber[pos] & 0xFF;
         }
         return ret;
+    }
+
+    /**
+     * Extracts the file type bits from a mode.
+     */
+    static long fileType(final long mode) {
+        return mode & CpioConstants.S_IFMT;
     }
 
     /**

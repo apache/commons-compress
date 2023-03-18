@@ -52,20 +52,9 @@ public class ZstdUtils {
         setCacheZstdAvailablity(!OsgiUtils.isRunningInOsgiEnvironment());
     }
 
-    /** Private constructor to prevent instantiation of this utility class. */
-    private ZstdUtils() {
-    }
-
-    /**
-     * Are the classes required to support Zstandard compression available?
-     * @return true if the classes required to support Zstandard compression are available
-     */
-    public static boolean isZstdCompressionAvailable() {
-        final CachedAvailability cachedResult = cachedZstdAvailability;
-        if (cachedResult != CachedAvailability.DONT_CACHE) {
-            return cachedResult == CachedAvailability.CACHED_AVAILABLE;
-        }
-        return internalIsZstdCompressionAvailable();
+    // only exists to support unit tests
+    static CachedAvailability getCachedZstdAvailability() {
+        return cachedZstdAvailability;
     }
 
     private static boolean internalIsZstdCompressionAvailable() {
@@ -78,19 +67,15 @@ public class ZstdUtils {
     }
 
     /**
-     * Whether to cache the result of the Zstandard for Java check.
-     *
-     * <p>This defaults to {@code false} in an OSGi environment and {@code true} otherwise.</p>
-     * @param doCache whether to cache the result
+     * Are the classes required to support Zstandard compression available?
+     * @return true if the classes required to support Zstandard compression are available
      */
-    public static void setCacheZstdAvailablity(final boolean doCache) {
-        if (!doCache) {
-            cachedZstdAvailability = CachedAvailability.DONT_CACHE;
-        } else if (cachedZstdAvailability == CachedAvailability.DONT_CACHE) {
-            final boolean hasZstd = internalIsZstdCompressionAvailable();
-            cachedZstdAvailability = hasZstd ? CachedAvailability.CACHED_AVAILABLE
-                : CachedAvailability.CACHED_UNAVAILABLE;
+    public static boolean isZstdCompressionAvailable() {
+        final CachedAvailability cachedResult = cachedZstdAvailability;
+        if (cachedResult != CachedAvailability.DONT_CACHE) {
+            return cachedResult == CachedAvailability.CACHED_AVAILABLE;
         }
+        return internalIsZstdCompressionAvailable();
     }
 
     /**
@@ -131,8 +116,23 @@ public class ZstdUtils {
         return false;
     }
 
-    // only exists to support unit tests
-    static CachedAvailability getCachedZstdAvailability() {
-        return cachedZstdAvailability;
+    /**
+     * Whether to cache the result of the Zstandard for Java check.
+     *
+     * <p>This defaults to {@code false} in an OSGi environment and {@code true} otherwise.</p>
+     * @param doCache whether to cache the result
+     */
+    public static void setCacheZstdAvailablity(final boolean doCache) {
+        if (!doCache) {
+            cachedZstdAvailability = CachedAvailability.DONT_CACHE;
+        } else if (cachedZstdAvailability == CachedAvailability.DONT_CACHE) {
+            final boolean hasZstd = internalIsZstdCompressionAvailable();
+            cachedZstdAvailability = hasZstd ? CachedAvailability.CACHED_AVAILABLE
+                : CachedAvailability.CACHED_UNAVAILABLE;
+        }
+    }
+
+    /** Private constructor to prevent instantiation of this utility class. */
+    private ZstdUtils() {
     }
 }

@@ -36,9 +36,8 @@ public class DeflateCompressorOutputStream extends CompressorOutputStream {
     /**
      * Creates a Deflate compressed output stream with the default parameters.
      * @param outputStream the stream to wrap
-     * @throws IOException on error
      */
-    public DeflateCompressorOutputStream(final OutputStream outputStream) throws IOException {
+    public DeflateCompressorOutputStream(final OutputStream outputStream) {
         this(outputStream, new DeflateParameters());
     }
 
@@ -46,33 +45,20 @@ public class DeflateCompressorOutputStream extends CompressorOutputStream {
      * Creates a Deflate compressed output stream with the specified parameters.
      * @param outputStream the stream to wrap
      * @param parameters the deflate parameters to apply
-     * @throws IOException on error
      */
     public DeflateCompressorOutputStream(final OutputStream outputStream,
-                                         final DeflateParameters parameters) throws IOException {
+                                         final DeflateParameters parameters) {
         this.deflater = new Deflater(parameters.getCompressionLevel(), !parameters.withZlibHeader());
         this.out = new DeflaterOutputStream(outputStream, deflater);
     }
 
     @Override
-    public void write(final int b) throws IOException {
-        out.write(b);
-    }
-
-    @Override
-    public void write(final byte[] buf, final int off, final int len) throws IOException {
-        out.write(buf, off, len);
-    }
-
-    /**
-     * Flushes the encoder and calls <code>outputStream.flush()</code>.
-     * All buffered pending data will then be decompressible from
-     * the output stream. Calling this function very often may increase
-     * the compressed file size a lot.
-     */
-    @Override
-    public void flush() throws IOException {
-        out.flush();
+    public void close() throws IOException {
+        try {
+            out.close();
+        } finally {
+            deflater.end();
+        }
     }
 
     /**
@@ -84,12 +70,24 @@ public class DeflateCompressorOutputStream extends CompressorOutputStream {
         out.finish();
     }
 
+    /**
+     * Flushes the encoder and calls {@code outputStream.flush()}.
+     * All buffered pending data will then be decompressible from
+     * the output stream. Calling this function very often may increase
+     * the compressed file size a lot.
+     */
     @Override
-    public void close() throws IOException {
-        try {
-            out.close();
-        } finally {
-            deflater.end();
-        }
+    public void flush() throws IOException {
+        out.flush();
+    }
+
+    @Override
+    public void write(final byte[] buf, final int off, final int len) throws IOException {
+        out.write(buf, off, len);
+    }
+
+    @Override
+    public void write(final int b) throws IOException {
+        out.write(b);
     }
 }

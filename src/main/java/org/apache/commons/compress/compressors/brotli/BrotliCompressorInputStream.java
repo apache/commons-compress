@@ -52,14 +52,12 @@ public class BrotliCompressorInputStream extends CompressorInputStream
         decIS.close();
     }
 
+    /**
+     * @since 1.17
+     */
     @Override
-    public int read(final byte[] b) throws IOException {
-        return decIS.read(b);
-    }
-
-    @Override
-    public long skip(final long n) throws IOException {
-        return IOUtils.skip(decIS, n);
+    public long getCompressedCount() {
+        return countingStream.getBytesRead();
     }
 
     @Override
@@ -80,6 +78,11 @@ public class BrotliCompressorInputStream extends CompressorInputStream
     }
 
     @Override
+    public int read(final byte[] b) throws IOException {
+        return decIS.read(b);
+    }
+
+    @Override
     public int read(final byte[] buf, final int off, final int len) throws IOException {
         final int ret = decIS.read(buf, off, len);
         count(ret);
@@ -87,20 +90,17 @@ public class BrotliCompressorInputStream extends CompressorInputStream
     }
 
     @Override
-    public String toString() {
-        return decIS.toString();
-    }
-
-    @Override
     public synchronized void reset() throws IOException {
         decIS.reset();
     }
 
-    /**
-     * @since 1.17
-     */
     @Override
-    public long getCompressedCount() {
-        return countingStream.getBytesRead();
+    public long skip(final long n) throws IOException {
+        return IOUtils.skip(decIS, n);
+    }
+
+    @Override
+    public String toString() {
+        return decIS.toString();
     }
 }

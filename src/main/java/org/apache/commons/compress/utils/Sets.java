@@ -29,10 +29,6 @@ import java.util.HashSet;
  */
 public class Sets {
 
-    private Sets() {
-        // Do not instantiate
-    }
-
     /**
      * Creates a new HashSet filled with the given elements
      *
@@ -46,5 +42,9 @@ public class Sets {
         final HashSet<E> set = new HashSet<>(elements.length);
         Collections.addAll(set, elements);
         return set;
+    }
+
+    private Sets() {
+        // Do not instantiate
     }
 }

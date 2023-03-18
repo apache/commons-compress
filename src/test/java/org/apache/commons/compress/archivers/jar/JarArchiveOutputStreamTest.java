@@ -18,41 +18,42 @@
  */
 package org.apache.commons.compress.archivers.jar;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Instant;
 
-import org.junit.Test;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.JarMarker;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipExtraField;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.junit.jupiter.api.Test;
 
 public class JarArchiveOutputStreamTest {
 
     @Test
     public void testJarMarker() throws IOException {
-        final File testArchive = File.createTempFile("jar-aostest", ".jar");
-        testArchive.deleteOnExit();
-        JarArchiveOutputStream out = null;
-        ZipFile zf = null;
-        try {
-
-            out = new JarArchiveOutputStream(Files.newOutputStream(testArchive.toPath()));
-            out.putArchiveEntry(new ZipArchiveEntry("foo/"));
+        final Path testArchive = Files.createTempFile("jar-aostest", ".jar");
+        testArchive.toFile().deleteOnExit();
+        try (JarArchiveOutputStream out = new JarArchiveOutputStream(Files.newOutputStream(testArchive))) {
+            final ZipArchiveEntry ze1 = new ZipArchiveEntry("foo/");
+            // Ensure we won't accidentally add an Extra field.
+            ze1.setTime(Instant.parse("2022-12-27T12:10:23Z").toEpochMilli());
+            out.putArchiveEntry(ze1);
             out.closeArchiveEntry();
-            out.putArchiveEntry(new ZipArchiveEntry("bar/"));
+            final ZipArchiveEntry ze2 = new ZipArchiveEntry("bar/");
+            // Ensure we won't accidentally add an Extra field.
+            ze2.setTime(Instant.parse("2022-12-28T02:56:01Z").toEpochMilli());
+            out.putArchiveEntry(ze2);
             out.closeArchiveEntry();
             out.finish();
-            out.close();
-            out = null;
-
-            zf = new ZipFile(testArchive);
+        }
+        try (ZipFile zf = new ZipFile(testArchive)) {
             ZipArchiveEntry ze = zf.getEntry("foo/");
             assertNotNull(ze);
             ZipExtraField[] fes = ze.getExtraFields();
@@ -64,12 +65,6 @@ public class JarArchiveOutputStreamTest {
             fes = ze.getExtraFields();
             assertEquals(0, fes.length);
         } finally {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (final IOException e) { /* swallow */ }
-            }
-            ZipFile.closeQuietly(zf);
             AbstractTestCase.tryHardToDelete(testArchive);
         }
     }

@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Abstract superclass for reference constant pool entries, such as a method or field reference.
@@ -30,6 +31,8 @@ public abstract class CPRef extends ConstantPoolEntry {
     protected CPNameAndType nameAndType;
     transient int nameAndTypeIndex;
 
+    protected String cachedToString;
+
     /**
      * Create a new CPRef
      *
@@ -41,11 +44,8 @@ public abstract class CPRef extends ConstantPoolEntry {
      */
     public CPRef(final byte type, final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
         super(type, globalIndex);
-        this.className = className;
-        this.nameAndType = descriptor;
-        if (descriptor == null || className == null) {
-            throw new NullPointerException("Null arguments are not allowed");
-        }
+        this.className = Objects.requireNonNull(className, "className");
+        this.nameAndType = Objects.requireNonNull(descriptor, "descriptor");
     }
 
     @Override
@@ -86,8 +86,6 @@ public abstract class CPRef extends ConstantPoolEntry {
         nameAndTypeIndex = pool.indexOf(nameAndType);
         classNameIndex = pool.indexOf(className);
     }
-
-    protected String cachedToString;
 
     @Override
     public String toString() {

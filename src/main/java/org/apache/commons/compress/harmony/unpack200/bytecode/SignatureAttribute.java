@@ -24,14 +24,14 @@ import java.io.IOException;
  */
 public class SignatureAttribute extends Attribute {
 
-    private int signature_index;
-    private final CPUTF8 signature;
-
     private static CPUTF8 attributeName;
-
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
+
+    private int signatureIndex;
+
+    private final CPUTF8 signature;
 
     public SignatureAttribute(final CPUTF8 value) {
         super(attributeName);
@@ -57,17 +57,7 @@ public class SignatureAttribute extends Attribute {
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         signature.resolve(pool);
-        signature_index = pool.indexOf(signature);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#writeBody(java.io.DataOutputStream)
-     */
-    @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeShort(signature_index);
+        signatureIndex = pool.indexOf(signature);
     }
 
     /*
@@ -79,6 +69,16 @@ public class SignatureAttribute extends Attribute {
     public String toString() {
         // TODO Auto-generated method stub
         return "Signature: " + signature;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#writeBody(java.io.DataOutputStream)
+     */
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        dos.writeShort(signatureIndex);
     }
 
 }

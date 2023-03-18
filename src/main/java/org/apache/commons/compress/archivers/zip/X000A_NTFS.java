@@ -17,8 +17,12 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.nio.file.attribute.FileTime;
 import java.util.Date;
+import java.util.Objects;
 import java.util.zip.ZipException;
+
+import org.apache.commons.compress.utils.TimeUtils;
 
 /**
  * NTFS extra field that was thought to store various attributes but
@@ -64,16 +68,149 @@ import java.util.zip.ZipException;
  * @NotThreadSafe
  */
 public class X000A_NTFS implements ZipExtraField {
-    private static final ZipShort HEADER_ID = new ZipShort(0x000a);
+
+    /**
+     * The header ID for this extra field.
+     *
+     * @since 1.23
+     */
+    public static final ZipShort HEADER_ID = new ZipShort(0x000a);
+
     private static final ZipShort TIME_ATTR_TAG = new ZipShort(0x0001);
     private static final ZipShort TIME_ATTR_SIZE = new ZipShort(3 * 8);
 
+    private static ZipEightByteInteger dateToZip(final Date d) {
+        if (d == null) {
+            return null;
+        }
+        return new ZipEightByteInteger(TimeUtils.toNtfsTime(d));
+    }
+    private static ZipEightByteInteger fileTimeToZip(final FileTime time) {
+        if (time == null) {
+            return null;
+        }
+        return new ZipEightByteInteger(TimeUtils.toNtfsTime(time));
+    }
+    private static Date zipToDate(final ZipEightByteInteger z) {
+        if (z == null || ZipEightByteInteger.ZERO.equals(z)) {
+            return null;
+        }
+        return TimeUtils.ntfsTimeToDate(z.getLongValue());
+    }
+
+    private static FileTime zipToFileTime(final ZipEightByteInteger z) {
+        if (z == null || ZipEightByteInteger.ZERO.equals(z)) {
+            return null;
+        }
+        return TimeUtils.ntfsTimeToFileTime(z.getLongValue());
+    }
+
     private ZipEightByteInteger modifyTime = ZipEightByteInteger.ZERO;
+
     private ZipEightByteInteger accessTime = ZipEightByteInteger.ZERO;
+
     private ZipEightByteInteger createTime = ZipEightByteInteger.ZERO;
 
+    @Override
+    public boolean equals(final Object o) {
+        if (o instanceof X000A_NTFS) {
+            final X000A_NTFS xf = (X000A_NTFS) o;
+
+            return Objects.equals(modifyTime, xf.modifyTime) &&
+                   Objects.equals(accessTime, xf.accessTime) &&
+                   Objects.equals(createTime, xf.createTime);
+        }
+        return false;
+    }
+
     /**
-     * The Header-ID.
+     * Gets the access time as a {@link FileTime}
+     * of this ZIP entry, or null if no such timestamp exists in the ZIP entry.
+     *
+     * @return access time as a {@link FileTime} or null.
+     * @since 1.23
+     */
+    public FileTime getAccessFileTime() {
+        return zipToFileTime(accessTime);
+    }
+
+    /**
+     * Gets the access time as a java.util.Date
+     * of this ZIP entry, or null if no such timestamp exists in the ZIP entry.
+     *
+     * @return access time as java.util.Date or null.
+     */
+    public Date getAccessJavaTime() {
+        return zipToDate(accessTime);
+    }
+
+    /**
+     * Gets the "File last access time" of this ZIP entry as a
+     * ZipEightByteInteger object, or {@link ZipEightByteInteger#ZERO}
+     * if no such timestamp exists in the ZIP entry.
+     *
+     * @return File last access time
+     */
+    public ZipEightByteInteger getAccessTime() { return accessTime; }
+
+    /**
+     * Gets the actual data to put into central directory data - without Header-ID
+     * or length specifier.
+     *
+     * @return the central directory data
+     */
+    @Override
+    public byte[] getCentralDirectoryData() {
+        return getLocalFileDataData();
+    }
+
+    /**
+     * Gets the length of the extra field in the local file data - without
+     * Header-ID or length specifier.
+     *
+     * <p>For X5455 the central length is often smaller than the
+     * local length, because central cannot contain access or create
+     * timestamps.</p>
+     *
+     * @return a {@code ZipShort} for the length of the data of this extra field
+     */
+    @Override
+    public ZipShort getCentralDirectoryLength() {
+        return getLocalFileDataLength();
+    }
+
+    /**
+     * Gets the create time as a {@link FileTime}
+     * of this ZIP entry, or null if no such timestamp exists in the ZIP entry.
+     *
+     * @return create time as a {@link FileTime} or null.
+     * @since 1.23
+     */
+    public FileTime getCreateFileTime() {
+        return zipToFileTime(createTime);
+    }
+
+    /**
+     * Gets the create time as a java.util.Date of this ZIP
+     * entry, or null if no such timestamp exists in the ZIP entry.
+     *
+     * @return create time as java.util.Date or null.
+     */
+    public Date getCreateJavaTime() {
+        return zipToDate(createTime);
+    }
+
+    /**
+     * Gets the "File creation time" of this ZIP entry as a
+     * ZipEightByteInteger object, or {@link ZipEightByteInteger#ZERO}
+     * if no such timestamp exists in the ZIP entry.
+     *
+     * @return File creation time
+     */
+    public ZipEightByteInteger getCreateTime() { return createTime; }
+
+    /**
+     * Gets the Header-ID.
      *
      * @return the value for the header id for this extrafield
      */
@@ -83,36 +220,7 @@ public class X000A_NTFS implements ZipExtraField {
     }
 
     /**
-     * Length of the extra field in the local file data - without
-     * Header-ID or length specifier.
-     *
-     * @return a <code>ZipShort</code> for the length of the data of this extra field
-     */
-    @Override
-    public ZipShort getLocalFileDataLength() {
-        return new ZipShort(4 /* reserved */
-                            + 2 /* Tag#1 */
-                            + 2 /* Size#1 */
-                            + 3 * 8 /* time values */);
-    }
-
-    /**
-     * Length of the extra field in the local file data - without
-     * Header-ID or length specifier.
-     *
-     * <p>For X5455 the central length is often smaller than the
-     * local length, because central cannot contain access or create
-     * timestamps.</p>
-     *
-     * @return a <code>ZipShort</code> for the length of the data of this extra field
-     */
-    @Override
-    public ZipShort getCentralDirectoryLength() {
-        return getLocalFileDataLength();
-    }
-
-    /**
-     * The actual data to put into local file data - without Header-ID
+     * Gets the actual data to put into local file data - without Header-ID
      * or length specifier.
      *
      * @return get the data
@@ -134,14 +242,77 @@ public class X000A_NTFS implements ZipExtraField {
     }
 
     /**
-     * The actual data to put into central directory data - without Header-ID
-     * or length specifier.
+     * Gets the length of the extra field in the local file data - without
+     * Header-ID or length specifier.
      *
-     * @return the central directory data
+     * @return a {@code ZipShort} for the length of the data of this extra field
      */
     @Override
-    public byte[] getCentralDirectoryData() {
-        return getLocalFileDataData();
+    public ZipShort getLocalFileDataLength() {
+        return new ZipShort(4 /* reserved */
+                            + 2 /* Tag#1 */
+                            + 2 /* Size#1 */
+                            + 3 * 8 /* time values */);
+    }
+
+    /**
+     * Gets the modify time as a {@link FileTime}
+     * of this ZIP entry, or null if no such timestamp exists in the ZIP entry.
+     *
+     * @return modify time as a {@link FileTime} or null.
+     * @since 1.23
+     */
+    public FileTime getModifyFileTime() {
+        return zipToFileTime(modifyTime);
+    }
+
+    /**
+     * Gets the modify time as a java.util.Date
+     * of this ZIP entry, or null if no such timestamp exists in the ZIP entry.
+     *
+     * @return modify time as java.util.Date or null.
+     */
+    public Date getModifyJavaTime() {
+        return zipToDate(modifyTime);
+    }
+
+    /**
+     * Gets the "File last modification time" of this ZIP entry as
+     * a ZipEightByteInteger object, or {@link
+     * ZipEightByteInteger#ZERO} if no such timestamp exists in the
+     * ZIP entry.
+     *
+     * @return File last modification time
+     */
+    public ZipEightByteInteger getModifyTime() { return modifyTime; }
+
+    @Override
+    public int hashCode() {
+        int hc = -123;
+        if (modifyTime != null) {
+            hc ^= modifyTime.hashCode();
+        }
+        if (accessTime != null) {
+            // Since accessTime is often same as modifyTime,
+            // this prevents them from XOR negating each other.
+            hc ^= Integer.rotateLeft(accessTime.hashCode(), 11);
+        }
+        if (createTime != null) {
+            hc ^= Integer.rotateLeft(createTime.hashCode(), 22);
+        }
+        return hc;
+    }
+
+    /**
+     * Doesn't do anything special since this class always uses the
+     * same parsing logic for both central directory and local file data.
+     */
+    @Override
+    public void parseFromCentralDirectoryData(
+            final byte[] buffer, final int offset, final int length
+    ) throws ZipException {
+        reset();
+        parseFromLocalFileData(buffer, offset, length);
     }
 
     /**
@@ -173,192 +344,6 @@ public class X000A_NTFS implements ZipExtraField {
         }
     }
 
-    /**
-     * Doesn't do anything special since this class always uses the
-     * same parsing logic for both central directory and local file data.
-     */
-    @Override
-    public void parseFromCentralDirectoryData(
-            final byte[] buffer, final int offset, final int length
-    ) throws ZipException {
-        reset();
-        parseFromLocalFileData(buffer, offset, length);
-    }
-
-    /**
-     * Returns the "File last modification time" of this zip entry as
-     * a ZipEightByteInteger object, or {@link
-     * ZipEightByteInteger#ZERO} if no such timestamp exists in the
-     * zip entry.
-     *
-     * @return File last modification time
-     */
-    public ZipEightByteInteger getModifyTime() { return modifyTime; }
-
-    /**
-     * Returns the "File last access time" of this zip entry as a
-     * ZipEightByteInteger object, or {@link ZipEightByteInteger#ZERO}
-     * if no such timestamp exists in the zip entry.
-     *
-     * @return File last access time
-     */
-    public ZipEightByteInteger getAccessTime() { return accessTime; }
-
-    /**
-     * Returns the "File creation time" of this zip entry as a
-     * ZipEightByteInteger object, or {@link ZipEightByteInteger#ZERO}
-     * if no such timestamp exists in the zip entry.
-     *
-     * @return File creation time
-     */
-    public ZipEightByteInteger getCreateTime() { return createTime; }
-
-    /**
-     * Returns the modify time as a java.util.Date
-     * of this zip entry, or null if no such timestamp exists in the zip entry.
-     *
-     * @return modify time as java.util.Date or null.
-     */
-    public Date getModifyJavaTime() {
-        return zipToDate(modifyTime);
-    }
-
-    /**
-     * Returns the access time as a java.util.Date
-     * of this zip entry, or null if no such timestamp exists in the zip entry.
-     *
-     * @return access time as java.util.Date or null.
-     */
-    public Date getAccessJavaTime() {
-        return zipToDate(accessTime);
-    }
-
-    /**
-     * Returns the create time as a a java.util.Date of this zip
-     * entry, or null if no such timestamp exists in the zip entry.
-     *
-     * @return create time as java.util.Date or null.
-     */
-    public Date getCreateJavaTime() {
-        return zipToDate(createTime);
-    }
-
-    /**
-     * Sets the File last modification time of this zip entry using a
-     * ZipEightByteInteger object.
-     *
-     * @param t ZipEightByteInteger of the modify time
-     */
-    public void setModifyTime(final ZipEightByteInteger t) {
-        modifyTime = t == null ? ZipEightByteInteger.ZERO : t;
-    }
-
-    /**
-     * Sets the File last access time of this zip entry using a
-     * ZipEightByteInteger object.
-     *
-     * @param t ZipEightByteInteger of the access time
-     */
-    public void setAccessTime(final ZipEightByteInteger t) {
-        accessTime = t == null ? ZipEightByteInteger.ZERO : t;
-    }
-
-    /**
-     * Sets the File creation time of this zip entry using a
-     * ZipEightByteInteger object.
-     *
-     * @param t ZipEightByteInteger of the create time
-     */
-    public void setCreateTime(final ZipEightByteInteger t) {
-        createTime = t == null ? ZipEightByteInteger.ZERO : t;
-    }
-
-    /**
-     * Sets the modify time as a java.util.Date of this zip entry.
-     *
-     * @param d modify time as java.util.Date
-     */
-    public void setModifyJavaTime(final Date d) { setModifyTime(dateToZip(d)); }
-
-    /**
-     * Sets the access time as a java.util.Date
-     * of this zip entry.
-     *
-     * @param d access time as java.util.Date
-     */
-    public void setAccessJavaTime(final Date d) { setAccessTime(dateToZip(d)); }
-
-    /**
-     * <p>
-     * Sets the create time as a java.util.Date
-     * of this zip entry.  Supplied value is truncated to per-second
-     * precision (milliseconds zeroed-out).
-     * </p><p>
-     * Note: the setters for flags and timestamps are decoupled.
-     * Even if the timestamp is not-null, it will only be written
-     * out if the corresponding bit in the flags is also set.
-     * </p>
-     *
-     * @param d create time as java.util.Date
-     */
-    public void setCreateJavaTime(final Date d) { setCreateTime(dateToZip(d)); }
-
-    /**
-     * Returns a String representation of this class useful for
-     * debugging purposes.
-     *
-     * @return A String representation of this class useful for
-     *         debugging purposes.
-     */
-    @Override
-    public String toString() {
-        final StringBuilder buf = new StringBuilder();
-        buf.append("0x000A Zip Extra Field:")
-            .append(" Modify:[").append(getModifyJavaTime()).append("] ")
-            .append(" Access:[").append(getAccessJavaTime()).append("] ")
-            .append(" Create:[").append(getCreateJavaTime()).append("] ");
-        return buf.toString();
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (o instanceof X000A_NTFS) {
-            final X000A_NTFS xf = (X000A_NTFS) o;
-
-            return (modifyTime == xf.modifyTime || (modifyTime != null && modifyTime.equals(xf.modifyTime))) &&
-                    (accessTime == xf.accessTime || (accessTime != null && accessTime.equals(xf.accessTime))) &&
-                    (createTime == xf.createTime || (createTime != null && createTime.equals(xf.createTime)));
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        int hc = -123;
-        if (modifyTime != null) {
-            hc ^= modifyTime.hashCode();
-        }
-        if (accessTime != null) {
-            // Since accessTime is often same as modifyTime,
-            // this prevents them from XOR negating each other.
-            hc ^= Integer.rotateLeft(accessTime.hashCode(), 11);
-        }
-        if (createTime != null) {
-            hc ^= Integer.rotateLeft(createTime.hashCode(), 22);
-        }
-        return hc;
-    }
-
-    /**
-     * Reset state back to newly constructed state.  Helps us make sure
-     * parse() calls always generate clean results.
-     */
-    private void reset() {
-        this.modifyTime = ZipEightByteInteger.ZERO;
-        this.accessTime = ZipEightByteInteger.ZERO;
-        this.createTime = ZipEightByteInteger.ZERO;
-    }
-
     private void readTimeAttr(final byte[] data, int offset, final int length) {
         if (length >= 2 + 3 * 8) {
             final ZipShort tagValueLength = new ZipShort(data, offset);
@@ -373,22 +358,120 @@ public class X000A_NTFS implements ZipExtraField {
         }
     }
 
-    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724290%28v=vs.85%29.aspx
-    // A file time is a 64-bit value that represents the number of
-    // 100-nanosecond intervals that have elapsed since 12:00
-    // A.M. January 1, 1601 Coordinated Universal Time (UTC).
-    // this is the offset of Windows time 0 to Unix epoch in 100-nanosecond intervals
-    private static final long EPOCH_OFFSET = -116444736000000000L;
-
-    private static ZipEightByteInteger dateToZip(final Date d) {
-        if (d == null) { return null; }
-        return new ZipEightByteInteger((d.getTime() * 10000L) - EPOCH_OFFSET);
+    /**
+     * Reset state back to newly constructed state.  Helps us make sure
+     * parse() calls always generate clean results.
+     */
+    private void reset() {
+        this.modifyTime = ZipEightByteInteger.ZERO;
+        this.accessTime = ZipEightByteInteger.ZERO;
+        this.createTime = ZipEightByteInteger.ZERO;
     }
 
-    private static Date zipToDate(final ZipEightByteInteger z) {
-        if (z == null || ZipEightByteInteger.ZERO.equals(z)) { return null; }
-        final long l = (z.getLongValue() + EPOCH_OFFSET) / 10000L;
-        return new Date(l);
+    /**
+     * Sets the access time.
+     *
+     * @param time access time as a {@link FileTime}
+     * @since 1.23
+     */
+    public void setAccessFileTime(final FileTime time) {
+        setAccessTime(fileTimeToZip(time));
     }
 
+    /**
+     * Sets the access time as a java.util.Date
+     * of this ZIP entry.
+     *
+     * @param d access time as java.util.Date
+     */
+    public void setAccessJavaTime(final Date d) { setAccessTime(dateToZip(d)); }
+
+    /**
+     * Sets the File last access time of this ZIP entry using a
+     * ZipEightByteInteger object.
+     *
+     * @param t ZipEightByteInteger of the access time
+     */
+    public void setAccessTime(final ZipEightByteInteger t) {
+        accessTime = t == null ? ZipEightByteInteger.ZERO : t;
+    }
+
+    /**
+     * Sets the create time.
+     *
+     * @param time create time as a {@link FileTime}
+     * @since 1.23
+     */
+    public void setCreateFileTime(final FileTime time) {
+        setCreateTime(fileTimeToZip(time));
+    }
+
+    /**
+     * <p>
+     * Sets the create time as a java.util.Date
+     * of this ZIP entry.  Supplied value is truncated to per-second
+     * precision (milliseconds zeroed-out).
+     * </p><p>
+     * Note: the setters for flags and timestamps are decoupled.
+     * Even if the timestamp is not-null, it will only be written
+     * out if the corresponding bit in the flags is also set.
+     * </p>
+     *
+     * @param d create time as java.util.Date
+     */
+    public void setCreateJavaTime(final Date d) { setCreateTime(dateToZip(d)); }
+
+    /**
+     * Sets the File creation time of this ZIP entry using a
+     * ZipEightByteInteger object.
+     *
+     * @param t ZipEightByteInteger of the create time
+     */
+    public void setCreateTime(final ZipEightByteInteger t) {
+        createTime = t == null ? ZipEightByteInteger.ZERO : t;
+    }
+
+    /**
+     * Sets the modify time.
+     *
+     * @param time modify time as a {@link FileTime}
+     * @since 1.23
+     */
+    public void setModifyFileTime(final FileTime time) {
+        setModifyTime(fileTimeToZip(time));
+    }
+
+    /**
+     * Sets the modify time as a java.util.Date of this ZIP entry.
+     *
+     * @param d modify time as java.util.Date
+     */
+    public void setModifyJavaTime(final Date d) { setModifyTime(dateToZip(d)); }
+
+    /**
+     * Sets the File last modification time of this ZIP entry using a
+     * ZipEightByteInteger object.
+     *
+     * @param t ZipEightByteInteger of the modify time
+     */
+    public void setModifyTime(final ZipEightByteInteger t) {
+        modifyTime = t == null ? ZipEightByteInteger.ZERO : t;
+    }
+
+    /**
+     * Returns a String representation of this class useful for
+     * debugging purposes.
+     *
+     * @return A String representation of this class useful for
+     *         debugging purposes.
+     */
+    @Override
+    public String toString() {
+        final StringBuilder buf = new StringBuilder();
+        buf.append("0x000A Zip Extra Field:")
+            .append(" Modify:[").append(getModifyFileTime()).append("] ")
+            .append(" Access:[").append(getAccessFileTime()).append("] ")
+            .append(" Create:[").append(getCreateFileTime()).append("] ");
+        return buf.toString();
+    }
 }

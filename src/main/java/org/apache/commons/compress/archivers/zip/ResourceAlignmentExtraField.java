@@ -29,7 +29,7 @@ import java.util.zip.ZipException;
  * when reading a padding field.</p>
  *
  * <p>This enables Commons Compress to create "aligned" archives
- * similar to Android's zipalign command line tool.</p>
+ * similar to Android's {@code zipalign} command line tool.</p>
  *
  * @since 1.14
  * @see "https://developer.android.com/studio/command-line/zipalign.html"
@@ -76,6 +76,16 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
     }
 
     /**
+     * Indicates whether method change is allowed when re-compressing the ZIP file.
+     *
+     * @return
+     *      true if method change is allowed, false otherwise.
+     */
+    public boolean allowMethodChange() {
+        return allowMethodChange;
+    }
+
+    /**
      * Gets requested alignment.
      *
      * @return
@@ -85,29 +95,19 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
         return alignment;
     }
 
-    /**
-     * Indicates whether method change is allowed when re-compressing the zip file.
-     *
-     * @return
-     *      true if method change is allowed, false otherwise.
-     */
-    public boolean allowMethodChange() {
-        return allowMethodChange;
-    }
-
     @Override
-    public ZipShort getHeaderId() {
-        return ID;
-    }
-
-    @Override
-    public ZipShort getLocalFileDataLength() {
-        return new ZipShort(BASE_SIZE + padding);
+    public byte[] getCentralDirectoryData() {
+        return ZipShort.getBytes(alignment | (allowMethodChange ? ALLOW_METHOD_MESSAGE_CHANGE_FLAG : 0));
     }
 
     @Override
     public ZipShort getCentralDirectoryLength() {
         return new ZipShort(BASE_SIZE);
+    }
+
+    @Override
+    public ZipShort getHeaderId() {
+        return ID;
     }
 
     @Override
@@ -119,14 +119,8 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
     }
 
     @Override
-    public byte[] getCentralDirectoryData() {
-        return ZipShort.getBytes(alignment | (allowMethodChange ? ALLOW_METHOD_MESSAGE_CHANGE_FLAG : 0));
-    }
-
-    @Override
-    public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length) throws ZipException {
-        parseFromCentralDirectoryData(buffer, offset, length);
-        this.padding = length - BASE_SIZE;
+    public ZipShort getLocalFileDataLength() {
+        return new ZipShort(BASE_SIZE + padding);
     }
 
     @Override
@@ -137,5 +131,11 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
         final int alignmentValue = ZipShort.getValue(buffer, offset);
         this.alignment = (short) (alignmentValue & (ALLOW_METHOD_MESSAGE_CHANGE_FLAG - 1));
         this.allowMethodChange = (alignmentValue & ALLOW_METHOD_MESSAGE_CHANGE_FLAG) != 0;
+    }
+
+    @Override
+    public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length) throws ZipException {
+        parseFromCentralDirectoryData(buffer, offset, length);
+        this.padding = length - BASE_SIZE;
     }
 }

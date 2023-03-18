@@ -18,43 +18,33 @@
  */
 package org.apache.commons.compress.compressors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.commons.compress.compressors.gzip.GzipUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class GzipUtilsTestCase {
 
     @Test
-    public void testIsCompressedFilename() {
-        assertFalse(GzipUtils.isCompressedFilename(""));
-        assertFalse(GzipUtils.isCompressedFilename(".gz"));
+    public void testGetCompressedFilename() {
+        assertEquals(".gz", GzipUtils.getCompressedFilename(""));
+        assertEquals("x.gz", GzipUtils.getCompressedFilename("x"));
 
-        assertTrue(GzipUtils.isCompressedFilename("x.tgz"));
-        assertTrue(GzipUtils.isCompressedFilename("x.taz"));
-        assertTrue(GzipUtils.isCompressedFilename("x.svgz"));
-        assertTrue(GzipUtils.isCompressedFilename("x.cpgz"));
-        assertTrue(GzipUtils.isCompressedFilename("x.wmz"));
-        assertTrue(GzipUtils.isCompressedFilename("x.emz"));
-        assertTrue(GzipUtils.isCompressedFilename("x.gz"));
-        assertTrue(GzipUtils.isCompressedFilename("x.z"));
-        assertTrue(GzipUtils.isCompressedFilename("x-gz"));
-        assertTrue(GzipUtils.isCompressedFilename("x-z"));
-        assertTrue(GzipUtils.isCompressedFilename("x_z"));
+        assertEquals("x.tgz", GzipUtils.getCompressedFilename("x.tar"));
+        assertEquals("x.svgz", GzipUtils.getCompressedFilename("x.svg"));
+        assertEquals("x.cpgz", GzipUtils.getCompressedFilename("x.cpio"));
+        assertEquals("x.wmz", GzipUtils.getCompressedFilename("x.wmf"));
+        assertEquals("x.emz", GzipUtils.getCompressedFilename("x.emf"));
 
-        assertFalse(GzipUtils.isCompressedFilename("xxgz"));
-        assertFalse(GzipUtils.isCompressedFilename("xzz"));
-        assertFalse(GzipUtils.isCompressedFilename("xaz"));
+        assertEquals("x.svgz", GzipUtils.getCompressedFilename("x.SVG"));
+        assertEquals("X.svgz", GzipUtils.getCompressedFilename("X.SVG"));
+        assertEquals("X.svgz", GzipUtils.getCompressedFilename("X.svG"));
 
-        assertTrue(GzipUtils.isCompressedFilename("x.SVGZ"));
-        assertTrue(GzipUtils.isCompressedFilename("x.Svgz"));
-        assertTrue(GzipUtils.isCompressedFilename("x.svGZ"));
-
-        assertFalse(GzipUtils.isCompressedFilename("x.wmz "));
-        assertFalse(GzipUtils.isCompressedFilename("x.wmz\n"));
-        assertFalse(GzipUtils.isCompressedFilename("x.wmz.y"));
+        assertEquals("x.wmf .gz", GzipUtils.getCompressedFilename("x.wmf "));
+        assertEquals("x.wmf\n.gz", GzipUtils.getCompressedFilename("x.wmf\n"));
+        assertEquals("x.wmf.y.gz", GzipUtils.getCompressedFilename("x.wmf.y"));
     }
 
     @Test
@@ -84,23 +74,33 @@ public class GzipUtilsTestCase {
     }
 
     @Test
-    public void testGetCompressedFilename() {
-        assertEquals(".gz", GzipUtils.getCompressedFilename(""));
-        assertEquals("x.gz", GzipUtils.getCompressedFilename("x"));
+    public void testIsCompressedFilename() {
+        assertFalse(GzipUtils.isCompressedFilename(""));
+        assertFalse(GzipUtils.isCompressedFilename(".gz"));
 
-        assertEquals("x.tgz", GzipUtils.getCompressedFilename("x.tar"));
-        assertEquals("x.svgz", GzipUtils.getCompressedFilename("x.svg"));
-        assertEquals("x.cpgz", GzipUtils.getCompressedFilename("x.cpio"));
-        assertEquals("x.wmz", GzipUtils.getCompressedFilename("x.wmf"));
-        assertEquals("x.emz", GzipUtils.getCompressedFilename("x.emf"));
+        assertTrue(GzipUtils.isCompressedFilename("x.tgz"));
+        assertTrue(GzipUtils.isCompressedFilename("x.taz"));
+        assertTrue(GzipUtils.isCompressedFilename("x.svgz"));
+        assertTrue(GzipUtils.isCompressedFilename("x.cpgz"));
+        assertTrue(GzipUtils.isCompressedFilename("x.wmz"));
+        assertTrue(GzipUtils.isCompressedFilename("x.emz"));
+        assertTrue(GzipUtils.isCompressedFilename("x.gz"));
+        assertTrue(GzipUtils.isCompressedFilename("x.z"));
+        assertTrue(GzipUtils.isCompressedFilename("x-gz"));
+        assertTrue(GzipUtils.isCompressedFilename("x-z"));
+        assertTrue(GzipUtils.isCompressedFilename("x_z"));
 
-        assertEquals("x.svgz", GzipUtils.getCompressedFilename("x.SVG"));
-        assertEquals("X.svgz", GzipUtils.getCompressedFilename("X.SVG"));
-        assertEquals("X.svgz", GzipUtils.getCompressedFilename("X.svG"));
+        assertFalse(GzipUtils.isCompressedFilename("xxgz"));
+        assertFalse(GzipUtils.isCompressedFilename("xzz"));
+        assertFalse(GzipUtils.isCompressedFilename("xaz"));
 
-        assertEquals("x.wmf .gz", GzipUtils.getCompressedFilename("x.wmf "));
-        assertEquals("x.wmf\n.gz", GzipUtils.getCompressedFilename("x.wmf\n"));
-        assertEquals("x.wmf.y.gz", GzipUtils.getCompressedFilename("x.wmf.y"));
+        assertTrue(GzipUtils.isCompressedFilename("x.SVGZ"));
+        assertTrue(GzipUtils.isCompressedFilename("x.Svgz"));
+        assertTrue(GzipUtils.isCompressedFilename("x.svGZ"));
+
+        assertFalse(GzipUtils.isCompressedFilename("x.wmz "));
+        assertFalse(GzipUtils.isCompressedFilename("x.wmz\n"));
+        assertFalse(GzipUtils.isCompressedFilename("x.wmz.y"));
     }
 
 }

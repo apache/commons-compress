@@ -18,46 +18,29 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.math.BigInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
- * JUnit testcases for org.apache.commons.compress.archivers.zip.ZipEightByteInteger.
+ * JUnit tests for org.apache.commons.compress.archivers.zip.ZipEightByteInteger.
  *
  */
 public class ZipEightByteIntegerTest {
 
     /**
-     * Test conversion to bytes.
-     */
-    @Test
-    public void testLongToBytes() {
-        final ZipEightByteInteger zl = new ZipEightByteInteger(0xAB12345678L);
-        final byte[] result = zl.getBytes();
-        assertEquals("length getBytes", 8, result.length);
-        assertEquals("first byte getBytes", 0x78, result[0]);
-        assertEquals("second byte getBytes", 0x56, result[1]);
-        assertEquals("third byte getBytes", 0x34, result[2]);
-        assertEquals("fourth byte getBytes", 0x12, result[3]);
-        assertEquals("fifth byte getBytes", (byte) 0xAB, result[4]);
-        assertEquals("sixth byte getBytes", 0, result[5]);
-        assertEquals("seventh byte getBytes", 0, result[6]);
-        assertEquals("eighth byte getBytes", 0, result[7]);
-    }
-
-    /**
      * Test conversion from bytes.
      */
     @Test
-    public void testLongFromBytes() {
-        final byte[] val = new byte[] {0x78, 0x56, 0x34, 0x12, (byte) 0xAB, 0x00, 0x00, 0x00};
+    public void testBIFromBytes() {
+        final byte[] val = {(byte) 0xFE, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
         final ZipEightByteInteger zl = new ZipEightByteInteger(val);
-        assertEquals("longValue from bytes", 0xAB12345678L, zl.getLongValue());
+        assertEquals(BigInteger.valueOf(Long.MAX_VALUE).shiftLeft(1),
+                zl.getValue(),
+                "value from bytes");
     }
 
     /**
@@ -69,27 +52,15 @@ public class ZipEightByteIntegerTest {
             new ZipEightByteInteger(BigInteger.valueOf(Long.MAX_VALUE)
                                     .shiftLeft(1));
         final byte[] result = zl.getBytes();
-        assertEquals("length getBytes", 8, result.length);
-        assertEquals("first byte getBytes", (byte) 0xFE, result[0]);
-        assertEquals("second byte getBytes", (byte) 0xFF, result[1]);
-        assertEquals("third byte getBytes", (byte) 0xFF, result[2]);
-        assertEquals("fourth byte getBytes", (byte) 0xFF, result[3]);
-        assertEquals("fifth byte getBytes", (byte) 0xFF, result[4]);
-        assertEquals("sixth byte getBytes", (byte) 0xFF, result[5]);
-        assertEquals("seventh byte getBytes", (byte) 0xFF, result[6]);
-        assertEquals("eighth byte getBytes", (byte) 0xFF, result[7]);
-    }
-
-    /**
-     * Test conversion from bytes.
-     */
-    @Test
-    public void testBIFromBytes() {
-        final byte[] val = new byte[] {(byte) 0xFE, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
-        final ZipEightByteInteger zl = new ZipEightByteInteger(val);
-        assertEquals("value from bytes",
-                     BigInteger.valueOf(Long.MAX_VALUE).shiftLeft(1),
-                     zl.getValue());
+        assertEquals(8, result.length, "length getBytes");
+        assertEquals((byte) 0xFE, result[0], "first byte getBytes");
+        assertEquals((byte) 0xFF, result[1], "second byte getBytes");
+        assertEquals((byte) 0xFF, result[2], "third byte getBytes");
+        assertEquals((byte) 0xFF, result[3], "fourth byte getBytes");
+        assertEquals((byte) 0xFF, result[4], "fifth byte getBytes");
+        assertEquals((byte) 0xFF, result[5], "sixth byte getBytes");
+        assertEquals((byte) 0xFF, result[6], "seventh byte getBytes");
+        assertEquals((byte) 0xFF, result[7], "eighth byte getBytes");
     }
 
     /**
@@ -101,15 +72,43 @@ public class ZipEightByteIntegerTest {
         final ZipEightByteInteger zl2 = new ZipEightByteInteger(0x12345678);
         final ZipEightByteInteger zl3 = new ZipEightByteInteger(0x87654321);
 
-        assertEquals("reflexive", zl, zl);
+        assertEquals(zl, zl, "reflexive");
 
-        assertEquals("works", zl, zl2);
-        assertNotEquals("works, part two", zl, zl3);
+        assertEquals(zl, zl2, "works");
+        assertNotEquals(zl, zl3, "works, part two");
 
-        assertEquals("symmetric", zl2, zl);
+        assertEquals(zl2, zl, "symmetric");
 
-        assertNotEquals("null handling", null, zl);
-        assertNotEquals("non ZipEightByteInteger handling", zl, new Integer(0x1234));
+        assertNotEquals(null, zl, "null handling");
+        assertNotEquals(zl, Integer.valueOf(0x1234), "non ZipEightByteInteger handling");
+    }
+
+    /**
+     * Test conversion from bytes.
+     */
+    @Test
+    public void testLongFromBytes() {
+        final byte[] val = {0x78, 0x56, 0x34, 0x12, (byte) 0xAB, 0x00, 0x00, 0x00};
+        final ZipEightByteInteger zl = new ZipEightByteInteger(val);
+        assertEquals(0xAB12345678L, zl.getLongValue(), "longValue from bytes");
+    }
+
+    /**
+     * Test conversion to bytes.
+     */
+    @Test
+    public void testLongToBytes() {
+        final ZipEightByteInteger zl = new ZipEightByteInteger(0xAB12345678L);
+        final byte[] result = zl.getBytes();
+        assertEquals(8, result.length, "length getBytes");
+        assertEquals(0x78, result[0], "first byte getBytes");
+        assertEquals(0x56, result[1], "second byte getBytes");
+        assertEquals(0x34, result[2], "third byte getBytes");
+        assertEquals(0x12, result[3], "fourth byte getBytes");
+        assertEquals((byte) 0xAB, result[4], "fifth byte getBytes");
+        assertEquals(0, result[5], "sixth byte getBytes");
+        assertEquals(0, result[6], "seventh byte getBytes");
+        assertEquals(0, result[7], "eighth byte getBytes");
     }
 
     /**

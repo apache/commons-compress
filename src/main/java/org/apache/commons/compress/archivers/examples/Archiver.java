@@ -104,10 +104,21 @@ public class Archiver {
      * @param target the stream to write the new archive to.
      * @param directory the directory that contains the files to archive.
      * @throws IOException if an I/O error occurs
-     * @throws ArchiveException if the archive cannot be created for other reasons
      */
-    public void create(final ArchiveOutputStream target, final File directory) throws IOException, ArchiveException {
+    public void create(final ArchiveOutputStream target, final File directory) throws IOException {
         create(target, directory.toPath(), EMPTY_FileVisitOption);
+    }
+
+    /**
+     * Creates an archive {@code target} by recursively including all files and directories in {@code directory}.
+     *
+     * @param target the stream to write the new archive to.
+     * @param directory the directory that contains the files to archive.
+     * @throws IOException if an I/O error occurs or the archive cannot be created for other reasons.
+     * @since 1.21
+     */
+    public void create(final ArchiveOutputStream target, final Path directory) throws IOException {
+        create(target, directory, EMPTY_FileVisitOption);
     }
 
     /**
@@ -125,18 +136,6 @@ public class Archiver {
         Files.walkFileTree(directory, fileVisitOptions, Integer.MAX_VALUE,
             new ArchiverFileVisitor(target, directory, linkOptions));
         target.finish();
-    }
-
-    /**
-     * Creates an archive {@code target} by recursively including all files and directories in {@code directory}.
-     *
-     * @param target the stream to write the new archive to.
-     * @param directory the directory that contains the files to archive.
-     * @throws IOException if an I/O error occurs or the archive cannot be created for other reasons.
-     * @since 1.21
-     */
-    public void create(final ArchiveOutputStream target, final Path directory) throws IOException {
-        create(target, directory, EMPTY_FileVisitOption);
     }
 
     /**

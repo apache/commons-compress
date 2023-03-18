@@ -1,0 +1,253 @@
+<?xml version="1.0"?>
+<!--
+
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<document>
+    <properties>
+        <title>Commons Compress Security Reports</title>
+        <author email="dev@commons.apache.org">Commons Team</author>
+    </properties>
+    <body>
+      <section name="General Information">
+        <p>For information about reporting or asking questions about
+        security problems, please see the <a
+        href="https://commons.apache.org/security.html">security page
+        of the Commons project</a>.</p>
+      </section>
+
+      <section name="Apache Commons Compress Security Vulnerabilities">
+        <p>This page lists all security vulnerabilities fixed in
+        released versions of Apache Commons Compress. Each
+        vulnerability is given a security impact rating by the
+        development team - please note that this rating may vary from
+        platform to platform. We also list the versions of Commons
+        Compress the flaw is known to affect, and where a flaw has not
+        been verified list the version with a question mark.</p>
+
+        <p>Please note that binary patches are never provided. If you
+        need to apply a source code patch, use the building
+        instructions for the Commons Compress version that you are
+        using.</p>
+
+        <p>If you need help on building Commons Compress or other help
+        on following the instructions to mitigate the known
+        vulnerabilities listed here, please send your questions to the
+        public <a href="mail-lists.html">Compress Users mailing
+        list</a>.</p>
+
+        <p>If you have encountered an unlisted security vulnerability
+        or other unexpected behavior that has security impact, or if
+        the descriptions here are incomplete, please report them
+        privately to the Apache Security Team. Thank you.</p>
+
+        <subsection name="Fixed in Apache Commons Compress 1.21">
+          <p><b>Low: Denial of Service</b> <a
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-35515">CVE-2021-35515</a></p>
+
+          <p>When reading a specially crafted 7Z archive, the construction of the
+          list of codecs that decompress an entry can result in an infinite
+          loop.  This could be used to mount a denial of service attack against
+          services that use Compress' sevenz package.</p>
+
+          <p>This was fixed in revision <a
+          href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=commit;h=3fe6b42110dc56d0d6fe0aaf80cfecb8feea5321">3fe6b42</a>.</p>
+
+          <p>This issue was discovered by OSS Fuzz.</p>
+
+          <p>Affects: 1.6 - 1.20</p>
+
+          <p><b>Low: Denial of Service</b> <a
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-35516">CVE-2021-35516</a></p>
+
+          <p>When reading a specially crafted 7Z archive, Compress can be made to
+          allocate large amounts of memory that finally leads to an out of memory
+          error even for very small inputs. This could be used to mount a denial
+          of service attack against services that use Compress' sevenz package.</p>
+
+          <p>This was fixed in revisions
+          <a
+              href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=commit;h=26924e96c7730db014c310757e11c9359db07f3e">26924e9</a>,
+          <a
+              href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=commit;h=c51de6cfaec75b21566374158f25e1734c3a94cb">c51de6c</a>,
+          <a
+              href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=commit;h=0aba8b8fd8053ae323f15d736d1762b2161c76a6">0aba8b8</a>,
+          <a
+              href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=commit;h=60d551a748236d7f4651a4ae88d5a351f7c5754b">60d551a</a>,
+          <a
+              href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=commit;h=bf5a5346ae04b9d2a5b0356ca75f11dcc8d94789">bf5a534</a>,
+          <a
+              href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=commit;h=5761493cbaf7a7d608a3b68f4d61aaa822dbeb4f">5761493</a>,
+          and <a
+              href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=commit;h=ae2b27cc011f47f0289cb24a11f2d4f1db711f8a">ae2b27c</a>
+          .</p>
+
+          <p>This issue was first reported to the project's issue tracker as
+          <a href="https://issues.apache.org/jira/browse/COMPRESS-542">COMPRESS-542</a>
+          by Robin Schimpf.
+          Later OSS Fuzz detected ways to exploit this issue which managed to
+          escape the initial attempt to fix it.</p>
+
+          <p>Affects: 1.6 - 1.20</p>
+
+          <p><b>Low: Denial of Service</b> <a
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-35517">CVE-2021-35517</a></p>
+
+          <p>When reading a specially crafted TAR archive, Compress
+          can be made to allocate large amounts of memory that finally
+          leads to an out of memory error even for very small
+          inputs. This could be used to mount a denial of service
+          attack against services that use Compress' tar package.</p>
+
+          <p>This was fixed in revisions
+          <a
+              href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=commit;h=d0af873e77d16f41edfef7b69da5c8c35c96a650">d0af873</a>,
+          <a
+              href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=commit;h=7ce1b0796d6cbe1f41b969583bd49f33ae0efef0">7ce1b07</a>
+          and <a
+              href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=commit;h=80124dd9fe4b0a0b2e203ca19aacac8cd0afc96f">80124dd</a>.</p>
+
+          <p>This issue was discovered by OSS Fuzz.</p>
+
+          <p>Affects: 1.1 - 1.20</p>
+
+          <p><b>Low: Denial of Service</b> <a
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-36090">CVE-2021-36090</a></p>
+
+          <p>When reading a specially crafted ZIP archive, Compress
+          can be made to allocate large amounts of memory that finally
+          leads to an out of memory error even for very small
+          inputs. This could be used to mount a denial of service
+          attack against services that use Compress' zip package.</p>
+
+          <p>This was fixed in revisions
+          <a
+              href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=commit;h=ef5d70b625000e38404194aaab311b771c44efda">ef5d70b</a>
+          and <a
+              href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=commit;h=80124dd9fe4b0a0b2e203ca19aacac8cd0afc96f">80124dd</a>.</p>
+
+          <p>This issue was discovered by OSS Fuzz.</p>
+
+          <p>Affects: 1.0 - 1.20</p>
+
+        </subsection>
+
+        <subsection name="Fixed in Apache Commons Compress 1.19">
+          <p><b>Low: Denial of Service</b> <a
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-12402">CVE-2019-12402</a></p>
+
+          <p>The file name encoding algorithm used internally in Apache Commons
+          Compress can get into an infinite loop when faced with specially
+          crafted inputs. This can lead to a denial of service attack if an
+          attacker can choose the file names inside of an archive created by
+          Compress.</p>
+
+          <p>This was fixed in revision <a
+          href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=commitdiff;h=4ad5d80a6272e007f64a6ac66829ca189a8093b9;hp=16a0c84e84b93cc8c107b7ff3080bd11317ab581">4ad5d80a</a>.</p>
+
+          <p>This was first reported to the Commons Security Team on 22 August
+          2019 and made public on 27 August 2019.</p>
+
+          <p>Affects: 1.15 - 1.18</p>
+
+        </subsection>
+
+        <subsection name="Fixed in Apache Commons Compress 1.18">
+          <p><b>Low: Denial of Service</b> <a
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-11771">CVE-2018-11771</a></p>
+
+          <p>When reading a specially crafted ZIP archive, the read
+          method of <code>ZipArchiveInputStream</code> can fail to
+          return the correct EOF indication after the end of the
+          stream has been reached. When combined with a
+          <code>java.io.InputStreamReader</code> this can lead to an
+          infinite stream, which can be used to mount a denial of
+          service attack against services that use Compress' zip
+          package</p>
+
+          <p>This was fixed in revision <a
+          href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=blobdiff;f=src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveInputStream.java;h=e1995d7aa51dfac6ae933987fb0b7760c607582b;hp=0a2c1aa0063c620c867715119eae2013c87b5e70;hb=a41ce6892cb0590b2e658704434ac0dbcb6834c8;hpb=64ed6dde03afbef6715fdfdeab5fc04be6192899">a41ce68</a>.</p>
+
+          <p>This was first reported to the Security Team on 14 June
+          2018 and made public on 16 August 2018.</p>
+
+          <p>Affects: 1.7 - 1.17</p>
+
+        </subsection>
+
+        <subsection name="Fixed in Apache Commons Compress 1.16">
+          <p><b>Low: Denial of Service</b> <a
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-1324">CVE-2018-1324</a></p>
+
+          <p>A specially crafted ZIP archive can be used to cause an
+          infinite loop inside of Compress' extra field parser used by
+          the <code>ZipFile</code> and
+          <code>ZipArchiveInputStream</code> classes.  This can be
+          used to mount a denial of service attack against services
+          that use Compress' zip package.</p>
+
+          <p>This was fixed in revision <a
+          href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=blobdiff;f=src/main/java/org/apache/commons/compress/archivers/zip/X0017_StrongEncryptionHeader.java;h=acc3b22346b49845e85b5ef27a5814b69e834139;hp=0feb9c98cc622cde1defa3bbd268ef82b4ae5c18;hb=2a2f1dc48e22a34ddb72321a4db211da91aa933b;hpb=dcb0486fb4cb2b6592c04d6ec2edbd3f690df5f2">2a2f1dc4</a>.</p>
+
+          <p>This was first reported to the project's JIRA on <a
+          href="https://issues.apache.org/jira/browse/COMPRESS-432">19
+          December 2017</a>.</p>
+
+          <p>Affects: 1.11 - 1.15</p>
+
+        </subsection>
+
+        <subsection name="Fixed in Apache Commons Compress 1.4.1">
+          <p><b>Low: Denial of Service</b> <a
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-2098">CVE-2012-2098</a></p>
+
+          <p>The bzip2 compressing streams in Apache Commons Compress
+          internally use sorting algorithms with unacceptable
+          worst-case performance on very repetitive inputs.  A
+          specially crafted input to Compress'
+          <code>BZip2CompressorOutputStream</code> can be used to make
+          the process spend a very long time while using up all
+          available processing time effectively leading to a denial of
+          service.</p>
+
+          <p>This was fixed in revisions
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1332540">1332540</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1332552">1332552</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1333522">1333522</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1337444">1337444</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1340715">1340715</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1340723">1340723</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1340757">1340757</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1340786">1340786</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1340787">1340787</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1340790">1340790</a>,
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1340795">1340795</a> and
+          <a href="https://svn.apache.org/viewvc?view=revision&amp;revision=1340799">1340799</a>.</p>
+
+          <p>This was first reported to the Security Team on 12 April
+          2012 and made public on 23 May 2012.</p>
+
+          <p>Affects: 1.0 - 1.4</p>
+
+        </subsection>
+      </section>
+
+      <section name="Errors and Omissions">
+        <p>Please report any errors or omissions to <a
+        href="mail-lists.html">the dev mailing list</a>.</p>
+      </section>
+    </body>
+</document>

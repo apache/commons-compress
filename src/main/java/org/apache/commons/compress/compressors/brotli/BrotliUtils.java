@@ -38,10 +38,20 @@ public class BrotliUtils {
         setCacheBrotliAvailablity(!OsgiUtils.isRunningInOsgiEnvironment());
     }
 
-    /** Private constructor to prevent instantiation of this utility class. */
-    private BrotliUtils() {
+    // only exists to support unit tests
+    static CachedAvailability getCachedBrotliAvailability() {
+        return cachedBrotliAvailability;
     }
 
+
+    private static boolean internalIsBrotliCompressionAvailable() {
+        try {
+            Class.forName("org.brotli.dec.BrotliInputStream");
+            return true;
+        } catch (final NoClassDefFoundError | Exception error) { // NOSONAR
+            return false;
+        }
+    }
 
     /**
      * Are the classes required to support Brotli compression available?
@@ -53,15 +63,6 @@ public class BrotliUtils {
             return cachedResult == CachedAvailability.CACHED_AVAILABLE;
         }
         return internalIsBrotliCompressionAvailable();
-    }
-
-    private static boolean internalIsBrotliCompressionAvailable() {
-        try {
-            Class.forName("org.brotli.dec.BrotliInputStream");
-            return true;
-        } catch (final NoClassDefFoundError | Exception error) { // NOSONAR
-            return false;
-        }
     }
 
     /**
@@ -80,8 +81,7 @@ public class BrotliUtils {
         }
     }
 
-    // only exists to support unit tests
-    static CachedAvailability getCachedBrotliAvailability() {
-        return cachedBrotliAvailability;
+    /** Private constructor to prevent instantiation of this utility class. */
+    private BrotliUtils() {
     }
 }

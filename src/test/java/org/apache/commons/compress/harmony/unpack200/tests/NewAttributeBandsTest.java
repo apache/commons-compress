@@ -16,6 +16,10 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -30,165 +34,52 @@ import org.apache.commons.compress.harmony.unpack200.NewAttributeBands.Replicati
 import org.apache.commons.compress.harmony.unpack200.NewAttributeBands.Union;
 import org.apache.commons.compress.harmony.unpack200.NewAttributeBands.UnionCase;
 import org.apache.commons.compress.harmony.unpack200.Segment;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Tests for unpack200 support for non-predefined attributes
  */
 public class NewAttributeBandsTest extends AbstractBandsTestCase {
 
+    private class MockNewAttributeBands extends NewAttributeBands {
+
+        public MockNewAttributeBands(final Segment segment, final AttributeLayout layout)
+                throws IOException {
+            super(segment, layout);
+        }
+
+        public List<?> getLayoutElements() {
+            return attributeLayoutElements;
+        }
+    }
+
+    @Test
     public void testEmptyLayout() throws IOException, Pack200Exception {
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
                 new MockSegment(), new AttributeLayout("test",
                         AttributeLayout.CONTEXT_CLASS, "", 25));
-        List layoutElements = newAttributeBands.getLayoutElements();
+        final List<?> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(0, layoutElements.size());
     }
 
-    public void testIntegralLayout() throws IOException, Pack200Exception {
-        tryIntegral("B");
-        tryIntegral("FB");
-        tryIntegral("SB");
-        tryIntegral("H");
-        tryIntegral("FH");
-        tryIntegral("SH");
-        tryIntegral("I");
-        tryIntegral("FI");
-        tryIntegral("SI");
-        tryIntegral("PB");
-        tryIntegral("OB");
-        tryIntegral("OSB");
-        tryIntegral("POB");
-        tryIntegral("PH");
-        tryIntegral("OH");
-        tryIntegral("OSH");
-        tryIntegral("POH");
-        tryIntegral("PI");
-        tryIntegral("OI");
-        tryIntegral("OSI");
-        tryIntegral("POI");
-    }
-
-    public void tryIntegral(String layout) throws IOException, Pack200Exception {
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "B", "FB", "SB", "H", "FH", "SH", "I", "FI", "SI", "PB", "OB",
+            "OSB", "POB", "PH", "OH", "OSH", "POH", "PI", "OI", "OSI", "POI"
+    })
+    public void testIntegralLayout(final String layoutStr) throws IOException, Pack200Exception {
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
                 new MockSegment(), new AttributeLayout("test",
-                        AttributeLayout.CONTEXT_CLASS, layout, 25));
-        List layoutElements = newAttributeBands.getLayoutElements();
+                        AttributeLayout.CONTEXT_CLASS, layoutStr, 25));
+        final List layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
-        Integral element = (Integral) layoutElements.get(0);
-        assertEquals(layout, element.getTag());
+        final Integral element = (Integral) layoutElements.get(0);
+        assertEquals(layoutStr, element.getTag());
     }
 
-    public void testReplicationLayout() throws IOException, Pack200Exception {
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
-                new MockSegment(), new AttributeLayout("test",
-                        AttributeLayout.CONTEXT_CLASS, "NH[PHOHRUHRSHH]", 25));
-        List layoutElements = newAttributeBands.getLayoutElements();
-        assertEquals(1, layoutElements.size());
-        Replication element = (Replication) layoutElements.get(0);
-        Integral countElement = element.getCountElement();
-        assertEquals("H", countElement.getTag());
-        List replicatedElements = element.getLayoutElements();
-        assertEquals(5, replicatedElements.size());
-        Integral firstElement = (Integral) replicatedElements.get(0);
-        assertEquals("PH", firstElement.getTag());
-        Integral secondElement = (Integral) replicatedElements.get(1);
-        assertEquals("OH", secondElement.getTag());
-        Reference thirdElement = (Reference) replicatedElements.get(2);
-        assertEquals("RUH", thirdElement.getTag());
-        Reference fourthElement = (Reference) replicatedElements.get(3);
-        assertEquals("RSH", fourthElement.getTag());
-        Integral fifthElement = (Integral) replicatedElements.get(4);
-        assertEquals("H", fifthElement.getTag());
-    }
-
-    public void testReferenceLayouts() throws IOException, Pack200Exception {
-        tryReference("KIB");
-        tryReference("KIH");
-        tryReference("KII");
-        tryReference("KINH");
-        tryReference("KJH");
-        tryReference("KDH");
-        tryReference("KSH");
-        tryReference("KQH");
-        tryReference("RCH");
-        tryReference("RSH");
-        tryReference("RDH");
-        tryReference("RFH");
-        tryReference("RMH");
-        tryReference("RIH");
-        tryReference("RUH");
-        tryReference("RQH");
-        tryReference("RQNH");
-        tryReference("RQNI");
-    }
-
-    private void tryReference(String layout) throws IOException,
-            Pack200Exception {
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
-                new MockSegment(), new AttributeLayout("test",
-                        AttributeLayout.CONTEXT_CODE, layout, 26));
-        List layoutElements = newAttributeBands.getLayoutElements();
-        assertEquals(1, layoutElements.size());
-        Reference element = (Reference) layoutElements.get(0);
-        assertEquals(layout, element.getTag());
-    }
-
-    public void testUnionLayout() throws IOException, Pack200Exception {
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
-                new MockSegment(), new AttributeLayout("test",
-                        AttributeLayout.CONTEXT_CODE,
-                        "TB(55)[FH](23)[]()[RSH]", 26));
-        List layoutElements = newAttributeBands.getLayoutElements();
-        assertEquals(1, layoutElements.size());
-        Union element = (Union) layoutElements.get(0);
-        Integral tag = element.getUnionTag();
-        assertEquals("B", tag.getTag());
-        List unionCases = element.getUnionCases();
-        assertEquals(2, unionCases.size());
-        UnionCase firstCase = (UnionCase) unionCases.get(0);
-        assertTrue(firstCase.hasTag(55));
-        assertFalse(firstCase.hasTag(23));
-        List body = firstCase.getBody();
-        assertEquals(1, body.size());
-        Integral bodyElement = (Integral) body.get(0);
-        assertEquals("FH", bodyElement.getTag());
-        UnionCase secondCase = (UnionCase) unionCases.get(1);
-        assertTrue(secondCase.hasTag(23));
-        assertFalse(secondCase.hasTag(55));
-        body = secondCase.getBody();
-        assertEquals(0, body.size());
-        List defaultBody = element.getDefaultCaseBody();
-        assertEquals(1, defaultBody.size());
-        Reference ref = (Reference) defaultBody.get(0);
-        assertEquals("RSH", ref.getTag());
-    }
-
-    public void testLayoutWithCalls() throws IOException, Pack200Exception {
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
-                new MockSegment(),
-                new AttributeLayout(
-                        "test",
-                        AttributeLayout.CONTEXT_FIELD,
-                        "[NH[(1)]][RSH NH[RUH(1)]][TB(66,67,73,83,90)[KIH](68)[KDH](70)[KFH](74)[KJH](99)[RSH](101)[RSH RUH](115)[RUH](91)[NH[(0)]](64)[RSH[RUH(0)]]()[]]",
-                        26));
-        List layoutElements = newAttributeBands.getLayoutElements();
-        assertEquals(3, layoutElements.size());
-        Callable firstCallable = (Callable) layoutElements.get(0);
-        Callable secondCallable = (Callable) layoutElements.get(1);
-        Callable thirdCallable = (Callable) layoutElements.get(2);
-        List firstBody = firstCallable.getBody();
-        assertEquals(1, firstBody.size());
-        Replication rep = (Replication) firstBody.get(0);
-        List repBody = rep.getLayoutElements();
-        assertEquals(1, repBody.size());
-        Call call = (Call) repBody.get(0);
-        assertEquals(1, call.getCallableIndex());
-        assertEquals(secondCallable, call.getCallable());
-        assertFalse(firstCallable.isBackwardsCallable());
-        assertFalse(secondCallable.isBackwardsCallable());
-        assertFalse(thirdCallable.isBackwardsCallable());
-    }
-
+    @Test
     public void testLayoutWithBackwardsCall() throws IOException,
             Pack200Exception {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
@@ -242,15 +133,101 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
         assertFalse(firstCallable.isBackwardsCallable());
     }
 
-    private class MockNewAttributeBands extends NewAttributeBands {
-
-        public MockNewAttributeBands(Segment segment, AttributeLayout layout)
-                throws IOException {
-            super(segment, layout);
-        }
-
-        public List getLayoutElements() {
-            return attributeLayoutElements;
-        }
+    @Test
+    public void testLayoutWithCalls() throws IOException, Pack200Exception {
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
+                new MockSegment(),
+                new AttributeLayout(
+                        "test",
+                        AttributeLayout.CONTEXT_FIELD,
+                        "[NH[(1)]][RSH NH[RUH(1)]][TB(66,67,73,83,90)[KIH](68)[KDH](70)[KFH](74)[KJH](99)[RSH](101)[RSH RUH](115)[RUH](91)[NH[(0)]](64)[RSH[RUH(0)]]()[]]",
+                        26));
+        final List layoutElements = newAttributeBands.getLayoutElements();
+        assertEquals(3, layoutElements.size());
+        final Callable firstCallable = (Callable) layoutElements.get(0);
+        final Callable secondCallable = (Callable) layoutElements.get(1);
+        final Callable thirdCallable = (Callable) layoutElements.get(2);
+        final List firstBody = firstCallable.getBody();
+        assertEquals(1, firstBody.size());
+        final Replication rep = (Replication) firstBody.get(0);
+        final List repBody = rep.getLayoutElements();
+        assertEquals(1, repBody.size());
+        final Call call = (Call) repBody.get(0);
+        assertEquals(1, call.getCallableIndex());
+        assertEquals(secondCallable, call.getCallable());
+        assertFalse(firstCallable.isBackwardsCallable());
+        assertFalse(secondCallable.isBackwardsCallable());
+        assertFalse(thirdCallable.isBackwardsCallable());
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "KIB", "KIH", "KII", "KINH", "KJH", "KDH", "KSH", "KQH", "RCH",
+            "RSH", "RDH", "RFH", "RMH", "RIH", "RUH", "RQH", "RQNH", "RQNI"
+    })
+    public void testReferenceLayouts(final String layout) throws IOException, Pack200Exception {
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
+                new MockSegment(), new AttributeLayout("test",
+                        AttributeLayout.CONTEXT_CODE, layout, 26));
+        final List layoutElements = newAttributeBands.getLayoutElements();
+        assertEquals(1, layoutElements.size());
+        final Reference element = (Reference) layoutElements.get(0);
+        assertEquals(layout, element.getTag());
+    }
+
+    @Test
+    public void testReplicationLayout() throws IOException, Pack200Exception {
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
+                new MockSegment(), new AttributeLayout("test",
+                        AttributeLayout.CONTEXT_CLASS, "NH[PHOHRUHRSHH]", 25));
+        final List layoutElements = newAttributeBands.getLayoutElements();
+        assertEquals(1, layoutElements.size());
+        final Replication element = (Replication) layoutElements.get(0);
+        final Integral countElement = element.getCountElement();
+        assertEquals("H", countElement.getTag());
+        final List replicatedElements = element.getLayoutElements();
+        assertEquals(5, replicatedElements.size());
+        final Integral firstElement = (Integral) replicatedElements.get(0);
+        assertEquals("PH", firstElement.getTag());
+        final Integral secondElement = (Integral) replicatedElements.get(1);
+        assertEquals("OH", secondElement.getTag());
+        final Reference thirdElement = (Reference) replicatedElements.get(2);
+        assertEquals("RUH", thirdElement.getTag());
+        final Reference fourthElement = (Reference) replicatedElements.get(3);
+        assertEquals("RSH", fourthElement.getTag());
+        final Integral fifthElement = (Integral) replicatedElements.get(4);
+        assertEquals("H", fifthElement.getTag());
+    }
+
+    @Test
+    public void testUnionLayout() throws IOException, Pack200Exception {
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
+                new MockSegment(), new AttributeLayout("test",
+                        AttributeLayout.CONTEXT_CODE,
+                        "TB(55)[FH](23)[]()[RSH]", 26));
+        final List layoutElements = newAttributeBands.getLayoutElements();
+        assertEquals(1, layoutElements.size());
+        final Union element = (Union) layoutElements.get(0);
+        final Integral tag = element.getUnionTag();
+        assertEquals("B", tag.getTag());
+        final List unionCases = element.getUnionCases();
+        assertEquals(2, unionCases.size());
+        final UnionCase firstCase = (UnionCase) unionCases.get(0);
+        assertTrue(firstCase.hasTag(55));
+        assertFalse(firstCase.hasTag(23));
+        List body = firstCase.getBody();
+        assertEquals(1, body.size());
+        final Integral bodyElement = (Integral) body.get(0);
+        assertEquals("FH", bodyElement.getTag());
+        final UnionCase secondCase = (UnionCase) unionCases.get(1);
+        assertTrue(secondCase.hasTag(23));
+        assertFalse(secondCase.hasTag(55));
+        body = secondCase.getBody();
+        assertEquals(0, body.size());
+        final List defaultBody = element.getDefaultCaseBody();
+        assertEquals(1, defaultBody.size());
+        final Reference ref = (Reference) defaultBody.get(0);
+        assertEquals("RSH", ref.getTag());
+    }
+
 }

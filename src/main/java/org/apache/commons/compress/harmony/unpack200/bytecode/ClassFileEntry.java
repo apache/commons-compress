@@ -39,6 +39,10 @@ public abstract class ClassFileEntry {
     @Override
     public abstract int hashCode();
 
+    protected int objectHashCode() {
+        return super.hashCode();
+    }
+
     /**
      * Allows the constant pool entries to resolve their nested entries.
      *
@@ -46,10 +50,6 @@ public abstract class ClassFileEntry {
      */
     protected void resolve(final ClassConstantPool pool) {
         resolved = true;
-    }
-
-    protected int objectHashCode() {
-        return super.hashCode();
     }
 
     @Override

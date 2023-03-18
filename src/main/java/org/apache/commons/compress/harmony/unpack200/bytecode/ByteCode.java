@@ -27,6 +27,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm
  */
 public class ByteCode extends ClassFileEntry {
 
+    private static ByteCode[] noArgByteCodes = new ByteCode[255];
+
     public static ByteCode getByteCode(final int opcode) {
         final int byteOpcode = 0xFF & opcode;
         if (ByteCodeForm.get(byteOpcode).hasNoOperand()) {
@@ -37,8 +39,6 @@ public class ByteCode extends ClassFileEntry {
         }
         return new ByteCode(byteOpcode);
     }
-
-    private static ByteCode[] noArgByteCodes = new ByteCode[255];
 
     private final ByteCodeForm byteCodeForm;
 
@@ -59,10 +59,21 @@ public class ByteCode extends ClassFileEntry {
         this.nested = nested;
     }
 
+    /**
+     * Some ByteCodes (in particular, those with labels need to be fixed up after all the bytecodes in the CodeAttribute
+     * have been added. (This can't be done beforehand because the CodeAttribute needs to be complete before targets can
+     * be assigned.)
+     *
+     * @param codeAttribute the code attribute
+     */
+    public void applyByteCodeTargetFixup(final CodeAttribute codeAttribute) {
+        getByteCodeForm().fixUpByteCodeTargets(this, codeAttribute);
+    }
+
     @Override
     protected void doWrite(final DataOutputStream dos) throws IOException {
-        for (int i = 0; i < rewrite.length; i++) {
-            dos.writeByte(rewrite[i]);
+        for (final int element : rewrite) {
+            dos.writeByte(element);
         }
     }
 
@@ -84,6 +95,14 @@ public class ByteCode extends ClassFileEntry {
         return byteCodeForm;
     }
 
+    public int getByteCodeIndex() {
+        return byteCodeOffset;
+    }
+
+    public int[] getByteCodeTargets() {
+        return byteCodeTargets;
+    }
+
     public int getLength() {
         return rewrite.length;
     }
@@ -97,13 +116,48 @@ public class ByteCode extends ClassFileEntry {
         return nested;
     }
 
+    public int[] getNestedPosition(final int index) {
+        return getNestedPositions()[index];
+    }
+
+    public int[][] getNestedPositions() {
+        return nestedPositions;
+    }
+
     public int getOpcode() {
         return getByteCodeForm().getOpcode();
+    }
+
+    /**
+     * Some bytecodes (the ones with variable lengths) can't have a static rewrite array - they need the ability to
+     * update the array. This method permits their associated bytecode formst to query their rewrite array.
+     *
+     * Note that this should not be called from bytecodes which have a static rewrite; use the table in ByteCodeForm
+     * instead to specify those rewrites.
+     *
+     * @return Some bytecodes.
+     */
+    public int[] getRewrite() {
+        return rewrite;
     }
 
     @Override
     public int hashCode() {
         return objectHashCode();
+    }
+
+    /**
+     * This method will answer true if the receiver is a multi-bytecode instruction (such as aload0_putfield_super);
+     * otherwise, it will answer false.
+     *
+     * @return boolean true if multibytecode, false otherwise
+     */
+    public boolean hasMultipleByteCodes() {
+        return getByteCodeForm().hasMultipleByteCodes();
+    }
+
+    public boolean nestedMustStartClassPool() {
+        return byteCodeForm.nestedMustStartClassPool();
     }
 
     /*
@@ -139,27 +193,46 @@ public class ByteCode extends ClassFileEntry {
     }
 
     /**
-     * Given an array of ints which correspond to bytes in the operand of the bytecode, set the rewrite bytes of the
-     * operand to be the appropriate values. All values in operands[] will be masked with 0xFF so they fit into a byte.
+     * ByteCodes may need to know their position in the code array (in particular, label byte codes need to know where
+     * they are in order to calculate their targets). This method lets the CodeAttribute specify where the byte code is.
      *
-     * @param operands int[] rewrite operand bytes
+     * Since there are no aload0+label instructions, this method doesn't worry about multioperation bytecodes.
+     *
+     * @param byteCodeOffset int position in code array.
      */
-    public void setOperandBytes(final int[] operands) {
-        final int firstOperandIndex = getByteCodeForm().firstOperandIndex();
-        final int byteCodeFormLength = getByteCodeForm().operandLength();
-        if (firstOperandIndex < 1) {
-            // No operand rewriting permitted for this bytecode
-            throw new Error("Trying to rewrite " + this + " that has no rewrite");
-        }
+    public void setByteCodeIndex(final int byteCodeOffset) {
+        this.byteCodeOffset = byteCodeOffset;
+    }
 
-        if (byteCodeFormLength != operands.length) {
-            throw new Error("Trying to rewrite " + this + " with " + operands.length + " but bytecode has length "
-                + byteCodeForm.operandLength());
-        }
+    /**
+     * Some ByteCodes (in particular, those with labels) have to keep track of byteCodeTargets. These are initially
+     * offsets in the CodeAttribute array relative to the byteCodeOffset, but later get fixed up to point to the
+     * absolute position in the CodeAttribute array. This method sets the targets.
+     *
+     * @param byteCodeTargets int index in array
+     */
+    public void setByteCodeTargets(final int[] byteCodeTargets) {
+        this.byteCodeTargets = byteCodeTargets;
+    }
 
-        for (int index = 0; index < byteCodeFormLength; index++) {
-            rewrite[index + firstOperandIndex] = operands[index] & 0xFF;
-        }
+    public void setNested(final ClassFileEntry[] nested) {
+        this.nested = nested;
+    }
+
+    /**
+     * nestedPositions is an array of arrays of ints. Each subarray specifies a position of a nested element (from the
+     * nested[] array) and the length of that element.
+     *
+     * For instance, one might have a nested of: {CPClass java/lang/Foo, CPFloat 3.14} The nestedPositions would then
+     * be: {{0,2},{2,2}} In other words, when the bytecode is resolved, the CPClass will be resolved to an int and
+     * inserted at position 0 and 1 of the rewrite arguments (the first occurrences of -1). The CPFloat will be resolved
+     * to an int position and inserted at positions 2 and 3 of the rewrite arguments.
+     *
+     * @param nestedPositions Each subarray specifies a position of a nested element (from the nested[] array) and the
+     *        length of that element.
+     */
+    public void setNestedPositions(final int[][] nestedPositions) {
+        this.nestedPositions = nestedPositions;
     }
 
     /**
@@ -188,22 +261,6 @@ public class ByteCode extends ClassFileEntry {
     }
 
     /**
-     * This is just like setOperandInt, but takes special care when the operand is less than 0 to make sure it's written
-     * correctly.
-     *
-     * @param operand int to set the rewrite bytes to
-     * @param position int position of the operands in the rewrite bytes
-     */
-    public void setOperandSigned2Bytes(final int operand, final int position) {
-        if (operand >= 0) {
-            setOperand2Bytes(operand, position);
-        } else {
-            final int twosComplementOperand = 0x10000 + operand;
-            setOperand2Bytes(twosComplementOperand, position);
-        }
-    }
-
-    /**
      * Given an int operand, treat it as a byte and set the rewrite byte for that position to that value. Mask of
      * anything beyond 0xFF.
      *
@@ -227,89 +284,44 @@ public class ByteCode extends ClassFileEntry {
         rewrite[firstOperandIndex + position] = operand & 0xFF;
     }
 
-    @Override
-    public String toString() {
-        return getByteCodeForm().getName();
-    }
+    /**
+     * Given an array of ints which correspond to bytes in the operand of the bytecode, set the rewrite bytes of the
+     * operand to be the appropriate values. All values in operands[] will be masked with 0xFF so they fit into a byte.
+     *
+     * @param operands int[] rewrite operand bytes
+     */
+    public void setOperandBytes(final int[] operands) {
+        final int firstOperandIndex = getByteCodeForm().firstOperandIndex();
+        final int byteCodeFormLength = getByteCodeForm().operandLength();
+        if (firstOperandIndex < 1) {
+            // No operand rewriting permitted for this bytecode
+            throw new Error("Trying to rewrite " + this + " that has no rewrite");
+        }
 
-    public void setNested(final ClassFileEntry[] nested) {
-        this.nested = nested;
+        if (byteCodeFormLength != operands.length) {
+            throw new Error("Trying to rewrite " + this + " with " + operands.length + " but bytecode has length "
+                + byteCodeForm.operandLength());
+        }
+
+        for (int index = 0; index < byteCodeFormLength; index++) {
+            rewrite[index + firstOperandIndex] = operands[index] & 0xFF;
+        }
     }
 
     /**
-     * nestedPositions is an array of arrays of ints. Each subarray specifies a position of a nested element (from the
-     * nested[] array) and the length of that element.
+     * This is just like setOperandInt, but takes special care when the operand is less than 0 to make sure it's written
+     * correctly.
      *
-     * For instance, one might have a nested of: {CPClass java/lang/Foo, CPFloat 3.14} The nestedPositions would then
-     * be: {{0,2},{2,2}} In other words, when the bytecode is resolved, the CPClass will be resolved to an int and
-     * inserted at position 0 and 1 of the rewrite arguments (the first occurrences of -1). The CPFloat will be resolved
-     * to an int position and inserted at positions 2 and 3 of the rewrite arguments.
-     *
-     * @param nestedPositions Each subarray specifies a position of a nested element (from the nested[] array) and the
-     *        length of that element.
+     * @param operand int to set the rewrite bytes to
+     * @param position int position of the operands in the rewrite bytes
      */
-    public void setNestedPositions(final int[][] nestedPositions) {
-        this.nestedPositions = nestedPositions;
-    }
-
-    public int[][] getNestedPositions() {
-        return nestedPositions;
-    }
-
-    public int[] getNestedPosition(final int index) {
-        return getNestedPositions()[index];
-    }
-
-    /**
-     * This method will answer true if the receiver is a multi-bytecode instruction (such as aload0_putfield_super);
-     * otherwise, it will answer false.
-     *
-     * @return boolean true if multibytecode, false otherwise
-     */
-    public boolean hasMultipleByteCodes() {
-        return getByteCodeForm().hasMultipleByteCodes();
-    }
-
-    /**
-     * ByteCodes may need to know their position in the code array (in particular, label byte codes need to know where
-     * they are in order to calculate their targets). This method lets the CodeAttribute specify where the byte code is.
-     *
-     * Since there are no aload0+label instructions, this method doesn't worry about multioperation bytecodes.
-     *
-     * @param byteCodeOffset int position in code array.
-     */
-    public void setByteCodeIndex(final int byteCodeOffset) {
-        this.byteCodeOffset = byteCodeOffset;
-    }
-
-    public int getByteCodeIndex() {
-        return byteCodeOffset;
-    }
-
-    /**
-     * Some ByteCodes (in particular, those with labels) have to keep track of byteCodeTargets. These are initially
-     * offsets in the CodeAttribute array relative to the byteCodeOffset, but later get fixed up to point to the
-     * absolute position in the CodeAttribute array. This method sets the targets.
-     *
-     * @param byteCodeTargets int index in array
-     */
-    public void setByteCodeTargets(final int[] byteCodeTargets) {
-        this.byteCodeTargets = byteCodeTargets;
-    }
-
-    public int[] getByteCodeTargets() {
-        return byteCodeTargets;
-    }
-
-    /**
-     * Some ByteCodes (in particular, those with labels need to be fixed up after all the bytecodes in the CodeAttribute
-     * have been added. (This can't be done beforehand because the CodeAttribute needs to be complete before targets can
-     * be assigned.)
-     *
-     * @param codeAttribute the code attribute
-     */
-    public void applyByteCodeTargetFixup(final CodeAttribute codeAttribute) {
-        getByteCodeForm().fixUpByteCodeTargets(this, codeAttribute);
+    public void setOperandSigned2Bytes(final int operand, final int position) {
+        if (operand >= 0) {
+            setOperand2Bytes(operand, position);
+        } else {
+            final int twosComplementOperand = 0x10000 + operand;
+            setOperand2Bytes(twosComplementOperand, position);
+        }
     }
 
     /**
@@ -325,20 +337,8 @@ public class ByteCode extends ClassFileEntry {
         this.rewrite = rewrite;
     }
 
-    /**
-     * Some bytecodes (the ones with variable lengths) can't have a static rewrite array - they need the ability to
-     * update the array. This method permits their associated bytecode formst to query their rewrite array.
-     *
-     * Note that this should not be called from bytecodes which have a static rewrite; use the table in ByteCodeForm
-     * instead to specify those rewrites.
-     *
-     * @return Some bytecodes.
-     */
-    public int[] getRewrite() {
-        return rewrite;
-    }
-
-    public boolean nestedMustStartClassPool() {
-        return byteCodeForm.nestedMustStartClassPool();
+    @Override
+    public String toString() {
+        return getByteCodeForm().getName();
     }
 }

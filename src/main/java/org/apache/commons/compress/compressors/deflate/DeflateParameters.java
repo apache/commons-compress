@@ -27,29 +27,11 @@ import java.util.zip.Deflater;
  */
 public class DeflateParameters {
 
+    static final int MAX_LEVEL = 9;
+    static final int MIN_LEVEL = 0;
+
     private boolean zlibHeader = true;
     private int compressionLevel = Deflater.DEFAULT_COMPRESSION;
-
-    /**
-     * Whether or not the zlib header shall be written (when
-     * compressing) or expected (when decompressing).
-     * @return true if zlib header shall be written
-     */
-    public boolean withZlibHeader() {
-        return zlibHeader;
-    }
-
-    /**
-     * Sets the zlib header presence parameter.
-     *
-     * <p>This affects whether or not the zlib header will be written
-     * (when compressing) or expected (when decompressing).</p>
-     *
-     * @param zlibHeader true if zlib header shall be written
-     */
-    public void setWithZlibHeader(final boolean zlibHeader) {
-        this.zlibHeader = zlibHeader;
-    }
 
     /**
      * The compression level.
@@ -70,10 +52,31 @@ public class DeflateParameters {
      * @see Deflater#BEST_COMPRESSION
      */
     public void setCompressionLevel(final int compressionLevel) {
-        if (compressionLevel < -1 || compressionLevel > 9) {
+        if (compressionLevel < MIN_LEVEL || compressionLevel > MAX_LEVEL) {
             throw new IllegalArgumentException("Invalid Deflate compression level: " + compressionLevel);
         }
         this.compressionLevel = compressionLevel;
+    }
+
+    /**
+     * Sets the zlib header presence parameter.
+     *
+     * <p>This affects whether or not the zlib header will be written
+     * (when compressing) or expected (when decompressing).</p>
+     *
+     * @param zlibHeader true if zlib header shall be written
+     */
+    public void setWithZlibHeader(final boolean zlibHeader) {
+        this.zlibHeader = zlibHeader;
+    }
+
+    /**
+     * Whether or not the zlib header shall be written (when
+     * compressing) or expected (when decompressing).
+     * @return true if zlib header shall be written
+     */
+    public boolean withZlibHeader() {
+        return zlibHeader;
     }
 
 }

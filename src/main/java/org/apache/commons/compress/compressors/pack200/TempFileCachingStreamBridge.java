@@ -19,11 +19,11 @@
 
 package org.apache.commons.compress.compressors.pack200;
 
-import java.io.File;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * StreamBridge that caches all data written to the output side in
@@ -31,25 +31,28 @@ import java.nio.file.Files;
  * @since 1.3
  */
 class TempFileCachingStreamBridge extends StreamBridge {
-    private final File f;
+    private final Path f;
 
     TempFileCachingStreamBridge() throws IOException {
-        f = File.createTempFile("commons-compress", "packtemp");
-        f.deleteOnExit();
-        out = Files.newOutputStream(f.toPath());
+        f = Files.createTempFile("commons-compress", "packtemp");
+        f.toFile().deleteOnExit();
+        out = Files.newOutputStream(f);
     }
 
     @Override
     InputStream getInputView() throws IOException {
         out.close();
-        return new FilterInputStream(Files.newInputStream(f.toPath())) {
+        return new FilterInputStream(Files.newInputStream(f)) {
             @Override
             public void close() throws IOException {
                 try {
                     super.close();
                 } finally {
-                    // if this fails the only thing we can do is to rely on deleteOnExit
-                    f.delete(); // NOSONAR
+                    try {
+                        Files.deleteIfExists(f);
+                    } catch (IOException ignore) {
+                        // if this fails the only thing we can do is to rely on deleteOnExit
+                    }
                 }
             }
         };

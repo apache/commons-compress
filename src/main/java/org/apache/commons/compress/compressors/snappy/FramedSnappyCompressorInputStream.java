@@ -55,13 +55,44 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
     private static final int MAX_SKIPPABLE_TYPE = 0xfd;
 
     // used by FramedSnappyCompressorOutputStream as well
-    static final byte[] SZ_SIGNATURE = new byte[] { //NOSONAR
+    static final byte[] SZ_SIGNATURE = { //NOSONAR
         (byte) STREAM_IDENTIFIER_TYPE, // tag
         6, 0, 0, // length
         's', 'N', 'a', 'P', 'p', 'Y'
     };
 
+    /**
+     * Checks if the signature matches what is expected for a .sz file.
+     *
+     * <p>.sz files start with a chunk with tag 0xff and content sNaPpY.</p>
+     *
+     * @param signature the bytes to check
+     * @param length    the number of bytes to check
+     * @return          true if this is a .sz stream, false otherwise
+     */
+    public static boolean matches(final byte[] signature, final int length) {
+
+        if (length < SZ_SIGNATURE.length) {
+            return false;
+        }
+
+        byte[] shortenedSig = signature;
+        if (signature.length > SZ_SIGNATURE.length) {
+            shortenedSig = Arrays.copyOf(signature, SZ_SIGNATURE.length);
+        }
+
+        return Arrays.equals(shortenedSig, SZ_SIGNATURE);
+    }
+    static long unmask(long x) {
+        // ugly, maybe we should just have used ints and deal with the
+        // overflow
+        x -= MASK_OFFSET;
+        x &= 0xffffFFFFL;
+        return ((x >> 17) | (x << 15)) & 0xffffFFFFL;
+    }
+
     private long unreadBytes;
+
     private final CountingInputStream countingStream;
 
     /** The underlying stream to read compressed data from */
@@ -74,12 +105,12 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
 
     // used in no-arg read method
     private final byte[] oneByte = new byte[1];
-
     private boolean endReached, inUncompressedChunk;
-
     private int uncompressedBytesRemaining;
     private long expectedChecksum = -1;
+
     private final int blockSize;
+
     private final PureJavaCrc32C checksum = new PureJavaCrc32C();
 
     private final ByteUtils.ByteSupplier supplier = this::readOneByte;
@@ -136,8 +167,15 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
 
     /** {@inheritDoc} */
     @Override
-    public int read() throws IOException {
-        return read(oneByte, 0, 1) == -1 ? -1 : oneByte[0] & 0xFF;
+    public int available() throws IOException {
+        if (inUncompressedChunk) {
+            return Math.min(uncompressedBytesRemaining,
+                            inputStream.available());
+        }
+        if (currentCompressedChunk != null) {
+            return currentCompressedChunk.available();
+        }
+        return 0;
     }
 
     /** {@inheritDoc} */
@@ -151,6 +189,20 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
         } finally {
             inputStream.close();
         }
+    }
+
+    /**
+     * @since 1.17
+     */
+    @Override
+    public long getCompressedCount() {
+        return countingStream.getBytesRead() - unreadBytes;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int read() throws IOException {
+        return read(oneByte, 0, 1) == -1 ? -1 : oneByte[0] & 0xFF;
     }
 
     /** {@inheritDoc} */
@@ -170,60 +222,14 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
         return read;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public int available() throws IOException {
-        if (inUncompressedChunk) {
-            return Math.min(uncompressedBytesRemaining,
-                            inputStream.available());
+    private long readCrc() throws IOException {
+        final byte[] b = new byte[4];
+        final int read = IOUtils.readFully(inputStream, b);
+        count(read);
+        if (read != 4) {
+            throw new IOException("Premature end of stream");
         }
-        if (currentCompressedChunk != null) {
-            return currentCompressedChunk.available();
-        }
-        return 0;
-    }
-
-    /**
-     * @since 1.17
-     */
-    @Override
-    public long getCompressedCount() {
-        return countingStream.getBytesRead() - unreadBytes;
-    }
-
-    /**
-     * Read from the current chunk into the given array.
-     *
-     * @return -1 if there is no current chunk or the number of bytes
-     * read from the current chunk (which may be -1 if the end of the
-     * chunk is reached).
-     */
-    private int readOnce(final byte[] b, final int off, final int len) throws IOException {
-        int read = -1;
-        if (inUncompressedChunk) {
-            final int amount = Math.min(uncompressedBytesRemaining, len);
-            if (amount == 0) {
-                return -1;
-            }
-            read = inputStream.read(b, off, amount);
-            if (read != -1) {
-                uncompressedBytesRemaining -= read;
-                count(read);
-            }
-        } else if (currentCompressedChunk != null) {
-            final long before = currentCompressedChunk.getBytesRead();
-            read = currentCompressedChunk.read(b, off, len);
-            if (read == -1) {
-                currentCompressedChunk.close();
-                currentCompressedChunk = null;
-            } else {
-                count(currentCompressedChunk.getBytesRead() - before);
-            }
-        }
-        if (read > 0) {
-            checksum.update(b, off, read);
-        }
-        return read;
+        return ByteUtils.fromLittleEndian(b);
     }
 
     private void readNextBlock() throws IOException {
@@ -275,26 +281,61 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
         }
     }
 
-    private long readCrc() throws IOException {
-        final byte[] b = new byte[4];
-        final int read = IOUtils.readFully(inputStream, b);
-        count(read);
-        if (read != 4) {
-            throw new IOException("Premature end of stream");
+    /**
+     * Read from the current chunk into the given array.
+     *
+     * @return -1 if there is no current chunk or the number of bytes
+     * read from the current chunk (which may be -1 if the end of the
+     * chunk is reached).
+     */
+    private int readOnce(final byte[] b, final int off, final int len) throws IOException {
+        int read = -1;
+        if (inUncompressedChunk) {
+            final int amount = Math.min(uncompressedBytesRemaining, len);
+            if (amount == 0) {
+                return -1;
+            }
+            read = inputStream.read(b, off, amount);
+            if (read != -1) {
+                uncompressedBytesRemaining -= read;
+                count(read);
+            }
+        } else if (currentCompressedChunk != null) {
+            final long before = currentCompressedChunk.getBytesRead();
+            read = currentCompressedChunk.read(b, off, len);
+            if (read == -1) {
+                currentCompressedChunk.close();
+                currentCompressedChunk = null;
+            } else {
+                count(currentCompressedChunk.getBytesRead() - before);
+            }
         }
-        return ByteUtils.fromLittleEndian(b);
+        if (read > 0) {
+            checksum.update(b, off, read);
+        }
+        return read;
     }
 
-    static long unmask(long x) {
-        // ugly, maybe we should just have used ints and deal with the
-        // overflow
-        x -= MASK_OFFSET;
-        x &= 0xffffFFFFL;
-        return ((x >> 17) | (x << 15)) & 0xffffFFFFL;
+    private int readOneByte() throws IOException {
+        final int b = inputStream.read();
+        if (b != -1) {
+            count(1);
+            return b & 0xFF;
+        }
+        return -1;
     }
 
     private int readSize() throws IOException {
         return (int) ByteUtils.fromLittleEndian(supplier, 3);
+    }
+
+    private void readStreamIdentifier() throws IOException {
+        final byte[] b = new byte[10];
+        final int read = IOUtils.readFully(inputStream, b);
+        count(read);
+        if (10 != read || !matches(b, 10)) {
+            throw new IOException("Not a framed Snappy stream");
+        }
     }
 
     private void skipBlock() throws IOException {
@@ -309,54 +350,12 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
         }
     }
 
-    private void readStreamIdentifier() throws IOException {
-        final byte[] b = new byte[10];
-        final int read = IOUtils.readFully(inputStream, b);
-        count(read);
-        if (10 != read || !matches(b, 10)) {
-            throw new IOException("Not a framed Snappy stream");
-        }
-    }
-
-    private int readOneByte() throws IOException {
-        final int b = inputStream.read();
-        if (b != -1) {
-            count(1);
-            return b & 0xFF;
-        }
-        return -1;
-    }
-
     private void verifyLastChecksumAndReset() throws IOException {
         if (expectedChecksum >= 0 && expectedChecksum != checksum.getValue()) {
             throw new IOException("Checksum verification failed");
         }
         expectedChecksum = -1;
         checksum.reset();
-    }
-
-    /**
-     * Checks if the signature matches what is expected for a .sz file.
-     *
-     * <p>.sz files start with a chunk with tag 0xff and content sNaPpY.</p>
-     *
-     * @param signature the bytes to check
-     * @param length    the number of bytes to check
-     * @return          true if this is a .sz stream, false otherwise
-     */
-    public static boolean matches(final byte[] signature, final int length) {
-
-        if (length < SZ_SIGNATURE.length) {
-            return false;
-        }
-
-        byte[] shortenedSig = signature;
-        if (signature.length > SZ_SIGNATURE.length) {
-            shortenedSig = new byte[SZ_SIGNATURE.length];
-            System.arraycopy(signature, 0, shortenedSig, 0, SZ_SIGNATURE.length);
-        }
-
-        return Arrays.equals(shortenedSig, SZ_SIGNATURE);
     }
 
 }

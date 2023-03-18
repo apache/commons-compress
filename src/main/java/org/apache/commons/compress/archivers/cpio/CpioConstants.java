@@ -23,6 +23,8 @@ package org.apache.commons.compress.archivers.cpio;
  *
  * based on code from the jRPM project (jrpm.sourceforge.net)
  *
+ * http://www.opengroup.org/onlinepubs/9699919799/basedefs/cpio.h.html has a list of the C_xxx constants.
+ *
  */
 public interface CpioConstants {
     /** magic number of a cpio entry in the new format */
@@ -37,24 +39,22 @@ public interface CpioConstants {
     /** magic number of a cpio entry in the old binary format */
     int MAGIC_OLD_BINARY = 070707;
 
-    // These FORMAT_ constants are internal to the code
-
-    /** write/read a CpioArchiveEntry in the new format */
+    /** write/read a CpioArchiveEntry in the new format. FORMAT_ constants are internal. */
     short FORMAT_NEW = 1;
 
-    /** write/read a CpioArchiveEntry in the new format with crc */
+    /** write/read a CpioArchiveEntry in the new format with crc. FORMAT_ constants are internal. */
     short FORMAT_NEW_CRC = 2;
 
-    /** write/read a CpioArchiveEntry in the old ascii format */
+    /** write/read a CpioArchiveEntry in the old ascii format. FORMAT_ constants are internal. */
     short FORMAT_OLD_ASCII = 4;
 
-    /** write/read a CpioArchiveEntry in the old binary format */
+    /** write/read a CpioArchiveEntry in the old binary format. FORMAT_ constants are internal. */
     short FORMAT_OLD_BINARY = 8;
 
-    /** Mask for both new formats */
+    /** Mask for both new formats. FORMAT_ constants are internal. */
     short FORMAT_NEW_MASK = 3;
 
-    /** Mask for both old formats */
+    /** Mask for both old formats. FORMAT_ constants are internal. */
     short FORMAT_OLD_MASK = 12;
 
     /*
@@ -63,9 +63,6 @@ public interface CpioConstants {
 
     /** Mask for all file type bits. */
     int S_IFMT   = 0170000;
-
- // http://www.opengroup.org/onlinepubs/9699919799/basedefs/cpio.h.html
- // has a list of the C_xxx constants
 
     /** Defines a socket */
     int C_ISSOCK = 0140000;

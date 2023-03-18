@@ -20,32 +20,13 @@ package org.apache.commons.compress.archivers.sevenz;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Usage: archive-name [list]
+ */
 public class CLI {
-
 
     private enum Mode {
         LIST("Analysing") {
-            @Override
-            public void takeAction(final SevenZFile archive, final SevenZArchiveEntry entry) {
-                System.out.print(entry.getName());
-                if (entry.isDirectory()) {
-                    System.out.print(" dir");
-                } else {
-                    System.out.print(" " + entry.getCompressedSize()
-                                     + "/" + entry.getSize());
-                }
-                if (entry.getHasLastModifiedDate()) {
-                    System.out.print(" " + entry.getLastModifiedDate());
-                } else {
-                    System.out.print(" no last modified date");
-                }
-                if (!entry.isDirectory()) {
-                    System.out.println(" " + getContentMethods(entry));
-                } else {
-                    System.out.println();
-                }
-            }
-
             private String getContentMethods(final SevenZArchiveEntry entry) {
                 final StringBuilder sb = new StringBuilder();
                 boolean first = true;
@@ -61,17 +42,46 @@ public class CLI {
                 }
                 return sb.toString();
             }
+
+            @Override
+            public void takeAction(final SevenZFile archive, final SevenZArchiveEntry entry) {
+                System.out.print(entry.getName());
+                if (entry.isDirectory()) {
+                    System.out.print(" dir");
+                } else {
+                    System.out.print(" " + entry.getCompressedSize() + "/" + entry.getSize());
+                }
+                if (entry.getHasLastModifiedDate()) {
+                    System.out.print(" " + entry.getLastModifiedDate());
+                } else {
+                    System.out.print(" no last modified date");
+                }
+                if (!entry.isDirectory()) {
+                    System.out.println(" " + getContentMethods(entry));
+                } else {
+                    System.out.println();
+                }
+            }
         };
 
         private final String message;
+
         Mode(final String message) {
             this.message = message;
         }
+
         public String getMessage() {
             return message;
         }
-        public abstract void takeAction(SevenZFile archive, SevenZArchiveEntry entry)
-            throws IOException;
+
+        public abstract void takeAction(SevenZFile archive, SevenZArchiveEntry entry) throws IOException;
+    }
+
+    private static Mode grabMode(final String[] args) {
+        if (args.length < 2) {
+            return Mode.LIST;
+        }
+        return Enum.valueOf(Mode.class, args[1].toUpperCase());
     }
 
     public static void main(final String[] args) throws Exception {
@@ -87,7 +97,7 @@ public class CLI {
         }
         try (final SevenZFile archive = new SevenZFile(f)) {
             SevenZArchiveEntry ae;
-            while((ae=archive.getNextEntry()) != null) {
+            while ((ae = archive.getNextEntry()) != null) {
                 mode.takeAction(archive, ae);
             }
         }
@@ -95,13 +105,6 @@ public class CLI {
 
     private static void usage() {
         System.out.println("Parameters: archive-name [list]");
-    }
-
-    private static Mode grabMode(final String[] args) {
-        if (args.length < 2) {
-            return Mode.LIST;
-        }
-        return Enum.valueOf(Mode.class, args[1].toUpperCase());
     }
 
 }

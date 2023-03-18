@@ -26,38 +26,17 @@ import java.util.List;
  */
 public class AnnotationDefaultAttribute extends AnnotationsAttribute {
 
-    private final ElementValue element_value;
-
     private static CPUTF8 attributeName;
 
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
 
-    public AnnotationDefaultAttribute(final ElementValue element_value) {
+    private final ElementValue elementValue;
+
+    public AnnotationDefaultAttribute(final ElementValue elementValue) {
         super(attributeName);
-        this.element_value = element_value;
-    }
-
-    @Override
-    protected int getLength() {
-        return element_value.getLength();
-    }
-
-    @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        element_value.writeBody(dos);
-    }
-
-    @Override
-    protected void resolve(final ClassConstantPool pool) {
-        super.resolve(pool);
-        element_value.resolve(pool);
-    }
-
-    @Override
-    public String toString() {
-        return "AnnotationDefault: " + element_value;
+        this.elementValue = elementValue;
     }
 
     @Override
@@ -66,15 +45,36 @@ public class AnnotationDefaultAttribute extends AnnotationsAttribute {
     }
 
     @Override
+    protected int getLength() {
+        return elementValue.getLength();
+    }
+
+    @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        final List nested = new ArrayList();
+        final List<Object> nested = new ArrayList<>();
         nested.add(attributeName);
-        nested.addAll(element_value.getClassFileEntries());
+        nested.addAll(elementValue.getClassFileEntries());
         final ClassFileEntry[] nestedEntries = new ClassFileEntry[nested.size()];
         for (int i = 0; i < nestedEntries.length; i++) {
             nestedEntries[i] = (ClassFileEntry) nested.get(i);
         }
         return nestedEntries;
+    }
+
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
+        super.resolve(pool);
+        elementValue.resolve(pool);
+    }
+
+    @Override
+    public String toString() {
+        return "AnnotationDefault: " + elementValue;
+    }
+
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        elementValue.writeBody(dos);
     }
 
 }

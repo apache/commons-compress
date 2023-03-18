@@ -26,29 +26,23 @@ import java.util.List;
  */
 public class InnerClassesAttribute extends Attribute {
 
-    private static CPUTF8 attributeName;
-
-    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
-        attributeName = cpUTF8Value;
-    }
-
     private static class InnerClassesEntry {
 
-        CPClass inner_class_info;
-        CPClass outer_class_info;
-        CPUTF8 inner_class_name;
+        CPClass innerClassInfo;
+        CPClass outerClassInfo;
+        CPUTF8 innerClassName;
 
-        int inner_class_info_index = -1;
-        int outer_class_info_index = -1;
-        int inner_name_index = -1;
-        int inner_class_access_flags = -1;
+        int innerClassInfoIndex = -1;
+        int outerClassInfoIndex = -1;
+        int innerNameIndex = -1;
+        int innerClassAccessFlags = -1;
 
         public InnerClassesEntry(final CPClass innerClass, final CPClass outerClass, final CPUTF8 innerName,
             final int flags) {
-            this.inner_class_info = innerClass;
-            this.outer_class_info = outerClass;
-            this.inner_class_name = innerName;
-            this.inner_class_access_flags = flags;
+            this.innerClassInfo = innerClass;
+            this.outerClassInfo = outerClass;
+            this.innerClassName = innerName;
+            this.innerClassAccessFlags = flags;
         }
 
         /**
@@ -57,43 +51,73 @@ public class InnerClassesAttribute extends Attribute {
          * @param pool ClassConstantPool which holds the CPClass and CPUTF8 objects.
          */
         public void resolve(final ClassConstantPool pool) {
-            if (inner_class_info != null) {
-                inner_class_info.resolve(pool);
-                inner_class_info_index = pool.indexOf(inner_class_info);
+            if (innerClassInfo != null) {
+                innerClassInfo.resolve(pool);
+                innerClassInfoIndex = pool.indexOf(innerClassInfo);
             } else {
-                inner_class_info_index = 0;
+                innerClassInfoIndex = 0;
             }
 
-            if (inner_class_name != null) {
-                inner_class_name.resolve(pool);
-                inner_name_index = pool.indexOf(inner_class_name);
+            if (innerClassName != null) {
+                innerClassName.resolve(pool);
+                innerNameIndex = pool.indexOf(innerClassName);
             } else {
-                inner_name_index = 0;
+                innerNameIndex = 0;
             }
 
-            if (outer_class_info != null) {
-                outer_class_info.resolve(pool);
-                outer_class_info_index = pool.indexOf(outer_class_info);
+            if (outerClassInfo != null) {
+                outerClassInfo.resolve(pool);
+                outerClassInfoIndex = pool.indexOf(outerClassInfo);
             } else {
-                outer_class_info_index = 0;
+                outerClassInfoIndex = 0;
             }
         }
 
         public void write(final DataOutputStream dos) throws IOException {
-            dos.writeShort(inner_class_info_index);
-            dos.writeShort(outer_class_info_index);
-            dos.writeShort(inner_name_index);
-            dos.writeShort(inner_class_access_flags);
+            dos.writeShort(innerClassInfoIndex);
+            dos.writeShort(outerClassInfoIndex);
+            dos.writeShort(innerNameIndex);
+            dos.writeShort(innerClassAccessFlags);
         }
 
     }
 
-    private final List innerClasses = new ArrayList();
-    private final List nestedClassFileEntries = new ArrayList();
+    private static CPUTF8 attributeName;
+
+    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
+        attributeName = cpUTF8Value;
+    }
+
+    private final List<InnerClassesEntry> innerClasses = new ArrayList<>();
+    private final List<ConstantPoolEntry> nestedClassFileEntries = new ArrayList<>();
 
     public InnerClassesAttribute(final String name) {
         super(attributeName);
         nestedClassFileEntries.add(getAttributeName());
+    }
+
+    public void addInnerClassesEntry(final CPClass innerClass, final CPClass outerClass, final CPUTF8 innerName,
+        final int flags) {
+        if (innerClass != null) {
+            nestedClassFileEntries.add(innerClass);
+        }
+        if (outerClass != null) {
+            nestedClassFileEntries.add(outerClass);
+        }
+        if (innerName != null) {
+            nestedClassFileEntries.add(innerName);
+        }
+        addInnerClassesEntry(new InnerClassesEntry(innerClass, outerClass, innerName, flags));
+    }
+
+    private void addInnerClassesEntry(final InnerClassesEntry innerClassesEntry) {
+        innerClasses.add(innerClassesEntry);
+    }
+
+    @Override
+    protected void doWrite(final DataOutputStream dos) throws IOException {
+        // Hack so I can see what's being written.
+        super.doWrite(dos);
     }
 
     @Override
@@ -125,11 +149,7 @@ public class InnerClassesAttribute extends Attribute {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        final ClassFileEntry[] result = new ClassFileEntry[nestedClassFileEntries.size()];
-        for (int index = 0; index < result.length; index++) {
-            result[index] = (ClassFileEntry) nestedClassFileEntries.get(index);
-        }
-        return result;
+        return nestedClassFileEntries.toArray(ClassFileEntry.NONE);
     }
 
     @Override
@@ -143,8 +163,7 @@ public class InnerClassesAttribute extends Attribute {
     @Override
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
-        for (int it = 0; it < innerClasses.size(); it++) {
-            final InnerClassesEntry entry = (InnerClassesEntry) innerClasses.get(it);
+        for (final InnerClassesEntry entry : innerClasses) {
             entry.resolve(pool);
         }
     }
@@ -155,36 +174,11 @@ public class InnerClassesAttribute extends Attribute {
     }
 
     @Override
-    protected void doWrite(final DataOutputStream dos) throws IOException {
-        // Hack so I can see what's being written.
-        super.doWrite(dos);
-    }
-
-    @Override
     protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(innerClasses.size());
 
-        for (int it = 0; it < innerClasses.size(); it++) {
-            final InnerClassesEntry entry = (InnerClassesEntry) innerClasses.get(it);
+        for (final InnerClassesEntry entry : innerClasses) {
             entry.write(dos);
         }
-    }
-
-    public void addInnerClassesEntry(final CPClass innerClass, final CPClass outerClass, final CPUTF8 innerName,
-        final int flags) {
-        if (innerClass != null) {
-            nestedClassFileEntries.add(innerClass);
-        }
-        if (outerClass != null) {
-            nestedClassFileEntries.add(outerClass);
-        }
-        if (innerName != null) {
-            nestedClassFileEntries.add(innerName);
-        }
-        addInnerClassesEntry(new InnerClassesEntry(innerClass, outerClass, innerName, flags));
-    }
-
-    private void addInnerClassesEntry(final InnerClassesEntry innerClassesEntry) {
-        innerClasses.add(innerClassesEntry);
     }
 }

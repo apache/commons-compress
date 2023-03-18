@@ -18,7 +18,9 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import java.nio.charset.StandardCharsets;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.util.Arrays;
 import java.util.zip.CRC32;
 import java.util.zip.ZipException;
 
@@ -36,34 +38,34 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
 
     /**
      * Assemble as unicode extension from the name/comment and
-     * encoding of the original zip entry.
+     * encoding of the original ZIP entry.
      *
      * @param text The file name or comment.
-     * @param bytes The encoded of the file name or comment in the zip
+     * @param bytes The encoded of the file name or comment in the ZIP
+     * file.
+     */
+    protected AbstractUnicodeExtraField(final String text, final byte[] bytes) {
+        this(text, bytes, 0, bytes.length);
+    }
+
+    /**
+     * Assemble as unicode extension from the name/comment and
+     * encoding of the original ZIP entry.
+     *
+     * @param text The file name or comment.
+     * @param bytes The encoded of the file name or comment in the ZIP
      * file.
      * @param off The offset of the encoded file name or comment in
-     * <code>bytes</code>.
+     * {@code bytes}.
      * @param len The length of the encoded file name or comment in
-     * <code>bytes</code>.
+     * {@code bytes}.
      */
     protected AbstractUnicodeExtraField(final String text, final byte[] bytes, final int off, final int len) {
         final CRC32 crc32 = new CRC32();
         crc32.update(bytes, off, len);
         nameCRC32 = crc32.getValue();
 
-        unicodeName = text.getBytes(StandardCharsets.UTF_8);
-    }
-
-    /**
-     * Assemble as unicode extension from the name/comment and
-     * encoding of the original zip entry.
-     *
-     * @param text The file name or comment.
-     * @param bytes The encoded of the file name or comment in the zip
-     * file.
-     */
-    protected AbstractUnicodeExtraField(final String text, final byte[] bytes) {
-        this(text, bytes, 0, bytes.length);
+        unicodeName = text.getBytes(UTF_8);
     }
 
     private void assembleData() {
@@ -78,49 +80,6 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         System.arraycopy(unicodeName, 0, data, 5, unicodeName.length);
     }
 
-    /**
-     * @return The CRC32 checksum of the file name or comment as
-     *         encoded in the central directory of the zip file.
-     */
-    public long getNameCRC32() {
-        return nameCRC32;
-    }
-
-    /**
-     * @param nameCRC32 The CRC32 checksum of the file name as encoded
-     *         in the central directory of the zip file to set.
-     */
-    public void setNameCRC32(final long nameCRC32) {
-        this.nameCRC32 = nameCRC32;
-        data = null;
-    }
-
-    /**
-     * @return The UTF-8 encoded name.
-     */
-    public byte[] getUnicodeName() {
-        byte[] b = null;
-        if (unicodeName != null) {
-            b = new byte[unicodeName.length];
-            System.arraycopy(unicodeName, 0, b, 0, b.length);
-        }
-        return b;
-    }
-
-    /**
-     * @param unicodeName The UTF-8 encoded name to set.
-     */
-    public void setUnicodeName(final byte[] unicodeName) {
-        if (unicodeName != null) {
-            this.unicodeName = new byte[unicodeName.length];
-            System.arraycopy(unicodeName, 0, this.unicodeName, 0,
-                             unicodeName.length);
-        } else {
-            this.unicodeName = null;
-        }
-        data = null;
-    }
-
     @Override
     public byte[] getCentralDirectoryData() {
         if (data == null) {
@@ -128,8 +87,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         }
         byte[] b = null;
         if (data != null) {
-            b = new byte[data.length];
-            System.arraycopy(data, 0, b, 0, b.length);
+            b = Arrays.copyOf(data, data.length);
         }
         return b;
     }
@@ -150,6 +108,32 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     @Override
     public ZipShort getLocalFileDataLength() {
         return getCentralDirectoryLength();
+    }
+
+    /**
+     * @return The CRC32 checksum of the file name or comment as
+     *         encoded in the central directory of the ZIP file.
+     */
+    public long getNameCRC32() {
+        return nameCRC32;
+    }
+
+    /**
+     * @return The UTF-8 encoded name.
+     */
+    public byte[] getUnicodeName() {
+        return unicodeName != null ? Arrays.copyOf(unicodeName, unicodeName.length) : null;
+    }
+
+    /**
+     * Doesn't do anything special since this class always uses the
+     * same data in central directory and local file data.
+     */
+    @Override
+    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset,
+                                              final int length)
+        throws ZipException {
+        parseFromLocalFileData(buffer, offset, length);
     }
 
     @Override
@@ -174,13 +158,23 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     }
 
     /**
-     * Doesn't do anything special since this class always uses the
-     * same data in central directory and local file data.
+     * @param nameCRC32 The CRC32 checksum of the file name as encoded
+     *         in the central directory of the ZIP file to set.
      */
-    @Override
-    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset,
-                                              final int length)
-        throws ZipException {
-        parseFromLocalFileData(buffer, offset, length);
+    public void setNameCRC32(final long nameCRC32) {
+        this.nameCRC32 = nameCRC32;
+        data = null;
+    }
+
+    /**
+     * @param unicodeName The UTF-8 encoded name to set.
+     */
+    public void setUnicodeName(final byte[] unicodeName) {
+        if (unicodeName != null) {
+            this.unicodeName = Arrays.copyOf(unicodeName, unicodeName.length);
+        } else {
+            this.unicodeName = null;
+        }
+        data = null;
     }
 }

@@ -20,6 +20,30 @@ package org.apache.commons.compress.archivers.arj;
 import java.util.Arrays;
 
 class MainHeader {
+    static class Flags {
+        static final int GARBLED = 0x01;
+        static final int OLD_SECURED_NEW_ANSI_PAGE = 0x02;
+        static final int VOLUME = 0x04;
+        static final int ARJPROT = 0x08;
+        static final int PATHSYM = 0x10;
+        static final int BACKUP = 0x20;
+        static final int SECURED = 0x40;
+        static final int ALTNAME = 0x80;
+    }
+    static class HostOS {
+        static final int MS_DOS = 0;
+        static final int PRIMOS = 1;
+        static final int UNIX = 2;
+        static final int AMIGA = 3;
+        static final int MAC_OS = 4;
+        static final int OS2 = 5;
+        static final int APPLE_GS = 6;
+        static final int ATARI_ST = 7;
+        static final int NeXT = 8;
+        static final int VAX_VMS = 9;
+        static final int WIN95 = 10;
+        static final int WIN32 = 11;
+    }
     int archiverVersionNumber;
     int minVersionToExtract;
     int hostOS;
@@ -38,34 +62,10 @@ class MainHeader {
     int arjProtectionFactor;
     int arjFlags2;
     String name;
+
     String comment;
+
     byte[] extendedHeaderBytes;
-
-    static class Flags {
-        static final int GARBLED = 0x01;
-        static final int OLD_SECURED_NEW_ANSI_PAGE = 0x02;
-        static final int VOLUME = 0x04;
-        static final int ARJPROT = 0x08;
-        static final int PATHSYM = 0x10;
-        static final int BACKUP = 0x20;
-        static final int SECURED = 0x40;
-        static final int ALTNAME = 0x80;
-    }
-
-    static class HostOS {
-        static final int MS_DOS = 0;
-        static final int PRIMOS = 1;
-        static final int UNIX = 2;
-        static final int AMIGA = 3;
-        static final int MAC_OS = 4;
-        static final int OS2 = 5;
-        static final int APPLE_GS = 6;
-        static final int ATARI_ST = 7;
-        static final int NeXT = 8;
-        static final int VAX_VMS = 9;
-        static final int WIN95 = 10;
-        static final int WIN32 = 11;
-    }
 
     @Override
     public String toString() {

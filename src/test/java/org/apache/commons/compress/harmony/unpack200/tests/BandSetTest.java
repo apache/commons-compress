@@ -16,11 +16,11 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import junit.framework.TestCase;
 
 import org.apache.commons.compress.harmony.pack200.BHSDCodec;
 import org.apache.commons.compress.harmony.pack200.Codec;
@@ -28,11 +28,14 @@ import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.BandSet;
 import org.apache.commons.compress.harmony.unpack200.Segment;
 import org.apache.commons.compress.harmony.unpack200.SegmentHeader;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-public class BandSetTest extends TestCase {
+public class BandSetTest {
 
     public class MockSegment extends Segment {
 
+        @Override
         public SegmentHeader getSegmentHeader() {
             return new SegmentHeader(this);
         }
@@ -40,41 +43,54 @@ public class BandSetTest extends TestCase {
 
     private final BandSet bandSet = new BandSet(new MockSegment()) {
 
-        public void read(InputStream inputStream) throws IOException,
+        @Override
+        public void read(final InputStream inputStream) throws IOException,
                 Pack200Exception {
         }
 
+        @Override
         public void unpack() throws IOException, Pack200Exception {
         }
 
     };
 
+    @Test
     public void testDecodeBandInt() throws IOException, Pack200Exception {
-        BHSDCodec codec = Codec.BYTE1;
-        byte[] bytes = new byte[] { (byte) 3, (byte) 56, (byte) 122, (byte) 78 };
-        InputStream in = new ByteArrayInputStream(bytes);
-        int[] ints = bandSet.decodeBandInt("Test Band", in, codec, 4);
+        final BHSDCodec codec = Codec.BYTE1;
+        final byte[] bytes = { (byte) 3, (byte) 56, (byte) 122, (byte) 78 };
+        final InputStream in = new ByteArrayInputStream(bytes);
+        final int[] ints = bandSet.decodeBandInt("Test Band", in, codec, 4);
         for (int i = 0; i < ints.length; i++) {
-            assertEquals("Wrong value in position " + i, ints[i], bytes[i]);
+            assertEquals(ints[i], bytes[i], "Wrong value in position " + i);
         }
     }
 
+    @Test
+    @Disabled("TODO: Implement")
     public void testParseFlags1() {
 
     }
 
+    @Test
+    @Disabled("TODO: Implement")
     public void testParseFlags2() {
 
     }
 
+    @Test
+    @Disabled("TODO: Implement")
     public void testParseFlags3() {
 
     }
 
+    @Test
+    @Disabled("TODO: Implement")
     public void testParseReferences1() {
 
     }
 
+    @Test
+    @Disabled("TODO: Implement")
     public void testParseReferences2() {
 
     }

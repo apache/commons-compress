@@ -18,14 +18,15 @@
  */
 package org.apache.commons.compress;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -34,20 +35,25 @@ import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public final class DetectArchiverTestCase extends AbstractTestCase {
 
     final ClassLoader classLoader = getClass().getClassLoader();
 
-    @Test
-    public void testDetectionNotArchive() throws IOException {
-        try {
-            getStreamFor("test.txt");
-            fail("Expected ArchiveException");
-        } catch (final ArchiveException e) {
-            // expected
-        }
+    private void checkEmptyArchive(final String type) throws Exception{
+        final Path ar = createEmptyArchive(type); // will be deleted by tearDown()
+        ar.toFile().deleteOnExit(); // Just in case file cannot be deleted
+        assertDoesNotThrow(() -> {
+            try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(ar));
+                 ArchiveInputStream ais = factory.createArchiveInputStream(in)) {
+            }
+        }, "Should have recognized empty archive for " + type);
+    }
+
+    private ArchiveInputStream getStreamFor(final String resource)
+            throws ArchiveException, IOException {
+        return factory.createArchiveInputStream(new BufferedInputStream(newInputStream(resource)));
     }
 
     @Test
@@ -105,18 +111,17 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
 
     }
 
-    private ArchiveInputStream getStreamFor(final String resource)
-            throws ArchiveException, IOException {
-        return factory.createArchiveInputStream(
-                   new BufferedInputStream(Files.newInputStream(getFile(resource).toPath())));
-    }
-
     // Check that the empty archives created by the code are readable
 
     // Not possible to detect empty "ar" archive as it is completely empty
 //    public void testEmptyArArchive() throws Exception {
 //        emptyArchive("ar");
 //    }
+
+    @Test
+    public void testDetectionNotArchive() {
+        assertThrows(ArchiveException.class, () -> getStreamFor("test.txt"));
+    }
 
     @Test
     public void testEmptyCpioArchive() throws Exception {
@@ -135,24 +140,5 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
     @Test
     public void testEmptyZipArchive() throws Exception {
         checkEmptyArchive("zip");
-    }
-
-    private void checkEmptyArchive(final String type) throws Exception{
-        final File ar = createEmptyArchive(type); // will be deleted by tearDown()
-        ar.deleteOnExit(); // Just in case file cannot be deleted
-        ArchiveInputStream ais = null;
-        BufferedInputStream in = null;
-        try {
-            in = new BufferedInputStream(Files.newInputStream(ar.toPath()));
-            ais = factory.createArchiveInputStream(in);
-        } catch (final ArchiveException ae) {
-            fail("Should have recognized empty archive for "+type);
-        } finally {
-            if (ais != null) {
-                ais.close(); // will close input as well
-            } else if (in != null){
-                in.close();
-            }
-        }
     }
 }

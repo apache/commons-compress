@@ -59,10 +59,23 @@ public class SevenZMethodConfiguration {
     public SevenZMethodConfiguration(final SevenZMethod method, final Object options) {
         this.method = method;
         this.options = options;
-        if (options != null && !Coders.findByMethod(method).canAcceptOptions(options)) {
+        if (options != null && !Coders.findByMethod(method).isOptionInstance(options)) {
             throw new IllegalArgumentException("The " + method + " method doesn't support options of type "
                                                + options.getClass());
         }
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final SevenZMethodConfiguration other = (SevenZMethodConfiguration) obj;
+        return Objects.equals(method, other.method)
+            && Objects.equals(options, other.options);
     }
 
     /**
@@ -84,18 +97,5 @@ public class SevenZMethodConfiguration {
     @Override
     public int hashCode() {
         return method == null ? 0 : method.hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        final SevenZMethodConfiguration other = (SevenZMethodConfiguration) obj;
-        return Objects.equals(method, other.method)
-            && Objects.equals(options, other.options);
     }
 }

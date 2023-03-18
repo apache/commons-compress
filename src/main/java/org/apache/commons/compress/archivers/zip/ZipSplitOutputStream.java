@@ -17,12 +17,15 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.utils.FileNameUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.Objects;
+
+import org.apache.commons.compress.utils.FileNameUtils;
 
 /**
  * Used internally by {@link ZipArchiveOutputStream} when creating a split archive.
@@ -30,13 +33,6 @@ import java.nio.file.Files;
  * @since 1.20
  */
 class ZipSplitOutputStream extends OutputStream {
-    private OutputStream outputStream;
-    private File zipFile;
-    private final long splitSize;
-    private int currentSplitSegmentIndex;
-    private long currentSplitSegmentBytesWritten;
-    private boolean finished;
-    private final byte[] singleByte = new byte[1];
 
     /**
      * 8.5.1 Capacities for split archives are as follows:
@@ -48,26 +44,143 @@ class ZipSplitOutputStream extends OutputStream {
      */
     private final static long ZIP_SEGMENT_MIN_SIZE = 64 * 1024L;
     private final static long ZIP_SEGMENT_MAX_SIZE = 4294967295L;
+    private OutputStream outputStream;
+    private Path zipFile;
+    private final long splitSize;
+    private int currentSplitSegmentIndex;
+    private long currentSplitSegmentBytesWritten;
+
+    private boolean finished;
+    private final byte[] singleByte = new byte[1];
 
     /**
-     * Create a split zip. If the zip file is smaller than the split size,
-     * then there will only be one split zip, and its suffix is .zip,
+     * Creates a split ZIP. If the ZIP file is smaller than the split size,
+     * then there will only be one split ZIP, and its suffix is .zip,
      * otherwise the split segments should be like .z01, .z02, ... .z(N-1), .zip
-     *
-     * @param zipFile   the zip file to write to
+     * @param zipFile   the ZIP file to write to
      * @param splitSize the split size
+     * @throws IllegalArgumentException if arguments are illegal: Zip split segment size should between 64K and 4,294,967,295.
+     * @throws IOException if an I/O error occurs
      */
     public ZipSplitOutputStream(final File zipFile, final long splitSize) throws IllegalArgumentException, IOException {
-        if (splitSize < ZIP_SEGMENT_MIN_SIZE || splitSize > ZIP_SEGMENT_MAX_SIZE) {
-            throw new IllegalArgumentException("zip split segment size should between 64K and 4,294,967,295");
-        }
+        this(zipFile.toPath(), splitSize);
+    }
 
+    /**
+     * Creates a split ZIP. If the ZIP file is smaller than the split size,
+     * then there will only be one split ZIP, and its suffix is .zip,
+     * otherwise the split segments should be like .z01, .z02, ... .z(N-1), .zip
+     * @param zipFile   the path to ZIP file to write to
+     * @param splitSize the split size
+     * @throws IllegalArgumentException if arguments are illegal: Zip split segment size should between 64K and 4,294,967,295.
+     * @throws IOException if an I/O error occurs
+     * @since 1.22
+     */
+    public ZipSplitOutputStream(final Path zipFile, final long splitSize) throws IllegalArgumentException, IOException {
+        if (splitSize < ZIP_SEGMENT_MIN_SIZE || splitSize > ZIP_SEGMENT_MAX_SIZE) {
+            throw new IllegalArgumentException("Zip split segment size should between 64K and 4,294,967,295");
+        }
         this.zipFile = zipFile;
         this.splitSize = splitSize;
-
-        this.outputStream = Files.newOutputStream(zipFile.toPath());
-        // write the zip split signature 0x08074B50 to the zip file
+        this.outputStream = Files.newOutputStream(zipFile);
+        // write the ZIP split signature 0x08074B50 to the ZIP file
         writeZipSplitSignature();
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (!finished) {
+            finish();
+        }
+    }
+
+    /**
+     * Create the new ZIP split segment, the last ZIP segment should be .zip, and the ZIP split segments' suffix should be
+     * like .z01, .z02, .z03, ... .z99, .z100, ..., .z(N-1), .zip
+     * <p>
+     * 8.3.3 Split ZIP files are typically written to the same location
+     * and are subject to name collisions if the spanned name
+     * format is used since each segment will reside on the same
+     * drive. To avoid name collisions, split archives are named
+     * as follows.
+     * <p>
+     * Segment 1   = filename.z01
+     * Segment n-1 = filename.z(n-1)
+     * Segment n   = filename.zip
+     * <p>
+     * NOTE:
+     * The ZIP split segment begin from 1,2,3,... , and we're creating a new segment,
+     * so the new segment suffix should be (currentSplitSegmentIndex + 2)
+     *
+     * @param zipSplitSegmentSuffixIndex
+     * @return
+     * @throws IOException
+     */
+    private Path createNewSplitSegmentFile(final Integer zipSplitSegmentSuffixIndex) throws IOException {
+        final int newZipSplitSegmentSuffixIndex = zipSplitSegmentSuffixIndex == null ? (currentSplitSegmentIndex + 2) : zipSplitSegmentSuffixIndex;
+        final String baseName = FileNameUtils.getBaseName(zipFile);
+        String extension = ".z";
+        if (newZipSplitSegmentSuffixIndex <= 9) {
+            extension += "0" + newZipSplitSegmentSuffixIndex;
+        } else {
+            extension += newZipSplitSegmentSuffixIndex;
+        }
+
+        final Path parent = zipFile.getParent();
+        final String dir = Objects.nonNull(parent) ? parent.toAbsolutePath().toString() : ".";
+        final Path newFile = zipFile.getFileSystem().getPath(dir, baseName + extension);
+
+        if (Files.exists(newFile)) {
+            throw new IOException("split ZIP segment " + baseName + extension + " already exists");
+        }
+        return newFile;
+    }
+
+    /**
+     * The last ZIP split segment's suffix should be .zip
+     *
+     * @throws IOException
+     */
+    private void finish() throws IOException {
+        if (finished) {
+            throw new IOException("This archive has already been finished");
+        }
+
+        final String zipFileBaseName = FileNameUtils.getBaseName(zipFile);
+        outputStream.close();
+        Files.move(zipFile, zipFile.resolveSibling(zipFileBaseName + ".zip"), StandardCopyOption.ATOMIC_MOVE);
+        finished = true;
+    }
+
+    public long getCurrentSplitSegmentBytesWritten() {
+        return currentSplitSegmentBytesWritten;
+    }
+
+    public int getCurrentSplitSegmentIndex() {
+        return currentSplitSegmentIndex;
+    }
+
+    /**
+     * Create a new ZIP split segment and prepare to write to the new segment
+     *
+     * @throws IOException
+     */
+    private void openNewSplitSegment() throws IOException {
+        Path newFile;
+        if (currentSplitSegmentIndex == 0) {
+            outputStream.close();
+            newFile = createNewSplitSegmentFile(1);
+            Files.move(zipFile, newFile, StandardCopyOption.ATOMIC_MOVE);
+        }
+
+        newFile = createNewSplitSegmentFile(null);
+
+        outputStream.close();
+        outputStream = Files.newOutputStream(newFile);
+        currentSplitSegmentBytesWritten = 0;
+        zipFile = newFile;
+        currentSplitSegmentIndex++;
+
     }
 
     /**
@@ -93,18 +206,12 @@ class ZipSplitOutputStream extends OutputStream {
     }
 
     @Override
-    public void write(final int i) throws IOException {
-        singleByte[0] = (byte)(i & 0xff);
-        write(singleByte);
-    }
-
-    @Override
     public void write(final byte[] b) throws IOException {
         write(b, 0, b.length);
     }
 
     /**
-     * Write the data to zip split segments, if the remaining space of current split segment
+     * Write the data to ZIP split segments, if the remaining space of current split segment
      * is not enough, then a new split segment should be created
      *
      * @param b   data to write
@@ -133,111 +240,18 @@ class ZipSplitOutputStream extends OutputStream {
     }
 
     @Override
-    public void close() throws IOException {
-        if (!finished) {
-            finish();
-        }
+    public void write(final int i) throws IOException {
+        singleByte[0] = (byte)(i & 0xff);
+        write(singleByte);
     }
 
     /**
-     * The last zip split segment's suffix should be .zip
-     *
-     * @throws IOException
-     */
-    private void finish() throws IOException {
-        if (finished) {
-            throw new IOException("This archive has already been finished");
-        }
-
-        final String zipFileBaseName = FileNameUtils.getBaseName(zipFile.getName());
-        final File lastZipSplitSegmentFile = new File(zipFile.getParentFile(), zipFileBaseName + ".zip");
-        outputStream.close();
-        if (!zipFile.renameTo(lastZipSplitSegmentFile)) {
-            throw new IOException("Failed to rename " + zipFile + " to " + lastZipSplitSegmentFile);
-        }
-        finished = true;
-    }
-
-    /**
-     * Create a new zip split segment and prepare to write to the new segment
-     *
-     * @throws IOException
-     */
-    private void openNewSplitSegment() throws IOException {
-        File newFile;
-        if (currentSplitSegmentIndex == 0) {
-            outputStream.close();
-            newFile = createNewSplitSegmentFile(1);
-            if (!zipFile.renameTo(newFile)) {
-                throw new IOException("Failed to rename " + zipFile + " to " + newFile);
-            }
-        }
-
-        newFile = createNewSplitSegmentFile(null);
-
-        outputStream.close();
-        outputStream = Files.newOutputStream(newFile.toPath());
-        currentSplitSegmentBytesWritten = 0;
-        zipFile = newFile;
-        currentSplitSegmentIndex++;
-
-    }
-
-    /**
-     * Write the zip split signature (0x08074B50) to the head of the first zip split segment
+     * Write the ZIP split signature (0x08074B50) to the head of the first ZIP split segment
      *
      * @throws IOException
      */
     private void writeZipSplitSignature() throws IOException {
         outputStream.write(ZipArchiveOutputStream.DD_SIG);
         currentSplitSegmentBytesWritten += ZipArchiveOutputStream.DD_SIG.length;
-    }
-
-    /**
-     * Create the new zip split segment, the last zip segment should be .zip, and the zip split segments' suffix should be
-     * like .z01, .z02, .z03, ... .z99, .z100, ..., .z(N-1), .zip
-     * <p>
-     * 8.3.3 Split ZIP files are typically written to the same location
-     * and are subject to name collisions if the spanned name
-     * format is used since each segment will reside on the same
-     * drive. To avoid name collisions, split archives are named
-     * as follows.
-     * <p>
-     * Segment 1   = filename.z01
-     * Segment n-1 = filename.z(n-1)
-     * Segment n   = filename.zip
-     * <p>
-     * NOTE:
-     * The zip split segment begin from 1,2,3,... , and we're creating a new segment,
-     * so the new segment suffix should be (currentSplitSegmentIndex + 2)
-     *
-     * @param zipSplitSegmentSuffixIndex
-     * @return
-     * @throws IOException
-     */
-    private File createNewSplitSegmentFile(final Integer zipSplitSegmentSuffixIndex) throws IOException {
-        final int newZipSplitSegmentSuffixIndex = zipSplitSegmentSuffixIndex == null ? (currentSplitSegmentIndex + 2) : zipSplitSegmentSuffixIndex;
-        final String baseName = FileNameUtils.getBaseName(zipFile.getName());
-        String extension = ".z";
-        if (newZipSplitSegmentSuffixIndex <= 9) {
-            extension += "0" + newZipSplitSegmentSuffixIndex;
-        } else {
-            extension += newZipSplitSegmentSuffixIndex;
-        }
-
-        final File newFile = new File(zipFile.getParent(), baseName + extension);
-
-        if (newFile.exists()) {
-            throw new IOException("split zip segment " + baseName + extension + " already exists");
-        }
-        return newFile;
-    }
-
-    public int getCurrentSplitSegmentIndex() {
-        return currentSplitSegmentIndex;
-    }
-
-    public long getCurrentSplitSegmentBytesWritten() {
-        return currentSplitSegmentBytesWritten;
     }
 }

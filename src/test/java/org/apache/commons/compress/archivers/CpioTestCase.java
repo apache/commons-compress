@@ -18,10 +18,10 @@
  */
 package org.apache.commons.compress.archivers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.InputStream;
@@ -35,8 +35,7 @@ import org.apache.commons.compress.archivers.cpio.CpioArchiveEntry;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveOutputStream;
 import org.apache.commons.compress.archivers.cpio.CpioConstants;
-import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public final class CpioTestCase extends AbstractTestCase {
 
@@ -50,11 +49,11 @@ public final class CpioTestCase extends AbstractTestCase {
         final OutputStream out = Files.newOutputStream(output.toPath());
         final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("cpio", out);
         os.putArchiveEntry(new CpioArchiveEntry("test1.xml", file1.length()));
-        IOUtils.copy(Files.newInputStream(file1.toPath()), os);
+        Files.copy(file1.toPath(), os);
         os.closeArchiveEntry();
 
         os.putArchiveEntry(new CpioArchiveEntry("test2.xml", file2.length()));
-        IOUtils.copy(Files.newInputStream(file2.toPath()), os);
+        Files.copy(file2.toPath(), os);
         os.closeArchiveEntry();
 
         os.close();
@@ -75,13 +74,13 @@ public final class CpioTestCase extends AbstractTestCase {
             CpioArchiveEntry entry = new CpioArchiveEntry("test1.xml", file1Length);
             entry.setMode(CpioConstants.C_ISREG);
             os.putArchiveEntry(entry);
-            IOUtils.copy(Files.newInputStream(file1.toPath()), os);
+            Files.copy(file1.toPath(), os);
             os.closeArchiveEntry();
 
             entry = new CpioArchiveEntry("test2.xml", file2Length);
             entry.setMode(CpioConstants.C_ISREG);
             os.putArchiveEntry(entry);
-            IOUtils.copy(Files.newInputStream(file2.toPath()), os);
+            Files.copy(file2.toPath(), os);
             os.closeArchiveEntry();
             os.finish();
             os.close();
@@ -97,21 +96,19 @@ public final class CpioTestCase extends AbstractTestCase {
         ArchiveEntry entry = null;
         while ((entry = in.getNextEntry()) != null) {
             final File cpioget = new File(dir, entry.getName());
-            final OutputStream out = Files.newOutputStream(cpioget.toPath());
-            IOUtils.copy(in, out);
-            out.close();
+            Files.copy(in, cpioget.toPath());
             result.put(entry.getName(), cpioget);
         }
         in.close();
         is.close();
 
         File t = result.get("test1.xml");
-        assertTrue("Expected " + t.getAbsolutePath() + " to exist", t.exists());
-        assertEquals("length of " + t.getAbsolutePath(), file1Length, t.length());
+        assertTrue(t.exists(), "Expected " + t.getAbsolutePath() + " to exist");
+        assertEquals(file1Length, t.length(), "length of " + t.getAbsolutePath());
 
         t = result.get("test2.xml");
-        assertTrue("Expected " + t.getAbsolutePath() + " to exist", t.exists());
-        assertEquals("length of " + t.getAbsolutePath(), file2Length, t.length());
+        assertTrue(t.exists(), "Expected " + t.getAbsolutePath() + " to exist");
+        assertEquals(file2Length, t.length(), "length of " + t.getAbsolutePath());
     }
 
     @Test
@@ -196,7 +193,7 @@ public final class CpioTestCase extends AbstractTestCase {
     }
 
     @Test
-    public void testFileEntryFromFile() throws Exception {
+    public void testExplicitFileEntry() throws Exception {
         final File[] tmp = createTempDirAndFile();
         File archive = null;
         CpioArchiveOutputStream tos = null;
@@ -206,7 +203,10 @@ public final class CpioTestCase extends AbstractTestCase {
             archive = File.createTempFile("test.", ".cpio", tmp[0]);
             archive.deleteOnExit();
             tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()));
-            final CpioArchiveEntry in = new CpioArchiveEntry(tmp[1], "foo");
+            final CpioArchiveEntry in = new CpioArchiveEntry("foo");
+            in.setTime(tmp[1].lastModified() / 1000);
+            in.setSize(tmp[1].length());
+            in.setMode(CpioConstants.C_ISREG);
             tos.putArchiveEntry(in);
             final byte[] b = new byte[(int) tmp[1].length()];
             fis = Files.newInputStream(tmp[1].toPath());
@@ -245,7 +245,7 @@ public final class CpioTestCase extends AbstractTestCase {
     }
 
     @Test
-    public void testExplicitFileEntry() throws Exception {
+    public void testFileEntryFromFile() throws Exception {
         final File[] tmp = createTempDirAndFile();
         File archive = null;
         CpioArchiveOutputStream tos = null;
@@ -255,10 +255,7 @@ public final class CpioTestCase extends AbstractTestCase {
             archive = File.createTempFile("test.", ".cpio", tmp[0]);
             archive.deleteOnExit();
             tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()));
-            final CpioArchiveEntry in = new CpioArchiveEntry("foo");
-            in.setTime(tmp[1].lastModified() / 1000);
-            in.setSize(tmp[1].length());
-            in.setMode(CpioConstants.C_ISREG);
+            final CpioArchiveEntry in = new CpioArchiveEntry(tmp[1], "foo");
             tos.putArchiveEntry(in);
             final byte[] b = new byte[(int) tmp[1].length()];
             fis = Files.newInputStream(tmp[1].toPath());

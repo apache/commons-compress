@@ -18,75 +18,19 @@
  */
 package org.apache.commons.compress.archivers;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
-import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public final class DumpTestCase extends AbstractTestCase {
-
-    @Test
-    public void testDumpUnarchiveAll() throws Exception {
-        unarchiveAll(getFile("bla.dump"));
-    }
-
-    @Test
-    public void testCompressedDumpUnarchiveAll() throws Exception {
-        unarchiveAll(getFile("bla.z.dump"));
-    }
-
-    private void unarchiveAll(final File input) throws Exception {
-        final InputStream is = Files.newInputStream(input.toPath());
-        ArchiveInputStream in = null;
-        OutputStream out = null;
-        try {
-            in = ArchiveStreamFactory.DEFAULT
-                .createArchiveInputStream("dump", is);
-
-            ArchiveEntry entry = in.getNextEntry();
-            while (entry != null) {
-                final File archiveEntry = new File(dir, entry.getName());
-                archiveEntry.getParentFile().mkdirs();
-                if (entry.isDirectory()) {
-                    archiveEntry.mkdir();
-                    entry = in.getNextEntry();
-                    continue;
-                }
-                out = Files.newOutputStream(archiveEntry.toPath());
-                IOUtils.copy(in, out);
-                out.close();
-                out = null;
-                entry = in.getNextEntry();
-            }
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            if (in != null) {
-                in.close();
-            }
-            is.close();
-        }
-    }
-
-    @Test
-    public void testArchiveDetection() throws Exception {
-        archiveDetection(getFile("bla.dump"));
-    }
-
-    @Test
-    public void testCompressedArchiveDetection() throws Exception {
-        archiveDetection(getFile("bla.z.dump"));
-    }
 
     private void archiveDetection(final File f) throws Exception {
         try (InputStream is = Files.newInputStream(f.toPath())) {
@@ -95,6 +39,23 @@ public final class DumpTestCase extends AbstractTestCase {
                             .createArchiveInputStream(new BufferedInputStream(is))
                             .getClass());
         }
+    }
+
+    private void checkDumpArchive(final File f) throws Exception {
+        final ArrayList<String> expected = new ArrayList<>();
+        expected.add("");
+        expected.add("lost+found/");
+        expected.add("test1.xml");
+        expected.add("test2.xml");
+        try (InputStream is = Files.newInputStream(f.toPath())) {
+            checkArchiveContent(new DumpArchiveInputStream(is),
+                    expected);
+        }
+    }
+
+    @Test
+    public void testArchiveDetection() throws Exception {
+        archiveDetection(getFile("bla.dump"));
     }
 
     @Test
@@ -107,15 +68,36 @@ public final class DumpTestCase extends AbstractTestCase {
         checkDumpArchive(getFile("bla.z.dump"));
     }
 
-    private void checkDumpArchive(final File f) throws Exception {
-        final ArrayList<String> expected = new ArrayList<>();
-        expected.add("");
-        expected.add("lost+found/");
-        expected.add("test1.xml");
-        expected.add("test2.xml");
-        try (InputStream is = Files.newInputStream(f.toPath())) {
-            checkArchiveContent(new DumpArchiveInputStream(is),
-                    expected);
+    @Test
+    public void testCompressedArchiveDetection() throws Exception {
+        archiveDetection(getFile("bla.z.dump"));
+    }
+
+    @Test
+    public void testCompressedDumpUnarchiveAll() throws Exception {
+        unarchiveAll(getFile("bla.z.dump"));
+    }
+
+    @Test
+    public void testDumpUnarchiveAll() throws Exception {
+        unarchiveAll(getFile("bla.dump"));
+    }
+
+    private void unarchiveAll(final File input) throws Exception {
+        try (InputStream is = Files.newInputStream(input.toPath());
+                ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("dump", is)) {
+            ArchiveEntry entry = in.getNextEntry();
+            while (entry != null) {
+                final File archiveEntry = new File(dir, entry.getName());
+                archiveEntry.getParentFile().mkdirs();
+                if (entry.isDirectory()) {
+                    archiveEntry.mkdir();
+                    entry = in.getNextEntry();
+                    continue;
+                }
+                Files.copy(in, archiveEntry.toPath());
+                entry = in.getNextEntry();
+            }
         }
     }
 }

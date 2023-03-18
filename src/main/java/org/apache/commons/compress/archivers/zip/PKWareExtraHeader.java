@@ -67,12 +67,125 @@ import java.util.zip.ZipException;
  */
 public abstract class PKWareExtraHeader implements ZipExtraField {
 
+    /**
+     * Encryption algorithm.
+     *
+     * @since 1.11
+     */
+    public enum EncryptionAlgorithm {
+        DES(0x6601),
+        RC2pre52(0x6602),
+        TripleDES168(0x6603),
+        TripleDES192(0x6609),
+        AES128(0x660E),
+        AES192(0x660F),
+        AES256(0x6610),
+        RC2(0x6702),
+        RC4(0x6801),
+        UNKNOWN(0xFFFF);
+
+        private static final Map<Integer, EncryptionAlgorithm> codeToEnum;
+
+        static {
+            final Map<Integer, EncryptionAlgorithm> cte = new HashMap<>();
+            for (final EncryptionAlgorithm method : values()) {
+                cte.put(method.getCode(), method);
+            }
+            codeToEnum = Collections.unmodifiableMap(cte);
+        }
+
+        /**
+         * Returns the EncryptionAlgorithm for the given code or null if the
+         * method is not known.
+         * @param code the code of the algorithm
+         * @return the EncryptionAlgorithm for the given code or null
+         * if the method is not known
+         */
+        public static EncryptionAlgorithm getAlgorithmByCode(final int code) {
+            return codeToEnum.get(code);
+        }
+
+        private final int code;
+
+        /**
+         * private constructor for enum style class.
+         */
+        EncryptionAlgorithm(final int code) {
+            this.code = code;
+        }
+
+        /**
+         * the algorithm id.
+         *
+         * @return the PKWare AlgorithmId
+         */
+        public int getCode() {
+            return code;
+        }
+    }
+
+    /**
+     * Hash Algorithm
+     *
+     * @since 1.11
+     */
+    public enum HashAlgorithm {
+        NONE(0),
+        CRC32(1),
+        MD5(0x8003),
+        SHA1(0x8004),
+        RIPEND160(0x8007),
+        SHA256(0x800C),
+        SHA384(0x800D),
+        SHA512(0x800E);
+
+        private static final Map<Integer, HashAlgorithm> codeToEnum;
+
+        static {
+            final Map<Integer, HashAlgorithm> cte = new HashMap<>();
+            for (final HashAlgorithm method : values()) {
+                cte.put(method.getCode(), method);
+            }
+            codeToEnum = Collections.unmodifiableMap(cte);
+        }
+
+        /**
+         * Returns the HashAlgorithm for the given code or null if the method is
+         * not known.
+         * @param code the code of the algorithm
+         * @return the HashAlgorithm for the given code or null
+         * if the method is not known
+         */
+        public static HashAlgorithm getAlgorithmByCode(final int code) {
+            return codeToEnum.get(code);
+        }
+
+        private final int code;
+
+        /**
+         * private constructor for enum style class.
+         */
+        HashAlgorithm(final int code) {
+            this.code = code;
+        }
+
+        /**
+         * the hash algorithm ID.
+         *
+         * @return the PKWare hashAlg
+         */
+        public int getCode() {
+            return code;
+        }
+    }
     private final ZipShort headerId;
+
     /**
      * Extra field data in local file data - without Header-ID or length
      * specifier.
      */
     private byte[] localData;
+
     /**
      * Extra field data in central directory - without Header-ID or length
      * specifier.
@@ -83,55 +196,25 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         this.headerId = headerId;
     }
 
+    protected final void assertMinimalLength(final int minimum, final int length)
+        throws ZipException {
+        if (length < minimum) {
+            throw new ZipException(getClass().getName() + " is too short, only "
+                + length + " bytes, expected at least " + minimum);
+        }
+    }
+
     /**
-     * Get the header id.
+     * Get the central data.
      *
-     * @return the header id
+     * @return the central data if present, else return the local file data
      */
     @Override
-    public ZipShort getHeaderId() {
-        return headerId;
-    }
-
-    /**
-     * Set the extra field data in the local file data - without Header-ID or
-     * length specifier.
-     *
-     * @param data
-     *            the field data to use
-     */
-    public void setLocalFileDataData(final byte[] data) {
-        localData = ZipUtil.copy(data);
-    }
-
-    /**
-     * Get the length of the local data.
-     *
-     * @return the length of the local data
-     */
-    @Override
-    public ZipShort getLocalFileDataLength() {
-        return new ZipShort(localData != null ? localData.length : 0);
-    }
-
-    /**
-     * Get the local data.
-     *
-     * @return the local data
-     */
-    @Override
-    public byte[] getLocalFileDataData() {
-        return ZipUtil.copy(localData);
-    }
-
-    /**
-     * Set the extra field data in central directory.
-     *
-     * @param data
-     *            the data to use
-     */
-    public void setCentralDirectoryData(final byte[] data) {
-        centralData = ZipUtil.copy(data);
+    public byte[] getCentralDirectoryData() {
+        if (centralData != null) {
+            return ZipUtil.copy(centralData);
+        }
+        return getLocalFileDataData();
     }
 
     /**
@@ -149,31 +232,33 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     }
 
     /**
-     * Get the central data.
+     * Get the header id.
      *
-     * @return the central data if present, else return the local file data
+     * @return the header id
      */
     @Override
-    public byte[] getCentralDirectoryData() {
-        if (centralData != null) {
-            return ZipUtil.copy(centralData);
-        }
-        return getLocalFileDataData();
+    public ZipShort getHeaderId() {
+        return headerId;
     }
 
     /**
-     * @param data
-     *            the array of bytes.
-     * @param offset
-     *            the source location in the data array.
-     * @param length
-     *            the number of bytes to use in the data array.
-     * @see ZipExtraField#parseFromLocalFileData(byte[], int, int)
+     * Get the local data.
+     *
+     * @return the local data
      */
     @Override
-    public void parseFromLocalFileData(final byte[] data, final int offset, final int length)
-        throws ZipException {
-        setLocalFileDataData(Arrays.copyOfRange(data, offset, offset + length));
+    public byte[] getLocalFileDataData() {
+        return ZipUtil.copy(localData);
+    }
+
+    /**
+     * Get the length of the local data.
+     *
+     * @return the length of the local data
+     */
+    @Override
+    public ZipShort getLocalFileDataLength() {
+        return new ZipShort(localData != null ? localData.length : 0);
     }
 
     /**
@@ -195,123 +280,39 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         }
     }
 
-    protected final void assertMinimalLength(final int minimum, final int length)
+    /**
+     * @param data
+     *            the array of bytes.
+     * @param offset
+     *            the source location in the data array.
+     * @param length
+     *            the number of bytes to use in the data array.
+     * @see ZipExtraField#parseFromLocalFileData(byte[], int, int)
+     */
+    @Override
+    public void parseFromLocalFileData(final byte[] data, final int offset, final int length)
         throws ZipException {
-        if (length < minimum) {
-            throw new ZipException(getClass().getName() + " is too short, only "
-                + length + " bytes, expected at least " + minimum);
-        }
+        setLocalFileDataData(Arrays.copyOfRange(data, offset, offset + length));
     }
 
     /**
-     * Encryption algorithm.
+     * Set the extra field data in central directory.
      *
-     * @since 1.11
+     * @param data
+     *            the data to use
      */
-    public enum EncryptionAlgorithm {
-        DES(0x6601),
-        RC2pre52(0x6602),
-        TripleDES168(0x6603),
-        TripleDES192(0x6609),
-        AES128(0x660E),
-        AES192(0x660F),
-        AES256(0x6610),
-        RC2(0x6702),
-        RC4(0x6801),
-        UNKNOWN(0xFFFF);
-
-        private final int code;
-
-        private static final Map<Integer, EncryptionAlgorithm> codeToEnum;
-
-        static {
-            final Map<Integer, EncryptionAlgorithm> cte = new HashMap<>();
-            for (final EncryptionAlgorithm method : values()) {
-                cte.put(method.getCode(), method);
-            }
-            codeToEnum = Collections.unmodifiableMap(cte);
-        }
-
-        /**
-         * private constructor for enum style class.
-         */
-        EncryptionAlgorithm(final int code) {
-            this.code = code;
-        }
-
-        /**
-         * the algorithm id.
-         *
-         * @return the PKWare AlgorithmId
-         */
-        public int getCode() {
-            return code;
-        }
-
-        /**
-         * Returns the EncryptionAlgorithm for the given code or null if the
-         * method is not known.
-         * @param code the code of the algorithm
-         * @return the EncryptionAlgorithm for the given code or null
-         * if the method is not known
-         */
-        public static EncryptionAlgorithm getAlgorithmByCode(final int code) {
-            return codeToEnum.get(code);
-        }
+    public void setCentralDirectoryData(final byte[] data) {
+        centralData = ZipUtil.copy(data);
     }
 
     /**
-     * Hash Algorithm
+     * Set the extra field data in the local file data - without Header-ID or
+     * length specifier.
      *
-     * @since 1.11
+     * @param data
+     *            the field data to use
      */
-    public enum HashAlgorithm {
-        NONE(0),
-        CRC32(1),
-        MD5(0x8003),
-        SHA1(0x8004),
-        RIPEND160(0x8007),
-        SHA256(0x800C),
-        SHA384(0x800D),
-        SHA512(0x800E);
-
-        private final int code;
-
-        private static final Map<Integer, HashAlgorithm> codeToEnum;
-
-        static {
-            final Map<Integer, HashAlgorithm> cte = new HashMap<>();
-            for (final HashAlgorithm method : values()) {
-                cte.put(method.getCode(), method);
-            }
-            codeToEnum = Collections.unmodifiableMap(cte);
-        }
-
-        /**
-         * private constructor for enum style class.
-         */
-        HashAlgorithm(final int code) {
-            this.code = code;
-        }
-
-        /**
-         * the hash algorithm ID.
-         *
-         * @return the PKWare hashAlg
-         */
-        public int getCode() {
-            return code;
-        }
-
-        /**
-         * Returns the HashAlgorithm for the given code or null if the method is
-         * not known.
-         * @param code the code of the algorithm
-         * @return the HashAlgorithm for the given code or null
-         * if the method is not known
-         */
-        public static HashAlgorithm getAlgorithmByCode(final int code) {
-            return codeToEnum.get(code);
-        }
+    public void setLocalFileDataData(final byte[] data) {
+        localData = ZipUtil.copy(data);
     }
 }

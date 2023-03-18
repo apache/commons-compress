@@ -18,6 +18,10 @@
 
 package org.apache.commons.compress.archivers.tar;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -28,50 +32,9 @@ import java.util.Random;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import org.junit.jupiter.api.Test;
 
 public class BigFilesIT extends AbstractTestCase {
-
-    @Test
-    public void readFileBiggerThan8GByteStar() throws Exception {
-        readFileBiggerThan8GByte("8.star.tar.gz");
-    }
-
-    @Test
-    public void readFileBiggerThan8GBytePosix() throws Exception {
-        readFileBiggerThan8GByte("8.posix.tar.gz");
-    }
-
-    @Test
-    public void readFileHeadersOfArchiveBiggerThan8GByte() throws Exception {
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath("8.posix.tar.gz")));
-             GzipCompressorInputStream gzin = new GzipCompressorInputStream(in);
-             TarArchiveInputStream tin = new TarArchiveInputStream(gzin)) {
-            final TarArchiveEntry e = tin.getNextTarEntry();
-            assertNotNull(e);
-            assertNull(tin.getNextTarEntry());
-        }
-    }
-
-    @Test
-    public void tarFileReadFileHeadersOfArchiveBiggerThan8GByte() throws Exception {
-        Path file = getPath("8.posix.tar.gz");
-        Path output = resultDir.toPath().resolve("8.posix.tar");
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(file));
-             GzipCompressorInputStream gzin = new GzipCompressorInputStream(in)) {
-            Files.copy(gzin, output, StandardCopyOption.REPLACE_EXISTING);
-        }
-
-        try (final TarFile tarFile = new TarFile(output)) {
-            List<TarArchiveEntry> entries = tarFile.getEntries();
-            assertEquals(1, entries.size());
-            assertNotNull(entries.get(0));
-        }
-    }
 
     private void readFileBiggerThan8GByte(final String name) throws Exception {
         try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(name)));
@@ -90,12 +53,49 @@ public class BigFilesIT extends AbstractTestCase {
                 // too long, just pick a few ones randomly
                 for (int i = 0; i < 100; i++) {
                     final int idx = r.nextInt(readNow);
-                    assertEquals("testing byte " + (read + idx), 0, buf[idx]);
+                    assertEquals(0, buf[idx], "testing byte " + (read + idx));
                 }
                 read += readNow;
             }
             assertEquals(8200L * 1024 * 1024, read);
             assertNull(tin.getNextTarEntry());
+        }
+    }
+
+    @Test
+    public void readFileBiggerThan8GBytePosix() throws Exception {
+        readFileBiggerThan8GByte("8.posix.tar.gz");
+    }
+
+    @Test
+    public void readFileBiggerThan8GByteStar() throws Exception {
+        readFileBiggerThan8GByte("8.star.tar.gz");
+    }
+
+    @Test
+    public void readFileHeadersOfArchiveBiggerThan8GByte() throws Exception {
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath("8.posix.tar.gz")));
+             GzipCompressorInputStream gzin = new GzipCompressorInputStream(in);
+             TarArchiveInputStream tin = new TarArchiveInputStream(gzin)) {
+            final TarArchiveEntry e = tin.getNextTarEntry();
+            assertNotNull(e);
+            assertNull(tin.getNextTarEntry());
+        }
+    }
+
+    @Test
+    public void tarFileReadFileHeadersOfArchiveBiggerThan8GByte() throws Exception {
+        final Path file = getPath("8.posix.tar.gz");
+        final Path output = resultDir.toPath().resolve("8.posix.tar");
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(file));
+             GzipCompressorInputStream gzin = new GzipCompressorInputStream(in)) {
+            Files.copy(gzin, output, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        try (final TarFile tarFile = new TarFile(output)) {
+            final List<TarArchiveEntry> entries = tarFile.getEntries();
+            assertEquals(1, entries.size());
+            assertNotNull(entries.get(0));
         }
     }
 

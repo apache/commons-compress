@@ -17,9 +17,9 @@
 package org.apache.commons.compress.harmony.pack200;
 
 /**
- * Constant pool entry for a class
+ * Constant pool entry for a class.
  */
-public class CPClass extends CPConstant implements Comparable {
+public class CPClass extends CPConstant<CPClass> {
 
     private final String className;
     private final CPUTF8 utf8;
@@ -29,8 +29,8 @@ public class CPClass extends CPConstant implements Comparable {
         this.utf8 = utf8;
         this.className = utf8.getUnderlyingString();
         final char[] chars = className.toCharArray();
-        for (int i = 0; i < chars.length; i++) {
-            if (chars[i] <= 0x2D) {
+        for (final char element : chars) {
+            if (element <= 0x2D) {
                 isInnerClass = true;
                 return;
             }
@@ -39,13 +39,8 @@ public class CPClass extends CPConstant implements Comparable {
     }
 
     @Override
-    public int compareTo(final Object arg0) {
-        return className.compareTo(((CPClass) arg0).className);
-    }
-
-    @Override
-    public String toString() {
-        return className;
+    public int compareTo(final CPClass arg0) {
+        return className.compareTo(arg0.className);
     }
 
     public int getIndexInCpUtf8() {
@@ -54,6 +49,11 @@ public class CPClass extends CPConstant implements Comparable {
 
     public boolean isInnerClass() {
         return isInnerClass;
+    }
+
+    @Override
+    public String toString() {
+        return className;
     }
 
 }

@@ -18,8 +18,8 @@
  */
 package org.apache.commons.compress.compressors;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -31,7 +31,7 @@ import java.util.Random;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.snappy.FramedSnappyCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public final class FramedSnappyTestCase
     extends AbstractTestCase {
@@ -53,32 +53,29 @@ public final class FramedSnappyTestCase
         testUnarchive(is -> new CompressorStreamFactory().createCompressorInputStream(is));
     }
 
-    private void testUnarchive(final StreamWrapper<CompressorInputStream> wrapper) throws Exception {
-        final File input = getFile("bla.tar.sz");
-        final File output = new File(dir, "bla.tar");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            // the intermediate BufferedInputStream is there for mark
-            // support in the autodetection test
-            try (CompressorInputStream in = wrapper.wrap(new BufferedInputStream(is));
-                    OutputStream out = Files.newOutputStream(output.toPath())) {
-                IOUtils.copy(in, out);
-                assertEquals(995, in.getBytesRead());
-            }
-        }
-        final File original = getFile("bla.tar");
-        try (InputStream written = Files.newInputStream(output.toPath())) {
-            try (InputStream orig = Files.newInputStream(original.toPath())) {
-                assertArrayEquals(IOUtils.toByteArray(written),
-                        IOUtils.toByteArray(orig));
-            }
-        }
-    }
-
     @Test
     public void testRoundtrip() throws Exception {
         testRoundtrip(getFile("test.txt"));
         testRoundtrip(getFile("bla.tar"));
         testRoundtrip(getFile("COMPRESS-256.7z"));
+    }
+
+    private void testRoundtrip(final File input) throws Exception {
+        final long start = System.currentTimeMillis();
+        final File outputSz = new File(dir, input.getName() + ".sz");
+        try (OutputStream os = Files.newOutputStream(outputSz.toPath());
+                CompressorOutputStream sos = new CompressorStreamFactory().createCompressorOutputStream("snappy-framed", os)) {
+            Files.copy(input.toPath(), sos);
+        }
+        // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
+        // + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        try (InputStream is = Files.newInputStream(input.toPath());
+                CompressorInputStream sis = new CompressorStreamFactory().createCompressorInputStream("snappy-framed",
+                        Files.newInputStream(outputSz.toPath()))) {
+            final byte[] expected = IOUtils.toByteArray(is);
+            final byte[] actual = IOUtils.toByteArray(sis);
+            assertArrayEquals(expected, actual);
+        }
     }
 
     @Test
@@ -100,8 +97,8 @@ public final class FramedSnappyTestCase
             sos.write(b[0]);
             sos.write(b, 1, b.length - 1); // must be split into multiple compressed chunks
         }
-        System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-            + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
+        //    + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         try (InputStream is = Files.newInputStream(input.toPath());
              CompressorInputStream sis = new CompressorStreamFactory()
                  .createCompressorInputStream("snappy-framed", Files.newInputStream(outputSz.toPath()))) {
@@ -111,23 +108,23 @@ public final class FramedSnappyTestCase
         }
     }
 
-    private void testRoundtrip(final File input)  throws Exception {
-        final long start = System.currentTimeMillis();
-        final File outputSz = new File(dir, input.getName() + ".sz");
-        try (InputStream is = Files.newInputStream(input.toPath());
-             OutputStream os = Files.newOutputStream(outputSz.toPath());
-             CompressorOutputStream sos = new CompressorStreamFactory()
-                 .createCompressorOutputStream("snappy-framed", os)) {
-            IOUtils.copy(is, sos);
+    private void testUnarchive(final StreamWrapper<CompressorInputStream> wrapper) throws Exception {
+        final File input = getFile("bla.tar.sz");
+        final File output = new File(dir, "bla.tar");
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            // the intermediate BufferedInputStream is there for mark
+            // support in the autodetection test
+            try (CompressorInputStream in = wrapper.wrap(new BufferedInputStream(is))) {
+                Files.copy(in, output.toPath());
+                assertEquals(995, in.getBytesRead());
+            }
         }
-        System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-            + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
-        try (InputStream is = Files.newInputStream(input.toPath());
-             CompressorInputStream sis = new CompressorStreamFactory()
-                 .createCompressorInputStream("snappy-framed", Files.newInputStream(outputSz.toPath()))) {
-            final byte[] expected = IOUtils.toByteArray(is);
-            final byte[] actual = IOUtils.toByteArray(sis);
-            assertArrayEquals(expected, actual);
+        final File original = getFile("bla.tar");
+        try (InputStream written = Files.newInputStream(output.toPath())) {
+            try (InputStream orig = Files.newInputStream(original.toPath())) {
+                assertArrayEquals(IOUtils.toByteArray(written),
+                        IOUtils.toByteArray(orig));
+            }
         }
     }
 }

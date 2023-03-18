@@ -33,17 +33,17 @@ import java.nio.charset.StandardCharsets;
  * </p>
  *
  * <dl>
- * <dt><code>US-ASCII</code></dt>
+ * <dt>{@code US-ASCII}</dt>
  * <dd>Seven-bit ASCII, a.k.a. ISO646-US, a.k.a. the Basic Latin block of the Unicode character set.</dd>
- * <dt><code>ISO-8859-1</code></dt>
+ * <dt>{@code ISO-8859-1}</dt>
  * <dd>ISO Latin Alphabet No. 1, a.k.a. ISO-LATIN-1.</dd>
- * <dt><code>UTF-8</code></dt>
+ * <dt>{@code UTF-8}</dt>
  * <dd>Eight-bit Unicode Transformation Format.</dd>
- * <dt><code>UTF-16BE</code></dt>
+ * <dt>{@code UTF-16BE}</dt>
  * <dd>Sixteen-bit Unicode Transformation Format, big-endian byte order.</dd>
- * <dt><code>UTF-16LE</code></dt>
+ * <dt>{@code UTF-16LE}</dt>
  * <dd>Sixteen-bit Unicode Transformation Format, little-endian byte order.</dd>
- * <dt><code>UTF-16</code></dt>
+ * <dt>{@code UTF-16}</dt>
  * <dd>Sixteen-bit Unicode Transformation Format, byte order specified by a mandatory initial byte-order mark (either order
  * accepted on input, big-endian used on output.)</dd>
  * </dl>
@@ -61,32 +61,6 @@ public class Charsets {
     // This class should only contain Charset instances for required encodings. This guarantees that it will load correctly and
     // without delay on all Java platforms.
     //
-
-    /**
-     * Returns the given Charset or the default Charset if the given Charset is null.
-     *
-     * @param charset
-     *            A charset or null.
-     * @return the given Charset or the default Charset if the given Charset is null
-     */
-    public static Charset toCharset(final Charset charset) {
-        return charset == null ? Charset.defaultCharset() : charset;
-    }
-
-    /**
-     * Returns a Charset for the named charset. If the name is null, return the default Charset.
-     *
-     * @param charset
-     *            The name of the requested charset, may be null.
-     * @return a Charset for the named charset
-     * @throws java.nio.charset.UnsupportedCharsetException
-     *             If the named charset is unavailable
-     * @throws java.nio.charset.IllegalCharsetNameException
-     *             If the given charset name is illegal
-     */
-    public static Charset toCharset(final String charset) {
-        return charset == null ? Charset.defaultCharset() : Charset.forName(charset);
-    }
 
     /**
      * CharsetNamesISO Latin Alphabet No. 1, a.k.a. ISO-LATIN-1.
@@ -170,4 +144,30 @@ public class Charsets {
      */
     @Deprecated
     public static final Charset UTF_8 = StandardCharsets.UTF_8;
+
+    /**
+     * Returns the given Charset or the default Charset if the given Charset is null.
+     *
+     * @param charset
+     *            A charset or null.
+     * @return the given Charset or the default Charset if the given Charset is null
+     */
+    public static Charset toCharset(final Charset charset) {
+        return charset == null ? Charset.defaultCharset() : charset;
+    }
+
+    /**
+     * Returns a Charset for the named charset. If the name is null, return the default Charset.
+     *
+     * @param charset
+     *            The name of the requested charset, may be null.
+     * @return a Charset for the named charset
+     * @throws java.nio.charset.UnsupportedCharsetException
+     *             If the named charset is unavailable
+     * @throws java.nio.charset.IllegalCharsetNameException
+     *             If the given charset name is illegal
+     */
+    public static Charset toCharset(final String charset) {
+        return charset == null ? Charset.defaultCharset() : Charset.forName(charset);
+    }
 }

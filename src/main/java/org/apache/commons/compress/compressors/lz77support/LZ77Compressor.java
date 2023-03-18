@@ -27,9 +27,9 @@ import java.util.Objects;
  *
  * <p>Most LZ77 derived algorithms split input data into blocks of
  * uncompressed data (called literal blocks) and back-references
- * (pairs of offsets and lengths) that state "add <code>length</code>
+ * (pairs of offsets and lengths) that state "add {@code length}
  * bytes that are the same as those already written starting
- * <code>offset</code> bytes before the current position. The details
+ * {@code offset} bytes before the current position. The details
  * of how those blocks and back-references are encoded are quite
  * different between the algorithms and some algorithms perform
  * additional steps (Huffman encoding in the case of DEFLATE for
@@ -47,7 +47,7 @@ import java.util.Objects;
  * talk about it :-), LZSS would likely be closer to the truth but
  * LZ77 has become the synonym for a whole family of algorithms.</p>
  *
- * <p>The API consists of a compressor that is fed <code>byte</code>s
+ * <p>The API consists of a compressor that is fed {@code byte}s
  * and emits {@link Block}s to a registered callback where the blocks
  * represent either {@link LiteralBlock literal blocks}, {@link
  * BackReference back-references} or {@link EOD end of data
@@ -58,24 +58,24 @@ import java.util.Objects;
  * <p>Several parameters influence the outcome of the "compression":</p>
  * <dl>
  *
- *  <dt><code>windowSize</code></dt> <dd>the size of the sliding
+ *  <dt>{@code windowSize}</dt> <dd>the size of the sliding
  *  window, must be a power of two - this determines the maximum
  *  offset a back-reference can take. The compressor maintains a
- *  buffer of twice of <code>windowSize</code> - real world values are
+ *  buffer of twice of {@code windowSize} - real world values are
  *  in the area of 32k.</dd>
  *
- *  <dt><code>minBackReferenceLength</code></dt>
+ *  <dt>{@code minBackReferenceLength}</dt>
  *  <dd>Minimal length of a back-reference found. A true minimum of 3 is
  *  hard-coded inside of this implementation but bigger lengths can be
  *  configured.</dd>
  *
- *  <dt><code>maxBackReferenceLength</code></dt>
+ *  <dt>{@code maxBackReferenceLength}</dt>
  *  <dd>Maximal length of a back-reference found.</dd>
  *
- *  <dt><code>maxOffset</code></dt>
+ *  <dt>{@code maxOffset}</dt>
  *  <dd>Maximal offset of a back-reference.</dd>
  *
- *  <dt><code>maxLiteralLength</code></dt>
+ *  <dt>{@code maxLiteralLength}</dt>
  *  <dd>Maximal length of a literal block.</dd>
  * </dl>
  *
@@ -84,6 +84,39 @@ import java.util.Objects;
  * @NotThreadSafe
  */
 public class LZ77Compressor {
+
+    /**
+     * Represents a back-reference.
+     */
+    public static final class BackReference extends Block {
+        private final int offset, length;
+        public BackReference(final int offset, final int length) {
+            this.offset = offset;
+            this.length = length;
+        }
+        /**
+         * Provides the length of the back-reference.
+         * @return the length
+         */
+        public int getLength() {
+            return length;
+        }
+        /**
+         * Provides the offset of the back-reference.
+         * @return the offset
+         */
+        public int getOffset() {
+            return offset;
+        }
+        @Override
+        public BlockType getType() {
+            return BlockType.BACK_REFERENCE;
+        }
+        @Override
+        public String toString() {
+            return "BackReference with offset " + offset + " and length " + length;
+        }
+    }
 
     /**
      * Base class representing blocks the compressor may emit.
@@ -99,6 +132,30 @@ public class LZ77Compressor {
             LITERAL, BACK_REFERENCE, EOD
         }
         public abstract BlockType getType();
+    }
+
+    /**
+     * Callback invoked while the compressor processes data.
+     *
+     * <p>The callback is invoked on the same thread that receives the
+     * bytes to compress and may be invoked multiple times during the
+     * execution of {@link #compress} or {@link #finish}.</p>
+     */
+    public interface Callback {
+        /**
+         * Consumes a block.
+         * @param b the block to consume
+         * @throws IOException in case of an error
+         */
+        void accept(Block b) throws IOException;
+    }
+
+    /** A simple "we are done" marker. */
+    public static final class EOD extends Block {
+        @Override
+        public BlockType getType() {
+            return BlockType.EOD;
+        }
     }
 
     /**
@@ -128,18 +185,18 @@ public class LZ77Compressor {
             return data;
         }
         /**
-         * Offset into data where the literal block starts.
-         * @return the offset
-         */
-        public int getOffset() {
-            return offset;
-        }
-        /**
          * Length of literal block.
          * @return the length
          */
         public int getLength() {
             return length;
+        }
+        /**
+         * Offset into data where the literal block starts.
+         * @return the offset
+         */
+        public int getOffset() {
+            return offset;
         }
         @Override
         public BlockType getType() {
@@ -151,73 +208,22 @@ public class LZ77Compressor {
         }
     }
 
-    /**
-     * Represents a back-reference.
-     */
-    public static final class BackReference extends Block {
-        private final int offset, length;
-        public BackReference(final int offset, final int length) {
-            this.offset = offset;
-            this.length = length;
-        }
-        /**
-         * Provides the offset of the back-reference.
-         * @return the offset
-         */
-        public int getOffset() {
-            return offset;
-        }
-        /**
-         * Provides the length of the back-reference.
-         * @return the length
-         */
-        public int getLength() {
-            return length;
-        }
-        @Override
-        public BlockType getType() {
-            return BlockType.BACK_REFERENCE;
-        }
-        @Override
-        public String toString() {
-            return "BackReference with offset " + offset + " and length " + length;
-        }
-    }
-
-    /** A simple "we are done" marker. */
-    public static final class EOD extends Block {
-        @Override
-        public BlockType getType() {
-            return BlockType.EOD;
-        }
-    }
-
     private static final Block THE_EOD = new EOD();
-
-    /**
-     * Callback invoked while the compressor processes data.
-     *
-     * <p>The callback is invoked on the same thread that receives the
-     * bytes to compress and may be invoked multiple times during the
-     * execution of {@link #compress} or {@link #finish}.</p>
-     */
-    public interface Callback {
-        /**
-         * Consumes a block.
-         * @param b the block to consume
-         * @throws IOException in case of an error
-         */
-        void accept(Block b) throws IOException;
-    }
 
     static final int NUMBER_OF_BYTES_IN_HASH = 3;
     private static final int NO_MATCH = -1;
 
+    // we use a 15 bit hash code as calculated in updateHash
+    private static final int HASH_SIZE = 1 << 15;
+    private static final int HASH_MASK = HASH_SIZE - 1;
+
+    private static final int H_SHIFT = 5;
     private final Parameters params;
     private final Callback callback;
 
     // the sliding window, twice as big as "windowSize" parameter
     private final byte[] window;
+
     // the head of hash-chain - indexed by hash-code, points to the
     // location inside of window of the latest sequence of bytes with
     // the given hash.
@@ -227,10 +233,8 @@ public class LZ77Compressor {
     // "windowSize" elements, the index is "window location modulo
     // windowSize".
     private final int[] prev;
-
     // bit mask used when indexing into prev
     private final int wMask;
-
     private boolean initialized;
     // the position inside of window that shall be encoded right now
     private int currentPosition;
@@ -239,11 +243,14 @@ public class LZ77Compressor {
     private int lookahead;
     // the hash of the three bytes stating at the current position
     private int insertHash;
+
     // the position inside of the window where the current literal
     // block starts (in case we are inside of a literal block).
     private int blockStart;
+
     // position of the current match
     private int matchStart = NO_MATCH;
+
     // number of missed insertString calls for the up to three last
     // bytes of the last match that can only be performed once more
     // data has been read
@@ -253,7 +260,7 @@ public class LZ77Compressor {
      * Initializes a compressor with parameters and a callback.
      * @param params the parameters
      * @param callback the callback
-     * @throws NullPointerException if either parameter is <code>null</code>
+     * @throws NullPointerException if either parameter is {@code null}
      */
     public LZ77Compressor(final Parameters params, final Callback callback) {
         Objects.requireNonNull(params, "params");
@@ -270,147 +277,10 @@ public class LZ77Compressor {
         prev = new int[wSize];
     }
 
-    /**
-     * Feeds bytes into the compressor which in turn may emit zero or
-     * more blocks to the callback during the execution of this
-     * method.
-     * @param data the data to compress - must not be null
-     * @throws IOException if the callback throws an exception
-     */
-    public void compress(final byte[] data) throws IOException {
-        compress(data, 0, data.length);
-    }
-
-    /**
-     * Feeds bytes into the compressor which in turn may emit zero or
-     * more blocks to the callback during the execution of this
-     * method.
-     * @param data the data to compress - must not be null
-     * @param off the start offset of the data
-     * @param len the number of bytes to compress
-     * @throws IOException if the callback throws an exception
-     */
-    public void compress(final byte[] data, int off, int len) throws IOException {
-        final int wSize = params.getWindowSize();
-        while (len > wSize) { // chop into windowSize sized chunks
-            doCompress(data, off, wSize);
-            off += wSize;
-            len -= wSize;
+    private void catchUpMissedInserts() {
+        while (missedInserts > 0) {
+            insertString(currentPosition - missedInserts--);
         }
-        if (len > 0) {
-            doCompress(data, off, len);
-        }
-    }
-
-    /**
-     * Tells the compressor to process all remaining data and signal
-     * end of data to the callback.
-     *
-     * <p>The compressor will in turn emit at least one block ({@link
-     * EOD}) but potentially multiple blocks to the callback during
-     * the execution of this method.</p>
-     * @throws IOException if the callback throws an exception
-     */
-    public void finish() throws IOException {
-        if (blockStart != currentPosition || lookahead > 0) {
-            currentPosition += lookahead;
-            flushLiteralBlock();
-        }
-        callback.accept(THE_EOD);
-    }
-
-    /**
-     * Adds some initial data to fill the window with.
-     *
-     * <p>This is used if the stream has been cut into blocks and
-     * back-references of one block may refer to data of the previous
-     * block(s). One such example is the LZ4 frame format using block
-     * dependency.</p>
-     *
-     * @param data the data to fill the window with.
-     * @throws IllegalStateException if the compressor has already started to accept data
-     */
-    public void prefill(final byte[] data) {
-        if (currentPosition != 0 || lookahead != 0) {
-            throw new IllegalStateException("The compressor has already started to accept data, can't prefill anymore");
-        }
-
-        // don't need more than windowSize for back-references
-        final int len = Math.min(params.getWindowSize(), data.length);
-        System.arraycopy(data, data.length - len, window, 0, len);
-
-        if (len >= NUMBER_OF_BYTES_IN_HASH) {
-            initialize();
-            final int stop = len - NUMBER_OF_BYTES_IN_HASH + 1;
-            for (int i = 0; i < stop; i++) {
-                insertString(i);
-            }
-            missedInserts = NUMBER_OF_BYTES_IN_HASH - 1;
-        } else { // not enough data to hash anything
-            missedInserts = len;
-        }
-        blockStart = currentPosition = len;
-    }
-
-    // we use a 15 bit hashcode as calculated in updateHash
-    private static final int HASH_SIZE = 1 << 15;
-    private static final int HASH_MASK = HASH_SIZE - 1;
-    private static final int H_SHIFT = 5;
-
-    /**
-     * Assumes we are calculating the hash for three consecutive bytes
-     * as a rolling hash, i.e. for bytes ABCD if H is the hash of ABC
-     * the new hash for BCD is nextHash(H, D).
-     *
-     * <p>The hash is shifted by five bits on each update so all
-     * effects of A have been swapped after the third update.</p>
-     */
-    private int nextHash(final int oldHash, final byte nextByte) {
-        final int nextVal = nextByte & 0xFF;
-        return ((oldHash << H_SHIFT) ^ nextVal) & HASH_MASK;
-    }
-
-    // performs the actual algorithm with the pre-condition len <= windowSize
-    private void doCompress(final byte[] data, final int off, final int len) throws IOException {
-        final int spaceLeft = window.length - currentPosition - lookahead;
-        if (len > spaceLeft) {
-            slide();
-        }
-        System.arraycopy(data, off, window, currentPosition + lookahead, len);
-        lookahead += len;
-        if (!initialized && lookahead >= params.getMinBackReferenceLength()) {
-            initialize();
-        }
-        if (initialized) {
-            compress();
-        }
-    }
-
-    private void slide() throws IOException {
-        final int wSize = params.getWindowSize();
-        if (blockStart != currentPosition && blockStart < wSize) {
-            flushLiteralBlock();
-            blockStart = currentPosition;
-        }
-        System.arraycopy(window, wSize, window, 0, wSize);
-        currentPosition -= wSize;
-        matchStart -= wSize;
-        blockStart -= wSize;
-        for (int i = 0; i < HASH_SIZE; i++) {
-            final int h = head[i];
-            head[i] = h >= wSize ? h - wSize : NO_MATCH;
-        }
-        for (int i = 0; i < wSize; i++) {
-            final int p = prev[i];
-            prev[i] = p >= wSize ? p - wSize : NO_MATCH;
-        }
-    }
-
-    private void initialize() {
-        for (int i = 0; i < NUMBER_OF_BYTES_IN_HASH - 1; i++) {
-            insertHash = nextHash(insertHash, window[i]);
-        }
-        initialized = true;
     }
 
     private void compress() throws IOException {
@@ -453,12 +323,90 @@ public class LZ77Compressor {
             }
         }
     }
+    /**
+     * Feeds bytes into the compressor which in turn may emit zero or
+     * more blocks to the callback during the execution of this
+     * method.
+     * @param data the data to compress - must not be null
+     * @throws IOException if the callback throws an exception
+     */
+    public void compress(final byte[] data) throws IOException {
+        compress(data, 0, data.length);
+    }
+    /**
+     * Feeds bytes into the compressor which in turn may emit zero or
+     * more blocks to the callback during the execution of this
+     * method.
+     * @param data the data to compress - must not be null
+     * @param off the start offset of the data
+     * @param len the number of bytes to compress
+     * @throws IOException if the callback throws an exception
+     */
+    public void compress(final byte[] data, int off, int len) throws IOException {
+        final int wSize = params.getWindowSize();
+        while (len > wSize) { // chop into windowSize sized chunks
+            doCompress(data, off, wSize);
+            off += wSize;
+            len -= wSize;
+        }
+        if (len > 0) {
+            doCompress(data, off, len);
+        }
+    }
+
+    // performs the actual algorithm with the pre-condition len <= windowSize
+    private void doCompress(final byte[] data, final int off, final int len) throws IOException {
+        final int spaceLeft = window.length - currentPosition - lookahead;
+        if (len > spaceLeft) {
+            slide();
+        }
+        System.arraycopy(data, off, window, currentPosition + lookahead, len);
+        lookahead += len;
+        if (!initialized && lookahead >= params.getMinBackReferenceLength()) {
+            initialize();
+        }
+        if (initialized) {
+            compress();
+        }
+    }
+
+    /**
+     * Tells the compressor to process all remaining data and signal
+     * end of data to the callback.
+     *
+     * <p>The compressor will in turn emit at least one block ({@link
+     * EOD}) but potentially multiple blocks to the callback during
+     * the execution of this method.</p>
+     * @throws IOException if the callback throws an exception
+     */
+    public void finish() throws IOException {
+        if (blockStart != currentPosition || lookahead > 0) {
+            currentPosition += lookahead;
+            flushLiteralBlock();
+        }
+        callback.accept(THE_EOD);
+    }
+
+    private void flushBackReference(final int matchLength) throws IOException {
+        callback.accept(new BackReference(currentPosition - matchStart, matchLength));
+    }
+
+    private void flushLiteralBlock() throws IOException {
+        callback.accept(new LiteralBlock(window, blockStart, currentPosition - blockStart));
+    }
+
+    private void initialize() {
+        for (int i = 0; i < NUMBER_OF_BYTES_IN_HASH - 1; i++) {
+            insertHash = nextHash(insertHash, window[i]);
+        }
+        initialized = true;
+    }
 
     /**
      * Inserts the current three byte sequence into the dictionary and
      * returns the previous head of the hash-chain.
      *
-     * <p>Updates <code>insertHash</code> and <code>prev</code> as a
+     * <p>Updates {@code insertHash} and {@code prev} as a
      * side effect.</p>
      */
     private int insertString(final int pos) {
@@ -467,31 +415,6 @@ public class LZ77Compressor {
         prev[pos & wMask] = hashHead;
         head[insertHash] = pos;
         return hashHead;
-    }
-
-    private int longestMatchForNextPosition(final int prevMatchLength) {
-        // save a bunch of values to restore them if the next match isn't better than the current one
-        final int prevMatchStart = matchStart;
-        final int prevInsertHash = insertHash;
-
-        lookahead--;
-        currentPosition++;
-        final int hashHead = insertString(currentPosition);
-        final int prevHashHead = prev[currentPosition & wMask];
-        int matchLength = longestMatch(hashHead);
-
-        if (matchLength <= prevMatchLength) {
-            // use the first match, as the next one isn't any better
-            matchLength = prevMatchLength;
-            matchStart = prevMatchStart;
-
-            // restore modified values
-            head[insertHash] = prevHashHead;
-            insertHash = prevInsertHash;
-            currentPosition--;
-            lookahead++;
-        }
-        return matchLength;
     }
 
     private void insertStringsInMatch(final int matchLength) {
@@ -503,20 +426,6 @@ public class LZ77Compressor {
             insertString(currentPosition + i);
         }
         missedInserts = matchLength - stop - 1;
-    }
-
-    private void catchUpMissedInserts() {
-        while (missedInserts > 0) {
-            insertString(currentPosition - missedInserts--);
-        }
-    }
-
-    private void flushBackReference(final int matchLength) throws IOException {
-        callback.accept(new BackReference(currentPosition - matchStart, matchLength));
-    }
-
-    private void flushLiteralBlock() throws IOException {
-        callback.accept(new LiteralBlock(window, blockStart, currentPosition - blockStart));
     }
 
     /**
@@ -553,5 +462,96 @@ public class LZ77Compressor {
             matchHead = prev[matchHead & wMask];
         }
         return longestMatchLength; // < minLength if no matches have been found, will be ignored in compress()
+    }
+
+    private int longestMatchForNextPosition(final int prevMatchLength) {
+        // save a bunch of values to restore them if the next match isn't better than the current one
+        final int prevMatchStart = matchStart;
+        final int prevInsertHash = insertHash;
+
+        lookahead--;
+        currentPosition++;
+        final int hashHead = insertString(currentPosition);
+        final int prevHashHead = prev[currentPosition & wMask];
+        int matchLength = longestMatch(hashHead);
+
+        if (matchLength <= prevMatchLength) {
+            // use the first match, as the next one isn't any better
+            matchLength = prevMatchLength;
+            matchStart = prevMatchStart;
+
+            // restore modified values
+            head[insertHash] = prevHashHead;
+            insertHash = prevInsertHash;
+            currentPosition--;
+            lookahead++;
+        }
+        return matchLength;
+    }
+
+    /**
+     * Assumes we are calculating the hash for three consecutive bytes
+     * as a rolling hash, i.e. for bytes ABCD if H is the hash of ABC
+     * the new hash for BCD is nextHash(H, D).
+     *
+     * <p>The hash is shifted by five bits on each update so all
+     * effects of A have been swapped after the third update.</p>
+     */
+    private int nextHash(final int oldHash, final byte nextByte) {
+        final int nextVal = nextByte & 0xFF;
+        return ((oldHash << H_SHIFT) ^ nextVal) & HASH_MASK;
+    }
+
+    /**
+     * Adds some initial data to fill the window with.
+     *
+     * <p>This is used if the stream has been cut into blocks and
+     * back-references of one block may refer to data of the previous
+     * block(s). One such example is the LZ4 frame format using block
+     * dependency.</p>
+     *
+     * @param data the data to fill the window with.
+     * @throws IllegalStateException if the compressor has already started to accept data
+     */
+    public void prefill(final byte[] data) {
+        if (currentPosition != 0 || lookahead != 0) {
+            throw new IllegalStateException("The compressor has already started to accept data, can't prefill anymore");
+        }
+
+        // don't need more than windowSize for back-references
+        final int len = Math.min(params.getWindowSize(), data.length);
+        System.arraycopy(data, data.length - len, window, 0, len);
+
+        if (len >= NUMBER_OF_BYTES_IN_HASH) {
+            initialize();
+            final int stop = len - NUMBER_OF_BYTES_IN_HASH + 1;
+            for (int i = 0; i < stop; i++) {
+                insertString(i);
+            }
+            missedInserts = NUMBER_OF_BYTES_IN_HASH - 1;
+        } else { // not enough data to hash anything
+            missedInserts = len;
+        }
+        blockStart = currentPosition = len;
+    }
+
+    private void slide() throws IOException {
+        final int wSize = params.getWindowSize();
+        if (blockStart != currentPosition && blockStart < wSize) {
+            flushLiteralBlock();
+            blockStart = currentPosition;
+        }
+        System.arraycopy(window, wSize, window, 0, wSize);
+        currentPosition -= wSize;
+        matchStart -= wSize;
+        blockStart -= wSize;
+        for (int i = 0; i < HASH_SIZE; i++) {
+            final int h = head[i];
+            head[i] = h >= wSize ? h - wSize : NO_MATCH;
+        }
+        for (int i = 0; i < wSize; i++) {
+            final int p = prev[i];
+            prev[i] = p >= wSize ? p - wSize : NO_MATCH;
+        }
     }
 }

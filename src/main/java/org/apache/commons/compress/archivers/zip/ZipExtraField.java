@@ -32,38 +32,10 @@ import java.util.zip.ZipException;
  */
 public interface ZipExtraField {
     /**
-     * Size of an extra field field header (id + length).
+     * Size of an extra field header (id + length).
      * @since 1.14
      */
     int EXTRAFIELD_HEADER_SIZE = 4;
-
-    /**
-     * The Header-ID.
-     *
-     * @return The HeaderId value
-     */
-    ZipShort getHeaderId();
-
-    /**
-     * Length of the extra field in the local file data - without
-     * Header-ID or length specifier.
-     * @return the length of the field in the local file data
-     */
-    ZipShort getLocalFileDataLength();
-
-    /**
-     * Length of the extra field in the central directory - without
-     * Header-ID or length specifier.
-     * @return the length of the field in the central directory
-     */
-    ZipShort getCentralDirectoryLength();
-
-    /**
-     * The actual data to put into local file data - without Header-ID
-     * or length specifier.
-     * @return the data
-     */
-    byte[] getLocalFileDataData();
 
     /**
      * The actual data to put into central directory - without Header-ID or
@@ -73,15 +45,32 @@ public interface ZipExtraField {
     byte[] getCentralDirectoryData();
 
     /**
-     * Populate data from this array as if it was in local file data.
-     *
-     * @param buffer the buffer to read data from
-     * @param offset offset into buffer to read data
-     * @param length the length of data
-     * @throws ZipException on error
+     * Length of the extra field in the central directory - without
+     * Header-ID or length specifier.
+     * @return the length of the field in the central directory
      */
-    void parseFromLocalFileData(byte[] buffer, int offset, int length)
-        throws ZipException;
+    ZipShort getCentralDirectoryLength();
+
+    /**
+     * The Header-ID.
+     *
+     * @return The HeaderId value
+     */
+    ZipShort getHeaderId();
+
+    /**
+     * The actual data to put into local file data - without Header-ID
+     * or length specifier.
+     * @return the data
+     */
+    byte[] getLocalFileDataData();
+
+    /**
+     * Length of the extra field in the local file data - without
+     * Header-ID or length specifier.
+     * @return the length of the field in the local file data
+     */
+    ZipShort getLocalFileDataLength();
 
     /**
      * Populate data from this array as if it was in central directory data.
@@ -92,5 +81,16 @@ public interface ZipExtraField {
      * @throws ZipException on error
      */
     void parseFromCentralDirectoryData(byte[] buffer, int offset, int length)
+        throws ZipException;
+
+    /**
+     * Populate data from this array as if it was in local file data.
+     *
+     * @param buffer the buffer to read data from
+     * @param offset offset into buffer to read data
+     * @param length the length of data
+     * @throws ZipException on error
+     */
+    void parseFromLocalFileData(byte[] buffer, int offset, int length)
         throws ZipException;
 }

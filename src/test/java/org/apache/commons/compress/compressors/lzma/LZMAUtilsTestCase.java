@@ -18,13 +18,53 @@
  */
 package org.apache.commons.compress.compressors.lzma;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LZMAUtilsTestCase {
+
+    @Test
+    public void testCachingIsEnabledByDefaultAndLZMAIsPresent() {
+        assertEquals(LZMAUtils.CachedAvailability.CACHED_AVAILABLE, LZMAUtils.getCachedLZMAAvailability());
+        assertTrue(LZMAUtils.isLZMACompressionAvailable());
+    }
+
+    @Test
+    public void testCanTurnOffCaching() {
+        try {
+            LZMAUtils.setCacheLZMAAvailablity(false);
+            assertEquals(LZMAUtils.CachedAvailability.DONT_CACHE, LZMAUtils.getCachedLZMAAvailability());
+            assertTrue(LZMAUtils.isLZMACompressionAvailable());
+        } finally {
+            LZMAUtils.setCacheLZMAAvailablity(true);
+        }
+    }
+
+    @Test
+    public void testGetCompressedFilename() {
+        assertEquals(".lzma", LZMAUtils.getCompressedFilename(""));
+        assertEquals("x.lzma", LZMAUtils.getCompressedFilename("x"));
+
+        assertEquals("x.wmf .lzma", LZMAUtils.getCompressedFilename("x.wmf "));
+        assertEquals("x.wmf\n.lzma", LZMAUtils.getCompressedFilename("x.wmf\n"));
+        assertEquals("x.wmf.y.lzma", LZMAUtils.getCompressedFilename("x.wmf.y"));
+    }
+
+    @Test
+    public void testGetUncompressedFilename() {
+        assertEquals("", LZMAUtils.getUncompressedFilename(""));
+        assertEquals(".lzma", LZMAUtils.getUncompressedFilename(".lzma"));
+
+        assertEquals("x", LZMAUtils.getUncompressedFilename("x.lzma"));
+        assertEquals("x", LZMAUtils.getUncompressedFilename("x-lzma"));
+
+        assertEquals("x.lzma ", LZMAUtils.getUncompressedFilename("x.lzma "));
+        assertEquals("x.lzma\n", LZMAUtils.getUncompressedFilename("x.lzma\n"));
+        assertEquals("x.lzma.y", LZMAUtils.getUncompressedFilename("x.lzma.y"));
+    }
 
     @Test
     public void testIsCompressedFilename() {
@@ -44,29 +84,6 @@ public class LZMAUtilsTestCase {
     }
 
     @Test
-    public void testGetUncompressedFilename() {
-        assertEquals("", LZMAUtils.getUncompressedFilename(""));
-        assertEquals(".lzma", LZMAUtils.getUncompressedFilename(".lzma"));
-
-        assertEquals("x", LZMAUtils.getUncompressedFilename("x.lzma"));
-        assertEquals("x", LZMAUtils.getUncompressedFilename("x-lzma"));
-
-        assertEquals("x.lzma ", LZMAUtils.getUncompressedFilename("x.lzma "));
-        assertEquals("x.lzma\n", LZMAUtils.getUncompressedFilename("x.lzma\n"));
-        assertEquals("x.lzma.y", LZMAUtils.getUncompressedFilename("x.lzma.y"));
-    }
-
-    @Test
-    public void testGetCompressedFilename() {
-        assertEquals(".lzma", LZMAUtils.getCompressedFilename(""));
-        assertEquals("x.lzma", LZMAUtils.getCompressedFilename("x"));
-
-        assertEquals("x.wmf .lzma", LZMAUtils.getCompressedFilename("x.wmf "));
-        assertEquals("x.wmf\n.lzma", LZMAUtils.getCompressedFilename("x.wmf\n"));
-        assertEquals("x.wmf.y.lzma", LZMAUtils.getCompressedFilename("x.wmf.y"));
-    }
-
-    @Test
     public void testMatches() {
         final byte[] data = {
             (byte) 0x5D, 0, 0,
@@ -76,23 +93,6 @@ public class LZMAUtilsTestCase {
         assertTrue(LZMAUtils.matches(data, 4));
         data[2] = '0';
         assertFalse(LZMAUtils.matches(data, 3));
-    }
-
-    @Test
-    public void testCachingIsEnabledByDefaultAndLZMAIsPresent() {
-        assertEquals(LZMAUtils.CachedAvailability.CACHED_AVAILABLE, LZMAUtils.getCachedLZMAAvailability());
-        assertTrue(LZMAUtils.isLZMACompressionAvailable());
-    }
-
-    @Test
-    public void testCanTurnOffCaching() {
-        try {
-            LZMAUtils.setCacheLZMAAvailablity(false);
-            assertEquals(LZMAUtils.CachedAvailability.DONT_CACHE, LZMAUtils.getCachedLZMAAvailability());
-            assertTrue(LZMAUtils.isLZMACompressionAvailable());
-        } finally {
-            LZMAUtils.setCacheLZMAAvailablity(true);
-        }
     }
 
     @Test

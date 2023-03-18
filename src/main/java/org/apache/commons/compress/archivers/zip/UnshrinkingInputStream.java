@@ -38,9 +38,8 @@ class UnshrinkingInputStream extends LZWInputStream {
      * IOException is not actually thrown!
      *
      * @param inputStream
-     * @throws IOException IOException is not actually thrown!
      */
-    public UnshrinkingInputStream(final InputStream inputStream) throws IOException {
+    public UnshrinkingInputStream(final InputStream inputStream) {
         super(inputStream, ByteOrder.LITTLE_ENDIAN);
         setClearCode(DEFAULT_CODE_SIZE);
         initializeTables(MAX_CODE_SIZE);
@@ -63,21 +62,6 @@ class UnshrinkingInputStream extends LZWInputStream {
             isUsed[idx] = true;
         }
         return idx;
-    }
-
-    private void partialClear() {
-        final boolean[] isParent = new boolean[MAX_TABLE_SIZE];
-        for (int i = 0; i < isUsed.length; i++) {
-            if (isUsed[i] && getPrefix(i) != UNUSED_PREFIX) {
-                isParent[getPrefix(i)] = true;
-            }
-        }
-        for (int i = getClearCode() + 1; i < isParent.length; i++) {
-            if (!isParent[i]) {
-                isUsed[i] = false;
-                setPrefix(i, UNUSED_PREFIX);
-            }
-        }
     }
 
     @Override
@@ -123,5 +107,20 @@ class UnshrinkingInputStream extends LZWInputStream {
             throw new IOException("Invalid clear code subcode " + subCode);
         }
         return 0;
+    }
+
+    private void partialClear() {
+        final boolean[] isParent = new boolean[MAX_TABLE_SIZE];
+        for (int i = 0; i < isUsed.length; i++) {
+            if (isUsed[i] && getPrefix(i) != UNUSED_PREFIX) {
+                isParent[getPrefix(i)] = true;
+            }
+        }
+        for (int i = getClearCode() + 1; i < isParent.length; i++) {
+            if (!isParent[i]) {
+                isUsed[i] = false;
+                setPrefix(i, UNUSED_PREFIX);
+            }
+        }
     }
 }

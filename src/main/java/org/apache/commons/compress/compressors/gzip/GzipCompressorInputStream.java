@@ -18,18 +18,17 @@
  */
 package org.apache.commons.compress.compressors.gzip;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.EOFException;
-import java.io.InputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
-import java.io.BufferedInputStream;
-import java.nio.charset.StandardCharsets;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.CRC32;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
-import java.util.zip.CRC32;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
@@ -52,7 +51,7 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  * </p>
  *
  * <p>
- * Instead of using <code>GZIPInputStream</code>, this class has its own .gz
+ * Instead of using {@code GZIPInputStream}, this class has its own .gz
  * container format decoder. The actual decompression is done with
  * {@link java.util.zip.Inflater}.
  * </p>
@@ -83,6 +82,29 @@ public class GzipCompressorInputStream extends CompressorInputStream
     private static final int FNAME = 0x08;
     private static final int FCOMMENT = 0x10;
     private static final int FRESERVED = 0xE0;
+
+    /**
+     * Checks if the signature matches what is expected for a .gz file.
+     *
+     * @param signature the bytes to check
+     * @param length    the number of bytes to check
+     * @return          true if this is a .gz stream, false otherwise
+     *
+     * @since 1.1
+     */
+    public static boolean matches(final byte[] signature, final int length) {
+        return length >= 2 && signature[0] == 31 && signature[1] == -117;
+    }
+
+    private static byte[] readToNull(final DataInput inData) throws IOException {
+        try (final ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            int b = 0;
+            while ((b = inData.readUnsignedByte()) != 0x00) { // NOPMD NOSONAR
+                bos.write(b);
+            }
+            return bos.toByteArray();
+        }
+    }
 
     private final CountingInputStream countingStream;
 
@@ -118,7 +140,7 @@ public class GzipCompressorInputStream extends CompressorInputStream
      * from the specified input stream.
      * <p>
      * This is equivalent to
-     * <code>GzipCompressorInputStream(inputStream, false)</code> and thus
+     * {@code GzipCompressorInputStream(inputStream, false)} and thus
      * will not decompress concatenated .gz files.
      *
      * @param inputStream  the InputStream from which this object should
@@ -135,12 +157,12 @@ public class GzipCompressorInputStream extends CompressorInputStream
      * Constructs a new input stream that decompresses gzip-compressed data
      * from the specified input stream.
      * <p>
-     * If <code>decompressConcatenated</code> is {@code false}:
+     * If {@code decompressConcatenated} is {@code false}:
      * This decompressor might read more input than it will actually use.
-     * If <code>inputStream</code> supports <code>mark</code> and
-     * <code>reset</code>, then the input position will be adjusted
+     * If {@code inputStream} supports {@code mark} and
+     * {@code reset}, then the input position will be adjusted
      * so that it is right after the last byte of the compressed stream.
-     * If <code>mark</code> isn't supported, the input position will be
+     * If {@code mark} isn't supported, the input position will be
      * undefined.
      *
      * @param inputStream  the InputStream from which this object should
@@ -165,6 +187,31 @@ public class GzipCompressorInputStream extends CompressorInputStream
 
         this.decompressConcatenated = decompressConcatenated;
         init(true);
+    }
+
+    /**
+     * Closes the input stream (unless it is System.in).
+     *
+     * @since 1.2
+     */
+    @Override
+    public void close() throws IOException {
+        if (inf != null) {
+            inf.end();
+            inf = null;
+        }
+
+        if (this.in != System.in) {
+            this.in.close();
+        }
+    }
+
+    /**
+     * @since 1.17
+     */
+    @Override
+    public long getCompressedCount() {
+        return countingStream.getBytesRead();
     }
 
     /**
@@ -238,14 +285,12 @@ public class GzipCompressorInputStream extends CompressorInputStream
 
         // Original file name
         if ((flg & FNAME) != 0) {
-            parameters.setFilename(new String(readToNull(inData),
-                    StandardCharsets.ISO_8859_1));
+            parameters.setFilename(new String(readToNull(inData), GzipUtils.GZIP_ENCODING));
         }
 
         // Comment
         if ((flg & FCOMMENT) != 0) {
-            parameters.setComment(new String(readToNull(inData),
-                    StandardCharsets.ISO_8859_1));
+            parameters.setComment(new String(readToNull(inData), GzipUtils.GZIP_ENCODING));
         }
 
         // Header "CRC16" which is actually a truncated CRC32 (which isn't
@@ -262,16 +307,6 @@ public class GzipCompressorInputStream extends CompressorInputStream
         crc.reset();
 
         return true;
-    }
-
-    private static byte[] readToNull(final DataInput inData) throws IOException {
-        try (final ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-            int b = 0;
-            while ((b = inData.readUnsignedByte()) != 0x00) { // NOPMD NOSONAR
-                bos.write(b);
-            }
-            return bos.toByteArray();
-        }
     }
 
     @Override
@@ -363,43 +398,5 @@ public class GzipCompressorInputStream extends CompressorInputStream
         }
 
         return size;
-    }
-
-    /**
-     * Checks if the signature matches what is expected for a .gz file.
-     *
-     * @param signature the bytes to check
-     * @param length    the number of bytes to check
-     * @return          true if this is a .gz stream, false otherwise
-     *
-     * @since 1.1
-     */
-    public static boolean matches(final byte[] signature, final int length) {
-        return length >= 2 && signature[0] == 31 && signature[1] == -117;
-    }
-
-    /**
-     * Closes the input stream (unless it is System.in).
-     *
-     * @since 1.2
-     */
-    @Override
-    public void close() throws IOException {
-        if (inf != null) {
-            inf.end();
-            inf = null;
-        }
-
-        if (this.in != System.in) {
-            this.in.close();
-        }
-    }
-
-    /**
-     * @since 1.17
-     */
-    @Override
-    public long getCompressedCount() {
-        return countingStream.getBytesRead();
     }
 }

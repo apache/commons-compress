@@ -18,18 +18,31 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 
 /**
  * Unit tests for class {@link Folder}.
  *
- * @date 26.06.2017
  * @see Folder
- **/
+ */
 public class FolderTest {
+
+
+    @Test
+    public void testFindBindPairForInStream() {
+
+        final Folder folder = new Folder();
+        final BindPair[] bindPairArray = new BindPair[1];
+        final BindPair bindPair = new BindPair();
+        bindPairArray[0] = bindPair;
+        folder.bindPairs = bindPairArray;
+
+        assertEquals(0, folder.findBindPairForInStream(0));
+
+    }
 
 
     @Test
@@ -67,20 +80,6 @@ public class FolderTest {
         final Folder folder = new Folder();
 
         assertEquals(0L, folder.getUnpackSize());
-
-    }
-
-
-    @Test
-    public void testFindBindPairForInStream() {
-
-        final Folder folder = new Folder();
-        final BindPair[] bindPairArray = new BindPair[1];
-        final BindPair bindPair = new BindPair();
-        bindPairArray[0] = bindPair;
-        folder.bindPairs = bindPairArray;
-
-        assertEquals(0, folder.findBindPairForInStream(0));
 
     }
 

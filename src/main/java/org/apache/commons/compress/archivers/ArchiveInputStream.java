@@ -39,20 +39,28 @@ import java.io.InputStream;
  */
 public abstract class ArchiveInputStream extends InputStream {
 
-    private final byte[] single = new byte[1];
     private static final int BYTE_MASK = 0xFF;
+    private final byte[] single = new byte[1];
 
     /** holds the number of bytes read in this stream */
     private long bytesRead;
 
     /**
-     * Returns the next Archive Entry in this Stream.
+     * Whether this stream is able to read the given entry.
      *
-     * @return the next entry,
-     *         or {@code null} if there are no more entries
-     * @throws IOException if the next entry could not be read
+     * <p>
+     * Some archive formats support variants or details that are not supported (yet).
+     * </p>
+     *
+     * @param archiveEntry
+     *            the entry to test
+     * @return This implementation always returns true.
+     *
+     * @since 1.1
      */
-    public abstract ArchiveEntry getNextEntry() throws IOException;
+    public boolean canReadEntryData(final ArchiveEntry archiveEntry) {
+        return true;
+    }
 
     /*
      * Note that subclasses also implement specific get() methods which
@@ -62,25 +70,6 @@ public abstract class ArchiveInputStream extends InputStream {
      * @throws IOException
      */
     // public abstract XXXArchiveEntry getNextXXXEntry() throws IOException;
-
-    /**
-     * Reads a byte of data. This method will block until enough input is
-     * available.
-     *
-     * Simply calls the {@link #read(byte[], int, int)} method.
-     *
-     * MUST be overridden if the {@link #read(byte[], int, int)} method
-     * is not overridden; may be overridden otherwise.
-     *
-     * @return the byte read, or -1 if end of input is reached
-     * @throws IOException
-     *             if an I/O error has occurred
-     */
-    @Override
-    public int read() throws IOException {
-        final int num = read(single, 0, 1);
-        return num == -1 ? -1 : single[0] & BYTE_MASK;
-    }
 
     /**
      * Increments the counter of already read bytes.
@@ -106,13 +95,12 @@ public abstract class ArchiveInputStream extends InputStream {
     }
 
     /**
-     * Decrements the counter of already read bytes.
-     *
-     * @param pushedBack the number of bytes pushed back.
+     * Returns the current number of bytes read from this stream.
+     * @return the number of read bytes
      * @since 1.1
      */
-    protected void pushedBackBytes(final long pushedBack) {
-        bytesRead -= pushedBack;
+    public long getBytesRead() {
+        return bytesRead;
     }
 
     /**
@@ -127,29 +115,41 @@ public abstract class ArchiveInputStream extends InputStream {
     }
 
     /**
-     * Returns the current number of bytes read from this stream.
-     * @return the number of read bytes
+     * Returns the next Archive Entry in this Stream.
+     *
+     * @return the next entry,
+     *         or {@code null} if there are no more entries
+     * @throws IOException if the next entry could not be read
+     */
+    public abstract ArchiveEntry getNextEntry() throws IOException;
+
+    /**
+     * Decrements the counter of already read bytes.
+     *
+     * @param pushedBack the number of bytes pushed back.
      * @since 1.1
      */
-    public long getBytesRead() {
-        return bytesRead;
+    protected void pushedBackBytes(final long pushedBack) {
+        bytesRead -= pushedBack;
     }
 
     /**
-     * Whether this stream is able to read the given entry.
+     * Reads a byte of data. This method will block until enough input is
+     * available.
      *
-     * <p>
-     * Some archive formats support variants or details that are not supported (yet).
-     * </p>
+     * Simply calls the {@link #read(byte[], int, int)} method.
      *
-     * @param archiveEntry
-     *            the entry to test
-     * @return This implementation always returns true.
+     * MUST be overridden if the {@link #read(byte[], int, int)} method
+     * is not overridden; may be overridden otherwise.
      *
-     * @since 1.1
+     * @return the byte read, or -1 if end of input is reached
+     * @throws IOException
+     *             if an I/O error has occurred
      */
-    public boolean canReadEntryData(final ArchiveEntry archiveEntry) {
-        return true;
+    @Override
+    public int read() throws IOException {
+        final int num = read(single, 0, 1);
+        return num == -1 ? -1 : single[0] & BYTE_MASK;
     }
 
 }

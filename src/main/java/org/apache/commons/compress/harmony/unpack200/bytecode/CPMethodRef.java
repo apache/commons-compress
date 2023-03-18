@@ -21,20 +21,15 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
  */
 public class CPMethodRef extends CPRef {
 
+    private boolean hashCodeComputed;
+
+    private int cachedHashCode;
+
     public CPMethodRef(final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
         super(ConstantPoolEntry.CP_Methodref, className, descriptor, globalIndex);
     }
-
-    @Override
-    protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] {className, nameAndType};
-    }
-
-    private boolean hashcodeComputed;
-    private int cachedHashCode;
-
     private void generateHashCode() {
-        hashcodeComputed = true;
+        hashCodeComputed = true;
         final int PRIME = 31;
         int result = 1;
         result = PRIME * result + className.hashCode();
@@ -43,8 +38,13 @@ public class CPMethodRef extends CPRef {
     }
 
     @Override
+    protected ClassFileEntry[] getNestedClassFileEntries() {
+        return new ClassFileEntry[] {className, nameAndType};
+    }
+
+    @Override
     public int hashCode() {
-        if (!hashcodeComputed) {
+        if (!hashCodeComputed) {
             generateHashCode();
         }
         return cachedHashCode;

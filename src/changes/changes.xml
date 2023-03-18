@@ -37,11 +37,228 @@ mvn changes:announcement-generate -Prelease-notes [-Dchanges.version=m.n]
 The <action> type attribute can be add,update,fix,remove.
 -->
 
-<document>
+<document xmlns="http://maven.apache.org/changes/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <properties>
     <title>Apache Commons Compress Release Notes</title>
   </properties>
   <body>
+    <release version="1.23.0" date="2023-03-18">
+      <!-- FIX -->
+      <action type="fix" dev="ggregory" due-to="CodeQL, Gary Gregory">Implicit narrowing conversion in compound assignment.</action>
+      <action type="fix" dev="ggregory" due-to="CodeQL, Gary Gregory">Avoid NPE in FileNameUtils.getBaseName(Path) for paths with zero elements like root paths.</action>
+      <action type="fix" dev="ggregory" due-to="CodeQL, Gary Gregory">Avoid NPE in FileNameUtils.getExtension(Path) for paths with zero elements like root paths.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">LZMA2Decoder.decode() looses original exception.</action>
+      <action type="fix" dev="ggregory" due-to="Arturo Bernal">Extract conditions and avoid duplicate code. #297.</action>
+      <action type="fix" dev="ggregory" due-to="Arturo Bernal">Remove duplicate conditions. Use switch instead. #298.</action>
+      <action type="fix" dev="ggregory" due-to="Robin Schimpf">Replace JUnit 3 and 4 with JUnit 5 #344, #346.</action>
+      <action type="fix" dev="ggregory" due-to="Glavo">Make 'ZipFile.offsetComparator' static #353.</action>
+      <action type="fix" issue="COMPRESS-638" dev="ggregory" due-to="Radar wen, Gary Gregory, Michael Osipov">
+        The GzipCompressorOutputStream#writeHeader() uses ISO_8859_1 to write the file name and comment. 
+        If the strings contains non-ISO_8859_1 characters, unknown characters are displayed after decompression. 
+        Use percent encoding for non ISO_8859_1 characters.
+      </action>
+      <action type="fix" dev="ggregory" due-to="Jonathan Leitschuh, Gary Gregory">Port some code from IO to NIO APIs.</action>
+      <action type="fix" dev="ggregory" due-to="Una, Gary Gregory, Jochen Wiedmann, quaternary, Bruno P. Kinoshita">pack200: Fix FileBands misusing InputStream#read(byte[]) #360.</action>      
+      <action type="fix" issue="COMPRESS-641" dev="ggregory" due-to="XenoAmess, Gary Gregory, Bruno P. Kinoshita">Add TarArchiveEntry.getLinkFlag() #365.</action>
+      <action type="fix" issue="COMPRESS-642" dev="ggregory" due-to="Anton Klarén, Gary Gregory">Integer overflow ArithmeticException in TarArchiveOutputStream #368.</action>
+      <action type="fix" issue="COMPRESS-642" dev="ggregory" due-to="Dominik Stadler, Stefan Bodewig, Gary Gregory">org.apache.commons.compress.archivers.zip.ZipFile.finalize() should not write to std err.</action>
+      <!-- ADD -->
+      <action type="add" issue="COMPRESS-614" dev="ggregory" due-to="Andre Brait, Gary Gregory">Use FileTime for time fields in SevenZipArchiveEntry #256.</action>
+      <action type="add" issue="COMPRESS-621" dev="ggregory" due-to="Glavo">Fix calculation the offset of the first ZIP central directory entry #334.</action>
+      <action type="add" issue="COMPRESS-633" dev="ggregory" due-to="Daniel Santos, Bruno P. Kinoshita, Gary Gregory">Add encryption support for SevenZ #332.</action>
+      <action type="add" issue="COMPRESS-613" dev="ggregory" due-to="Andre Brait, Gary Gregory, Bruno P. Kinoshita">Support for extra time data in Zip archives #345.</action>      
+      <action type="add" issue="COMPRESS-621" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.zip.DefaultBackingStoreSupplier to write to a custom folder instead of the default temporary folder.</action>
+      <action type="add" issue="COMPRESS-600" dev="ggregory" due-to="Gary Gregory, Pascal Davoust">Add capability to configure Deflater strategy in GzipCompressorOutputStream: GzipParameters.setDeflateStrategy(int).</action>
+      <!-- REMOVE -->
+      <action type="remove" dev="ggregory" due-to="Gary Gregory">Remove BZip2CompressorOutputStream.finalize() which only wrote to std err.</action>
+      <!-- UPDATE -->
+      <action type="update" dev="ggregory" due-to="Dependabot">Bump mockito.version from 4.8.0 to 4.11.0 #328, #331, #340, #348.</action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">Bump pmd from 6.50.0 to 6.53.0.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot">Bump memoryfilesystem from 2.3.0 to 2.5.0 #330, #359.</action>
+      <action type="update" dev="kinow" due-to="Dependabot">Bump slf4j-api from 2.0.3 to 2.0.7 #329, #333, #341, #371.</action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">Bump japicmp from 0.16.0 to 0.17.1.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot">Bump commons-parent from 54 to 56 #339, #349.</action>
+      <action type="update" dev="kinow" due-to="Dependabot">Bump zstd-jni from 1.5.2-5 to 1.5.4-2 #362, #364.</action>
+    </release>
+    <release version="1.22" date="2022-11-01">
+      <!-- FIX -->
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">
+        Fix some compiler warnings in pack200 packages.
+      </action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">
+        Close File input stream after unpacking in Pack200UnpackerAdapter.unpack(File, JarOutputStream).
+      </action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">
+        Pack200UnpackerAdapter.unpack(InputStream, JarOutputStream) should not close its given input stream.
+      </action>
+      <action issue="COMPRESS-596" type="fix" date="2021-12-07" dev="Peter Lee" due-to="Tamas Mucs">
+        Fix minor problem in examples.
+      </action>
+      <action issue="COMPRESS-584" type="fix" date="2021-08-11" dev="matthijsln" due-to="Matthijs Laan, Peter Lee">
+        Add a limit to the copy buffer in IOUtils.readRange() to
+        avoid reading more from a channel than asked for.
+        Github Pull Request #214.
+      </action>
+      <action type="fix" dev="ggregory" due-to="Helder Magalhães, Gary Gregory, PeterAlfredLee">
+        Documentation nits #217.
+      </action>
+      <action type="fix" dev="ggregory" due-to="Arturo Bernal">
+        Replace wrapper Collections.sort is with an instance method directly. #245.
+      </action>
+      <action type="fix" dev="ggregory" due-to="Arturo Bernal">
+        Replace manual comparisons with Comparator.comparingInt() #244.
+      </action>
+      <action type="fix" dev="ggregory" due-to="Arturo Bernal">
+        Replace manual copy of array contents with System.arraycopy() #246.
+      </action>
+      <action type="fix" dev="ggregory" due-to="Glavo, Bruno P. Kinoshita, PeterAlfredLee, Gary Gregory">
+        Fix thread safety issues when encoding 7z password #248.
+      </action>
+      <action type="fix" dev="ggregory" due-to="Peter Dettman">
+        bzip2: calculate median-of-3 on unsigned values #242.
+      </action>
+      <action type="fix" dev="ggregory" due-to="Arturo Bernal, Gary Gregory, Bruno P. Kinoshita">
+        Use Math.min and Math.max calculations. #247.
+      </action>
+      <action issue="COMPRESS-603" type="fix" date="2022-02-09" dev="Peter Lee" due-to="Matt Sicker">
+        Expander should be able to work if an entry's name is "./".
+      </action>
+      <action issue="COMPRESS-604" type="fix" dev="ggregory" due-to="Andre Brait">
+        Ensure compatibility with Java 8 #252.
+      </action>
+      <action type="fix" dev="ggregory" due-to="Arturo Bernal">
+        Use StringBuilder instead of StringBuffer. #284.
+      </action>
+      <action type="fix" dev="ggregory" due-to="Arturo Bernal">
+        Inline variable. Remove redundant local variable. #283.
+      </action>
+      <action type="fix" dev="ggregory" due-to="Arturo Bernal">
+        Use compare method #285.
+      </action>
+      <action type="fix" dev="ggregory" due-to="Arturo Bernal">
+        Remove Unnecessary interface modifiers #281.
+      </action>
+      <action type="fix" dev="ggregory" due-to="Arturo Bernal">
+        Avoid use C-style array declaration. #282.
+      </action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">
+        ChecksumVerifyingInputStream.read() does not always validate checksum at end-of-stream.        
+      </action>
+      <action type="fix" dev="ggregory" due-to="Matt Juntunen">
+        Fix TarFileTest #289.
+      </action>
+      <action issue="COMPRESS-625" type="fix" dev="ggregory" due-to="MrBump, Gary Gregory">
+        Update Wikipedia link in TarUtils.java:627.
+      </action>
+      <action issue="COMPRESS-626" type="fix" dev="ggregory" due-to="Andrii Hudz, Gary Gregory">
+        OutOfMemoryError on malformed pack200 input (attributes).
+      </action>
+      <action issue="COMPRESS-628" type="fix" dev="ggregory" due-to="Andrii Hudz, Gary Gregory">
+        OutOfMemoryError on malformed pack200 input (org.apache.commons.compress.harmony.pack200.NewAttributeBands.readNextUnionCase).
+      </action>
+      <action issue="COMPRESS-628" type="fix" dev="ggregory" due-to="Gary Gregory">
+        OutOfMemoryError on malformed unpack200 input (org.apache.commons.compress.harmony.unpack200.NewAttributeBands.readNextUnionCase).
+      </action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">
+        Some input streams are not closed in org.apache.commons.compress.harmony.pack200.PackingUtils.
+      </action>
+      <action issue="COMPRESS-627" type="fix" dev="ggregory" due-to="anatawa12, Gary Gregory">
+        Pack200 causes a 'archive.3E' error if it’s not in the system class loader.
+      </action>
+      <!-- ADD -->
+      <action issue="COMPRESS-602" type="add" dev="ggregory" due-to="Postelnicu George, Gary Gregory">
+        Migrate ZIP package to use NIO #236.
+      </action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">
+        Add APK file extension constants: ArchiveStreamFactory.APK, APKM, APKS, XAPK.
+      </action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">
+        ArchiveStreamFactory.createArchiveInputStream(String, InputStream, String) supports the "APK" format (it's a JAR).
+      </action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">
+        Expander example now has NIO Path versions of IO File APIs.
+      </action>
+      <action issue="COMPRESS-612" type="add" dev="ggregory" due-to="Andre Brait, Gary Gregory">
+        Improve TAR support for file times #254.
+      </action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">
+        Add SevenZArchiveEntry.setContentMethods(SevenZMethodConfiguration...).
+      </action>
+      <!-- UPDATE -->
+      <action type="update" dev="kinow" due-to="Dependabot, Gary Gregory">
+        Bump actions/cache from 2.1.6 to 3.0.10 #230, #257, #305, #320.
+      </action>
+      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">
+        Bump actions/checkout from 2.3.4 to 3.1.0 #226, #227, #251, #300, #321.
+      </action>
+      <action type="update" dev="kinow" due-to="Dependabot">
+        Bump actions/setup-java from 2 to 3.5.1 #278.
+      </action>
+      <action type="update" dev="kinow" due-to="Dependabot">
+        Bump github/codeql-action from 1 to 2 #287.
+      </action>
+      <action type="update" dev="ggregory" due-to="Dependabot">
+        Bump mockito-core from 3.11.1 to 4.6.1 #209, #224, #231, #235, #243, #253, #286, #294.
+      </action>
+      <action type="update" dev="ggregory" due-to="Dependabot">
+        Bump org.apache.felix.framework from 7.0.0 to 7.0.1 #208.
+      </action>
+      <action type="update" dev="ggregory" due-to="Dependabot">
+        Bump memoryfilesystem from 2.1.0 to 2.3.0 #212, #237.
+      </action>
+      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">
+        Bump zstd-jni from 1.5.0-2 to 1.5.2-5 #215, #233, #238, #240, #250, #291, #326.
+      </action>
+      <action type="update" issue="COMPRESS-582" dev="ggregory" due-to="Alex Landau, Stephan, Gary Gregory">
+        Bump Pack200 packages from ASM 3.2 to 9.2 #216. 
+        Breaks binary compatibility in the internals of the pack200 implementation:
+        - org.apache.commons.compress.harmony.pack200.Segment
+        - org.apache.commons.compress.harmony.pack200.SegmentMethodVisitor
+        - org.apache.commons.compress.harmony.pack200.SegmentAnnotationVisitor
+        - org.apache.commons.compress.harmony.pack200.SegmentFieldVisitor
+      </action>
+      <action type="update" dev="kinow" due-to="Dependabot">
+        Bump asm from 9.2 to 9.4 #279, #322.
+      </action>
+      <action type="update" dev="ggregory" due-to="Dependabot">
+        Bump maven-javadoc-plugin from 3.3.0 to 3.4.1 #221, #249, #288, #308.
+      </action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory, Dependabot">
+        Bump maven-pmd-plugin from 3.14.0 to 3.19.0 #296, #309, #311.
+      </action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">
+        Bump pmd from 6.44.0 to 6.50.0.
+      </action>
+      <action type="update" dev="kinow" due-to="Gary Gregory">
+        Bump commons.japicmp.version from 0.15.3 to 0.16.0.
+      </action>
+      <action type="update" dev="ggregory" due-to="Dependabot">
+        Bump maven-bundle-plugin from 5.1.2 to 5.1.8 #234, #239, #290, #292, #301, #304.
+      </action>
+      <action type="update" dev="ggregory" due-to="Dependabot">
+        Bump org.apache.felix.framework from 7.0.1 to 7.0.5 #232, #295.
+      </action>
+      <action type="update" dev="kinow" due-to="Dependabot">
+        Bump slf4j-api from 1.7.30 to 2.0.3 #213, #241, #258, #310, #314, #315, #318.
+      </action>
+      <action type="update" dev="kinow" due-to="Dependabot, Gary Gregory">
+        Bump commons-parent from 52 to 54 #280.
+      </action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">
+        Bump commons.jacoco.version from 0.8.7 to 0.8.8.
+      </action>
+      <action type="update" dev="kinow" due-to="Dependabot">
+        Bump junit.version from 5.8.2 to 5.9.1 #302, #317.
+      </action>
+      <action type="update" dev="kinow" due-to="Dependabot">
+        Bump mockito.version from 4.6.1 to 4.8.0 #307, #312.
+      </action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">
+        Bump maven-surefire-plugin from 3.0.0-M6 to 3.0.0-M7.
+      </action>
+    </release>
     <release version="1.21" date="2021-07-12"
              description="Release 1.21 (Java 8)
 ----------------------------------------
@@ -112,7 +329,7 @@ you relied on the recovery attempt.">
         Throw IOException when it encounters a non-number while parsing pax header.
       </action>
       <action issue="COMPRESS-531" type="fix" date="2020-05-31">
-        Throw IOException when a a tar archive contains a PAX header
+        Throw IOException when a tar archive contains a PAX header
         without any normal entry following it.
       </action>
       <action issue="COMPRESS-532" type="fix" date="2020-05-31">
@@ -233,7 +450,7 @@ you relied on the recovery attempt.">
       </action>
       <action issue="COMPRESS-548" type="fix" date="2020-08-24"
               due-to="Maksim Zuev" dev="PeterLee">
-        Throw an IOException when reading the zip extra field if the
+        Throw an IOException when reading the ZIP extra field if the
         length is too short.
       </action>
       <action issue="COMPRESS-554" type="fix" date="2020-09-01"
@@ -253,15 +470,15 @@ you relied on the recovery attempt.">
       <action issue="COMPRESS-550" type="add" date="2020-09-07"
               due-to="Scott Frederick" dev="PeterLee">
         Add writePreamble to ZipArchiveInputStream. This method could
-        write raw data to zip archive before any entry was written to
-        the zip archive.
+        write raw data to ZIP archive before any entry was written to
+        the ZIP archive.
         For most of the time, this is used to create self-extracting
-        zip.
+        ZIP.
         Github Pull Request #127.
       </action>
       <action type="fix" date="2020-09-24" dev="PeterLee">
         Fix for the CFH signature detect in ZipArchiveInputStream.
-        The problem could be reproduced by a zip archive with Data
+        The problem could be reproduced by a ZIP archive with Data
         Descriptor and STORED, and without the Data Descriptor
         signature.
       </action>
@@ -439,6 +656,17 @@ you relied on the recovery attempt.">
         The parser for GNU sparse tar headers could throw a
         NullPointerExcpetion rather than an IOException if the archive
         ended while more sparse headers were expected.
+      </action>
+      <action issue="COMPRESS-591" type="update" date="2021-09-29"
+              due-to="Lasse Collin" dev="Peter Lee">
+        Call enableRelaxedEndCondition() to enable decoding of 7z
+        files containing LZMA streams with end marker.
+        Github Pull Request #223.
+      </action>
+      <action issue="COMPRESS-592" type="fix" date="2021-10-29"
+              dev="Peter Lee" due-to="Roland Kreuzer">
+        Use LinkedHashMap for fileMap in SevenZFile.readFilesInfo,
+        as it will be read in specific order.
       </action>
     </release>
     <release version="1.20" date="2020-02-08"
@@ -873,7 +1101,7 @@ wanted to create such files.">
       </action>
       <action issue="COMPRESS-416" type="fix" date="2017-07-04"
               due-to="Simon Spero ">
-        The code of the extended timestamp zip extra field incorrectly
+        The code of the extended timestamp ZIP extra field incorrectly
         assumed the time was stored as unsigned 32-bit int and thus
         created incorrect results for years after 2037.
       </action>
@@ -1075,7 +1303,7 @@ the feature was not 100% effective in any case.
       </action>
       <action issue="COMPRESS-352" type="add" date="2016-05-22">
         FramedSnappyCompressorInputStream now supports the dialect of
-        Snappy used by the IWA files contained within the zip archives
+        Snappy used by the IWA files contained within the ZIP archives
         used in Apple's iWork 13 files.
       </action>
       <action issue="COMPRESS-351" type="update" date="2016-06-07">
@@ -1269,7 +1497,7 @@ This also changes the superclass of ZCompressorInputStream.
       <action issue="COMPRESS-296" type="add" date="2015-01-10"
               due-to="Kristian Rosenvold">
         Added support for parallel compression. This low-level API allows
-        a client to build a zip/jar file by using the class
+        a client to build a ZIP/jar file by using the class
         org.apache.commons.compress.archivers.zip.ParallelScatterZipCreator.
 
         Zip documentation updated with further notes about parallel features.
@@ -1581,7 +1809,7 @@ This also changes the superclass of ZCompressorInputStream.
       </action>
       <action type="update" date="2012-07-08" issue="COMPRESS-188"
               due-to="Harald Kuhn">
-        Improved exception message if a zip archive cannot be read
+        Improved exception message if a ZIP archive cannot be read
         because of an unsupported compression method.
       </action>
       <action type="update" date="2012-07-07" issue="COMPRESS-192"
@@ -1649,11 +1877,11 @@ This also changes the superclass of ZCompressorInputStream.
       </action>
         <action type="update" date="2013-01-08" issue="COMPRESS-210"
                 due-to="Julius Davies">
-          Can now handle zip extra field 0x5455 - Extended Timestamp.
+          Can now handle ZIP extra field 0x5455 - Extended Timestamp.
         </action>
         <action type="update" date="2013-01-07" issue="COMPRESS-211"
                 due-to="Julius Davies">
-          handle zip extra field 0x7875 - Info Zip New Unix Extra Field.
+          handle ZIP extra field 0x7875 - Info Zip New Unix Extra Field.
         </action>
         <action type="update" date="2013-01-07" issue="COMPRESS-213"
                 due-to="Julius Davies">
@@ -1661,7 +1889,7 @@ This also changes the superclass of ZCompressorInputStream.
         </action>
         <action type="update" date="2013-01-14" issue="COMPRESS-214"
                 due-to="Julius Davies">
-            better support for unix symlinks in ZipFile entries
+            better support for Unix symlinks in ZipFile entries
         </action>
         <action type="update" date="2013-01-19" issue="COMPRESS-215"
                 due-to="Robin Power">
@@ -1832,7 +2060,7 @@ This also changes the superclass of ZCompressorInputStream.
         message for entries between 2 GByte and 4 GByte in size.
       </action>
       <action issue="COMPRESS-145" type="fix" date="2011-07-23"
-              due-tue="Patrick Dreyer">
+              due-to="Patrick Dreyer">
         TarArchiveInputStream now detects sparse entries using the
         oldgnu format and properly reports it cannot extract their
         contents.
@@ -1932,7 +2160,7 @@ This also changes the superclass of ZCompressorInputStream.
       </action>
       <action type="add" date="2010-03-09" issue="COMPRESS-98">
         The ZIP classes will throw specialized exceptions if any
-        attempt is made to read or write data that uses zip features
+        attempt is made to read or write data that uses ZIP features
         not supported (yet).
       </action>
       <action type="add" date="2010-03-08" issue="COMPRESS-99">

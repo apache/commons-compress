@@ -28,17 +28,39 @@ import java.util.zip.Checksum;
  * @since 1.7
  */
 public class ChecksumVerifyingInputStream extends InputStream {
+
     private final InputStream in;
     private long bytesRemaining;
     private final long expectedChecksum;
     private final Checksum checksum;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param checksum Checksum implementation.
+     * @param in the stream to wrap
+     * @param size the of the stream's content
+     * @param expectedChecksum the expected checksum
+     */
     public ChecksumVerifyingInputStream(final Checksum checksum, final InputStream in,
                                         final long size, final long expectedChecksum) {
         this.checksum = checksum;
         this.in = in;
         this.expectedChecksum = expectedChecksum;
         this.bytesRemaining = size;
+    }
+
+    @Override
+    public void close() throws IOException {
+        in.close();
+    }
+
+    /**
+     * @return bytes remaining to read
+     * @since 1.21
+     */
+    public long getBytesRemaining() {
+        return bytesRemaining;
     }
 
     /**
@@ -57,9 +79,7 @@ public class ChecksumVerifyingInputStream extends InputStream {
             checksum.update(ret);
             --bytesRemaining;
         }
-        if (bytesRemaining == 0 && expectedChecksum != checksum.getValue()) {
-            throw new IOException("Checksum verification failed");
-        }
+        verify();
         return ret;
     }
 
@@ -90,31 +110,19 @@ public class ChecksumVerifyingInputStream extends InputStream {
             checksum.update(b, off, ret);
             bytesRemaining -= ret;
         }
-        if (bytesRemaining <= 0 && expectedChecksum != checksum.getValue()) {
-            throw new IOException("Checksum verification failed");
-        }
+        verify();
         return ret;
     }
 
     @Override
     public long skip(final long n) throws IOException {
         // Can't really skip, we have to hash everything to verify the checksum
-        if (read() >= 0) {
-            return 1;
+        return read() >= 0 ? 1 : 0;
+    }
+
+    private void verify() throws IOException {
+        if (bytesRemaining <= 0 && expectedChecksum != checksum.getValue()) {
+            throw new IOException("Checksum verification failed");
         }
-        return 0;
-    }
-
-    @Override
-    public void close() throws IOException {
-        in.close();
-    }
-
-    /**
-     * @return bytes remaining to read
-     * @since 1.21
-     */
-    public long getBytesRemaining() {
-        return bytesRemaining;
     }
 }

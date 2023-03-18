@@ -24,9 +24,10 @@ import java.io.IOException;
  */
 public class ClassFile {
 
+    private static final int MAGIC = 0xCAFEBABE;
+
     public int major;
     public int minor;
-    private final int magic = 0xCAFEBABE;
     public ClassConstantPool pool = new ClassConstantPool();
     public int accessFlags;
     public int thisClass;
@@ -37,7 +38,7 @@ public class ClassFile {
     public Attribute[] attributes;
 
     public void write(final DataOutputStream dos) throws IOException {
-        dos.writeInt(magic);
+        dos.writeInt(MAGIC);
         dos.writeShort(minor);
         dos.writeShort(major);
         dos.writeShort(pool.size() + 1);
@@ -54,20 +55,20 @@ public class ClassFile {
         dos.writeShort(thisClass);
         dos.writeShort(superClass);
         dos.writeShort(interfaces.length);
-        for (int i = 0; i < interfaces.length; i++) {
-            dos.writeShort(interfaces[i]);
+        for (final int element : interfaces) {
+            dos.writeShort(element);
         }
         dos.writeShort(fields.length);
-        for (int i = 0; i < fields.length; i++) {
-            fields[i].write(dos);
+        for (final ClassFileEntry field : fields) {
+            field.write(dos);
         }
         dos.writeShort(methods.length);
-        for (int i = 0; i < methods.length; i++) {
-            methods[i].write(dos);
+        for (final ClassFileEntry method : methods) {
+            method.write(dos);
         }
         dos.writeShort(attributes.length);
-        for (int i = 0; i < attributes.length; i++) {
-            attributes[i].write(dos);
+        for (final Attribute attribute : attributes) {
+            attribute.write(dos);
         }
     }
 }

@@ -34,10 +34,18 @@ public class ChecksumCalculatingInputStream extends InputStream {
     public ChecksumCalculatingInputStream(final Checksum checksum, final InputStream inputStream) {
 
         Objects.requireNonNull(checksum, "checksum");
-        Objects.requireNonNull(inputStream, "in");
+        Objects.requireNonNull(inputStream, "inputStream");
 
         this.checksum = checksum;
         this.in = inputStream;
+    }
+
+    /**
+     * Returns the calculated checksum.
+     * @return the calculated checksum.
+     */
+    public long getValue() {
+        return checksum.getValue();
     }
 
     /**
@@ -91,14 +99,6 @@ public class ChecksumCalculatingInputStream extends InputStream {
             return 1;
         }
         return 0;
-    }
-
-    /**
-     * Returns the calculated checksum.
-     * @return the calculated checksum.
-     */
-    public long getValue() {
-        return checksum.getValue();
     }
 
 }

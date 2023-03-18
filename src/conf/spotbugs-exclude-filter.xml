@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+
+<!--
+  This file contains some false positive bugs detected by findbugs. Their
+  false positive nature has been analyzed individually and they have been
+  put here to instruct findbugs it must ignore them.
+-->
+<FindBugsFilter
+    xmlns="https://github.com/spotbugs/filter/3.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd">
+
+  <!-- Reason: References to System.out/err == -->
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.Lister" />
+    <Or>
+      <Method name="main" />
+      <Method name="usage" />
+    </Or>
+    <Bug pattern="NP_ALWAYS_NULL" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.zip.ZipFile" />
+    <Method name="finalize" />
+    <Bug pattern="NP_ALWAYS_NULL" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.dump.DumpArchiveUtil" />
+    <Method name="dumpBlock" />
+    <Bug pattern="NP_ALWAYS_NULL" />
+  </Match>
+
+  <!-- Reason: fallthrough is intended -->
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.zip.ExtraFieldUtils" />
+    <Method name="parse" />
+    <Bug pattern="SF_SWITCH_FALLTHROUGH" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.compressors.lz4.BlockLZ4CompressorInputStream" />
+    <Method name="read" />
+    <Bug pattern="SF_SWITCH_FALLTHROUGH" />
+  </Match>
+
+  <!-- Reason: fields unused as documented -->
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.jar.JarArchiveEntry" />
+    <Or>
+      <Field name="certificates"/>
+      <Field name="manifestAttributes"/>
+    </Or>
+    <Bug pattern="UWF_NULL_FIELD" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.dump.DumpArchiveEntry" />
+    <Field name="summary"/>
+    <Bug pattern="UWF_NULL_FIELD" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.sevenz.Folder" />
+    <Field name="totalInputStreams"/>
+    <Bug pattern="URF_UNREAD_FIELD" />
+  </Match>
+
+  <!-- Reason: exception in close swallowed in order to re-throw original in caller -->
+  <Match>
+    <Class name="org.apache.commons.compress.utils.IOUtils" />
+    <Method name="closeQuietly" />
+    <Bug pattern="DE_MIGHT_IGNORE" />
+  </Match>
+
+  <!-- Reason: skip(Long.MAX_VALUE) called to drain stream completely,
+       the class overrides skip to ensure it reads the full amount
+       until EOF is reached -->
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.zip.ZipArchiveInputStream" />
+    <Method name="closeEntry" />
+    <Bug pattern="SR_NOT_CHECKED" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.tar.TarArchiveInputStream" />
+    <Method name="getNextTarEntry" />
+    <Bug pattern="SR_NOT_CHECKED" />
+  </Match>
+
+  <!-- Reason: trying to delete a temporary file that has deleteOnExit set
+       anyway -->
+  <Match>
+    <Class name="org.apache.commons.compress.compressors.pack200.Pack200Utils" />
+    <Method name="normalize" />
+    <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.compressors.pack200.TempFileCachingStreamBridge$1" />
+    <Method name="close" />
+    <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" />
+  </Match>
+
+  <!-- Reason: It is the Pack200*Stream that's going to close it. -->
+  <Match>
+    <Class name="org.apache.commons.compress.compressors.pack200.TempFileCachingStreamBridge$1" />
+    <Method name="&lt;init&gt;" />
+    <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
+  </Match>
+
+  <!-- Reason: the contract is to use default encoding (unless told otherwise) -->
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.arj.ArjArchiveInputStream" />
+    <Method name="readString" />
+    <Bug pattern="DM_DEFAULT_ENCODING" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.zip.AsiExtraField" />
+    <Or>
+      <Method name="getLocalFileDataData" />
+      <Method name="getLocalFileDataLength" />
+      <Method name="parseFromLocalFileData" />
+    </Or>
+    <Bug pattern="DM_DEFAULT_ENCODING" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.zip.FallbackZipEncoding" />
+    <Or>
+      <Method name="decode" />
+      <Method name="encode" />
+    </Or>
+    <Bug pattern="DM_DEFAULT_ENCODING" />
+  </Match>
+
+  <!-- Reason: default encoding is good enough for exception message -->
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.tar.TarUtils" />
+    <Method name="exceptionMessage" />
+    <Bug pattern="DM_DEFAULT_ENCODING" />
+  </Match>
+
+  <!-- Reason: unrolled loop, all possible cases are covered -->
+  <Match>
+    <Class name="org.apache.commons.compress.compressors.snappy.PureJavaCrc32C" />
+    <Method name="update" />
+    <Bug pattern="SF_SWITCH_NO_DEFAULT" />
+  </Match>
+
+  <!-- Reason: class only adds unused always-null fields and superclass' equals is sufficient -->
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.jar.JarArchiveEntry" />
+    <Method name="equals" />
+    <Bug pattern="EQ_DOESNT_OVERRIDE_EQUALS" />
+  </Match>
+  
+  <!-- Reason: failure to delete a file that may not exist. And we really don't care that much either -->
+  <Match>
+    <Class name="org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore" />
+    <Method name="close" />
+    <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" />
+  </Match>
+
+  <!-- Reason: nested code can throw IllegalArgumentException if
+       stream is not a TAR stream -->
+  <Match>
+    <Class name="org.apache.commons.compress.archivers.ArchiveStreamFactory" />
+    <Method name="createArchiveInputStream" />
+    <Bug pattern="REC_CATCH_EXCEPTION" />
+  </Match>
+  
+  <!-- the class wants to allow outside access to the array, just like
+       ByteBuffer.wrap does -->
+  <Match>
+    <Class name="org.apache.commons.compress.utils.SeekableInMemoryByteChannel" />
+    <Method name="array" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.utils.SeekableInMemoryByteChannel" />
+    <Method name="&lt;init&gt;" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+
+  <!-- the array is exposed deliberately to improve performance and it
+       is documented that way -->
+  <Match>
+    <Class name="org.apache.commons.compress.compressors.lz77support.LZ77Compressor$LiteralBlock" />
+    <Method name="getData" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <Class name="org.apache.commons.compress.compressors.lz77support.LZ77Compressor$LiteralBlock" />
+    <Method name="&lt;init&gt;" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+
+</FindBugsFilter>

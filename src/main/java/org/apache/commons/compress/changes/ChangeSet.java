@@ -37,26 +37,6 @@ public final class ChangeSet {
     private final Set<Change> changes = new LinkedHashSet<>();
 
     /**
-     * Deletes the file with the file name from the archive.
-     *
-     * @param fileName
-     *            the file name of the file to delete
-     */
-    public void delete(final String fileName) {
-        addDeletion(new Change(fileName, Change.TYPE_DELETE));
-    }
-
-    /**
-     * Deletes the directory tree from the archive.
-     *
-     * @param dirName
-     *            the name of the directory tree to delete
-     */
-    public void deleteDir(final String dirName) {
-        addDeletion(new Change(dirName, Change.TYPE_DELETE_DIR));
-    }
-
-    /**
      * Adds a new archive entry to the archive.
      *
      * @param pEntry
@@ -103,8 +83,8 @@ public final class ChangeSet {
                         && change.getEntry() != null) {
                     final ArchiveEntry entry = change.getEntry();
 
-                    if(entry.equals(pChange.getEntry())) {
-                        if(pChange.isReplaceMode()) {
+                    if (entry.equals(pChange.getEntry())) {
+                        if (pChange.isReplaceMode()) {
                             it.remove();
                             changes.add(pChange);
                         }
@@ -150,6 +130,26 @@ public final class ChangeSet {
             }
         }
         changes.add(pChange);
+    }
+
+    /**
+     * Deletes the file with the file name from the archive.
+     *
+     * @param fileName
+     *            the file name of the file to delete
+     */
+    public void delete(final String fileName) {
+        addDeletion(new Change(fileName, Change.TYPE_DELETE));
+    }
+
+    /**
+     * Deletes the directory tree from the archive.
+     *
+     * @param dirName
+     *            the name of the directory tree to delete
+     */
+    public void deleteDir(final String dirName) {
+        addDeletion(new Change(dirName, Change.TYPE_DELETE_DIR));
     }
 
     /**

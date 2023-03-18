@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 import org.apache.commons.compress.harmony.unpack200.SegmentUtils;
 
@@ -34,6 +35,10 @@ public class CPNameAndType extends ConstantPoolEntry {
 
     transient int nameIndex;
 
+    private boolean hashCodeComputed;
+
+    private int cachedHashCode;
+
     /**
      * Create a new CPNameAndType
      *
@@ -44,60 +49,14 @@ public class CPNameAndType extends ConstantPoolEntry {
      */
     public CPNameAndType(final CPUTF8 name, final CPUTF8 descriptor, final int globalIndex) {
         super(ConstantPoolEntry.CP_NameAndType, globalIndex);
-        this.name = name;
-        this.descriptor = descriptor;
-        if (name == null || descriptor == null) {
-            throw new NullPointerException("Null arguments are not allowed");
-        }
-    }
-
-    @Override
-    protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] {name, descriptor};
-    }
-
-    @Override
-    protected void resolve(final ClassConstantPool pool) {
-        super.resolve(pool);
-        descriptorIndex = pool.indexOf(descriptor);
-        nameIndex = pool.indexOf(name);
+        this.name = Objects.requireNonNull(name, "name");
+        this.descriptor = Objects.requireNonNull(descriptor, "descriptor");
     }
 
     /*
      * field_info { u2 access_flags; u2 name_index; u2 descriptor_index; u2 attributes_count; attribute_info
      * attributes[attributes_count]; }
      */
-
-    @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeShort(nameIndex);
-        dos.writeShort(descriptorIndex);
-    }
-
-    @Override
-    public String toString() {
-        return "NameAndType: " + name + "(" + descriptor + ")";
-    }
-
-    private boolean hashcodeComputed;
-    private int cachedHashCode;
-
-    private void generateHashCode() {
-        hashcodeComputed = true;
-        final int PRIME = 31;
-        int result = 1;
-        result = PRIME * result + descriptor.hashCode();
-        result = PRIME * result + name.hashCode();
-        cachedHashCode = result;
-    }
-
-    @Override
-    public int hashCode() {
-        if (!hashcodeComputed) {
-            generateHashCode();
-        }
-        return cachedHashCode;
-    }
 
     @Override
     public boolean equals(final Object obj) {
@@ -120,6 +79,27 @@ public class CPNameAndType extends ConstantPoolEntry {
         return true;
     }
 
+    private void generateHashCode() {
+        hashCodeComputed = true;
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + descriptor.hashCode();
+        result = PRIME * result + name.hashCode();
+        cachedHashCode = result;
+    }
+
+    @Override
+    protected ClassFileEntry[] getNestedClassFileEntries() {
+        return new ClassFileEntry[] {name, descriptor};
+    }
+    @Override
+    public int hashCode() {
+        if (!hashCodeComputed) {
+            generateHashCode();
+        }
+        return cachedHashCode;
+    }
+
     /**
      * Answers the invokeinterface count argument when the receiver is treated as an invokeinterface target. This value
      * is not meaningful if the receiver is not an invokeinterface target.
@@ -128,5 +108,23 @@ public class CPNameAndType extends ConstantPoolEntry {
      */
     public int invokeInterfaceCount() {
         return 1 + SegmentUtils.countInvokeInterfaceArgs(descriptor.underlyingString());
+    }
+
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
+        super.resolve(pool);
+        descriptorIndex = pool.indexOf(descriptor);
+        nameIndex = pool.indexOf(name);
+    }
+
+    @Override
+    public String toString() {
+        return "NameAndType: " + name + "(" + descriptor + ")";
+    }
+
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        dos.writeShort(nameIndex);
+        dos.writeShort(descriptorIndex);
     }
 }

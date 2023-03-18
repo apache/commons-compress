@@ -25,6 +25,10 @@ import static org.ops4j.pax.exam.CoreOptions.composite;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
+import java.lang.reflect.Method;
+
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -33,9 +37,6 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
-import java.lang.reflect.Method;
-import javax.inject.Inject;
-
 @RunWith(PaxExam.class)
 public class OsgiITest {
 
@@ -43,6 +44,11 @@ public class OsgiITest {
 
     @Inject
     private BundleContext ctx;
+
+    @Test
+    public void canLoadBundle() {
+        assertNotNull("Expected to find bundle " + EXPECTED_BUNDLE_NAME, loadBundle());
+    }
 
     @Configuration
     public Option[] config() {
@@ -63,9 +69,13 @@ public class OsgiITest {
        };
     }
 
-    @Test
-    public void canLoadBundle() {
-        assertNotNull("Expected to find bundle " + EXPECTED_BUNDLE_NAME, loadBundle());
+    private Bundle loadBundle() {
+        for (final Bundle b : ctx.getBundles()) {
+            if (EXPECTED_BUNDLE_NAME.equals(b.getSymbolicName())) {
+                return b;
+            }
+        }
+        return null;
     }
 
     @Test
@@ -77,14 +87,5 @@ public class OsgiITest {
         assertNotNull("Can access isRunningInOsgiEnvironment method", m);
 
         assertTrue("Compress detects OSGi environment", (Boolean) m.invoke(null));
-    }
-
-    private Bundle loadBundle() {
-        for (final Bundle b : ctx.getBundles()) {
-            if (EXPECTED_BUNDLE_NAME.equals(b.getSymbolicName())) {
-                return b;
-            }
-        }
-        return null;
     }
 }

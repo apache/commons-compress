@@ -40,7 +40,7 @@ public final class IOUtils {
     private static final int SKIP_BUF_SIZE = 4096;
 
     /**
-     * Empty array of of type {@link LinkOption}.
+     * Empty array of type {@link LinkOption}.
      *
      * @since 1.21
      */
@@ -50,8 +50,29 @@ public final class IOUtils {
     // Does not affect Immutability
     private static final byte[] SKIP_BUF = new byte[SKIP_BUF_SIZE];
 
-    /** Private constructor to prevent instantiation of this utility class. */
-    private IOUtils(){
+    /**
+     * Closes the given Closeable and swallows any IOException that may occur.
+     * @param c Closeable to close, can be null
+     * @since 1.7
+     */
+    public static void closeQuietly(final Closeable c) {
+        if (c != null) {
+            try {
+                c.close();
+            } catch (final IOException ignored) { // NOPMD NOSONAR
+            }
+        }
+    }
+
+    /**
+     * Copies the source file to the given output stream.
+     * @param sourceFile The file to read.
+     * @param outputStream The output stream to write.
+     * @throws IOException if an I/O error occurs when reading or writing.
+     * @since 1.21
+     */
+    public static void copy(final File sourceFile, final OutputStream outputStream) throws IOException {
+        Files.copy(sourceFile.toPath(), outputStream);
     }
 
     /**
@@ -61,7 +82,7 @@ public final class IOUtils {
      * @param input
      *            the InputStream to copy
      * @param output
-     *            the target Stream
+     *            the target, may be null to simulate output to dev/null on Linux and NUL on Windows
      * @return the number of bytes copied
      * @throws IOException
      *             if an error occurs
@@ -76,7 +97,7 @@ public final class IOUtils {
      * @param input
      *            the InputStream to copy
      * @param output
-     *            the target Stream
+     *            the target, may be null to simulate output to dev/null on Linux and NUL on Windows
      * @param buffersize
      *            the buffer size to use, must be bigger than 0
      * @return the number of bytes copied
@@ -91,49 +112,69 @@ public final class IOUtils {
         }
         final byte[] buffer = new byte[buffersize];
         int n = 0;
-        long count=0;
+        long count = 0;
         while (-1 != (n = input.read(buffer))) {
-            output.write(buffer, 0, n);
+            if (output != null) {
+                output.write(buffer, 0, n);
+            }
             count += n;
         }
         return count;
     }
 
     /**
-     * Skips the given number of bytes by repeatedly invoking skip on
-     * the given input stream if necessary.
+     * Copies part of the content of a InputStream into an OutputStream.
+     * Uses a default buffer size of 8024 bytes.
      *
-     * <p>In a case where the stream's skip() method returns 0 before
-     * the requested number of bytes has been skip this implementation
-     * will fall back to using the read() method.</p>
-     *
-     * <p>This method will only skip less than the requested number of
-     * bytes if the end of the input stream has been reached.</p>
-     *
-     * @param input stream to skip bytes in
-     * @param numToSkip the number of bytes to skip
-     * @return the number of bytes actually skipped
-     * @throws IOException on error
+     * @param input
+     *            the InputStream to copy
+     * @param output
+     *            the target Stream
+     * @param len
+     *            maximum amount of bytes to copy
+     * @return the number of bytes copied
+     * @throws IOException
+     *             if an error occurs
+     * @since 1.21
      */
-    public static long skip(final InputStream input, long numToSkip) throws IOException {
-        final long available = numToSkip;
-        while (numToSkip > 0) {
-            final long skipped = input.skip(numToSkip);
-            if (skipped == 0) {
-                break;
-            }
-            numToSkip -= skipped;
-        }
+    public static long copyRange(final InputStream input, final long len, final OutputStream output)
+        throws IOException {
+        return copyRange(input, len, output, COPY_BUF_SIZE);
+    }
 
-        while (numToSkip > 0) {
-            final int read = readFully(input, SKIP_BUF, 0,
-                                 (int) Math.min(numToSkip, SKIP_BUF_SIZE));
-            if (read < 1) {
-                break;
-            }
-            numToSkip -= read;
+    /**
+     * Copies part of the content of a InputStream into an OutputStream
+     *
+     * @param input
+     *            the InputStream to copy
+     * @param len
+     *            maximum amount of bytes to copy
+     * @param output
+     *            the target, may be null to simulate output to dev/null on Linux and NUL on Windows
+     * @param buffersize
+     *            the buffer size to use, must be bigger than 0
+     * @return the number of bytes copied
+     * @throws IOException
+     *             if an error occurs
+     * @throws IllegalArgumentException
+     *             if buffersize is smaller than or equal to 0
+     * @since 1.21
+     */
+    public static long copyRange(final InputStream input, final long len, final OutputStream output,
+        final int buffersize) throws IOException {
+        if (buffersize < 1) {
+            throw new IllegalArgumentException("buffersize must be bigger than 0");
         }
-        return available - numToSkip;
+        final byte[] buffer = new byte[(int) Math.min(buffersize, len)];
+        int n = 0;
+        long count = 0;
+        while (count < len && -1 != (n = input.read(buffer, 0, (int) Math.min(len - count, buffer.length)))) {
+            if (output != null) {
+                output.write(buffer, 0, n);
+            }
+            count += n;
+        }
+        return count;
     }
 
     /**
@@ -170,6 +211,12 @@ public final class IOUtils {
     public static int readFully(final InputStream input, final byte[] array) throws IOException {
         return readFully(input, array, 0, array.length);
     }
+
+    // toByteArray(InputStream) copied from:
+    // commons/proper/io/trunk/src/main/java/org/apache/commons/io/IOUtils.java?revision=1428941
+    // January 8th, 2013
+    //
+    // Assuming our copy() works just as well as theirs!  :-)
 
     /**
      * Reads as much from input as possible to fill the given array
@@ -213,15 +260,15 @@ public final class IOUtils {
      * is detected, or an exception is thrown.</p>
      *
      * @param channel the channel to read from
-     * @param b the buffer into which the data is read.
+     * @param byteBuffer the buffer into which the data is read.
      * @throws IOException - if an I/O error occurs.
      * @throws EOFException - if the channel reaches the end before reading all the bytes.
      */
-    public static void readFully(final ReadableByteChannel channel, final ByteBuffer b) throws IOException {
-        final int expectedLength = b.remaining();
+    public static void readFully(final ReadableByteChannel channel, final ByteBuffer byteBuffer) throws IOException {
+        final int expectedLength = byteBuffer.remaining();
         int read = 0;
         while (read < expectedLength) {
-            final int readNow = channel.read(b);
+            final int readNow = channel.read(byteBuffer);
             if (readNow <= 0) {
                 break;
             }
@@ -232,112 +279,10 @@ public final class IOUtils {
         }
     }
 
-    // toByteArray(InputStream) copied from:
-    // commons/proper/io/trunk/src/main/java/org/apache/commons/io/IOUtils.java?revision=1428941
-    // January 8th, 2013
-    //
-    // Assuming our copy() works just as well as theirs!  :-)
-
     /**
-     * Gets the contents of an <code>InputStream</code> as a <code>byte[]</code>.
-     * <p>
-     * This method buffers the input internally, so there is no need to use a
-     * <code>BufferedInputStream</code>.
+     * Gets part of the contents of an {@code InputStream} as a {@code byte[]}.
      *
-     * @param input  the <code>InputStream</code> to read from
-     * @return the requested byte array
-     * @throws NullPointerException if the input is null
-     * @throws IOException if an I/O error occurs
-     * @since 1.5
-     */
-    public static byte[] toByteArray(final InputStream input) throws IOException {
-        final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        copy(input, output);
-        return output.toByteArray();
-    }
-
-    /**
-     * Closes the given Closeable and swallows any IOException that may occur.
-     * @param c Closeable to close, can be null
-     * @since 1.7
-     */
-    public static void closeQuietly(final Closeable c) {
-        if (c != null) {
-            try {
-                c.close();
-            } catch (final IOException ignored) { // NOPMD NOSONAR
-            }
-        }
-    }
-
-    /**
-     * Copies the source file to the given output stream.
-     * @param sourceFile The file to read.
-     * @param outputStream The output stream to write.
-     * @throws IOException if an I/O error occurs when reading or writing.
-     * @since 1.21
-     */
-    public static void copy(final File sourceFile, final OutputStream outputStream) throws IOException {
-        Files.copy(sourceFile.toPath(), outputStream);
-    }
-
-    /**
-     * Copies part of the content of a InputStream into an OutputStream.
-     * Uses a default buffer size of 8024 bytes.
-     *
-     * @param input
-     *            the InputStream to copy
-     * @param output
-     *            the target Stream
-     * @param len
-     *            maximum amount of bytes to copy
-     * @return the number of bytes copied
-     * @throws IOException
-     *             if an error occurs
-     * @since 1.21
-     */
-    public static long copyRange(final InputStream input, final long len, final OutputStream output)
-        throws IOException {
-        return copyRange(input, len, output, COPY_BUF_SIZE);
-    }
-
-    /**
-     * Copies part of the content of a InputStream into an OutputStream
-     *
-     * @param input
-     *            the InputStream to copy
-     * @param len
-     *            maximum amount of bytes to copy
-     * @param output
-     *            the target Stream
-     * @param buffersize
-     *            the buffer size to use, must be bigger than 0
-     * @return the number of bytes copied
-     * @throws IOException
-     *             if an error occurs
-     * @throws IllegalArgumentException
-     *             if buffersize is smaller than or equal to 0
-     * @since 1.21
-     */
-    public static long copyRange(final InputStream input, final long len, final OutputStream output,
-        final int buffersize) throws IOException {
-        if (buffersize < 1) {
-            throw new IllegalArgumentException("buffersize must be bigger than 0");
-        }
-        final byte[] buffer = new byte[(int) Math.min(buffersize, len)];
-        int n = 0;
-        long count = 0;
-        while (count < len && -1 != (n = input.read(buffer, 0, (int) Math.min(len - count, buffer.length)))) {
-            output.write(buffer, 0, n);
-            count += n;
-        }
-        return count;
-    }
-
-    /**
-     * Gets part of the contents of an <code>InputStream</code> as a <code>byte[]</code>.
-     *
-     * @param input  the <code>InputStream</code> to read from
+     * @param input  the {@code InputStream} to read from
      * @param len
      *            maximum amount of bytes to copy
      * @return the requested byte array
@@ -352,9 +297,9 @@ public final class IOUtils {
     }
 
     /**
-     * Gets part of the contents of an <code>ReadableByteChannel</code> as a <code>byte[]</code>.
+     * Gets part of the contents of an {@code ReadableByteChannel} as a {@code byte[]}.
      *
-     * @param input  the <code>ReadableByteChannel</code> to read from
+     * @param input  the {@code ReadableByteChannel} to read from
      * @param len
      *            maximum amount of bytes to copy
      * @return the requested byte array
@@ -367,6 +312,8 @@ public final class IOUtils {
         final ByteBuffer b = ByteBuffer.allocate(Math.min(len, COPY_BUF_SIZE));
         int read = 0;
         while (read < len) {
+            // Make sure we never read more than len bytes
+            b.limit(Math.min(len - read, b.capacity()));
             final int readNow = input.read(b);
             if (readNow <= 0) {
                 break;
@@ -376,6 +323,65 @@ public final class IOUtils {
             read += readNow;
         }
         return output.toByteArray();
+    }
+
+    /**
+     * Skips the given number of bytes by repeatedly invoking skip on
+     * the given input stream if necessary.
+     *
+     * <p>In a case where the stream's skip() method returns 0 before
+     * the requested number of bytes has been skip this implementation
+     * will fall back to using the read() method.</p>
+     *
+     * <p>This method will only skip less than the requested number of
+     * bytes if the end of the input stream has been reached.</p>
+     *
+     * @param input stream to skip bytes in
+     * @param numToSkip the number of bytes to skip
+     * @return the number of bytes actually skipped
+     * @throws IOException on error
+     */
+    public static long skip(final InputStream input, long numToSkip) throws IOException {
+        final long available = numToSkip;
+        while (numToSkip > 0) {
+            final long skipped = input.skip(numToSkip);
+            if (skipped == 0) {
+                break;
+            }
+            numToSkip -= skipped;
+        }
+
+        while (numToSkip > 0) {
+            final int read = readFully(input, SKIP_BUF, 0,
+                                 (int) Math.min(numToSkip, SKIP_BUF_SIZE));
+            if (read < 1) {
+                break;
+            }
+            numToSkip -= read;
+        }
+        return available - numToSkip;
+    }
+
+    /**
+     * Gets the contents of an {@code InputStream} as a {@code byte[]}.
+     * <p>
+     * This method buffers the input internally, so there is no need to use a
+     * {@code BufferedInputStream}.
+     *
+     * @param input  the {@code InputStream} to read from
+     * @return the requested byte array
+     * @throws NullPointerException if the input is null
+     * @throws IOException if an I/O error occurs
+     * @since 1.5
+     */
+    public static byte[] toByteArray(final InputStream input) throws IOException {
+        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+        copy(input, output);
+        return output.toByteArray();
+    }
+
+    /** Private constructor to prevent instantiation of this utility class. */
+    private IOUtils(){
     }
 
 }

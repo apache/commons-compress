@@ -17,7 +17,7 @@
 package org.apache.commons.compress.harmony.pack200;
 
 /**
- * Abstract superclass for constant pool entries
+ * Abstract superclass for constant pool entries.
  */
 public abstract class ConstantPoolEntry {
 

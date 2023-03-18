@@ -48,13 +48,13 @@ public abstract class CompressorInputStream extends InputStream {
     }
 
     /**
-     * Decrements the counter of already read bytes.
+     * Returns the current number of bytes read from this stream.
+     * @return the number of read bytes
      *
-     * @param pushedBack the number of bytes pushed back.
-     * @since 1.7
+     * @since 1.1
      */
-    protected void pushedBackBytes(final long pushedBack) {
-        bytesRead -= pushedBack;
+    public long getBytesRead() {
+        return bytesRead;
     }
 
     /**
@@ -66,16 +66,6 @@ public abstract class CompressorInputStream extends InputStream {
     @Deprecated
     public int getCount() {
         return (int) bytesRead;
-    }
-
-    /**
-     * Returns the current number of bytes read from this stream.
-     * @return the number of read bytes
-     *
-     * @since 1.1
-     */
-    public long getBytesRead() {
-        return bytesRead;
     }
 
     /**
@@ -92,5 +82,15 @@ public abstract class CompressorInputStream extends InputStream {
      */
     public long getUncompressedCount() {
         return getBytesRead();
+    }
+
+    /**
+     * Decrements the counter of already read bytes.
+     *
+     * @param pushedBack the number of bytes pushed back.
+     * @since 1.7
+     */
+    protected void pushedBackBytes(final long pushedBack) {
+        bytesRead -= pushedBack;
     }
 }

@@ -52,8 +52,15 @@ public interface ZipEncoding {
     boolean canEncode(String name);
 
     /**
+     * @param data The byte values to decode.
+     * @return The decoded string.
+     * @throws IOException on error
+     */
+    String decode(byte [] data) throws IOException;
+
+    /**
      * Encode a file name or a comment to a byte array suitable for
-     * storing it to a serialized zip entry.
+     * storing it to a serialized ZIP entry.
      *
      * <p>Examples for CP 437 (in pseudo-notation, right hand side is
      * C-style notation):</p>
@@ -66,7 +73,7 @@ public interface ZipEncoding {
      * @return A byte buffer with a backing array containing the
      *         encoded name.  Unmappable characters or malformed
      *         character sequences are mapped to a sequence of utf-16
-     *         words encoded in the format <code>%Uxxxx</code>.  It is
+     *         words encoded in the format {@code %Uxxxx}.  It is
      *         assumed, that the byte buffer is positioned at the
      *         beginning of the encoded result, the byte buffer has a
      *         backing array and the limit of the byte buffer points
@@ -74,11 +81,4 @@ public interface ZipEncoding {
      * @throws IOException on error
      */
     ByteBuffer encode(String name) throws IOException;
-
-    /**
-     * @param data The byte values to decode.
-     * @return The decoded string.
-     * @throws IOException on error
-     */
-    String decode(byte [] data) throws IOException;
 }

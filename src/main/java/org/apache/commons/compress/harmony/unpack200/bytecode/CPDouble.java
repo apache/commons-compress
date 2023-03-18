@@ -29,13 +29,13 @@ public class CPDouble extends CPConstantNumber {
     }
 
     @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeDouble(getNumber().doubleValue());
+    public String toString() {
+        return "Double: " + getValue();
     }
 
     @Override
-    public String toString() {
-        return "Double: " + getValue();
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        dos.writeDouble(getNumber().doubleValue());
     }
 
 }

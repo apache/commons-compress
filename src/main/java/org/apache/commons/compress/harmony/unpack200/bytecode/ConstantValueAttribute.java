@@ -18,15 +18,12 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * An {@link Attribute} representing a constant.
  */
 public class ConstantValueAttribute extends Attribute {
-
-    private int constantIndex;
-
-    private final ClassFileEntry entry;
 
     private static CPUTF8 attributeName;
 
@@ -34,12 +31,13 @@ public class ConstantValueAttribute extends Attribute {
         attributeName = cpUTF8Value;
     }
 
+    private int constantIndex;
+
+    private final ClassFileEntry entry;
+
     public ConstantValueAttribute(final ClassFileEntry entry) {
         super(attributeName);
-        if (entry == null) {
-            throw new NullPointerException();
-        }
-        this.entry = entry;
+        this.entry = Objects.requireNonNull(entry, "entry");
     }
 
     @Override
@@ -54,11 +52,7 @@ public class ConstantValueAttribute extends Attribute {
             return false;
         }
         final ConstantValueAttribute other = (ConstantValueAttribute) obj;
-        if (entry == null) {
-            if (other.entry != null) {
-                return false;
-            }
-        } else if (!entry.equals(other.entry)) {
+        if (!Objects.equals(entry, other.entry)) {
             return false;
         }
         return true;

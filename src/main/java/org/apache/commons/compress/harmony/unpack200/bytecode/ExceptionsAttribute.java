@@ -33,10 +33,14 @@ public class ExceptionsAttribute extends Attribute {
             return 0;
         }
         int result = 1;
-        for (int index = 0; index < array.length; index++) {
-            result = prime * result + (array[index] == null ? 0 : array[index].hashCode());
+        for (final Object element : array) {
+            result = prime * result + (element == null ? 0 : element.hashCode());
         }
         return result;
+    }
+
+    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
+        attributeName = cpUTF8Value;
     }
 
     private transient int[] exceptionIndexes;
@@ -74,9 +78,7 @@ public class ExceptionsAttribute extends Attribute {
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         final ClassFileEntry[] result = new ClassFileEntry[exceptions.length + 1];
-        for (int i = 0; i < exceptions.length; i++) {
-            result[i] = exceptions[i];
-        }
+        System.arraycopy(exceptions, 0, result, 0, exceptions.length);
         result[exceptions.length] = getAttributeName();
         return result;
     }
@@ -101,10 +103,10 @@ public class ExceptionsAttribute extends Attribute {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         sb.append("Exceptions: ");
-        for (int i = 0; i < exceptions.length; i++) {
-            sb.append(exceptions[i]);
+        for (final CPClass exception : exceptions) {
+            sb.append(exception);
             sb.append(' ');
         }
         return sb.toString();
@@ -113,13 +115,9 @@ public class ExceptionsAttribute extends Attribute {
     @Override
     protected void writeBody(final DataOutputStream dos) throws IOException {
         dos.writeShort(exceptionIndexes.length);
-        for (int i = 0; i < exceptionIndexes.length; i++) {
-            dos.writeShort(exceptionIndexes[i]);
+        for (final int element : exceptionIndexes) {
+            dos.writeShort(element);
         }
-    }
-
-    public static void setAttributeName(final CPUTF8 cpUTF8Value) {
-        attributeName = cpUTF8Value;
     }
 
 }

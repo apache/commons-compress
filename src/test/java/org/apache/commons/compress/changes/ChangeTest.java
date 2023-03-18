@@ -18,47 +18,35 @@
  */
 package org.apache.commons.compress.changes;
 
-import org.apache.commons.compress.archivers.memory.MemoryArchiveEntry;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.PipedInputStream;
 
+import org.apache.commons.compress.archivers.memory.MemoryArchiveEntry;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for class {@link Change}.
  *
- * @date 16.06.2017
  * @see Change
- **/
+ */
 public class ChangeTest {
 
-
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testFailsToCreateChangeTakingFourArgumentsThrowsNullPointerExceptionOne() {
-
         final MemoryArchiveEntry memoryArchiveEntry = new MemoryArchiveEntry("x");
-
-        final Change change  = new Change(memoryArchiveEntry, null, false);
-
+        assertThrows(NullPointerException.class, () -> new Change(memoryArchiveEntry, null, false));
     }
 
-
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testFailsToCreateChangeTakingFourArgumentsThrowsNullPointerExceptionTwo() {
-
         final PipedInputStream pipedInputStream = new PipedInputStream(1);
-
-        final Change change  = new Change(null, pipedInputStream, false);
-
+        assertThrows(NullPointerException.class, () -> new Change(null, pipedInputStream, false));
     }
 
-
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testFailsToCreateChangeTakingThreeArgumentsThrowsNullPointerException() {
-
-        final Change change  = new Change(null, (-407));
-
+        assertThrows(NullPointerException.class, () -> new Change(null, (-407)));
     }
-
 
 }

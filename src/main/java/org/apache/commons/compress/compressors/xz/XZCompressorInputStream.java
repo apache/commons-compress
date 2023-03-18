@@ -21,15 +21,14 @@ package org.apache.commons.compress.compressors.xz;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.tukaani.xz.XZ;
-import org.tukaani.xz.SingleXZInputStream;
-import org.tukaani.xz.XZInputStream;
-
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.tukaani.xz.SingleXZInputStream;
+import org.tukaani.xz.XZ;
+import org.tukaani.xz.XZInputStream;
 
 /**
  * XZ decompressor.
@@ -37,9 +36,6 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  */
 public class XZCompressorInputStream extends CompressorInputStream
     implements InputStreamStatistics {
-
-    private final CountingInputStream countingStream;
-    private final InputStream in;
 
     /**
      * Checks if the signature matches what is expected for a .xz file.
@@ -61,6 +57,9 @@ public class XZCompressorInputStream extends CompressorInputStream
 
         return true;
     }
+    private final CountingInputStream countingStream;
+
+    private final InputStream in;
 
     /**
      * Creates a new input stream that decompresses XZ-compressed data
@@ -73,7 +72,7 @@ public class XZCompressorInputStream extends CompressorInputStream
      *                          the input is corrupt or truncated, the .xz
      *                          headers specify options that are not supported
      *                          by this implementation, or the underlying
-     *                          <code>inputStream</code> throws an exception
+     *                          {@code inputStream} throws an exception
      */
     public XZCompressorInputStream(final InputStream inputStream)
             throws IOException {
@@ -95,7 +94,7 @@ public class XZCompressorInputStream extends CompressorInputStream
      *                          the input is corrupt or truncated, the .xz
      *                          headers specify options that are not supported
      *                          by this implementation, or the underlying
-     *                          <code>inputStream</code> throws an exception
+     *                          {@code inputStream} throws an exception
      */
     public XZCompressorInputStream(final InputStream inputStream,
                                    final boolean decompressConcatenated)
@@ -121,7 +120,7 @@ public class XZCompressorInputStream extends CompressorInputStream
      *                          the input is corrupt or truncated, the .xz
      *                          headers specify options that are not supported
      *                          by this implementation,
-     *                          or the underlying <code>inputStream</code> throws an exception
+     *                          or the underlying {@code inputStream} throws an exception
      *
      * @since 1.14
      */
@@ -134,6 +133,24 @@ public class XZCompressorInputStream extends CompressorInputStream
         } else {
             in = new SingleXZInputStream(countingStream, memoryLimitInKb);
         }
+    }
+
+    @Override
+    public int available() throws IOException {
+        return in.available();
+    }
+
+    @Override
+    public void close() throws IOException {
+        in.close();
+    }
+
+    /**
+     * @since 1.17
+     */
+    @Override
+    public long getCompressedCount() {
+        return countingStream.getBytesRead();
     }
 
     @Override
@@ -170,23 +187,5 @@ public class XZCompressorInputStream extends CompressorInputStream
             //convert to commons-compress MemoryLimtException
             throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), e);
         }
-    }
-
-    @Override
-    public int available() throws IOException {
-        return in.available();
-    }
-
-    @Override
-    public void close() throws IOException {
-        in.close();
-    }
-
-    /**
-     * @since 1.17
-     */
-    @Override
-    public long getCompressedCount() {
-        return countingStream.getBytesRead();
     }
 }

@@ -17,66 +17,66 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.parallel.InputStreamSupplier;
-import org.apache.commons.compress.utils.IOUtils;
-import org.junit.After;
-import org.junit.Test;
+import static org.apache.commons.compress.AbstractTestCase.tryHardToDelete;
+import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.zip.ZipEntry;
 
-import static org.apache.commons.compress.AbstractTestCase.tryHardToDelete;
-import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import org.apache.commons.compress.parallel.InputStreamSupplier;
+import org.apache.commons.compress.utils.IOUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 public class ScatterZipOutputStreamTest {
 
     private File scatterFile = null;
     private File target = null;
 
-    @After
+    @AfterEach
     public void cleanup() {
         tryHardToDelete(scatterFile);
         tryHardToDelete(target);
     }
 
+    private InputStreamSupplier createPayloadSupplier(final ByteArrayInputStream payload) {
+        return () -> payload;
+    }
+
     @Test
     public void putArchiveEntry() throws Exception {
         scatterFile = File.createTempFile("scattertest", ".notzip");
-        final ScatterZipOutputStream scatterZipOutputStream = ScatterZipOutputStream.fileBased(scatterFile);
         final byte[] B_PAYLOAD = "RBBBBBBS".getBytes();
         final byte[] A_PAYLOAD = "XAAY".getBytes();
+        try (ScatterZipOutputStream scatterZipOutputStream = ScatterZipOutputStream.fileBased(scatterFile)) {
 
-        final ZipArchiveEntry zab = new ZipArchiveEntry("b.txt");
-        zab.setMethod(ZipEntry.DEFLATED);
-        final ByteArrayInputStream payload = new ByteArrayInputStream(B_PAYLOAD);
-        scatterZipOutputStream.addArchiveEntry(createZipArchiveEntryRequest(zab, createPayloadSupplier(payload)));
+            final ZipArchiveEntry zab = new ZipArchiveEntry("b.txt");
+            zab.setMethod(ZipEntry.DEFLATED);
+            final ByteArrayInputStream payload = new ByteArrayInputStream(B_PAYLOAD);
+            scatterZipOutputStream.addArchiveEntry(createZipArchiveEntryRequest(zab, createPayloadSupplier(payload)));
 
-        final ZipArchiveEntry zae = new ZipArchiveEntry("a.txt");
-        zae.setMethod(ZipEntry.DEFLATED);
-        final ByteArrayInputStream payload1 = new ByteArrayInputStream(A_PAYLOAD);
-        scatterZipOutputStream.addArchiveEntry(createZipArchiveEntryRequest(zae, createPayloadSupplier(payload1)));
+            final ZipArchiveEntry zae = new ZipArchiveEntry("a.txt");
+            zae.setMethod(ZipEntry.DEFLATED);
+            final ByteArrayInputStream payload1 = new ByteArrayInputStream(A_PAYLOAD);
+            scatterZipOutputStream.addArchiveEntry(createZipArchiveEntryRequest(zae, createPayloadSupplier(payload1)));
 
-        target = File.createTempFile("scattertest", ".zip");
-        final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(target);
-        scatterZipOutputStream.writeTo( outputStream);
-        outputStream.close();
-        scatterZipOutputStream.close();
+            target = File.createTempFile("scattertest", ".zip");
+            try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(target)) {
+                scatterZipOutputStream.writeTo(outputStream);
+            }
+        }
 
-        final ZipFile zf = new ZipFile(target);
-        final ZipArchiveEntry b_entry = zf.getEntries("b.txt").iterator().next();
-        assertEquals(8, b_entry.getSize());
-        assertArrayEquals(B_PAYLOAD, IOUtils.toByteArray(zf.getInputStream(b_entry)));
+        try (ZipFile zf = new ZipFile(target)) {
+            final ZipArchiveEntry b_entry = zf.getEntries("b.txt").iterator().next();
+            assertEquals(8, b_entry.getSize());
+            assertArrayEquals(B_PAYLOAD, IOUtils.toByteArray(zf.getInputStream(b_entry)));
 
-        final ZipArchiveEntry a_entry = zf.getEntries("a.txt").iterator().next();
-        assertEquals(4, a_entry.getSize());
-        assertArrayEquals(A_PAYLOAD, IOUtils.toByteArray(zf.getInputStream(a_entry)));
-        zf.close();
-    }
-
-    private InputStreamSupplier createPayloadSupplier(final ByteArrayInputStream payload) {
-        return () -> payload;
+            final ZipArchiveEntry a_entry = zf.getEntries("a.txt").iterator().next();
+            assertEquals(4, a_entry.getSize());
+            assertArrayEquals(A_PAYLOAD, IOUtils.toByteArray(zf.getInputStream(a_entry)));
+        }
     }
 }

@@ -25,18 +25,22 @@ import org.apache.commons.compress.harmony.unpack200.Segment;
 
 public class CodeAttribute extends BCIRenumberedAttribute {
 
-    public List attributes = new ArrayList();
-    // instances
-    public List byteCodeOffsets = new ArrayList();
-    public List byteCodes = new ArrayList();
-    public int codeLength;
-    public List exceptionTable; // of ExceptionTableEntry
-    public int maxLocals;
-    public int maxStack;
     private static CPUTF8 attributeName;
+    public static void setAttributeName(final CPUTF8 attributeName) {
+        CodeAttribute.attributeName = attributeName;
+    }
+    public List<Attribute> attributes = new ArrayList<>();
+    // instances
+    public List<Integer> byteCodeOffsets = new ArrayList<>();
+    public List<ByteCode> byteCodes = new ArrayList<>();
+    public int codeLength;
+    public List<ExceptionTableEntry> exceptionTable;
+    public int maxLocals;
 
-    public CodeAttribute(final int maxStack, final int maxLocals, final byte codePacked[], final Segment segment,
-        final OperandManager operandManager, final List exceptionTable) {
+    public int maxStack;
+
+    public CodeAttribute(final int maxStack, final int maxLocals, final byte[] codePacked, final Segment segment,
+        final OperandManager operandManager, final List<ExceptionTableEntry> exceptionTable) {
         super(attributeName);
         this.maxLocals = maxLocals;
         this.maxStack = maxStack;
@@ -53,7 +57,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
             byteCode.extractOperands(operandManager, segment, codeLength);
             byteCodes.add(byteCode);
             codeLength += byteCode.getLength();
-            final int lastBytecodePosition = ((Integer) byteCodeOffsets.get(byteCodeOffsets.size() - 1)).intValue();
+            final int lastBytecodePosition = byteCodeOffsets.get(byteCodeOffsets.size() - 1).intValue();
             // This code assumes all multiple byte bytecodes are
             // replaced by a single-byte bytecode followed by
             // another bytecode.
@@ -78,89 +82,8 @@ public class CodeAttribute extends BCIRenumberedAttribute {
         // sizes, fix up the byte code targets
         // At this point, byteCodes may be a different size than
         // codePacked because of wide bytecodes.
-        for (int i = 0; i < byteCodes.size(); i++) {
-            final ByteCode byteCode = (ByteCode) byteCodes.get(i);
+        for (final ByteCode byteCode : byteCodes) {
             byteCode.applyByteCodeTargetFixup(this);
-        }
-    }
-
-    @Override
-    protected int getLength() {
-        int attributesSize = 0;
-        for (int it = 0; it < attributes.size(); it++) {
-            final Attribute attribute = (Attribute) attributes.get(it);
-            attributesSize += attribute.getLengthIncludingHeader();
-        }
-        return 2 + 2 + 4 + codeLength + 2 + exceptionTable.size() * (2 + 2 + 2 + 2) + 2 + attributesSize;
-    }
-
-    @Override
-    protected ClassFileEntry[] getNestedClassFileEntries() {
-        final ArrayList nestedEntries = new ArrayList(attributes.size() + byteCodes.size() + 10);
-        nestedEntries.add(getAttributeName());
-        nestedEntries.addAll(byteCodes);
-        nestedEntries.addAll(attributes);
-        // Don't forget to add the ExceptionTable catch_types
-        for (int iter = 0; iter < exceptionTable.size(); iter++) {
-            final ExceptionTableEntry entry = (ExceptionTableEntry) exceptionTable.get(iter);
-            final CPClass catchType = entry.getCatchType();
-            // If the catch type is null, this is a finally
-            // block. If it's not null, we need to add the
-            // CPClass to the list of nested class file entries.
-            if (catchType != null) {
-                nestedEntries.add(catchType);
-            }
-        }
-        final ClassFileEntry[] nestedEntryArray = new ClassFileEntry[nestedEntries.size()];
-        nestedEntries.toArray(nestedEntryArray);
-        return nestedEntryArray;
-    }
-
-    @Override
-    protected void resolve(final ClassConstantPool pool) {
-        super.resolve(pool);
-        for (int it = 0; it < attributes.size(); it++) {
-            final Attribute attribute = (Attribute) attributes.get(it);
-            attribute.resolve(pool);
-        }
-
-        for (int it = 0; it < byteCodes.size(); it++) {
-            final ByteCode byteCode = (ByteCode) byteCodes.get(it);
-            byteCode.resolve(pool);
-        }
-
-        for (int it = 0; it < exceptionTable.size(); it++) {
-            final ExceptionTableEntry entry = (ExceptionTableEntry) exceptionTable.get(it);
-            entry.resolve(pool);
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "Code: " + getLength() + " bytes";
-    }
-
-    @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeShort(maxStack);
-        dos.writeShort(maxLocals);
-
-        dos.writeInt(codeLength);
-        for (int it = 0; it < byteCodes.size(); it++) {
-            final ByteCode byteCode = (ByteCode) byteCodes.get(it);
-            byteCode.write(dos);
-        }
-
-        dos.writeShort(exceptionTable.size());
-        for (int it = 0; it < exceptionTable.size(); it++) {
-            final ExceptionTableEntry entry = (ExceptionTableEntry) exceptionTable.get(it);
-            entry.write(dos);
-        }
-
-        dos.writeShort(attributes.size());
-        for (int it = 0; it < attributes.size(); it++) {
-            final Attribute attribute = (Attribute) attributes.get(it);
-            attribute.write(dos);
         }
     }
 
@@ -175,20 +98,75 @@ public class CodeAttribute extends BCIRenumberedAttribute {
     }
 
     @Override
+    protected int getLength() {
+        int attributesSize = 0;
+        for (final Attribute attribute : attributes) {
+            attributesSize += attribute.getLengthIncludingHeader();
+        }
+        return 2 + 2 + 4 + codeLength + 2 + exceptionTable.size() * (2 + 2 + 2 + 2) + 2 + attributesSize;
+    }
+
+    @Override
+    protected ClassFileEntry[] getNestedClassFileEntries() {
+        final List<ClassFileEntry> nestedEntries = new ArrayList<>(attributes.size() + byteCodes.size() + 10);
+        nestedEntries.add(getAttributeName());
+        nestedEntries.addAll(byteCodes);
+        nestedEntries.addAll(attributes);
+        // Don't forget to add the ExceptionTable catch_types
+        for (final ExceptionTableEntry entry : exceptionTable) {
+            final CPClass catchType = entry.getCatchType();
+            // If the catch type is null, this is a finally
+            // block. If it's not null, we need to add the
+            // CPClass to the list of nested class file entries.
+            if (catchType != null) {
+                nestedEntries.add(catchType);
+            }
+        }
+        return nestedEntries.toArray(ClassFileEntry.NONE);
+    }
+
+    @Override
     protected int[] getStartPCs() {
         // Do nothing here as we've overriden renumber
         return null;
     }
 
     @Override
-    public void renumber(final List byteCodeOffsets) {
-        for (int iter = 0; iter < exceptionTable.size(); iter++) {
-            final ExceptionTableEntry entry = (ExceptionTableEntry) exceptionTable.get(iter);
-            entry.renumber(byteCodeOffsets);
-        }
+    public void renumber(final List<Integer> byteCodeOffsets) {
+        exceptionTable.forEach(entry -> entry.renumber(byteCodeOffsets));
     }
 
-    public static void setAttributeName(final CPUTF8 attributeName) {
-        CodeAttribute.attributeName = attributeName;
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
+        super.resolve(pool);
+        attributes.forEach(attribute -> attribute.resolve(pool));
+        byteCodes.forEach(byteCode -> byteCode.resolve(pool));
+        exceptionTable.forEach(byteCode -> byteCode.resolve(pool));
+    }
+
+    @Override
+    public String toString() {
+        return "Code: " + getLength() + " bytes";
+    }
+
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        dos.writeShort(maxStack);
+        dos.writeShort(maxLocals);
+
+        dos.writeInt(codeLength);
+        for (final ByteCode byteCode : byteCodes) {
+            byteCode.write(dos);
+        }
+
+        dos.writeShort(exceptionTable.size());
+        for (final ExceptionTableEntry entry : exceptionTable) {
+            entry.write(dos);
+        }
+
+        dos.writeShort(attributes.size());
+        for (final Attribute attribute : attributes) {
+            attribute.write(dos);
+        }
     }
 }

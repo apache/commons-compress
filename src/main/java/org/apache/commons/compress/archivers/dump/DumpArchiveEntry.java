@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
 /**
@@ -179,259 +180,111 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * @NotThreadSafe
  */
 public class DumpArchiveEntry implements ArchiveEntry {
-    private String name;
-    private TYPE type = TYPE.UNKNOWN;
-    private int mode;
-    private Set<PERMISSION> permissions = Collections.emptySet();
-    private long size;
-    private long atime;
-    private long mtime;
-    private int uid;
-    private int gid;
+    public enum PERMISSION {
+        SETUID(04000),
+        SETGUI(02000),
+        STICKY(01000),
+        USER_READ(00400),
+        USER_WRITE(00200),
+        USER_EXEC(00100),
+        GROUP_READ(00040),
+        GROUP_WRITE(00020),
+        GROUP_EXEC(00010),
+        WORLD_READ(00004),
+        WORLD_WRITE(00002),
+        WORLD_EXEC(00001);
 
-    /**
-     * Currently unused
-     */
-    private final DumpArchiveSummary summary = null;
+        public static Set<PERMISSION> find(final int code) {
+            final Set<PERMISSION> set = new HashSet<>();
 
-    // this information is available from standard index.
-    private final TapeSegmentHeader header = new TapeSegmentHeader();
-    private String simpleName;
-    private String originalName;
+            for (final PERMISSION p : PERMISSION.values()) {
+                if ((code & p.code) == p.code) {
+                    set.add(p);
+                }
+            }
 
-    // this information is available from QFA index
-    private int volume;
-    private long offset;
-    private int ino;
-    private int nlink;
-    private long ctime;
-    private int generation;
-    private boolean isDeleted;
+            if (set.isEmpty()) {
+                return Collections.emptySet();
+            }
 
-    /**
-     * Default constructor.
-     */
-    public DumpArchiveEntry() {
-    }
-
-    /**
-     * Constructor taking only file name.
-     * @param name pathname
-     * @param simpleName actual file name.
-     */
-    public DumpArchiveEntry(final String name, final String simpleName) {
-        setName(name);
-        this.simpleName = simpleName;
-    }
-
-    /**
-     * Constructor taking name, inode and type.
-     *
-     * @param name the name
-     * @param simpleName the simple name
-     * @param ino the ino
-     * @param type the type
-     */
-    protected DumpArchiveEntry(final String name, final String simpleName, final int ino,
-                               final TYPE type) {
-        setType(type);
-        setName(name);
-        this.simpleName = simpleName;
-        this.ino = ino;
-        this.offset = 0;
-    }
-
-    /**
-     * Returns the path of the entry.
-     * @return the path of the entry.
-     */
-    public String getSimpleName() {
-        return simpleName;
-    }
-
-    /**
-     * Sets the path of the entry.
-     * @param simpleName the simple name
-     */
-    protected void setSimpleName(final String simpleName) {
-        this.simpleName = simpleName;
-    }
-
-    /**
-     * Returns the ino of the entry.
-     * @return the ino
-     */
-    public int getIno() {
-        return header.getIno();
-    }
-
-    /**
-     * Return the number of hard links to the entry.
-     * @return the number of hard links
-     */
-    public int getNlink() {
-        return nlink;
-    }
-
-    /**
-     * Set the number of hard links.
-     * @param nlink the number of hard links
-     */
-    public void setNlink(final int nlink) {
-        this.nlink = nlink;
-    }
-
-    /**
-     * Get file creation time.
-     * @return the creation time
-     */
-    public Date getCreationTime() {
-        return new Date(ctime);
-    }
-
-    /**
-     * Set the file creation time.
-     * @param ctime the creation time
-     */
-    public void setCreationTime(final Date ctime) {
-        this.ctime = ctime.getTime();
-    }
-
-    /**
-     * Return the generation of the file.
-     * @return the generation
-     */
-    public int getGeneration() {
-        return generation;
-    }
-
-    /**
-     * Set the generation of the file.
-     * @param generation the generation
-     */
-    public void setGeneration(final int generation) {
-        this.generation = generation;
-    }
-
-    /**
-     * Has this file been deleted? (On valid on incremental dumps.)
-     * @return whether the file has been deleted
-     */
-    public boolean isDeleted() {
-        return isDeleted;
-    }
-
-    /**
-     * Set whether this file has been deleted.
-     * @param isDeleted whether the file has been deleted
-     */
-    public void setDeleted(final boolean isDeleted) {
-        this.isDeleted = isDeleted;
-    }
-
-    /**
-     * Return the offset within the archive
-     * @return the offset
-     */
-    public long getOffset() {
-        return offset;
-    }
-
-    /**
-     * Set the offset within the archive.
-     * @param offset the offset
-     */
-    public void setOffset(final long offset) {
-        this.offset = offset;
-    }
-
-    /**
-     * Return the tape volume where this file is located.
-     * @return the volume
-     */
-    public int getVolume() {
-        return volume;
-    }
-
-    /**
-     * Set the tape volume.
-     * @param volume the volume
-     */
-    public void setVolume(final int volume) {
-        this.volume = volume;
-    }
-
-    /**
-     * Return the type of the tape segment header.
-     * @return the segment header
-     */
-    public DumpArchiveConstants.SEGMENT_TYPE getHeaderType() {
-        return header.getType();
-    }
-
-    /**
-     * Return the number of records in this segment.
-     * @return the number of records
-     */
-    public int getHeaderCount() {
-        return header.getCount();
-    }
-
-    /**
-     * Return the number of sparse records in this segment.
-     * @return the number of sparse records
-     */
-    public int getHeaderHoles() {
-        return header.getHoles();
-    }
-
-    /**
-     * Is this a sparse record?
-     * @param idx index of the record to check
-     * @return whether this is a sparse record
-     */
-    public boolean isSparseRecord(final int idx) {
-        return (header.getCdata(idx) & 0x01) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return ino;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (o == null || !o.getClass().equals(getClass())) {
-            return false;
+            return EnumSet.copyOf(set);
         }
 
-        final DumpArchiveEntry rhs = (DumpArchiveEntry) o;
+        private final int code;
 
-        if (rhs.header == null) {
-            return false;
+        PERMISSION(final int code) {
+            this.code = code;
         }
-
-        if (ino != rhs.ino) {
-            return false;
-        }
-
-        // summary is always null right now, but this may change some day
-        if ((summary == null && rhs.summary != null) // NOSONAR
-                || (summary != null && !summary.equals(rhs.summary))) { // NOSONAR
-            return false;
-        }
-
-        return true;
     }
+    /**
+     * Archive entry as stored on tape. There is one TSH for (at most)
+     * every 512k in the file.
+     */
+    static class TapeSegmentHeader {
+        private DumpArchiveConstants.SEGMENT_TYPE type;
+        private int volume;
+        private int ino;
+        private int count;
+        private int holes;
+        private final byte[] cdata = new byte[512]; // map of any 'holes'
 
-    @Override
-    public String toString() {
-        return getName();
+        public int getCdata(final int idx) {
+            return cdata[idx];
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public int getHoles() {
+            return holes;
+        }
+
+        public int getIno() {
+            return ino;
+        }
+
+        public DumpArchiveConstants.SEGMENT_TYPE getType() {
+            return type;
+        }
+
+        public int getVolume() {
+            return volume;
+        }
+
+        void setIno(final int ino) {
+            this.ino = ino;
+        }
     }
+    public enum TYPE {
+        WHITEOUT(14),
+        SOCKET(12),
+        LINK(10),
+        FILE(8),
+        BLKDEV(6),
+        DIRECTORY(4),
+        CHRDEV(2),
+        FIFO(1),
+        UNKNOWN(15);
 
+        public static TYPE find(final int code) {
+            TYPE type = UNKNOWN;
+
+            for (final TYPE t : TYPE.values()) {
+                if (code == t.code) {
+                    type = t;
+                }
+            }
+
+            return type;
+        }
+
+        private final int code;
+
+        TYPE(final int code) {
+            this.code = code;
+        }
+    }
     /**
      * Populate the dump archive entry and tape segment header with
      * the contents of the buffer.
@@ -501,64 +354,182 @@ public class DumpArchiveEntry implements ArchiveEntry {
         //entry.isSummaryOnly = false;
         return entry;
     }
+    private String name;
+    private TYPE type = TYPE.UNKNOWN;
+    private int mode;
+    private Set<PERMISSION> permissions = Collections.emptySet();
+    private long size;
+
+    private long atime;
+
+    private long mtime;
+    private int uid;
+    private int gid;
 
     /**
-     * Update entry with information from next tape segment header.
+     * Currently unused
      */
-    void update(final byte[] buffer) {
-        header.volume = DumpArchiveUtil.convert32(buffer, 16);
-        header.count = DumpArchiveUtil.convert32(buffer, 160);
+    private final DumpArchiveSummary summary = null;
+    // this information is available from standard index.
+    private final TapeSegmentHeader header = new TapeSegmentHeader();
+    private String simpleName;
+    private String originalName;
+    // this information is available from QFA index
+    private int volume;
+    private long offset;
+    private int ino;
 
-        header.holes = 0;
+    private int nlink;
 
-        for (int i = 0; (i < 512) && (i < header.count); i++) {
-            if (buffer[164 + i] == 0) {
-                header.holes++;
-            }
-        }
+    private long ctime;
 
-        System.arraycopy(buffer, 164, header.cdata, 0, 512);
+    private int generation;
+
+    private boolean isDeleted;
+
+    /**
+     * Default constructor.
+     */
+    public DumpArchiveEntry() {
     }
 
     /**
-     * Archive entry as stored on tape. There is one TSH for (at most)
-     * every 512k in the file.
+     * Constructor taking only file name.
+     * @param name pathname
+     * @param simpleName actual file name.
      */
-    static class TapeSegmentHeader {
-        private DumpArchiveConstants.SEGMENT_TYPE type;
-        private int volume;
-        private int ino;
-        private int count;
-        private int holes;
-        private final byte[] cdata = new byte[512]; // map of any 'holes'
+    public DumpArchiveEntry(final String name, final String simpleName) {
+        setName(name);
+        this.simpleName = simpleName;
+    }
 
-        public DumpArchiveConstants.SEGMENT_TYPE getType() {
-            return type;
+    /**
+     * Constructor taking name, inode and type.
+     *
+     * @param name the name
+     * @param simpleName the simple name
+     * @param ino the ino
+     * @param type the type
+     */
+    protected DumpArchiveEntry(final String name, final String simpleName, final int ino,
+                               final TYPE type) {
+        setType(type);
+        setName(name);
+        this.simpleName = simpleName;
+        this.ino = ino;
+        this.offset = 0;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o == null || !o.getClass().equals(getClass())) {
+            return false;
         }
 
-        public int getVolume() {
-            return volume;
+        final DumpArchiveEntry rhs = (DumpArchiveEntry) o;
+
+        if (ino != rhs.ino) {
+            return false;
         }
 
-        public int getIno() {
-            return ino;
+        // summary is always null right now, but this may change some day
+        if ((summary == null && rhs.summary != null) // NOSONAR
+                || (summary != null && !summary.equals(rhs.summary))) { // NOSONAR
+            return false;
         }
 
-        void setIno(final int ino) {
-            this.ino = ino;
-        }
+        return true;
+    }
 
-        public int getCount() {
-            return count;
-        }
+    /**
+     * Returns the time the file was last accessed.
+     * @return the access time
+     */
+    public Date getAccessTime() {
+        return new Date(atime);
+    }
 
-        public int getHoles() {
-            return holes;
-        }
+    /**
+     * Get file creation time.
+     * @return the creation time
+     */
+    public Date getCreationTime() {
+        return new Date(ctime);
+    }
 
-        public int getCdata(final int idx) {
-            return cdata[idx];
-        }
+    /**
+     * Returns the size of the entry as read from the archive.
+     */
+    long getEntrySize() {
+        return size;
+    }
+
+    /**
+     * Return the generation of the file.
+     * @return the generation
+     */
+    public int getGeneration() {
+        return generation;
+    }
+
+    /**
+     * Return the group id
+     * @return the group id
+     */
+    public int getGroupId() {
+        return gid;
+    }
+
+    /**
+     * Return the number of records in this segment.
+     * @return the number of records
+     */
+    public int getHeaderCount() {
+        return header.getCount();
+    }
+
+    /**
+     * Return the number of sparse records in this segment.
+     * @return the number of sparse records
+     */
+    public int getHeaderHoles() {
+        return header.getHoles();
+    }
+
+    /**
+     * Return the type of the tape segment header.
+     * @return the segment header
+     */
+    public DumpArchiveConstants.SEGMENT_TYPE getHeaderType() {
+        return header.getType();
+    }
+
+    /**
+     * Returns the ino of the entry.
+     * @return the ino
+     */
+    public int getIno() {
+        return header.getIno();
+    }
+
+    /**
+     * The last modified date.
+     * @return the last modified date
+     */
+    @Override
+    public Date getLastModifiedDate() {
+        return new Date(mtime);
+    }
+
+    /**
+     * Return the access permissions on the entry.
+     * @return the access permissions
+     */
+    public int getMode() {
+        return mode;
     }
 
     /**
@@ -574,11 +545,204 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
+     * Return the number of hard links to the entry.
+     * @return the number of hard links
+     */
+    public int getNlink() {
+        return nlink;
+    }
+
+    /**
+     * Return the offset within the archive
+     * @return the offset
+     */
+    public long getOffset() {
+        return offset;
+    }
+
+    /**
      * Returns the unmodified name of the entry.
      * @return the name of the entry.
      */
     String getOriginalName() {
         return originalName;
+    }
+
+    /**
+     * Returns the permissions on the entry.
+     * @return the permissions
+     */
+    public Set<PERMISSION> getPermissions() {
+        return permissions;
+    }
+
+    /**
+     * Returns the path of the entry.
+     * @return the path of the entry.
+     */
+    public String getSimpleName() {
+        return simpleName;
+    }
+
+    /**
+     * Returns the size of the entry.
+     * @return the size
+     */
+    @Override
+    public long getSize() {
+        return isDirectory() ? SIZE_UNKNOWN : size;
+    }
+
+    /**
+     * Get the type of the entry.
+     * @return the type
+     */
+    public TYPE getType() {
+        return type;
+    }
+
+    /**
+     * Return the user id.
+     * @return the user id
+     */
+    public int getUserId() {
+        return uid;
+    }
+
+    /**
+     * Return the tape volume where this file is located.
+     * @return the volume
+     */
+    public int getVolume() {
+        return volume;
+    }
+
+    @Override
+    public int hashCode() {
+        return ino;
+    }
+
+    /**
+     * Is this a block device?
+     * @return whether this is a block device
+     */
+    public boolean isBlkDev() {
+        return type == TYPE.BLKDEV;
+    }
+
+    /**
+     * Is this a character device?
+     * @return whether this is a character device
+     */
+    public boolean isChrDev() {
+        return type == TYPE.CHRDEV;
+    }
+
+    /**
+     * Has this file been deleted? (On valid on incremental dumps.)
+     * @return whether the file has been deleted
+     */
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    /**
+     * Is this a directory?
+     * @return whether this is a directory
+     */
+    @Override
+    public boolean isDirectory() {
+        return type == TYPE.DIRECTORY;
+    }
+
+    /**
+     * Is this a fifo/pipe?
+     * @return whether this is a fifo
+     */
+    public boolean isFifo() {
+        return type == TYPE.FIFO;
+    }
+
+    /**
+     * Is this a regular file?
+     * @return whether this is a regular file
+     */
+    public boolean isFile() {
+        return type == TYPE.FILE;
+    }
+
+    /**
+     * Is this a network device?
+     * @return whether this is a socket
+     */
+    public boolean isSocket() {
+        return type == TYPE.SOCKET;
+    }
+
+    /**
+     * Is this a sparse record?
+     * @param idx index of the record to check
+     * @return whether this is a sparse record
+     */
+    public boolean isSparseRecord(final int idx) {
+        return (header.getCdata(idx) & 0x01) == 0;
+    }
+
+    /**
+     * Set the time the file was last accessed.
+     * @param atime the access time
+     */
+    public void setAccessTime(final Date atime) {
+        this.atime = atime.getTime();
+    }
+
+    /**
+     * Set the file creation time.
+     * @param ctime the creation time
+     */
+    public void setCreationTime(final Date ctime) {
+        this.ctime = ctime.getTime();
+    }
+
+    /**
+     * Set whether this file has been deleted.
+     * @param isDeleted whether the file has been deleted
+     */
+    public void setDeleted(final boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    /**
+     * Set the generation of the file.
+     * @param generation the generation
+     */
+    public void setGeneration(final int generation) {
+        this.generation = generation;
+    }
+
+    /**
+     * Set the group id.
+     * @param gid the group id
+     */
+    public void setGroupId(final int gid) {
+        this.gid = gid;
+    }
+
+    /**
+     * Set the time the file was last modified.
+     * @param mtime the last modified time
+     */
+    public void setLastModifiedDate(final Date mtime) {
+        this.mtime = mtime.getTime();
+    }
+
+    /**
+     * Set the access permissions on the entry.
+     * @param mode the access permissions
+     */
+    public void setMode(final int mode) {
+        this.mode = mode & 07777;
+        this.permissions = PERMISSION.find(mode);
     }
 
     /**
@@ -599,118 +763,27 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * The last modified date.
-     * @return the last modified date
+     * Set the number of hard links.
+     * @param nlink the number of hard links
      */
-    @Override
-    public Date getLastModifiedDate() {
-        return new Date(mtime);
+    public void setNlink(final int nlink) {
+        this.nlink = nlink;
     }
 
     /**
-     * Is this a directory?
-     * @return whether this is a directory
+     * Set the offset within the archive.
+     * @param offset the offset
      */
-    @Override
-    public boolean isDirectory() {
-        return type == TYPE.DIRECTORY;
+    public void setOffset(final long offset) {
+        this.offset = offset;
     }
 
     /**
-     * Is this a regular file?
-     * @return whether this is a regular file
+     * Sets the path of the entry.
+     * @param simpleName the simple name
      */
-    public boolean isFile() {
-        return type == TYPE.FILE;
-    }
-
-    /**
-     * Is this a network device?
-     * @return whether this is a socket
-     */
-    public boolean isSocket() {
-        return type == TYPE.SOCKET;
-    }
-
-    /**
-     * Is this a character device?
-     * @return whether this is a character device
-     */
-    public boolean isChrDev() {
-        return type == TYPE.CHRDEV;
-    }
-
-    /**
-     * Is this a block device?
-     * @return whether this is a block device
-     */
-    public boolean isBlkDev() {
-        return type == TYPE.BLKDEV;
-    }
-
-    /**
-     * Is this a fifo/pipe?
-     * @return whether this is a fifo
-     */
-    public boolean isFifo() {
-        return type == TYPE.FIFO;
-    }
-
-    /**
-     * Get the type of the entry.
-     * @return the type
-     */
-    public TYPE getType() {
-        return type;
-    }
-
-    /**
-     * Set the type of the entry.
-     * @param type the type
-     */
-    public void setType(final TYPE type) {
-        this.type = type;
-    }
-
-    /**
-     * Return the access permissions on the entry.
-     * @return the access permissions
-     */
-    public int getMode() {
-        return mode;
-    }
-
-    /**
-     * Set the access permissions on the entry.
-     * @param mode the access permissions
-     */
-    public void setMode(final int mode) {
-        this.mode = mode & 07777;
-        this.permissions = PERMISSION.find(mode);
-    }
-
-    /**
-     * Returns the permissions on the entry.
-     * @return the permissions
-     */
-    public Set<PERMISSION> getPermissions() {
-        return permissions;
-    }
-
-    /**
-     * Returns the size of the entry.
-     * @return the size
-     */
-    @Override
-    public long getSize() {
-        return isDirectory() ? SIZE_UNKNOWN : size;
-    }
-
-    /**
-     * Returns the size of the entry as read from the archive.
-     */
-    long getEntrySize() {
-        return size;
+    protected void setSimpleName(final String simpleName) {
+        this.simpleName = simpleName;
     }
 
     /**
@@ -722,35 +795,11 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set the time the file was last modified.
-     * @param mtime the last modified time
+     * Set the type of the entry.
+     * @param type the type
      */
-    public void setLastModifiedDate(final Date mtime) {
-        this.mtime = mtime.getTime();
-    }
-
-    /**
-     * Returns the time the file was last accessed.
-     * @return the access time
-     */
-    public Date getAccessTime() {
-        return new Date(atime);
-    }
-
-    /**
-     * Set the time the file was last accessed.
-     * @param atime the access time
-     */
-    public void setAccessTime(final Date atime) {
-        this.atime = atime.getTime();
-    }
-
-    /**
-     * Return the user id.
-     * @return the user id
-     */
-    public int getUserId() {
-        return uid;
+    public void setType(final TYPE type) {
+        this.type = type;
     }
 
     /**
@@ -762,85 +811,33 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Return the group id
-     * @return the group id
+     * Set the tape volume.
+     * @param volume the volume
      */
-    public int getGroupId() {
-        return gid;
+    public void setVolume(final int volume) {
+        this.volume = volume;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
     /**
-     * Set the group id.
-     * @param gid the group id
+     * Update entry with information from next tape segment header.
      */
-    public void setGroupId(final int gid) {
-        this.gid = gid;
-    }
+    void update(final byte[] buffer) {
+        header.volume = DumpArchiveUtil.convert32(buffer, 16);
+        header.count = DumpArchiveUtil.convert32(buffer, 160);
 
-    public enum TYPE {
-        WHITEOUT(14),
-        SOCKET(12),
-        LINK(10),
-        FILE(8),
-        BLKDEV(6),
-        DIRECTORY(4),
-        CHRDEV(2),
-        FIFO(1),
-        UNKNOWN(15);
+        header.holes = 0;
 
-        private final int code;
-
-        TYPE(final int code) {
-            this.code = code;
-        }
-
-        public static TYPE find(final int code) {
-            TYPE type = UNKNOWN;
-
-            for (final TYPE t : TYPE.values()) {
-                if (code == t.code) {
-                    type = t;
-                }
+        for (int i = 0; (i < 512) && (i < header.count); i++) {
+            if (buffer[164 + i] == 0) {
+                header.holes++;
             }
-
-            return type;
-        }
-    }
-
-    public enum PERMISSION {
-        SETUID(04000),
-        SETGUI(02000),
-        STICKY(01000),
-        USER_READ(00400),
-        USER_WRITE(00200),
-        USER_EXEC(00100),
-        GROUP_READ(00040),
-        GROUP_WRITE(00020),
-        GROUP_EXEC(00010),
-        WORLD_READ(00004),
-        WORLD_WRITE(00002),
-        WORLD_EXEC(00001);
-
-        private final int code;
-
-        PERMISSION(final int code) {
-            this.code = code;
         }
 
-        public static Set<PERMISSION> find(final int code) {
-            final Set<PERMISSION> set = new HashSet<>();
-
-            for (final PERMISSION p : PERMISSION.values()) {
-                if ((code & p.code) == p.code) {
-                    set.add(p);
-                }
-            }
-
-            if (set.isEmpty()) {
-                return Collections.emptySet();
-            }
-
-            return EnumSet.copyOf(set);
-        }
+        System.arraycopy(buffer, 164, header.cdata, 0, 512);
     }
 }

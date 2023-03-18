@@ -18,19 +18,20 @@ package org.apache.commons.compress.harmony.pack200;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.commons.compress.harmony.pack200.Archive.PackingFile;
 import org.apache.commons.compress.harmony.pack200.Archive.SegmentUnit;
+import org.apache.commons.compress.utils.ExactMath;
 import org.objectweb.asm.ClassReader;
 
 /**
  * Bands containing information about files in the pack200 archive and the file contents for non-class-files.
- * Corresponds to the <code>file_bands</code> set of bands described in the specification.
+ * Corresponds to the {@code file_bands} set of bands described in the specification.
  */
 public class FileBands extends BandSet {
 
@@ -40,7 +41,7 @@ public class FileBands extends BandSet {
     private final long[] file_size;
     private final int[] file_options;
     private final byte[][] file_bits;
-    private final List fileList;
+    private final List<PackingFile> fileList;
     private final PackingOptions options;
     private final CpBands cpBands;
 
@@ -59,9 +60,8 @@ public class FileBands extends BandSet {
         file_bits = new byte[size][];
         final int archiveModtime = segmentHeader.getArchive_modtime();
 
-        final Set classNames = new HashSet();
-        for (final Iterator iterator = segmentUnit.getClassList().iterator(); iterator.hasNext();) {
-            final ClassReader reader = (ClassReader) iterator.next();
+        final Set<String> classNames = new HashSet<>();
+        for (final ClassReader reader : segmentUnit.getClassList()) {
             classNames.add(reader.getClassName());
         }
         final CPUTF8 emptyString = cpBands.getCPUtf8("");
@@ -69,7 +69,7 @@ public class FileBands extends BandSet {
         int latestModtime = Integer.MIN_VALUE;
         final boolean isLatest = !PackingOptions.KEEP.equals(options.getModificationTime());
         for (int i = 0; i < size; i++) {
-            final PackingFile packingFile = (PackingFile) fileList.get(i);
+            final PackingFile packingFile = fileList.get(i);
             final String name = packingFile.getName();
             if (name.endsWith(".class") && !options.isPassFile(name)) {
                 file_options[i] |= (1 << 1);
@@ -87,7 +87,7 @@ public class FileBands extends BandSet {
             }
             final byte[] bytes = packingFile.getContents();
             file_size[i] = bytes.length;
-            totalSize += file_size[i];
+            totalSize = ExactMath.add(totalSize, file_size[i]);
 
             // update modification time
             modtime = (packingFile.getModtime() + TimeZone.getDefault().getRawOffset()) / 1000L;
@@ -100,9 +100,7 @@ public class FileBands extends BandSet {
         }
 
         if (isLatest) {
-            for (int index = 0; index < size; index++) {
-                file_modtime[index] = latestModtime;
-            }
+            Arrays.fill(file_modtime, latestModtime);
         }
     }
 
@@ -114,7 +112,7 @@ public class FileBands extends BandSet {
         file_name = new int[fileName.length];
         for (int i = 0; i < file_name.length; i++) {
             if (fileName[i].equals(cpBands.getCPUtf8(""))) {
-                final PackingFile packingFile = (PackingFile) fileList.get(i);
+                final PackingFile packingFile = fileList.get(i);
                 final String name = packingFile.getName();
                 if (options.isPassFile(name)) {
                     fileName[i] = cpBands.getCPUtf8(name);
@@ -123,6 +121,21 @@ public class FileBands extends BandSet {
             }
             file_name[i] = fileName[i].getIndex();
         }
+    }
+
+    private int[] flatten(final byte[][] bytes) {
+        int total = 0;
+        for (final byte[] element : bytes) {
+            total += element.length;
+        }
+        final int[] band = new int[total];
+        int index = 0;
+        for (final byte[] element : bytes) {
+            for (final byte element2 : element) {
+                band[index++] = element2 & 0xFF;
+            }
+        }
+        return band;
     }
 
     @Override
@@ -151,21 +164,6 @@ public class FileBands extends BandSet {
         encodedBand = encodeBandInt("file_bits", flatten(file_bits), Codec.BYTE1);
         out.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length + " bytes from file_bits[" + file_bits.length + "]");
-    }
-
-    private int[] flatten(final byte[][] bytes) {
-        int total = 0;
-        for (int i = 0; i < bytes.length; i++) {
-            total += bytes[i].length;
-        }
-        final int[] band = new int[total];
-        int index = 0;
-        for (int i = 0; i < bytes.length; i++) {
-            for (int j = 0; j < bytes[i].length; j++) {
-                band[index++] = bytes[i][j] & 0xFF;
-            }
-        }
-        return band;
     }
 
 }

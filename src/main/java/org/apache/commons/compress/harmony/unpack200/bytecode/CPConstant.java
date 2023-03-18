@@ -16,6 +16,8 @@
  */
 package org.apache.commons.compress.harmony.unpack200.bytecode;
 
+import java.util.Objects;
+
 /**
  * Abstract superclass for constant pool constant entries such as numbers or Strings
  */
@@ -33,10 +35,7 @@ public abstract class CPConstant extends ConstantPoolEntry {
      */
     public CPConstant(final byte tag, final Object value, final int globalIndex) {
         super(tag, globalIndex);
-        this.value = value;
-        if (value == null) {
-            throw new NullPointerException("Null arguments are not allowed");
-        }
+        this.value = Objects.requireNonNull(value, "value");
     }
 
     @Override
@@ -51,25 +50,18 @@ public abstract class CPConstant extends ConstantPoolEntry {
             return false;
         }
         final CPConstant other = (CPConstant) obj;
-        if (value == null) {
-            if (other.value != null) {
-                return false;
-            }
-        } else if (!value.equals(other.value)) {
+        if (!Objects.equals(value, other.value)) {
             return false;
         }
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        final int PRIME = 31;
-        int result = 1;
-        result = PRIME * result + ((value == null) ? 0 : value.hashCode());
-        return result;
-    }
-
     protected Object getValue() {
         return value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

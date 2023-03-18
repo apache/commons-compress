@@ -35,23 +35,35 @@ public class Pack200ClassReader extends ClassReader {
         super(b);
     }
 
-    @Override
-    public int readUnsignedShort(final int index) {
-        // Doing this to check whether last load-constant instruction was ldc (18) or ldc_w (19)
-        // TODO: Assess whether this impacts on performance
-        final int unsignedShort = super.readUnsignedShort(index);
-        if (b[index - 1] == 19) {
-            lastUnsignedShort = unsignedShort;
-        } else {
-            lastUnsignedShort = Short.MIN_VALUE;
-        }
-        return unsignedShort;
+    public String getFileName() {
+        return fileName;
+    }
+
+    public boolean hasSyntheticAttributes() {
+        return anySyntheticAttributes;
+    }
+
+    public boolean lastConstantHadWideIndex() {
+        return lastConstantHadWideIndex;
     }
 
     @Override
     public Object readConst(final int item, final char[] buf) {
         lastConstantHadWideIndex = item == lastUnsignedShort;
         return super.readConst(item, buf);
+    }
+
+    @Override
+    public int readUnsignedShort(final int index) {
+        // Doing this to check whether last load-constant instruction was ldc (18) or ldc_w (19)
+        // TODO: Assess whether this impacts on performance
+        final int unsignedShort = super.readUnsignedShort(index);
+        if (index > 0 && b[index - 1] == 19) {
+            lastUnsignedShort = unsignedShort;
+        } else {
+            lastUnsignedShort = Short.MIN_VALUE;
+        }
+        return unsignedShort;
     }
 
     @Override
@@ -63,20 +75,8 @@ public class Pack200ClassReader extends ClassReader {
         return utf8;
     }
 
-    public boolean lastConstantHadWideIndex() {
-        return lastConstantHadWideIndex;
-    }
-
-    public boolean hasSyntheticAttributes() {
-        return anySyntheticAttributes;
-    }
-
     public void setFileName(final String name) {
         this.fileName = name;
-    }
-
-    public String getFileName() {
-        return fileName;
     }
 
 }

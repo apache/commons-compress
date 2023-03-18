@@ -19,7 +19,6 @@ package org.apache.commons.compress.archivers.arj;
 
 import java.io.File;
 import java.util.Date;
-import java.util.regex.Matcher;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipUtil;
@@ -31,6 +30,24 @@ import org.apache.commons.compress.archivers.zip.ZipUtil;
  * @since 1.6
  */
 public class ArjArchiveEntry implements ArchiveEntry {
+    /**
+     * The known values for HostOs.
+     */
+    public static class HostOs {
+        public static final int DOS = 0;
+        public static final int PRIMOS = 1;
+        public static final int UNIX = 2;
+        public static final int AMIGA = 3;
+        public static final int MAC_OS = 4;
+        public static final int OS_2 = 5;
+        public static final int APPLE_GS = 6;
+        public static final int ATARI_ST = 7;
+        public static final int NEXT = 8;
+        public static final int VAX_VMS = 9;
+        public static final int WIN95 = 10;
+        public static final int WIN32 = 11;
+    }
+
     private final LocalFileHeader localFileHeader;
 
     public ArjArchiveEntry() {
@@ -41,39 +58,25 @@ public class ArjArchiveEntry implements ArchiveEntry {
         this.localFileHeader = localFileHeader;
     }
 
-    /**
-     * Get this entry's name.
-     *
-     * <p>This method returns the raw name as it is stored inside of the archive.</p>
-     *
-     * @return This entry's name.
-     */
     @Override
-    public String getName() {
-        if ((localFileHeader.arjFlags & LocalFileHeader.Flags.PATHSYM) != 0) {
-            return localFileHeader.name.replaceAll("/",
-                    Matcher.quoteReplacement(File.separator));
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
         }
-        return localFileHeader.name;
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final ArjArchiveEntry other = (ArjArchiveEntry) obj;
+        return localFileHeader.equals(other.localFileHeader);
     }
 
     /**
-     * Get this entry's file size.
-     *
-     * @return This entry's file size.
+     * The operating system the archive has been created on.
+     * @see HostOs
+     * @return the host OS code
      */
-    @Override
-    public long getSize() {
-        return localFileHeader.originalSize;
-    }
-
-    /** True if the entry refers to a directory.
-     *
-     * @return True if the entry refers to a directory
-     */
-    @Override
-    public boolean isDirectory() {
-        return localFileHeader.fileType == LocalFileHeader.FileTypes.DIRECTORY;
+    public int getHostOs() {
+        return localFileHeader.hostOS;
     }
 
     /**
@@ -98,6 +101,10 @@ public class ArjArchiveEntry implements ArchiveEntry {
         return new Date(ts);
     }
 
+    int getMethod() {
+        return localFileHeader.method;
+    }
+
     /**
      * File mode of this entry.
      *
@@ -107,6 +114,32 @@ public class ArjArchiveEntry implements ArchiveEntry {
      */
     public int getMode() {
         return localFileHeader.fileAccessMode;
+    }
+
+    /**
+     * Get this entry's name.
+     *
+     * <p>This method returns the raw name as it is stored inside of the archive.</p>
+     *
+     * @return This entry's name.
+     */
+    @Override
+    public String getName() {
+        if ((localFileHeader.arjFlags & LocalFileHeader.Flags.PATHSYM) != 0) {
+            return localFileHeader.name.replace("/",
+                    File.separator);
+        }
+        return localFileHeader.name;
+    }
+
+    /**
+     * Get this entry's file size.
+     *
+     * @return This entry's file size.
+     */
+    @Override
+    public long getSize() {
+        return localFileHeader.originalSize;
     }
 
     /**
@@ -120,13 +153,19 @@ public class ArjArchiveEntry implements ArchiveEntry {
         return isHostOsUnix() ? getMode() : 0;
     }
 
-    /**
-     * The operating system the archive has been created on.
-     * @see HostOs
-     * @return the host OS code
+    @Override
+    public int hashCode() {
+        final String name = getName();
+        return name == null ? 0 : name.hashCode();
+    }
+
+    /** True if the entry refers to a directory.
+     *
+     * @return True if the entry refers to a directory
      */
-    public int getHostOs() {
-        return localFileHeader.hostOS;
+    @Override
+    public boolean isDirectory() {
+        return localFileHeader.fileType == LocalFileHeader.FileTypes.DIRECTORY;
     }
 
     /**
@@ -137,46 +176,6 @@ public class ArjArchiveEntry implements ArchiveEntry {
      */
     public boolean isHostOsUnix() {
         return getHostOs() == HostOs.UNIX || getHostOs() == HostOs.NEXT;
-    }
-
-    int getMethod() {
-        return localFileHeader.method;
-    }
-
-    @Override
-    public int hashCode() {
-        final String name = getName();
-        return name == null ? 0 : name.hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        final ArjArchiveEntry other = (ArjArchiveEntry) obj;
-        return localFileHeader.equals(other.localFileHeader);
-    }
-
-    /**
-     * The known values for HostOs.
-     */
-    public static class HostOs {
-        public static final int DOS = 0;
-        public static final int PRIMOS = 1;
-        public static final int UNIX = 2;
-        public static final int AMIGA = 3;
-        public static final int MAC_OS = 4;
-        public static final int OS_2 = 5;
-        public static final int APPLE_GS = 6;
-        public static final int ATARI_ST = 7;
-        public static final int NEXT = 8;
-        public static final int VAX_VMS = 9;
-        public static final int WIN95 = 10;
-        public static final int WIN32 = 11;
     }
 
 }

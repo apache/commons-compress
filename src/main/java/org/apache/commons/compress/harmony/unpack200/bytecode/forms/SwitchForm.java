@@ -41,10 +41,10 @@ public abstract class SwitchForm extends VariableInstructionForm {
         final int[] replacementTargets = new int[numberOfLabels];
 
         final int sourceIndex = byteCode.getByteCodeIndex();
-        final int sourceValue = ((Integer) codeAttribute.byteCodeOffsets.get(sourceIndex)).intValue();
+        final int sourceValue = codeAttribute.byteCodeOffsets.get(sourceIndex).intValue();
         for (int index = 0; index < numberOfLabels; index++) {
             final int absoluteInstructionTargetIndex = sourceIndex + originalTargets[index];
-            final int targetValue = ((Integer) codeAttribute.byteCodeOffsets.get(absoluteInstructionTargetIndex))
+            final int targetValue = codeAttribute.byteCodeOffsets.get(absoluteInstructionTargetIndex)
                 .intValue();
             replacementTargets[index] = targetValue - sourceValue;
         }

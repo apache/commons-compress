@@ -23,10 +23,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
+
 import org.apache.commons.compress.java.util.jar.Pack200;
 
 /**
@@ -36,8 +38,6 @@ import org.apache.commons.compress.java.util.jar.Pack200;
  * @since 1.3
  */
 public class Pack200Utils {
-    private Pack200Utils() { }
-
     /**
      * Normalizes a JAR archive in-place so it can be safely signed
      * and packed.
@@ -58,27 +58,6 @@ public class Pack200Utils {
     public static void normalize(final File jar)
         throws IOException {
         normalize(jar, jar, null);
-    }
-
-    /**
-     * Normalizes a JAR archive in-place so it can be safely signed
-     * and packed.
-     *
-     * <p>As stated in <a
-     * href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a>
-     * javadocs applying a Pack200 compression to a JAR archive will
-     * in general make its signatures invalid.  In order to prepare a
-     * JAR for signing it should be "normalized" by packing and
-     * unpacking it.  This is what this method does.</p>
-     *
-     * @param jar the JAR archive to normalize
-     * @param props properties to set for the pack operation.  This
-     * method will implicitly set the segment limit to -1.
-     * @throws IOException if reading or writing fails
-     */
-    public static void normalize(final File jar, final Map<String, String> props)
-        throws IOException {
-        normalize(jar, jar, props);
     }
 
     /**
@@ -131,9 +110,9 @@ public class Pack200Utils {
             props = new HashMap<>();
         }
         props.put(Pack200.Packer.SEGMENT_LIMIT, "-1");
-        final File tempFile = File.createTempFile("commons-compress", "pack200normalize");
+        final Path tempFile = Files.createTempFile("commons-compress", "pack200normalize");
         try {
-            try (OutputStream fos = Files.newOutputStream(tempFile.toPath());
+            try (OutputStream fos = Files.newOutputStream(tempFile);
                  JarFile jarFile = new JarFile(from)) {
                 final Pack200.Packer packer = Pack200.newPacker();
                 packer.properties().putAll(props);
@@ -141,12 +120,33 @@ public class Pack200Utils {
             }
             final Pack200.Unpacker unpacker = Pack200.newUnpacker();
             try (JarOutputStream jos = new JarOutputStream(Files.newOutputStream(to.toPath()))) {
-                unpacker.unpack(tempFile, jos);
+                unpacker.unpack(tempFile.toFile(), jos);
             }
         } finally {
-            if (!tempFile.delete()) {
-                tempFile.deleteOnExit();
-            }
+            Files.delete(tempFile);
         }
     }
+
+    /**
+     * Normalizes a JAR archive in-place so it can be safely signed
+     * and packed.
+     *
+     * <p>As stated in <a
+     * href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a>
+     * javadocs applying a Pack200 compression to a JAR archive will
+     * in general make its signatures invalid.  In order to prepare a
+     * JAR for signing it should be "normalized" by packing and
+     * unpacking it.  This is what this method does.</p>
+     *
+     * @param jar the JAR archive to normalize
+     * @param props properties to set for the pack operation.  This
+     * method will implicitly set the segment limit to -1.
+     * @throws IOException if reading or writing fails
+     */
+    public static void normalize(final File jar, final Map<String, String> props)
+        throws IOException {
+        normalize(jar, jar, props);
+    }
+
+    private Pack200Utils() { }
 }

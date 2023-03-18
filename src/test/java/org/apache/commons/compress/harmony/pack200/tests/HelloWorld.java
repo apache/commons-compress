@@ -21,16 +21,16 @@ package org.apache.commons.compress.harmony.pack200.tests;
  */
 public class HelloWorld {
 
+    public static void main(final String[] args) {
+        System.out.println("Hello world");
+    }
     int i = 97, j = 42, k = 12345;
     float f = 3.142f, g = 2.718f;
     long l = 299792458;
+
     double d = 4.0d;
 
-    public static void main(String[] args) {
-        System.out.println("Hello world");
-    }
-
-    public HelloWorld[][] method(int a, int b, int c) {
+    public HelloWorld[][] method(final int a, final int b, final int c) {
         return null;
     }
 }

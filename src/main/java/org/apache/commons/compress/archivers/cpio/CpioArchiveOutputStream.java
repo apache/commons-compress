@@ -101,6 +101,17 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     final String encoding;
 
     /**
+     * Construct the cpio output stream. The format for this CPIO stream is the
+     * "new" format using ASCII encoding for file names
+     *
+     * @param out
+     *            The cpio stream
+     */
+    public CpioArchiveOutputStream(final OutputStream out) {
+        this(out, FORMAT_NEW);
+    }
+
+    /**
      * Construct the cpio output stream with a specified format, a
      * blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE} and
      * using ASCII as the file name encoding.
@@ -169,17 +180,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
 
     /**
      * Construct the cpio output stream. The format for this CPIO stream is the
-     * "new" format using ASCII encoding for file names
-     *
-     * @param out
-     *            The cpio stream
-     */
-    public CpioArchiveOutputStream(final OutputStream out) {
-        this(out, FORMAT_NEW);
-    }
-
-    /**
-     * Construct the cpio output stream. The format for this CPIO stream is the
      * "new" format.
      *
      * @param out
@@ -194,6 +194,101 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     }
 
     /**
+     * Closes the CPIO output stream as well as the stream being filtered.
+     *
+     * @throws IOException
+     *             if an I/O error has occurred or if a CPIO file error has
+     *             occurred
+     */
+    @Override
+    public void close() throws IOException {
+        try {
+            if (!finished) {
+                finish();
+            }
+        } finally {
+            if (!this.closed) {
+                out.close();
+                this.closed = true;
+            }
+        }
+    }
+
+    /*(non-Javadoc)
+     *
+     * @see
+     * org.apache.commons.compress.archivers.ArchiveOutputStream#closeArchiveEntry
+     * ()
+     */
+    @Override
+    public void closeArchiveEntry() throws IOException {
+        if (finished) {
+            throw new IOException("Stream has already been finished");
+        }
+
+        ensureOpen();
+
+        if (entry == null) {
+            throw new IOException("Trying to close non-existent entry");
+        }
+
+        if (this.entry.getSize() != this.written) {
+            throw new IOException("Invalid entry size (expected "
+                    + this.entry.getSize() + " but got " + this.written
+                    + " bytes)");
+        }
+        pad(this.entry.getDataPadCount());
+        if (this.entry.getFormat() == FORMAT_NEW_CRC
+            && this.crc != this.entry.getChksum()) {
+            throw new IOException("CRC Error");
+        }
+        this.entry = null;
+        this.crc = 0;
+        this.written = 0;
+    }
+
+    /**
+     * Creates a new ArchiveEntry. The entryName must be an ASCII encoded string.
+     *
+     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, String)
+     */
+    @Override
+    public ArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
+            throws IOException {
+        if (finished) {
+            throw new IOException("Stream has already been finished");
+        }
+        return new CpioArchiveEntry(inputFile, entryName);
+    }
+
+    /**
+     * Creates a new ArchiveEntry. The entryName must be an ASCII encoded string.
+     *
+     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, String)
+     */
+    @Override
+    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options)
+            throws IOException {
+        if (finished) {
+            throw new IOException("Stream has already been finished");
+        }
+        return new CpioArchiveEntry(inputPath, entryName, options);
+    }
+
+    /**
+     * Encodes the given string using the configured encoding.
+     *
+     * @param str the String to write
+     * @throws IOException if the string couldn't be written
+     * @return result of encoding the string
+     */
+    private byte[] encode(final String str) throws IOException {
+        final ByteBuffer buf = zipEncoding.encode(str);
+        final int len = buf.limit() - buf.position();
+        return Arrays.copyOfRange(buf.array(), buf.arrayOffset(), buf.arrayOffset() + len);
+    }
+
+    /**
      * Check to make sure that this stream has not been closed
      *
      * @throws IOException
@@ -202,6 +297,47 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     private void ensureOpen() throws IOException {
         if (this.closed) {
             throw new IOException("Stream closed");
+        }
+    }
+
+    /**
+     * Finishes writing the contents of the CPIO output stream without closing
+     * the underlying stream. Use this method when applying multiple filters in
+     * succession to the same output stream.
+     *
+     * @throws IOException
+     *             if an I/O exception has occurred or if a CPIO file error has
+     *             occurred
+     */
+    @Override
+    public void finish() throws IOException {
+        ensureOpen();
+        if (finished) {
+            throw new IOException("This archive has already been finished");
+        }
+
+        if (this.entry != null) {
+            throw new IOException("This archive contains unclosed entries.");
+        }
+        this.entry = new CpioArchiveEntry(this.entryFormat);
+        this.entry.setName(CPIO_TRAILER);
+        this.entry.setNumberOfLinks(1);
+        writeHeader(this.entry);
+        closeArchiveEntry();
+
+        final int lengthOfLastBlock = (int) (getBytesWritten() % blockSize);
+        if (lengthOfLastBlock != 0) {
+            pad(blockSize - lengthOfLastBlock);
+        }
+
+        finished = true;
+    }
+
+    private void pad(final int count) throws IOException{
+        if (count > 0){
+            final byte[] buff = new byte[count];
+            out.write(buff);
+            count(count);
         }
     }
 
@@ -221,7 +357,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      */
     @Override
     public void putArchiveEntry(final ArchiveEntry entry) throws IOException {
-        if(finished) {
+        if (finished) {
             throw new IOException("Stream has already been finished");
         }
 
@@ -245,163 +381,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
 
         writeHeader(e);
         this.entry = e;
-        this.written = 0;
-    }
-
-    private void writeHeader(final CpioArchiveEntry e) throws IOException {
-        switch (e.getFormat()) {
-        case FORMAT_NEW:
-            out.write(ArchiveUtils.toAsciiBytes(MAGIC_NEW));
-            count(6);
-            writeNewEntry(e);
-            break;
-        case FORMAT_NEW_CRC:
-            out.write(ArchiveUtils.toAsciiBytes(MAGIC_NEW_CRC));
-            count(6);
-            writeNewEntry(e);
-            break;
-        case FORMAT_OLD_ASCII:
-            out.write(ArchiveUtils.toAsciiBytes(MAGIC_OLD_ASCII));
-            count(6);
-            writeOldAsciiEntry(e);
-            break;
-        case FORMAT_OLD_BINARY:
-            final boolean swapHalfWord = true;
-            writeBinaryLong(MAGIC_OLD_BINARY, 2, swapHalfWord);
-            writeOldBinaryEntry(e, swapHalfWord);
-            break;
-        default:
-            throw new IOException("Unknown format " + e.getFormat());
-        }
-    }
-
-    private void writeNewEntry(final CpioArchiveEntry entry) throws IOException {
-        long inode = entry.getInode();
-        long devMin = entry.getDeviceMin();
-        if (CPIO_TRAILER.equals(entry.getName())) {
-            inode = devMin = 0;
-        } else {
-            if (inode == 0 && devMin == 0) {
-                inode = nextArtificalDeviceAndInode & 0xFFFFFFFF;
-                devMin = (nextArtificalDeviceAndInode++ >> 32) & 0xFFFFFFFF;
-            } else {
-                nextArtificalDeviceAndInode =
-                    Math.max(nextArtificalDeviceAndInode,
-                             inode + 0x100000000L * devMin) + 1;
-            }
-        }
-
-        writeAsciiLong(inode, 8, 16);
-        writeAsciiLong(entry.getMode(), 8, 16);
-        writeAsciiLong(entry.getUID(), 8, 16);
-        writeAsciiLong(entry.getGID(), 8, 16);
-        writeAsciiLong(entry.getNumberOfLinks(), 8, 16);
-        writeAsciiLong(entry.getTime(), 8, 16);
-        writeAsciiLong(entry.getSize(), 8, 16);
-        writeAsciiLong(entry.getDeviceMaj(), 8, 16);
-        writeAsciiLong(devMin, 8, 16);
-        writeAsciiLong(entry.getRemoteDeviceMaj(), 8, 16);
-        writeAsciiLong(entry.getRemoteDeviceMin(), 8, 16);
-        final byte[] name = encode(entry.getName());
-        writeAsciiLong(name.length + 1L, 8, 16);
-        writeAsciiLong(entry.getChksum(), 8, 16);
-        writeCString(name);
-        pad(entry.getHeaderPadCount(name.length));
-    }
-
-    private void writeOldAsciiEntry(final CpioArchiveEntry entry)
-            throws IOException {
-        long inode = entry.getInode();
-        long device = entry.getDevice();
-        if (CPIO_TRAILER.equals(entry.getName())) {
-            inode = device = 0;
-        } else {
-            if (inode == 0 && device == 0) {
-                inode = nextArtificalDeviceAndInode & 0777777;
-                device = (nextArtificalDeviceAndInode++ >> 18) & 0777777;
-            } else {
-                nextArtificalDeviceAndInode =
-                    Math.max(nextArtificalDeviceAndInode,
-                             inode + 01000000 * device) + 1;
-            }
-        }
-
-        writeAsciiLong(device, 6, 8);
-        writeAsciiLong(inode, 6, 8);
-        writeAsciiLong(entry.getMode(), 6, 8);
-        writeAsciiLong(entry.getUID(), 6, 8);
-        writeAsciiLong(entry.getGID(), 6, 8);
-        writeAsciiLong(entry.getNumberOfLinks(), 6, 8);
-        writeAsciiLong(entry.getRemoteDevice(), 6, 8);
-        writeAsciiLong(entry.getTime(), 11, 8);
-        final byte[] name = encode(entry.getName());
-        writeAsciiLong(name.length + 1L, 6, 8);
-        writeAsciiLong(entry.getSize(), 11, 8);
-        writeCString(name);
-    }
-
-    private void writeOldBinaryEntry(final CpioArchiveEntry entry,
-            final boolean swapHalfWord) throws IOException {
-        long inode = entry.getInode();
-        long device = entry.getDevice();
-        if (CPIO_TRAILER.equals(entry.getName())) {
-            inode = device = 0;
-        } else {
-            if (inode == 0 && device == 0) {
-                inode = nextArtificalDeviceAndInode & 0xFFFF;
-                device = (nextArtificalDeviceAndInode++ >> 16) & 0xFFFF;
-            } else {
-                nextArtificalDeviceAndInode =
-                    Math.max(nextArtificalDeviceAndInode,
-                             inode + 0x10000 * device) + 1;
-            }
-        }
-
-        writeBinaryLong(device, 2, swapHalfWord);
-        writeBinaryLong(inode, 2, swapHalfWord);
-        writeBinaryLong(entry.getMode(), 2, swapHalfWord);
-        writeBinaryLong(entry.getUID(), 2, swapHalfWord);
-        writeBinaryLong(entry.getGID(), 2, swapHalfWord);
-        writeBinaryLong(entry.getNumberOfLinks(), 2, swapHalfWord);
-        writeBinaryLong(entry.getRemoteDevice(), 2, swapHalfWord);
-        writeBinaryLong(entry.getTime(), 4, swapHalfWord);
-        final byte[] name = encode(entry.getName());
-        writeBinaryLong(name.length + 1L, 2, swapHalfWord);
-        writeBinaryLong(entry.getSize(), 4, swapHalfWord);
-        writeCString(name);
-        pad(entry.getHeaderPadCount(name.length));
-    }
-
-    /*(non-Javadoc)
-     *
-     * @see
-     * org.apache.commons.compress.archivers.ArchiveOutputStream#closeArchiveEntry
-     * ()
-     */
-    @Override
-    public void closeArchiveEntry() throws IOException {
-        if(finished) {
-            throw new IOException("Stream has already been finished");
-        }
-
-        ensureOpen();
-
-        if (entry == null) {
-            throw new IOException("Trying to close non-existent entry");
-        }
-
-        if (this.entry.getSize() != this.written) {
-            throw new IOException("Invalid entry size (expected "
-                    + this.entry.getSize() + " but got " + this.written
-                    + " bytes)");
-        }
-        pad(this.entry.getDataPadCount());
-        if (this.entry.getFormat() == FORMAT_NEW_CRC
-            && this.crc != this.entry.getChksum()) {
-            throw new IOException("CRC Error");
-        }
-        this.entry = null;
-        this.crc = 0;
         this.written = 0;
     }
 
@@ -447,75 +426,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         count(len);
     }
 
-    /**
-     * Finishes writing the contents of the CPIO output stream without closing
-     * the underlying stream. Use this method when applying multiple filters in
-     * succession to the same output stream.
-     *
-     * @throws IOException
-     *             if an I/O exception has occurred or if a CPIO file error has
-     *             occurred
-     */
-    @Override
-    public void finish() throws IOException {
-        ensureOpen();
-        if (finished) {
-            throw new IOException("This archive has already been finished");
-        }
-
-        if (this.entry != null) {
-            throw new IOException("This archive contains unclosed entries.");
-        }
-        this.entry = new CpioArchiveEntry(this.entryFormat);
-        this.entry.setName(CPIO_TRAILER);
-        this.entry.setNumberOfLinks(1);
-        writeHeader(this.entry);
-        closeArchiveEntry();
-
-        final int lengthOfLastBlock = (int) (getBytesWritten() % blockSize);
-        if (lengthOfLastBlock != 0) {
-            pad(blockSize - lengthOfLastBlock);
-        }
-
-        finished = true;
-    }
-
-    /**
-     * Closes the CPIO output stream as well as the stream being filtered.
-     *
-     * @throws IOException
-     *             if an I/O error has occurred or if a CPIO file error has
-     *             occurred
-     */
-    @Override
-    public void close() throws IOException {
-        try {
-            if (!finished) {
-                finish();
-            }
-        } finally {
-            if (!this.closed) {
-                out.close();
-                this.closed = true;
-            }
-        }
-    }
-
-    private void pad(final int count) throws IOException{
-        if (count > 0){
-            final byte[] buff = new byte[count];
-            out.write(buff);
-            count(count);
-        }
-    }
-
-    private void writeBinaryLong(final long number, final int length,
-            final boolean swapHalfWord) throws IOException {
-        final byte[] tmp = CpioUtil.long2byteArray(number, length, swapHalfWord);
-        out.write(tmp);
-        count(tmp.length);
-    }
-
     private void writeAsciiLong(final long number, final int length,
             final int radix) throws IOException {
         final StringBuilder tmp = new StringBuilder();
@@ -525,7 +435,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         } else if (radix == 8) {
             tmp.append(Long.toOctalString(number));
         } else {
-            tmp.append(Long.toString(number));
+            tmp.append(number);
         }
 
         if (tmp.length() <= length) {
@@ -542,17 +452,11 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         count(b.length);
     }
 
-    /**
-     * Encodes the given string using the configured encoding.
-     *
-     * @param str the String to write
-     * @throws IOException if the string couldn't be written
-     * @return result of encoding the string
-     */
-    private byte[] encode(final String str) throws IOException {
-        final ByteBuffer buf = zipEncoding.encode(str);
-        final int len = buf.limit() - buf.position();
-        return Arrays.copyOfRange(buf.array(), buf.arrayOffset(), buf.arrayOffset() + len);
+    private void writeBinaryLong(final long number, final int length,
+            final boolean swapHalfWord) throws IOException {
+        final byte[] tmp = CpioUtil.long2byteArray(number, length, swapHalfWord);
+        out.write(tmp);
+        count(tmp.length);
     }
 
     /**
@@ -566,32 +470,122 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         count(str.length + 1);
     }
 
-    /**
-     * Creates a new ArchiveEntry. The entryName must be an ASCII encoded string.
-     *
-     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, java.lang.String)
-     */
-    @Override
-    public ArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
-            throws IOException {
-        if(finished) {
-            throw new IOException("Stream has already been finished");
+    private void writeHeader(final CpioArchiveEntry e) throws IOException {
+        switch (e.getFormat()) {
+        case FORMAT_NEW:
+            out.write(ArchiveUtils.toAsciiBytes(MAGIC_NEW));
+            count(6);
+            writeNewEntry(e);
+            break;
+        case FORMAT_NEW_CRC:
+            out.write(ArchiveUtils.toAsciiBytes(MAGIC_NEW_CRC));
+            count(6);
+            writeNewEntry(e);
+            break;
+        case FORMAT_OLD_ASCII:
+            out.write(ArchiveUtils.toAsciiBytes(MAGIC_OLD_ASCII));
+            count(6);
+            writeOldAsciiEntry(e);
+            break;
+        case FORMAT_OLD_BINARY:
+            final boolean swapHalfWord = true;
+            writeBinaryLong(MAGIC_OLD_BINARY, 2, swapHalfWord);
+            writeOldBinaryEntry(e, swapHalfWord);
+            break;
+        default:
+            throw new IOException("Unknown format " + e.getFormat());
         }
-        return new CpioArchiveEntry(inputFile, entryName);
     }
 
-    /**
-     * Creates a new ArchiveEntry. The entryName must be an ASCII encoded string.
-     *
-     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, java.lang.String)
-     */
-    @Override
-    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options)
-            throws IOException {
-        if(finished) {
-            throw new IOException("Stream has already been finished");
+    private void writeNewEntry(final CpioArchiveEntry entry) throws IOException {
+        long inode = entry.getInode();
+        long devMin = entry.getDeviceMin();
+        if (CPIO_TRAILER.equals(entry.getName())) {
+            inode = devMin = 0;
+        } else if (inode == 0 && devMin == 0) {
+            inode = nextArtificalDeviceAndInode & 0xFFFFFFFF;
+            devMin = (nextArtificalDeviceAndInode++ >> 32) & 0xFFFFFFFF;
+        } else {
+            nextArtificalDeviceAndInode =
+                Math.max(nextArtificalDeviceAndInode,
+                         inode + 0x100000000L * devMin) + 1;
         }
-        return new CpioArchiveEntry(inputPath, entryName, options);
+
+        writeAsciiLong(inode, 8, 16);
+        writeAsciiLong(entry.getMode(), 8, 16);
+        writeAsciiLong(entry.getUID(), 8, 16);
+        writeAsciiLong(entry.getGID(), 8, 16);
+        writeAsciiLong(entry.getNumberOfLinks(), 8, 16);
+        writeAsciiLong(entry.getTime(), 8, 16);
+        writeAsciiLong(entry.getSize(), 8, 16);
+        writeAsciiLong(entry.getDeviceMaj(), 8, 16);
+        writeAsciiLong(devMin, 8, 16);
+        writeAsciiLong(entry.getRemoteDeviceMaj(), 8, 16);
+        writeAsciiLong(entry.getRemoteDeviceMin(), 8, 16);
+        final byte[] name = encode(entry.getName());
+        writeAsciiLong(name.length + 1L, 8, 16);
+        writeAsciiLong(entry.getChksum(), 8, 16);
+        writeCString(name);
+        pad(entry.getHeaderPadCount(name.length));
+    }
+
+    private void writeOldAsciiEntry(final CpioArchiveEntry entry)
+            throws IOException {
+        long inode = entry.getInode();
+        long device = entry.getDevice();
+        if (CPIO_TRAILER.equals(entry.getName())) {
+            inode = device = 0;
+        } else if (inode == 0 && device == 0) {
+            inode = nextArtificalDeviceAndInode & 0777777;
+            device = (nextArtificalDeviceAndInode++ >> 18) & 0777777;
+        } else {
+            nextArtificalDeviceAndInode =
+                Math.max(nextArtificalDeviceAndInode,
+                         inode + 01000000 * device) + 1;
+        }
+
+        writeAsciiLong(device, 6, 8);
+        writeAsciiLong(inode, 6, 8);
+        writeAsciiLong(entry.getMode(), 6, 8);
+        writeAsciiLong(entry.getUID(), 6, 8);
+        writeAsciiLong(entry.getGID(), 6, 8);
+        writeAsciiLong(entry.getNumberOfLinks(), 6, 8);
+        writeAsciiLong(entry.getRemoteDevice(), 6, 8);
+        writeAsciiLong(entry.getTime(), 11, 8);
+        final byte[] name = encode(entry.getName());
+        writeAsciiLong(name.length + 1L, 6, 8);
+        writeAsciiLong(entry.getSize(), 11, 8);
+        writeCString(name);
+    }
+
+    private void writeOldBinaryEntry(final CpioArchiveEntry entry,
+            final boolean swapHalfWord) throws IOException {
+        long inode = entry.getInode();
+        long device = entry.getDevice();
+        if (CPIO_TRAILER.equals(entry.getName())) {
+            inode = device = 0;
+        } else if (inode == 0 && device == 0) {
+            inode = nextArtificalDeviceAndInode & 0xFFFF;
+            device = (nextArtificalDeviceAndInode++ >> 16) & 0xFFFF;
+        } else {
+            nextArtificalDeviceAndInode =
+                Math.max(nextArtificalDeviceAndInode,
+                         inode + 0x10000 * device) + 1;
+        }
+
+        writeBinaryLong(device, 2, swapHalfWord);
+        writeBinaryLong(inode, 2, swapHalfWord);
+        writeBinaryLong(entry.getMode(), 2, swapHalfWord);
+        writeBinaryLong(entry.getUID(), 2, swapHalfWord);
+        writeBinaryLong(entry.getGID(), 2, swapHalfWord);
+        writeBinaryLong(entry.getNumberOfLinks(), 2, swapHalfWord);
+        writeBinaryLong(entry.getRemoteDevice(), 2, swapHalfWord);
+        writeBinaryLong(entry.getTime(), 4, swapHalfWord);
+        final byte[] name = encode(entry.getName());
+        writeBinaryLong(name.length + 1L, 2, swapHalfWord);
+        writeBinaryLong(entry.getSize(), 4, swapHalfWord);
+        writeCString(name);
+        pad(entry.getHeaderPadCount(name.length));
     }
 
 }

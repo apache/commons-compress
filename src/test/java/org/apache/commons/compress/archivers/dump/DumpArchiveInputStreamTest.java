@@ -18,81 +18,74 @@
  */
 package org.apache.commons.compress.archivers.dump;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
-import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DumpArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        final byte[] buf = new byte[2];
+        try (InputStream in = newInputStream("bla.dump");
+             DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
+            final ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read(buf));
+            assertEquals(-1, archive.read(buf));
+        }
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        try (InputStream in = newInputStream("bla.dump");
+             DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
+            final ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read());
+            assertEquals(-1, archive.read());
+        }
+    }
+
+    @Test
+    public void testConsumesArchiveCompletely() throws Exception {
+        try (final InputStream is = DumpArchiveInputStreamTest.class.getResourceAsStream("/archive_with_trailer.dump");
+                DumpArchiveInputStream dump = new DumpArchiveInputStream(is)) {
+            while (dump.getNextDumpEntry() != null) {
+                // just consume the archive
+            }
+            final byte[] expected = { 'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n' };
+            final byte[] actual = new byte[expected.length];
+            is.read(actual);
+            assertArrayEquals(expected, actual);
+        }
+    }
+
+    @Test
     public void testNotADumpArchive() throws Exception {
-        try (InputStream is = Files.newInputStream(getFile("bla.zip").toPath())) {
-            new DumpArchiveInputStream(is).close();
-            fail("expected an exception");
-        } catch (final ArchiveException ex) {
-            // expected
+        try (InputStream is = newInputStream("bla.zip")) {
+            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(),
+                    "expected an exception");
             assertTrue(ex.getCause() instanceof ShortFileException);
         }
     }
 
     @Test
     public void testNotADumpArchiveButBigEnough() throws Exception {
-        try (InputStream is = Files.newInputStream(getFile("zip64support.tar.bz2").toPath())) {
-            new DumpArchiveInputStream(is).close();
-            fail("expected an exception");
-        } catch (final ArchiveException ex) {
-            // expected
-            assertTrue(ex.getCause() instanceof UnrecognizedFormatException);
-        }
-    }
-
-    @Test
-    public void testConsumesArchiveCompletely() throws Exception {
-        final InputStream is = DumpArchiveInputStreamTest.class
-            .getResourceAsStream("/archive_with_trailer.dump");
-        final DumpArchiveInputStream dump = new DumpArchiveInputStream(is);
-        while (dump.getNextDumpEntry() != null) {
-            // just consume the archive
-        }
-        final byte[] expected = new byte[] {
-            'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n'
-        };
-        final byte[] actual = new byte[expected.length];
-        is.read(actual);
-        assertArrayEquals(expected, actual);
-        dump.close();
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (InputStream in = Files.newInputStream(getFile("bla.dump").toPath());
-             DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
-            IOUtils.toByteArray(archive);
-            assertEquals(-1, archive.read());
-            assertEquals(-1, archive.read());
-        }
-    }
-
-    @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        final byte[] buf = new byte[2];
-        try (InputStream in = Files.newInputStream(getFile("bla.dump").toPath());
-             DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
-            IOUtils.toByteArray(archive);
-            assertEquals(-1, archive.read(buf));
-            assertEquals(-1, archive.read(buf));
+        try (InputStream is = newInputStream("zip64support.tar.bz2")) {
+            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(),
+                    "expected an exception");
+            assertInstanceOf(UnrecognizedFormatException.class, ex.getCause());
         }
     }
 

@@ -18,56 +18,40 @@
  */
 package org.apache.commons.compress.utils;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.NoSuchElementException;
 
-import static org.junit.Assert.assertFalse;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for class {@link ServiceLoaderIterator org.apache.commons.compress.utils.ServiceLoaderIterator}.
  *
- * @date 13.06.2017
  * @see ServiceLoaderIterator
- **/
+ */
 public class ServiceLoaderIteratorTest {
-
-
-
-    @Test(expected = NoSuchElementException.class)
-    public void testNextThrowsNoSuchElementException() {
-
-        final Class<String> clasz = String.class;
-        final ServiceLoaderIterator<String> serviceLoaderIterator = new ServiceLoaderIterator<>(clasz);
-
-        serviceLoaderIterator.next();
-
-    }
-
 
     @Test
     public void testHasNextReturnsFalse() {
-
         final Class<Object> clasz = Object.class;
         final ServiceLoaderIterator<Object> serviceLoaderIterator = new ServiceLoaderIterator<>(clasz);
         final boolean result = serviceLoaderIterator.hasNext();
-
         assertFalse(result);
-
     }
 
+    @Test
+    public void testNextThrowsNoSuchElementException() {
+        final Class<String> clasz = String.class;
+        final ServiceLoaderIterator<String> serviceLoaderIterator = new ServiceLoaderIterator<>(clasz);
+        assertThrows(NoSuchElementException.class, () -> serviceLoaderIterator.next());
+    }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testRemoveThrowsUnsupportedOperationException() {
-
         final Class<Integer> clasz = Integer.class;
         final ServiceLoaderIterator<Integer> serviceLoaderIterator = new ServiceLoaderIterator<>(clasz);
-
-        serviceLoaderIterator.remove();
-
-
+        assertThrows(UnsupportedOperationException.class, () -> serviceLoaderIterator.remove());
     }
-
-
 
 }

@@ -20,10 +20,10 @@ package org.apache.commons.compress.compressors.lzma;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import org.tukaani.xz.LZMA2Options;
-import org.tukaani.xz.LZMAOutputStream;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
+import org.tukaani.xz.LZMA2Options;
+import org.tukaani.xz.LZMAOutputStream;
 
 /**
  * LZMA compressor.
@@ -45,21 +45,8 @@ public class LZMACompressorOutputStream extends CompressorOutputStream {
 
     /** {@inheritDoc} */
     @Override
-    public void write(final int b) throws IOException {
-        out.write(b);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void write(final byte[] buf, final int off, final int len) throws IOException {
-        out.write(buf, off, len);
-    }
-
-    /**
-     * Doesn't do anything as {@link LZMAOutputStream} doesn't support flushing.
-     */
-    @Override
-    public void flush() throws IOException {
+    public void close() throws IOException {
+        out.close();
     }
 
     /**
@@ -71,9 +58,22 @@ public class LZMACompressorOutputStream extends CompressorOutputStream {
         out.finish();
     }
 
+    /**
+     * Doesn't do anything as {@link LZMAOutputStream} doesn't support flushing.
+     */
+    @Override
+    public void flush() throws IOException {
+    }
+
     /** {@inheritDoc} */
     @Override
-    public void close() throws IOException {
-        out.close();
+    public void write(final byte[] buf, final int off, final int len) throws IOException {
+        out.write(buf, off, len);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void write(final int b) throws IOException {
+        out.write(b);
     }
 }

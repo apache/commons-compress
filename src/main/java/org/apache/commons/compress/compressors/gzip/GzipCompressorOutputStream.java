@@ -20,6 +20,8 @@ package org.apache.commons.compress.compressors.gzip;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -81,89 +83,21 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     public GzipCompressorOutputStream(final OutputStream out, final GzipParameters parameters) throws IOException {
         this.out = out;
         this.deflater = new Deflater(parameters.getCompressionLevel(), true);
+        this.deflater.setStrategy(parameters.getDeflateStrategy());
         this.deflateBuffer = new byte[parameters.getBufferSize()];
         writeHeader(parameters);
     }
 
-    private void writeHeader(final GzipParameters parameters) throws IOException {
-        final String filename = parameters.getFilename();
-        final String comment = parameters.getComment();
-
-        final ByteBuffer buffer = ByteBuffer.allocate(10);
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.putShort((short) GZIPInputStream.GZIP_MAGIC);
-        buffer.put((byte) Deflater.DEFLATED); // compression method (8: deflate)
-        buffer.put((byte) ((filename != null ? FNAME : 0) | (comment != null ? FCOMMENT : 0))); // flags
-        buffer.putInt((int) (parameters.getModificationTime() / 1000));
-
-        // extra flags
-        final int compressionLevel = parameters.getCompressionLevel();
-        if (compressionLevel == Deflater.BEST_COMPRESSION) {
-            buffer.put((byte) 2);
-        } else if (compressionLevel == Deflater.BEST_SPEED) {
-            buffer.put((byte) 4);
-        } else {
-            buffer.put((byte) 0);
-        }
-
-        buffer.put((byte) parameters.getOperatingSystem());
-
-        out.write(buffer.array());
-
-        if (filename != null) {
-            out.write(filename.getBytes(StandardCharsets.ISO_8859_1));
-            out.write(0);
-        }
-
-        if (comment != null) {
-            out.write(comment.getBytes(StandardCharsets.ISO_8859_1));
-            out.write(0);
-        }
-    }
-
-    private void writeTrailer() throws IOException {
-        final ByteBuffer buffer = ByteBuffer.allocate(8);
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.putInt((int) crc.getValue());
-        buffer.putInt(deflater.getTotalIn());
-
-        out.write(buffer.array());
-    }
-
     @Override
-    public void write(final int b) throws IOException {
-        write(new byte[]{(byte) (b & 0xff)}, 0, 1);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @since 1.1
-     */
-    @Override
-    public void write(final byte[] buffer) throws IOException {
-        write(buffer, 0, buffer.length);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @since 1.1
-     */
-    @Override
-    public void write(final byte[] buffer, final int offset, final int length) throws IOException {
-        if (deflater.finished()) {
-            throw new IOException("Cannot write more data, the end of the compressed data stream has been reached");
-
-        }
-        if (length > 0) {
-            deflater.setInput(buffer, offset, length);
-
-            while (!deflater.needsInput()) {
-                deflate();
+    public void close() throws IOException {
+        if (!closed) {
+            try {
+                finish();
+            } finally {
+                deflater.end();
+                out.close();
+                closed = true;
             }
-
-            crc.update(buffer, offset, length);
         }
     }
 
@@ -202,17 +136,106 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
         out.flush();
     }
 
-    @Override
-    public void close() throws IOException {
-        if (!closed) {
-            try {
-                finish();
-            } finally {
-                deflater.end();
-                out.close();
-                closed = true;
-            }
+    /**
+     * Gets the bytes encoded in the {@value GzipUtils#GZIP_ENCODING} Charset.
+     * <p>
+     * If the string cannot be encoded directly with {@value GzipUtils#GZIP_ENCODING}, then use URI-style percent encoding.
+     * </p>
+     *
+     * @param string The string to encode.
+     * @return
+     * @throws IOException
+     */
+    private byte[] getBytes(final String string) throws IOException {
+        if (GzipUtils.GZIP_ENCODING.newEncoder().canEncode(string)) {
+            return string.getBytes(GzipUtils.GZIP_ENCODING);
         }
+        try {
+            return new URI(null, null, string, null).toASCIIString().getBytes(StandardCharsets.US_ASCII);
+        } catch (final URISyntaxException e) {
+            throw new IOException(string, e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.1
+     */
+    @Override
+    public void write(final byte[] buffer) throws IOException {
+        write(buffer, 0, buffer.length);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.1
+     */
+    @Override
+    public void write(final byte[] buffer, final int offset, final int length) throws IOException {
+        if (deflater.finished()) {
+            throw new IOException("Cannot write more data, the end of the compressed data stream has been reached");
+        }
+        if (length > 0) {
+            deflater.setInput(buffer, offset, length);
+
+            while (!deflater.needsInput()) {
+                deflate();
+            }
+
+            crc.update(buffer, offset, length);
+        }
+    }
+
+    @Override
+    public void write(final int b) throws IOException {
+        write(new byte[] { (byte) (b & 0xff) }, 0, 1);
+    }
+
+    private void writeHeader(final GzipParameters parameters) throws IOException {
+        final String filename = parameters.getFilename();
+        final String comment = parameters.getComment();
+
+        final ByteBuffer buffer = ByteBuffer.allocate(10);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort((short) GZIPInputStream.GZIP_MAGIC);
+        buffer.put((byte) Deflater.DEFLATED); // compression method (8: deflate)
+        buffer.put((byte) ((filename != null ? FNAME : 0) | (comment != null ? FCOMMENT : 0))); // flags
+        buffer.putInt((int) (parameters.getModificationTime() / 1000));
+
+        // extra flags
+        final int compressionLevel = parameters.getCompressionLevel();
+        if (compressionLevel == Deflater.BEST_COMPRESSION) {
+            buffer.put((byte) 2);
+        } else if (compressionLevel == Deflater.BEST_SPEED) {
+            buffer.put((byte) 4);
+        } else {
+            buffer.put((byte) 0);
+        }
+
+        buffer.put((byte) parameters.getOperatingSystem());
+
+        out.write(buffer.array());
+
+        if (filename != null) {
+            out.write(getBytes(filename));
+            out.write(0);
+        }
+
+        if (comment != null) {
+            out.write(getBytes(comment));
+            out.write(0);
+        }
+    }
+
+    private void writeTrailer() throws IOException {
+        final ByteBuffer buffer = ByteBuffer.allocate(8);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.putInt((int) crc.getValue());
+        buffer.putInt(deflater.getTotalIn());
+
+        out.write(buffer.array());
     }
 
 }

@@ -40,6 +40,10 @@ import org.apache.commons.compress.utils.ByteUtils;
  */
 public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStream {
 
+    private enum State {
+        NO_BLOCK, IN_LITERAL, IN_BACK_REFERENCE
+    }
+
     /** Mask used to determine the type of "tag" is being processed */
     private static final int TAG_MASK = 0x03;
 
@@ -87,38 +91,6 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int read(final byte[] b, final int off, final int len) throws IOException {
-        if (len == 0) {
-            return 0;
-        }
-        if (endReached) {
-            return -1;
-        }
-        switch (state) {
-        case NO_BLOCK:
-            fill();
-            return read(b, off, len);
-        case IN_LITERAL:
-            final int litLen = readLiteral(b, off, len);
-            if (!hasMoreDataInBlock()) {
-                state = State.NO_BLOCK;
-            }
-            return litLen > 0 ? litLen : read(b, off, len);
-        case IN_BACK_REFERENCE:
-            final int backReferenceLen = readBackReference(b, off, len);
-            if (!hasMoreDataInBlock()) {
-                state = State.NO_BLOCK;
-            }
-            return backReferenceLen > 0 ? backReferenceLen : read(b, off, len);
-        default:
-            throw new IOException("Unknown stream state " + state);
-        }
-    }
-
-    /**
      * Try to fill the buffer with the next block of data.
      */
     private void fill() throws IOException {
@@ -159,9 +131,6 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
              */
 
             length = 4 + ((b >> 2) & 0x07);
-            if (length < 0) {
-                throw new IOException("Illegal block with a negative match length found");
-            }
             uncompressedBytesRemaining -= length;
             offset = (b & 0xE0) << 3;
             b = readOneByte();
@@ -234,6 +203,48 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
         }
     }
 
+    /**
+     * Get the uncompressed size of the stream
+     *
+     * @return the uncompressed size
+     */
+    @Override
+    public int getSize() {
+        return size;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int read(final byte[] b, final int off, final int len) throws IOException {
+        if (len == 0) {
+            return 0;
+        }
+        if (endReached) {
+            return -1;
+        }
+        switch (state) {
+        case NO_BLOCK:
+            fill();
+            return read(b, off, len);
+        case IN_LITERAL:
+            final int litLen = readLiteral(b, off, len);
+            if (!hasMoreDataInBlock()) {
+                state = State.NO_BLOCK;
+            }
+            return litLen > 0 ? litLen : read(b, off, len);
+        case IN_BACK_REFERENCE:
+            final int backReferenceLen = readBackReference(b, off, len);
+            if (!hasMoreDataInBlock()) {
+                state = State.NO_BLOCK;
+            }
+            return backReferenceLen > 0 ? backReferenceLen : read(b, off, len);
+        default:
+            throw new IOException("Unknown stream state " + state);
+        }
+    }
+
     /*
      * For literals up to and including 60 bytes in length, the
      * upper six bits of the tag byte contain (len-1). The literal
@@ -296,19 +307,5 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
             sz |= (b & 0x7f) << (index++ * 7);
         } while (0 != (b & 0x80));
         return sz;
-    }
-
-    /**
-     * Get the uncompressed size of the stream
-     *
-     * @return the uncompressed size
-     */
-    @Override
-    public int getSize() {
-        return size;
-    }
-
-    private enum State {
-        NO_BLOCK, IN_LITERAL, IN_BACK_REFERENCE
     }
 }

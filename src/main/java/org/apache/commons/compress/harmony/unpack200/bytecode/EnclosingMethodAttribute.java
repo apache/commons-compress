@@ -24,28 +24,20 @@ import java.io.IOException;
  */
 public class EnclosingMethodAttribute extends Attribute {
 
-    private int class_index;
-    private int method_index;
-    private final CPClass cpClass;
-    private final CPNameAndType method;
     private static CPUTF8 attributeName;
-
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
+    private int classIndex;
+    private int methodIndex;
+    private final CPClass cpClass;
+
+    private final CPNameAndType method;
 
     public EnclosingMethodAttribute(final CPClass cpClass, final CPNameAndType method) {
         super(attributeName);
         this.cpClass = cpClass;
         this.method = method;
-    }
-
-    @Override
-    protected ClassFileEntry[] getNestedClassFileEntries() {
-        if (method != null) {
-            return new ClassFileEntry[] {attributeName, cpClass, method};
-        }
-        return new ClassFileEntry[] {attributeName, cpClass};
     }
 
     /*
@@ -59,27 +51,24 @@ public class EnclosingMethodAttribute extends Attribute {
     }
 
     @Override
+    protected ClassFileEntry[] getNestedClassFileEntries() {
+        if (method != null) {
+            return new ClassFileEntry[] { attributeName, cpClass, method };
+        }
+        return new ClassFileEntry[] { attributeName, cpClass };
+    }
+
+    @Override
     protected void resolve(final ClassConstantPool pool) {
         super.resolve(pool);
         cpClass.resolve(pool);
-        class_index = pool.indexOf(cpClass);
+        classIndex = pool.indexOf(cpClass);
         if (method != null) {
             method.resolve(pool);
-            method_index = pool.indexOf(method);
+            methodIndex = pool.indexOf(method);
         } else {
-            method_index = 0;
+            methodIndex = 0;
         }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#writeBody(java.io.DataOutputStream)
-     */
-    @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeShort(class_index);
-        dos.writeShort(method_index);
     }
 
     /*
@@ -90,6 +79,17 @@ public class EnclosingMethodAttribute extends Attribute {
     @Override
     public String toString() {
         return "EnclosingMethod";
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#writeBody(java.io.DataOutputStream)
+     */
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        dos.writeShort(classIndex);
+        dos.writeShort(methodIndex);
     }
 
 }

@@ -18,8 +18,9 @@
  */
 package org.apache.commons.compress.compressors.z;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,50 +28,44 @@ import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.nio.file.Files;
 import java.util.Collections;
-import org.apache.commons.compress.utils.IOUtils;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
+import org.apache.commons.compress.utils.IOUtils;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for class {@link ZCompressorInputStream}.
  *
- * @date 16.06.2017
  * @see ZCompressorInputStream
- **/
+ */
 public class ZCompressorInputStreamTest {
-
-
-    @Test(expected = IOException.class)
-    public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() throws IOException {
-        final SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration());
-        final ZCompressorInputStream zCompressorInputStream = new ZCompressorInputStream(sequenceInputStream);
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.tar.Z");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final ZCompressorInputStream in =
-                    new ZCompressorInputStream(is);
-            IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read());
-            Assert.assertEquals(-1, in.read());
-            in.close();
-        }
-    }
 
     @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.Z");
         final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final ZCompressorInputStream in =
-                    new ZCompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                ZCompressorInputStream in = new ZCompressorInputStream(is)) {
             IOUtils.toByteArray(in);
-            Assert.assertEquals(-1, in.read(buf));
-            Assert.assertEquals(-1, in.read(buf));
-            in.close();
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
         }
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tar.Z");
+        try (InputStream is = Files.newInputStream(input.toPath());
+                ZCompressorInputStream in = new ZCompressorInputStream(is)) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+        }
+    }
+
+    @Test
+    public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() {
+        final SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration());
+        assertThrows(IOException.class, () -> new ZCompressorInputStream(sequenceInputStream));
     }
 
 }

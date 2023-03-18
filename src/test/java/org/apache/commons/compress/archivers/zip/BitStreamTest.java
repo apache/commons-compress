@@ -19,77 +19,77 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 
 import org.apache.commons.compress.utils.ByteUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BitStreamTest {
 
     @Test
     public void testEmptyStream() throws Exception {
-        final BitStream stream = new BitStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
-        assertEquals("next bit", -1, stream.nextBit());
-        assertEquals("next bit", -1, stream.nextBit());
-        assertEquals("next bit", -1, stream.nextBit());
-        stream.close();
-    }
-
-    @Test
-    public void testStream() throws Exception {
-        final BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x03 }));
-
-        assertEquals("bit 0", 0, stream.nextBit());
-        assertEquals("bit 1", 1, stream.nextBit());
-        assertEquals("bit 2", 0, stream.nextBit());
-        assertEquals("bit 3", 1, stream.nextBit());
-        assertEquals("bit 4", 0, stream.nextBit());
-        assertEquals("bit 5", 1, stream.nextBit());
-        assertEquals("bit 6", 1, stream.nextBit());
-        assertEquals("bit 7", 1, stream.nextBit());
-
-        assertEquals("bit 8", 1, stream.nextBit());
-        assertEquals("bit 9", 1, stream.nextBit());
-        assertEquals("bit 10", 0, stream.nextBit());
-        assertEquals("bit 11", 0, stream.nextBit());
-        assertEquals("bit 12", 0, stream.nextBit());
-        assertEquals("bit 13", 0, stream.nextBit());
-        assertEquals("bit 14", 0, stream.nextBit());
-        assertEquals("bit 15", 0, stream.nextBit());
-
-        assertEquals("next bit", -1, stream.nextBit());
-        stream.close();
-    }
-
-    @Test
-    public void testNextByteFromEmptyStream() throws Exception {
-        final BitStream stream = new BitStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
-        assertEquals("next byte", -1, stream.nextByte());
-        assertEquals("next byte", -1, stream.nextByte());
-        stream.close();
-    }
-
-    @Test
-    public void testReadAlignedBytes() throws Exception {
-        final BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x35 }));
-        assertEquals("next byte", 0xEA, stream.nextByte());
-        assertEquals("next byte", 0x35, stream.nextByte());
-        assertEquals("next byte", -1, stream.nextByte());
-        stream.close();
+        try (BitStream stream = new BitStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
+            assertEquals(-1, stream.nextBit(), "next bit");
+            assertEquals(-1, stream.nextBit(), "next bit");
+            assertEquals(-1, stream.nextBit(), "next bit");
+        }
     }
 
     @Test
     public void testNextByte() throws Exception {
-        final BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x35 }));
-        assertEquals("bit 0", 0, stream.nextBit());
-        assertEquals("bit 1", 1, stream.nextBit());
-        assertEquals("bit 2", 0, stream.nextBit());
-        assertEquals("bit 3", 1, stream.nextBit());
+        try (BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x35 }))) {
+            assertEquals(0, stream.nextBit(), "bit 0");
+            assertEquals(1, stream.nextBit(), "bit 1");
+            assertEquals(0, stream.nextBit(), "bit 2");
+            assertEquals(1, stream.nextBit(), "bit 3");
 
-        assertEquals("next byte", 0x5E, stream.nextByte());
-        assertEquals("next byte", -1, stream.nextByte()); // not enough bits left to read a byte
-        stream.close();
+            assertEquals(0x5E, stream.nextByte(), "next byte");
+            assertEquals(-1, stream.nextByte(), "next byte"); // not enough bits left to read a byte
+        }
+    }
+
+    @Test
+    public void testNextByteFromEmptyStream() throws Exception {
+        try (BitStream stream = new BitStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
+            assertEquals(-1, stream.nextByte(), "next byte");
+            assertEquals(-1, stream.nextByte(), "next byte");
+        }
+    }
+
+    @Test
+    public void testReadAlignedBytes() throws Exception {
+        try (BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x35 }))) {
+            assertEquals(0xEA, stream.nextByte(), "next byte");
+            assertEquals(0x35, stream.nextByte(), "next byte");
+            assertEquals(-1, stream.nextByte(), "next byte");
+        }
+    }
+
+    @Test
+    public void testStream() throws Exception {
+        try (BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x03 }))) {
+
+            assertEquals(0, stream.nextBit(), "bit 0");
+            assertEquals(1, stream.nextBit(), "bit 1");
+            assertEquals(0, stream.nextBit(), "bit 2");
+            assertEquals(1, stream.nextBit(), "bit 3");
+            assertEquals(0, stream.nextBit(), "bit 4");
+            assertEquals(1, stream.nextBit(), "bit 5");
+            assertEquals(1, stream.nextBit(), "bit 6");
+            assertEquals(1, stream.nextBit(), "bit 7");
+
+            assertEquals(1, stream.nextBit(), "bit 8");
+            assertEquals(1, stream.nextBit(), "bit 9");
+            assertEquals(0, stream.nextBit(), "bit 10");
+            assertEquals(0, stream.nextBit(), "bit 11");
+            assertEquals(0, stream.nextBit(), "bit 12");
+            assertEquals(0, stream.nextBit(), "bit 13");
+            assertEquals(0, stream.nextBit(), "bit 14");
+            assertEquals(0, stream.nextBit(), "bit 15");
+
+            assertEquals(-1, stream.nextBit(), "next bit");
+        }
     }
 }

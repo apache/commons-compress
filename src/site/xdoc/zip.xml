@@ -129,7 +129,7 @@
 
         <p>The constructor accepting a <code>File</code> and a size is
         used exclusively for creating a split ZIP archive and is
-        described in th next section. For the remainder of this
+        described in the next section. For the remainder of this
         section this constructor is equivalent to the one using the
         <code>OutputStream</code> argument and thus it is not possible
         to add uncompressed entries of unknown size.</p>
@@ -163,7 +163,7 @@
 
         <p>Split archives consist of multiple files that reside in the
         same directory with the same base name (the file name without
-        the file extension). The last file of the the archive has the
+        the file extension). The last file of the archive has the
         extension <code>zip</code> the remaining files conventionally
         use extensions <code>z01</code>, <code>z02</code> and so
         on. Support for splitted archives has been added with Compress
@@ -174,7 +174,7 @@
         accepts a <code>File</code> argument and a size. The size
         determines the maximum size of a split segment - the size must
         be between 64kB and 4GB. While creating the archive, this will
-        create several files fillowing the naming convention described
+        create several files following the naming convention described
         above. The name of the <code>File</code> argument used inside
         of the constructor must use the extension
         <code>zip</code>.</p>
@@ -268,7 +268,7 @@
           an option <code>createUnicodeExtraFields</code> which makes
           it write these extra fields either for all entries
           ("always") or only those whose name cannot be encoded using
-          the specified encoding (not-encodeable), it defaults to
+          the specified encoding (not-encodable), it defaults to
           "never" since the extra fields create bigger archives.</p>
 
         <p>The fallbackToUTF8 attribute
@@ -455,7 +455,7 @@
 
         <p>If <code>ZipArchiveOutputStream</code> is writing to a
           non-seekable stream it has to decide whether to use Zip64
-          extensions or not before it starts wrtiting the entry data.
+          extensions or not before it starts writing the entry data.
           This means that if the size of the entry is unknown
           when <code>putArchiveEntry</code> is called it doesn't have
           anything to base the decision on.  By default it will not

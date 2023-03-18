@@ -24,45 +24,32 @@ import java.io.IOException;
  */
 public class LineNumberTableAttribute extends BCIRenumberedAttribute {
 
-    private final int line_number_table_length;
-    private final int[] start_pcs;
-    private final int[] line_numbers;
     private static CPUTF8 attributeName;
-
+    
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
 
-    public LineNumberTableAttribute(final int line_number_table_length, final int[] start_pcs,
-        final int[] line_numbers) {
+    private final int lineNumberTableLength;
+    private final int[] startPcs;
+    private final int[] lineNumbers;
+
+    public LineNumberTableAttribute(final int lineNumberTableLength, final int[] startPcs,
+        final int[] lineNumbers) {
         super(attributeName);
-        this.line_number_table_length = line_number_table_length;
-        this.start_pcs = start_pcs;
-        this.line_numbers = line_numbers;
+        this.lineNumberTableLength = lineNumberTableLength;
+        this.startPcs = startPcs;
+        this.lineNumbers = lineNumbers;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return this == obj;
     }
 
     @Override
     protected int getLength() {
-        return 2 + (4 * line_number_table_length);
-    }
-
-    @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeShort(line_number_table_length);
-        for (int i = 0; i < line_number_table_length; i++) {
-            dos.writeShort(start_pcs[i]);
-            dos.writeShort(line_numbers[i]);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#toString()
-     */
-    @Override
-    public String toString() {
-        return "LineNumberTable: " + line_number_table_length + " lines";
+        return 2 + (4 * lineNumberTableLength);
     }
 
     /*
@@ -76,8 +63,8 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        return this == obj;
+    protected int[] getStartPCs() {
+        return startPcs;
     }
 
     /*
@@ -92,8 +79,22 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
         super.resolve(pool);
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#toString()
+     */
     @Override
-    protected int[] getStartPCs() {
-        return start_pcs;
+    public String toString() {
+        return "LineNumberTable: " + lineNumberTableLength + " lines";
+    }
+
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        dos.writeShort(lineNumberTableLength);
+        for (int i = 0; i < lineNumberTableLength; i++) {
+            dos.writeShort(startPcs[i]);
+            dos.writeShort(lineNumbers[i]);
+        }
     }
 }

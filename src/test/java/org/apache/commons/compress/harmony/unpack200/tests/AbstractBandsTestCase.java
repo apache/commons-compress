@@ -16,7 +16,7 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.AttrDefinitionBands;
@@ -26,58 +26,63 @@ import org.apache.commons.compress.harmony.unpack200.SegmentHeader;
 import org.apache.commons.compress.harmony.unpack200.SegmentOptions;
 
 /**
- * 
+ *
  */
-public abstract class AbstractBandsTestCase extends TestCase {
-
-    protected int numClasses = 1;
-    protected int[] numMethods = { 1 };
-
-    public class MockSegmentHeader extends SegmentHeader {
-
-        public MockSegmentHeader(Segment segment) {
-            super(segment);
-        }
-
-        public int getClassCount() {
-            return numClasses;
-        }
-
-        public SegmentOptions getOptions() {
-            try {
-                return new SegmentOptions(0);
-            } catch (Pack200Exception e) {
-                return null;
-            }
-        }
-    }
+public abstract class AbstractBandsTestCase {
 
     public class MockAttributeDefinitionBands extends AttrDefinitionBands {
 
-        public MockAttributeDefinitionBands(Segment segment) {
+        public MockAttributeDefinitionBands(final Segment segment) {
             super(segment);
         }
 
+        @Override
         public AttributeLayoutMap getAttributeDefinitionMap() {
             try {
                 return new AttributeLayoutMap();
-            } catch (Pack200Exception e) {
+            } catch (final Pack200Exception e) {
                 fail(e.getLocalizedMessage());
             }
             return null;
         }
 
     }
-
     public class MockSegment extends Segment {
 
+        @Override
         protected AttrDefinitionBands getAttrDefinitionBands() {
             return new MockAttributeDefinitionBands(this);
         }
 
+        @Override
         public SegmentHeader getSegmentHeader() {
             return new MockSegmentHeader(this);
         }
     }
+
+    public class MockSegmentHeader extends SegmentHeader {
+
+        public MockSegmentHeader(final Segment segment) {
+            super(segment);
+        }
+
+        @Override
+        public int getClassCount() {
+            return numClasses;
+        }
+
+        @Override
+        public SegmentOptions getOptions() {
+            try {
+                return new SegmentOptions(0);
+            } catch (final Pack200Exception e) {
+                return null;
+            }
+        }
+    }
+
+    protected int numClasses = 1;
+
+    protected int[] numMethods = { 1 };
 
 }

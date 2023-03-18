@@ -16,6 +16,8 @@
  */
 package org.apache.commons.compress.harmony.unpack200.bytecode.forms;
 
+import java.util.Arrays;
+
 import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
@@ -36,25 +38,21 @@ public class TableSwitchForm extends SwitchForm {
     @Override
     public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager,
         final int codeLength) {
-        final int case_count = operandManager.nextCaseCount();
-        final int default_pc = operandManager.nextLabel();
-        int case_value = -1;
-        case_value = operandManager.nextCaseValues();
+        final int caseCount = operandManager.nextCaseCount();
+        final int defaultPc = operandManager.nextLabel();
+        int caseValue = -1;
+        caseValue = operandManager.nextCaseValues();
 
-        final int case_pcs[] = new int[case_count];
-        for (int index = 0; index < case_count; index++) {
-            case_pcs[index] = operandManager.nextLabel();
-        }
+        final int[] casePcs = new int[caseCount];
+        Arrays.setAll(casePcs, i -> operandManager.nextLabel());
 
-        final int[] labelsArray = new int[case_count + 1];
-        labelsArray[0] = default_pc;
-        for (int index = 1; index < case_count + 1; index++) {
-            labelsArray[index] = case_pcs[index - 1];
-        }
+        final int[] labelsArray = new int[caseCount + 1];
+        labelsArray[0] = defaultPc;
+        System.arraycopy(casePcs, 0, labelsArray, 1, caseCount + 1 - 1);
         byteCode.setByteCodeTargets(labelsArray);
 
-        final int lowValue = case_value;
-        final int highValue = lowValue + case_count - 1;
+        final int lowValue = caseValue;
+        final int highValue = lowValue + caseCount - 1;
         // All this gets dumped into the rewrite bytes of the
         // poor bytecode.
 
@@ -71,7 +69,7 @@ public class TableSwitchForm extends SwitchForm {
         final int rewriteSize = 1 + padLength + 4 // defaultbytes
             + 4 // lowbyte
             + 4 // highbyte
-            + (4 * case_pcs.length);
+            + (4 * casePcs.length);
 
         final int[] newRewrite = new int[rewriteSize];
         int rewriteIndex = 0;
@@ -104,7 +102,7 @@ public class TableSwitchForm extends SwitchForm {
 
         // jump offsets
         // The case_pcs will get overwritten by fixUpByteCodeTargets
-        for (int index = 0; index < case_count; index++) {
+        for (int index = 0; index < caseCount; index++) {
             // offset
             newRewrite[rewriteIndex++] = -1;
             newRewrite[rewriteIndex++] = -1;

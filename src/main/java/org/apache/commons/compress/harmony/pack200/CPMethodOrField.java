@@ -32,11 +32,6 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
     }
 
     @Override
-    public String toString() {
-        return className + ": " + nameAndType;
-    }
-
-    @Override
     public int compareTo(final Object obj) {
         if (obj instanceof CPMethodOrField) {
             final CPMethodOrField mof = (CPMethodOrField) obj;
@@ -57,28 +52,33 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
         return className;
     }
 
-    public int getDescIndex() {
-        return nameAndType.getIndex();
-    }
-
     public CPNameAndType getDesc() {
         return nameAndType;
+    }
+
+    public int getDescIndex() {
+        return nameAndType.getIndex();
     }
 
     public int getIndexInClass() {
         return indexInClass;
     }
 
-    public void setIndexInClass(final int index) {
-        indexInClass = index;
-    }
-
     public int getIndexInClassForConstructor() {
         return indexInClassForConstructor;
     }
 
+    public void setIndexInClass(final int index) {
+        indexInClass = index;
+    }
+
     public void setIndexInClassForConstructor(final int index) {
         indexInClassForConstructor = index;
+    }
+
+    @Override
+    public String toString() {
+        return className + ": " + nameAndType;
     }
 
 }

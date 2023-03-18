@@ -16,58 +16,61 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 import org.apache.commons.compress.harmony.unpack200.CpBands;
 import org.apache.commons.compress.harmony.unpack200.Segment;
 import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
-import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPFieldRef;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPMethodRef;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPString;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute;
+import org.apache.commons.compress.harmony.unpack200.bytecode.ExceptionTableEntry;
 import org.apache.commons.compress.harmony.unpack200.bytecode.LocalVariableTableAttribute;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for CodeAttribute
  */
-public class CodeAttributeTest extends TestCase {
+public class CodeAttributeTest {
 
-    public class MockCodeAttribute extends CodeAttribute {
+	public class MockCodeAttribute extends CodeAttribute {
 
-        public MockCodeAttribute(int maxStack, int maxLocals,
-                byte[] codePacked, Segment segment,
-                OperandManager operandManager, List exceptionTable) {
-            super(maxStack, maxLocals, codePacked, segment, operandManager,
-                    exceptionTable);
-        }
+		public MockCodeAttribute(final int maxStack, final int maxLocals, final byte[] codePacked, final Segment segment,
+				final OperandManager operandManager, final List<ExceptionTableEntry> exceptionTable) {
+			super(maxStack, maxLocals, codePacked, segment, operandManager, exceptionTable);
+		}
 
-        public int getLength() {
-            return super.getLength();
-        }
-    }
+		@Override
+		public int getLength() {
+			return super.getLength();
+		}
+	}
 
     public class MockCpBands extends CpBands {
 
-        public MockCpBands(Segment segment) {
+        public MockCpBands(final Segment segment) {
             super(segment);
         }
 
-        public CPFieldRef cpFieldValue(int index) {
+        @Override
+        public CPFieldRef cpFieldValue(final int index) {
             return null;
         }
 
-        public CPString cpStringValue(int index) {
+        @Override
+        public CPMethodRef cpMethodValue(final int index) {
+            return null;
+        }
+
+        @Override
+        public CPString cpStringValue(final int index) {
             return new CPString(new CPUTF8("Hello"), -1);
-        }
-
-        public CPMethodRef cpMethodValue(int index) {
-            return null;
         }
 
     }
@@ -101,6 +104,7 @@ public class CodeAttributeTest extends TestCase {
 
     public class MockSegment extends Segment {
 
+        @Override
         public SegmentConstantPool getConstantPool() {
             return new MockSegmentConstantPool(cpBands);
         }
@@ -108,12 +112,13 @@ public class CodeAttributeTest extends TestCase {
 
     public class MockSegmentConstantPool extends SegmentConstantPool {
 
-        public MockSegmentConstantPool(CpBands bands) {
+        public MockSegmentConstantPool(final CpBands bands) {
             super(bands);
         }
 
-        protected int matchSpecificPoolEntryIndex(String[] nameArray,
-                String compareString, int desiredIndex) {
+        @Override
+        protected int matchSpecificPoolEntryIndex(final String[] nameArray,
+                final String compareString, final int desiredIndex) {
             return 1;
         }
     }
@@ -136,12 +141,13 @@ public class CodeAttributeTest extends TestCase {
             -49, // return 4
     };
 
+    @Test
     public void testLength() {
-        OperandManager operandManager = new MockOperandManager();
+        final OperandManager operandManager = new MockOperandManager();
         operandManager.setSegment(segment);
         operandManager.setCurrentClass("java/lang/Foo");
 
-        MockCodeAttribute attribute = new MockCodeAttribute(3, // maxStack
+        final MockCodeAttribute attribute = new MockCodeAttribute(3, // maxStack
                 2, // maxLocals
                 mixedByteArray, // codePacked
                 segment, // segment
@@ -154,49 +160,51 @@ public class CodeAttributeTest extends TestCase {
         assertEquals(37, attribute.getLength());
     }
 
+    @Test
     public void testMixedByteCodes() {
-        OperandManager operandManager = new MockOperandManager();
+        final OperandManager operandManager = new MockOperandManager();
         operandManager.setSegment(segment);
         operandManager.setCurrentClass("java/lang/Foo");
 
-        CodeAttribute attribute = new CodeAttribute(3, // maxStack
+        final CodeAttribute attribute = new CodeAttribute(3, // maxStack
                 2, // maxLocals
                 mixedByteArray, // codePacked
                 segment, // segment
                 operandManager, // operandManager
-                new ArrayList());
+                new ArrayList<>());
         assertEquals(2, attribute.maxLocals);
         assertEquals(3, attribute.maxStack);
-        assertEquals("aload_0_putfield_this", ((ByteCode) attribute.byteCodes
-                .get(4)).toString());
+        assertEquals("aload_0_putfield_this", attribute.byteCodes
+                .get(4).toString());
 
-        int expectedLabels[] = new int[] { 0, 1, 4, 5, 8, 9, 10, 13, 14 };
+        final int expectedLabels[] = { 0, 1, 4, 5, 8, 9, 10, 13, 14 };
         for (int index = 0; index < expectedLabels.length; index++) {
             assertEquals(expectedLabels[index],
-                    ((Integer) attribute.byteCodeOffsets.get(index)).intValue());
+                    attribute.byteCodeOffsets.get(index).intValue());
         }
     }
 
+    @Test
     public void testSingleByteCodes() {
-        OperandManager operandManager = new MockOperandManager();
+        final OperandManager operandManager = new MockOperandManager();
         operandManager.setSegment(segment);
         operandManager.setCurrentClass("java/lang/Foo");
 
-        CodeAttribute attribute = new CodeAttribute(4, // maxStack
+        final CodeAttribute attribute = new CodeAttribute(4, // maxStack
                 3, // maxLocals
                 singleByteArray, // codePacked
                 segment, // segment
                 operandManager, // operandManager
-                new ArrayList());
+                new ArrayList<>());
         assertEquals(3, attribute.maxLocals);
         assertEquals(4, attribute.maxStack);
-        assertEquals("invokespecial_this", ((ByteCode) attribute.byteCodes
-                .get(3)).toString());
+        assertEquals("invokespecial_this", attribute.byteCodes
+                .get(3).toString());
 
-        int expectedLabels[] = new int[] { 0, 1, 2, 4 };
+        final int expectedLabels[] = { 0, 1, 2, 4 };
         for (int index = 0; index < expectedLabels.length; index++) {
             assertEquals(expectedLabels[index],
-                    ((Integer) attribute.byteCodeOffsets.get(index)).intValue());
+                    attribute.byteCodeOffsets.get(index).intValue());
         }
     }
 

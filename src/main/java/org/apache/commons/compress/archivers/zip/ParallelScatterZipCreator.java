@@ -17,13 +17,10 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
-import org.apache.commons.compress.parallel.InputStreamSupplier;
-import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
-import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
+import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Deque;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -32,52 +29,38 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.Deflater;
 
-import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
+import org.apache.commons.compress.parallel.InputStreamSupplier;
+import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
+import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
 
 /**
- * Creates a zip in parallel by using multiple threadlocal {@link ScatterZipOutputStream} instances.
+ * Creates a ZIP in parallel by using multiple threadlocal {@link ScatterZipOutputStream} instances.
  * <p>
- * Note that until 1.18, this class generally made no guarantees about the order of things written to
- * the output file. Things that needed to come in a specific order (manifests, directories)
- * had to be handled by the client of this class, usually by writing these things to the
- * {@link ZipArchiveOutputStream} <em>before</em> calling {@link #writeTo writeTo} on this class.</p>
- * <p>
- * The client can supply an {@link java.util.concurrent.ExecutorService}, but for reasons of
- * memory model consistency, this will be shut down by this class prior to completion.
+ * Note that until 1.18, this class generally made no guarantees about the order of things written to the output file. Things that needed to come in a specific
+ * order (manifests, directories) had to be handled by the client of this class, usually by writing these things to the {@link ZipArchiveOutputStream}
+ * <em>before</em> calling {@link #writeTo writeTo} on this class.
  * </p>
+ * <p>
+ * The client can supply an {@link java.util.concurrent.ExecutorService}, but for reasons of memory model consistency, this will be shut down by this class
+ * prior to completion.
+ * </p>
+ *
  * @since 1.10
  */
 public class ParallelScatterZipCreator {
-    private final Deque<ScatterZipOutputStream> streams = new ConcurrentLinkedDeque<>();
-    private final ExecutorService es;
-    private final ScatterGatherBackingStoreSupplier backingStoreSupplier;
-    private final Deque<Future<? extends ScatterZipOutputStream>> futures = new ConcurrentLinkedDeque<>();
 
+    private final Deque<ScatterZipOutputStream> streams = new ConcurrentLinkedDeque<>();
+    private final ExecutorService executorService;
+    private final ScatterGatherBackingStoreSupplier backingStoreSupplier;
+
+    private final Deque<Future<? extends ScatterZipOutputStream>> futures = new ConcurrentLinkedDeque<>();
     private final long startedAt = System.currentTimeMillis();
     private long compressionDoneAt;
     private long scatterDoneAt;
+
     private final int compressionLevel;
-
-    private static class DefaultBackingStoreSupplier implements ScatterGatherBackingStoreSupplier {
-        final AtomicInteger storeNum = new AtomicInteger(0);
-
-        @Override
-        public ScatterGatherBackingStore get() throws IOException {
-            final File tempFile = File.createTempFile("parallelscatter", "n" + storeNum.incrementAndGet());
-            return new FileBasedScatterGatherBackingStore(tempFile);
-        }
-    }
-
-    private ScatterZipOutputStream createDeferred(final ScatterGatherBackingStoreSupplier scatterGatherBackingStoreSupplier)
-            throws IOException {
-        final ScatterGatherBackingStore bs = scatterGatherBackingStoreSupplier.get();
-        // lifecycle is bound to the ScatterZipOutputStream returned
-        final StreamCompressor sc = StreamCompressor.create(compressionLevel, bs); //NOSONAR
-        return new ScatterZipOutputStream(bs, sc);
-    }
 
     private final ThreadLocal<ScatterZipOutputStream> tlScatterStreams = new ThreadLocal<ScatterZipOutputStream>() {
         @Override
@@ -87,13 +70,13 @@ public class ParallelScatterZipCreator {
                 streams.add(scatterStream);
                 return scatterStream;
             } catch (final IOException e) {
-                throw new RuntimeException(e); //NOSONAR
+                throw new UncheckedIOException(e); //NOSONAR
             }
         }
     };
 
     /**
-     * Create a ParallelScatterZipCreator with default threads, which is set to the number of available
+     * Constructs a ParallelScatterZipCreator with default threads, which is set to the number of available
      * processors, as defined by {@link java.lang.Runtime#availableProcessors}
      */
     public ParallelScatterZipCreator() {
@@ -101,17 +84,17 @@ public class ParallelScatterZipCreator {
     }
 
     /**
-     * Create a ParallelScatterZipCreator
+     * Constructs a ParallelScatterZipCreator
      *
      * @param executorService The executorService to use for parallel scheduling. For technical reasons,
      *                        this will be shut down by this class.
      */
     public ParallelScatterZipCreator(final ExecutorService executorService) {
-        this(executorService, new DefaultBackingStoreSupplier());
+        this(executorService, new DefaultBackingStoreSupplier(null));
     }
 
     /**
-     * Create a ParallelScatterZipCreator
+     * Constructs a ParallelScatterZipCreator
      *
      * @param executorService The executorService to use. For technical reasons, this will be shut down
      *                        by this class.
@@ -123,7 +106,7 @@ public class ParallelScatterZipCreator {
     }
 
     /**
-     * Create a ParallelScatterZipCreator
+     * Constructs a ParallelScatterZipCreator
      *
      * @param executorService      The executorService to use. For technical reasons, this will be shut down
      *                             by this class.
@@ -142,7 +125,7 @@ public class ParallelScatterZipCreator {
         }
 
         this.backingStoreSupplier = backingStoreSupplier;
-        es = executorService;
+        this.executorService = executorService;
         this.compressionLevel = compressionLevel;
     }
 
@@ -173,34 +156,18 @@ public class ParallelScatterZipCreator {
         submitStreamAwareCallable(createCallable(zipArchiveEntryRequestSupplier));
     }
 
-    /**
-     * Submit a callable for compression.
-     *
-     * @see ParallelScatterZipCreator#createCallable for details of if/when to use this.
-     *
-     * @param callable The callable to run, created by {@link #createCallable createCallable}, possibly wrapped by caller.
-     */
-    public final void submit(final Callable<? extends Object> callable) {
-        submitStreamAwareCallable(() -> {
-            callable.call();
-            return tlScatterStreams.get();
-        });
+    private void closeAll() {
+        for (final ScatterZipOutputStream scatterStream : streams) {
+            try {
+                scatterStream.close();
+            } catch (final IOException ex) { //NOSONAR
+                // no way to properly log this
+            }
+        }
     }
 
     /**
-     * Submit a callable for compression.
-     *
-     * @see ParallelScatterZipCreator#createCallable for details of if/when to use this.
-     *
-     * @param callable The callable to run, created by {@link #createCallable createCallable}, possibly wrapped by caller.
-     * @since 1.19
-     */
-    public final void submitStreamAwareCallable(final Callable<? extends ScatterZipOutputStream> callable) {
-        futures.add(es.submit(callable));
-    }
-
-    /**
-     * Create a callable that will compress the given archive entry.
+     * Creates a callable that will compress the given archive entry.
      *
      * <p>This method is expected to be called from a single client thread.</p>
      *
@@ -232,7 +199,7 @@ public class ParallelScatterZipCreator {
     }
 
     /**
-     * Create a callable that will compress archive entry supplied by {@link ZipArchiveEntryRequestSupplier}.
+     * Creates a callable that will compress archive entry supplied by {@link ZipArchiveEntryRequestSupplier}.
      *
      * <p>This method is expected to be called from a single client thread.</p>
      *
@@ -255,16 +222,58 @@ public class ParallelScatterZipCreator {
         };
     }
 
+    private ScatterZipOutputStream createDeferred(final ScatterGatherBackingStoreSupplier scatterGatherBackingStoreSupplier)
+            throws IOException {
+        final ScatterGatherBackingStore bs = scatterGatherBackingStoreSupplier.get();
+        // lifecycle is bound to the ScatterZipOutputStream returned
+        final StreamCompressor sc = StreamCompressor.create(compressionLevel, bs); //NOSONAR
+        return new ScatterZipOutputStream(bs, sc);
+    }
+
     /**
-     * Write the contents this to the target {@link ZipArchiveOutputStream}.
-     * <p>
-     * It may be beneficial to write things like directories and manifest files to the targetStream
-     * before calling this method.
-     * </p>
+     * Gets a message describing the overall statistics of the compression run
      *
-     * <p>Calling this method will shut down the {@link ExecutorService} used by this class. If any of the {@link
-     * Callable}s {@link #submitStreamAwareCallable submit}ted to this instance throws an exception, the archive can not be created properly and
-     * this method will throw an exception.</p>
+     * @return A string
+     */
+    public ScatterStatistics getStatisticsMessage() {
+        return new ScatterStatistics(compressionDoneAt - startedAt, scatterDoneAt - compressionDoneAt);
+    }
+
+    /**
+     * Submits a callable for compression.
+     *
+     * @see ParallelScatterZipCreator#createCallable for details of if/when to use this.
+     *
+     * @param callable The callable to run, created by {@link #createCallable createCallable}, possibly wrapped by caller.
+     */
+    public final void submit(final Callable<? extends Object> callable) {
+        submitStreamAwareCallable(() -> {
+            callable.call();
+            return tlScatterStreams.get();
+        });
+    }
+
+    /**
+     * Submits a callable for compression.
+     *
+     * @see ParallelScatterZipCreator#createCallable for details of if/when to use this.
+     *
+     * @param callable The callable to run, created by {@link #createCallable createCallable}, possibly wrapped by caller.
+     * @since 1.19
+     */
+    public final void submitStreamAwareCallable(final Callable<? extends ScatterZipOutputStream> callable) {
+        futures.add(executorService.submit(callable));
+    }
+
+    /**
+     * Writes the contents this to the target {@link ZipArchiveOutputStream}.
+     * <p>
+     * It may be beneficial to write things like directories and manifest files to the targetStream before calling this method.
+     * </p>
+     * <p>
+     * Calling this method will shut down the {@link ExecutorService} used by this class. If any of the {@link Callable}s {@link #submitStreamAwareCallable
+     * submit}ted to this instance throws an exception, the archive can not be created properly and this method will throw an exception.
+     * </p>
      *
      * @param targetStream The {@link ZipArchiveOutputStream} to receive the contents of the scatter streams
      * @throws IOException          If writing fails
@@ -281,10 +290,10 @@ public class ParallelScatterZipCreator {
                     future.get();
                 }
             } finally {
-                es.shutdown();
+                executorService.shutdown();
             }
 
-            es.awaitTermination(1000 * 60L, TimeUnit.SECONDS);  // == Infinity. We really *must* wait for this to complete
+            executorService.awaitTermination(1000 * 60L, TimeUnit.SECONDS);  // == Infinity. We really *must* wait for this to complete
 
             // It is important that all threads terminate before we go on, ensure happens-before relationship
             compressionDoneAt = System.currentTimeMillis();
@@ -301,25 +310,6 @@ public class ParallelScatterZipCreator {
             scatterDoneAt = System.currentTimeMillis();
         } finally {
             closeAll();
-        }
-    }
-
-    /**
-     * Returns a message describing the overall statistics of the compression run
-     *
-     * @return A string
-     */
-    public ScatterStatistics getStatisticsMessage() {
-        return new ScatterStatistics(compressionDoneAt - startedAt, scatterDoneAt - compressionDoneAt);
-    }
-
-    private void closeAll() {
-        for (final ScatterZipOutputStream scatterStream : streams) {
-            try {
-                scatterStream.close();
-            } catch (final IOException ex) { //NOSONAR
-                // no way to properly log this
-            }
         }
     }
 }

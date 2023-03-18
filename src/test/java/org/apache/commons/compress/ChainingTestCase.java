@@ -18,40 +18,35 @@
 
 package org.apache.commons.compress;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.File;
-import java.nio.file.Files;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarConstants;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 
 public class ChainingTestCase extends AbstractTestCase {
 
     @Test
-    public void testTarGzip() throws Exception {
-        final File file = getFile("bla.tgz");
-        try (final TarArchiveInputStream is = new TarArchiveInputStream(
-            new GzipCompressorInputStream(Files.newInputStream(file.toPath())))) {
+    public void testTarBzip2() throws Exception {
+        try (final TarArchiveInputStream is = new TarArchiveInputStream(new BZip2CompressorInputStream(newInputStream("bla.tar.bz2")))) {
             final TarArchiveEntry entry = (TarArchiveEntry) is.getNextEntry();
             assertNotNull(entry);
             assertEquals("test1.xml", entry.getName());
+            assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
         }
     }
 
     @Test
-    public void testTarBzip2() throws Exception {
-        final File file = getFile("bla.tar.bz2");
-        try (final TarArchiveInputStream is = new TarArchiveInputStream(
-            new BZip2CompressorInputStream(Files.newInputStream(file.toPath())))) {
+    public void testTarGzip() throws Exception {
+        try (final TarArchiveInputStream is = new TarArchiveInputStream(new GzipCompressorInputStream(newInputStream("bla.tgz")))) {
             final TarArchiveEntry entry = (TarArchiveEntry) is.getNextEntry();
             assertNotNull(entry);
             assertEquals("test1.xml", entry.getName());
+            assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
         }
     }
 }

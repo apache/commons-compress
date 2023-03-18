@@ -17,84 +17,111 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Arrays;
+import org.junit.jupiter.api.Test;
 
+/**
+ * Tests {@link SevenZArchiveEntry}.
+ */
 public class SevenZArchiveEntryTest {
-
-    @Test(expected=UnsupportedOperationException.class)
-    public void shouldThrowIfNoLastModifiedDateIsSet() {
-        new SevenZArchiveEntry().getLastModifiedDate();
-    }
-
-    @Test(expected=UnsupportedOperationException.class)
-    public void shouldThrowIfNoCreationDateIsSet() {
-        new SevenZArchiveEntry().getCreationDate();
-    }
-
-    @Test(expected=UnsupportedOperationException.class)
-    public void shouldThrowIfNoAccessDateIsSet() {
-        new SevenZArchiveEntry().getAccessDate();
-    }
-
-    @Test
-    public void noMethodsIsDifferentFromSomeMethods() {
-        final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
-        final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
-        z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.COPY)));
-        Assert.assertNotEquals(z1, z2);
-        Assert.assertNotEquals(z2, z1);
-    }
-
-    @Test
-    public void oneMethodsIsDifferentFromTwoMethods() {
-        final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
-        final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
-        z1.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.COPY)));
-        z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER),
-                                           new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
-        Assert.assertNotEquals(z1, z2);
-        Assert.assertNotEquals(z2, z1);
-    }
-
-    @Test
-    public void sameMethodsYieldEqualEntries() {
-        final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
-        final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
-        z1.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER),
-                                           new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
-        z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER),
-                                           new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
-        Assert.assertEquals(z1, z2);
-        Assert.assertEquals(z2, z1);
-    }
-
-    @Test
-    public void methodOrderMattersInEquals() {
-        final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
-        final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
-        z1.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2),
-                                           new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER)));
-        z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER),
-                                           new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
-        Assert.assertNotEquals(z1, z2);
-        Assert.assertNotEquals(z2, z1);
-    }
 
     @Test
     public void methodConfigurationMattersInEquals() {
         final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z3 = new SevenZArchiveEntry();
-        z1.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 1)));
-        z2.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 2)));
-        z3.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 2)));
-        Assert.assertNotEquals(z1, z2);
-        Assert.assertNotEquals(z2, z1);
-        Assert.assertEquals(z3, z2);
-        Assert.assertEquals(z2, z3);
+        z1.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 1));
+        z2.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 2));
+        z3.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 2));
+        assertNotEquals(z1, z2);
+        assertNotEquals(z2, z1);
+        assertEquals(z3, z2);
+        assertEquals(z2, z3);
     }
+
+    @Test
+    public void methodOrderMattersInEquals() {
+        final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
+        final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
+        z1.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.LZMA2), new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER));
+        z2.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER), new SevenZMethodConfiguration(SevenZMethod.LZMA2));
+        assertNotEquals(z1, z2);
+        assertNotEquals(z2, z1);
+    }
+
+    @Test
+    public void noMethodsIsDifferentFromSomeMethods() {
+        final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
+        final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
+        z2.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.COPY));
+        assertNotEquals(z1, z2);
+        assertNotEquals(z2, z1);
+    }
+
+    @Test
+    public void oneMethodsIsDifferentFromTwoMethods() {
+        final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
+        final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
+        z1.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.COPY));
+        z2.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER), new SevenZMethodConfiguration(SevenZMethod.LZMA2));
+        assertNotEquals(z1, z2);
+        assertNotEquals(z2, z1);
+    }
+
+    @Test
+    public void sameMethodsYieldEqualEntries() {
+        final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
+        final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
+        z1.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER), new SevenZMethodConfiguration(SevenZMethod.LZMA2));
+        z2.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER), new SevenZMethodConfiguration(SevenZMethod.LZMA2));
+        assertEquals(z1, z2);
+        assertEquals(z2, z1);
+    }
+
+    @Test
+    public void shouldThrowIfAccessDateIsSetToNull() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            final SevenZArchiveEntry entry = new SevenZArchiveEntry();
+            entry.setAccessDate(null);
+            entry.getAccessDate();
+        });
+    }
+
+    @Test
+    public void shouldThrowIfCreationDateIsSetToNull() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            final SevenZArchiveEntry entry = new SevenZArchiveEntry();
+            entry.setCreationDate(null);
+            entry.getCreationDate();
+        });
+    }
+
+    @Test
+    public void shouldThrowIfLastModifiedDateIsSetToNull() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            final SevenZArchiveEntry entry = new SevenZArchiveEntry();
+            entry.setLastModifiedDate(null);
+            entry.getLastModifiedDate();
+        });
+    }
+
+    @Test
+    public void shouldThrowIfNoAccessDateIsSet() {
+        assertThrows(UnsupportedOperationException.class, () -> new SevenZArchiveEntry().getAccessDate());
+    }
+
+    @Test
+    public void shouldThrowIfNoCreationDateIsSet() {
+        assertThrows(UnsupportedOperationException.class, () -> new SevenZArchiveEntry().getCreationDate());
+    }
+
+    @Test
+    public void shouldThrowIfNoLastModifiedDateIsSet() {
+        assertThrows(UnsupportedOperationException.class, () -> new SevenZArchiveEntry().getLastModifiedDate());
+    }
+
 
 }

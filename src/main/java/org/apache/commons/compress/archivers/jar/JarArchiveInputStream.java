@@ -33,6 +33,20 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 public class JarArchiveInputStream extends ZipArchiveInputStream {
 
     /**
+     * Checks if the signature matches what is expected for a jar file
+     * (in this case it is the same as for a ZIP file).
+     *
+     * @param signature
+     *            the bytes to check
+     * @param length
+     *            the number of bytes to check
+     * @return true, if this stream is a jar archive stream, false otherwise
+     */
+    public static boolean matches(final byte[] signature, final int length ) {
+        return ZipArchiveInputStream.matches(signature, length);
+    }
+
+    /**
      * Creates an instance from the input stream using the default encoding.
      *
      * @param inputStream the input stream to wrap
@@ -52,27 +66,13 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
         super(inputStream, encoding);
     }
 
-    public JarArchiveEntry getNextJarEntry() throws IOException {
-        final ZipArchiveEntry entry = getNextZipEntry();
-        return entry == null ? null : new JarArchiveEntry(entry);
-    }
-
     @Override
     public ArchiveEntry getNextEntry() throws IOException {
         return getNextJarEntry();
     }
 
-    /**
-     * Checks if the signature matches what is expected for a jar file
-     * (in this case it is the same as for a zip file).
-     *
-     * @param signature
-     *            the bytes to check
-     * @param length
-     *            the number of bytes to check
-     * @return true, if this stream is a jar archive stream, false otherwise
-     */
-    public static boolean matches(final byte[] signature, final int length ) {
-        return ZipArchiveInputStream.matches(signature, length);
+    public JarArchiveEntry getNextJarEntry() throws IOException {
+        final ZipArchiveEntry entry = getNextZipEntry();
+        return entry == null ? null : new JarArchiveEntry(entry);
     }
 }

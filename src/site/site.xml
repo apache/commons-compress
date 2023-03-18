@@ -33,30 +33,12 @@
       <item name="Conventions"    href="/conventions.html"/>
       <item name="Issue Tracking" href="/issue-tracking.html"/>
       <item name="Download"    href="/download_compress.cgi"/>
-      <item name="Security Reports"    href="/security-reports.html"/>
+      <item name="Security"    href="/security.html"/>
       <item name="Wiki" href="https://wiki.apache.org/commons/Compress"/>
     </menu>
     <menu name="API Docs">
-      <item name="Latest release" href="javadocs/api-release/index.html"/>
-      <item name="1.21" href="javadocs/api-1.21/index.html"/>
-      <item name="1.20" href="javadocs/api-1.20/index.html"/>
-      <item name="1.19" href="javadocs/api-1.19/index.html"/>
-      <item name="1.18" href="javadocs/api-1.18/index.html"/>
-      <item name="1.17" href="javadocs/api-1.17/index.html"/>
-      <item name="1.16.1" href="javadocs/api-1.16.1/index.html"/>
-      <item name="1.16" href="javadocs/api-1.16/index.html"/>
-      <item name="1.15" href="javadocs/api-1.15/index.html"/>
-      <item name="1.14" href="javadocs/api-1.14/index.html"/>
-      <item name="1.13" href="javadocs/api-1.13/index.html"/>
-      <item name="1.12" href="javadocs/api-1.12/index.html"/>
-      <item name="1.11" href="javadocs/api-1.11/index.html"/>
-      <item name="1.10" href="javadocs/api-1.10/index.html"/>
-      <item name="1.9" href="javadocs/api-1.9/index.html"/>
-      <item name="1.8.1" href="javadocs/api-1.8.1/index.html"/>
-      <item name="1.8" href="javadocs/api-1.8/index.html"/>
-      <item name="1.7" href="javadocs/api-1.7/index.html"/>
-      <item name="1.6" href="javadocs/api-1.6/index.html"/>
-      <item name="GIT latest" href="apidocs/index.html"/>
+      <item name="Javadoc" href="apidocs/index.html"/>
+      <item name="Javadoc Archive" href="https://javadoc.io/doc/org.apache.commons/commons-compress/"/>
     </menu>
   </body>
   

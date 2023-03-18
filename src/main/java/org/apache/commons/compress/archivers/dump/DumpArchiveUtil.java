@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.dump;
 
 import java.io.IOException;
 import java.util.Arrays;
+
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.utils.ByteUtils;
 
@@ -28,16 +29,10 @@ import org.apache.commons.compress.utils.ByteUtils;
  */
 class DumpArchiveUtil {
     /**
-     * Private constructor to prevent instantiation.
-     */
-    private DumpArchiveUtil() {
-    }
-
-    /**
      * Calculate checksum for buffer.
      *
      * @param buffer buffer containing tape segment header
-     * @returns checksum
+     * @return checksum
      */
     public static int calculateChecksum(final byte[] buffer) {
         int calc = 0;
@@ -51,9 +46,61 @@ class DumpArchiveUtil {
     }
 
     /**
-     * Verify that the buffer contains a tape segment header.
+     * Read 2-byte integer from buffer.
      *
      * @param buffer
+     * @param offset
+     * @return the 2-byte entry as an int
+     */
+    public static final int convert16(final byte[] buffer, final int offset) {
+        return (int) ByteUtils.fromLittleEndian(buffer, offset, 2);
+    }
+
+    /**
+     * Read 4-byte integer from buffer.
+     *
+     * @param buffer
+     * @param offset
+     * @return the 4-byte entry as an int
+     */
+    public static final int convert32(final byte[] buffer, final int offset) {
+        return (int) ByteUtils.fromLittleEndian(buffer, offset, 4);
+    }
+
+    /**
+     * Read 8-byte integer from buffer.
+     *
+     * @param buffer
+     * @param offset
+     * @return the 8-byte entry as a long
+     */
+    public static final long convert64(final byte[] buffer, final int offset) {
+        return ByteUtils.fromLittleEndian(buffer, offset, 8);
+    }
+
+    /**
+     * Decodes a byte array to a string.
+     */
+    static String decode(final ZipEncoding encoding, final byte[] b, final int offset, final int len)
+        throws IOException {
+        return encoding.decode(Arrays.copyOfRange(b, offset, offset + len));
+    }
+
+    /**
+     * Gets the ino associated with this buffer.
+     *
+     * @param buffer
+     * @return the ino associated with this buffer.
+     */
+    public static final int getIno(final byte[] buffer) {
+        return convert32(buffer, 20);
+    }
+
+    /**
+     * Verifies that the buffer contains a tape segment header.
+     *
+     * @param buffer
+     * @return Whether the buffer contains a tape segment header.
      */
     public static final boolean verify(final byte[] buffer) {
         // verify magic. for now only accept NFS_MAGIC.
@@ -70,52 +117,8 @@ class DumpArchiveUtil {
     }
 
     /**
-     * Get the ino associated with this buffer.
-     *
-     * @param buffer
+     * Private constructor to prevent instantiation.
      */
-    public static final int getIno(final byte[] buffer) {
-        return convert32(buffer, 20);
-    }
-
-    /**
-     * Read 8-byte integer from buffer.
-     *
-     * @param buffer
-     * @param offset
-     * @return the 8-byte entry as a long
-     */
-    public static final long convert64(final byte[] buffer, final int offset) {
-        return ByteUtils.fromLittleEndian(buffer, offset, 8);
-    }
-
-    /**
-     * Read 4-byte integer from buffer.
-     *
-     * @param buffer
-     * @param offset
-     * @return the 4-byte entry as an int
-     */
-    public static final int convert32(final byte[] buffer, final int offset) {
-        return (int) ByteUtils.fromLittleEndian(buffer, offset, 4);
-    }
-
-    /**
-     * Read 2-byte integer from buffer.
-     *
-     * @param buffer
-     * @param offset
-     * @return the 2-byte entry as an int
-     */
-    public static final int convert16(final byte[] buffer, final int offset) {
-        return (int) ByteUtils.fromLittleEndian(buffer, offset, 2);
-    }
-
-    /**
-     * Decodes a byte array to a string.
-     */
-    static String decode(final ZipEncoding encoding, final byte[] b, final int offset, final int len)
-        throws IOException {
-        return encoding.decode(Arrays.copyOfRange(b, offset, offset + len));
+    private DumpArchiveUtil() {
     }
 }

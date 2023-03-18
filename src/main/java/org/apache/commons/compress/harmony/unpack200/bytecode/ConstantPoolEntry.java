@@ -61,7 +61,17 @@ public abstract class ConstantPoolEntry extends ClassFileEntry {
     }
 
     @Override
+    public void doWrite(final DataOutputStream dos) throws IOException {
+        dos.writeByte(tag);
+        writeBody(dos);
+    }
+
+    @Override
     public abstract boolean equals(Object obj);
+
+    public int getGlobalIndex() {
+        return globalIndex;
+    }
 
     public byte getTag() {
         return tag;
@@ -70,15 +80,5 @@ public abstract class ConstantPoolEntry extends ClassFileEntry {
     @Override
     public abstract int hashCode();
 
-    @Override
-    public void doWrite(final DataOutputStream dos) throws IOException {
-        dos.writeByte(tag);
-        writeBody(dos);
-    }
-
     protected abstract void writeBody(DataOutputStream dos) throws IOException;
-
-    public int getGlobalIndex() {
-        return globalIndex;
-    }
 }

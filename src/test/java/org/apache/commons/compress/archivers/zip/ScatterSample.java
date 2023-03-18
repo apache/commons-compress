@@ -17,11 +17,11 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.parallel.InputStreamSupplier;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+
+import org.apache.commons.compress.parallel.InputStreamSupplier;
 
 public class ScatterSample {
 

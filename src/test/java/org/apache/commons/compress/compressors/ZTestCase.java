@@ -18,21 +18,38 @@
  */
 package org.apache.commons.compress.compressors;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.z.ZCompressorInputStream;
-import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public final class ZTestCase extends AbstractTestCase {
+
+    @Test
+    public void testMatches() {
+        assertFalse(ZCompressorInputStream.matches(new byte[] { 1, 2, 3, 4 }, 4));
+        assertFalse(ZCompressorInputStream.matches(new byte[] { 0x1f, 2, 3, 4 }, 4));
+        assertFalse(ZCompressorInputStream.matches(new byte[] { 1, (byte) 0x9d, 3, 4 }, 4));
+        assertFalse(ZCompressorInputStream.matches(new byte[] { 0x1f, (byte) 0x9d, 3, 4 }, 3));
+        assertTrue(ZCompressorInputStream.matches(new byte[] { 0x1f, (byte) 0x9d, 3, 4 }, 4));
+    }
+
+    private void testUnarchive(final StreamWrapper<CompressorInputStream> wrapper) throws Exception {
+        final File input = getFile("bla.tar.Z");
+        final File output = new File(dir, "bla.tar");
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            try (InputStream in = wrapper.wrap(is)) {
+                Files.copy(in, output.toPath());
+            }
+        }
+    }
 
     @Test
     public void testZUnarchive() throws Exception {
@@ -40,38 +57,13 @@ public final class ZTestCase extends AbstractTestCase {
     }
 
     @Test
-    public void testZUnarchiveViaFactory() throws Exception {
-        testUnarchive(is -> new CompressorStreamFactory()
-            .createCompressorInputStream(CompressorStreamFactory.Z, is));
-    }
-
-    @Test
     public void testZUnarchiveViaAutoDetection() throws Exception {
-        testUnarchive(is -> new CompressorStreamFactory()
-            .createCompressorInputStream(new BufferedInputStream(is)));
+        testUnarchive(is -> new CompressorStreamFactory().createCompressorInputStream(new BufferedInputStream(is)));
     }
 
     @Test
-    public void testMatches() throws Exception {
-        assertFalse(ZCompressorInputStream.matches(new byte[] { 1, 2, 3, 4 }, 4));
-        assertFalse(ZCompressorInputStream.matches(new byte[] { 0x1f, 2, 3, 4 }, 4));
-        assertFalse(ZCompressorInputStream.matches(new byte[] { 1, (byte)0x9d, 3, 4 },
-                                                   4));
-        assertFalse(ZCompressorInputStream.matches(new byte[] { 0x1f, (byte) 0x9d, 3, 4 },
-                                                   3));
-        assertTrue(ZCompressorInputStream.matches(new byte[] { 0x1f, (byte) 0x9d, 3, 4 },
-                                                  4));
-    }
-
-    private void testUnarchive(final StreamWrapper<CompressorInputStream> wrapper) throws Exception {
-        final File input = getFile("bla.tar.Z");
-        final File output = new File(dir, "bla.tar");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            try (InputStream in = wrapper.wrap(is);
-                    OutputStream out = Files.newOutputStream(output.toPath())) {
-                IOUtils.copy(in, out);
-            }
-        }
+    public void testZUnarchiveViaFactory() throws Exception {
+        testUnarchive(is -> new CompressorStreamFactory().createCompressorInputStream(CompressorStreamFactory.Z, is));
     }
 
 }

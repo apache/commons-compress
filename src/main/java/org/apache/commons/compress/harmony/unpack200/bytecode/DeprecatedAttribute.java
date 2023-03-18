@@ -47,21 +47,21 @@ public class DeprecatedAttribute extends Attribute {
     /*
      * (non-Javadoc)
      *
-     * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#writeBody(java.io.DataOutputStream)
-     */
-    @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        // No body
-    }
-
-    /*
-     * (non-Javadoc)
-     *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#toString()
      */
     @Override
     public String toString() {
         return "Deprecated Attribute";
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#writeBody(java.io.DataOutputStream)
+     */
+    @Override
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        // No body
     }
 
 }

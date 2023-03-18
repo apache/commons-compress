@@ -110,7 +110,7 @@ public class AttributeLayout implements IMatcher {
 
     /**
      * Construct a default AttributeLayout (equivalent to
-     * <code>new AttributeLayout(name, context, layout, index, true);</code>)
+     * {@code new AttributeLayout(name, context, layout, index, true);})
      *
      * @param name TODO
      * @param context TODO
@@ -127,7 +127,6 @@ public class AttributeLayout implements IMatcher {
 
     public AttributeLayout(final String name, final int context, final String layout, final int index,
         final boolean isDefault) throws Pack200Exception {
-        super();
         this.index = index;
         this.context = context;
         if (index >= 0) {
@@ -167,8 +166,20 @@ public class AttributeLayout implements IMatcher {
         return Codec.UNSIGNED5;
     }
 
+    public int getContext() {
+        return context;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
     public String getLayout() {
         return layout;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public ClassFileEntry getValue(final long value, final SegmentConstantPool pool) throws Pack200Exception {
@@ -184,8 +195,7 @@ public class AttributeLayout implements IMatcher {
             return getValue(layout, value, pool);
         }
         if (type.equals("Ljava/lang/String;")) { //$NON-NLS-1$
-            final ClassFileEntry value2 = getValue("KS", value, pool); //$NON-NLS-1$
-            return value2;
+            return getValue("KS", value, pool);
         }
         return getValue("K" + type + layout.substring(2), value, //$NON-NLS-1$
             pool);
@@ -206,6 +216,10 @@ public class AttributeLayout implements IMatcher {
         return r;
     }
 
+    public boolean isDefaultLayout() {
+        return isDefault;
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -216,23 +230,6 @@ public class AttributeLayout implements IMatcher {
         return (value & mask) != 0;
     }
 
-    @Override
-    public String toString() {
-        return contextNames[context] + ": " + name;
-    }
-
-    public int getContext() {
-        return context;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public int numBackwardsCallables() {
         if (layout == "*") {
             return 1;
@@ -240,12 +237,13 @@ public class AttributeLayout implements IMatcher {
         return backwardsCallCount;
     }
 
-    public boolean isDefaultLayout() {
-        return isDefault;
-    }
-
     public void setBackwardsCallCount(final int backwardsCallCount) {
         this.backwardsCallCount = backwardsCallCount;
+    }
+
+    @Override
+    public String toString() {
+        return contextNames[context] + ": " + name;
     }
 
 }

@@ -52,6 +52,58 @@ import org.apache.commons.compress.utils.ByteUtils;
  * @NotThreadSafe
  */
 public class SnappyCompressorOutputStream extends CompressorOutputStream {
+    // literal length is stored as (len - 1) either inside the tag
+    // (six bits minus four flags) or in 1 to 4 bytes after the tag
+    private static final int MAX_LITERAL_SIZE_WITHOUT_SIZE_BYTES = 60;
+    private static final int MAX_LITERAL_SIZE_WITH_ONE_SIZE_BYTE = 1 << 8;
+    private static final int MAX_LITERAL_SIZE_WITH_TWO_SIZE_BYTES = 1 << 16;
+
+    private static final int MAX_LITERAL_SIZE_WITH_THREE_SIZE_BYTES = 1 << 24;
+
+    private static final int ONE_SIZE_BYTE_MARKER = 60 << 2;
+
+    private static final int TWO_SIZE_BYTE_MARKER = 61 << 2;
+
+    private static final int THREE_SIZE_BYTE_MARKER = 62 << 2;
+
+    private static final int FOUR_SIZE_BYTE_MARKER = 63 << 2;
+
+    // Back-references ("copies") have their offset/size information
+    // in two, three or five bytes.
+    private static final int MIN_MATCH_LENGTH_WITH_ONE_OFFSET_BYTE = 4;
+
+    private static final int MAX_MATCH_LENGTH_WITH_ONE_OFFSET_BYTE = 11;
+
+    private static final int MAX_OFFSET_WITH_ONE_OFFSET_BYTE = 1 << 11 - 1;
+
+    private static final int MAX_OFFSET_WITH_TWO_OFFSET_BYTES = 1 << 16 - 1;
+
+    private static final int ONE_BYTE_COPY_TAG = 1;
+
+    private static final int TWO_BYTE_COPY_TAG = 2;
+    private static final int FOUR_BYTE_COPY_TAG = 3;
+    // technically the format could use shorter matches but with a
+    // length of three the offset would be encoded as at least two
+    // bytes in addition to the tag, so yield no compression at all
+    private static final int MIN_MATCH_LENGTH = 4;
+    // Snappy stores the match length in six bits of the tag
+    private static final int MAX_MATCH_LENGTH = 64;
+
+    /**
+     * Returns a builder correctly configured for the Snappy algorithm using the gven block size.
+     * @param blockSize the block size.
+     * @return a builder correctly configured for the Snappy algorithm using the gven block size
+     */
+    public static Parameters.Builder createParameterBuilder(final int blockSize) {
+        // the max offset and max literal length defined by the format
+        // are 2^32 - 1 and 2^32 respectively - with blockSize being
+        // an integer we will never exceed that
+        return Parameters.builder(blockSize)
+            .withMinBackReferenceLength(MIN_MATCH_LENGTH)
+            .withMaxBackReferenceLength(MAX_MATCH_LENGTH)
+            .withMaxOffset(blockSize)
+            .withMaxLiteralLength(blockSize);
+    }
     private final LZ77Compressor compressor;
     private final OutputStream os;
     private final ByteUtils.ByteConsumer consumer;
@@ -115,17 +167,6 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
     }
 
     @Override
-    public void write(final int b) throws IOException {
-        oneByte[0] = (byte) (b & 0xff);
-        write(oneByte);
-    }
-
-    @Override
-    public void write(final byte[] data, final int off, final int len) throws IOException {
-        compressor.compress(data, off, len);
-    }
-
-    @Override
     public void close() throws IOException {
         try {
             finish();
@@ -146,31 +187,44 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
         }
     }
 
-    private void writeUncompressedSize(long uncompressedSize) throws IOException {
-        boolean more = false;
-        do {
-            int currentByte = (int) (uncompressedSize & 0x7F);
-            more = uncompressedSize > currentByte;
-            if (more) {
-                currentByte |= 0x80;
-            }
-            os.write(currentByte);
-            uncompressedSize >>= 7;
-        } while (more);
+    @Override
+    public void write(final byte[] data, final int off, final int len) throws IOException {
+        compressor.compress(data, off, len);
     }
 
-    // literal length is stored as (len - 1) either inside the tag
-    // (six bits minus four flags) or in 1 to 4 bytes after the tag
-    private static final int MAX_LITERAL_SIZE_WITHOUT_SIZE_BYTES = 60;
-    private static final int MAX_LITERAL_SIZE_WITH_ONE_SIZE_BYTE = 1 << 8;
-    private static final int MAX_LITERAL_SIZE_WITH_TWO_SIZE_BYTES = 1 << 16;
-    private static final int MAX_LITERAL_SIZE_WITH_THREE_SIZE_BYTES = 1 << 24;
+    @Override
+    public void write(final int b) throws IOException {
+        oneByte[0] = (byte) (b & 0xff);
+        write(oneByte);
+    }
+    private void writeBackReference(final LZ77Compressor.BackReference block) throws IOException {
+        final int len = block.getLength();
+        final int offset = block.getOffset();
+        if (len >= MIN_MATCH_LENGTH_WITH_ONE_OFFSET_BYTE && len <= MAX_MATCH_LENGTH_WITH_ONE_OFFSET_BYTE
+            && offset <= MAX_OFFSET_WITH_ONE_OFFSET_BYTE) {
+            writeBackReferenceWithOneOffsetByte(len, offset);
+        } else if (offset < MAX_OFFSET_WITH_TWO_OFFSET_BYTES) {
+            writeBackReferenceWithTwoOffsetBytes(len, offset);
+        } else {
+            writeBackReferenceWithFourOffsetBytes(len, offset);
+        }
+    }
+    private void writeBackReferenceWithFourOffsetBytes(final int len, final int offset) throws IOException {
+        writeBackReferenceWithLittleEndianOffset(FOUR_BYTE_COPY_TAG, 4, len, offset);
+    }
+    private void writeBackReferenceWithLittleEndianOffset(final int tag, final int offsetBytes, final int len, final int offset)
+        throws IOException {
+        os.write(tag | ((len - 1) << 2));
+        writeLittleEndian(offsetBytes, offset);
+    }
 
-    private static final int ONE_SIZE_BYTE_MARKER = 60 << 2;
-    private static final int TWO_SIZE_BYTE_MARKER = 61 << 2;
-    private static final int THREE_SIZE_BYTE_MARKER = 62 << 2;
-    private static final int FOUR_SIZE_BYTE_MARKER = 63 << 2;
-
+    private void writeBackReferenceWithOneOffsetByte(final int len, final int offset) throws IOException {
+        os.write(ONE_BYTE_COPY_TAG | ((len - 4) << 2) | ((offset & 0x700) >> 3));
+        os.write(offset & 0xff);
+    }
+    private void writeBackReferenceWithTwoOffsetBytes(final int len, final int offset) throws IOException {
+        writeBackReferenceWithLittleEndianOffset(TWO_BYTE_COPY_TAG, 2, len, offset);
+    }
     private void writeLiteralBlock(final LZ77Compressor.LiteralBlock block) throws IOException {
         final int len = block.getLength();
         if (len <= MAX_LITERAL_SIZE_WITHOUT_SIZE_BYTES) {
@@ -186,6 +240,10 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
         }
     }
 
+    private void writeLiteralBlockFourSizeBytes(final LZ77Compressor.LiteralBlock block, final int len) throws IOException {
+        writeLiteralBlockWithSize(FOUR_SIZE_BYTE_MARKER, 4, len, block);
+    }
+
     private void writeLiteralBlockNoSizeBytes(final LZ77Compressor.LiteralBlock block, final int len) throws IOException {
         writeLiteralBlockWithSize(len - 1 << 2, 0, len, block);
     }
@@ -194,16 +252,12 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
         writeLiteralBlockWithSize(ONE_SIZE_BYTE_MARKER, 1, len, block);
     }
 
-    private void writeLiteralBlockTwoSizeBytes(final LZ77Compressor.LiteralBlock block, final int len) throws IOException {
-        writeLiteralBlockWithSize(TWO_SIZE_BYTE_MARKER, 2, len, block);
-    }
-
     private void writeLiteralBlockThreeSizeBytes(final LZ77Compressor.LiteralBlock block, final int len) throws IOException {
         writeLiteralBlockWithSize(THREE_SIZE_BYTE_MARKER, 3, len, block);
     }
 
-    private void writeLiteralBlockFourSizeBytes(final LZ77Compressor.LiteralBlock block, final int len) throws IOException {
-        writeLiteralBlockWithSize(FOUR_SIZE_BYTE_MARKER, 4, len, block);
+    private void writeLiteralBlockTwoSizeBytes(final LZ77Compressor.LiteralBlock block, final int len) throws IOException {
+        writeLiteralBlockWithSize(TWO_SIZE_BYTE_MARKER, 2, len, block);
     }
 
     private void writeLiteralBlockWithSize(final int tagByte, final int sizeBytes, final int len, final LZ77Compressor.LiteralBlock block)
@@ -212,74 +266,20 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
         writeLittleEndian(sizeBytes, len - 1);
         os.write(block.getData(), block.getOffset(), len);
     }
-
     private void writeLittleEndian(final int numBytes, final int num) throws IOException {
         ByteUtils.toLittleEndian(consumer, num, numBytes);
     }
 
-    // Back-references ("copies") have their offset/size information
-    // in two, three or five bytes.
-    private static final int MIN_MATCH_LENGTH_WITH_ONE_OFFSET_BYTE = 4;
-    private static final int MAX_MATCH_LENGTH_WITH_ONE_OFFSET_BYTE = 11;
-    private static final int MAX_OFFSET_WITH_ONE_OFFSET_BYTE = 1 << 11 - 1;
-    private static final int MAX_OFFSET_WITH_TWO_OFFSET_BYTES = 1 << 16 - 1;
-
-    private static final int ONE_BYTE_COPY_TAG = 1;
-    private static final int TWO_BYTE_COPY_TAG = 2;
-    private static final int FOUR_BYTE_COPY_TAG = 3;
-
-    private void writeBackReference(final LZ77Compressor.BackReference block) throws IOException {
-        final int len = block.getLength();
-        final int offset = block.getOffset();
-        if (len >= MIN_MATCH_LENGTH_WITH_ONE_OFFSET_BYTE && len <= MAX_MATCH_LENGTH_WITH_ONE_OFFSET_BYTE
-            && offset <= MAX_OFFSET_WITH_ONE_OFFSET_BYTE) {
-            writeBackReferenceWithOneOffsetByte(len, offset);
-        } else if (offset < MAX_OFFSET_WITH_TWO_OFFSET_BYTES) {
-            writeBackReferenceWithTwoOffsetBytes(len, offset);
-        } else {
-            writeBackReferenceWithFourOffsetBytes(len, offset);
-        }
-    }
-
-    private void writeBackReferenceWithOneOffsetByte(final int len, final int offset) throws IOException {
-        os.write(ONE_BYTE_COPY_TAG | ((len - 4) << 2) | ((offset & 0x700) >> 3));
-        os.write(offset & 0xff);
-    }
-
-    private void writeBackReferenceWithTwoOffsetBytes(final int len, final int offset) throws IOException {
-        writeBackReferenceWithLittleEndianOffset(TWO_BYTE_COPY_TAG, 2, len, offset);
-    }
-
-    private void writeBackReferenceWithFourOffsetBytes(final int len, final int offset) throws IOException {
-        writeBackReferenceWithLittleEndianOffset(FOUR_BYTE_COPY_TAG, 4, len, offset);
-    }
-
-    private void writeBackReferenceWithLittleEndianOffset(final int tag, final int offsetBytes, final int len, final int offset)
-        throws IOException {
-        os.write(tag | ((len - 1) << 2));
-        writeLittleEndian(offsetBytes, offset);
-    }
-
-    // technically the format could use shorter matches but with a
-    // length of three the offset would be encoded as at least two
-    // bytes in addition to the tag, so yield no compression at all
-    private static final int MIN_MATCH_LENGTH = 4;
-    // Snappy stores the match length in six bits of the tag
-    private static final int MAX_MATCH_LENGTH = 64;
-
-    /**
-     * Returns a builder correctly configured for the Snappy algorithm using the gven block size.
-     * @param blockSize the block size.
-     * @return a builder correctly configured for the Snappy algorithm using the gven block size
-     */
-    public static Parameters.Builder createParameterBuilder(final int blockSize) {
-        // the max offset and max literal length defined by the format
-        // are 2^32 - 1 and 2^32 respectively - with blockSize being
-        // an integer we will never exceed that
-        return Parameters.builder(blockSize)
-            .withMinBackReferenceLength(MIN_MATCH_LENGTH)
-            .withMaxBackReferenceLength(MAX_MATCH_LENGTH)
-            .withMaxOffset(blockSize)
-            .withMaxLiteralLength(blockSize);
+    private void writeUncompressedSize(long uncompressedSize) throws IOException {
+        boolean more = false;
+        do {
+            int currentByte = (int) (uncompressedSize & 0x7F);
+            more = uncompressedSize > currentByte;
+            if (more) {
+                currentByte |= 0x80;
+            }
+            os.write(currentByte);
+            uncompressedSize >>= 7;
+        } while (more);
     }
 }

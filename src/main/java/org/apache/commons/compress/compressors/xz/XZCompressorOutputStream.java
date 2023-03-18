@@ -20,10 +20,10 @@ package org.apache.commons.compress.compressors.xz;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import org.tukaani.xz.LZMA2Options;
-import org.tukaani.xz.XZOutputStream;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
+import org.tukaani.xz.LZMA2Options;
+import org.tukaani.xz.XZOutputStream;
 
 /**
  * XZ compressor.
@@ -34,7 +34,7 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
 
     /**
      * Creates a new XZ compressor using the default LZMA2 options.
-     * This is equivalent to <code>XZCompressorOutputStream(outputStream, 6)</code>.
+     * This is equivalent to {@code XZCompressorOutputStream(outputStream, 6)}.
      * @param outputStream the stream to wrap
      * @throws IOException on error
      */
@@ -65,24 +65,8 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
     }
 
     @Override
-    public void write(final int b) throws IOException {
-        out.write(b);
-    }
-
-    @Override
-    public void write(final byte[] buf, final int off, final int len) throws IOException {
-        out.write(buf, off, len);
-    }
-
-    /**
-     * Flushes the encoder and calls <code>outputStream.flush()</code>.
-     * All buffered pending data will then be decompressible from
-     * the output stream. Calling this function very often may increase
-     * the compressed file size a lot.
-     */
-    @Override
-    public void flush() throws IOException {
-        out.flush();
+    public void close() throws IOException {
+        out.close();
     }
 
     /**
@@ -94,8 +78,24 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
         out.finish();
     }
 
+    /**
+     * Flushes the encoder and calls {@code outputStream.flush()}.
+     * All buffered pending data will then be decompressible from
+     * the output stream. Calling this function very often may increase
+     * the compressed file size a lot.
+     */
     @Override
-    public void close() throws IOException {
-        out.close();
+    public void flush() throws IOException {
+        out.flush();
+    }
+
+    @Override
+    public void write(final byte[] buf, final int off, final int len) throws IOException {
+        out.write(buf, off, len);
+    }
+
+    @Override
+    public void write(final int b) throws IOException {
+        out.write(b);
     }
 }

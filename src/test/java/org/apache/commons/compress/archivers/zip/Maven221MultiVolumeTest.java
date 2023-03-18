@@ -18,20 +18,18 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 
+import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
- * JUnit testcase for a multi-volume zip file.
+ * JUnit test for a multi-volume ZIP file.
  *
  * Some tools (like 7-zip) allow users to split a large archives into 'volumes'
  * with a given size to fit them into multiple cds, usb drives, or emails with
@@ -44,9 +42,10 @@ import org.junit.Test;
  * yields an exception.
  *
  */
-public class Maven221MultiVolumeTest {
+public class Maven221MultiVolumeTest extends AbstractTestCase {
 
-    private static final String [] ENTRIES = new String [] {
+    private static final String[] ENTRIES = {
+        // @formatter:off
         "apache-maven-2.2.1/",
         "apache-maven-2.2.1/LICENSE.txt",
         "apache-maven-2.2.1/NOTICE.txt",
@@ -62,15 +61,21 @@ public class Maven221MultiVolumeTest {
         "apache-maven-2.2.1/conf/",
         "apache-maven-2.2.1/conf/settings.xml",
         "apache-maven-2.2.1/lib/"
+        // @formatter:on
     };
 
     private static final String LAST_ENTRY_NAME =
         "apache-maven-2.2.1/lib/maven-2.2.1-uber.jar";
 
     @Test
+    public void testRead7ZipMultiVolumeArchiveForFile() {
+        assertThrows(IOException.class, () -> new ZipFile(getFile("apache-maven-2.2.1.zip.001")));
+    }
+
+    @Test
     public void testRead7ZipMultiVolumeArchiveForStream() throws IOException {
 
-        try (final InputStream archive = Files.newInputStream(getFile("apache-maven-2.2.1.zip.001").toPath());
+        try (final InputStream archive = newInputStream("apache-maven-2.2.1.zip.001");
              ZipArchiveInputStream zi = new ZipArchiveInputStream(archive, null, false)) {
 
             // these are the entries that are supposed to be processed
@@ -88,38 +93,21 @@ public class Maven221MultiVolumeTest {
             // subsequent reads thus a client application might enter
             // an infinite loop after the fix, we should get an
             // exception
-            try {
+            final IOException e1 = assertThrows(IOException.class, () -> {
                 while (zi.read(buffer) > 0) {
                     // empty
                 }
-                fail("shouldn't be able to read from truncated entry");
-            } catch (final IOException e) {
-                assertEquals("Truncated ZIP file", e.getMessage());
-            }
+            }, "shouldn't be able to read from truncated entry");
+            assertEquals("Truncated ZIP file", e1.getMessage());
 
-            try {
-                zi.read(buffer);
-                fail("shouldn't be able to read from truncated entry after exception");
-            } catch (final IOException e) {
-                assertEquals("Truncated ZIP file", e.getMessage());
-            }
+            final IOException e2 = assertThrows(IOException.class, () -> zi.read(buffer),
+                    "shouldn't be able to read from truncated entry after exception");
+            assertEquals("Truncated ZIP file", e2.getMessage());
 
             // and now we get another entry, which should also yield
             // an exception
-            try {
-                zi.getNextEntry();
-                fail("shouldn't be able to read another entry from truncated" + " file");
-            } catch (final IOException e) {
-                // this is to be expected
-            }
-        }
-    }
-
-    @Test(expected=IOException.class)
-    public void testRead7ZipMultiVolumeArchiveForFile() throws IOException {
-        final File file = getFile("apache-maven-2.2.1.zip.001");
-        try (final ZipFile zf = new ZipFile(file)) {
-            // empty
+            assertThrows(IOException.class, zi::getNextEntry,
+                    "shouldn't be able to read another entry from truncated file");
         }
     }
 }

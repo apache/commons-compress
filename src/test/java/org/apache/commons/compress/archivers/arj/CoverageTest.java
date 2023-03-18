@@ -18,17 +18,17 @@
  */
 package org.apache.commons.compress.archivers.arj;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.apache.commons.compress.archivers.arj.ArjArchiveEntry.HostOs;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CoverageTest {
 
     @Test
-    public void testHostOsInstance() {
-        final HostOs hostOs = new HostOs();
-        assertNotNull(hostOs);
+    public void testCallLFHToString() {
+        final LocalFileHeader lfh = new LocalFileHeader();
+        assertNotNull(lfh.toString());
     }
     @Test
     public void testHeaderInstances() {
@@ -38,9 +38,9 @@ public class CoverageTest {
         assertNotNull(new MainHeader.Flags());
     }
     @Test
-    public void testCallLFHToString() {
-        final LocalFileHeader lfh = new LocalFileHeader();
-        assertNotNull(lfh.toString());
+    public void testHostOsInstance() {
+        final HostOs hostOs = new HostOs();
+        assertNotNull(hostOs);
     }
 
 }

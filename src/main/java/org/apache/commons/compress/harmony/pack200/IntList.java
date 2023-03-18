@@ -19,7 +19,7 @@ package org.apache.commons.compress.harmony.pack200;
 import java.util.Arrays;
 
 /**
- * IntList is based on <code>java.util.ArrayList</code>, but is written specifically for ints in order to reduce boxing
+ * IntList is based on {@code java.util.ArrayList}, but is written specifically for ints in order to reduce boxing
  * and unboxing to Integers, reduce the memory required and improve performance of pack200.
  */
 public class IntList {
@@ -92,6 +92,13 @@ public class IntList {
         }
 
         modCount++;
+    }
+
+    public void addAll(final IntList list) {
+        growAtEnd(list.size());
+        for (int i = 0; i < list.size(); i++) {
+            add(list.get(i));
+        }
     }
 
     public void clear() {
@@ -236,13 +243,6 @@ public class IntList {
         final int[] result = new int[size];
         System.arraycopy(array, firstIndex, result, 0, size);
         return result;
-    }
-
-    public void addAll(final IntList list) {
-        growAtEnd(list.size());
-        for (int i = 0; i < list.size(); i++) {
-            add(list.get(i));
-        }
     }
 
 }

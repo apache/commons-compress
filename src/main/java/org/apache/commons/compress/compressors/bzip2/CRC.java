@@ -91,12 +91,10 @@ class CRC {
             0xbcb4666d, 0xb8757bda, 0xb5365d03, 0xb1f740b4
         };
 
+        private int globalCrc;
+
         CRC() {
             initializeCRC();
-        }
-
-        void initializeCRC() {
-            globalCrc = 0xffffffff;
         }
 
         int getFinalCRC() {
@@ -105,6 +103,10 @@ class CRC {
 
         int getGlobalCRC() {
             return globalCrc;
+        }
+
+        void initializeCRC() {
+            globalCrc = 0xffffffff;
         }
 
         void setGlobalCRC(final int newCrc) {
@@ -129,6 +131,4 @@ class CRC {
             }
             this.globalCrc = globalCrcShadow;
         }
-
-        private int globalCrc;
 }

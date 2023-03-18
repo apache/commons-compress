@@ -36,6 +36,12 @@ import java.io.InputStream;
 public interface ScatterGatherBackingStore extends Closeable {
 
     /**
+     * Closes this backing store for further writing.
+     * @throws IOException when something fails
+     */
+    void closeForWriting() throws IOException;
+
+    /**
      * An input stream that contains the scattered payload
      *
      * @return An InputStream, should be closed by the caller of this method.
@@ -52,10 +58,4 @@ public interface ScatterGatherBackingStore extends Closeable {
      * @throws IOException when something fails
      */
     void writeOut(byte[] data, int offset, int length) throws IOException;
-
-    /**
-     * Closes this backing store for further writing.
-     * @throws IOException when something fails
-     */
-    void closeForWriting() throws IOException;
 }

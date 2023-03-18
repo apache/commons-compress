@@ -65,7 +65,11 @@ public class CodecEncoding {
         new BHSDCodec(4, 224, 0, 1), new BHSDCodec(4, 224, 1, 1), new BHSDCodec(4, 240, 0, 1),
         new BHSDCodec(4, 240, 1, 1), new BHSDCodec(4, 248, 0, 1), new BHSDCodec(4, 248, 1, 1)};
 
-    private static Map canonicalCodecsToSpecifiers;
+    private static Map<BHSDCodec, Integer> canonicalCodecsToSpecifiers;
+
+    public static BHSDCodec getCanonicalCodec(final int i) {
+        return canonicalCodec[i];
+    }
 
     /**
      * Returns the codec specified by the given value byte and optional byte header. If the value is &gt;= 116, then
@@ -76,7 +80,7 @@ public class CodecEncoding {
      * @param value the canonical encoding value
      * @param in the input stream to read additional byte headers from
      * @param defaultCodec TODO
-     * @return the corresponding codec, or <code>null</code> if the default should be used
+     * @return the corresponding codec, or {@code null} if the default should be used
      *
      * @throws IOException if there is a problem reading from the input stream (which in reality, is never, since the
      *         band_headers are likely stored in a byte array and accessed via a ByteArrayInputStream. However, an
@@ -173,23 +177,19 @@ public class CodecEncoding {
         return new PopulationCodec(fCodec, tCodec, uCodec);
     }
 
-    public static int getSpecifierForDefaultCodec(final BHSDCodec defaultCodec) {
-        return getSpecifier(defaultCodec, null)[0];
-    }
-
     public static int[] getSpecifier(final Codec codec, final Codec defaultForBand) {
         // lazy initialization
         if (canonicalCodecsToSpecifiers == null) {
-            final HashMap reverseMap = new HashMap(canonicalCodec.length);
+            final HashMap<BHSDCodec, Integer> reverseMap = new HashMap<>(canonicalCodec.length);
             for (int i = 0; i < canonicalCodec.length; i++) {
                 reverseMap.put(canonicalCodec[i], Integer.valueOf(i));
             }
             canonicalCodecsToSpecifiers = reverseMap;
         }
 
-        if (canonicalCodecsToSpecifiers.containsKey(codec)) {
-            return new int[] {((Integer) canonicalCodecsToSpecifiers.get(codec)).intValue()};
-        }
+		if (canonicalCodecsToSpecifiers.containsKey(codec)) {
+			return new int[] { canonicalCodecsToSpecifiers.get(codec).intValue() };
+		}
         if (codec instanceof BHSDCodec) {
             // Cache these?
             final BHSDCodec bhsdCodec = (BHSDCodec) codec;
@@ -235,12 +235,12 @@ public class CodecEncoding {
                 specifier[1] = kx;
                 index++;
             }
-            for (int i = 0; i < aSpecifier.length; i++) {
-                specifier[index] = aSpecifier[i];
+            for (final int element : aSpecifier) {
+                specifier[index] = element;
                 index++;
             }
-            for (int i = 0; i < bSpecifier.length; i++) {
-                specifier[index] = bSpecifier[i];
+            for (final int element : bSpecifier) {
+                specifier[index] = element;
                 index++;
             }
             return specifier;
@@ -255,7 +255,6 @@ public class CodecEncoding {
             int tDefL = 0;
             final int[] favoured = populationCodec.getFavoured();
             if (favoured != null) {
-                final int k = favoured.length;
                 if (tokenCodec == Codec.BYTE1) {
                     tDefL = 1;
                 } else if (tokenCodec instanceof BHSDCodec) {
@@ -279,16 +278,16 @@ public class CodecEncoding {
                 + tokenSpecifier.length];
             specifier[0] = first;
             int index = 1;
-            for (int i = 0; i < favouredSpecifier.length; i++) {
-                specifier[index] = favouredSpecifier[i];
+            for (final int element : favouredSpecifier) {
+                specifier[index] = element;
                 index++;
             }
-            for (int i = 0; i < tokenSpecifier.length; i++) {
-                specifier[index] = tokenSpecifier[i];
+            for (final int element : tokenSpecifier) {
+                specifier[index] = element;
                 index++;
             }
-            for (int i = 0; i < unfavouredSpecifier.length; i++) {
-                specifier[index] = unfavouredSpecifier[i];
+            for (final int element : unfavouredSpecifier) {
+                specifier[index] = element;
                 index++;
             }
             return specifier;
@@ -297,7 +296,7 @@ public class CodecEncoding {
         return null;
     }
 
-    public static BHSDCodec getCanonicalCodec(final int i) {
-        return canonicalCodec[i];
+    public static int getSpecifierForDefaultCodec(final BHSDCodec defaultCodec) {
+        return getSpecifier(defaultCodec, null)[0];
     }
 }

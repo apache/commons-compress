@@ -18,12 +18,12 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.utils.InputStreamStatistics;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
+
+import org.apache.commons.compress.utils.InputStreamStatistics;
 
 /**
  * Helper class to provide statistics
@@ -54,6 +54,16 @@ import java.util.zip.InflaterInputStream;
     }
 
     @Override
+    public long getCompressedCount() {
+        return compressedCount;
+    }
+
+    @Override
+    public long getUncompressedCount() {
+        return uncompressedCount;
+    }
+
+    @Override
     public int read() throws IOException {
         final int b = super.read();
         if (b > -1) {
@@ -69,15 +79,5 @@ import java.util.zip.InflaterInputStream;
             uncompressedCount += bytes;
         }
         return bytes;
-    }
-
-    @Override
-    public long getCompressedCount() {
-        return compressedCount;
-    }
-
-    @Override
-    public long getUncompressedCount() {
-        return uncompressedCount;
     }
 }

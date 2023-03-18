@@ -21,35 +21,42 @@ package org.apache.commons.compress.archivers.ar;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ArArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
-    public void testReadLongNamesGNU() throws Exception {
-        checkLongNameEntry("longfile_gnu.ar");
+    public void cantReadAfterClose() throws Exception {
+        try (InputStream in = newInputStream("bla.ar");
+             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+            archive.close();
+            assertThrows(IllegalStateException.class, () -> archive.read());
+        }
     }
 
     @Test
-    public void testReadLongNamesBSD() throws Exception {
-        checkLongNameEntry("longfile_bsd.ar");
+    public void cantReadWithoutOpeningAnEntry() throws Exception {
+        try (InputStream in = newInputStream("bla.ar");
+             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+            assertThrows(IllegalStateException.class, () -> archive.read());
+        }
     }
 
     private void checkLongNameEntry(final String archive) throws Exception {
-        try (final InputStream fis = Files.newInputStream((getFile(archive).toPath()));
+        try (final InputStream fis = newInputStream(archive);
              final ArArchiveInputStream s = new ArArchiveInputStream(new BufferedInputStream(fis))) {
             ArchiveEntry e = s.getNextEntry();
             assertEquals("this_is_a_long_file_name.txt", e.getName());
@@ -68,20 +75,9 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
-             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
-            IOUtils.toByteArray(archive);
-            assertEquals(-1, archive.read());
-            assertEquals(-1, archive.read());
-        }
-    }
-
-    @Test
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
-        try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
+        try (InputStream in = newInputStream("bla.ar");
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
@@ -92,7 +88,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void simpleInputStream() throws IOException {
-        try (final InputStream fileInputStream = Files.newInputStream(getFile("bla.ar").toPath())) {
+        try (final InputStream fileInputStream = newInputStream("bla.ar")) {
 
             // This default implementation of InputStream.available() always returns zero,
             // and there are many streams in practice where the total length of the stream is not known.
@@ -119,20 +115,24 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected=IllegalStateException.class)
-    public void cantReadWithoutOpeningAnEntry() throws Exception {
-        try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        try (InputStream in = newInputStream("bla.ar");
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            archive.read();
+            final ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read());
+            assertEquals(-1, archive.read());
         }
     }
 
-    @Test(expected=IllegalStateException.class)
-    public void cantReadAfterClose() throws Exception {
-        try (InputStream in = Files.newInputStream(getFile("bla.ar").toPath());
-             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            archive.close();
-            archive.read();
-        }
+    @Test
+    public void testReadLongNamesBSD() throws Exception {
+        checkLongNameEntry("longfile_bsd.ar");
+    }
+
+    @Test
+    public void testReadLongNamesGNU() throws Exception {
+        checkLongNameEntry("longfile_gnu.ar");
     }
 }

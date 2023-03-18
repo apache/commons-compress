@@ -34,20 +34,99 @@ import java.util.List;
  */
 public class SegmentConstantPoolArrayCache {
 
-    protected IdentityHashMap knownArrays = new IdentityHashMap(1000);
+    /**
+     * CachedArray keeps track of the last known size of an array as well as a HashMap that knows the mapping from
+     * element values to the indices of the array which contain that value.
+     */
+    protected class CachedArray {
+        String[] primaryArray;
+        int lastKnownSize;
+        HashMap<String, List<Integer>> primaryTable;
 
-    protected List lastIndexes;
+        public CachedArray(final String[] array) {
+            this.primaryArray = array;
+            this.lastKnownSize = array.length;
+            this.primaryTable = new HashMap<>(lastKnownSize);
+            cacheIndexes();
+        }
+
+        /**
+         * Given a primaryArray, cache its values in a HashMap to provide a backwards mapping from element values to
+         * element indexes. For instance, a primaryArray of: {"Zero", "Foo", "Two", "Foo"} would yield a HashMap of:
+         * "Zero" -&gt; 0 "Foo" -&gt; 1, 3 "Two" -&gt; 2 which is then cached.
+         */
+        protected void cacheIndexes() {
+            for (int index = 0; index < primaryArray.length; index++) {
+                final String key = primaryArray[index];
+                primaryTable.computeIfAbsent(key, k -> new ArrayList<>());
+                primaryTable.get(key).add(Integer.valueOf(index));
+            }
+        }
+
+        /**
+         * Given a particular key, answer a List of index locations in the array which contain that key.
+         *
+         * If no elements are found, answer an empty list.
+         *
+         * @param key String element of the array
+         * @return List of indexes containing that key in the array.
+         */
+        public List<Integer> indexesForKey(final String key) {
+            final List<Integer> list = primaryTable.get(key);
+            return list != null ? list : Collections.emptyList();
+        }
+
+        /**
+         * Answer the last known size of the array cached. If the last known size is not the same as the current size,
+         * the array must have changed.
+         *
+         * @return int last known size of the cached array
+         */
+        public int lastKnownSize() {
+            return lastKnownSize;
+        }
+    }
+
+    protected IdentityHashMap<String[], CachedArray> knownArrays = new IdentityHashMap<>(1000);
+    protected List<Integer> lastIndexes;
     protected String[] lastArray;
+
     protected String lastKey;
 
     /**
+     * Given a String array, answer true if the array is correctly cached. Answer false if the array is not cached, or
+     * if the array cache is outdated.
+     *
+     * @param array of String
+     * @return boolean true if up-to-date cache, otherwise false.
+     */
+    protected boolean arrayIsCached(final String[] array) {
+        final CachedArray cachedArray = knownArrays.get(array);
+        return !(cachedArray == null || cachedArray.lastKnownSize() != array.length);
+    }
+
+    /**
+     * Cache the array passed in as the argument
+     *
+     * @param array String[] to cache
+     */
+    protected void cacheArray(final String[] array) {
+        if (arrayIsCached(array)) {
+            throw new IllegalArgumentException("Trying to cache an array that already exists");
+        }
+        knownArrays.put(array, new CachedArray(array));
+        // Invalidate the cache-within-a-cache
+        lastArray = null;
+    }
+
+    /**
      * Answer the indices for the given key in the given array. If no such key exists in the cached array, answer -1.
-     * 
+     *
      * @param array String[] array to search for the value
      * @param key String value for which to search
      * @return List collection of index positions in the array
      */
-    public List indexesForArrayKey(final String[] array, final String key) {
+    public List<Integer> indexesForArrayKey(final String[] array, final String key) {
         if (!arrayIsCached(array)) {
             cacheArray(array);
         }
@@ -65,98 +144,8 @@ public class SegmentConstantPoolArrayCache {
         // Remember the last thing we found.
         lastArray = array;
         lastKey = key;
-        lastIndexes = ((CachedArray) knownArrays.get(array)).indexesForKey(key);
+        lastIndexes = knownArrays.get(array).indexesForKey(key);
 
         return lastIndexes;
-    }
-
-    /**
-     * Given a String array, answer true if the array is correctly cached. Answer false if the array is not cached, or
-     * if the array cache is outdated.
-     *
-     * @param array of String
-     * @return boolean true if up-to-date cache, otherwise false.
-     */
-    protected boolean arrayIsCached(final String[] array) {
-        if (!knownArrays.containsKey(array)) {
-            return false;
-        }
-        final CachedArray cachedArray = (CachedArray) knownArrays.get(array);
-        if (cachedArray.lastKnownSize() != array.length) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Cache the array passed in as the argument
-     * 
-     * @param array String[] to cache
-     */
-    protected void cacheArray(final String[] array) {
-        if (arrayIsCached(array)) {
-            throw new IllegalArgumentException("Trying to cache an array that already exists");
-        }
-        knownArrays.put(array, new CachedArray(array));
-        // Invalidate the cache-within-a-cache
-        lastArray = null;
-    }
-
-    /**
-     * CachedArray keeps track of the last known size of an array as well as a HashMap that knows the mapping from
-     * element values to the indices of the array which contain that value.
-     */
-    protected class CachedArray {
-        String[] primaryArray;
-        int lastKnownSize;
-        HashMap primaryTable;
-
-        public CachedArray(final String[] array) {
-            super();
-            this.primaryArray = array;
-            this.lastKnownSize = array.length;
-            this.primaryTable = new HashMap(lastKnownSize);
-            cacheIndexes();
-        }
-
-        /**
-         * Answer the last known size of the array cached. If the last known size is not the same as the current size,
-         * the array must have changed.
-         * 
-         * @return int last known size of the cached array
-         */
-        public int lastKnownSize() {
-            return lastKnownSize;
-        }
-
-        /**
-         * Given a particular key, answer a List of index locations in the array which contain that key.
-         *
-         * If no elements are found, answer an empty list.
-         *
-         * @param key String element of the array
-         * @return List of indexes containing that key in the array.
-         */
-        public List indexesForKey(final String key) {
-            if (!primaryTable.containsKey(key)) {
-                return Collections.EMPTY_LIST;
-            }
-            return (List) primaryTable.get(key);
-        }
-
-        /**
-         * Given a primaryArray, cache its values in a HashMap to provide a backwards mapping from element values to
-         * element indexes. For instance, a primaryArray of: {"Zero", "Foo", "Two", "Foo"} would yield a HashMap of:
-         * "Zero" -&gt; 0 "Foo" -&gt; 1, 3 "Two" -&gt; 2 which is then cached.
-         */
-        protected void cacheIndexes() {
-            for (int index = 0; index < primaryArray.length; index++) {
-                final String key = primaryArray[index];
-                if (!primaryTable.containsKey(key)) {
-                    primaryTable.put(key, new ArrayList());
-                }
-                ((ArrayList) primaryTable.get(key)).add(Integer.valueOf(index));
-            }
-        }
     }
 }

@@ -18,19 +18,20 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Source file class file attribute
  */
 public class SourceFileAttribute extends Attribute {
 
-    private final CPUTF8 name;
-    private int nameIndex;
     private static CPUTF8 attributeName;
-
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
+    private final CPUTF8 name;
+
+    private int nameIndex;
 
     public SourceFileAttribute(final CPUTF8 name) {
         super(attributeName);
@@ -49,23 +50,9 @@ public class SourceFileAttribute extends Attribute {
             return false;
         }
         final SourceFileAttribute other = (SourceFileAttribute) obj;
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
+        if (!Objects.equals(name, other.name)) {
             return false;
         }
-        return true;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#isSourceFileAttribute()
-     */
-    @Override
-    public boolean isSourceFileAttribute() {
         return true;
     }
 
@@ -85,6 +72,16 @@ public class SourceFileAttribute extends Attribute {
         int result = super.hashCode();
         result = PRIME * result + ((name == null) ? 0 : name.hashCode());
         return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#isSourceFileAttribute()
+     */
+    @Override
+    public boolean isSourceFileAttribute() {
+        return true;
     }
 
     @Override

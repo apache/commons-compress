@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Abstract superclass for class file attributes
@@ -51,11 +52,7 @@ public abstract class Attribute extends ClassFileEntry {
             return false;
         }
         final Attribute other = (Attribute) obj;
-        if (attributeName == null) {
-            if (other.attributeName != null) {
-                return false;
-            }
-        } else if (!attributeName.equals(other.attributeName)) {
+        if (!Objects.equals(attributeName, other.attributeName)) {
             return false;
         }
         return true;
@@ -92,6 +89,11 @@ public abstract class Attribute extends ClassFileEntry {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(attributeName);
+    }
+
     /**
      * Answer true if the receiver is a source file attribute (which gets special handling when the class is built);
      * otherwise answer false.
@@ -100,14 +102,6 @@ public abstract class Attribute extends ClassFileEntry {
      */
     public boolean isSourceFileAttribute() {
         return false;
-    }
-
-    @Override
-    public int hashCode() {
-        final int PRIME = 31;
-        int result = 1;
-        result = PRIME * result + ((attributeName == null) ? 0 : attributeName.hashCode());
-        return result;
     }
 
     @Override

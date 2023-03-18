@@ -42,12 +42,21 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
     // > easily use small fixed-size buffers.
     private static final int MAX_COMPRESSED_BUFFER_SIZE = 1 << 16;
 
+    static long mask(long x) {
+        // ugly, maybe we should just have used ints and deal with the
+        // overflow
+        x = ((x >> 15) | (x << 17));
+        x += FramedSnappyCompressorInputStream.MASK_OFFSET;
+        x &= 0xffffFFFFL;
+        return x;
+    }
     private final OutputStream out;
     private final Parameters params;
     private final PureJavaCrc32C checksum = new PureJavaCrc32C();
     // used in one-arg write method
     private final byte[] oneByte = new byte[1];
     private final byte[] buffer = new byte[MAX_COMPRESSED_BUFFER_SIZE];
+
     private int currentIndex;
 
     private final ByteUtils.ByteConsumer consumer;
@@ -76,28 +85,6 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
         this.params = params;
         consumer = new ByteUtils.OutputStreamByteConsumer(out);
         out.write(FramedSnappyCompressorInputStream.SZ_SIGNATURE);
-    }
-
-    @Override
-    public void write(final int b) throws IOException {
-        oneByte[0] = (byte) (b & 0xff);
-        write(oneByte);
-    }
-
-    @Override
-    public void write(final byte[] data, int off, int len) throws IOException {
-        if (currentIndex + len > MAX_COMPRESSED_BUFFER_SIZE) {
-            flushBuffer();
-            while (len > MAX_COMPRESSED_BUFFER_SIZE) {
-                System.arraycopy(data, off, buffer, 0, MAX_COMPRESSED_BUFFER_SIZE);
-                off += MAX_COMPRESSED_BUFFER_SIZE;
-                len -= MAX_COMPRESSED_BUFFER_SIZE;
-                currentIndex = MAX_COMPRESSED_BUFFER_SIZE;
-                flushBuffer();
-            }
-        }
-        System.arraycopy(data, off, buffer, currentIndex, len);
-        currentIndex += len;
     }
 
     @Override
@@ -133,8 +120,26 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
         currentIndex = 0;
     }
 
-    private void writeLittleEndian(final int numBytes, final long num) throws IOException {
-        ByteUtils.toLittleEndian(consumer, num, numBytes);
+    @Override
+    public void write(final byte[] data, int off, int len) throws IOException {
+        if (currentIndex + len > MAX_COMPRESSED_BUFFER_SIZE) {
+            flushBuffer();
+            while (len > MAX_COMPRESSED_BUFFER_SIZE) {
+                System.arraycopy(data, off, buffer, 0, MAX_COMPRESSED_BUFFER_SIZE);
+                off += MAX_COMPRESSED_BUFFER_SIZE;
+                len -= MAX_COMPRESSED_BUFFER_SIZE;
+                currentIndex = MAX_COMPRESSED_BUFFER_SIZE;
+                flushBuffer();
+            }
+        }
+        System.arraycopy(data, off, buffer, currentIndex, len);
+        currentIndex += len;
+    }
+
+    @Override
+    public void write(final int b) throws IOException {
+        oneByte[0] = (byte) (b & 0xff);
+        write(oneByte);
     }
 
     private void writeCrc() throws IOException {
@@ -143,12 +148,7 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
         checksum.reset();
     }
 
-    static long mask(long x) {
-        // ugly, maybe we should just have used ints and deal with the
-        // overflow
-        x = ((x >> 15) | (x << 17));
-        x += FramedSnappyCompressorInputStream.MASK_OFFSET;
-        x &= 0xffffFFFFL;
-        return x;
+    private void writeLittleEndian(final int numBytes, final long num) throws IOException {
+        ByteUtils.toLittleEndian(consumer, num, numBytes);
     }
 }

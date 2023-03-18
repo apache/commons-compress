@@ -16,17 +16,22 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.AttributeLayout;
 import org.apache.commons.compress.harmony.unpack200.AttributeLayoutMap;
+import org.junit.jupiter.api.Test;
 
-public class AttributeLayoutMapTest extends TestCase {
+public class AttributeLayoutMapTest {
 
+    @Test
     public void testRepeatable() throws Pack200Exception {
         // Check we can retrieve a default layout
-        AttributeLayoutMap a = new AttributeLayoutMap();
+        final AttributeLayoutMap a = new AttributeLayoutMap();
         AttributeLayout layout = a.getAttributeLayout("SourceFile",
                 AttributeLayout.CONTEXT_CLASS);
         assertNotNull(layout);
@@ -44,7 +49,7 @@ public class AttributeLayoutMapTest extends TestCase {
         assertTrue(layout.matches(-1));
         assertFalse(layout.matches(0));
         // and that changes don't affect subsequent defaults
-        AttributeLayoutMap b = new AttributeLayoutMap();
+        final AttributeLayoutMap b = new AttributeLayoutMap();
         layout = b.getAttributeLayout("SourceFile",
                 AttributeLayout.CONTEXT_CLASS);
         assertNotNull(layout);

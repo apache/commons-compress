@@ -36,22 +36,22 @@ public class MetadataBandGroup extends BandSet {
 
     public IntList param_NB = new IntList(); // TODO: Lazy instantiation?
     public IntList anno_N = new IntList();
-    public List type_RS = new ArrayList();
+    public List<CPSignature> type_RS = new ArrayList<>();
     public IntList pair_N = new IntList();
-    public List name_RU = new ArrayList();
-    public List T = new ArrayList();
-    public List caseI_KI = new ArrayList();
-    public List caseD_KD = new ArrayList();
-    public List caseF_KF = new ArrayList();
-    public List caseJ_KJ = new ArrayList();
-    public List casec_RS = new ArrayList();
-    public List caseet_RS = new ArrayList();
-    public List caseec_RU = new ArrayList();
-    public List cases_RU = new ArrayList();
+    public List<CPUTF8> name_RU = new ArrayList<>();
+    public List<String> T = new ArrayList<>();
+    public List<CPConstant<?>> caseI_KI = new ArrayList<>();
+    public List<CPConstant<?>> caseD_KD = new ArrayList<>();
+    public List<CPConstant<?>> caseF_KF = new ArrayList<>();
+    public List<CPConstant<?>> caseJ_KJ = new ArrayList<>();
+    public List<CPSignature> casec_RS = new ArrayList<>();
+    public List<CPSignature> caseet_RS = new ArrayList<>();
+    public List<CPUTF8> caseec_RU = new ArrayList<>();
+    public List<CPUTF8> cases_RU = new ArrayList<>();
     public IntList casearray_N = new IntList();
-    public List nesttype_RS = new ArrayList();
+    public List<CPSignature> nesttype_RS = new ArrayList<>();
     public IntList nestpair_N = new IntList();
-    public List nestname_RU = new ArrayList();
+    public List<CPUTF8> nestname_RU = new ArrayList<>();
 
     private final CpBands cpBands;
     private final int context;
@@ -60,7 +60,7 @@ public class MetadataBandGroup extends BandSet {
      * Constructs a new MetadataBandGroup
      *
      * @param type must be either AD, RVA, RIA, RVPA or RIPA.
-     * @param context <code>CONTEXT_CLASS</code>, <code>CONTEXT_METHOD</code> or <code>CONTEXT_FIELD</code>
+     * @param context {@code CONTEXT_CLASS}, {@code CONTEXT_METHOD} or {@code CONTEXT_FIELD}
      * @param cpBands constant pool bands
      * @param segmentHeader segment header
      * @param effort packing effort
@@ -73,9 +73,185 @@ public class MetadataBandGroup extends BandSet {
         this.context = context;
     }
 
+    /**
+     * Add an annotation to this set of bands
+     *
+     * @param desc TODO
+     * @param nameRU TODO
+     * @param tags TODO
+     * @param values TODO
+     * @param caseArrayN TODO
+     * @param nestTypeRS TODO
+     * @param nestNameRU TODO
+     * @param nestPairN TODO
+     */
+	public void addAnnotation(final String desc, final List<String> nameRU, final List<String> tags,
+			final List<Object> values, final List<Integer> caseArrayN, final List<String> nestTypeRS,
+			final List<String> nestNameRU, final List<Integer> nestPairN) {
+		type_RS.add(cpBands.getCPSignature(desc));
+		pair_N.add(nameRU.size());
+		nameRU.forEach(name -> name_RU.add(cpBands.getCPUtf8(name)));
+
+		final Iterator<Object> valuesIterator = values.iterator();
+		for (final String tag : tags) {
+			T.add(tag);
+            switch (tag) {
+                case "B":
+                case "C":
+                case "I":
+                case "S":
+                case "Z": {
+                    caseI_KI.add(cpBands.getConstant(valuesIterator.next()));
+                    break;
+                }
+                case "D": {
+                    caseD_KD.add(cpBands.getConstant(valuesIterator.next()));
+                    break;
+                }
+                case "F": {
+                    caseF_KF.add(cpBands.getConstant(valuesIterator.next()));
+                    break;
+                }
+                case "J": {
+                    caseJ_KJ.add(cpBands.getConstant(valuesIterator.next()));
+                    break;
+                }
+                case "c": {
+                    casec_RS.add(cpBands.getCPSignature(nextString(valuesIterator)));
+                    break;
+                }
+                case "e": {
+                    caseet_RS.add(cpBands.getCPSignature(nextString(valuesIterator)));
+                    caseec_RU.add(cpBands.getCPUtf8(nextString(valuesIterator)));
+                    break;
+                }
+                case "s": {
+                    cases_RU.add(cpBands.getCPUtf8(nextString(valuesIterator)));
+                    break;
+                }
+            }
+			// do nothing here for [ or @ (handled below)
+		}
+		for (final Integer element : caseArrayN) {
+			final int arraySize = element.intValue();
+			casearray_N.add(arraySize);
+			numBackwardsCalls += arraySize;
+		}
+		nestTypeRS.forEach(element -> nesttype_RS.add(cpBands.getCPSignature(element)));
+		nestNameRU.forEach(element -> nestname_RU.add(cpBands.getCPUtf8(element)));
+		for (final Integer numPairs : nestPairN) {
+			nestpair_N.add(numPairs.intValue());
+			numBackwardsCalls += numPairs.intValue();
+		}
+	}
+
+    /**
+     * Add an annotation to this set of bands.
+     *
+     * @param numParams TODO
+     * @param annoN TODO
+     * @param pairN TODO
+     * @param typeRS TODO
+     * @param nameRU TODO
+     * @param tags TODO
+     * @param values TODO
+     * @param caseArrayN TODO
+     * @param nestTypeRS TODO
+     * @param nestNameRU TODO
+     * @param nestPairN TODO
+     */
+	public void addParameterAnnotation(final int numParams, final int[] annoN, final IntList pairN,
+			final List<String> typeRS, final List<String> nameRU, final List<String> tags, final List<Object> values,
+			final List<Integer> caseArrayN, final List<String> nestTypeRS, final List<String> nestNameRU,
+			final List<Integer> nestPairN) {
+		param_NB.add(numParams);
+		for (final int element : annoN) {
+			anno_N.add(element);
+		}
+		pair_N.addAll(pairN);
+        typeRS.forEach(desc -> type_RS.add(cpBands.getCPSignature(desc)));
+        nameRU.forEach(name -> name_RU.add(cpBands.getCPUtf8(name)));
+		final Iterator<Object> valuesIterator = values.iterator();
+		for (final String tag : tags) {
+			T.add(tag);
+            switch (tag) {
+                case "B":
+                case "C":
+                case "I":
+                case "S":
+                case "Z": {
+                    caseI_KI.add(cpBands.getConstant(valuesIterator.next()));
+                    break;
+                }
+                case "D": {
+                    caseD_KD.add(cpBands.getConstant(valuesIterator.next()));
+                    break;
+                }
+                case "F": {
+                    caseF_KF.add(cpBands.getConstant(valuesIterator.next()));
+                    break;
+                }
+                case "J": {
+                    caseJ_KJ.add(cpBands.getConstant(valuesIterator.next()));
+                    break;
+                }
+                case "c": {
+                    casec_RS.add(cpBands.getCPSignature(nextString(valuesIterator)));
+                    break;
+                }
+                case "e": {
+                    caseet_RS.add(cpBands.getCPSignature(nextString(valuesIterator)));
+                    caseec_RU.add(cpBands.getCPUtf8(nextString(valuesIterator)));
+                    break;
+                }
+                case "s": {
+                    cases_RU.add(cpBands.getCPUtf8(nextString(valuesIterator)));
+                    break;
+                }
+            }
+			// do nothing here for [ or @ (handled below)
+		}
+		for (final Integer element : caseArrayN) {
+			final int arraySize = element.intValue();
+			casearray_N.add(arraySize);
+			numBackwardsCalls += arraySize;
+		}
+		nestTypeRS.forEach(type -> nesttype_RS.add(cpBands.getCPSignature(type)));
+		nestNameRU.forEach(name -> nestname_RU.add(cpBands.getCPUtf8(name)));
+		for (final Integer numPairs : nestPairN) {
+			nestpair_N.add(numPairs.intValue());
+			numBackwardsCalls += numPairs.intValue();
+		}
+	}
+
+    /**
+     * Returns true if any annotations have been added to this set of bands.
+     *
+     * @return true if any annotations have been added to this set of bands.
+     */
+    public boolean hasContent() {
+        return type_RS.size() > 0;
+    }
+
+    public void incrementAnnoN() {
+        anno_N.increment(anno_N.size() - 1);
+    }
+
+    public void newEntryInAnnoN() {
+        anno_N.add(1);
+    }
+
+    private String nextString(final Iterator<Object> valuesIterator) {
+        return (String) valuesIterator.next();
+    }
+
+    public int numBackwardsCalls() {
+        return numBackwardsCalls;
+    }
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.commons.compress.harmony.pack200.BandSet#pack(java.io.OutputStream)
      */
     @Override
@@ -199,188 +375,6 @@ public class MetadataBandGroup extends BandSet {
         }
     }
 
-    private int[] tagListToArray(final List t2) {
-        final int[] ints = new int[t2.size()];
-        for (int i = 0; i < ints.length; i++) {
-            ints[i] = ((String) t2.get(i)).charAt(0);
-        }
-        return ints;
-    }
-
-    /**
-     * Add an annotation to this set of bands.
-     * 
-     * @param numParams TODO
-     * @param annoN TODO
-     * @param pairN TODO
-     * @param typeRS TODO
-     * @param nameRU TODO
-     * @param t TODO
-     * @param values TODO
-     * @param caseArrayN TODO
-     * @param nestTypeRS TODO
-     * @param nestNameRU TODO
-     * @param nestPairN TODO
-     */
-    public void addParameterAnnotation(final int numParams, final int[] annoN, final IntList pairN, final List typeRS,
-        final List nameRU, final List t, final List values, final List caseArrayN, final List nestTypeRS,
-        final List nestNameRU, final List nestPairN) {
-        param_NB.add(numParams);
-        for (int i = 0; i < annoN.length; i++) {
-            anno_N.add(annoN[i]);
-        }
-        pair_N.addAll(pairN);
-        for (final Iterator iterator = typeRS.iterator(); iterator.hasNext();) {
-            final String desc = (String) iterator.next();
-            type_RS.add(cpBands.getCPSignature(desc));
-        }
-        for (final Iterator iterator = nameRU.iterator(); iterator.hasNext();) {
-            final String name = (String) iterator.next();
-            name_RU.add(cpBands.getCPUtf8(name));
-        }
-        final Iterator valuesIterator = values.iterator();
-        for (final Iterator iterator = t.iterator(); iterator.hasNext();) {
-            final String tag = (String) iterator.next();
-            T.add(tag);
-            if (tag.equals("B") || tag.equals("C") || tag.equals("I") || tag.equals("S") || tag.equals("Z")) {
-                final Integer value = (Integer) valuesIterator.next();
-                caseI_KI.add(cpBands.getConstant(value));
-            } else if (tag.equals("D")) {
-                final Double value = (Double) valuesIterator.next();
-                caseD_KD.add(cpBands.getConstant(value));
-            } else if (tag.equals("F")) {
-                final Float value = (Float) valuesIterator.next();
-                caseF_KF.add(cpBands.getConstant(value));
-            } else if (tag.equals("J")) {
-                final Long value = (Long) valuesIterator.next();
-                caseJ_KJ.add(cpBands.getConstant(value));
-            } else if (tag.equals("c")) {
-                final String value = (String) valuesIterator.next();
-                casec_RS.add(cpBands.getCPSignature(value));
-            } else if (tag.equals("e")) {
-                final String value = (String) valuesIterator.next();
-                final String value2 = (String) valuesIterator.next();
-                caseet_RS.add(cpBands.getCPSignature(value));
-                caseec_RU.add(cpBands.getCPUtf8(value2));
-            } else if (tag.equals("s")) {
-                final String value = (String) valuesIterator.next();
-                cases_RU.add(cpBands.getCPUtf8(value));
-            }
-            // do nothing here for [ or @ (handled below)
-        }
-        for (final Iterator iterator = caseArrayN.iterator(); iterator.hasNext();) {
-            final int arraySize = ((Integer) iterator.next()).intValue();
-            casearray_N.add(arraySize);
-            numBackwardsCalls += arraySize;
-        }
-        for (final Iterator iterator = nestTypeRS.iterator(); iterator.hasNext();) {
-            final String type = (String) iterator.next();
-            nesttype_RS.add(cpBands.getCPSignature(type));
-        }
-        for (final Iterator iterator = nestNameRU.iterator(); iterator.hasNext();) {
-            final String name = (String) iterator.next();
-            nestname_RU.add(cpBands.getCPUtf8(name));
-        }
-        for (final Iterator iterator = nestPairN.iterator(); iterator.hasNext();) {
-            final Integer numPairs = (Integer) iterator.next();
-            nestpair_N.add(numPairs.intValue());
-            numBackwardsCalls += numPairs.intValue();
-        }
-    }
-
-    /**
-     * Add an annotation to this set of bands
-     *
-     * @param desc TODO
-     * @param nameRU TODO
-     * @param t TODO
-     * @param values TODO
-     * @param caseArrayN TODO
-     * @param nestTypeRS TODO
-     * @param nestNameRU TODO
-     * @param nestPairN TODO
-     */
-    public void addAnnotation(final String desc, final List nameRU, final List t, final List values,
-        final List caseArrayN, final List nestTypeRS, final List nestNameRU, final List nestPairN) {
-        type_RS.add(cpBands.getCPSignature(desc));
-        pair_N.add(nameRU.size());
-
-        for (final Iterator iterator = nameRU.iterator(); iterator.hasNext();) {
-            final String name = (String) iterator.next();
-            name_RU.add(cpBands.getCPUtf8(name));
-        }
-
-        final Iterator valuesIterator = values.iterator();
-        for (final Iterator iterator = t.iterator(); iterator.hasNext();) {
-            final String tag = (String) iterator.next();
-            T.add(tag);
-            if (tag.equals("B") || tag.equals("C") || tag.equals("I") || tag.equals("S") || tag.equals("Z")) {
-                final Integer value = (Integer) valuesIterator.next();
-                caseI_KI.add(cpBands.getConstant(value));
-            } else if (tag.equals("D")) {
-                final Double value = (Double) valuesIterator.next();
-                caseD_KD.add(cpBands.getConstant(value));
-            } else if (tag.equals("F")) {
-                final Float value = (Float) valuesIterator.next();
-                caseF_KF.add(cpBands.getConstant(value));
-            } else if (tag.equals("J")) {
-                final Long value = (Long) valuesIterator.next();
-                caseJ_KJ.add(cpBands.getConstant(value));
-            } else if (tag.equals("c")) {
-                final String value = (String) valuesIterator.next();
-                casec_RS.add(cpBands.getCPSignature(value));
-            } else if (tag.equals("e")) {
-                final String value = (String) valuesIterator.next();
-                final String value2 = (String) valuesIterator.next();
-                caseet_RS.add(cpBands.getCPSignature(value));
-                caseec_RU.add(cpBands.getCPUtf8(value2));
-            } else if (tag.equals("s")) {
-                final String value = (String) valuesIterator.next();
-                cases_RU.add(cpBands.getCPUtf8(value));
-            }
-            // do nothing here for [ or @ (handled below)
-        }
-        for (final Iterator iterator = caseArrayN.iterator(); iterator.hasNext();) {
-            final int arraySize = ((Integer) iterator.next()).intValue();
-            casearray_N.add(arraySize);
-            numBackwardsCalls += arraySize;
-        }
-        for (final Iterator iterator = nestTypeRS.iterator(); iterator.hasNext();) {
-            final String type = (String) iterator.next();
-            nesttype_RS.add(cpBands.getCPSignature(type));
-        }
-        for (final Iterator iterator = nestNameRU.iterator(); iterator.hasNext();) {
-            final String name = (String) iterator.next();
-            nestname_RU.add(cpBands.getCPUtf8(name));
-        }
-        for (final Iterator iterator = nestPairN.iterator(); iterator.hasNext();) {
-            final Integer numPairs = (Integer) iterator.next();
-            nestpair_N.add(numPairs.intValue());
-            numBackwardsCalls += numPairs.intValue();
-        }
-    }
-
-    /**
-     * Returns true if any annotations have been added to this set of bands.
-     *
-     * @return true if any annotations have been added to this set of bands.
-     */
-    public boolean hasContent() {
-        return type_RS.size() > 0;
-    }
-
-    public int numBackwardsCalls() {
-        return numBackwardsCalls;
-    }
-
-    public void incrementAnnoN() {
-        anno_N.increment(anno_N.size() - 1);
-    }
-
-    public void newEntryInAnnoN() {
-        anno_N.add(1);
-    }
-
     /**
      * Remove the latest annotation that was added to this group
      */
@@ -399,36 +393,51 @@ public class MetadataBandGroup extends BandSet {
      * Convenience method for removeLatest
      */
     private void removeOnePair() {
-        final String tag = (String) T.remove(T.size() - 1);
-        if (tag.equals("B") || tag.equals("C") || tag.equals("I") || tag.equals("S") || tag.equals("Z")) {
-            caseI_KI.remove(caseI_KI.size() - 1);
-        } else if (tag.equals("D")) {
-            caseD_KD.remove(caseD_KD.size() - 1);
-        } else if (tag.equals("F")) {
-            caseF_KF.remove(caseF_KF.size() - 1);
-        } else if (tag.equals("J")) {
-            caseJ_KJ.remove(caseJ_KJ.size() - 1);
-        } else if (tag.equals("C")) {
-            casec_RS.remove(casec_RS.size() - 1);
-        } else if (tag.equals("e")) {
-            caseet_RS.remove(caseet_RS.size() - 1);
-            caseec_RU.remove(caseet_RS.size() - 1);
-        } else if (tag.equals("s")) {
-            cases_RU.remove(cases_RU.size() - 1);
-        } else if (tag.equals("[")) {
-            final int arraySize = casearray_N.remove(casearray_N.size() - 1);
-            numBackwardsCalls -= arraySize;
-            for (int k = 0; k < arraySize; k++) {
-                removeOnePair();
-            }
-        } else if (tag.equals("@")) {
-            nesttype_RS.remove(nesttype_RS.size() - 1);
-            final int numPairs = nestpair_N.remove(nestpair_N.size() - 1);
-            numBackwardsCalls -= numPairs;
-            for (int i = 0; i < numPairs; i++) {
-                removeOnePair();
-            }
+        final String tag = T.remove(T.size() - 1);
+        switch (tag) {
+            case "B":
+            case "C":
+            case "I":
+            case "S":
+            case "Z":
+                caseI_KI.remove(caseI_KI.size() - 1);
+                break;
+            case "D":
+                caseD_KD.remove(caseD_KD.size() - 1);
+                break;
+            case "F":
+                caseF_KF.remove(caseF_KF.size() - 1);
+                break;
+            case "J":
+                caseJ_KJ.remove(caseJ_KJ.size() - 1);
+                break;
+            case "e":
+                caseet_RS.remove(caseet_RS.size() - 1);
+                caseec_RU.remove(caseet_RS.size() - 1);
+                break;
+            case "s":
+                cases_RU.remove(cases_RU.size() - 1);
+                break;
+            case "[":
+                final int arraySize = casearray_N.remove(casearray_N.size() - 1);
+                numBackwardsCalls -= arraySize;
+                for (int k = 0; k < arraySize; k++) {
+                    removeOnePair();
+                }
+                break;
+            case "@":
+                nesttype_RS.remove(nesttype_RS.size() - 1);
+                final int numPairs = nestpair_N.remove(nestpair_N.size() - 1);
+                numBackwardsCalls -= numPairs;
+                for (int i = 0; i < numPairs; i++) {
+                    removeOnePair();
+                }
+                break;
         }
+    }
+
+    private int[] tagListToArray(final List<String> list) {
+        return list.stream().mapToInt(s -> s.charAt(0)).toArray();
     }
 
 }

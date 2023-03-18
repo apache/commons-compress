@@ -16,6 +16,8 @@
  */
 package org.apache.commons.compress.harmony.unpack200.bytecode.forms;
 
+import java.util.Arrays;
+
 import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
@@ -36,22 +38,16 @@ public class LookupSwitchForm extends SwitchForm {
     @Override
     public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager,
         final int codeLength) {
-        final int case_count = operandManager.nextCaseCount();
-        final int default_pc = operandManager.nextLabel();
-        final int case_values[] = new int[case_count];
-        for (int index = 0; index < case_count; index++) {
-            case_values[index] = operandManager.nextCaseValues();
-        }
-        final int case_pcs[] = new int[case_count];
-        for (int index = 0; index < case_count; index++) {
-            case_pcs[index] = operandManager.nextLabel();
-        }
+        final int caseCount = operandManager.nextCaseCount();
+        final int defaultPc = operandManager.nextLabel();
+        final int[] caseValues = new int[caseCount];
+        Arrays.setAll(caseValues, i -> operandManager.nextCaseValues());
+        final int[] casePcs = new int[caseCount];
+        Arrays.setAll(casePcs, i -> operandManager.nextLabel());
 
-        final int[] labelsArray = new int[case_count + 1];
-        labelsArray[0] = default_pc;
-        for (int index = 1; index < case_count + 1; index++) {
-            labelsArray[index] = case_pcs[index - 1];
-        }
+        final int[] labelsArray = new int[caseCount + 1];
+        labelsArray[0] = defaultPc;
+        System.arraycopy(casePcs, 0, labelsArray, 1, caseCount + 1 - 1);
         byteCode.setByteCodeTargets(labelsArray);
 
         // All this gets dumped into the rewrite bytes of the
@@ -69,7 +65,7 @@ public class LookupSwitchForm extends SwitchForm {
         final int padLength = 3 - (codeLength % 4);
         final int rewriteSize = 1 + padLength + 4 // defaultbytes
             + 4 // npairs
-            + (4 * case_values.length) + (4 * case_pcs.length);
+            + (4 * caseValues.length) + (4 * casePcs.length);
 
         final int[] newRewrite = new int[rewriteSize];
         int rewriteIndex = 0;
@@ -92,15 +88,15 @@ public class LookupSwitchForm extends SwitchForm {
 
         // npairs
         final int npairsIndex = rewriteIndex;
-        setRewrite4Bytes(case_values.length, npairsIndex, newRewrite);
+        setRewrite4Bytes(caseValues.length, npairsIndex, newRewrite);
         rewriteIndex += 4;
 
         // match-offset pairs
-        // The case_values aren't overwritten, but the
-        // case_pcs will get overwritten by fixUpByteCodeTargets
-        for (int index = 0; index < case_values.length; index++) {
+        // The caseValues aren't overwritten, but the
+        // casePcs will get overwritten by fixUpByteCodeTargets
+        for (final int caseValue : caseValues) {
             // match
-            setRewrite4Bytes(case_values[index], rewriteIndex, newRewrite);
+            setRewrite4Bytes(caseValue, rewriteIndex, newRewrite);
             rewriteIndex += 4;
             // offset
             newRewrite[rewriteIndex++] = -1;

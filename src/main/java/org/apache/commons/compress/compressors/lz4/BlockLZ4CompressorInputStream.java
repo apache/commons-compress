@@ -33,9 +33,13 @@ import org.apache.commons.compress.utils.ByteUtils;
  */
 public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputStream {
 
+    private enum State {
+        NO_BLOCK, IN_LITERAL, LOOKING_FOR_BACK_REFERENCE, IN_BACK_REFERENCE, EOF
+    }
     static final int WINDOW_SIZE = 1 << 16;
     static final int SIZE_BITS = 4;
     static final int BACK_REFERENCE_SIZE_MASK = (1 << SIZE_BITS) - 1;
+
     static final int LITERAL_SIZE_MASK = BACK_REFERENCE_SIZE_MASK << SIZE_BITS;
 
     /** Back-Reference-size part of the block starting byte. */
@@ -49,11 +53,40 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
      *
      * @param is
      *            An InputStream to read compressed data from
-     *
-     * @throws IOException if reading fails
      */
-    public BlockLZ4CompressorInputStream(final InputStream is) throws IOException {
+    public BlockLZ4CompressorInputStream(final InputStream is) {
         super(is, WINDOW_SIZE);
+    }
+
+    /**
+     * @return false if there is no more back-reference - this means this is the
+     * last block of the stream.
+     */
+    private boolean initializeBackReference() throws IOException {
+        int backReferenceOffset = 0;
+        try {
+            backReferenceOffset = (int) ByteUtils.fromLittleEndian(supplier, 2);
+        } catch (final IOException ex) {
+            if (nextBackReferenceSize == 0) { // the last block has no back-reference
+                return false;
+            }
+            throw ex;
+        }
+        long backReferenceSize = nextBackReferenceSize;
+        if (nextBackReferenceSize == BACK_REFERENCE_SIZE_MASK) {
+            backReferenceSize += readSizeBytes();
+        }
+        // minimal match length 4 is encoded as 0
+        if (backReferenceSize < 0) {
+            throw new IOException("Illegal block with a negative match length found");
+        }
+        try {
+            startBackReference(backReferenceOffset, backReferenceSize + 4);
+        } catch (final IllegalArgumentException ex) {
+            throw new IOException("Illegal block with bad offset found", ex);
+        }
+        state = State.IN_BACK_REFERENCE;
+        return true;
     }
 
     /**
@@ -93,6 +126,19 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
         }
     }
 
+    private long readSizeBytes() throws IOException {
+        long accum = 0;
+        int nextByte;
+        do {
+            nextByte = readOneByte();
+            if (nextByte == -1) {
+                throw new IOException("Premature end of stream while parsing length");
+            }
+            accum += nextByte;
+        } while (nextByte == 255);
+        return accum;
+    }
+
     private void readSizes() throws IOException {
         final int nextBlock = readOneByte();
         if (nextBlock == -1) {
@@ -108,53 +154,5 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
         }
         startLiteral(literalSizePart);
         state = State.IN_LITERAL;
-    }
-
-    private long readSizeBytes() throws IOException {
-        long accum = 0;
-        int nextByte;
-        do {
-            nextByte = readOneByte();
-            if (nextByte == -1) {
-                throw new IOException("Premature end of stream while parsing length");
-            }
-            accum += nextByte;
-        } while (nextByte == 255);
-        return accum;
-    }
-
-    /**
-     * @return false if there is no more back-reference - this means this is the
-     * last block of the stream.
-     */
-    private boolean initializeBackReference() throws IOException {
-        int backReferenceOffset = 0;
-        try {
-            backReferenceOffset = (int) ByteUtils.fromLittleEndian(supplier, 2);
-        } catch (final IOException ex) {
-            if (nextBackReferenceSize == 0) { // the last block has no back-reference
-                return false;
-            }
-            throw ex;
-        }
-        long backReferenceSize = nextBackReferenceSize;
-        if (nextBackReferenceSize == BACK_REFERENCE_SIZE_MASK) {
-            backReferenceSize += readSizeBytes();
-        }
-        // minimal match length 4 is encoded as 0
-        if (backReferenceSize < 0) {
-            throw new IOException("Illegal block with a negative match length found");
-        }
-        try {
-            startBackReference(backReferenceOffset, backReferenceSize + 4);
-        } catch (final IllegalArgumentException ex) {
-            throw new IOException("Illegal block with bad offset found", ex);
-        }
-        state = State.IN_BACK_REFERENCE;
-        return true;
-    }
-
-    private enum State {
-        NO_BLOCK, IN_LITERAL, LOOKING_FOR_BACK_REFERENCE, IN_BACK_REFERENCE, EOF
     }
 }

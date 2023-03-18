@@ -17,64 +17,58 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 import org.tukaani.xz.LZMA2Options;
 
 public class SevenZMethodConfigurationTest {
 
     @Test
-    public void shouldAllowNullOptions() {
-        Assert.assertNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, null)
-                          .getOptions());
-    }
-
-    @Test
     public void shouldAllowLZMA2OptionsForLZMA() {
-        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA,
-                                                           new LZMA2Options())
-                             .getOptions());
-    }
-
-    @Test
-    public void shouldAllowNumberForLZMA() {
-        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA, 42)
-                             .getOptions());
+        assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA, new LZMA2Options()).getOptions());
     }
 
     @Test
     public void shouldAllowLZMA2OptionsForLZMA2() {
-        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2,
-                                                           new LZMA2Options())
-                             .getOptions());
+        assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, new LZMA2Options()).getOptions());
     }
 
     @Test
-    public void shouldAllowNumberForLZMA2() {
-        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 42)
-                             .getOptions());
+    public void shouldAllowNullOptions() {
+        assertNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, null).getOptions());
     }
 
     @Test
     public void shouldAllowNumberForBzip2() {
-        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.BZIP2, 42)
-                             .getOptions());
+        assertNotNull(new SevenZMethodConfiguration(SevenZMethod.BZIP2, 42).getOptions());
     }
 
     @Test
     public void shouldAllowNumberForDeflate() {
-        Assert.assertNotNull(new SevenZMethodConfiguration(SevenZMethod.DEFLATE, 42)
-                             .getOptions());
+        assertNotNull(new SevenZMethodConfiguration(SevenZMethod.DEFLATE, 42).getOptions());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
+    public void shouldAllowNumberForLZMA() {
+        assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA, 42).getOptions());
+    }
+
+    @Test
+    public void shouldAllowNumberForLZMA2() {
+        assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 42).getOptions());
+    }
+
+    @Test
     public void shouldNotAllowStringOptionsForLZMA() {
-        new SevenZMethodConfiguration(SevenZMethod.LZMA, "");
+        assertThrows(IllegalArgumentException.class, () -> new SevenZMethodConfiguration(SevenZMethod.LZMA, ""));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldNotAllowStringOptionsForLZMA2() {
-        new SevenZMethodConfiguration(SevenZMethod.LZMA2, "");
+        assertThrows(IllegalArgumentException.class, () -> new SevenZMethodConfiguration(SevenZMethod.LZMA2, ""));
     }
 
 }

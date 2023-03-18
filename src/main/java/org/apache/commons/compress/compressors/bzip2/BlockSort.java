@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.compressors.bzip2;
 
+import java.util.Arrays;
 import java.util.BitSet;
 
 /**
@@ -107,6 +108,8 @@ class BlockSort {
      * I've also removed the now unused randomization code.
      */
 
+    private static final int FTAB_LENGTH = 65537; // 262148 byte
+
     /*
      * LBZ2: If you are ever unlucky/improbable enough to get a stack
      * overflow whilst sorting, increase the following constant and
@@ -118,84 +121,50 @@ class BlockSort {
     private static final int FALLBACK_QSORT_STACK_SIZE = 100;
 
     private static final int STACK_SIZE =
-        QSORT_STACK_SIZE < FALLBACK_QSORT_STACK_SIZE
-        ? FALLBACK_QSORT_STACK_SIZE : QSORT_STACK_SIZE;
+            Math.max(QSORT_STACK_SIZE, FALLBACK_QSORT_STACK_SIZE);
+
+    private static final int FALLBACK_QSORT_SMALL_THRESH = 10;
+    /*
+     * LBZ2: Knuth's increments seem to work better than Incerpi-Sedgewick here.
+     * Possibly because the number of elems to sort is usually small, typically
+     * &lt;= 20.
+     */
+    private static final int[] INCS = { 1, 4, 13, 40, 121, 364, 1093, 3280,
+                                        9841, 29524, 88573, 265720, 797161,
+                                        2391484 };
+    private static final int SMALL_THRESH = 20;
+
+    private static final int DEPTH_THRESH = 10;
+    private static final int WORK_FACTOR = 30;
+    private static final int SETMASK = (1 << 21);
+
+    private static final int CLEARMASK = (~SETMASK);
+    private static int med3(final int a, final int b, final int c) {
+        return (a < b) ? (b < c ? b : a < c ? c : a) : (b > c ? b : a > c ? c
+                                                        : a);
+    }
+    private static void vswap(final int[] fmap, int p1, int p2, int n) {
+        n += p1;
+        while (p1 < n) {
+            final int t = fmap[p1];
+            fmap[p1++] = fmap[p2];
+            fmap[p2++] = t;
+        }
+    }
 
     /*
      * Used when sorting. If too many long comparisons happen, we stop sorting,
      * and use fallbackSort instead.
      */
     private int workDone;
+
     private int workLimit;
+
     private boolean firstAttempt;
 
     private final int[] stack_ll = new int[STACK_SIZE]; // 4000 byte
+
     private final int[] stack_hh = new int[STACK_SIZE]; // 4000 byte
-    private final int[] stack_dd = new int[QSORT_STACK_SIZE]; // 4000 byte
-
-    private final int[] mainSort_runningOrder = new int[256]; // 1024 byte
-    private final int[] mainSort_copy = new int[256]; // 1024 byte
-    private final boolean[] mainSort_bigDone = new boolean[256]; // 256 byte
-
-    private final int[] ftab = new int[65537]; // 262148 byte
-
-    /**
-     * Array instance identical to Data's sfmap, both are used only
-     * temporarily and indepently, so we do not need to allocate
-     * additional memory.
-     */
-    private final char[] quadrant;
-
-    BlockSort(final BZip2CompressorOutputStream.Data data) {
-        this.quadrant = data.sfmap;
-    }
-
-    void blockSort(final BZip2CompressorOutputStream.Data data, final int last) {
-        this.workLimit = WORK_FACTOR * last;
-        this.workDone = 0;
-        this.firstAttempt = true;
-
-        if (last + 1 < 10000) {
-            fallbackSort(data, last);
-        } else {
-            mainSort(data, last);
-
-            if (this.firstAttempt && (this.workDone > this.workLimit)) {
-                fallbackSort(data, last);
-            }
-        }
-
-        final int[] fmap = data.fmap;
-        data.origPtr = -1;
-        for (int i = 0; i <= last; i++) {
-            if (fmap[i] == 0) {
-                data.origPtr = i;
-                break;
-            }
-        }
-
-        // assert (data.origPtr != -1) : data.origPtr;
-    }
-
-    /**
-     * Adapt fallbackSort to the expected interface of the rest of the
-     * code, in particular deal with the fact that block starts at
-     * offset 1 (in libbzip2 1.0.6 it starts at 0).
-     */
-    final void fallbackSort(final BZip2CompressorOutputStream.Data data,
-                            final int last) {
-        data.block[0] = data.block[last + 1];
-        fallbackSort(data.fmap, data.block, last + 1);
-        for (int i = 0; i < last + 1; i++) {
-            --data.fmap[i];
-        }
-        for (int i = 0; i < last + 1; i++) {
-            if (data.fmap[i] == -1) {
-                data.fmap[i] = last;
-                break;
-            }
-        }
-    }
 
 /*---------------------------------------------*/
 
@@ -254,80 +223,68 @@ class BlockSort {
      *
      */
 
-    /**
-     * @param fmap points to the index of the starting point of a
-     *        permutation inside the block of data in the current
-     *        partially sorted order
-     * @param eclass points from the index of a character inside the
-     *        block to the first index in fmap that contains the
-     *        bucket of its suffix that is sorted in this step.
-     * @param lo lower boundary of the fmap-interval to be sorted
-     * @param hi upper boundary of the fmap-interval to be sorted
-     */
-    private void fallbackSimpleSort(final int[] fmap,
-                                    final int[] eclass,
-                                    final int lo,
-                                    final int hi) {
-        if (lo == hi) {
-            return;
-        }
+    private final int[] stack_dd = new int[QSORT_STACK_SIZE]; // 4000 byte
 
-        int j;
-        if (hi - lo > 3) {
-            for (int i = hi - 4; i >= lo; i--) {
-                final int tmp = fmap[i];
-                final int ec_tmp = eclass[tmp];
-                for (j = i + 4; j <= hi && ec_tmp > eclass[fmap[j]];
-                     j += 4) {
-                    fmap[j - 4] = fmap[j];
-                }
-                fmap[j - 4] = tmp;
+    private final int[] mainSort_runningOrder = new int[256]; // 1024 byte
+
+    private final int[] mainSort_copy = new int[256]; // 1024 byte
+
+    private final boolean[] mainSort_bigDone = new boolean[256]; // 256 byte
+
+    private final int[] ftab = new int[FTAB_LENGTH]; // 262148 byte
+
+    /**
+     * Array instance identical to Data's sfmap, both are used only
+     * temporarily and indepently, so we do not need to allocate
+     * additional memory.
+     */
+    private final char[] quadrant;
+
+    private int[] eclass;
+
+
+/*---------------------------------------------*/
+
+    BlockSort(final BZip2CompressorOutputStream.Data data) {
+        this.quadrant = data.sfmap;
+    }
+
+    void blockSort(final BZip2CompressorOutputStream.Data data, final int last) {
+        this.workLimit = WORK_FACTOR * last;
+        this.workDone = 0;
+        this.firstAttempt = true;
+
+        if (last + 1 < 10000) {
+            fallbackSort(data, last);
+        } else {
+            mainSort(data, last);
+
+            if (this.firstAttempt && (this.workDone > this.workLimit)) {
+                fallbackSort(data, last);
             }
         }
 
-        for (int i = hi - 1; i >= lo; i--) {
-            final int tmp = fmap[i];
-            final int ec_tmp = eclass[tmp];
-            for (j = i + 1; j <= hi && ec_tmp > eclass[fmap[j]]; j++) {
-                fmap[j - 1] = fmap[j];
+        final int[] fmap = data.fmap;
+        data.origPtr = -1;
+        for (int i = 0; i <= last; i++) {
+            if (fmap[i] == 0) {
+                data.origPtr = i;
+                break;
             }
-            fmap[j-1] = tmp;
         }
+
+        // assert (data.origPtr != -1) : data.origPtr;
     }
 
-    private static final int FALLBACK_QSORT_SMALL_THRESH = 10;
-
-    /**
-     * swaps two values in fmap
+    /*
+     * The C code uses an array of ints (each int holding 32 flags) to
+     * represents the bucket-start flags (bhtab).  It also contains
+     * optimizations to skip over 32 consecutively set or
+     * consecutively unset bits on word boundaries at once.  For now
+     * I've chosen to use the simpler but potentially slower code
+     * using BitSet - also in the hope that using the BitSet#nextXXX
+     * methods may be fast enough.
      */
-    private void fswap(final int[] fmap, final int zz1, final int zz2) {
-        final int zztmp = fmap[zz1];
-        fmap[zz1] = fmap[zz2];
-        fmap[zz2] = zztmp;
-    }
-
-    /**
-     * swaps two intervals starting at yyp1 and yyp2 of length yyn inside fmap.
-     */
-    private void fvswap(final int[] fmap, int yyp1, int yyp2, int yyn) {
-        while (yyn > 0) {
-            fswap(fmap, yyp1, yyp2);
-            yyp1++; yyp2++; yyn--;
-        }
-    }
-
-    private int fmin(final int a, final int b) {
-        return a < b ? a : b;
-    }
-
-    private void fpush(final int sp, final int lz, final int hz) {
-        stack_ll[sp] = lz;
-        stack_hh[sp] = hz;
-    }
-
-    private int[] fpop(final int sp) {
-        return new int[] { stack_ll[sp], stack_hh[sp] };
-    }
 
     /**
      * @param fmap points to the index of the starting point of a
@@ -422,9 +379,9 @@ class BlockSort {
                 continue;
             }
 
-            n = fmin(ltLo - lo, unLo - ltLo);
+            n = Math.min(ltLo - lo, unLo - ltLo);
             fvswap(fmap, lo, unLo - n, n);
-            int m = fmin(hi - gtHi, gtHi - unHi);
+            int m = Math.min(hi - gtHi, gtHi - unHi);
             fvswap(fmap, unHi + 1, hi - m + 1, m);
 
             n = lo + unLo - ltLo - 1;
@@ -440,27 +397,76 @@ class BlockSort {
         }
     }
 
-
 /*---------------------------------------------*/
 
-    private int[] eclass;
-
-    private int[] getEclass() {
-        if (eclass == null) {
-            eclass = new int[quadrant.length / 2];
+    /**
+     * @param fmap points to the index of the starting point of a
+     *        permutation inside the block of data in the current
+     *        partially sorted order
+     * @param eclass points from the index of a character inside the
+     *        block to the first index in fmap that contains the
+     *        bucket of its suffix that is sorted in this step.
+     * @param lo lower boundary of the fmap-interval to be sorted
+     * @param hi upper boundary of the fmap-interval to be sorted
+     */
+    private void fallbackSimpleSort(final int[] fmap,
+                                    final int[] eclass,
+                                    final int lo,
+                                    final int hi) {
+        if (lo == hi) {
+            return;
         }
-        return eclass;
+
+        int j;
+        if (hi - lo > 3) {
+            for (int i = hi - 4; i >= lo; i--) {
+                final int tmp = fmap[i];
+                final int ec_tmp = eclass[tmp];
+                for (j = i + 4; j <= hi && ec_tmp > eclass[fmap[j]];
+                     j += 4) {
+                    fmap[j - 4] = fmap[j];
+                }
+                fmap[j - 4] = tmp;
+            }
+        }
+
+        for (int i = hi - 1; i >= lo; i--) {
+            final int tmp = fmap[i];
+            final int ec_tmp = eclass[tmp];
+            for (j = i + 1; j <= hi && ec_tmp > eclass[fmap[j]]; j++) {
+                fmap[j - 1] = fmap[j];
+            }
+            fmap[j-1] = tmp;
+        }
     }
 
-    /*
-     * The C code uses an array of ints (each int holding 32 flags) to
-     * represents the bucket-start flags (bhtab).  It also contains
-     * optimizations to skip over 32 consecutively set or
-     * consecutively unset bits on word boundaries at once.  For now
-     * I've chosen to use the simpler but potentially slower code
-     * using BitSet - also in the hope that using the BitSet#nextXXX
-     * methods may be fast enough.
+    /**
+     * Adapt fallbackSort to the expected interface of the rest of the
+     * code, in particular deal with the fact that block starts at
+     * offset 1 (in libbzip2 1.0.6 it starts at 0).
      */
+    final void fallbackSort(final BZip2CompressorOutputStream.Data data,
+                            final int last) {
+        data.block[0] = data.block[last + 1];
+        fallbackSort(data.fmap, data.block, last + 1);
+        for (int i = 0; i < last + 1; i++) {
+            --data.fmap[i];
+        }
+        for (int i = 0; i < last + 1; i++) {
+            if (data.fmap[i] == -1) {
+                data.fmap[i] = last;
+                break;
+            }
+        }
+    }
+
+/*--
+   LBZ2: The following is an implementation of
+   an elegant 3-way quicksort for strings,
+   described in a paper "Fast Algorithms for
+   Sorting and Searching Strings", by Robert
+   Sedgewick and Jon L. Bentley.
+--*/
 
     /**
      * @param fmap points to the index of the starting point of a
@@ -572,23 +578,149 @@ class BlockSort {
         }
     }
 
-/*---------------------------------------------*/
+    private int[] fpop(final int sp) {
+        return new int[] { stack_ll[sp], stack_hh[sp] };
+    }
 
-    /*
-     * LBZ2: Knuth's increments seem to work better than Incerpi-Sedgewick here.
-     * Possibly because the number of elems to sort is usually small, typically
-     * &lt;= 20.
+    private void fpush(final int sp, final int lz, final int hz) {
+        stack_ll[sp] = lz;
+        stack_hh[sp] = hz;
+    }
+    /**
+     * swaps two values in fmap
      */
-    private static final int[] INCS = { 1, 4, 13, 40, 121, 364, 1093, 3280,
-                                        9841, 29524, 88573, 265720, 797161,
-                                        2391484 };
+    private void fswap(final int[] fmap, final int zz1, final int zz2) {
+        final int zztmp = fmap[zz1];
+        fmap[zz1] = fmap[zz2];
+        fmap[zz2] = zztmp;
+    }
+    /**
+     * swaps two intervals starting at yyp1 and yyp2 of length yyn inside fmap.
+     */
+    private void fvswap(final int[] fmap, int yyp1, int yyp2, int yyn) {
+        while (yyn > 0) {
+            fswap(fmap, yyp1, yyp2);
+            yyp1++; yyp2++; yyn--;
+        }
+    }
 
+    private int[] getEclass() {
+        if (eclass == null) {
+            eclass = new int[quadrant.length / 2];
+        }
+        return eclass;
+    }
+
+    /**
+     * Method "mainQSort3", file "blocksort.c", BZip2 1.0.2
+     */
+    private void mainQSort3(final BZip2CompressorOutputStream.Data dataShadow,
+                            final int loSt, final int hiSt, final int dSt,
+                            final int last) {
+        final int[] stack_ll = this.stack_ll;
+        final int[] stack_hh = this.stack_hh;
+        final int[] stack_dd = this.stack_dd;
+        final int[] fmap = dataShadow.fmap;
+        final byte[] block = dataShadow.block;
+
+        stack_ll[0] = loSt;
+        stack_hh[0] = hiSt;
+        stack_dd[0] = dSt;
+
+        for (int sp = 1; --sp >= 0;) {
+            final int lo = stack_ll[sp];
+            final int hi = stack_hh[sp];
+            final int d = stack_dd[sp];
+
+            if ((hi - lo < SMALL_THRESH) || (d > DEPTH_THRESH)) {
+                if (mainSimpleSort(dataShadow, lo, hi, d, last)) {
+                    return;
+                }
+            } else {
+                final int d1 = d + 1;
+                final int med = med3(block[fmap[lo] + d1] & 0xff,
+                                     block[fmap[hi] + d1] & 0xff,
+                                     block[fmap[(lo + hi) >>> 1] + d1] & 0xff);
+
+                int unLo = lo;
+                int unHi = hi;
+                int ltLo = lo;
+                int gtHi = hi;
+
+                while (true) {
+                    while (unLo <= unHi) {
+                        final int n = (block[fmap[unLo] + d1] & 0xff)
+                            - med;
+                        if (n == 0) {
+                            final int temp = fmap[unLo];
+                            fmap[unLo++] = fmap[ltLo];
+                            fmap[ltLo++] = temp;
+                        } else if (n < 0) {
+                            unLo++;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    while (unLo <= unHi) {
+                        final int n = (block[fmap[unHi] + d1] & 0xff)
+                            - med;
+                        if (n == 0) {
+                            final int temp = fmap[unHi];
+                            fmap[unHi--] = fmap[gtHi];
+                            fmap[gtHi--] = temp;
+                        } else if (n > 0) {
+                            unHi--;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    if (unLo > unHi) {
+                        break;
+                    }
+                    final int temp = fmap[unLo];
+                    fmap[unLo++] = fmap[unHi];
+                    fmap[unHi--] = temp;
+                }
+
+                if (gtHi < ltLo) {
+                    stack_ll[sp] = lo;
+                    stack_hh[sp] = hi;
+                    stack_dd[sp] = d1;
+                } else {
+                    int n = Math.min(ltLo - lo, unLo - ltLo);
+                    vswap(fmap, lo, unLo - n, n);
+                    int m = Math.min(hi - gtHi, gtHi - unHi);
+                    vswap(fmap, unLo, hi - m + 1, m);
+
+                    n = lo + unLo - ltLo - 1;
+                    m = hi - (gtHi - unHi) + 1;
+
+                    stack_ll[sp] = lo;
+                    stack_hh[sp] = n;
+                    stack_dd[sp] = d;
+                    sp++;
+
+                    stack_ll[sp] = n + 1;
+                    stack_hh[sp] = m - 1;
+                    stack_dd[sp] = d1;
+                    sp++;
+
+                    stack_ll[sp] = m;
+                    stack_hh[sp] = hi;
+                    stack_dd[sp] = d;
+                }
+                sp++;
+            }
+        }
+    }
     /**
      * This is the most hammered method of this class.
      *
      * <p>
      * This is the version using unrolled loops. Normally I never use such ones
-     * in Java code. The unrolling has shown a noticable performance improvement
+     * in Java code. The unrolling has shown a noticeable performance improvement
      * on JRE 1.4.2 (Linux i586 / HotSpot Client). Of course it depends on the
      * JIT compiler of the vm.
      * </p>
@@ -773,142 +905,6 @@ class BlockSort {
         return firstAttemptShadow && (workDoneShadow > workLimitShadow);
     }
 
-/*--
-   LBZ2: The following is an implementation of
-   an elegant 3-way quicksort for strings,
-   described in a paper "Fast Algorithms for
-   Sorting and Searching Strings", by Robert
-   Sedgewick and Jon L. Bentley.
---*/
-
-    private static void vswap(final int[] fmap, int p1, int p2, int n) {
-        n += p1;
-        while (p1 < n) {
-            final int t = fmap[p1];
-            fmap[p1++] = fmap[p2];
-            fmap[p2++] = t;
-        }
-    }
-
-    private static byte med3(final byte a, final byte b, final byte c) {
-        return (a < b) ? (b < c ? b : a < c ? c : a) : (b > c ? b : a > c ? c
-                                                        : a);
-    }
-
-    private static final int SMALL_THRESH = 20;
-    private static final int DEPTH_THRESH = 10;
-    private static final int WORK_FACTOR = 30;
-
-    /**
-     * Method "mainQSort3", file "blocksort.c", BZip2 1.0.2
-     */
-    private void mainQSort3(final BZip2CompressorOutputStream.Data dataShadow,
-                            final int loSt, final int hiSt, final int dSt,
-                            final int last) {
-        final int[] stack_ll = this.stack_ll;
-        final int[] stack_hh = this.stack_hh;
-        final int[] stack_dd = this.stack_dd;
-        final int[] fmap = dataShadow.fmap;
-        final byte[] block = dataShadow.block;
-
-        stack_ll[0] = loSt;
-        stack_hh[0] = hiSt;
-        stack_dd[0] = dSt;
-
-        for (int sp = 1; --sp >= 0;) {
-            final int lo = stack_ll[sp];
-            final int hi = stack_hh[sp];
-            final int d = stack_dd[sp];
-
-            if ((hi - lo < SMALL_THRESH) || (d > DEPTH_THRESH)) {
-                if (mainSimpleSort(dataShadow, lo, hi, d, last)) {
-                    return;
-                }
-            } else {
-                final int d1 = d + 1;
-                final int med = med3(block[fmap[lo] + d1],
-                                     block[fmap[hi] + d1], block[fmap[(lo + hi) >>> 1] + d1]) & 0xff;
-
-                int unLo = lo;
-                int unHi = hi;
-                int ltLo = lo;
-                int gtHi = hi;
-
-                while (true) {
-                    while (unLo <= unHi) {
-                        final int n = (block[fmap[unLo] + d1] & 0xff)
-                            - med;
-                        if (n == 0) {
-                            final int temp = fmap[unLo];
-                            fmap[unLo++] = fmap[ltLo];
-                            fmap[ltLo++] = temp;
-                        } else if (n < 0) {
-                            unLo++;
-                        } else {
-                            break;
-                        }
-                    }
-
-                    while (unLo <= unHi) {
-                        final int n = (block[fmap[unHi] + d1] & 0xff)
-                            - med;
-                        if (n == 0) {
-                            final int temp = fmap[unHi];
-                            fmap[unHi--] = fmap[gtHi];
-                            fmap[gtHi--] = temp;
-                        } else if (n > 0) {
-                            unHi--;
-                        } else {
-                            break;
-                        }
-                    }
-
-                    if (unLo > unHi) {
-                        break;
-                    }
-                    final int temp = fmap[unLo];
-                    fmap[unLo++] = fmap[unHi];
-                    fmap[unHi--] = temp;
-                }
-
-                if (gtHi < ltLo) {
-                    stack_ll[sp] = lo;
-                    stack_hh[sp] = hi;
-                    stack_dd[sp] = d1;
-                    sp++;
-                } else {
-                    int n = ((ltLo - lo) < (unLo - ltLo)) ? (ltLo - lo)
-                        : (unLo - ltLo);
-                    vswap(fmap, lo, unLo - n, n);
-                    int m = ((hi - gtHi) < (gtHi - unHi)) ? (hi - gtHi)
-                        : (gtHi - unHi);
-                    vswap(fmap, unLo, hi - m + 1, m);
-
-                    n = lo + unLo - ltLo - 1;
-                    m = hi - (gtHi - unHi) + 1;
-
-                    stack_ll[sp] = lo;
-                    stack_hh[sp] = n;
-                    stack_dd[sp] = d;
-                    sp++;
-
-                    stack_ll[sp] = n + 1;
-                    stack_hh[sp] = m - 1;
-                    stack_dd[sp] = d1;
-                    sp++;
-
-                    stack_ll[sp] = m;
-                    stack_hh[sp] = hi;
-                    stack_dd[sp] = d;
-                    sp++;
-                }
-            }
-        }
-    }
-
-    private static final int SETMASK = (1 << 21);
-    private static final int CLEARMASK = (~SETMASK);
-
     final void mainSort(final BZip2CompressorOutputStream.Data dataShadow,
                         final int lastShadow) {
         final int[] runningOrder = this.mainSort_runningOrder;
@@ -922,9 +918,7 @@ class BlockSort {
         final boolean firstAttemptShadow = this.firstAttempt;
 
         // LBZ2: Set up the 2-byte frequency table
-        for (int i = 65537; --i >= 0;) {
-            ftab[i] = 0;
-        }
+        Arrays.fill(ftab, 0);
 
         /*
          * In the various block-sized structures, live data runs from 0 to

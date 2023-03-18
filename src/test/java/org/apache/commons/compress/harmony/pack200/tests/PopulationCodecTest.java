@@ -16,67 +16,61 @@
  */
 package org.apache.commons.compress.harmony.pack200.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.stream.Stream;
 
-import junit.framework.TestCase;
-
-import org.apache.commons.compress.harmony.pack200.BHSDCodec;
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PopulationCodec;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-public class PopulationCodecTest extends TestCase {
+public class PopulationCodecTest {
 
-    public void testPopulationCodec() throws IOException, Pack200Exception {
-        checkDecode(new byte[] { 4, 5, 6, 4, 2, 1, 3, 0, 7 }, new long[] { 5,
-                4, 6, 7 }, Codec.BYTE1);
-        // Codec.SIGNED5 can be trivial for small n, because the encoding is 2n
-        // if even, 2n-1 if odd
-        // Therefore they're left here to explain what the values are :-)
-        checkDecode(new byte[] { 4 * 2, 4 * 2 - 1, 6 * 2, 4 * 2, 2 * 2, 1 * 2,
-                3 * 2, 0, 7 * 2 }, new long[] { -4, 4, 6, 7 }, Codec.SIGNED5);
-        checkDecode(new byte[] { 4 * 2 - 1, 4 * 2, 6 * 2, 4 * 2, 2 * 2, 1 * 2,
-                3 * 2, 0, 7 * 2 }, new long[] { 4, -4, 6, 7 }, Codec.SIGNED5);
-        checkDecode(new byte[] { 1, 1, 1 }, new long[] { 1 }, Codec.BYTE1);
-        checkDecode(new byte[] { 2, 2, 1 }, new long[] { 2 }, Codec.BYTE1);
-        checkDecode(new byte[] { 1, 1, 2 }, new long[] { -1 }, Codec.SIGNED5);
-        checkDecode(new byte[] { 2, 2, 0, 1, 3 }, new long[] { 3, 2 },
-                Codec.BYTE1);
-        checkDecode(new byte[] { 1, 2, 3, 4, 4, 2, 3, 4, 0, 1 }, new long[] {
-                2, 3, 4, 1 }, Codec.BYTE1);
-        checkDecode(new byte[] { 3, 2, 1, 4, 4, 2, 3, 4, 0, 1 }, new long[] {
-                2, 1, 4, 1 }, Codec.BYTE1);
-        checkDecode(new byte[] { 3, 2, 1, 4, 1, 2, 3, 4, 0, 1 }, new long[] {
-                2, 1, 4, 1 }, Codec.BYTE1);
+    static Stream<Arguments> populationCodec() {
+        return Stream.of(
+                Arguments.of(new byte[] { 4, 5, 6, 4, 2, 1, 3, 0, 7 }, new long[] { 5, 4, 6, 7 }, Codec.BYTE1),
+                // Codec.SIGNED5 can be trivial for small n, because the encoding is 2n
+                // if even, 2n-1 if odd
+                // Therefore they're left here to explain what the values are :-)
+                Arguments.of(new byte[] { 4 * 2, 4 * 2 - 1, 6 * 2, 4 * 2, 2 * 2, 1 * 2, 3 * 2, 0, 7 * 2 }, new long[] { -4, 4, 6, 7 }, Codec.SIGNED5),
+                Arguments.of(new byte[] { 4 * 2 - 1, 4 * 2, 6 * 2, 4 * 2, 2 * 2, 1 * 2, 3 * 2, 0, 7 * 2 }, new long[] { 4, -4, 6, 7 }, Codec.SIGNED5),
+                Arguments.of(new byte[] { 1, 1, 1 }, new long[] { 1 }, Codec.BYTE1),
+                Arguments.of(new byte[] { 2, 2, 1 }, new long[] { 2 }, Codec.BYTE1),
+                Arguments.of(new byte[] { 1, 1, 2 }, new long[] { -1 }, Codec.SIGNED5),
+                Arguments.of(new byte[] { 2, 2, 0, 1, 3 }, new long[] { 3, 2 }, Codec.BYTE1),
+                Arguments.of(new byte[] { 1, 2, 3, 4, 4, 2, 3, 4, 0, 1 }, new long[] { 2, 3, 4, 1 }, Codec.BYTE1),
+                Arguments.of(new byte[] { 3, 2, 1, 4, 4, 2, 3, 4, 0, 1 }, new long[] { 2, 1, 4, 1 }, Codec.BYTE1),
+                Arguments.of(new byte[] { 3, 2, 1, 4, 1, 2, 3, 4, 0, 1 }, new long[] { 2, 1, 4, 1 }, Codec.BYTE1)
+        );
     }
 
-    private void checkDecode(byte[] data, long[] expectedResult, Codec codec)
-            throws IOException, Pack200Exception {
-        InputStream in = new ByteArrayInputStream(data);
-
-        int[] result = new PopulationCodec(codec, codec, codec).decodeInts(
-                expectedResult.length, in);
-        assertEquals(expectedResult.length, result.length);
-        for (int i = 0; i < expectedResult.length; i++) {
-            assertEquals(expectedResult[i], result[i]);
-        }
-        assertEquals(0, in.available());
-    }
-    
+    @Test
     public void testEncodeSingleValue() {
-        try {
-            new PopulationCodec(BHSDCodec.SIGNED5, BHSDCodec.SIGNED5, BHSDCodec.UDELTA5).encode(5);
-            fail("Should not allow a single value to be encoded as we don't know which codec to use");
-        } catch (Pack200Exception e) {
-            // pass
-        }
-        try {
-            new PopulationCodec(BHSDCodec.SIGNED5, BHSDCodec.SIGNED5, BHSDCodec.UDELTA5).encode(5, 8);
-            fail("Should not allow a single value to be encoded as we don't know which codec to use");
-        } catch (Pack200Exception e) {
-            // pass
+        assertThrows(Pack200Exception.class, () -> new PopulationCodec(Codec.SIGNED5, Codec.SIGNED5, Codec.UDELTA5).encode(5),
+                "Should not allow a single value to be encoded as we don't know which codec to use");
+        assertThrows(Pack200Exception.class, () -> new PopulationCodec(Codec.SIGNED5, Codec.SIGNED5, Codec.UDELTA5).encode(5, 8),
+                "Should not allow a single value to be encoded as we don't know which codec to use");
+    }
+
+    @ParameterizedTest
+    @MethodSource("populationCodec")
+    public void testPopulationCodec(final byte[] data, final long[] expectedResult, final Codec codec) throws IOException, Pack200Exception {
+        try (InputStream in = new ByteArrayInputStream(data)) {
+            final int[] result = new PopulationCodec(codec, codec, codec).decodeInts(
+                    expectedResult.length, in);
+            assertEquals(expectedResult.length, result.length);
+            for (int i = 0; i < expectedResult.length; i++) {
+                assertEquals(expectedResult[i], result[i]);
+            }
+            assertEquals(0, in.available());
         }
     }
 

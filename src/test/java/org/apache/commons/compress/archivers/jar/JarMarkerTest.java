@@ -18,22 +18,18 @@
  */
 package org.apache.commons.compress.archivers.jar;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.zip.ZipException;
+
 import org.apache.commons.compress.archivers.zip.JarMarker;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class JarMarkerTest {
 
-    @Test public void testJarMarkerLengthCheck() {
-        final JarMarker jarMarker = JarMarker.getInstance();
-        try {
-            jarMarker.parseFromLocalFileData(null,0,1);
-            fail("should have thrown exception due to length of 1");
-        } catch (final ZipException e) {
-
-        }
+    @Test
+    public void testJarMarkerLengthCheck() {
+        assertThrows(ZipException.class, () -> JarMarker.getInstance().parseFromLocalFileData(null, 0, 1));
     }
 
 }

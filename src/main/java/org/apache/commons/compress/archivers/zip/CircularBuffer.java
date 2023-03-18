@@ -22,7 +22,6 @@ package org.apache.commons.compress.archivers.zip;
 /**
  * Circular byte buffer.
  *
- * @author Emmanuel Bourg
  * @since 1.7
  */
 class CircularBuffer {
@@ -45,34 +44,16 @@ class CircularBuffer {
     }
 
     /**
-     * Tells if a new byte can be read from the buffer.
+     * Tests whether a new byte can be read from the buffer.
+     *
+     * @return Whether a new byte can be read from the buffer.
      */
     public boolean available() {
         return readIndex != writeIndex;
     }
 
     /**
-     * Writes a byte to the buffer.
-     */
-    public void put(final int value) {
-        buffer[writeIndex] = (byte) value;
-        writeIndex = (writeIndex + 1) % size;
-    }
-
-    /**
-     * Reads a byte from the buffer.
-     */
-    public int get() {
-        if (available()) {
-            final int value = buffer[readIndex];
-            readIndex = (readIndex + 1) % size;
-            return value & 0xFF;
-        }
-        return -1;
-    }
-
-    /**
-     * Copy a previous interval in the buffer to the current position.
+     * Copies a previous interval in the buffer to the current position.
      *
      * @param distance the distance from the current write position
      * @param length   the number of bytes to copy
@@ -84,5 +65,29 @@ class CircularBuffer {
             buffer[writeIndex] = buffer[(i + size) % size];
             writeIndex = (writeIndex + 1) % size;
         }
+    }
+
+    /**
+     * Reads a byte from the buffer.
+     *
+     * @return a byte from the buffer.
+     */
+    public int get() {
+        if (available()) {
+            final int value = buffer[readIndex];
+            readIndex = (readIndex + 1) % size;
+            return value & 0xFF;
+        }
+        return -1;
+    }
+
+    /**
+     * Puts a byte to the buffer.
+     *
+     * @param value the value to put.
+     */
+    public void put(final int value) {
+        buffer[writeIndex] = (byte) value;
+        writeIndex = (writeIndex + 1) % size;
     }
 }

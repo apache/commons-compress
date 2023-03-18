@@ -17,6 +17,8 @@
 
 package org.apache.commons.compress.compressors.zstandard;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,8 +31,7 @@ import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ZstdRoundtripTest extends AbstractTestCase {
 
@@ -43,50 +44,47 @@ public class ZstdRoundtripTest extends AbstractTestCase {
         roundtrip(ZstdCompressorOutputStream::new);
     }
 
-    private void roundtrip(final OutputStreamCreator oc) throws IOException {
-        final File input = getFile("bla.tar");
-        long start = System.currentTimeMillis();
-        final File output = new File(dir, input.getName() + ".zstd");
-        try (InputStream is = Files.newInputStream(input.toPath());
-             FileOutputStream os = new FileOutputStream(output);
-             ZstdCompressorOutputStream zos = oc.wrap(os)) {
-            IOUtils.copy(is, zos);
-        }
-        System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-            + ", compressed bytes: " + output.length() + " after " + (System.currentTimeMillis() - start) + "ms");
-        start = System.currentTimeMillis();
-        try (InputStream is = Files.newInputStream(input.toPath());
-             ZstdCompressorInputStream zis = new ZstdCompressorInputStream(Files.newInputStream(output.toPath()))) {
-            final byte[] expected = IOUtils.toByteArray(is);
-            final byte[] actual = IOUtils.toByteArray(zis);
-            Assert.assertArrayEquals(expected, actual);
-        }
-        System.err.println(output.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
-    }
-
     @Test
     public void factoryRoundtrip() throws Exception {
         final File input = getFile("bla.tar");
         long start = System.currentTimeMillis();
         final File output = new File(dir, input.getName() + ".zstd");
-        try (InputStream is = Files.newInputStream(input.toPath());
-             OutputStream os = Files.newOutputStream(output.toPath());
-             CompressorOutputStream zos = new CompressorStreamFactory().createCompressorOutputStream("zstd", os)) {
-            IOUtils.copy(is, zos);
+        try (OutputStream os = Files.newOutputStream(output.toPath());
+                CompressorOutputStream zos = new CompressorStreamFactory().createCompressorOutputStream("zstd", os)) {
+            Files.copy(input.toPath(), zos);
         }
         start = System.currentTimeMillis();
-        try (InputStream is = Files.newInputStream(input.toPath());
-             CompressorInputStream zis = new CompressorStreamFactory()
-             .createCompressorInputStream("zstd", Files.newInputStream(output.toPath()))) {
-            final byte[] expected = IOUtils.toByteArray(is);
+        try (final InputStream inputStream = Files.newInputStream(output.toPath());
+                CompressorInputStream zis = new CompressorStreamFactory().createCompressorInputStream("zstd", inputStream)) {
+            final byte[] expected = Files.readAllBytes(input.toPath());
             final byte[] actual = IOUtils.toByteArray(zis);
-            Assert.assertArrayEquals(expected, actual);
+            assertArrayEquals(expected, actual);
         }
     }
 
+    private void roundtrip(final OutputStreamCreator oc) throws IOException {
+        final File input = getFile("bla.tar");
+        long start = System.currentTimeMillis();
+        final File output = new File(dir, input.getName() + ".zstd");
+        try (FileOutputStream os = new FileOutputStream(output);
+             ZstdCompressorOutputStream zos = oc.wrap(os)) {
+            Files.copy(input.toPath(), zos);
+        }
+        //System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
+        //    + ", compressed bytes: " + output.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        start = System.currentTimeMillis();
+        try (InputStream is = Files.newInputStream(input.toPath());
+             ZstdCompressorInputStream zis = new ZstdCompressorInputStream(Files.newInputStream(output.toPath()))) {
+            final byte[] expected = IOUtils.toByteArray(is);
+            final byte[] actual = IOUtils.toByteArray(zis);
+            assertArrayEquals(expected, actual);
+        }
+        // System.err.println(output.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
+    }
+
     @Test
-    public void roundtripWithCustomLevel() throws Exception {
-        roundtrip(os -> new ZstdCompressorOutputStream(os, 1));
+    public void roundtripWithChecksum() throws Exception {
+        roundtrip(os -> new ZstdCompressorOutputStream(os, 3, false, true));
     }
 
     @Test
@@ -95,8 +93,8 @@ public class ZstdRoundtripTest extends AbstractTestCase {
     }
 
     @Test
-    public void roundtripWithChecksum() throws Exception {
-        roundtrip(os -> new ZstdCompressorOutputStream(os, 3, false, true));
+    public void roundtripWithCustomLevel() throws Exception {
+        roundtrip(os -> new ZstdCompressorOutputStream(os, 1));
     }
 
 }

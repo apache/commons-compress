@@ -18,8 +18,8 @@
 
 package org.apache.commons.compress;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,14 +27,13 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.ArchiveException;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Test that can read various archive file examples.
@@ -44,7 +43,6 @@ import org.junit.runners.Parameterized.Parameters;
  * Files must be in resources/archives, and there must be a file.txt containing
  * the list of files in the archives.
  */
-@RunWith(Parameterized.class)
 public class ArchiveReadTest extends AbstractTestCase {
 
     private static final ClassLoader CLASSLOADER = ArchiveReadTest.class.getClassLoader();
@@ -55,21 +53,24 @@ public class ArchiveReadTest extends AbstractTestCase {
         try {
             ARCDIR = new File(CLASSLOADER.getResource("archives").toURI());
         } catch (final URISyntaxException e) {
-            throw new RuntimeException(e);
+            throw new AssertionError(e);
         }
     }
 
-    private final File file;
-
-    public ArchiveReadTest(final String file){
-        this.file = new File(ARCDIR, file);
+    public static Stream<Arguments> data() {
+        assertTrue(ARCDIR.exists());
+        final Collection<Arguments> params = new ArrayList<>();
+        for (final String fileName : ARCDIR.list((dir, name) -> !name.endsWith(".txt"))) {
+            params.add(Arguments.of(new File(ARCDIR, fileName)));
+        }
+        return params.stream();
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpFileList() throws Exception {
         assertTrue(ARCDIR.exists());
         final File listing = new File(ARCDIR, "files.txt");
-        assertTrue("files.txt is readable", listing.canRead());
+        assertTrue(listing.canRead(), "files.txt is readable");
         try (final BufferedReader br = new BufferedReader(Files.newBufferedReader(listing.toPath()))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -80,34 +81,17 @@ public class ArchiveReadTest extends AbstractTestCase {
         }
     }
 
-    @Parameters(name = "file={0}")
-    public static Collection<Object[]> data() {
-        assertTrue(ARCDIR.exists());
-        final Collection<Object[]> params = new ArrayList<>();
-        for (final String f : ARCDIR.list((dir, name) -> !name.endsWith(".txt")))
-        {
-            params.add(new Object[] { f });
-        }
-      return params;
-    }
-
     // files.txt contains size and filename
     @Override
     protected String getExpectedString(final ArchiveEntry entry) {
         return entry.getSize() + " " + entry.getName();
     }
 
-    @Test
-    public void testArchive() throws Exception{
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testArchive(final File file) throws Exception {
         @SuppressWarnings("unchecked") // fileList is correct type already
-        final
-        ArrayList<String> expected= (ArrayList<String>) FILELIST.clone();
-        try {
-           checkArchiveContent(file, expected);
-        } catch (final ArchiveException e) {
-            fail("Problem checking "+file);
-        } catch (final AssertionError e) { // show error in context
-            fail("Problem checking " + file + " " +e);
-        }
+        final ArrayList<String> expected = (ArrayList<String>) FILELIST.clone();
+        assertDoesNotThrow(() -> checkArchiveContent(file, expected), "Problem checking " + file);
     }
 }

@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+import org.apache.commons.compress.utils.ExactMath;
+
 /**
  * A run codec is a grouping of two nested codecs; K values are decoded from the first codec, and the remaining codes
  * are decoded from the remaining codec. Note that since this codec maintains state, the instances are not reusable.
@@ -59,22 +61,6 @@ public class RunCodec extends Codec {
         return normalise(this.last, bCodec);
     }
 
-    private int normalise(int value, final Codec codecUsed) {
-        if (codecUsed instanceof BHSDCodec) {
-            final BHSDCodec bhsd = (BHSDCodec) codecUsed;
-            if (bhsd.isDelta()) {
-                final long cardinality = bhsd.cardinality();
-                while (value > bhsd.largest()) {
-                    value -= cardinality;
-                }
-                while (value < bhsd.smallest()) {
-                    value += cardinality;
-                }
-            }
-        }
-        return value;
-    }
-
     @Override
     public int[] decodeInts(final int n, final InputStream in) throws IOException, Pack200Exception {
         final int[] band = new int[n];
@@ -88,6 +74,44 @@ public class RunCodec extends Codec {
         return band;
     }
 
+    @Override
+    public byte[] encode(final int value) throws Pack200Exception {
+        throw new Pack200Exception("Must encode entire band at once with a RunCodec");
+    }
+
+    @Override
+    public byte[] encode(final int value, final int last) throws Pack200Exception {
+        throw new Pack200Exception("Must encode entire band at once with a RunCodec");
+    }
+
+    public Codec getACodec() {
+        return aCodec;
+    }
+
+    public Codec getBCodec() {
+        return bCodec;
+    }
+
+    public int getK() {
+        return k;
+    }
+
+    private int normalise(int value, final Codec codecUsed) {
+        if (codecUsed instanceof BHSDCodec) {
+            final BHSDCodec bhsd = (BHSDCodec) codecUsed;
+            if (bhsd.isDelta()) {
+                final long cardinality = bhsd.cardinality();
+                while (value > bhsd.largest()) {
+                    value -= cardinality;
+                }
+                while (value < bhsd.smallest()) {
+                    value = ExactMath.add(value, cardinality);
+                }
+            }
+        }
+        return value;
+    }
+
     private void normalise(final int[] band, final Codec codecUsed) {
         if (codecUsed instanceof BHSDCodec) {
             final BHSDCodec bhsd = (BHSDCodec) codecUsed;
@@ -98,13 +122,13 @@ public class RunCodec extends Codec {
                         band[i] -= cardinality;
                     }
                     while (band[i] < bhsd.smallest()) {
-                        band[i] += cardinality;
+                        band[i] = ExactMath.add(band[i], cardinality);
                     }
                 }
             }
         } else if (codecUsed instanceof PopulationCodec) {
             final PopulationCodec popCodec = (PopulationCodec) codecUsed;
-            final int[] favoured = (int[]) popCodec.getFavoured().clone();
+            final int[] favoured = popCodec.getFavoured().clone();
             Arrays.sort(favoured);
             for (int i = 0; i < band.length; i++) {
                 final boolean favouredValue = Arrays.binarySearch(favoured, band[i]) > -1;
@@ -117,7 +141,7 @@ public class RunCodec extends Codec {
                             band[i] -= cardinality;
                         }
                         while (band[i] < bhsd.smallest()) {
-                            band[i] += cardinality;
+                            band[i] = ExactMath.add(band[i], cardinality);
                         }
                     }
                 }
@@ -128,27 +152,5 @@ public class RunCodec extends Codec {
     @Override
     public String toString() {
         return "RunCodec[k=" + k + ";aCodec=" + aCodec + "bCodec=" + bCodec + "]";
-    }
-
-    @Override
-    public byte[] encode(final int value, final int last) throws Pack200Exception {
-        throw new Pack200Exception("Must encode entire band at once with a RunCodec");
-    }
-
-    @Override
-    public byte[] encode(final int value) throws Pack200Exception {
-        throw new Pack200Exception("Must encode entire band at once with a RunCodec");
-    }
-
-    public int getK() {
-        return k;
-    }
-
-    public Codec getACodec() {
-        return aCodec;
-    }
-
-    public Codec getBCodec() {
-        return bCodec;
     }
 }

@@ -37,8 +37,8 @@ public class ExceptionTableEntry {
 
     /**
      * Create a new ExceptionTableEntry. Exception tables are of two kinds: either a normal one (with a Throwable as the
-     * catch_type) or a finally clause (which has no catch_type). In the class file, the finally clause is represented
-     * as catch_type == 0.
+     * catchType) or a finally clause (which has no catchType). In the class file, the finally clause is represented
+     * as catchType == 0.
      *
      * To create a finally clause with this method, pass in null for the catchType.
      *
@@ -54,23 +54,16 @@ public class ExceptionTableEntry {
         this.catchType = catchType;
     }
 
-    public void write(final DataOutputStream dos) throws IOException {
-        dos.writeShort(startPcRenumbered);
-        dos.writeShort(endPcRenumbered);
-        dos.writeShort(handlerPcRenumbered);
-        dos.writeShort(catchTypeIndex);
-    }
-
-    public void renumber(final List byteCodeOffsets) {
-        startPcRenumbered = ((Integer) byteCodeOffsets.get(startPC)).intValue();
-        final int endPcIndex = startPC + endPC;
-        endPcRenumbered = ((Integer) byteCodeOffsets.get(endPcIndex)).intValue();
-        final int handlerPcIndex = endPcIndex + handlerPC;
-        handlerPcRenumbered = ((Integer) byteCodeOffsets.get(handlerPcIndex)).intValue();
-    }
-
     public CPClass getCatchType() {
         return catchType;
+    }
+
+    public void renumber(final List<Integer> byteCodeOffsets) {
+        startPcRenumbered = byteCodeOffsets.get(startPC).intValue();
+        final int endPcIndex = startPC + endPC;
+        endPcRenumbered = byteCodeOffsets.get(endPcIndex).intValue();
+        final int handlerPcIndex = endPcIndex + handlerPC;
+        handlerPcRenumbered = byteCodeOffsets.get(handlerPcIndex).intValue();
     }
 
     public void resolve(final ClassConstantPool pool) {
@@ -82,5 +75,12 @@ public class ExceptionTableEntry {
         }
         catchType.resolve(pool);
         catchTypeIndex = pool.indexOf(catchType);
+    }
+
+    public void write(final DataOutputStream dos) throws IOException {
+        dos.writeShort(startPcRenumbered);
+        dos.writeShort(endPcRenumbered);
+        dos.writeShort(handlerPcRenumbered);
+        dos.writeShort(catchTypeIndex);
     }
 }

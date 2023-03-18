@@ -23,10 +23,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Locale;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -60,8 +59,6 @@ import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStre
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorOutputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdUtils;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.compress.utils.Lists;
-import org.apache.commons.compress.utils.ServiceLoaderIterator;
 import org.apache.commons.compress.utils.Sets;
 
 /**
@@ -213,236 +210,8 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     private static final String YOU_NEED_XZ_JAVA = youNeed("XZ for Java", "https://tukaani.org/xz/java.html");
     private static final String YOU_NEED_ZSTD_JNI = youNeed("Zstd JNI", "https://github.com/luben/zstd-jni");
 
-    private static String youNeed(final String name, final String url) {
-        return " In addition to Apache Commons Compress you need the " + name + " library - see " + url;
-    }
-
-    /**
-     * Constructs a new sorted map from input stream provider names to provider
-     * objects.
-     *
-     * <p>
-     * The map returned by this method will have one entry for each provider for
-     * which support is available in the current Java virtual machine. If two or
-     * more supported provider have the same name then the resulting map will
-     * contain just one of them; which one it will contain is not specified.
-     * </p>
-     *
-     * <p>
-     * The invocation of this method, and the subsequent use of the resulting
-     * map, may cause time-consuming disk or network I/O operations to occur.
-     * This method is provided for applications that need to enumerate all of
-     * the available providers, for example to allow user provider selection.
-     * </p>
-     *
-     * <p>
-     * This method may return different results at different times if new
-     * providers are dynamically made available to the current Java virtual
-     * machine.
-     * </p>
-     *
-     * @return An immutable, map from names to provider objects
-     * @since 1.13
-     */
-    public static SortedMap<String, CompressorStreamProvider> findAvailableCompressorInputStreamProviders() {
-        return AccessController.doPrivileged((PrivilegedAction<SortedMap<String, CompressorStreamProvider>>) () -> {
-            final TreeMap<String, CompressorStreamProvider> map = new TreeMap<>();
-            putAll(SINGLETON.getInputStreamCompressorNames(), SINGLETON, map);
-            for (final CompressorStreamProvider provider : findCompressorStreamProviders()) {
-                putAll(provider.getInputStreamCompressorNames(), provider, map);
-            }
-            return map;
-        });
-    }
-
-    /**
-     * Constructs a new sorted map from output stream provider names to provider
-     * objects.
-     *
-     * <p>
-     * The map returned by this method will have one entry for each provider for
-     * which support is available in the current Java virtual machine. If two or
-     * more supported provider have the same name then the resulting map will
-     * contain just one of them; which one it will contain is not specified.
-     * </p>
-     *
-     * <p>
-     * The invocation of this method, and the subsequent use of the resulting
-     * map, may cause time-consuming disk or network I/O operations to occur.
-     * This method is provided for applications that need to enumerate all of
-     * the available providers, for example to allow user provider selection.
-     * </p>
-     *
-     * <p>
-     * This method may return different results at different times if new
-     * providers are dynamically made available to the current Java virtual
-     * machine.
-     * </p>
-     *
-     * @return An immutable, map from names to provider objects
-     * @since 1.13
-     */
-    public static SortedMap<String, CompressorStreamProvider> findAvailableCompressorOutputStreamProviders() {
-        return AccessController.doPrivileged((PrivilegedAction<SortedMap<String, CompressorStreamProvider>>) () -> {
-            final TreeMap<String, CompressorStreamProvider> map = new TreeMap<>();
-            putAll(SINGLETON.getOutputStreamCompressorNames(), SINGLETON, map);
-            for (final CompressorStreamProvider provider : findCompressorStreamProviders()) {
-                putAll(provider.getOutputStreamCompressorNames(), provider, map);
-            }
-            return map;
-        });
-    }
-    private static ArrayList<CompressorStreamProvider> findCompressorStreamProviders() {
-        return Lists.newArrayList(serviceLoaderIterator());
-    }
-
-    public static String getBrotli() {
-        return BROTLI;
-    }
-
-    public static String getBzip2() {
-        return BZIP2;
-    }
-
-    public static String getDeflate() {
-        return DEFLATE;
-    }
-
-    /**
-     * @since 1.16
-     * @return the constant {@link #DEFLATE64}
-     */
-    public static String getDeflate64() {
-        return DEFLATE64;
-    }
-
-    public static String getGzip() {
-        return GZIP;
-    }
-
-    public static String getLzma() {
-        return LZMA;
-    }
-
-    public static String getPack200() {
-        return PACK200;
-    }
-
-    public static CompressorStreamFactory getSingleton() {
-        return SINGLETON;
-    }
-
-    public static String getSnappyFramed() {
-        return SNAPPY_FRAMED;
-    }
-
-    public static String getSnappyRaw() {
-        return SNAPPY_RAW;
-    }
-
-    public static String getXz() {
-        return XZ;
-    }
-
-    public static String getZ() {
-        return Z;
-    }
-
-    public static String getLZ4Framed() {
-        return LZ4_FRAMED;
-    }
-
-    public static String getLZ4Block() {
-        return LZ4_BLOCK;
-    }
-
-    public static String getZstandard() {
-        return ZSTANDARD;
-    }
-
-    static void putAll(final Set<String> names, final CompressorStreamProvider provider,
-            final TreeMap<String, CompressorStreamProvider> map) {
-        for (final String name : names) {
-            map.put(toKey(name), provider);
-        }
-    }
-
-    private static Iterator<CompressorStreamProvider> serviceLoaderIterator() {
-        return new ServiceLoaderIterator<>(CompressorStreamProvider.class);
-    }
-
-    private static String toKey(final String name) {
-        return name.toUpperCase(Locale.ROOT);
-    }
-
-    /**
-     * If true, decompress until the end of the input. If false, stop after the
-     * first stream and leave the input position to point to the next byte after
-     * the stream
-     */
-    private final Boolean decompressUntilEOF;
-    // This is Boolean so setDecompressConcatenated can determine whether it has
-    // been set by the ctor
-    // once the setDecompressConcatenated method has been removed, it can revert
-    // to boolean
-
-    private SortedMap<String, CompressorStreamProvider> compressorInputStreamProviders;
-
-    private SortedMap<String, CompressorStreamProvider> compressorOutputStreamProviders;
-
-    /**
-     * If true, decompress until the end of the input. If false, stop after the
-     * first stream and leave the input position to point to the next byte after
-     * the stream
-     */
-    private volatile boolean decompressConcatenated;
-
-    private final int memoryLimitInKb;
-
-    /**
-     * Create an instance with the decompress Concatenated option set to false.
-     */
-    public CompressorStreamFactory() {
-        this.decompressUntilEOF = null;
-        this.memoryLimitInKb = -1;
-    }
-
-    /**
-     * Create an instance with the provided decompress Concatenated option.
-     *
-     * @param decompressUntilEOF
-     *            if true, decompress until the end of the input; if false, stop
-     *            after the first stream and leave the input position to point
-     *            to the next byte after the stream. This setting applies to the
-     *            gzip, bzip2 and xz formats only.
-     *
-     * @param memoryLimitInKb
-     *            Some streams require allocation of potentially significant
-     *            byte arrays/tables, and they can offer checks to prevent OOMs
-     *            on corrupt files.  Set the maximum allowed memory allocation in KBs.
-     *
-     * @since 1.14
-     */
-    public CompressorStreamFactory(final boolean decompressUntilEOF, final int memoryLimitInKb) {
-        this.decompressUntilEOF = decompressUntilEOF;
-        // Also copy to existing variable so can continue to use that as the
-        // current value
-        this.decompressConcatenated = decompressUntilEOF;
-        this.memoryLimitInKb = memoryLimitInKb;
-    }
-
-    /**
-     * Create an instance with the provided decompress Concatenated option.
-     *
-     * @param decompressUntilEOF
-     *            if true, decompress until the end of the input; if false, stop
-     *            after the first stream and leave the input position to point
-     *            to the next byte after the stream. This setting applies to the
-     *            gzip, bzip2 and xz formats only.
-     * @since 1.10
-     */
-    public CompressorStreamFactory(final boolean decompressUntilEOF) {
-        this(decompressUntilEOF, -1);
+    private static Iterable<CompressorStreamProvider> archiveStreamProviderIterable() {
+        return ServiceLoader.load(CompressorStreamProvider.class, ClassLoader.getSystemClassLoader());
     }
 
     /**
@@ -516,6 +285,224 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         }
 
         throw new CompressorException("No Compressor found for the stream signature.");
+    }
+
+    /**
+     * Constructs a new sorted map from input stream provider names to provider
+     * objects.
+     *
+     * <p>
+     * The map returned by this method will have one entry for each provider for
+     * which support is available in the current Java virtual machine. If two or
+     * more supported provider have the same name then the resulting map will
+     * contain just one of them; which one it will contain is not specified.
+     * </p>
+     *
+     * <p>
+     * The invocation of this method, and the subsequent use of the resulting
+     * map, may cause time-consuming disk or network I/O operations to occur.
+     * This method is provided for applications that need to enumerate all of
+     * the available providers, for example to allow user provider selection.
+     * </p>
+     *
+     * <p>
+     * This method may return different results at different times if new
+     * providers are dynamically made available to the current Java virtual
+     * machine.
+     * </p>
+     *
+     * @return An immutable, map from names to provider objects
+     * @since 1.13
+     */
+    public static SortedMap<String, CompressorStreamProvider> findAvailableCompressorInputStreamProviders() {
+        return AccessController.doPrivileged((PrivilegedAction<SortedMap<String, CompressorStreamProvider>>) () -> {
+            final TreeMap<String, CompressorStreamProvider> map = new TreeMap<>();
+            putAll(SINGLETON.getInputStreamCompressorNames(), SINGLETON, map);
+            archiveStreamProviderIterable().forEach(provider -> putAll(provider.getInputStreamCompressorNames(), provider, map));
+            return map;
+        });
+    }
+
+    /**
+     * Constructs a new sorted map from output stream provider names to provider
+     * objects.
+     *
+     * <p>
+     * The map returned by this method will have one entry for each provider for
+     * which support is available in the current Java virtual machine. If two or
+     * more supported provider have the same name then the resulting map will
+     * contain just one of them; which one it will contain is not specified.
+     * </p>
+     *
+     * <p>
+     * The invocation of this method, and the subsequent use of the resulting
+     * map, may cause time-consuming disk or network I/O operations to occur.
+     * This method is provided for applications that need to enumerate all of
+     * the available providers, for example to allow user provider selection.
+     * </p>
+     *
+     * <p>
+     * This method may return different results at different times if new
+     * providers are dynamically made available to the current Java virtual
+     * machine.
+     * </p>
+     *
+     * @return An immutable, map from names to provider objects
+     * @since 1.13
+     */
+    public static SortedMap<String, CompressorStreamProvider> findAvailableCompressorOutputStreamProviders() {
+        return AccessController.doPrivileged((PrivilegedAction<SortedMap<String, CompressorStreamProvider>>) () -> {
+            final TreeMap<String, CompressorStreamProvider> map = new TreeMap<>();
+            putAll(SINGLETON.getOutputStreamCompressorNames(), SINGLETON, map);
+            archiveStreamProviderIterable().forEach(provider -> putAll(provider.getOutputStreamCompressorNames(), provider, map));
+            return map;
+        });
+    }
+
+    public static String getBrotli() {
+        return BROTLI;
+    }
+
+    public static String getBzip2() {
+        return BZIP2;
+    }
+
+    public static String getDeflate() {
+        return DEFLATE;
+    }
+
+    /**
+     * @since 1.16
+     * @return the constant {@link #DEFLATE64}
+     */
+    public static String getDeflate64() {
+        return DEFLATE64;
+    }
+
+    public static String getGzip() {
+        return GZIP;
+    }
+
+    public static String getLZ4Block() {
+        return LZ4_BLOCK;
+    }
+
+    public static String getLZ4Framed() {
+        return LZ4_FRAMED;
+    }
+
+    public static String getLzma() {
+        return LZMA;
+    }
+
+    public static String getPack200() {
+        return PACK200;
+    }
+
+    public static CompressorStreamFactory getSingleton() {
+        return SINGLETON;
+    }
+
+    public static String getSnappyFramed() {
+        return SNAPPY_FRAMED;
+    }
+
+    public static String getSnappyRaw() {
+        return SNAPPY_RAW;
+    }
+
+    public static String getXz() {
+        return XZ;
+    }
+
+    public static String getZ() {
+        return Z;
+    }
+
+    public static String getZstandard() {
+        return ZSTANDARD;
+    }
+
+    static void putAll(final Set<String> names, final CompressorStreamProvider provider, final TreeMap<String, CompressorStreamProvider> map) {
+        names.forEach(name -> map.put(toKey(name), provider));
+    }
+
+    private static String toKey(final String name) {
+        return name.toUpperCase(Locale.ROOT);
+    }
+
+    private static String youNeed(final String name, final String url) {
+        return " In addition to Apache Commons Compress you need the " + name + " library - see " + url;
+    }
+
+    /**
+     * If true, decompress until the end of the input. If false, stop after the
+     * first stream and leave the input position to point to the next byte after
+     * the stream
+     */
+    private final Boolean decompressUntilEOF;
+    // This is Boolean so setDecompressConcatenated can determine whether it has
+    // been set by the ctor
+    // once the setDecompressConcatenated method has been removed, it can revert
+    // to boolean
+
+    private SortedMap<String, CompressorStreamProvider> compressorInputStreamProviders;
+
+    private SortedMap<String, CompressorStreamProvider> compressorOutputStreamProviders;
+
+    /**
+     * If true, decompress until the end of the input. If false, stop after the
+     * first stream and leave the input position to point to the next byte after
+     * the stream
+     */
+    private volatile boolean decompressConcatenated;
+
+    private final int memoryLimitInKb;
+
+    /**
+     * Create an instance with the decompress Concatenated option set to false.
+     */
+    public CompressorStreamFactory() {
+        this.decompressUntilEOF = null;
+        this.memoryLimitInKb = -1;
+    }
+
+    /**
+     * Create an instance with the provided decompress Concatenated option.
+     *
+     * @param decompressUntilEOF
+     *            if true, decompress until the end of the input; if false, stop
+     *            after the first stream and leave the input position to point
+     *            to the next byte after the stream. This setting applies to the
+     *            gzip, bzip2 and xz formats only.
+     * @since 1.10
+     */
+    public CompressorStreamFactory(final boolean decompressUntilEOF) {
+        this(decompressUntilEOF, -1);
+    }
+
+    /**
+     * Create an instance with the provided decompress Concatenated option.
+     *
+     * @param decompressUntilEOF
+     *            if true, decompress until the end of the input; if false, stop
+     *            after the first stream and leave the input position to point
+     *            to the next byte after the stream. This setting applies to the
+     *            gzip, bzip2 and xz formats only.
+     *
+     * @param memoryLimitInKb
+     *            Some streams require allocation of potentially significant
+     *            byte arrays/tables, and they can offer checks to prevent OOMs
+     *            on corrupt files.  Set the maximum allowed memory allocation in KBs.
+     *
+     * @since 1.14
+     */
+    public CompressorStreamFactory(final boolean decompressUntilEOF, final int memoryLimitInKb) {
+        this.decompressUntilEOF = decompressUntilEOF;
+        // Also copy to existing variable so can continue to use that as the
+        // current value
+        this.decompressConcatenated = decompressUntilEOF;
+        this.memoryLimitInKb = memoryLimitInKb;
     }
     /**
      * Create an compressor input stream from an input stream, autodetecting the

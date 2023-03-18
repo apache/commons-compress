@@ -18,54 +18,25 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotSame;
+import org.junit.jupiter.api.Test;
 
 /**
- * JUnit testcases for org.apache.commons.compress.archivers.zip.ZipLong.
+ * JUnit tests for org.apache.commons.compress.archivers.zip.ZipLong.
  *
  */
 public class ZipLongTest {
 
-    /**
-     * Test conversion to bytes.
-     */
     @Test
-    public void testToBytes() {
-        final ZipLong zl = new ZipLong(0x12345678);
-        final byte[] result = zl.getBytes();
-        assertEquals("length getBytes", 4, result.length);
-        assertEquals("first byte getBytes", 0x78, result[0]);
-        assertEquals("second byte getBytes", 0x56, result[1]);
-        assertEquals("third byte getBytes", 0x34, result[2]);
-        assertEquals("fourth byte getBytes", 0x12, result[3]);
-    }
-
-    /**
-     * Test conversion to bytes.
-     */
-    @Test
-    public void testPut() {
-        final byte[] arr = new byte[5];
-        ZipLong.putLong(0x12345678, arr, 1);
-        assertEquals("first byte getBytes", 0x78, arr[1]);
-        assertEquals("second byte getBytes", 0x56, arr[2]);
-        assertEquals("third byte getBytes", 0x34, arr[3]);
-        assertEquals("fourth byte getBytes", 0x12, arr[4]);
-    }
-
-    /**
-     * Test conversion from bytes.
-     */
-    @Test
-    public void testFromBytes() {
-        final byte[] val = new byte[] {0x78, 0x56, 0x34, 0x12};
-        final ZipLong zl = new ZipLong(val);
-        assertEquals("value from bytes", 0x12345678, zl.getValue());
+    public void testClone() {
+        final ZipLong s1 = new ZipLong(42);
+        final ZipLong s2 = (ZipLong) s1.clone();
+        assertNotSame(s1, s2);
+        assertEquals(s1, s2);
+        assertEquals(s1.getValue(), s2.getValue());
     }
 
     /**
@@ -77,15 +48,38 @@ public class ZipLongTest {
         final ZipLong zl2 = new ZipLong(0x12345678);
         final ZipLong zl3 = new ZipLong(0x87654321);
 
-        assertEquals("reflexive", zl, zl);
+        assertEquals(zl, zl, "reflexive");
 
-        assertEquals("works", zl, zl2);
-        assertNotEquals("works, part two", zl, zl3);
+        assertEquals(zl, zl2, "works");
+        assertNotEquals(zl, zl3, "works, part two");
 
-        assertEquals("symmetric", zl2, zl);
+        assertEquals(zl2, zl, "symmetric");
 
-        assertNotEquals("null handling", null, zl);
-        assertNotEquals("non ZipLong handling", zl, new Integer(0x1234));
+        assertNotEquals(null, zl, "null handling");
+        assertNotEquals(zl, Integer.valueOf(0x1234), "non ZipLong handling");
+    }
+
+    /**
+     * Test conversion from bytes.
+     */
+    @Test
+    public void testFromBytes() {
+        final byte[] val = {0x78, 0x56, 0x34, 0x12};
+        final ZipLong zl = new ZipLong(val);
+        assertEquals(0x12345678, zl.getValue(), "value from bytes");
+    }
+
+    /**
+     * Test conversion to bytes.
+     */
+    @Test
+    public void testPut() {
+        final byte[] arr = new byte[5];
+        ZipLong.putLong(0x12345678, arr, 1);
+        assertEquals(0x78, arr[1], "first byte getBytes");
+        assertEquals(0x56, arr[2], "second byte getBytes");
+        assertEquals(0x34, arr[3], "third byte getBytes");
+        assertEquals(0x12, arr[4], "fourth byte getBytes");
     }
 
     /**
@@ -104,12 +98,17 @@ public class ZipLongTest {
 
     }
 
+    /**
+     * Test conversion to bytes.
+     */
     @Test
-    public void testClone() {
-        final ZipLong s1 = new ZipLong(42);
-        final ZipLong s2 = (ZipLong) s1.clone();
-        assertNotSame(s1, s2);
-        assertEquals(s1, s2);
-        assertEquals(s1.getValue(), s2.getValue());
+    public void testToBytes() {
+        final ZipLong zl = new ZipLong(0x12345678);
+        final byte[] result = zl.getBytes();
+        assertEquals(4, result.length, "length getBytes");
+        assertEquals(0x78, result[0], "first byte getBytes");
+        assertEquals(0x56, result[1], "second byte getBytes");
+        assertEquals(0x34, result[2], "third byte getBytes");
+        assertEquals(0x12, result[3], "fourth byte getBytes");
     }
 }

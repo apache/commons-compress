@@ -18,35 +18,23 @@
  */
 package org.apache.commons.compress.compressors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2Utils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BZip2UtilsTestCase {
 
     @Test
-    public void testIsCompressedFilename() {
-        assertFalse(BZip2Utils.isCompressedFilename(""));
-        assertFalse(BZip2Utils.isCompressedFilename(".gz"));
-
-        assertTrue(BZip2Utils.isCompressedFilename("x.tbz2"));
-        assertTrue(BZip2Utils.isCompressedFilename("x.tbz"));
-        assertTrue(BZip2Utils.isCompressedFilename("x.bz2"));
-        assertTrue(BZip2Utils.isCompressedFilename("x.bz"));
-
-        assertFalse(BZip2Utils.isCompressedFilename("xbz2"));
-        assertFalse(BZip2Utils.isCompressedFilename("xbz"));
-
-        assertTrue(BZip2Utils.isCompressedFilename("x.TBZ2"));
-        assertTrue(BZip2Utils.isCompressedFilename("x.Tbz2"));
-        assertTrue(BZip2Utils.isCompressedFilename("x.tbZ2"));
-
-        assertFalse(BZip2Utils.isCompressedFilename("x.bz "));
-        assertFalse(BZip2Utils.isCompressedFilename("x.tbz\n"));
-        assertFalse(BZip2Utils.isCompressedFilename("x.tbz2.y"));
+    public void testGetCompressedFilename() {
+        assertEquals(".bz2", BZip2Utils.getCompressedFilename(""));
+        assertEquals(" .bz2", BZip2Utils.getCompressedFilename(" "));
+        assertEquals("x.bz2", BZip2Utils.getCompressedFilename("x"));
+        assertEquals("X.bz2", BZip2Utils.getCompressedFilename("X"));
+        assertEquals("x.tar.bz2", BZip2Utils.getCompressedFilename("x.tar"));
+        assertEquals("x.tar.bz2", BZip2Utils.getCompressedFilename("x.TAR"));
     }
 
     @Test
@@ -69,13 +57,25 @@ public class BZip2UtilsTestCase {
     }
 
     @Test
-    public void testGetCompressedFilename() {
-        assertEquals(".bz2", BZip2Utils.getCompressedFilename(""));
-        assertEquals(" .bz2", BZip2Utils.getCompressedFilename(" "));
-        assertEquals("x.bz2", BZip2Utils.getCompressedFilename("x"));
-        assertEquals("X.bz2", BZip2Utils.getCompressedFilename("X"));
-        assertEquals("x.tar.bz2", BZip2Utils.getCompressedFilename("x.tar"));
-        assertEquals("x.tar.bz2", BZip2Utils.getCompressedFilename("x.TAR"));
+    public void testIsCompressedFilename() {
+        assertFalse(BZip2Utils.isCompressedFilename(""));
+        assertFalse(BZip2Utils.isCompressedFilename(".gz"));
+
+        assertTrue(BZip2Utils.isCompressedFilename("x.tbz2"));
+        assertTrue(BZip2Utils.isCompressedFilename("x.tbz"));
+        assertTrue(BZip2Utils.isCompressedFilename("x.bz2"));
+        assertTrue(BZip2Utils.isCompressedFilename("x.bz"));
+
+        assertFalse(BZip2Utils.isCompressedFilename("xbz2"));
+        assertFalse(BZip2Utils.isCompressedFilename("xbz"));
+
+        assertTrue(BZip2Utils.isCompressedFilename("x.TBZ2"));
+        assertTrue(BZip2Utils.isCompressedFilename("x.Tbz2"));
+        assertTrue(BZip2Utils.isCompressedFilename("x.tbZ2"));
+
+        assertFalse(BZip2Utils.isCompressedFilename("x.bz "));
+        assertFalse(BZip2Utils.isCompressedFilename("x.tbz\n"));
+        assertFalse(BZip2Utils.isCompressedFilename("x.tbz2.y"));
     }
 
 }

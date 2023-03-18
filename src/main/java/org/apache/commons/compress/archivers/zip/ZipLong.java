@@ -17,11 +17,11 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.utils.ByteUtils;
+import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
 
 import java.io.Serializable;
 
-import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
+import org.apache.commons.compress.utils.ByteUtils;
 
 /**
  * Utility class that represents a four byte integer with conversion
@@ -30,8 +30,6 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
  */
 public final class ZipLong implements Cloneable, Serializable {
     private static final long serialVersionUID = 1L;
-
-    private final long value;
 
     /** Central File Header Signature */
     public static final ZipLong CFH_SIG = new ZipLong(0X02014B50L);
@@ -74,21 +72,49 @@ public final class ZipLong implements Cloneable, Serializable {
     public static final ZipLong AED_SIG = new ZipLong(0X08064B50L);
 
     /**
-     * Create instance from a number.
-     * @param value the long to store as a ZipLong
+     * Get value as four bytes in big endian byte order.
+     * @param value the value to convert
+     * @return value as four bytes in big endian byte order
      */
-    public ZipLong(final long value) {
-        this.value = value;
+    public static byte[] getBytes(final long value) {
+        final byte[] result = new byte[WORD];
+        putLong(value, result, 0);
+        return result;
     }
 
     /**
-     * create instance from a java int.
-     * @param value the int to store as a ZipLong
-     * @since 1.15
+     * Helper method to get the value as a Java long from a four-byte array
+     * @param bytes the array of bytes
+     * @return the corresponding Java long value
      */
-    public ZipLong(final int value) {
-        this.value = value;
+    public static long getValue(final byte[] bytes) {
+        return getValue(bytes, 0);
     }
+
+    /**
+     * Helper method to get the value as a Java long from four bytes starting at given array offset
+     * @param bytes the array of bytes
+     * @param offset the offset to start
+     * @return the corresponding Java long value
+     */
+    public static long getValue(final byte[] bytes, final int offset) {
+        return ByteUtils.fromLittleEndian(bytes, offset, 4);
+    }
+
+    /**
+     * put the value as four bytes in big endian byte order.
+     * @param value the Java long to convert to bytes
+     * @param buf the output buffer
+     * @param  offset
+     *         The offset within the output buffer of the first byte to be written.
+     *         must be non-negative and no larger than {@code buf.length-4}
+     */
+
+    public static void putLong(final long value, final byte[] buf, final int offset) {
+        ByteUtils.toLittleEndian(buf, value, offset, 4);
+    }
+
+    private final long value;
 
     /**
      * Create instance from bytes.
@@ -108,73 +134,30 @@ public final class ZipLong implements Cloneable, Serializable {
     }
 
     /**
-     * Get value as four bytes in big endian byte order.
-     * @return value as four bytes in big endian order
-     */
-    public byte[] getBytes() {
-        return ZipLong.getBytes(value);
-    }
-
-    /**
-     * Get value as Java long.
-     * @return value as a long
-     */
-    public long getValue() {
-        return value;
-    }
-
-    /**
-     * Get value as a (signed) java int
-     * @return value as int
+     * create instance from a java int.
+     * @param value the int to store as a ZipLong
      * @since 1.15
      */
-    public int getIntValue() { return (int)value;}
-
-    /**
-     * Get value as four bytes in big endian byte order.
-     * @param value the value to convert
-     * @return value as four bytes in big endian byte order
-     */
-    public static byte[] getBytes(final long value) {
-        final byte[] result = new byte[WORD];
-        putLong(value, result, 0);
-        return result;
+    public ZipLong(final int value) {
+        this.value = value;
     }
 
     /**
-     * put the value as four bytes in big endian byte order.
-     * @param value the Java long to convert to bytes
-     * @param buf the output buffer
-     * @param  offset
-     *         The offset within the output buffer of the first byte to be written.
-     *         must be non-negative and no larger than {@code buf.length-4}
+     * Create instance from a number.
+     * @param value the long to store as a ZipLong
      */
-
-    public static void putLong(final long value, final byte[] buf, final int offset) {
-        ByteUtils.toLittleEndian(buf, value, offset, 4);
+    public ZipLong(final long value) {
+        this.value = value;
     }
 
-    public void putLong(final byte[] buf, final int offset) {
-        putLong(value, buf, offset);
-    }
-
-    /**
-     * Helper method to get the value as a Java long from four bytes starting at given array offset
-     * @param bytes the array of bytes
-     * @param offset the offset to start
-     * @return the corresponding Java long value
-     */
-    public static long getValue(final byte[] bytes, final int offset) {
-        return ByteUtils.fromLittleEndian(bytes, offset, 4);
-    }
-
-    /**
-     * Helper method to get the value as a Java long from a four-byte array
-     * @param bytes the array of bytes
-     * @return the corresponding Java long value
-     */
-    public static long getValue(final byte[] bytes) {
-        return getValue(bytes, 0);
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (final CloneNotSupportedException cnfe) {
+            // impossible
+            throw new IllegalStateException(cnfe); //NOSONAR
+        }
     }
 
     /**
@@ -191,6 +174,29 @@ public final class ZipLong implements Cloneable, Serializable {
     }
 
     /**
+     * Get value as four bytes in big endian byte order.
+     * @return value as four bytes in big endian order
+     */
+    public byte[] getBytes() {
+        return ZipLong.getBytes(value);
+    }
+
+    /**
+     * Get value as a (signed) java int
+     * @return value as int
+     * @since 1.15
+     */
+    public int getIntValue() { return (int)value;}
+
+    /**
+     * Get value as Java long.
+     * @return value as a long
+     */
+    public long getValue() {
+        return value;
+    }
+
+    /**
      * Override to make two instances with same value equal.
      * @return the value stored in the ZipLong
      */
@@ -199,14 +205,8 @@ public final class ZipLong implements Cloneable, Serializable {
         return (int) value;
     }
 
-    @Override
-    public Object clone() {
-        try {
-            return super.clone();
-        } catch (final CloneNotSupportedException cnfe) {
-            // impossible
-            throw new RuntimeException(cnfe); //NOSONAR
-        }
+    public void putLong(final byte[] buf, final int offset) {
+        putLong(value, buf, offset);
     }
 
     @Override

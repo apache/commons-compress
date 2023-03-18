@@ -18,12 +18,19 @@
  */
 package org.apache.commons.compress.archivers.examples;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
@@ -32,39 +39,28 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.StreamingNotSupportedException;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SevenZArchiverTest extends AbstractTestCase {
     private File target;
 
-    @Before
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        final File c = new File(dir, "a/b/c");
-        c.mkdirs();
-        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/d.txt").toPath())) {
-            os.write("Hello, world 1".getBytes(StandardCharsets.UTF_8));
-        }
-        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/c/e.txt").toPath())) {
-            os.write("Hello, world 2".getBytes(StandardCharsets.UTF_8));
-        }
-        target = new File(resultDir, "test.7z");
+    private void assertDir(final String expectedName, final ArchiveEntry entry) {
+        assertNotNull(entry, () -> expectedName + " does not exists");
+        assertEquals(expectedName + "/", entry.getName());
+        assertTrue(entry.isDirectory(), expectedName + " is not a directory");
     }
 
-    @Test
-    public void fileVersion() throws IOException, ArchiveException {
-        new Archiver().create("7z", target, dir);
-        verifyContent();
-    }
-
-    @Test(expected = StreamingNotSupportedException.class)
-    public void outputStreamVersion() throws IOException, ArchiveException {
-        try (OutputStream os = Files.newOutputStream(target.toPath())) {
-            new Archiver().create("7z", os, dir);
-        }
+    private void assertHelloWorld(final String expectedName, final String suffix, final ArchiveEntry entry, final SevenZFile z)
+        throws IOException {
+        assertNotNull(entry, () -> expectedName + " does not exists");
+        assertEquals(expectedName, entry.getName());
+        assertFalse(entry.isDirectory(), expectedName + " is a directory");
+        final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
+        final byte[] actual = new byte[expected.length];
+        assertEquals(actual.length, z.read(actual));
+        assertEquals(-1, z.read());
+        assertArrayEquals(expected, actual);
     }
 
     @Test
@@ -76,21 +72,49 @@ public class SevenZArchiverTest extends AbstractTestCase {
         verifyContent();
     }
 
-    // not really a 7z test but I didn't feel like adding a new test just for this
-    @Test(expected = ArchiveException.class)
-    public void unknownFormat() throws IOException, ArchiveException {
-        try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
-            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-            new Archiver().create("unknown format", c, dir);
+    @Test
+    public void fileVersion() throws IOException, ArchiveException {
+        new Archiver().create("7z", target, dir);
+        verifyContent();
+    }
+
+    @Test
+    public void outputStreamVersion() throws IOException {
+        try (OutputStream os = Files.newOutputStream(target.toPath())) {
+            assertThrows(StreamingNotSupportedException.class, () -> new Archiver().create("7z", os, dir));
         }
     }
 
-    private void verifyContent() throws IOException, ArchiveException {
+    @BeforeEach
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        final File c = new File(dir, "a/b/c");
+        c.mkdirs();
+        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/d.txt").toPath())) {
+            os.write("Hello, world 1".getBytes(UTF_8));
+        }
+        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/c/e.txt").toPath())) {
+            os.write("Hello, world 2".getBytes(UTF_8));
+        }
+        target = new File(resultDir, "test.7z");
+    }
+
+    // not really a 7z test but I didn't feel like adding a new test just for this
+    @Test
+    public void unknownFormat() throws IOException {
+        try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE, StandardOpenOption.CREATE,
+            StandardOpenOption.TRUNCATE_EXISTING)) {
+            assertThrows(ArchiveException.class, () -> new Archiver().create("unknown format", c, dir));
+        }
+    }
+
+    private void verifyContent() throws IOException {
         try (SevenZFile z = new SevenZFile(target)) {
             assertDir("a", z.getNextEntry());
             assertDir("a/b", z.getNextEntry());
             final ArchiveEntry n = z.getNextEntry();
-            Assert.assertNotNull(n);
+            assertNotNull(n);
             // File.list may return a/b/c or a/b/d.txt first
             if (n.getName().endsWith("/")) {
                 assertDir("a/b/c", n);
@@ -102,23 +126,5 @@ public class SevenZArchiverTest extends AbstractTestCase {
                 assertHelloWorld("a/b/c/e.txt", "2", z.getNextEntry(), z);
             }
         }
-    }
-
-    private void assertDir(final String expectedName, final ArchiveEntry entry) {
-        Assert.assertNotNull(expectedName + " does not exists", entry);
-        Assert.assertEquals(expectedName + "/", entry.getName());
-        Assert.assertTrue(expectedName + " is not a directory", entry.isDirectory());
-    }
-
-    private void assertHelloWorld(final String expectedName, final String suffix, final ArchiveEntry entry, final SevenZFile z)
-        throws IOException {
-        Assert.assertNotNull(expectedName + " does not exists", entry);
-        Assert.assertEquals(expectedName, entry.getName());
-        Assert.assertFalse(expectedName + " is a directory", entry.isDirectory());
-        final byte[] expected = ("Hello, world " + suffix).getBytes(StandardCharsets.UTF_8);
-        final byte[] actual = new byte[expected.length];
-        Assert.assertEquals(actual.length, z.read(actual));
-        Assert.assertEquals(-1, z.read());
-        Assert.assertArrayEquals(expected, actual);
     }
 }

@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Constant pool entry for a class
@@ -30,6 +31,10 @@ public class CPClass extends ConstantPoolEntry {
 
     private final CPUTF8 utf8;
 
+    private boolean hashCodeComputed;
+
+    private int cachedHashCode;
+
     /**
      * Creates a new CPClass
      *
@@ -39,10 +44,7 @@ public class CPClass extends ConstantPoolEntry {
      */
     public CPClass(final CPUTF8 name, final int globalIndex) {
         super(ConstantPoolEntry.CP_Class, globalIndex);
-        if (name == null) {
-            throw new NullPointerException("Null arguments are not allowed");
-        }
-        this.name = name.underlyingString();
+        this.name = Objects.requireNonNull(name, "name").underlyingString();
         this.utf8 = name;
     }
 
@@ -60,23 +62,23 @@ public class CPClass extends ConstantPoolEntry {
         final CPClass other = (CPClass) obj;
         return utf8.equals(other.utf8);
     }
+    private void generateHashCode() {
+        hashCodeComputed = true;
+        cachedHashCode = utf8.hashCode();
+    }
+
+    public String getName() {
+        return name;
+    }
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
         return new ClassFileEntry[] {utf8,};
     }
 
-    private boolean hashcodeComputed;
-    private int cachedHashCode;
-
-    private void generateHashCode() {
-        hashcodeComputed = true;
-        cachedHashCode = utf8.hashCode();
-    }
-
     @Override
     public int hashCode() {
-        if (!hashcodeComputed) {
+        if (!hashCodeComputed) {
             generateHashCode();
         }
         return cachedHashCode;
@@ -91,10 +93,6 @@ public class CPClass extends ConstantPoolEntry {
     @Override
     public String toString() {
         return "Class: " + getName();
-    }
-
-    public String getName() {
-        return name;
     }
 
     @Override

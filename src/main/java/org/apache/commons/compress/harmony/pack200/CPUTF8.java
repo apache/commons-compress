@@ -32,12 +32,12 @@ public class CPUTF8 extends ConstantPoolEntry implements Comparable {
         return string.compareTo(((CPUTF8) arg0).string);
     }
 
-    @Override
-    public String toString() {
+    public String getUnderlyingString() {
         return string;
     }
 
-    public String getUnderlyingString() {
+    @Override
+    public String toString() {
         return string;
     }
 

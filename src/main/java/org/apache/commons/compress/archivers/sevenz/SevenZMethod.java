@@ -90,19 +90,6 @@ public enum SevenZMethod {
      */
     DELTA_FILTER(new byte[] { 0x03 });
 
-    private final byte[] id;
-
-    SevenZMethod(final byte[] id) {
-        this.id = id;
-    }
-
-    byte[] getId() {
-        final int idLength = id.length;
-        final byte[] copy = new byte[idLength];
-        System.arraycopy(id, 0, copy, 0, idLength);
-        return copy;
-    }
-
     static SevenZMethod byId(final byte[] id) {
         for (final SevenZMethod m : SevenZMethod.class.getEnumConstants()) {
             if (Arrays.equals(m.id, id)) {
@@ -110,5 +97,15 @@ public enum SevenZMethod {
             }
         }
         return null;
+    }
+
+    private final byte[] id;
+
+    SevenZMethod(final byte[] id) {
+        this.id = id;
+    }
+
+    byte[] getId() {
+        return Arrays.copyOf(id, id.length);
     }
 }

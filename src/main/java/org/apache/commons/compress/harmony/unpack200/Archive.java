@@ -34,7 +34,7 @@ import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 
 /**
  * Archive is the main entry point to unpack200. An archive is constructed with either two file names, a pack file and
- * an output file name or an input stream and an output streams. Then <code>unpack()</code> is called, to unpack the
+ * an output file name or an input stream and an output streams. Then {@code unpack()} is called, to unpack the
  * pack200 archive.
  */
 public class Archive {
@@ -58,6 +58,18 @@ public class Archive {
     private String outputFileName;
 
     /**
+     * Creates an Archive with streams for the input and output files. Note: If you use this method then calling
+     * {@link #setRemovePackFile(boolean)} will have no effect.
+     *
+     * @param inputStream TODO
+     * @param outputStream TODO
+     */
+    public Archive(final InputStream inputStream, final JarOutputStream outputStream) {
+        this.inputStream = inputStream;
+        this.outputStream = outputStream;
+    }
+
+    /**
      * Creates an Archive with the given input and output file names.
      *
      * @param inputFile TODO
@@ -73,17 +85,47 @@ public class Archive {
         outputStream = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
     }
 
+    private boolean available(final InputStream inputStream) throws IOException {
+        inputStream.mark(1);
+        final int check = inputStream.read();
+        inputStream.reset();
+        return check != -1;
+    }
+
+    public void setDeflateHint(final boolean deflateHint) {
+        overrideDeflateHint = true;
+        this.deflateHint = deflateHint;
+    }
+
+    public void setLogFile(final String logFileName) throws FileNotFoundException {
+        this.logFile = new FileOutputStream(logFileName);
+    }
+
+    public void setLogFile(final String logFileName, final boolean append) throws FileNotFoundException {
+        logFile = new FileOutputStream(logFileName, append);
+    }
+
+    public void setQuiet(final boolean quiet) {
+        if (quiet || (logLevel == Segment.LOG_LEVEL_QUIET)) {
+            logLevel = Segment.LOG_LEVEL_QUIET;
+        }
+    }
+
     /**
-     * Creates an Archive with streams for the input and output files. Note: If you use this method then calling
-     * {@link #setRemovePackFile(boolean)} will have no effect.
+     * If removePackFile is set to true, the input file is deleted after unpacking.
      *
-     * @param inputStream TODO
-     * @param outputStream TODO
-     * @throws IOException TODO
+     * @param removePackFile If true, the input file is deleted after unpacking.
      */
-    public Archive(final InputStream inputStream, final JarOutputStream outputStream) throws IOException {
-        this.inputStream = inputStream;
-        this.outputStream = outputStream;
+    public void setRemovePackFile(final boolean removePackFile) {
+        this.removePackFile = removePackFile;
+    }
+
+    public void setVerbose(final boolean verbose) {
+        if (verbose) {
+            logLevel = Segment.LOG_LEVEL_VERBOSE;
+        } else if (logLevel == Segment.LOG_LEVEL_VERBOSE) {
+            logLevel = Segment.LOG_LEVEL_STANDARD;
+        }
     }
 
     /**
@@ -111,7 +153,7 @@ public class Archive {
             inputStream.mark(4);
             final int[] magic = {0xCA, 0xFE, 0xD0, 0x0D}; // Magic word for
             // pack200
-            final int word[] = new int[4];
+            final int[] word = new int[4];
             for (int i = 0; i < word.length; i++) {
                 word[i] = inputStream.read();
             }
@@ -187,51 +229,6 @@ public class Archive {
                 throw new Pack200Exception("Failed to delete the input file.");
             }
         }
-    }
-
-    private boolean available(final InputStream inputStream) throws IOException {
-        inputStream.mark(1);
-        final int check = inputStream.read();
-        inputStream.reset();
-        return check != -1;
-    }
-
-    /**
-     * If removePackFile is set to true, the input file is deleted after unpacking.
-     *
-     * @param removePackFile If true, the input file is deleted after unpacking.
-     */
-    public void setRemovePackFile(final boolean removePackFile) {
-        this.removePackFile = removePackFile;
-    }
-
-    public void setVerbose(final boolean verbose) {
-        if (verbose) {
-            logLevel = Segment.LOG_LEVEL_VERBOSE;
-        } else if (logLevel == Segment.LOG_LEVEL_VERBOSE) {
-            logLevel = Segment.LOG_LEVEL_STANDARD;
-        }
-    }
-
-    public void setQuiet(final boolean quiet) {
-        if (quiet) {
-            logLevel = Segment.LOG_LEVEL_QUIET;
-        } else if (logLevel == Segment.LOG_LEVEL_QUIET) {
-            logLevel = Segment.LOG_LEVEL_QUIET;
-        }
-    }
-
-    public void setLogFile(final String logFileName) throws FileNotFoundException {
-        this.logFile = new FileOutputStream(logFileName);
-    }
-
-    public void setLogFile(final String logFileName, final boolean append) throws FileNotFoundException {
-        logFile = new FileOutputStream(logFileName, append);
-    }
-
-    public void setDeflateHint(final boolean deflateHint) {
-        overrideDeflateHint = true;
-        this.deflateHint = deflateHint;
     }
 
 }

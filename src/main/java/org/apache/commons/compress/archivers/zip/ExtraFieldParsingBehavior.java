@@ -20,7 +20,7 @@ package org.apache.commons.compress.archivers.zip;
 import java.util.zip.ZipException;
 
 /**
- * Controls details of parsing zip extra fields.
+ * Controls details of parsing ZIP extra fields.
  *
  * @since 1.19
  */

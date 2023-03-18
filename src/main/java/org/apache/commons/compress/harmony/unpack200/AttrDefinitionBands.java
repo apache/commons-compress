@@ -54,6 +54,10 @@ public class AttrDefinitionBands extends BandSet {
         this.cpUTF8 = segment.getCpBands().getCpUTF8();
     }
 
+    public AttributeLayoutMap getAttributeDefinitionMap() {
+        return attributeDefinitionMap;
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -89,11 +93,6 @@ public class AttrDefinitionBands extends BandSet {
         setupDefaultAttributeNames();
     }
 
-    @Override
-    public void unpack() throws Pack200Exception, IOException {
-
-    }
-
     private void setupDefaultAttributeNames() {
         AnnotationDefaultAttribute.setAttributeName(segment.getCpBands().cpUTF8Value("AnnotationDefault")); //$NON-NLS-1$
         CodeAttribute.setAttributeName(segment.getCpBands().cpUTF8Value("Code")); //$NON-NLS-1$
@@ -114,8 +113,9 @@ public class AttrDefinitionBands extends BandSet {
             .setRipaAttributeName(segment.getCpBands().cpUTF8Value("RuntimeInvisibleParameterAnnotations"));
     }
 
-    public AttributeLayoutMap getAttributeDefinitionMap() {
-        return attributeDefinitionMap;
+    @Override
+    public void unpack() throws Pack200Exception, IOException {
+
     }
 
 }

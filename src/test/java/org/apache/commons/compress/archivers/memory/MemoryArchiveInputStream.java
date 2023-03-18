@@ -51,13 +51,13 @@ public final class MemoryArchiveInputStream extends ArchiveInputStream {
         return new MemoryArchiveEntry(filenames[p]);
     }
 
-    public String readString() {
-        return content[p++];
-    }
-
     @Override
     public int read() throws IOException {
         return 0;
+    }
+
+    public String readString() {
+        return content[p++];
     }
 
 }

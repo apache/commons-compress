@@ -29,13 +29,13 @@ public class CPInteger extends CPConstantNumber {
     }
 
     @Override
-    protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeInt(getNumber().intValue());
+    public String toString() {
+        return "Integer: " + getValue();
     }
 
     @Override
-    public String toString() {
-        return "Integer: " + getValue();
+    protected void writeBody(final DataOutputStream dos) throws IOException {
+        dos.writeInt(getNumber().intValue());
     }
 
 }

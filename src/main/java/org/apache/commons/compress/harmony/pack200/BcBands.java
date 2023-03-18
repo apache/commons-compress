@@ -22,67 +22,68 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.objectweb.asm.Label;
 
 /**
- * Bytecode bands (corresponds to the <code>bc_bands</code> set of bands in the pack200 specification)
+ * Bytecode bands (corresponds to the {@code bc_bands} set of bands in the pack200 specification)
  */
 public class BcBands extends BandSet {
 
+    private static final int MULTIANEWARRAY = 197;
+    private static final int ALOAD_0 = 42;
+
+    private static final int WIDE = 196;
+
+    private static final int INVOKEINTERFACE = 185;
+    private static final int TABLESWITCH = 170;
+    private static final int IINC = 132;
+    private static final int LOOKUPSWITCH = 171;
+    private static final int endMarker = 255;
     private final CpBands cpBands;
+
     private final Segment segment;
-
-    public BcBands(final CpBands cpBands, final Segment segment, final int effort) {
-        super(effort, segment.getSegmentHeader());
-        this.cpBands = cpBands;
-        this.segment = segment;
-    }
-
     private final IntList bcCodes = new IntList();
     private final IntList bcCaseCount = new IntList();
     private final IntList bcCaseValue = new IntList();
     private final IntList bcByte = new IntList();
     private final IntList bcShort = new IntList();
     private final IntList bcLocal = new IntList();
-    private final List bcLabel = new ArrayList();
-    private final List bcIntref = new ArrayList();
-    private final List bcFloatRef = new ArrayList();
-    private final List bcLongRef = new ArrayList();
-    private final List bcDoubleRef = new ArrayList();
-    private final List bcStringRef = new ArrayList();
-    private final List bcClassRef = new ArrayList();
-    private final List bcFieldRef = new ArrayList();
-    private final List bcMethodRef = new ArrayList();
-    private final List bcIMethodRef = new ArrayList();
-    private List bcThisField = new ArrayList();
-    private final List bcSuperField = new ArrayList();
-    private List bcThisMethod = new ArrayList();
-    private List bcSuperMethod = new ArrayList();
-    private List bcInitRef = new ArrayList();
 
+    // Integers and Labels
+    private final List bcLabel = new ArrayList();
+    private final List<CPInt> bcIntref = new ArrayList<>();
+    private final List<CPFloat> bcFloatRef = new ArrayList<>();
+    private final List<CPLong> bcLongRef = new ArrayList<>();
+    private final List<CPDouble> bcDoubleRef = new ArrayList<>();
+    private final List<CPString> bcStringRef = new ArrayList<>();
+    private final List<CPClass> bcClassRef = new ArrayList<>();
+    private final List<CPMethodOrField> bcFieldRef = new ArrayList<>();
+
+    private final List<CPMethodOrField> bcMethodRef = new ArrayList<>();
+    private final List<CPMethodOrField> bcIMethodRef = new ArrayList<>();
+    
+    // Integers and CPMethodOrField
+    private List bcThisField = new ArrayList<>();
+
+    private final List bcSuperField = new ArrayList<>();
+    private List bcThisMethod = new ArrayList<>();
+    private List bcSuperMethod = new ArrayList<>();
+    private List bcInitRef = new ArrayList<>();
     private String currentClass;
     private String superClass;
     private String currentNewClass;
-
-    private static final int MULTIANEWARRAY = 197;
-    private static final int ALOAD_0 = 42;
-    private static final int WIDE = 196;
-    private static final int INVOKEINTERFACE = 185;
-    private static final int TABLESWITCH = 170;
-    private static final int IINC = 132;
-    private static final int LOOKUPSWITCH = 171;
-    private static final int endMarker = 255;
-
     private final IntList bciRenumbering = new IntList();
-    private final Map labelsToOffsets = new HashMap();
+
+    private final Map<Label, Integer> labelsToOffsets = new HashMap<>();
     private int byteCodeOffset;
     private int renumberedOffset;
     private final IntList bcLabelRelativeOffsets = new IntList();
-
-    public void setCurrentClass(final String name, final String superName) {
-        currentClass = name;
-        superClass = superName;
+    public BcBands(final CpBands cpBands, final Segment segment, final int effort) {
+        super(effort, segment.getSegmentHeader());
+        this.cpBands = cpBands;
+        this.segment = segment;
     }
 
     /**
@@ -94,6 +95,14 @@ public class BcBands extends BandSet {
         bcThisMethod = getIndexInClass(bcThisMethod);
         bcSuperMethod = getIndexInClass(bcSuperMethod);
         bcInitRef = getIndexInClassForConstructor(bcInitRef);
+    }
+
+    private List<Integer> getIndexInClass(final List<CPMethodOrField> cPMethodOrFieldList) {
+        return cPMethodOrFieldList.stream().collect(Collectors.mapping(CPMethodOrField::getIndexInClass, Collectors.toList()));
+    }
+
+    private List<Integer> getIndexInClassForConstructor(final List<CPMethodOrField> cPMethodList) {
+        return cPMethodList.stream().collect(Collectors.mapping(CPMethodOrField::getIndexInClassForConstructor, Collectors.toList()));
     }
 
     @Override
@@ -192,22 +201,20 @@ public class BcBands extends BandSet {
         // out.write(encodeBandInt(integerListToArray(bcEscByte), Codec.BYTE1));
     }
 
-    private List getIndexInClass(final List cPMethodOrFieldList) {
-        final List indices = new ArrayList(cPMethodOrFieldList.size());
-        for (int i = 0; i < cPMethodOrFieldList.size(); i++) {
-            final CPMethodOrField cpMF = (CPMethodOrField) cPMethodOrFieldList.get(i);
-            indices.add(Integer.valueOf(cpMF.getIndexInClass()));
-        }
-        return indices;
+    public void setCurrentClass(final String name, final String superName) {
+        currentClass = name;
+        superClass = superName;
     }
 
-    private List getIndexInClassForConstructor(final List cPMethodList) {
-        final List indices = new ArrayList(cPMethodList.size());
-        for (int i = 0; i < cPMethodList.size(); i++) {
-            final CPMethodOrField cpMF = (CPMethodOrField) cPMethodList.get(i);
-            indices.add(Integer.valueOf(cpMF.getIndexInClassForConstructor()));
+    private void updateRenumbering() {
+        if (bciRenumbering.isEmpty()) {
+            bciRenumbering.add(0);
         }
-        return indices;
+        renumberedOffset++;
+        for (int i = bciRenumbering.size(); i < byteCodeOffset; i++) {
+            bciRenumbering.add(-1);
+        }
+        bciRenumbering.add(renumberedOffset);
     }
 
     public void visitEnd() {
@@ -219,7 +226,7 @@ public class BcBands extends BandSet {
         }
         if (renumberedOffset != 0) {
             if (renumberedOffset + 1 != bciRenumbering.size()) {
-                throw new RuntimeException("Mistake made with renumbering");
+                throw new IllegalStateException("Mistake made with renumbering");
             }
             for (int i = bcLabel.size() - 1; i >= 0; i--) {
                 final Object label = bcLabel.get(i);
@@ -228,7 +235,7 @@ public class BcBands extends BandSet {
                 }
                 if (label instanceof Label) {
                     bcLabel.remove(i);
-                    final Integer offset = (Integer) labelsToOffsets.get(label);
+                    final Integer offset = labelsToOffsets.get(label);
                     final int relativeOffset = bcLabelRelativeOffsets.get(i);
                     bcLabel.add(i,
                         Integer.valueOf(bciRenumbering.get(offset.intValue()) - bciRenumbering.get(relativeOffset)));
@@ -241,10 +248,6 @@ public class BcBands extends BandSet {
             byteCodeOffset = 0;
             renumberedOffset = 0;
         }
-    }
-
-    public void visitLabel(final Label label) {
-        labelsToOffsets.put(label, Integer.valueOf(byteCodeOffset));
     }
 
     public void visitFieldInsn(int opcode, final String owner, final String name, final String desc) {
@@ -278,17 +281,6 @@ public class BcBands extends BandSet {
         bcCodes.add(opcode);
     }
 
-    private void updateRenumbering() {
-        if (bciRenumbering.isEmpty()) {
-            bciRenumbering.add(0);
-        }
-        renumberedOffset++;
-        for (int i = bciRenumbering.size(); i < byteCodeOffset; i++) {
-            bciRenumbering.add(-1);
-        }
-        bciRenumbering.add(renumberedOffset);
-    }
-
     public void visitIincInsn(final int var, final int increment) {
         if (var > 255 || increment > 255) {
             byteCodeOffset += 6;
@@ -307,7 +299,7 @@ public class BcBands extends BandSet {
 
     public void visitInsn(final int opcode) {
         if (opcode >= 202) {
-            throw new RuntimeException("Non-standard bytecode instructions not supported");
+            throw new IllegalArgumentException("Non-standard bytecode instructions not supported");
         }
         bcCodes.add(opcode);
         byteCodeOffset++;
@@ -338,45 +330,49 @@ public class BcBands extends BandSet {
         updateRenumbering();
     }
 
+    public void visitLabel(final Label label) {
+        labelsToOffsets.put(label, Integer.valueOf(byteCodeOffset));
+    }
+
     public void visitLdcInsn(final Object cst) {
-        final CPConstant constant = cpBands.getConstant(cst);
+        final CPConstant<?> constant = cpBands.getConstant(cst);
         if (segment.lastConstantHadWideIndex() || constant instanceof CPLong || constant instanceof CPDouble) {
             byteCodeOffset += 3;
             if (constant instanceof CPInt) {
                 bcCodes.add(237); // ildc_w
-                bcIntref.add(constant);
+                bcIntref.add((CPInt) constant);
             } else if (constant instanceof CPFloat) {
                 bcCodes.add(238); // fldc
-                bcFloatRef.add(constant);
+                bcFloatRef.add((CPFloat) constant);
             } else if (constant instanceof CPLong) {
                 bcCodes.add(20); // lldc2_w
-                bcLongRef.add(constant);
+                bcLongRef.add((CPLong) constant);
             } else if (constant instanceof CPDouble) {
                 bcCodes.add(239); // dldc2_w
-                bcDoubleRef.add(constant);
+                bcDoubleRef.add((CPDouble) constant);
             } else if (constant instanceof CPString) {
                 bcCodes.add(19); // aldc
-                bcStringRef.add(constant);
+                bcStringRef.add((CPString) constant);
             } else if (constant instanceof CPClass) {
                 bcCodes.add(236); // cldc
-                bcClassRef.add(constant);
+                bcClassRef.add((CPClass) constant);
             } else {
-                throw new RuntimeException("Constant should not be null");
+                throw new IllegalArgumentException("Constant should not be null");
             }
         } else {
             byteCodeOffset += 2;
             if (constant instanceof CPInt) {
                 bcCodes.add(234); // ildc
-                bcIntref.add(constant);
+                bcIntref.add((CPInt) constant);
             } else if (constant instanceof CPFloat) {
                 bcCodes.add(235); // fldc
-                bcFloatRef.add(constant);
+                bcFloatRef.add((CPFloat) constant);
             } else if (constant instanceof CPString) {
                 bcCodes.add(18); // aldc
-                bcStringRef.add(constant);
+                bcStringRef.add((CPString) constant);
             } else if (constant instanceof CPClass) {
                 bcCodes.add(233); // cldc
-                bcClassRef.add(constant);
+                bcClassRef.add((CPClass) constant);
             }
         }
         updateRenumbering();
@@ -463,7 +459,7 @@ public class BcBands extends BandSet {
         bcByte.add(dimensions & 0xFF);
     }
 
-    public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label[] labels) {
+    public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label... labels) {
         bcCodes.add(TABLESWITCH);
         bcLabel.add(dflt);
         bcLabelRelativeOffsets.add(byteCodeOffset);

@@ -39,6 +39,16 @@ public class ClassRefForm extends ReferenceForm {
     }
 
     @Override
+    protected int getOffset(final OperandManager operandManager) {
+        return operandManager.nextClassRef();
+    }
+
+    @Override
+    protected int getPoolID() {
+        return SegmentConstantPool.CP_CLASS;
+    }
+
+    @Override
     protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset)
         throws Pack200Exception {
         // If the offset is not zero, proceed normally.
@@ -57,15 +67,5 @@ public class ClassRefForm extends ReferenceForm {
         nested = new ClassFileEntry[] {globalPool.getClassPoolEntry(operandManager.getCurrentClass())};
         byteCode.setNested(nested);
         byteCode.setNestedPositions(new int[][] {{0, 2}});
-    }
-
-    @Override
-    protected int getOffset(final OperandManager operandManager) {
-        return operandManager.nextClassRef();
-    }
-
-    @Override
-    protected int getPoolID() {
-        return SegmentConstantPool.CP_CLASS;
     }
 }

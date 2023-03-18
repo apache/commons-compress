@@ -29,12 +29,13 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.EnumSet;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,65 +52,329 @@ import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 
-import static org.apache.commons.compress.archivers.zip.ZipConstants.DWORD;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.SHORT;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC;
-import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC_SHORT;
-
 /**
- * Replacement for <code>java.util.ZipFile</code>.
+ * Replacement for {@code java.util.ZipFile}.
  *
  * <p>This class adds support for file name encodings other than UTF-8
- * (which is required to work on ZIP files created by native zip tools
+ * (which is required to work on ZIP files created by native ZIP tools
  * and is able to skip a preamble like the one found in self
  * extracting archives.  Furthermore it returns instances of
- * <code>org.apache.commons.compress.archivers.zip.ZipArchiveEntry</code>
- * instead of <code>java.util.zip.ZipEntry</code>.</p>
+ * {@code org.apache.commons.compress.archivers.zip.ZipArchiveEntry}
+ * instead of {@code java.util.zip.ZipEntry}.</p>
  *
- * <p>It doesn't extend <code>java.util.zip.ZipFile</code> as it would
+ * <p>It doesn't extend {@code java.util.zip.ZipFile} as it would
  * have to reimplement all methods anyway.  Like
- * <code>java.util.ZipFile</code>, it uses SeekableByteChannel under the
+ * {@code java.util.ZipFile}, it uses SeekableByteChannel under the
  * covers and supports compressed and uncompressed entries.  As of
  * Apache Commons Compress 1.3 it also transparently supports Zip64
  * extensions and thus individual entries and archives larger than 4
  * GB or with more than 65536 entries.</p>
  *
  * <p>The method signatures mimic the ones of
- * <code>java.util.zip.ZipFile</code>, with a couple of exceptions:
+ * {@code java.util.zip.ZipFile}, with a couple of exceptions:
  *
  * <ul>
  *   <li>There is no getName method.</li>
  *   <li>entries has been renamed to getEntries.</li>
  *   <li>getEntries and getEntry return
- *   <code>org.apache.commons.compress.archivers.zip.ZipArchiveEntry</code>
+ *   {@code org.apache.commons.compress.archivers.zip.ZipArchiveEntry}
  *   instances.</li>
  *   <li>close is allowed to throw IOException.</li>
  * </ul>
- *
  */
 public class ZipFile implements Closeable {
+    /**
+     * Lock-free implementation of BoundedInputStream. The
+     * implementation uses positioned reads on the underlying archive
+     * file channel and therefore performs significantly faster in
+     * concurrent environment.
+     */
+    private class BoundedFileChannelInputStream extends BoundedArchiveInputStream {
+        private final FileChannel archive;
+
+        BoundedFileChannelInputStream(final long start, final long remaining) {
+            super(start, remaining);
+            archive = (FileChannel) ZipFile.this.archive;
+        }
+
+        @Override
+        protected int read(final long pos, final ByteBuffer buf) throws IOException {
+            final int read = archive.read(buf, pos);
+            buf.flip();
+            return read;
+        }
+    }
+    /**
+     * Extends ZipArchiveEntry to store the offset within the archive.
+     */
+    private static class Entry extends ZipArchiveEntry {
+
+        Entry() {
+        }
+
+        @Override
+        public boolean equals(final Object other) {
+            if (super.equals(other)) {
+                // super.equals would return false if other were not an Entry
+                final Entry otherEntry = (Entry) other;
+                return getLocalHeaderOffset()
+                        == otherEntry.getLocalHeaderOffset()
+                    && super.getDataOffset()
+                        == otherEntry.getDataOffset()
+                    && super.getDiskNumberStart()
+                        == otherEntry.getDiskNumberStart();
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return 3 * super.hashCode()
+                + (int) getLocalHeaderOffset()+(int)(getLocalHeaderOffset()>>32);
+        }
+    }
+    private static final class NameAndComment {
+        private final byte[] name;
+        private final byte[] comment;
+        private NameAndComment(final byte[] name, final byte[] comment) {
+            this.name = name;
+            this.comment = comment;
+        }
+    }
+    private static class StoredStatisticsStream extends CountingInputStream implements InputStreamStatistics {
+        StoredStatisticsStream(final InputStream in) {
+            super(in);
+        }
+
+        @Override
+        public long getCompressedCount() {
+            return super.getBytesRead();
+        }
+
+        @Override
+        public long getUncompressedCount() {
+            return getCompressedCount();
+        }
+    }
     private static final int HASH_SIZE = 509;
     static final int NIBLET_MASK = 0x0f;
     static final int BYTE_SHIFT = 8;
     private static final int POS_0 = 0;
+
     private static final int POS_1 = 1;
+
     private static final int POS_2 = 2;
+
     private static final int POS_3 = 3;
+
     private static final byte[] ONE_ZERO_BYTE = new byte[1];
+
+    /**
+     * Length of a "central directory" entry structure without file
+     * name, extra fields or comment.
+     */
+    private static final int CFH_LEN =
+        /* version made by                 */ ZipConstants.SHORT
+        /* version needed to extract       */ + ZipConstants.SHORT
+        /* general purpose bit flag        */ + ZipConstants.SHORT
+        /* compression method              */ + ZipConstants.SHORT
+        /* last mod file time              */ + ZipConstants.SHORT
+        /* last mod file date              */ + ZipConstants.SHORT
+        /* crc-32                          */ + ZipConstants.WORD
+        /* compressed size                 */ + ZipConstants.WORD
+        /* uncompressed size               */ + ZipConstants.WORD
+        /* file name length                */ + ZipConstants. SHORT
+        /* extra field length              */ + ZipConstants.SHORT
+        /* file comment length             */ + ZipConstants.SHORT
+        /* disk number start               */ + ZipConstants.SHORT
+        /* internal file attributes        */ + ZipConstants.SHORT
+        /* external file attributes        */ + ZipConstants.WORD
+        /* relative offset of local header */ + ZipConstants.WORD;
+
+    private static final long CFH_SIG =
+        ZipLong.getValue(ZipArchiveOutputStream.CFH_SIG);
+
+    /**
+     * Length of the "End of central directory record" - which is
+     * supposed to be the last structure of the archive - without file
+     * comment.
+     */
+    static final int MIN_EOCD_SIZE =
+        /* end of central dir signature    */ ZipConstants.WORD
+        /* number of this disk             */ + ZipConstants.SHORT
+        /* number of the disk with the     */
+        /* start of the central directory  */ + ZipConstants.SHORT
+        /* total number of entries in      */
+        /* the central dir on this disk    */ + ZipConstants.SHORT
+        /* total number of entries in      */
+        /* the central dir                 */ + ZipConstants.SHORT
+        /* size of the central directory   */ + ZipConstants.WORD
+        /* offset of start of central      */
+        /* directory with respect to       */
+        /* the starting disk number        */ + ZipConstants.WORD
+        /* ZIP file comment length         */ + ZipConstants.SHORT;
+
+    /**
+     * Maximum length of the "End of central directory record" with a
+     * file comment.
+     */
+    private static final int MAX_EOCD_SIZE = MIN_EOCD_SIZE
+        /* maximum length of ZIP file comment */ + ZipConstants.ZIP64_MAGIC_SHORT;
+
+    /**
+     * Offset of the field that holds the location of the length of
+     * the central directory inside the "End of central directory
+     * record" relative to the start of the "End of central directory
+     * record".
+     */
+    private static final int CFD_LENGTH_OFFSET =
+        /* end of central dir signature    */ ZipConstants.WORD
+        /* number of this disk             */ + ZipConstants.SHORT
+        /* number of the disk with the     */
+        /* start of the central directory  */ + ZipConstants.SHORT
+        /* total number of entries in      */
+        /* the central dir on this disk    */ + ZipConstants.SHORT
+        /* total number of entries in      */
+        /* the central dir                 */ + ZipConstants.SHORT;
+
+    /**
+     * Offset of the field that holds the disk number of the first
+     * central directory entry inside the "End of central directory
+     * record" relative to the start of the "End of central directory
+     * record".
+     */
+    private static final int CFD_DISK_OFFSET =
+            /* end of central dir signature    */ ZipConstants.WORD
+            /* number of this disk             */ + ZipConstants.SHORT;
+    /**
+     * Offset of the field that holds the location of the first
+     * central directory entry inside the "End of central directory
+     * record" relative to the "number of the disk with the start
+     * of the central directory".
+     */
+    private static final int CFD_LOCATOR_RELATIVE_OFFSET =
+            /* total number of entries in      */
+            /* the central dir on this disk    */ + ZipConstants.SHORT
+            /* total number of entries in      */
+            /* the central dir                 */ + ZipConstants.SHORT
+            /* size of the central directory   */ + ZipConstants.WORD;
+    /**
+     * Length of the "Zip64 end of central directory locator" - which
+     * should be right in front of the "end of central directory
+     * record" if one is present at all.
+     */
+    private static final int ZIP64_EOCDL_LENGTH =
+        /* zip64 end of central dir locator sig */ ZipConstants.WORD
+        /* number of the disk with the start    */
+        /* start of the zip64 end of            */
+        /* central directory                    */ + ZipConstants.WORD
+        /* relative offset of the zip64         */
+        /* end of central directory record      */ + ZipConstants.DWORD
+        /* total number of disks                */ + ZipConstants.WORD;
+    /**
+     * Offset of the field that holds the location of the "Zip64 end
+     * of central directory record" inside the "Zip64 end of central
+     * directory locator" relative to the start of the "Zip64 end of
+     * central directory locator".
+     */
+    private static final int ZIP64_EOCDL_LOCATOR_OFFSET =
+        /* zip64 end of central dir locator sig */ ZipConstants.WORD
+        /* number of the disk with the start    */
+        /* start of the zip64 end of            */
+        /* central directory                    */ + ZipConstants.WORD;
+    /**
+     * Offset of the field that holds the location of the first
+     * central directory entry inside the "Zip64 end of central
+     * directory record" relative to the start of the "Zip64 end of
+     * central directory record".
+     */
+    private static final int ZIP64_EOCD_CFD_LOCATOR_OFFSET =
+        /* zip64 end of central dir        */
+        /* signature                       */ ZipConstants.WORD
+        /* size of zip64 end of central    */
+        /* directory record                */ + ZipConstants.DWORD
+        /* version made by                 */ + ZipConstants.SHORT
+        /* version needed to extract       */ + ZipConstants.SHORT
+        /* number of this disk             */ + ZipConstants.WORD
+        /* number of the disk with the     */
+        /* start of the central directory  */ + ZipConstants.WORD
+        /* total number of entries in the  */
+        /* central directory on this disk  */ + ZipConstants.DWORD
+        /* total number of entries in the  */
+        /* central directory               */ + ZipConstants.DWORD
+        /* size of the central directory   */ + ZipConstants.DWORD;
+    /**
+     * Offset of the field that holds the disk number of the first
+     * central directory entry inside the "Zip64 end of central
+     * directory record" relative to the start of the "Zip64 end of
+     * central directory record".
+     */
+    private static final int ZIP64_EOCD_CFD_DISK_OFFSET =
+            /* zip64 end of central dir        */
+            /* signature                       */ ZipConstants.WORD
+            /* size of zip64 end of central    */
+            /* directory record                */ + ZipConstants.DWORD
+            /* version made by                 */ + ZipConstants.SHORT
+            /* version needed to extract       */ + ZipConstants.SHORT
+            /* number of this disk             */ + ZipConstants.WORD;
+    /**
+     * Offset of the field that holds the location of the first
+     * central directory entry inside the "Zip64 end of central
+     * directory record" relative to the "number of the disk
+     * with the start of the central directory".
+     */
+    private static final int ZIP64_EOCD_CFD_LOCATOR_RELATIVE_OFFSET =
+            /* total number of entries in the  */
+            /* central directory on this disk  */ ZipConstants.DWORD
+            /* total number of entries in the  */
+            /* central directory               */ + ZipConstants.DWORD
+            /* size of the central directory   */ + ZipConstants.DWORD;
+    /**
+     * Number of bytes in local file header up to the &quot;length of
+     * file name&quot; entry.
+     */
+    private static final long LFH_OFFSET_FOR_FILENAME_LENGTH =
+        /* local file header signature     */ ZipConstants.WORD
+        /* version needed to extract       */ + ZipConstants.SHORT
+        /* general purpose bit flag        */ + ZipConstants.SHORT
+        /* compression method              */ + ZipConstants.SHORT
+        /* last mod file time              */ + ZipConstants.SHORT
+        /* last mod file date              */ + ZipConstants.SHORT
+        /* crc-32                          */ + ZipConstants.WORD
+        /* compressed size                 */ + ZipConstants.WORD
+        /* uncompressed size               */ + (long) ZipConstants.WORD;
+
+    /**
+     * Compares two ZipArchiveEntries based on their offset within the archive.
+     *
+     * <p>Won't return any meaningful results if one of the entries
+     * isn't part of the archive at all.</p>
+     *
+     * @since 1.1
+     */
+    private static final Comparator<ZipArchiveEntry> offsetComparator =
+        Comparator.comparingLong(ZipArchiveEntry::getDiskNumberStart)
+            .thenComparingLong(ZipArchiveEntry::getLocalHeaderOffset);
+
+    /**
+     * Closes a ZIP file quietly; throwing no IOException, dooes nothing
+     * on null input.
+     * @param zipFile file to close, can be null
+     */
+    public static void closeQuietly(final ZipFile zipFile) {
+        IOUtils.closeQuietly(zipFile);
+    }
 
     /**
      * List of entries in the order they appear inside the central
      * directory.
      */
-    private final List<ZipArchiveEntry> entries =
-        new LinkedList<>();
+    private final List<ZipArchiveEntry> entries = new LinkedList<>();
 
     /**
      * Maps String to list of ZipArchiveEntrys, name -> actual entries.
      */
-    private final Map<String, LinkedList<ZipArchiveEntry>> nameMap =
-        new HashMap<>(HASH_SIZE);
+    private final Map<String, LinkedList<ZipArchiveEntry>> nameMap = new HashMap<>(HASH_SIZE);
 
     /**
      * The encoding to use for file names and the file comment.
@@ -121,7 +386,7 @@ public class ZipFile implements Closeable {
     private final String encoding;
 
     /**
-     * The zip encoding to use for file names and the file comment.
+     * The ZIP encoding to use for file names and the file comment.
      */
     private final ZipEncoding zipEncoding;
 
@@ -146,22 +411,32 @@ public class ZipFile implements Closeable {
     private volatile boolean closed = true;
 
     /**
-     * Whether the zip archive is a split zip archive
+     * Whether the ZIP archive is a split ZIP archive
      */
     private final boolean isSplitZipArchive;
 
     // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
-    private final byte[] dwordBuf = new byte[DWORD];
-    private final byte[] wordBuf = new byte[WORD];
+    private final byte[] dwordBuf = new byte[ZipConstants.DWORD];
+
+    private final byte[] wordBuf = new byte[ZipConstants.WORD];
+
     private final byte[] cfhBuf = new byte[CFH_LEN];
-    private final byte[] shortBuf = new byte[SHORT];
+
+    private final byte[] shortBuf = new byte[ZipConstants.SHORT];
+
     private final ByteBuffer dwordBbuf = ByteBuffer.wrap(dwordBuf);
+
     private final ByteBuffer wordBbuf = ByteBuffer.wrap(wordBuf);
+
     private final ByteBuffer cfhBbuf = ByteBuffer.wrap(cfhBuf);
+
     private final ByteBuffer shortBbuf = ByteBuffer.wrap(shortBuf);
 
     private long centralDirectoryStartDiskNumber, centralDirectoryStartRelativeOffset;
+
     private long centralDirectoryStartOffset;
+
+    private long firstLocalFileHeaderOffset;
 
     /**
      * Opens the given file for reading, assuming "UTF8" for file names.
@@ -175,33 +450,8 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * Opens the given file for reading, assuming "UTF8".
-     *
-     * @param name name of the archive.
-     *
-     * @throws IOException if an error occurs while reading the file.
-     */
-    public ZipFile(final String name) throws IOException {
-        this(new File(name), ZipEncodingHelper.UTF8);
-    }
-
-    /**
      * Opens the given file for reading, assuming the specified
-     * encoding for file names, scanning unicode extra fields.
-     *
-     * @param name name of the archive.
-     * @param encoding the encoding to use for file names, use null
-     * for the platform's default encoding
-     *
-     * @throws IOException if an error occurs while reading the file.
-     */
-    public ZipFile(final String name, final String encoding) throws IOException {
-        this(new File(name), encoding, true);
-    }
-
-    /**
-     * Opens the given file for reading, assuming the specified
-     * encoding for file names and scanning for unicode extra fields.
+     * encoding for file names and scanning for Unicode extra fields.
      *
      * @param f the archive.
      * @param encoding the encoding to use for file names, use null
@@ -210,7 +460,7 @@ public class ZipFile implements Closeable {
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(final File f, final String encoding) throws IOException {
-        this(f, encoding, true);
+        this(f.toPath(), encoding, true);
     }
 
     /**
@@ -227,22 +477,19 @@ public class ZipFile implements Closeable {
      */
     public ZipFile(final File f, final String encoding, final boolean useUnicodeExtraFields)
         throws IOException {
-        this(f, encoding, useUnicodeExtraFields, false);
+        this(f.toPath(), encoding, useUnicodeExtraFields, false);
     }
 
     /**
      * Opens the given file for reading, assuming the specified
      * encoding for file names.
      *
-     *
      * <p>By default the central directory record and all local file headers of the archive will be read immediately
      * which may take a considerable amount of time when the archive is big. The {@code ignoreLocalFileHeader} parameter
      * can be set to {@code true} which restricts parsing to the central directory. Unfortunately the local file header
      * may contain information not present inside of the central directory which will not be available when the argument
      * is set to {@code true}. This includes the content of the Unicode extra field, so setting {@code
-     * ignoreLocalFileHeader} to {@code true} means {@code useUnicodeExtraFields} will be ignored effectively. Also
-     * {@link #getRawInputStream} is always going to return {@code null} if {@code ignoreLocalFileHeader} is {@code
-     * true}.</p>
+     * ignoreLocalFileHeader} to {@code true} means {@code useUnicodeExtraFields} will be ignored effectively.</p>
      *
      * @param f the archive.
      * @param encoding the encoding to use for file names, use null
@@ -260,6 +507,77 @@ public class ZipFile implements Closeable {
         throws IOException {
         this(Files.newByteChannel(f.toPath(), EnumSet.of(StandardOpenOption.READ)),
              f.getAbsolutePath(), encoding, useUnicodeExtraFields, true, ignoreLocalFileHeader);
+    }
+
+    /**
+     * Opens the given path for reading, assuming "UTF8" for file names.
+     *
+     * @param path path to the archive.
+     * @throws IOException if an error occurs while reading the file.
+     * @since 1.22
+     */
+    public ZipFile(final Path path) throws IOException {
+        this(path, ZipEncodingHelper.UTF8);
+    }
+
+    /**
+     * Opens the given path for reading, assuming the specified
+     * encoding for file names and scanning for Unicode extra fields.
+     *
+     * @param path path to the archive.
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
+     * @throws IOException if an error occurs while reading the file.
+     * @since 1.22
+     */
+    public ZipFile(final Path path, final String encoding) throws IOException {
+        this(path, encoding, true);
+    }
+
+
+    /**
+     * Opens the given path for reading, assuming the specified
+     * encoding for file names.
+     *
+     * @param path path to the archive.
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
+     * @param useUnicodeExtraFields whether to use InfoZIP Unicode
+     * Extra Fields (if present) to set the file names.
+     * @throws IOException if an error occurs while reading the file.
+     * @since 1.22
+     */
+    public ZipFile(final Path path, final String encoding, final boolean useUnicodeExtraFields)
+            throws IOException {
+        this(path, encoding, useUnicodeExtraFields, false);
+    }
+
+    /**
+     * Opens the given path for reading, assuming the specified
+     * encoding for file names.
+     * <p>By default the central directory record and all local file headers of the archive will be read immediately
+     * which may take a considerable amount of time when the archive is big. The {@code ignoreLocalFileHeader} parameter
+     * can be set to {@code true} which restricts parsing to the central directory. Unfortunately the local file header
+     * may contain information not present inside of the central directory which will not be available when the argument
+     * is set to {@code true}. This includes the content of the Unicode extra field, so setting {@code
+     * ignoreLocalFileHeader} to {@code true} means {@code useUnicodeExtraFields} will be ignored effectively.</p>
+     *
+     * @param path path to the archive.
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
+     * @param useUnicodeExtraFields whether to use InfoZIP Unicode
+     * Extra Fields (if present) to set the file names.
+     * @param ignoreLocalFileHeader whether to ignore information
+     * stored inside the local file header (see the notes in this method's javadoc)
+     * @throws IOException if an error occurs while reading the file.
+     * @since 1.22
+     */
+    public ZipFile(final Path path, final String encoding, final boolean useUnicodeExtraFields,
+                   final boolean ignoreLocalFileHeader)
+            throws IOException {
+        this(Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ)),
+                path.toAbsolutePath().toString(), encoding, useUnicodeExtraFields,
+                true, ignoreLocalFileHeader);
     }
 
     /**
@@ -336,9 +654,7 @@ public class ZipFile implements Closeable {
      * can be set to {@code true} which restricts parsing to the central directory. Unfortunately the local file header
      * may contain information not present inside of the central directory which will not be available when the argument
      * is set to {@code true}. This includes the content of the Unicode extra field, so setting {@code
-     * ignoreLocalFileHeader} to {@code true} means {@code useUnicodeExtraFields} will be ignored effectively. Also
-     * {@link #getRawInputStream} is always going to return {@code null} if {@code ignoreLocalFileHeader} is {@code
-     * true}.</p>
+     * ignoreLocalFileHeader} to {@code true} means {@code useUnicodeExtraFields} will be ignored effectively.</p>
      *
      * @param channel the archive.
      * @param archiveName name of the archive, used for error messages only.
@@ -390,12 +706,41 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * The encoding to use for file names and the file comment.
+     * Opens the given file for reading, assuming "UTF8".
      *
-     * @return null if using the platform's default character encoding.
+     * @param name name of the archive.
+     *
+     * @throws IOException if an error occurs while reading the file.
      */
-    public String getEncoding() {
-        return encoding;
+    public ZipFile(final String name) throws IOException {
+        this(new File(name).toPath(), ZipEncodingHelper.UTF8);
+    }
+
+    /**
+     * Opens the given file for reading, assuming the specified
+     * encoding for file names, scanning unicode extra fields.
+     *
+     * @param name name of the archive.
+     * @param encoding the encoding to use for file names, use null
+     * for the platform's default encoding
+     *
+     * @throws IOException if an error occurs while reading the file.
+     */
+    public ZipFile(final String name, final String encoding) throws IOException {
+        this(new File(name).toPath(), encoding, true);
+    }
+
+    /**
+     * Whether this class is able to read the given entry.
+     *
+     * <p>May return false if it is set up to use encryption or a
+     * compression method that hasn't been implemented yet.</p>
+     * @since 1.1
+     * @param ze the entry
+     * @return whether this class is able to read the given entry.
+     */
+    public boolean canReadEntryData(final ZipArchiveEntry ze) {
+        return ZipUtil.canHandleEntryData(ze);
     }
 
     /**
@@ -413,131 +758,9 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * close a zipfile quietly; throw no io fault, do nothing
-     * on a null parameter
-     * @param zipfile file to close, can be null
-     */
-    public static void closeQuietly(final ZipFile zipfile) {
-        IOUtils.closeQuietly(zipfile);
-    }
-
-    /**
-     * Returns all entries.
-     *
-     * <p>Entries will be returned in the same order they appear
-     * within the archive's central directory.</p>
-     *
-     * @return all entries as {@link ZipArchiveEntry} instances
-     */
-    public Enumeration<ZipArchiveEntry> getEntries() {
-        return Collections.enumeration(entries);
-    }
-
-    /**
-     * Returns all entries in physical order.
-     *
-     * <p>Entries will be returned in the same order their contents
-     * appear within the archive.</p>
-     *
-     * @return all entries as {@link ZipArchiveEntry} instances
-     *
-     * @since 1.1
-     */
-    public Enumeration<ZipArchiveEntry> getEntriesInPhysicalOrder() {
-        final ZipArchiveEntry[] allEntries = entries.toArray(ZipArchiveEntry.EMPTY_ZIP_ARCHIVE_ENTRY_ARRAY);
-        Arrays.sort(allEntries, offsetComparator);
-        return Collections.enumeration(Arrays.asList(allEntries));
-    }
-
-    /**
-     * Returns a named entry - or {@code null} if no entry by
-     * that name exists.
-     *
-     * <p>If multiple entries with the same name exist the first entry
-     * in the archive's central directory by that name is
-     * returned.</p>
-     *
-     * @param name name of the entry.
-     * @return the ZipArchiveEntry corresponding to the given name - or
-     * {@code null} if not present.
-     */
-    public ZipArchiveEntry getEntry(final String name) {
-        final LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
-        return entriesOfThatName != null ? entriesOfThatName.getFirst() : null;
-    }
-
-    /**
-     * Returns all named entries in the same order they appear within
-     * the archive's central directory.
-     *
-     * @param name name of the entry.
-     * @return the Iterable&lt;ZipArchiveEntry&gt; corresponding to the
-     * given name
-     * @since 1.6
-     */
-    public Iterable<ZipArchiveEntry> getEntries(final String name) {
-        final List<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
-        return entriesOfThatName != null ? entriesOfThatName
-            : Collections.emptyList();
-    }
-
-    /**
-     * Returns all named entries in the same order their contents
-     * appear within the archive.
-     *
-     * @param name name of the entry.
-     * @return the Iterable&lt;ZipArchiveEntry&gt; corresponding to the
-     * given name
-     * @since 1.6
-     */
-    public Iterable<ZipArchiveEntry> getEntriesInPhysicalOrder(final String name) {
-        ZipArchiveEntry[] entriesOfThatName = ZipArchiveEntry.EMPTY_ZIP_ARCHIVE_ENTRY_ARRAY;
-        if (nameMap.containsKey(name)) {
-            entriesOfThatName = nameMap.get(name).toArray(entriesOfThatName);
-            Arrays.sort(entriesOfThatName, offsetComparator);
-        }
-        return Arrays.asList(entriesOfThatName);
-    }
-
-    /**
-     * Whether this class is able to read the given entry.
-     *
-     * <p>May return false if it is set up to use encryption or a
-     * compression method that hasn't been implemented yet.</p>
-     * @since 1.1
-     * @param ze the entry
-     * @return whether this class is able to read the given entry.
-     */
-    public boolean canReadEntryData(final ZipArchiveEntry ze) {
-        return ZipUtil.canHandleEntryData(ze);
-    }
-
-    /**
-     * Expose the raw stream of the archive entry (compressed form).
-     *
-     * <p>This method does not relate to how/if we understand the payload in the
-     * stream, since we really only intend to move it on to somewhere else.</p>
-     *
-     * @param ze The entry to get the stream for
-     * @return The raw input stream containing (possibly) compressed data.
-     * @since 1.11
-     */
-    public InputStream getRawInputStream(final ZipArchiveEntry ze) {
-        if (!(ze instanceof Entry)) {
-            return null;
-        }
-        final long start = ze.getDataOffset();
-        if (start == EntryStreamOffsets.OFFSET_UNKNOWN) {
-            return null;
-        }
-        return createBoundedInputStream(start, ze.getCompressedSize());
-    }
-
-
-    /**
-     * Transfer selected entries from this zipfile to a given #ZipArchiveOutputStream.
+     * Transfer selected entries from this ZIP file to a given #ZipArchiveOutputStream.
      * Compression and all other attributes will be as in this file.
-     * <p>This method transfers entries based on the central directory of the zip file.</p>
+     * <p>This method transfers entries based on the central directory of the ZIP file.</p>
      *
      * @param target The zipArchiveOutputStream to write the entries to
      * @param predicate A predicate that selects which entries to write
@@ -555,36 +778,193 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * Returns an InputStream for reading the contents of the given entry.
+     * Creates new BoundedInputStream, according to implementation of
+     * underlying archive channel.
+     */
+    private BoundedArchiveInputStream createBoundedInputStream(final long start, final long remaining) {
+        if (start < 0 || remaining < 0 || start + remaining < start) {
+            throw new IllegalArgumentException("Corrupted archive, stream boundaries"
+                + " are out of range");
+        }
+        return archive instanceof FileChannel ?
+            new BoundedFileChannelInputStream(start, remaining) :
+            new BoundedSeekableByteChannelInputStream(start, remaining, archive);
+    }
+
+    private void fillNameMap() {
+        entries.forEach(ze -> {
+            // entries is filled in populateFromCentralDirectory and
+            // never modified
+            final String name = ze.getName();
+            final LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.computeIfAbsent(name, k -> new LinkedList<>());
+            entriesOfThatName.addLast(ze);
+        });
+    }
+
+    /**
+     * Ensures that the close method of this ZIP file is called when
+     * there are no more references to it.
+     * @see #close()
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            if (!closed) {
+                close();
+            }
+        } finally {
+            super.finalize();
+        }
+    }
+
+    /**
+     * Gets an InputStream for reading the content before the first local file header.
      *
-     * @param ze the entry to get the stream for.
+     * @return null if there is no content before the first local file header.
+     * Otherwise returns a stream to read the content before the first local file header.
+     * @since 1.23
+     */
+    public InputStream getContentBeforeFirstLocalFileHeader() {
+        return firstLocalFileHeaderOffset == 0
+                ? null : createBoundedInputStream(0, firstLocalFileHeaderOffset);
+    }
+
+    private long getDataOffset(final ZipArchiveEntry ze) throws IOException {
+        final long s = ze.getDataOffset();
+        if (s == EntryStreamOffsets.OFFSET_UNKNOWN) {
+            setDataOffset(ze);
+            return ze.getDataOffset();
+        }
+        return s;
+    }
+
+    /**
+     * Gets the encoding to use for file names and the file comment.
+     *
+     * @return null if using the platform's default character encoding.
+     */
+    public String getEncoding() {
+        return encoding;
+    }
+
+    /**
+     * Gets all entries.
+     *
+     * <p>Entries will be returned in the same order they appear
+     * within the archive's central directory.</p>
+     *
+     * @return all entries as {@link ZipArchiveEntry} instances
+     */
+    public Enumeration<ZipArchiveEntry> getEntries() {
+        return Collections.enumeration(entries);
+    }
+
+    /**
+     * Gets all named entries in the same order they appear within
+     * the archive's central directory.
+     *
+     * @param name name of the entry.
+     * @return the Iterable&lt;ZipArchiveEntry&gt; corresponding to the
+     * given name
+     * @since 1.6
+     */
+    public Iterable<ZipArchiveEntry> getEntries(final String name) {
+        final List<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
+        return entriesOfThatName != null ? entriesOfThatName
+            : Collections.emptyList();
+    }
+
+    /**
+     * Gets all entries in physical order.
+     *
+     * <p>Entries will be returned in the same order their contents
+     * appear within the archive.</p>
+     *
+     * @return all entries as {@link ZipArchiveEntry} instances
+     *
+     * @since 1.1
+     */
+    public Enumeration<ZipArchiveEntry> getEntriesInPhysicalOrder() {
+        final ZipArchiveEntry[] allEntries = entries.toArray(ZipArchiveEntry.EMPTY_ARRAY);
+        Arrays.sort(allEntries, offsetComparator);
+        return Collections.enumeration(Arrays.asList(allEntries));
+    }
+
+    /**
+     * Gets all named entries in the same order their contents
+     * appear within the archive.
+     *
+     * @param name name of the entry.
+     * @return the Iterable&lt;ZipArchiveEntry&gt; corresponding to the
+     * given name
+     * @since 1.6
+     */
+    public Iterable<ZipArchiveEntry> getEntriesInPhysicalOrder(final String name) {
+        ZipArchiveEntry[] entriesOfThatName = ZipArchiveEntry.EMPTY_ARRAY;
+        final LinkedList<ZipArchiveEntry> linkedList = nameMap.get(name);
+        if (linkedList != null) {
+            entriesOfThatName = linkedList.toArray(entriesOfThatName);
+            Arrays.sort(entriesOfThatName, offsetComparator);
+        }
+        return Arrays.asList(entriesOfThatName);
+    }
+
+    /**
+     * Gets a named entry or {@code null} if no entry by
+     * that name exists.
+     *
+     * <p>If multiple entries with the same name exist the first entry
+     * in the archive's central directory by that name is
+     * returned.</p>
+     *
+     * @param name name of the entry.
+     * @return the ZipArchiveEntry corresponding to the given name - or
+     * {@code null} if not present.
+     */
+    public ZipArchiveEntry getEntry(final String name) {
+        final LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
+        return entriesOfThatName != null ? entriesOfThatName.getFirst() : null;
+    }
+
+    /**
+     * Gets the offset of the first local file header in the file.
+     *
+     * @return the length of the content before the first local file header
+     * @since 1.23
+     */
+    public long getFirstLocalFileHeaderOffset() {
+        return firstLocalFileHeaderOffset;
+    }
+
+    /**
+     * Gets an InputStream for reading the contents of the given entry.
+     *
+     * @param zipEntry the entry to get the stream for.
      * @return a stream to read the entry from. The returned stream
      * implements {@link InputStreamStatistics}.
-     * @throws IOException if unable to create an input stream from the zipentry
+     * @throws IOException if unable to create an input stream from the zipEntry.
      */
-    public InputStream getInputStream(final ZipArchiveEntry ze)
+    public InputStream getInputStream(final ZipArchiveEntry zipEntry)
         throws IOException {
-        if (!(ze instanceof Entry)) {
+        if (!(zipEntry instanceof Entry)) {
             return null;
         }
         // cast validity is checked just above
-        ZipUtil.checkRequestedFeatures(ze);
-        final long start = getDataOffset(ze);
+        ZipUtil.checkRequestedFeatures(zipEntry);
 
         // doesn't get closed if the method is not supported - which
         // should never happen because of the checkRequestedFeatures
         // call above
-        final InputStream is =
-            new BufferedInputStream(createBoundedInputStream(start, ze.getCompressedSize())); //NOSONAR
-        switch (ZipMethod.getMethodByCode(ze.getMethod())) {
+        final InputStream is = new BufferedInputStream(getRawInputStream(zipEntry)); //NOSONAR
+        switch (ZipMethod.getMethodByCode(zipEntry.getMethod())) {
             case STORED:
                 return new StoredStatisticsStream(is);
             case UNSHRINKING:
                 return new UnshrinkingInputStream(is);
             case IMPLODING:
                 try {
-                    return new ExplodingInputStream(ze.getGeneralPurposeBit().getSlidingDictionarySize(),
-                            ze.getGeneralPurposeBit().getNumberOfShannonFanoTrees(), is);
+                    return new ExplodingInputStream(zipEntry.getGeneralPurposeBit().getSlidingDictionarySize(),
+                            zipEntry.getGeneralPurposeBit().getNumberOfShannonFanoTrees(), is);
                 } catch (final IllegalArgumentException ex) {
                     throw new IOException("bad IMPLODE data", ex);
                 }
@@ -624,16 +1004,41 @@ public class ZipFile implements Closeable {
             case WAVPACK:
             case XZ:
             default:
-                throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(ze.getMethod()), ze);
+                throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(zipEntry.getMethod()), zipEntry);
         }
     }
 
     /**
-     * <p>
-     * Convenience method to return the entry's content as a String if isUnixSymlink()
-     * returns true for it, otherwise returns null.
-     * </p>
+     * Gets the raw stream of the archive entry (compressed form).
      *
+     * <p>This method does not relate to how/if we understand the payload in the
+     * stream, since we really only intend to move it on to somewhere else.</p>
+     *
+     * <p>Since version 1.22, this method will make an attempt to read the entry's data
+     * stream offset, even if the {@code ignoreLocalFileHeader} parameter was {@code true}
+     * in the constructor. An IOException can also be thrown from the body of the method
+     * if this lookup fails for some reason.</p>
+     *
+     * @param ze The entry to get the stream for
+     * @return The raw input stream containing (possibly) compressed data.
+     * @since 1.11
+     * @throws IOException if there is a problem reading data offset (added in version 1.22).
+     */
+    public InputStream getRawInputStream(final ZipArchiveEntry ze) throws IOException {
+        if (!(ze instanceof Entry)) {
+            return null;
+        }
+
+        final long start = getDataOffset(ze);
+        if (start == EntryStreamOffsets.OFFSET_UNKNOWN) {
+            return null;
+        }
+        return createBoundedInputStream(start, ze.getCompressedSize());
+    }
+
+    /**
+     * Gets the entry's content as a String if isUnixSymlink()
+     * returns true for it, otherwise returns null.
      * <p>This method assumes the symbolic link's file name uses the
      * same encoding that as been specified for this ZipFile.</p>
      *
@@ -650,49 +1055,6 @@ public class ZipFile implements Closeable {
         }
         return null;
     }
-
-    /**
-     * Ensures that the close method of this zipfile is called when
-     * there are no more references to it.
-     * @see #close()
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            if (!closed) {
-                System.err.println("Cleaning up unclosed ZipFile for archive "
-                                   + archiveName);
-                close();
-            }
-        } finally {
-            super.finalize();
-        }
-    }
-
-    /**
-     * Length of a "central directory" entry structure without file
-     * name, extra fields or comment.
-     */
-    private static final int CFH_LEN =
-        /* version made by                 */ SHORT
-        /* version needed to extract       */ + SHORT
-        /* general purpose bit flag        */ + SHORT
-        /* compression method              */ + SHORT
-        /* last mod file time              */ + SHORT
-        /* last mod file date              */ + SHORT
-        /* crc-32                          */ + WORD
-        /* compressed size                 */ + WORD
-        /* uncompressed size               */ + WORD
-        /* file name length                 */ + SHORT
-        /* extra field length              */ + SHORT
-        /* file comment length             */ + SHORT
-        /* disk number start               */ + SHORT
-        /* internal file attributes        */ + SHORT
-        /* external file attributes        */ + WORD
-        /* relative offset of local header */ + WORD;
-
-    private static final long CFH_SIG =
-        ZipLong.getValue(ZipArchiveOutputStream.CFH_SIG);
 
     /**
      * Reads the central directory of the given archive and populates
@@ -732,6 +1094,151 @@ public class ZipFile implements Closeable {
     }
 
     /**
+     * Searches for either the &quot;Zip64 end of central directory
+     * locator&quot; or the &quot;End of central dir record&quot;, parses
+     * it and positions the stream at the first central directory
+     * record.
+     */
+    private void positionAtCentralDirectory()
+        throws IOException {
+        positionAtEndOfCentralDirectoryRecord();
+        boolean found = false;
+        final boolean searchedForZip64EOCD =
+            archive.position() > ZIP64_EOCDL_LENGTH;
+        if (searchedForZip64EOCD) {
+            archive.position(archive.position() - ZIP64_EOCDL_LENGTH);
+            wordBbuf.rewind();
+            IOUtils.readFully(archive, wordBbuf);
+            found = Arrays.equals(ZipArchiveOutputStream.ZIP64_EOCD_LOC_SIG,
+                                  wordBuf);
+        }
+        if (!found) {
+            // not a ZIP64 archive
+            if (searchedForZip64EOCD) {
+                skipBytes(ZIP64_EOCDL_LENGTH - ZipConstants.WORD);
+            }
+            positionAtCentralDirectory32();
+        } else {
+            positionAtCentralDirectory64();
+        }
+    }
+
+    /**
+     * Parses the &quot;End of central dir record&quot; and positions
+     * the stream at the first central directory record.
+     *
+     * Expects stream to be positioned at the beginning of the
+     * &quot;End of central dir record&quot;.
+     */
+    private void positionAtCentralDirectory32()
+        throws IOException {
+        final long endOfCentralDirectoryRecordOffset = archive.position();
+        if (isSplitZipArchive) {
+            skipBytes(CFD_DISK_OFFSET);
+            shortBbuf.rewind();
+            IOUtils.readFully(archive, shortBbuf);
+            centralDirectoryStartDiskNumber = ZipShort.getValue(shortBuf);
+
+            skipBytes(CFD_LOCATOR_RELATIVE_OFFSET);
+
+            wordBbuf.rewind();
+            IOUtils.readFully(archive, wordBbuf);
+            centralDirectoryStartRelativeOffset = ZipLong.getValue(wordBuf);
+            ((ZipSplitReadOnlySeekableByteChannel) archive)
+                .position(centralDirectoryStartDiskNumber, centralDirectoryStartRelativeOffset);
+        } else {
+            skipBytes(CFD_LENGTH_OFFSET);
+            wordBbuf.rewind();
+            IOUtils.readFully(archive, wordBbuf);
+            final long centralDirectoryLength = ZipLong.getValue(wordBuf);
+
+            wordBbuf.rewind();
+            IOUtils.readFully(archive, wordBbuf);
+            centralDirectoryStartDiskNumber = 0;
+            centralDirectoryStartRelativeOffset = ZipLong.getValue(wordBuf);
+
+            firstLocalFileHeaderOffset = Long.max(
+                    endOfCentralDirectoryRecordOffset - centralDirectoryLength - centralDirectoryStartRelativeOffset,
+                    0L);
+            archive.position(centralDirectoryStartRelativeOffset + firstLocalFileHeaderOffset);
+        }
+    }
+
+    /**
+     * Parses the &quot;Zip64 end of central directory locator&quot;,
+     * finds the &quot;Zip64 end of central directory record&quot; using the
+     * parsed information, parses that and positions the stream at the
+     * first central directory record.
+     *
+     * Expects stream to be positioned right behind the &quot;Zip64
+     * end of central directory locator&quot;'s signature.
+     */
+    private void positionAtCentralDirectory64()
+        throws IOException {
+        if (isSplitZipArchive) {
+            wordBbuf.rewind();
+            IOUtils.readFully(archive, wordBbuf);
+            final long diskNumberOfEOCD = ZipLong.getValue(wordBuf);
+
+            dwordBbuf.rewind();
+            IOUtils.readFully(archive, dwordBbuf);
+            final long relativeOffsetOfEOCD = ZipEightByteInteger.getLongValue(dwordBuf);
+            ((ZipSplitReadOnlySeekableByteChannel) archive)
+                .position(diskNumberOfEOCD, relativeOffsetOfEOCD);
+        } else {
+            skipBytes(ZIP64_EOCDL_LOCATOR_OFFSET
+                    - ZipConstants.WORD /* signature has already been read */);
+            dwordBbuf.rewind();
+            IOUtils.readFully(archive, dwordBbuf);
+            archive.position(ZipEightByteInteger.getLongValue(dwordBuf));
+        }
+
+        wordBbuf.rewind();
+        IOUtils.readFully(archive, wordBbuf);
+        if (!Arrays.equals(wordBuf, ZipArchiveOutputStream.ZIP64_EOCD_SIG)) {
+            throw new ZipException("Archive's ZIP64 end of central "
+                                   + "directory locator is corrupt.");
+        }
+
+        if (isSplitZipArchive) {
+            skipBytes(ZIP64_EOCD_CFD_DISK_OFFSET
+                    - ZipConstants.WORD /* signature has already been read */);
+            wordBbuf.rewind();
+            IOUtils.readFully(archive, wordBbuf);
+            centralDirectoryStartDiskNumber = ZipLong.getValue(wordBuf);
+
+            skipBytes(ZIP64_EOCD_CFD_LOCATOR_RELATIVE_OFFSET);
+
+            dwordBbuf.rewind();
+            IOUtils.readFully(archive, dwordBbuf);
+            centralDirectoryStartRelativeOffset = ZipEightByteInteger.getLongValue(dwordBuf);
+            ((ZipSplitReadOnlySeekableByteChannel) archive)
+                .position(centralDirectoryStartDiskNumber, centralDirectoryStartRelativeOffset);
+        } else {
+            skipBytes(ZIP64_EOCD_CFD_LOCATOR_OFFSET
+                    - ZipConstants.WORD /* signature has already been read */);
+            dwordBbuf.rewind();
+            IOUtils.readFully(archive, dwordBbuf);
+            centralDirectoryStartDiskNumber = 0;
+            centralDirectoryStartRelativeOffset = ZipEightByteInteger.getLongValue(dwordBuf);
+            archive.position(centralDirectoryStartRelativeOffset);
+        }
+    }
+
+    /**
+     * Searches for the and positions the stream at the start of the
+     * &quot;End of central dir record&quot;.
+     */
+    private void positionAtEndOfCentralDirectoryRecord()
+        throws IOException {
+        final boolean found = tryToLocateSignature(MIN_EOCD_SIZE, MAX_EOCD_SIZE,
+                                             ZipArchiveOutputStream.EOCD_SIG);
+        if (!found) {
+            throw new ZipException("Archive is not a ZIP archive");
+        }
+    }
+
+    /**
      * Reads an individual entry of the central directory, creats an
      * ZipArchiveEntry from it and adds it to the global maps.
      *
@@ -749,12 +1256,12 @@ public class ZipFile implements Closeable {
         final Entry ze = new Entry();
 
         final int versionMadeBy = ZipShort.getValue(cfhBuf, off);
-        off += SHORT;
+        off += ZipConstants.SHORT;
         ze.setVersionMadeBy(versionMadeBy);
         ze.setPlatform((versionMadeBy >> BYTE_SHIFT) & NIBLET_MASK);
 
         ze.setVersionRequired(ZipShort.getValue(cfhBuf, off));
-        off += SHORT; // version required
+        off += ZipConstants.SHORT; // version required
 
         final GeneralPurposeBit gpFlag = GeneralPurposeBit.parse(cfhBuf, off);
         final boolean hasUTF8Flag = gpFlag.usesUTF8ForNames();
@@ -766,59 +1273,59 @@ public class ZipFile implements Closeable {
         ze.setGeneralPurposeBit(gpFlag);
         ze.setRawFlag(ZipShort.getValue(cfhBuf, off));
 
-        off += SHORT;
+        off += ZipConstants.SHORT;
 
         //noinspection MagicConstant
         ze.setMethod(ZipShort.getValue(cfhBuf, off));
-        off += SHORT;
+        off += ZipConstants.SHORT;
 
         final long time = ZipUtil.dosToJavaTime(ZipLong.getValue(cfhBuf, off));
         ze.setTime(time);
-        off += WORD;
+        off += ZipConstants.WORD;
 
         ze.setCrc(ZipLong.getValue(cfhBuf, off));
-        off += WORD;
+        off += ZipConstants.WORD;
 
         long size = ZipLong.getValue(cfhBuf, off);
         if (size < 0) {
             throw new IOException("broken archive, entry with negative compressed size");
         }
         ze.setCompressedSize(size);
-        off += WORD;
+        off += ZipConstants.WORD;
 
         size = ZipLong.getValue(cfhBuf, off);
         if (size < 0) {
             throw new IOException("broken archive, entry with negative size");
         }
         ze.setSize(size);
-        off += WORD;
+        off += ZipConstants.WORD;
 
         final int fileNameLen = ZipShort.getValue(cfhBuf, off);
-        off += SHORT;
+        off += ZipConstants.SHORT;
         if (fileNameLen < 0) {
             throw new IOException("broken archive, entry with negative fileNameLen");
         }
 
         final int extraLen = ZipShort.getValue(cfhBuf, off);
-        off += SHORT;
+        off += ZipConstants.SHORT;
         if (extraLen < 0) {
             throw new IOException("broken archive, entry with negative extraLen");
         }
 
         final int commentLen = ZipShort.getValue(cfhBuf, off);
-        off += SHORT;
+        off += ZipConstants.SHORT;
         if (commentLen < 0) {
             throw new IOException("broken archive, entry with negative commentLen");
         }
 
         ze.setDiskNumberStart(ZipShort.getValue(cfhBuf, off));
-        off += SHORT;
+        off += ZipConstants.SHORT;
 
         ze.setInternalAttributes(ZipShort.getValue(cfhBuf, off));
-        off += SHORT;
+        off += ZipConstants.SHORT;
 
         ze.setExternalAttributes(ZipLong.getValue(cfhBuf, off));
-        off += WORD;
+        off += ZipConstants.WORD;
 
         final byte[] fileName = IOUtils.readRange(archive, fileNameLen);
         if (fileName.length < fileNameLen) {
@@ -827,7 +1334,7 @@ public class ZipFile implements Closeable {
         ze.setName(entryEncoding.decode(fileName), fileName);
 
         // LFH offset,
-        ze.setLocalHeaderOffset(ZipLong.getValue(cfhBuf, off));
+        ze.setLocalHeaderOffset(ZipLong.getValue(cfhBuf, off) + firstLocalFileHeaderOffset);
         // data offset will be filled later
         entries.add(ze);
 
@@ -837,7 +1344,7 @@ public class ZipFile implements Closeable {
         }
         try {
             ze.setCentralDirectoryExtra(cdExtraData);
-        } catch (RuntimeException ex) {
+        } catch (final RuntimeException ex) {
             final ZipException z = new ZipException("Invalid extra data in entry " + ze.getName());
             z.initCause(ex);
             throw z;
@@ -859,6 +1366,44 @@ public class ZipFile implements Closeable {
         ze.setStreamContiguous(true);
     }
 
+    /**
+     * Walks through all recorded entries and adds the data available
+     * from the local file header.
+     *
+     * <p>Also records the offsets for the data to read from the
+     * entries.</p>
+     */
+    private void resolveLocalFileHeaderData(final Map<ZipArchiveEntry, NameAndComment>
+                                            entriesWithoutUTF8Flag)
+        throws IOException {
+        for (final ZipArchiveEntry zipArchiveEntry : entries) {
+            // entries is filled in populateFromCentralDirectory and
+            // never modified
+            final Entry ze = (Entry) zipArchiveEntry;
+            final int[] lens = setDataOffset(ze);
+            final int fileNameLen = lens[0];
+            final int extraFieldLen = lens[1];
+            skipBytes(fileNameLen);
+            final byte[] localExtraData = IOUtils.readRange(archive, extraFieldLen);
+            if (localExtraData.length < extraFieldLen) {
+                throw new EOFException();
+            }
+            try {
+                ze.setExtra(localExtraData);
+            } catch (final RuntimeException ex) {
+                final ZipException z = new ZipException("Invalid extra data in entry " + ze.getName());
+                z.initCause(ex);
+                throw z;
+            }
+
+            if (entriesWithoutUTF8Flag.containsKey(ze)) {
+                final NameAndComment nc = entriesWithoutUTF8Flag.get(ze);
+                ZipUtil.setNameAndCommentFromExtraFields(ze, nc.name,
+                                                         nc.comment);
+            }
+        }
+    }
+
     private void sanityCheckLFHOffset(final ZipArchiveEntry ze) throws IOException {
         if (ze.getDiskNumberStart() < 0) {
             throw new IOException("broken archive, entry with negative disk number");
@@ -874,11 +1419,34 @@ public class ZipFile implements Closeable {
                 && ze.getLocalHeaderOffset() > centralDirectoryStartRelativeOffset) {
                 throw new IOException("local file header for " + ze.getName() + " starts after central directory");
             }
-        } else {
-            if (ze.getLocalHeaderOffset() > centralDirectoryStartOffset) {
-                throw new IOException("local file header for " + ze.getName() + " starts after central directory");
-            }
+        } else if (ze.getLocalHeaderOffset() > centralDirectoryStartOffset) {
+            throw new IOException("local file header for " + ze.getName() + " starts after central directory");
         }
+    }
+
+    private int[] setDataOffset(final ZipArchiveEntry ze) throws IOException {
+        long offset = ze.getLocalHeaderOffset();
+        if (isSplitZipArchive) {
+            ((ZipSplitReadOnlySeekableByteChannel) archive)
+                .position(ze.getDiskNumberStart(), offset + LFH_OFFSET_FOR_FILENAME_LENGTH);
+            // the offset should be updated to the global offset
+            offset = archive.position() - LFH_OFFSET_FOR_FILENAME_LENGTH;
+        } else {
+            archive.position(offset + LFH_OFFSET_FOR_FILENAME_LENGTH);
+        }
+        wordBbuf.rewind();
+        IOUtils.readFully(archive, wordBbuf);
+        wordBbuf.flip();
+        wordBbuf.get(shortBuf);
+        final int fileNameLen = ZipShort.getValue(shortBuf);
+        wordBbuf.get(shortBuf);
+        final int extraFieldLen = ZipShort.getValue(shortBuf);
+        ze.setDataOffset(offset + LFH_OFFSET_FOR_FILENAME_LENGTH
+                         + ZipConstants.SHORT + ZipConstants.SHORT + fileNameLen + extraFieldLen);
+        if (ze.getDataOffset() + ze.getCompressedSize() > centralDirectoryStartOffset) {
+            throw new IOException("data for " + ze.getName() + " overlaps with central directory.");
+        }
+        return new int[] { fileNameLen, extraFieldLen };
     }
 
     /**
@@ -903,11 +1471,11 @@ public class ZipFile implements Closeable {
         final Zip64ExtendedInformationExtraField z64 =
             (Zip64ExtendedInformationExtraField) extra;
         if (z64 != null) {
-            final boolean hasUncompressedSize = ze.getSize() == ZIP64_MAGIC;
-            final boolean hasCompressedSize = ze.getCompressedSize() == ZIP64_MAGIC;
+            final boolean hasUncompressedSize = ze.getSize() == ZipConstants.ZIP64_MAGIC;
+            final boolean hasCompressedSize = ze.getCompressedSize() == ZipConstants.ZIP64_MAGIC;
             final boolean hasRelativeHeaderOffset =
-                ze.getLocalHeaderOffset() == ZIP64_MAGIC;
-            final boolean hasDiskStart = ze.getDiskNumberStart() == ZIP64_MAGIC_SHORT;
+                ze.getLocalHeaderOffset() == ZipConstants.ZIP64_MAGIC;
+            final boolean hasDiskStart = ze.getDiskNumberStart() == ZipConstants.ZIP64_MAGIC_SHORT;
             z64.reparseCentralDirectoryData(hasUncompressedSize,
                                             hasCompressedSize,
                                             hasRelativeHeaderOffset,
@@ -944,282 +1512,27 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * Length of the "End of central directory record" - which is
-     * supposed to be the last structure of the archive - without file
-     * comment.
+     * Skips the given number of bytes or throws an EOFException if
+     * skipping failed.
      */
-    static final int MIN_EOCD_SIZE =
-        /* end of central dir signature    */ WORD
-        /* number of this disk             */ + SHORT
-        /* number of the disk with the     */
-        /* start of the central directory  */ + SHORT
-        /* total number of entries in      */
-        /* the central dir on this disk    */ + SHORT
-        /* total number of entries in      */
-        /* the central dir                 */ + SHORT
-        /* size of the central directory   */ + WORD
-        /* offset of start of central      */
-        /* directory with respect to       */
-        /* the starting disk number        */ + WORD
-        /* zipfile comment length          */ + SHORT;
-
-    /**
-     * Maximum length of the "End of central directory record" with a
-     * file comment.
-     */
-    private static final int MAX_EOCD_SIZE = MIN_EOCD_SIZE
-        /* maximum length of zipfile comment */ + ZIP64_MAGIC_SHORT;
-
-    /**
-     * Offset of the field that holds the location of the first
-     * central directory entry inside the "End of central directory
-     * record" relative to the start of the "End of central directory
-     * record".
-     */
-    private static final int CFD_LOCATOR_OFFSET =
-        /* end of central dir signature    */ WORD
-        /* number of this disk             */ + SHORT
-        /* number of the disk with the     */
-        /* start of the central directory  */ + SHORT
-        /* total number of entries in      */
-        /* the central dir on this disk    */ + SHORT
-        /* total number of entries in      */
-        /* the central dir                 */ + SHORT
-        /* size of the central directory   */ + WORD;
-
-    /**
-     * Offset of the field that holds the disk number of the first
-     * central directory entry inside the "End of central directory
-     * record" relative to the start of the "End of central directory
-     * record".
-     */
-    private static final int CFD_DISK_OFFSET =
-            /* end of central dir signature    */ WORD
-            /* number of this disk             */ + SHORT;
-
-    /**
-     * Offset of the field that holds the location of the first
-     * central directory entry inside the "End of central directory
-     * record" relative to the "number of the disk with the start
-     * of the central directory".
-     */
-    private static final int CFD_LOCATOR_RELATIVE_OFFSET =
-            /* total number of entries in      */
-            /* the central dir on this disk    */ + SHORT
-            /* total number of entries in      */
-            /* the central dir                 */ + SHORT
-            /* size of the central directory   */ + WORD;
-
-    /**
-     * Length of the "Zip64 end of central directory locator" - which
-     * should be right in front of the "end of central directory
-     * record" if one is present at all.
-     */
-    private static final int ZIP64_EOCDL_LENGTH =
-        /* zip64 end of central dir locator sig */ WORD
-        /* number of the disk with the start    */
-        /* start of the zip64 end of            */
-        /* central directory                    */ + WORD
-        /* relative offset of the zip64         */
-        /* end of central directory record      */ + DWORD
-        /* total number of disks                */ + WORD;
-
-    /**
-     * Offset of the field that holds the location of the "Zip64 end
-     * of central directory record" inside the "Zip64 end of central
-     * directory locator" relative to the start of the "Zip64 end of
-     * central directory locator".
-     */
-    private static final int ZIP64_EOCDL_LOCATOR_OFFSET =
-        /* zip64 end of central dir locator sig */ WORD
-        /* number of the disk with the start    */
-        /* start of the zip64 end of            */
-        /* central directory                    */ + WORD;
-
-    /**
-     * Offset of the field that holds the location of the first
-     * central directory entry inside the "Zip64 end of central
-     * directory record" relative to the start of the "Zip64 end of
-     * central directory record".
-     */
-    private static final int ZIP64_EOCD_CFD_LOCATOR_OFFSET =
-        /* zip64 end of central dir        */
-        /* signature                       */ WORD
-        /* size of zip64 end of central    */
-        /* directory record                */ + DWORD
-        /* version made by                 */ + SHORT
-        /* version needed to extract       */ + SHORT
-        /* number of this disk             */ + WORD
-        /* number of the disk with the     */
-        /* start of the central directory  */ + WORD
-        /* total number of entries in the  */
-        /* central directory on this disk  */ + DWORD
-        /* total number of entries in the  */
-        /* central directory               */ + DWORD
-        /* size of the central directory   */ + DWORD;
-
-    /**
-     * Offset of the field that holds the disk number of the first
-     * central directory entry inside the "Zip64 end of central
-     * directory record" relative to the start of the "Zip64 end of
-     * central directory record".
-     */
-    private static final int ZIP64_EOCD_CFD_DISK_OFFSET =
-            /* zip64 end of central dir        */
-            /* signature                       */ WORD
-            /* size of zip64 end of central    */
-            /* directory record                */ + DWORD
-            /* version made by                 */ + SHORT
-            /* version needed to extract       */ + SHORT
-            /* number of this disk             */ + WORD;
-
-    /**
-     * Offset of the field that holds the location of the first
-     * central directory entry inside the "Zip64 end of central
-     * directory record" relative to the "number of the disk
-     * with the start of the central directory".
-     */
-    private static final int ZIP64_EOCD_CFD_LOCATOR_RELATIVE_OFFSET =
-            /* total number of entries in the  */
-            /* central directory on this disk  */ DWORD
-            /* total number of entries in the  */
-            /* central directory               */ + DWORD
-            /* size of the central directory   */ + DWORD;
-
-    /**
-     * Searches for either the &quot;Zip64 end of central directory
-     * locator&quot; or the &quot;End of central dir record&quot;, parses
-     * it and positions the stream at the first central directory
-     * record.
-     */
-    private void positionAtCentralDirectory()
-        throws IOException {
-        positionAtEndOfCentralDirectoryRecord();
-        boolean found = false;
-        final boolean searchedForZip64EOCD =
-            archive.position() > ZIP64_EOCDL_LENGTH;
-        if (searchedForZip64EOCD) {
-            archive.position(archive.position() - ZIP64_EOCDL_LENGTH);
-            wordBbuf.rewind();
-            IOUtils.readFully(archive, wordBbuf);
-            found = Arrays.equals(ZipArchiveOutputStream.ZIP64_EOCD_LOC_SIG,
-                                  wordBuf);
+    private void skipBytes(final int count) throws IOException {
+        final long currentPosition = archive.position();
+        final long newPosition = currentPosition + count;
+        if (newPosition > archive.size()) {
+            throw new EOFException();
         }
-        if (!found) {
-            // not a ZIP64 archive
-            if (searchedForZip64EOCD) {
-                skipBytes(ZIP64_EOCDL_LENGTH - WORD);
-            }
-            positionAtCentralDirectory32();
-        } else {
-            positionAtCentralDirectory64();
-        }
+        archive.position(newPosition);
     }
 
     /**
-     * Parses the &quot;Zip64 end of central directory locator&quot;,
-     * finds the &quot;Zip64 end of central directory record&quot; using the
-     * parsed information, parses that and positions the stream at the
-     * first central directory record.
-     *
-     * Expects stream to be positioned right behind the &quot;Zip64
-     * end of central directory locator&quot;'s signature.
+     * Checks whether the archive starts with a LFH.  If it doesn't,
+     * it may be an empty archive.
      */
-    private void positionAtCentralDirectory64()
-        throws IOException {
-        if (isSplitZipArchive) {
-            wordBbuf.rewind();
-            IOUtils.readFully(archive, wordBbuf);
-            final long diskNumberOfEOCD = ZipLong.getValue(wordBuf);
-
-            dwordBbuf.rewind();
-            IOUtils.readFully(archive, dwordBbuf);
-            final long relativeOffsetOfEOCD = ZipEightByteInteger.getLongValue(dwordBuf);
-            ((ZipSplitReadOnlySeekableByteChannel) archive)
-                .position(diskNumberOfEOCD, relativeOffsetOfEOCD);
-        } else {
-            skipBytes(ZIP64_EOCDL_LOCATOR_OFFSET
-                    - WORD /* signature has already been read */);
-            dwordBbuf.rewind();
-            IOUtils.readFully(archive, dwordBbuf);
-            archive.position(ZipEightByteInteger.getLongValue(dwordBuf));
-        }
-
+    private boolean startsWithLocalFileHeader() throws IOException {
+        archive.position(firstLocalFileHeaderOffset);
         wordBbuf.rewind();
         IOUtils.readFully(archive, wordBbuf);
-        if (!Arrays.equals(wordBuf, ZipArchiveOutputStream.ZIP64_EOCD_SIG)) {
-            throw new ZipException("Archive's ZIP64 end of central "
-                                   + "directory locator is corrupt.");
-        }
-
-        if (isSplitZipArchive) {
-            skipBytes(ZIP64_EOCD_CFD_DISK_OFFSET
-                    - WORD /* signature has already been read */);
-            wordBbuf.rewind();
-            IOUtils.readFully(archive, wordBbuf);
-            centralDirectoryStartDiskNumber = ZipLong.getValue(wordBuf);
-
-            skipBytes(ZIP64_EOCD_CFD_LOCATOR_RELATIVE_OFFSET);
-
-            dwordBbuf.rewind();
-            IOUtils.readFully(archive, dwordBbuf);
-            centralDirectoryStartRelativeOffset = ZipEightByteInteger.getLongValue(dwordBuf);
-            ((ZipSplitReadOnlySeekableByteChannel) archive)
-                .position(centralDirectoryStartDiskNumber, centralDirectoryStartRelativeOffset);
-        } else {
-            skipBytes(ZIP64_EOCD_CFD_LOCATOR_OFFSET
-                    - WORD /* signature has already been read */);
-            dwordBbuf.rewind();
-            IOUtils.readFully(archive, dwordBbuf);
-            centralDirectoryStartDiskNumber = 0;
-            centralDirectoryStartRelativeOffset = ZipEightByteInteger.getLongValue(dwordBuf);
-            archive.position(centralDirectoryStartRelativeOffset);
-        }
-    }
-
-    /**
-     * Parses the &quot;End of central dir record&quot; and positions
-     * the stream at the first central directory record.
-     *
-     * Expects stream to be positioned at the beginning of the
-     * &quot;End of central dir record&quot;.
-     */
-    private void positionAtCentralDirectory32()
-        throws IOException {
-        if (isSplitZipArchive) {
-            skipBytes(CFD_DISK_OFFSET);
-            shortBbuf.rewind();
-            IOUtils.readFully(archive, shortBbuf);
-            centralDirectoryStartDiskNumber = ZipShort.getValue(shortBuf);
-
-            skipBytes(CFD_LOCATOR_RELATIVE_OFFSET);
-
-            wordBbuf.rewind();
-            IOUtils.readFully(archive, wordBbuf);
-            centralDirectoryStartRelativeOffset = ZipLong.getValue(wordBuf);
-            ((ZipSplitReadOnlySeekableByteChannel) archive)
-                .position(centralDirectoryStartDiskNumber, centralDirectoryStartRelativeOffset);
-        } else {
-            skipBytes(CFD_LOCATOR_OFFSET);
-            wordBbuf.rewind();
-            IOUtils.readFully(archive, wordBbuf);
-            centralDirectoryStartDiskNumber = 0;
-            centralDirectoryStartRelativeOffset = ZipLong.getValue(wordBuf);
-            archive.position(centralDirectoryStartRelativeOffset);
-        }
-    }
-
-    /**
-     * Searches for the and positions the stream at the start of the
-     * &quot;End of central dir record&quot;.
-     */
-    private void positionAtEndOfCentralDirectoryRecord()
-        throws IOException {
-        final boolean found = tryToLocateSignature(MIN_EOCD_SIZE, MAX_EOCD_SIZE,
-                                             ZipArchiveOutputStream.EOCD_SIG);
-        if (!found) {
-            throw new ZipException("Archive is not a ZIP archive");
-        }
+        return Arrays.equals(wordBuf, ZipArchiveOutputStream.LFH_SIG);
     }
 
     /**
@@ -1264,229 +1577,5 @@ public class ZipFile implements Closeable {
             archive.position(off);
         }
         return found;
-    }
-
-    /**
-     * Skips the given number of bytes or throws an EOFException if
-     * skipping failed.
-     */
-    private void skipBytes(final int count) throws IOException {
-        final long currentPosition = archive.position();
-        final long newPosition = currentPosition + count;
-        if (newPosition > archive.size()) {
-            throw new EOFException();
-        }
-        archive.position(newPosition);
-    }
-
-    /**
-     * Number of bytes in local file header up to the &quot;length of
-     * file name&quot; entry.
-     */
-    private static final long LFH_OFFSET_FOR_FILENAME_LENGTH =
-        /* local file header signature     */ WORD
-        /* version needed to extract       */ + SHORT
-        /* general purpose bit flag        */ + SHORT
-        /* compression method              */ + SHORT
-        /* last mod file time              */ + SHORT
-        /* last mod file date              */ + SHORT
-        /* crc-32                          */ + WORD
-        /* compressed size                 */ + WORD
-        /* uncompressed size               */ + (long) WORD;
-
-    /**
-     * Walks through all recorded entries and adds the data available
-     * from the local file header.
-     *
-     * <p>Also records the offsets for the data to read from the
-     * entries.</p>
-     */
-    private void resolveLocalFileHeaderData(final Map<ZipArchiveEntry, NameAndComment>
-                                            entriesWithoutUTF8Flag)
-        throws IOException {
-        for (final ZipArchiveEntry zipArchiveEntry : entries) {
-            // entries is filled in populateFromCentralDirectory and
-            // never modified
-            final Entry ze = (Entry) zipArchiveEntry;
-            final int[] lens = setDataOffset(ze);
-            final int fileNameLen = lens[0];
-            final int extraFieldLen = lens[1];
-            skipBytes(fileNameLen);
-            final byte[] localExtraData = IOUtils.readRange(archive, extraFieldLen);
-            if (localExtraData.length < extraFieldLen) {
-                throw new EOFException();
-            }
-            try {
-                ze.setExtra(localExtraData);
-            } catch (RuntimeException ex) {
-                final ZipException z = new ZipException("Invalid extra data in entry " + ze.getName());
-                z.initCause(ex);
-                throw z;
-            }
-
-            if (entriesWithoutUTF8Flag.containsKey(ze)) {
-                final NameAndComment nc = entriesWithoutUTF8Flag.get(ze);
-                ZipUtil.setNameAndCommentFromExtraFields(ze, nc.name,
-                                                         nc.comment);
-            }
-        }
-    }
-
-    private void fillNameMap() {
-        for (final ZipArchiveEntry ze : entries) {
-            // entries is filled in populateFromCentralDirectory and
-            // never modified
-            final String name = ze.getName();
-            LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.computeIfAbsent(name, k -> new LinkedList<>());
-            entriesOfThatName.addLast(ze);
-        }
-    }
-
-    private int[] setDataOffset(final ZipArchiveEntry ze) throws IOException {
-        long offset = ze.getLocalHeaderOffset();
-        if (isSplitZipArchive) {
-            ((ZipSplitReadOnlySeekableByteChannel) archive)
-                .position(ze.getDiskNumberStart(), offset + LFH_OFFSET_FOR_FILENAME_LENGTH);
-            // the offset should be updated to the global offset
-            offset = archive.position() - LFH_OFFSET_FOR_FILENAME_LENGTH;
-        } else {
-            archive.position(offset + LFH_OFFSET_FOR_FILENAME_LENGTH);
-        }
-        wordBbuf.rewind();
-        IOUtils.readFully(archive, wordBbuf);
-        wordBbuf.flip();
-        wordBbuf.get(shortBuf);
-        final int fileNameLen = ZipShort.getValue(shortBuf);
-        wordBbuf.get(shortBuf);
-        final int extraFieldLen = ZipShort.getValue(shortBuf);
-        ze.setDataOffset(offset + LFH_OFFSET_FOR_FILENAME_LENGTH
-                         + SHORT + SHORT + fileNameLen + extraFieldLen);
-        if (ze.getDataOffset() + ze.getCompressedSize() > centralDirectoryStartOffset) {
-            throw new IOException("data for " + ze.getName() + " overlaps with central directory.");
-        }
-        return new int[] { fileNameLen, extraFieldLen };
-    }
-
-    private long getDataOffset(final ZipArchiveEntry ze) throws IOException {
-        final long s = ze.getDataOffset();
-        if (s == EntryStreamOffsets.OFFSET_UNKNOWN) {
-            setDataOffset(ze);
-            return ze.getDataOffset();
-        }
-        return s;
-    }
-
-    /**
-     * Checks whether the archive starts with a LFH.  If it doesn't,
-     * it may be an empty archive.
-     */
-    private boolean startsWithLocalFileHeader() throws IOException {
-        archive.position(0);
-        wordBbuf.rewind();
-        IOUtils.readFully(archive, wordBbuf);
-        return Arrays.equals(wordBuf, ZipArchiveOutputStream.LFH_SIG);
-    }
-
-    /**
-     * Creates new BoundedInputStream, according to implementation of
-     * underlying archive channel.
-     */
-    private BoundedArchiveInputStream createBoundedInputStream(final long start, final long remaining) {
-        if (start < 0 || remaining < 0 || start + remaining < start) {
-            throw new IllegalArgumentException("Corrupted archive, stream boundaries"
-                + " are out of range");
-        }
-        return archive instanceof FileChannel ?
-            new BoundedFileChannelInputStream(start, remaining) :
-            new BoundedSeekableByteChannelInputStream(start, remaining, archive);
-    }
-
-    /**
-     * Lock-free implementation of BoundedInputStream. The
-     * implementation uses positioned reads on the underlying archive
-     * file channel and therefore performs significantly faster in
-     * concurrent environment.
-     */
-    private class BoundedFileChannelInputStream extends BoundedArchiveInputStream {
-        private final FileChannel archive;
-
-        BoundedFileChannelInputStream(final long start, final long remaining) {
-            super(start, remaining);
-            archive = (FileChannel) ZipFile.this.archive;
-        }
-
-        @Override
-        protected int read(final long pos, final ByteBuffer buf) throws IOException {
-            final int read = archive.read(buf, pos);
-            buf.flip();
-            return read;
-        }
-    }
-
-    private static final class NameAndComment {
-        private final byte[] name;
-        private final byte[] comment;
-        private NameAndComment(final byte[] name, final byte[] comment) {
-            this.name = name;
-            this.comment = comment;
-        }
-    }
-
-    /**
-     * Compares two ZipArchiveEntries based on their offset within the archive.
-     *
-     * <p>Won't return any meaningful results if one of the entries
-     * isn't part of the archive at all.</p>
-     *
-     * @since 1.1
-     */
-    private final Comparator<ZipArchiveEntry> offsetComparator =
-        Comparator.comparingLong(ZipArchiveEntry::getDiskNumberStart)
-            .thenComparingLong(ZipArchiveEntry::getLocalHeaderOffset);
-
-    /**
-     * Extends ZipArchiveEntry to store the offset within the archive.
-     */
-    private static class Entry extends ZipArchiveEntry {
-
-        Entry() {
-        }
-
-        @Override
-        public int hashCode() {
-            return 3 * super.hashCode()
-                + (int) getLocalHeaderOffset()+(int)(getLocalHeaderOffset()>>32);
-        }
-
-        @Override
-        public boolean equals(final Object other) {
-            if (super.equals(other)) {
-                // super.equals would return false if other were not an Entry
-                final Entry otherEntry = (Entry) other;
-                return getLocalHeaderOffset()
-                        == otherEntry.getLocalHeaderOffset()
-                    && super.getDataOffset()
-                        == otherEntry.getDataOffset()
-                    && super.getDiskNumberStart()
-                        == otherEntry.getDiskNumberStart();
-            }
-            return false;
-        }
-    }
-
-    private static class StoredStatisticsStream extends CountingInputStream implements InputStreamStatistics {
-        StoredStatisticsStream(final InputStream in) {
-            super(in);
-        }
-
-        @Override
-        public long getCompressedCount() {
-            return super.getBytesRead();
-        }
-
-        @Override
-        public long getUncompressedCount() {
-            return getCompressedCount();
-        }
     }
 }

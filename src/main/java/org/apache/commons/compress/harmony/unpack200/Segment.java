@@ -23,7 +23,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -105,7 +107,7 @@ public class Segment {
 
     private InputStream internalBuffer;
 
-    private ClassFile buildClassFile(final int classNum) throws Pack200Exception {
+    private ClassFile buildClassFile(final int classNum) {
         final ClassFile classFile = new ClassFile();
         final int[] major = classBands.getClassVersionMajor();
         final int[] minor = classBands.getClassVersionMinor();
@@ -126,11 +128,11 @@ public class Segment {
         // == str
 
         // Get the source file attribute
-        final ArrayList classAttributes = classBands.getClassAttributes()[classNum];
+        final List<Attribute> classAttributes = classBands.getClassAttributes()[classNum];
         SourceFileAttribute sourceFileAttribute = null;
-        for (int index = 0; index < classAttributes.size(); index++) {
-            if (((Attribute) classAttributes.get(index)).isSourceFileAttribute()) {
-                sourceFileAttribute = ((SourceFileAttribute) classAttributes.get(index));
+        for (final Attribute classAttribute : classAttributes) {
+            if (classAttribute.isSourceFileAttribute()) {
+                sourceFileAttribute = ((SourceFileAttribute) classAttribute);
             }
         }
 
@@ -166,9 +168,9 @@ public class Segment {
         // that will
         // be written out. Keep SourceFileAttributes out since we just
         // did them above.
-        final ArrayList classAttributesWithoutSourceFileAttribute = new ArrayList(classAttributes.size());
+        final List<Attribute> classAttributesWithoutSourceFileAttribute = new ArrayList<>(classAttributes.size());
         for (int index = 0; index < classAttributes.size(); index++) {
-            final Attribute attrib = (Attribute) classAttributes.get(index);
+            final Attribute attrib = classAttributes.get(index);
             if (!attrib.isSourceFileAttribute()) {
                 classAttributesWithoutSourceFileAttribute.add(attrib);
             }
@@ -178,7 +180,7 @@ public class Segment {
             + classAttributesWithoutSourceFileAttribute.size()];
         System.arraycopy(originalAttributes, 0, classFile.attributes, 0, originalAttributes.length);
         for (int index = 0; index < classAttributesWithoutSourceFileAttribute.size(); index++) {
-            final Attribute attrib = ((Attribute) classAttributesWithoutSourceFileAttribute.get(index));
+            final Attribute attrib = (classAttributesWithoutSourceFileAttribute.get(index));
             cp.add(attrib);
             classFile.attributes[originalAttributes.length + index] = attrib;
         }
@@ -187,12 +189,12 @@ public class Segment {
         final ClassFileEntry cfThis = cp.add(cpBands.cpClassValue(fullNameIndexInCpClass));
         final ClassFileEntry cfSuper = cp.add(cpBands.cpClassValue(classBands.getClassSuperInts()[classNum]));
         // add interfaces
-        final ClassFileEntry cfInterfaces[] = new ClassFileEntry[classBands.getClassInterfacesInts()[classNum].length];
+        final ClassFileEntry[] cfInterfaces = new ClassFileEntry[classBands.getClassInterfacesInts()[classNum].length];
         for (i = 0; i < cfInterfaces.length; i++) {
             cfInterfaces[i] = cp.add(cpBands.cpClassValue(classBands.getClassInterfacesInts()[classNum][i]));
         }
         // add fields
-        final ClassFileEntry cfFields[] = new ClassFileEntry[classBands.getClassFieldCount()[classNum]];
+        final ClassFileEntry[] cfFields = new ClassFileEntry[classBands.getClassFieldCount()[classNum]];
         // fieldDescr and fieldFlags used to create this
         for (i = 0; i < cfFields.length; i++) {
             final int descriptorIndex = classBands.getFieldDescrInts()[classNum][i];
@@ -204,7 +206,7 @@ public class Segment {
                 classBands.getFieldAttributes()[classNum][i]));
         }
         // add methods
-        final ClassFileEntry cfMethods[] = new ClassFileEntry[classBands.getClassMethodCount()[classNum]];
+        final ClassFileEntry[] cfMethods = new ClassFileEntry[classBands.getClassMethodCount()[classNum]];
         // methodDescr and methodFlags used to create this
         for (i = 0; i < cfMethods.length; i++) {
             final int descriptorIndex = classBands.getMethodDescrInts()[classNum][i];
@@ -219,13 +221,12 @@ public class Segment {
 
         // add inner class attribute (if required)
         boolean addInnerClassesAttr = false;
-        final IcTuple[] ic_local = getClassBands().getIcLocal()[classNum];
-        final boolean ic_local_sent = ic_local != null;
+        final IcTuple[] icLocal = getClassBands().getIcLocal()[classNum];
+        final boolean icLocalSent = icLocal != null;
         final InnerClassesAttribute innerClassesAttribute = new InnerClassesAttribute("InnerClasses");
-        final IcTuple[] ic_relevant = getIcBands().getRelevantIcTuples(fullName, cp);
-        final List ic_stored = computeIcStored(ic_local, ic_relevant);
-        for (int index = 0; index < ic_stored.size(); index++) {
-            final IcTuple icStored = (IcTuple) ic_stored.get(index);
+        final IcTuple[] icRelevant = getIcBands().getRelevantIcTuples(fullName, cp);
+        final List<IcTuple> ic_stored = computeIcStored(icLocal, icRelevant);
+        for (final IcTuple icStored : ic_stored) {
             final int innerClassIndex = icStored.thisClassIndex();
             final int outerClassIndex = icStored.outerClassIndex();
             final int simpleClassNameIndex = icStored.simpleClassNameIndex();
@@ -255,13 +256,13 @@ public class Segment {
         }
         // If ic_local is sent and it's empty, don't add
         // the inner classes attribute.
-        if (ic_local_sent && (ic_local.length == 0)) {
+        if (icLocalSent && (icLocal.length == 0)) {
             addInnerClassesAttr = false;
         }
 
         // If ic_local is not sent and ic_relevant is empty,
         // don't add the inner class attribute.
-        if (!ic_local_sent && (ic_relevant.length == 0)) {
+        if (!icLocalSent && (icRelevant.length == 0)) {
             addInnerClassesAttr = false;
         }
 
@@ -270,9 +271,7 @@ public class Segment {
             // existing classFile attributes.
             final Attribute[] originalAttrs = classFile.attributes;
             final Attribute[] newAttrs = new Attribute[originalAttrs.length + 1];
-            for (int index = 0; index < originalAttrs.length; index++) {
-                newAttrs[index] = originalAttrs[index];
-            }
+            System.arraycopy(originalAttrs, 0, newAttrs, 0, originalAttrs.length);
             newAttrs[newAttrs.length - 1] = innerClassesAttribute;
             classFile.attributes = newAttrs;
             cp.addWithNestedEntries(innerClassesAttribute);
@@ -297,70 +296,81 @@ public class Segment {
     /**
      * Given an ic_local and an ic_relevant, use them to calculate what should be added as ic_stored.
      *
-     * @param ic_local IcTuple[] array of local transmitted tuples
-     * @param ic_relevant IcTuple[] array of relevant tuples
+     * @param icLocal IcTuple[] array of local transmitted tuples
+     * @param icRelevant IcTuple[] array of relevant tuples
      * @return List of tuples to be stored. If ic_local is null or empty, the values returned may not be correct. The
      *         caller will have to determine if this is the case.
      */
-    private List computeIcStored(final IcTuple[] ic_local, final IcTuple[] ic_relevant) {
-        final List result = new ArrayList(ic_relevant.length);
-        final List duplicates = new ArrayList(ic_relevant.length);
-        final Set isInResult = new HashSet(ic_relevant.length);
+    private List<IcTuple> computeIcStored(final IcTuple[] icLocal, final IcTuple[] icRelevant) {
+        final List<IcTuple> result = new ArrayList<>(icRelevant.length);
+        final List<IcTuple> duplicates = new ArrayList<>(icRelevant.length);
+        final Set<IcTuple> isInResult = new HashSet<>(icRelevant.length);
 
         // need to compute:
         // result = ic_local XOR ic_relevant
 
         // add ic_local
-        if (ic_local != null) {
-            for (int index = 0; index < ic_local.length; index++) {
-                if (isInResult.add(ic_local[index])) {
-                    result.add(ic_local[index]);
+        if (icLocal != null) {
+            for (final IcTuple element : icLocal) {
+                if (isInResult.add(element)) {
+                    result.add(element);
                 }
             }
         }
 
         // add ic_relevant
-        for (int index = 0; index < ic_relevant.length; index++) {
-            if (isInResult.add(ic_relevant[index])) {
-                result.add(ic_relevant[index]);
+        for (final IcTuple element : icRelevant) {
+            if (isInResult.add(element)) {
+                result.add(element);
             } else {
-                duplicates.add(ic_relevant[index]);
+                duplicates.add(element);
             }
         }
 
         // eliminate "duplicates"
-        for (int index = 0; index < duplicates.size(); index++) {
-            final IcTuple tuple = (IcTuple) duplicates.get(index);
-            result.remove(tuple);
-        }
+        duplicates.forEach(result::remove);
 
         return result;
     }
 
-    /**
-     * This performs reading the data from the stream into non-static instance of Segment. After the completion of this
-     * method stream can be freed.
-     *
-     * @param in the input stream to read from
-     * @throws IOException if a problem occurs during reading from the underlying stream
-     * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
-     */
-    private void readSegment(final InputStream in) throws IOException, Pack200Exception {
-        log(LOG_LEVEL_VERBOSE, "-------");
-        cpBands = new CpBands(this);
-        cpBands.read(in);
-        attrDefinitionBands = new AttrDefinitionBands(this);
-        attrDefinitionBands.read(in);
-        icBands = new IcBands(this);
-        icBands.read(in);
-        classBands = new ClassBands(this);
-        classBands.read(in);
-        bcBands = new BcBands(this);
-        bcBands.read(in);
-        fileBands = new FileBands(this);
-        fileBands.read(in);
+    protected AttrDefinitionBands getAttrDefinitionBands() {
+        return attrDefinitionBands;
+    }
 
-        fileBands.processFileBits();
+    protected ClassBands getClassBands() {
+        return classBands;
+    }
+
+    public SegmentConstantPool getConstantPool() {
+        return cpBands.getConstantPool();
+    }
+
+    protected CpBands getCpBands() {
+        return cpBands;
+    }
+
+    protected IcBands getIcBands() {
+        return icBands;
+    }
+
+    public SegmentHeader getSegmentHeader() {
+        return header;
+    }
+
+    public void log(final int logLevel, final String message) {
+        if (this.logLevel >= logLevel) {
+            logStream.println(message);
+        }
+    }
+
+    /**
+     * Override the archive's deflate hint with the given boolean
+     *
+     * @param deflateHint - the deflate hint to use
+     */
+    public void overrideDeflateHint(final boolean deflateHint) {
+        this.overrideDeflateHint = true;
+        this.deflateHint = deflateHint;
     }
 
     /**
@@ -425,6 +435,44 @@ public class Segment {
     }
 
     /**
+     * This performs reading the data from the stream into non-static instance of Segment. After the completion of this
+     * method stream can be freed.
+     *
+     * @param in the input stream to read from
+     * @throws IOException if a problem occurs during reading from the underlying stream
+     * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
+     */
+    private void readSegment(final InputStream in) throws IOException, Pack200Exception {
+        log(LOG_LEVEL_VERBOSE, "-------");
+        cpBands = new CpBands(this);
+        cpBands.read(in);
+        attrDefinitionBands = new AttrDefinitionBands(this);
+        attrDefinitionBands.read(in);
+        icBands = new IcBands(this);
+        icBands.read(in);
+        classBands = new ClassBands(this);
+        classBands.read(in);
+        bcBands = new BcBands(this);
+        bcBands.read(in);
+        fileBands = new FileBands(this);
+        fileBands.read(in);
+
+        fileBands.processFileBits();
+    }
+
+    public void setLogLevel(final int logLevel) {
+        this.logLevel = logLevel;
+    }
+
+    public void setLogStream(final OutputStream logStream) {
+        this.logStream = new PrintWriter(new OutputStreamWriter(logStream, Charset.defaultCharset()), false);
+    }
+
+    public void setPreRead(final boolean value) {
+        doPreRead = value;
+    }
+
+    /**
      * Unpacks a packed stream (either .pack. or .pack.gz) into a corresponding JarOuputStream.
      *
      * @param in a packed stream.
@@ -436,6 +484,13 @@ public class Segment {
         unpackRead(in);
         unpackProcess();
         unpackWrite(out);
+    }
+
+    void unpackProcess() throws IOException, Pack200Exception {
+        if (internalBuffer != null) {
+            readSegment(internalBuffer);
+        }
+        parseSegment();
     }
 
     /*
@@ -460,14 +515,7 @@ public class Segment {
         }
     }
 
-    void unpackProcess() throws IOException, Pack200Exception {
-        if (internalBuffer != null) {
-            readSegment(internalBuffer);
-        }
-        parseSegment();
-    }
-
-    void unpackWrite(final JarOutputStream out) throws IOException, Pack200Exception {
+    void unpackWrite(final JarOutputStream out) throws IOException {
         writeJar(out);
         if (logStream != null) {
             logStream.close();
@@ -482,9 +530,8 @@ public class Segment {
      *
      * @param out the JarOutputStream to write data to
      * @throws IOException if an error occurs while reading or writing to the streams
-     * @throws Pack200Exception if an error occurs while processing data
      */
-    public void writeJar(final JarOutputStream out) throws IOException, Pack200Exception {
+    public void writeJar(final JarOutputStream out) throws IOException {
         final String[] fileName = fileBands.getFileName();
         final int[] fileModtime = fileBands.getFileModtime();
         final long[] fileSize = fileBands.getFileSize();
@@ -535,58 +582,6 @@ public class Segment {
                 out.write(fileBits[i]);
             }
         }
-    }
-
-    public SegmentConstantPool getConstantPool() {
-        return cpBands.getConstantPool();
-    }
-
-    public SegmentHeader getSegmentHeader() {
-        return header;
-    }
-
-    public void setPreRead(final boolean value) {
-        doPreRead = value;
-    }
-
-    protected AttrDefinitionBands getAttrDefinitionBands() {
-        return attrDefinitionBands;
-    }
-
-    protected ClassBands getClassBands() {
-        return classBands;
-    }
-
-    protected CpBands getCpBands() {
-        return cpBands;
-    }
-
-    protected IcBands getIcBands() {
-        return icBands;
-    }
-
-    public void setLogLevel(final int logLevel) {
-        this.logLevel = logLevel;
-    }
-
-    public void setLogStream(final OutputStream logStream) {
-        this.logStream = new PrintWriter(logStream);
-    }
-
-    public void log(final int logLevel, final String message) {
-        if (this.logLevel >= logLevel) {
-            logStream.println(message);
-        }
-    }
-
-    /**
-     * Override the archive's deflate hint with the given boolean
-     *
-     * @param deflateHint - the deflate hint to use
-     */
-    public void overrideDeflateHint(final boolean deflateHint) {
-        this.overrideDeflateHint = true;
-        this.deflateHint = deflateHint;
     }
 
 }

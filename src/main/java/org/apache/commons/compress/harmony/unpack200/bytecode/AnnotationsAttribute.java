@@ -31,60 +31,60 @@ public abstract class AnnotationsAttribute extends Attribute {
      */
     public static class Annotation {
 
-        private final int num_pairs;
-        private final CPUTF8[] element_names;
-        private final ElementValue[] element_values;
+        private final int numPairs;
+        private final CPUTF8[] elementNames;
+        private final ElementValue[] elementValues;
         private final CPUTF8 type;
 
         // Resolved values
-        private int type_index;
-        private int[] name_indexes;
+        private int typeIndex;
+        private int[] nameIndexes;
 
-        public Annotation(final int num_pairs, final CPUTF8 type, final CPUTF8[] element_names,
-            final ElementValue[] element_values) {
-            this.num_pairs = num_pairs;
+        public Annotation(final int numPairs, final CPUTF8 type, final CPUTF8[] elementNames,
+            final ElementValue[] elementValues) {
+            this.numPairs = numPairs;
             this.type = type;
-            this.element_names = element_names;
-            this.element_values = element_values;
+            this.elementNames = elementNames;
+            this.elementValues = elementValues;
+        }
+
+        public List<Object> getClassFileEntries() {
+            final List<Object> entries = new ArrayList<>();
+            for (int i = 0; i < elementNames.length; i++) {
+                entries.add(elementNames[i]);
+                entries.addAll(elementValues[i].getClassFileEntries());
+            }
+            entries.add(type);
+            return entries;
         }
 
         public int getLength() {
             int length = 4;
-            for (int i = 0; i < num_pairs; i++) {
+            for (int i = 0; i < numPairs; i++) {
                 length += 2;
-                length += element_values[i].getLength();
+                length += elementValues[i].getLength();
             }
             return length;
         }
 
         public void resolve(final ClassConstantPool pool) {
             type.resolve(pool);
-            type_index = pool.indexOf(type);
-            name_indexes = new int[num_pairs];
-            for (int i = 0; i < element_names.length; i++) {
-                element_names[i].resolve(pool);
-                name_indexes[i] = pool.indexOf(element_names[i]);
-                element_values[i].resolve(pool);
+            typeIndex = pool.indexOf(type);
+            nameIndexes = new int[numPairs];
+            for (int i = 0; i < elementNames.length; i++) {
+                elementNames[i].resolve(pool);
+                nameIndexes[i] = pool.indexOf(elementNames[i]);
+                elementValues[i].resolve(pool);
             }
         }
 
         public void writeBody(final DataOutputStream dos) throws IOException {
-            dos.writeShort(type_index);
-            dos.writeShort(num_pairs);
-            for (int i = 0; i < num_pairs; i++) {
-                dos.writeShort(name_indexes[i]);
-                element_values[i].writeBody(dos);
+            dos.writeShort(typeIndex);
+            dos.writeShort(numPairs);
+            for (int i = 0; i < numPairs; i++) {
+                dos.writeShort(nameIndexes[i]);
+                elementValues[i].writeBody(dos);
             }
-        }
-
-        public List getClassFileEntries() {
-            final List entries = new ArrayList();
-            for (int i = 0; i < element_names.length; i++) {
-                entries.add(element_names[i]);
-                entries.addAll(element_values[i].getClassFileEntries());
-            }
-            entries.add(type);
-            return entries;
         }
     }
 
@@ -94,71 +94,31 @@ public abstract class AnnotationsAttribute extends Attribute {
         private final int tag;
 
         // resolved value index if it's a constant
-        private int constant_value_index = -1;
+        private int constantValueIndex = -1;
 
         public ElementValue(final int tag, final Object value) {
             this.tag = tag;
             this.value = value;
         }
 
-        public List getClassFileEntries() {
-            final List entries = new ArrayList(1);
+        public List<Object> getClassFileEntries() {
+            final List<Object> entries = new ArrayList<>(1);
             if (value instanceof CPNameAndType) {
                 // used to represent enum, so don't include the actual CPNameAndType
                 entries.add(((CPNameAndType) value).name);
                 entries.add(((CPNameAndType) value).descriptor);
             } else if (value instanceof ClassFileEntry) {
+            	// TODO? ClassFileEntry is an Object
                 entries.add(value);
             } else if (value instanceof ElementValue[]) {
                 final ElementValue[] values = (ElementValue[]) value;
-                for (int i = 0; i < values.length; i++) {
-                    entries.addAll(values[i].getClassFileEntries());
+                for (final ElementValue value2 : values) {
+                    entries.addAll(value2.getClassFileEntries());
                 }
             } else if (value instanceof Annotation) {
                 entries.addAll(((Annotation) value).getClassFileEntries());
             }
             return entries;
-        }
-
-        public void resolve(final ClassConstantPool pool) {
-            if (value instanceof CPConstant) {
-                ((CPConstant) value).resolve(pool);
-                constant_value_index = pool.indexOf((CPConstant) value);
-            } else if (value instanceof CPClass) {
-                ((CPClass) value).resolve(pool);
-                constant_value_index = pool.indexOf((CPClass) value);
-            } else if (value instanceof CPUTF8) {
-                ((CPUTF8) value).resolve(pool);
-                constant_value_index = pool.indexOf((CPUTF8) value);
-            } else if (value instanceof CPNameAndType) {
-                ((CPNameAndType) value).resolve(pool);
-            } else if (value instanceof Annotation) {
-                ((Annotation) value).resolve(pool);
-            } else if (value instanceof ElementValue[]) {
-                final ElementValue[] nestedValues = (ElementValue[]) value;
-                for (int i = 0; i < nestedValues.length; i++) {
-                    nestedValues[i].resolve(pool);
-                }
-            }
-        }
-
-        public void writeBody(final DataOutputStream dos) throws IOException {
-            dos.writeByte(tag);
-            if (constant_value_index != -1) {
-                dos.writeShort(constant_value_index);
-            } else if (value instanceof CPNameAndType) {
-                ((CPNameAndType) value).writeBody(dos);
-            } else if (value instanceof Annotation) {
-                ((Annotation) value).writeBody(dos);
-            } else if (value instanceof ElementValue[]) {
-                final ElementValue[] nestedValues = (ElementValue[]) value;
-                dos.writeShort(nestedValues.length);
-                for (int i = 0; i < nestedValues.length; i++) {
-                    nestedValues[i].writeBody(dos);
-                }
-            } else {
-                throw new Error("");
-            }
         }
 
         public int getLength() {
@@ -179,14 +139,55 @@ public abstract class AnnotationsAttribute extends Attribute {
             case '[':
                 int length = 3;
                 final ElementValue[] nestedValues = (ElementValue[]) value;
-                for (int i = 0; i < nestedValues.length; i++) {
-                    length += nestedValues[i].getLength();
+                for (final ElementValue nestedValue : nestedValues) {
+                    length += nestedValue.getLength();
                 }
                 return length;
             case '@':
                 return (1 + ((Annotation) value).getLength());
             }
             return 0;
+        }
+
+        public void resolve(final ClassConstantPool pool) {
+            if (value instanceof CPConstant) {
+                ((CPConstant) value).resolve(pool);
+                constantValueIndex = pool.indexOf((CPConstant) value);
+            } else if (value instanceof CPClass) {
+                ((CPClass) value).resolve(pool);
+                constantValueIndex = pool.indexOf((CPClass) value);
+            } else if (value instanceof CPUTF8) {
+                ((CPUTF8) value).resolve(pool);
+                constantValueIndex = pool.indexOf((CPUTF8) value);
+            } else if (value instanceof CPNameAndType) {
+                ((CPNameAndType) value).resolve(pool);
+            } else if (value instanceof Annotation) {
+                ((Annotation) value).resolve(pool);
+            } else if (value instanceof ElementValue[]) {
+                final ElementValue[] nestedValues = (ElementValue[]) value;
+                for (final ElementValue nestedValue : nestedValues) {
+                    nestedValue.resolve(pool);
+                }
+            }
+        }
+
+        public void writeBody(final DataOutputStream dos) throws IOException {
+            dos.writeByte(tag);
+            if (constantValueIndex != -1) {
+                dos.writeShort(constantValueIndex);
+            } else if (value instanceof CPNameAndType) {
+                ((CPNameAndType) value).writeBody(dos);
+            } else if (value instanceof Annotation) {
+                ((Annotation) value).writeBody(dos);
+            } else if (value instanceof ElementValue[]) {
+                final ElementValue[] nestedValues = (ElementValue[]) value;
+                dos.writeShort(nestedValues.length);
+                for (final ElementValue nestedValue : nestedValues) {
+                    nestedValue.writeBody(dos);
+                }
+            } else {
+                throw new Error("");
+            }
         }
     }
 

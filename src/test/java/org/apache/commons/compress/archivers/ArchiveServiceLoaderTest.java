@@ -19,22 +19,24 @@
 
 package org.apache.commons.compress.archivers;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import org.apache.commons.compress.archivers.TestArchiveStreamProvider.ArchiveInvocationConfirmationException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ArchiveServiceLoaderTest {
 
-    @Test(expected = ArchiveInvocationConfirmationException.class)
-    public void testInputStream() throws ArchiveException {
-        ArchiveStreamFactory.DEFAULT.createArchiveInputStream("ArchiveTestInput1", new ByteArrayInputStream(new byte[] {}));
+    @Test
+    public void testInputStream() {
+        assertThrows(ArchiveException.class,
+            () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream("ArchiveTestInput1", new ByteArrayInputStream(new byte[] {})));
     }
 
-    @Test(expected = ArchiveInvocationConfirmationException.class)
-    public void testOutputStream() throws ArchiveException {
-        ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ArchiveTestOutput1", new ByteArrayOutputStream());
+    @Test
+    public void testOutputStream() {
+        assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ArchiveTestOutput1", new ByteArrayOutputStream()));
     }
 
 }

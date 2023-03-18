@@ -22,12 +22,10 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Enumeration;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * Simple command line application that lists the contents of a ZIP archive.
@@ -44,6 +42,19 @@ public final class Lister {
         String encoding;
         boolean allowStoredEntriesWithDataDescriptor = false;
         String dir;
+    }
+
+    private static void extract(final String dir, final ZipArchiveEntry entry,
+                                final InputStream is) throws IOException {
+        final File f = new File(dir, entry.getName());
+        if (!f.getParentFile().exists()) {
+            f.getParentFile().mkdirs();
+        }
+        Files.copy(is, f.toPath());
+    }
+
+    private static void list(final ZipArchiveEntry entry) {
+        System.out.println(entry.getName());
     }
 
     public static void main(final String[] args) throws IOException {
@@ -81,21 +92,6 @@ public final class Lister {
                     }
                 }
             }
-        }
-    }
-
-    private static void list(final ZipArchiveEntry entry) {
-        System.out.println(entry.getName());
-    }
-
-    private static void extract(final String dir, final ZipArchiveEntry entry,
-                                final InputStream is) throws IOException {
-        final File f = new File(dir, entry.getName());
-        if (!f.getParentFile().exists()) {
-            f.getParentFile().mkdirs();
-        }
-        try (OutputStream fos = Files.newOutputStream(f.toPath())) {
-            IOUtils.copy(is, fos);
         }
     }
 

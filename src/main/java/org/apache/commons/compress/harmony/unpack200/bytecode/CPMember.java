@@ -20,13 +20,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Superclass for member constant pool entries, such as fields or methods.
  */
 public class CPMember extends ClassFileEntry {
 
-    List attributes;
+    List<Attribute> attributes;
     short flags;
     CPUTF8 name;
     transient int nameIndex;
@@ -42,53 +43,24 @@ public class CPMember extends ClassFileEntry {
      * @param attributes TODO
      * @throws NullPointerException if name or descriptor is null
      */
-    public CPMember(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List attributes) {
-        this.name = name;
-        this.descriptor = descriptor;
+    public CPMember(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List<Attribute> attributes) {
+        this.name = Objects.requireNonNull(name, "name");
+        this.descriptor = Objects.requireNonNull(descriptor, "descriptor");
         this.flags = (short) flags;
-        this.attributes = (attributes == null ? Collections.EMPTY_LIST : attributes);
-        if (name == null || descriptor == null) {
-            throw new NullPointerException("Null arguments are not allowed");
-        }
+        this.attributes = attributes == null ? Collections.EMPTY_LIST : attributes;
     }
 
     @Override
-    protected ClassFileEntry[] getNestedClassFileEntries() {
+    protected void doWrite(final DataOutputStream dos) throws IOException {
+        dos.writeShort(flags);
+        dos.writeShort(nameIndex);
+        dos.writeShort(descriptorIndex);
         final int attributeCount = attributes.size();
-        final ClassFileEntry[] entries = new ClassFileEntry[attributeCount + 2];
-        entries[0] = name;
-        entries[1] = descriptor;
+        dos.writeShort(attributeCount);
         for (int i = 0; i < attributeCount; i++) {
-            entries[i + 2] = (Attribute) attributes.get(i);
+            final Attribute attribute = attributes.get(i);
+            attribute.doWrite(dos);
         }
-        return entries;
-    }
-
-    @Override
-    protected void resolve(final ClassConstantPool pool) {
-        super.resolve(pool);
-        nameIndex = pool.indexOf(name);
-        descriptorIndex = pool.indexOf(descriptor);
-        for (int it = 0; it < attributes.size(); it++) {
-            final Attribute attribute = (Attribute) attributes.get(it);
-            attribute.resolve(pool);
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        final int PRIME = 31;
-        int result = 1;
-        result = PRIME * result + attributes.hashCode();
-        result = PRIME * result + descriptor.hashCode();
-        result = PRIME * result + flags;
-        result = PRIME * result + name.hashCode();
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "CPMember: " + name + "(" + descriptor + ")";
     }
 
     @Override
@@ -119,16 +91,39 @@ public class CPMember extends ClassFileEntry {
     }
 
     @Override
-    protected void doWrite(final DataOutputStream dos) throws IOException {
-        dos.writeShort(flags);
-        dos.writeShort(nameIndex);
-        dos.writeShort(descriptorIndex);
+    protected ClassFileEntry[] getNestedClassFileEntries() {
         final int attributeCount = attributes.size();
-        dos.writeShort(attributeCount);
+        final ClassFileEntry[] entries = new ClassFileEntry[attributeCount + 2];
+        entries[0] = name;
+        entries[1] = descriptor;
         for (int i = 0; i < attributeCount; i++) {
-            final Attribute attribute = (Attribute) attributes.get(i);
-            attribute.doWrite(dos);
+            entries[i + 2] = attributes.get(i);
         }
+        return entries;
+    }
+
+    @Override
+    public int hashCode() {
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + attributes.hashCode();
+        result = PRIME * result + descriptor.hashCode();
+        result = PRIME * result + flags;
+        result = PRIME * result + name.hashCode();
+        return result;
+    }
+
+    @Override
+    protected void resolve(final ClassConstantPool pool) {
+        super.resolve(pool);
+        nameIndex = pool.indexOf(name);
+        descriptorIndex = pool.indexOf(descriptor);
+        attributes.forEach(attribute -> attribute.resolve(pool));
+    }
+
+    @Override
+    public String toString() {
+        return "CPMember: " + name + "(" + descriptor + ")";
     }
 
 }

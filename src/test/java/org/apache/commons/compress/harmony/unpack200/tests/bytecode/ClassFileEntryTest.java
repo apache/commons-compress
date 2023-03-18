@@ -16,7 +16,9 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests.bytecode;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPDouble;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPFloat;
@@ -26,83 +28,92 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPMember;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPString;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.harmony.unpack200.bytecode.SourceFileAttribute;
+import org.junit.jupiter.api.Test;
 
-public class ClassFileEntryTest extends TestCase {
+public class ClassFileEntryTest {
 
-    public void testUTF8() {
-        CPUTF8 u1 = new CPUTF8(new String("thing"), 1); //$NON-NLS-1$
-        CPUTF8 u2 = new CPUTF8(new String("thing"), 1); //$NON-NLS-1$
-        CPUTF8 u3 = new CPUTF8(new String("otherthing"), 2); //$NON-NLS-1$
-        checkEquality(u1, u2, "thing", u3);
-    }
-
-    private void checkEquality(Object equal1, Object equal2, String toString,
-            Object unequal) {
+    private void checkEquality(final Object equal1, final Object equal2, final String toString,
+            final Object unequal) {
         assertEquals(equal1, equal2);
         assertEquals(equal1.hashCode(), equal2.hashCode());
         assertTrue(equal1.toString().indexOf(toString) >= 0);
-        assertFalse(equal1.equals(unequal));
-        assertFalse(equal2.equals(unequal));
-        assertFalse(unequal.equals(equal1));
-        assertFalse(unequal.equals(equal2));
+        assertNotEquals(equal1, unequal);
+        assertNotEquals(equal2, unequal);
+        assertNotEquals(unequal, equal1);
+        assertNotEquals(unequal, equal2);
     }
 
-    public void testSourceAttribute() {
-        SourceFileAttribute sfa1 = new SourceFileAttribute(new CPUTF8(
-                new String("Thing.java"), 1)); //$NON-NLS-1$
-        SourceFileAttribute sfa2 = new SourceFileAttribute(new CPUTF8(
-                new String("Thing.java"), 1)); //$NON-NLS-1$
-        SourceFileAttribute sfa3 = new SourceFileAttribute(new CPUTF8(
-                new String("OtherThing.java"), 2)); //$NON-NLS-1$
-        checkEquality(sfa1, sfa2, "Thing.java", sfa3); //$NON-NLS-1$
-    }
-
-    public void testCPInteger() {
-        CPInteger cp1 = new CPInteger(new Integer(3), 3);
-        CPInteger cp2 = new CPInteger(new Integer(3), 3);
-        CPInteger cp3 = new CPInteger(new Integer(5), 5);
-        checkEquality(cp1, cp2, "3", cp3); //$NON-NLS-1$
-    }
-
-    public void testCPLong() {
-        CPLong cp1 = new CPLong(new Long(3), 3);
-        CPLong cp2 = new CPLong(new Long(3), 3);
-        CPLong cp3 = new CPLong(new Long(5), 5);
-        checkEquality(cp1, cp2, "3", cp3); //$NON-NLS-1$
-    }
-
+    @Test
     public void testCPDouble() {
-        CPDouble cp1 = new CPDouble(new Double(3), 3);
-        CPDouble cp2 = new CPDouble(new Double(3), 3);
-        CPDouble cp3 = new CPDouble(new Double(5), 5);
+        final CPDouble cp1 = new CPDouble(Double.valueOf(3), 3);
+        final CPDouble cp2 = new CPDouble(Double.valueOf(3), 3);
+        final CPDouble cp3 = new CPDouble(Double.valueOf(5), 5);
         checkEquality(cp1, cp2, "3", cp3); //$NON-NLS-1$
     }
 
-    public void testCPFloat() {
-        CPFloat cp1 = new CPFloat(new Float(3), 3);
-        CPFloat cp2 = new CPFloat(new Float(3), 3);
-        CPFloat cp3 = new CPFloat(new Float(5), 5);
-        checkEquality(cp1, cp2, "3", cp3); //$NON-NLS-1$
-    }
-
-    public void testCPString() {
-        CPString cp1 = new CPString(new CPUTF8(new String("3"), 3), 3);
-        CPString cp2 = new CPString(new CPUTF8(new String("3"), 3), 3);
-        CPString cp3 = new CPString(new CPUTF8(new String("5"), 5), 5);
-        checkEquality(cp1, cp2, "3", cp3); //$NON-NLS-1$
-    }
-
+    @Test
     public void testCPField() {
-        CPMember cp1 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("I", 4),
+        final CPMember cp1 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("I", 4),
                 0, null);
-        CPMember cp2 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("I", 4),
+        final CPMember cp2 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("I", 4),
                 0, null);
-        CPMember cp3 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("Z", 5),
+        final CPMember cp3 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("Z", 5),
                 0, null);
-        CPMember cp4 = new CPMember(new CPUTF8("GName", 6), new CPUTF8("I", 4),
+        final CPMember cp4 = new CPMember(new CPUTF8("GName", 6), new CPUTF8("I", 4),
                 0, null);
         checkEquality(cp1, cp2, "Name", cp3); //$NON-NLS-1$
         checkEquality(cp1, cp2, "I", cp4); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testCPFloat() {
+        final CPFloat cp1 = new CPFloat(Float.valueOf(3), 3);
+        final CPFloat cp2 = new CPFloat(Float.valueOf(3), 3);
+        final CPFloat cp3 = new CPFloat(Float.valueOf(5), 5);
+        checkEquality(cp1, cp2, "3", cp3); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testCPInteger() {
+        final CPInteger cp1 = new CPInteger(Integer.valueOf(3), 3);
+        final CPInteger cp2 = new CPInteger(Integer.valueOf(3), 3);
+        final CPInteger cp3 = new CPInteger(Integer.valueOf(5), 5);
+        checkEquality(cp1, cp2, "3", cp3); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testCPLong() {
+        final CPLong cp1 = new CPLong(Long.valueOf(3), 3);
+        final CPLong cp2 = new CPLong(Long.valueOf(3), 3);
+        final CPLong cp3 = new CPLong(Long.valueOf(5), 5);
+        checkEquality(cp1, cp2, "3", cp3); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testCPString() {
+        final CPString cp1 = new CPString(new CPUTF8("3", 3), 3);
+        final CPString cp2 = new CPString(new CPUTF8("3", 3), 3);
+        final CPString cp3 = new CPString(new CPUTF8("5", 5), 5);
+        checkEquality(cp1, cp2, "3", cp3); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testSourceAttribute() {
+        final SourceFileAttribute sfa1 = new SourceFileAttribute(new CPUTF8(
+                "Thing.java", 1)); //$NON-NLS-1$
+        final SourceFileAttribute sfa2 = new SourceFileAttribute(new CPUTF8(
+                "Thing.java", 1)); //$NON-NLS-1$
+        final SourceFileAttribute sfa3 = new SourceFileAttribute(new CPUTF8(
+                "OtherThing.java", 2)); //$NON-NLS-1$
+        checkEquality(sfa1, sfa2, "Thing.java", sfa3); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testUTF8() {
+        final CPUTF8 u1 = new CPUTF8("thing", 1); //$NON-NLS-1$
+        final CPUTF8 u2 = new CPUTF8("thing", 1); //$NON-NLS-1$
+        final CPUTF8 u3 = new CPUTF8("otherthing", 2); //$NON-NLS-1$
+        checkEquality(u1, u2, "thing", u3);
     }
 
 }

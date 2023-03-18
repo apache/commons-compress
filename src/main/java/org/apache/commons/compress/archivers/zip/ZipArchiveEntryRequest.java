@@ -17,9 +17,9 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.parallel.InputStreamSupplier;
-
 import java.io.InputStream;
+
+import org.apache.commons.compress.parallel.InputStreamSupplier;
 
 /**
  * A Thread-safe representation of a ZipArchiveEntry that is used to add entries to parallel archives.
@@ -27,15 +27,26 @@ import java.io.InputStream;
  * @since 1.10
  */
 public class ZipArchiveEntryRequest {
-    /*
-     The zipArchiveEntry is not thread safe, and cannot be safely accessed by the getters of this class.
-     It is safely accessible during the construction part of this class and also after the
-     thread pools have been shut down.
+
+    /**
+     * Creates a ZipArchiveEntryRequest
+     * @param zipArchiveEntry The entry to use
+     * @param payloadSupplier The payload that will be added to the ZIP entry.
+     * @return The newly created request
+     */
+    public static ZipArchiveEntryRequest createZipArchiveEntryRequest(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier payloadSupplier) {
+        return new ZipArchiveEntryRequest(zipArchiveEntry, payloadSupplier);
+    }
+
+    /**
+     * The ZIPArchiveEntry is not thread safe, and cannot be safely accessed by the getters of this class. It is safely accessible during the construction part
+     * of this class and also after the thread pools have been shut down.
      */
     private final ZipArchiveEntry zipArchiveEntry;
     private final InputStreamSupplier payloadSupplier;
-    private final int method;
 
+
+    private final int method;
 
     private ZipArchiveEntryRequest(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier payloadSupplier) {
         // this constructor has "safe" access to all member variables on zipArchiveEntry
@@ -45,29 +56,19 @@ public class ZipArchiveEntryRequest {
     }
 
     /**
-     * Create a ZipArchiveEntryRequest
-     * @param zipArchiveEntry The entry to use
-     * @param payloadSupplier The payload that will be added to the zip entry.
-     * @return The newly created request
-     */
-    public static ZipArchiveEntryRequest createZipArchiveEntryRequest(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier payloadSupplier) {
-        return new ZipArchiveEntryRequest(zipArchiveEntry, payloadSupplier);
-    }
-
-    /**
-     * The payload that will be added to this zip entry
-     * @return The input stream.
-     */
-    public InputStream getPayloadStream() {
-        return payloadSupplier.get();
-    }
-
-    /**
-     * The compression method to use
+     * Gets the compression method to use
      * @return The compression method to use
      */
     public int getMethod(){
        return method;
+    }
+
+    /**
+     * Gets the payload that will be added to this ZIP entry
+     * @return The input stream.
+     */
+    public InputStream getPayloadStream() {
+        return payloadSupplier.get();
     }
 
 

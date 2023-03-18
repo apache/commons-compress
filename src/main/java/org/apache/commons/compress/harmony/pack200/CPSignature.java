@@ -24,11 +24,11 @@ import java.util.List;
 public class CPSignature extends ConstantPoolEntry implements Comparable {
 
     private final CPUTF8 signatureForm;
-    private final List classes;
+    private final List<CPClass> classes;
     private final String signature;
     private final boolean formStartsWithBracket;
 
-    public CPSignature(final String signature, final CPUTF8 signatureForm, final List classes) {
+    public CPSignature(final String signature, final CPUTF8 signatureForm, final List<CPClass> classes) {
         this.signature = signature;
         this.signatureForm = signatureForm;
         this.classes = classes;
@@ -51,8 +51,8 @@ public class CPSignature extends ConstantPoolEntry implements Comparable {
         }
         if (classes.size() > 0) {
             for (int i = classes.size() - 1; i >= 0; i--) {
-                final CPClass cpClass = (CPClass) classes.get(i);
-                final CPClass compareClass = (CPClass) ((CPSignature) arg0).classes.get(i);
+                final CPClass cpClass = classes.get(i);
+                final CPClass compareClass = ((CPSignature) arg0).classes.get(i);
                 final int classComp = cpClass.compareTo(compareClass);
                 if (classComp != 0) {
                     return classComp;
@@ -62,24 +62,24 @@ public class CPSignature extends ConstantPoolEntry implements Comparable {
         return signature.compareTo(((CPSignature) arg0).signature);
     }
 
+    public List<CPClass> getClasses() {
+        return classes;
+    }
+
     public int getIndexInCpUtf8() {
         return signatureForm.getIndex();
     }
 
-    public List getClasses() {
-        return classes;
-    }
-
-    @Override
-    public String toString() {
-        return signature;
+    public CPUTF8 getSignatureForm() {
+        return signatureForm;
     }
 
     public String getUnderlyingString() {
         return signature;
     }
 
-    public CPUTF8 getSignatureForm() {
-        return signatureForm;
+    @Override
+    public String toString() {
+        return signature;
     }
 }

@@ -17,8 +17,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
-
 import java.io.Closeable;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -30,6 +28,8 @@ import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
+
 /**
  * Encapsulates a {@link Deflater} and crc calculator, handling multiple types of output streams.
  * Currently {@link java.util.zip.ZipEntry#DEFLATED} and {@link java.util.zip.ZipEntry#STORED} are the only
@@ -39,6 +39,66 @@ import java.util.zip.ZipEntry;
  */
 public abstract class StreamCompressor implements Closeable {
 
+    private static final class DataOutputCompressor extends StreamCompressor {
+        private final DataOutput raf;
+
+        public DataOutputCompressor(final Deflater deflater, final DataOutput raf) {
+            super(deflater);
+            this.raf = raf;
+        }
+
+        @Override
+        protected void writeOut(final byte[] data, final int offset, final int length)
+                throws IOException {
+            raf.write(data, offset, length);
+        }
+    }
+
+    private static final class OutputStreamCompressor extends StreamCompressor {
+        private final OutputStream os;
+
+        public OutputStreamCompressor(final Deflater deflater, final OutputStream os) {
+            super(deflater);
+            this.os = os;
+        }
+
+        @Override
+        protected void writeOut(final byte[] data, final int offset, final int length)
+                throws IOException {
+            os.write(data, offset, length);
+        }
+    }
+
+    private static final class ScatterGatherBackingStoreCompressor extends StreamCompressor {
+        private final ScatterGatherBackingStore bs;
+
+        public ScatterGatherBackingStoreCompressor(final Deflater deflater, final ScatterGatherBackingStore bs) {
+            super(deflater);
+            this.bs = bs;
+        }
+
+        @Override
+        protected void writeOut(final byte[] data, final int offset, final int length)
+                throws IOException {
+            bs.writeOut(data, offset, length);
+        }
+    }
+
+    private static final class SeekableByteChannelCompressor extends StreamCompressor {
+        private final SeekableByteChannel channel;
+
+        public SeekableByteChannelCompressor(final Deflater deflater,
+                                             final SeekableByteChannel channel) {
+            super(deflater);
+            this.channel = channel;
+        }
+
+        @Override
+        protected void writeOut(final byte[] data, final int offset, final int length)
+                throws IOException {
+            channel.write(ByteBuffer.wrap(data, offset, length));
+        }
+    }
     /*
      * Apparently Deflater.setInput gets slowed down a lot on Sun JVMs
      * when it gets handed a really big buffer.  See
@@ -47,21 +107,37 @@ public abstract class StreamCompressor implements Closeable {
      * Using a buffer size of 8 kB proved to be a good compromise
      */
     private static final int DEFLATER_BLOCK_SIZE = 8192;
-
-    private final Deflater def;
-
-    private final CRC32 crc = new CRC32();
-
-    private long writtenToOutputStreamForLastEntry;
-    private long sourcePayloadLength;
-    private long totalWrittenToOutputStream;
-
     private static final int BUFFER_SIZE = 4096;
-    private final byte[] outputBuffer = new byte[BUFFER_SIZE];
-    private final byte[] readerBuf = new byte[BUFFER_SIZE];
 
-    StreamCompressor(final Deflater deflater) {
-        this.def = deflater;
+    /**
+     * Create a stream compressor with the given compression level.
+     *
+     * @param os       The DataOutput to receive output
+     * @param deflater The deflater to use for the compressor
+     * @return A stream compressor
+     */
+    static StreamCompressor create(final DataOutput os, final Deflater deflater) {
+        return new DataOutputCompressor(deflater, os);
+    }
+    /**
+     * Create a stream compressor with the given compression level.
+     *
+     * @param compressionLevel The {@link Deflater}  compression level
+     * @param bs               The ScatterGatherBackingStore to receive output
+     * @return A stream compressor
+     */
+    public static StreamCompressor create(final int compressionLevel, final ScatterGatherBackingStore bs) {
+        final Deflater deflater = new Deflater(compressionLevel, true);
+        return new ScatterGatherBackingStoreCompressor(deflater, bs);
+    }
+    /**
+     * Create a stream compressor with the default compression level.
+     *
+     * @param os The stream to receive output
+     * @return A stream compressor
+     */
+    static StreamCompressor create(final OutputStream os) {
+        return create(os, new Deflater(Deflater.DEFAULT_COMPRESSION, true));
     }
 
     /**
@@ -78,22 +154,11 @@ public abstract class StreamCompressor implements Closeable {
     /**
      * Create a stream compressor with the default compression level.
      *
-     * @param os The stream to receive output
+     * @param bs The ScatterGatherBackingStore to receive output
      * @return A stream compressor
      */
-    static StreamCompressor create(final OutputStream os) {
-        return create(os, new Deflater(Deflater.DEFAULT_COMPRESSION, true));
-    }
-
-    /**
-     * Create a stream compressor with the given compression level.
-     *
-     * @param os       The DataOutput to receive output
-     * @param deflater The deflater to use for the compressor
-     * @return A stream compressor
-     */
-    static StreamCompressor create(final DataOutput os, final Deflater deflater) {
-        return new DataOutputCompressor(deflater, os);
+    public static StreamCompressor create(final ScatterGatherBackingStore bs) {
+        return create(Deflater.DEFAULT_COMPRESSION, bs);
     }
 
     /**
@@ -108,63 +173,35 @@ public abstract class StreamCompressor implements Closeable {
         return new SeekableByteChannelCompressor(deflater, os);
     }
 
-    /**
-     * Create a stream compressor with the given compression level.
-     *
-     * @param compressionLevel The {@link Deflater}  compression level
-     * @param bs               The ScatterGatherBackingStore to receive output
-     * @return A stream compressor
-     */
-    public static StreamCompressor create(final int compressionLevel, final ScatterGatherBackingStore bs) {
-        final Deflater deflater = new Deflater(compressionLevel, true);
-        return new ScatterGatherBackingStoreCompressor(deflater, bs);
+    private final Deflater def;
+
+    private final CRC32 crc = new CRC32();
+
+    private long writtenToOutputStreamForLastEntry;
+
+    private long sourcePayloadLength;
+
+    private long totalWrittenToOutputStream;
+
+    private final byte[] outputBuffer = new byte[BUFFER_SIZE];
+
+    private final byte[] readerBuf = new byte[BUFFER_SIZE];
+
+    StreamCompressor(final Deflater deflater) {
+        this.def = deflater;
     }
 
-    /**
-     * Create a stream compressor with the default compression level.
-     *
-     * @param bs The ScatterGatherBackingStore to receive output
-     * @return A stream compressor
-     */
-    public static StreamCompressor create(final ScatterGatherBackingStore bs) {
-        return create(Deflater.DEFAULT_COMPRESSION, bs);
+
+    @Override
+    public void close() throws IOException {
+        def.end();
     }
 
-    /**
-     * The crc32 of the last deflated file
-     *
-     * @return the crc32
-     */
-
-    public long getCrc32() {
-        return crc.getValue();
-    }
-
-    /**
-     * Return the number of bytes read from the source stream
-     *
-     * @return The number of bytes read, never negative
-     */
-    public long getBytesRead() {
-        return sourcePayloadLength;
-    }
-
-    /**
-     * The number of bytes written to the output for the last entry
-     *
-     * @return The number of bytes, never negative
-     */
-    public long getBytesWrittenForLastEntry() {
-        return writtenToOutputStreamForLastEntry;
-    }
-
-    /**
-     * The total number of bytes written to the output for all files
-     *
-     * @return The number of bytes, never negative
-     */
-    public long getTotalBytesWritten() {
-        return totalWrittenToOutputStream;
+    void deflate() throws IOException {
+        final int len = def.deflate(outputBuffer, 0, outputBuffer.length);
+        if (len > 0) {
+            writeCounted(outputBuffer, 0, len);
+        }
     }
 
 
@@ -186,6 +223,63 @@ public abstract class StreamCompressor implements Closeable {
         if (method == ZipEntry.DEFLATED) {
             flushDeflater();
         }
+    }
+
+    private void deflateUntilInputIsNeeded() throws IOException {
+        while (!def.needsInput()) {
+            deflate();
+        }
+    }
+
+    void flushDeflater() throws IOException {
+        def.finish();
+        while (!def.finished()) {
+            deflate();
+        }
+    }
+
+    /**
+     * Return the number of bytes read from the source stream
+     *
+     * @return The number of bytes read, never negative
+     */
+    public long getBytesRead() {
+        return sourcePayloadLength;
+    }
+
+    /**
+     * The number of bytes written to the output for the last entry
+     *
+     * @return The number of bytes, never negative
+     */
+    public long getBytesWrittenForLastEntry() {
+        return writtenToOutputStreamForLastEntry;
+    }
+
+    /**
+     * The crc32 of the last deflated file
+     *
+     * @return the crc32
+     */
+
+    public long getCrc32() {
+        return crc.getValue();
+    }
+
+    /**
+     * The total number of bytes written to the output for all files
+     *
+     * @return The number of bytes, never negative
+     */
+    public long getTotalBytesWritten() {
+        return totalWrittenToOutputStream;
+    }
+
+    void reset() {
+        crc.reset();
+        def.reset();
+        sourcePayloadLength = 0;
+        writtenToOutputStreamForLastEntry = 0;
     }
 
     /**
@@ -210,24 +304,14 @@ public abstract class StreamCompressor implements Closeable {
         return writtenToOutputStreamForLastEntry - current;
     }
 
-
-    void reset() {
-        crc.reset();
-        def.reset();
-        sourcePayloadLength = 0;
-        writtenToOutputStreamForLastEntry = 0;
+    public void writeCounted(final byte[] data) throws IOException {
+        writeCounted(data, 0, data.length);
     }
 
-    @Override
-    public void close() throws IOException {
-        def.end();
-    }
-
-    void flushDeflater() throws IOException {
-        def.finish();
-        while (!def.finished()) {
-            deflate();
-        }
+    public void writeCounted(final byte[] data, final int offset, final int length) throws IOException {
+        writeOut(data, offset, length);
+        writtenToOutputStreamForLastEntry += length;
+        totalWrittenToOutputStream += length;
     }
 
     private void writeDeflated(final byte[] b, final int offset, final int length)
@@ -252,89 +336,5 @@ public abstract class StreamCompressor implements Closeable {
         }
     }
 
-    private void deflateUntilInputIsNeeded() throws IOException {
-        while (!def.needsInput()) {
-            deflate();
-        }
-    }
-
-    void deflate() throws IOException {
-        final int len = def.deflate(outputBuffer, 0, outputBuffer.length);
-        if (len > 0) {
-            writeCounted(outputBuffer, 0, len);
-        }
-    }
-
-    public void writeCounted(final byte[] data) throws IOException {
-        writeCounted(data, 0, data.length);
-    }
-
-    public void writeCounted(final byte[] data, final int offset, final int length) throws IOException {
-        writeOut(data, offset, length);
-        writtenToOutputStreamForLastEntry += length;
-        totalWrittenToOutputStream += length;
-    }
-
     protected abstract void writeOut(byte[] data, int offset, int length) throws IOException;
-
-    private static final class ScatterGatherBackingStoreCompressor extends StreamCompressor {
-        private final ScatterGatherBackingStore bs;
-
-        public ScatterGatherBackingStoreCompressor(final Deflater deflater, final ScatterGatherBackingStore bs) {
-            super(deflater);
-            this.bs = bs;
-        }
-
-        @Override
-        protected void writeOut(final byte[] data, final int offset, final int length)
-                throws IOException {
-            bs.writeOut(data, offset, length);
-        }
-    }
-
-    private static final class OutputStreamCompressor extends StreamCompressor {
-        private final OutputStream os;
-
-        public OutputStreamCompressor(final Deflater deflater, final OutputStream os) {
-            super(deflater);
-            this.os = os;
-        }
-
-        @Override
-        protected void writeOut(final byte[] data, final int offset, final int length)
-                throws IOException {
-            os.write(data, offset, length);
-        }
-    }
-
-    private static final class DataOutputCompressor extends StreamCompressor {
-        private final DataOutput raf;
-
-        public DataOutputCompressor(final Deflater deflater, final DataOutput raf) {
-            super(deflater);
-            this.raf = raf;
-        }
-
-        @Override
-        protected void writeOut(final byte[] data, final int offset, final int length)
-                throws IOException {
-            raf.write(data, offset, length);
-        }
-    }
-
-    private static final class SeekableByteChannelCompressor extends StreamCompressor {
-        private final SeekableByteChannel channel;
-
-        public SeekableByteChannelCompressor(final Deflater deflater,
-                                             final SeekableByteChannel channel) {
-            super(deflater);
-            this.channel = channel;
-        }
-
-        @Override
-        protected void writeOut(final byte[] data, final int offset, final int length)
-                throws IOException {
-            channel.write(ByteBuffer.wrap(data, offset, length));
-        }
-    }
 }

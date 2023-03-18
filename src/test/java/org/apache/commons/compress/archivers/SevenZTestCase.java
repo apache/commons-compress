@@ -17,13 +17,18 @@
  */
 package org.apache.commons.compress.archivers;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.security.NoSuchAlgorithmException;
+
 import javax.crypto.Cipher;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -31,13 +36,17 @@ import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.sevenz.SevenZMethod;
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.commons.compress.utils.TimeUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SevenZTestCase extends AbstractTestCase {
 
+    private static void assumeStrongCryptoIsAvailable() throws NoSuchAlgorithmException {
+        assumeTrue(Cipher.getMaxAllowedKeyLength("AES/ECB/PKCS5Padding") >= 256, "test requires strong crypto");
+    }
     private File output;
+
     private final File file1, file2;
 
     public SevenZTestCase() throws IOException {
@@ -45,52 +54,13 @@ public class SevenZTestCase extends AbstractTestCase {
         file2 = getFile("test2.xml");
     }
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        output = new File(dir, "bla.7z");
-    }
-
-    @Test
-    public void testSevenZArchiveCreationUsingCopy() throws Exception {
-        testSevenZArchiveCreation(SevenZMethod.COPY);
-    }
-
-    @Test
-    public void testSevenZArchiveCreationUsingLZMA() throws Exception {
-        testSevenZArchiveCreation(SevenZMethod.LZMA);
-    }
-
-    @Test
-    public void testSevenZArchiveCreationUsingLZMA2() throws Exception {
-        testSevenZArchiveCreation(SevenZMethod.LZMA2);
-    }
-
-    @Test
-    public void testSevenZArchiveCreationUsingBZIP2() throws Exception {
-        testSevenZArchiveCreation(SevenZMethod.BZIP2);
-    }
-
-    @Test
-    public void testSevenZArchiveCreationUsingDeflate() throws Exception {
-        testSevenZArchiveCreation(SevenZMethod.DEFLATE);
-    }
-
-    private void testSevenZArchiveCreation(final SevenZMethod method) throws Exception {
-        createArchive(method);
-        try (SevenZFile archive = new SevenZFile(output)) {
-            SevenZArchiveEntry entry;
-
-            entry = archive.getNextEntry();
-            assert (entry != null);
-            assertEquals(entry.getName(), file1.getName());
-
-            entry = archive.getNextEntry();
-            assert (entry != null);
-            assertEquals(entry.getName(), file2.getName());
-
-            assert (archive.getNextEntry() == null);
+    private void copy(final File src, final SevenZOutputFile dst) throws IOException {
+        try (InputStream fis = Files.newInputStream(src.toPath())) {
+            final byte[] buffer = new byte[8*1024];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) >= 0) {
+                dst.write(buffer, 0, bytesRead);
+            }
         }
     }
 
@@ -114,62 +84,28 @@ public class SevenZTestCase extends AbstractTestCase {
         }
     }
 
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingCopy() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.COPY);
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingLZMA() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.LZMA);
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingLZMA2() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.LZMA2);
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingBZIP2() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.BZIP2);
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.DEFLATE);
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingAES() throws Exception {
-        assumeStrongCryptoIsAvailable();
-        try (SevenZFile archive = new SevenZFile(getFile("bla.encrypted.7z"), "foo".toCharArray())) {
-            singleByteReadConsistentlyReturnsMinusOneAtEof(archive);
-        }
-    }
-
-    private void singleByteReadConsistentlyReturnsMinusOneAtEof(final SevenZMethod method) throws Exception {
-        createArchive(method);
-        try (SevenZFile archive = new SevenZFile(output)) {
-            singleByteReadConsistentlyReturnsMinusOneAtEof(archive);
-        }
-    }
-
-    private void singleByteReadConsistentlyReturnsMinusOneAtEof(final SevenZFile archive) throws Exception {
+    private void multiByteReadConsistentlyReturnsMinusOneAtEof(final SevenZFile archive) throws Exception {
+        final byte[] buf = new byte[2];
         SevenZArchiveEntry entry = archive.getNextEntry();
         entry = archive.getNextEntry();
         readFully(archive);
-        assertEquals(-1, archive.read());
-        assertEquals(-1, archive.read());
+        assertEquals(-1, archive.read(buf));
+        assertEquals(-1, archive.read(buf));
+    }
+
+    private void multiByteReadConsistentlyReturnsMinusOneAtEof(final SevenZMethod method) throws Exception {
+        createArchive(method);
+        try (SevenZFile archive = new SevenZFile(output)) {
+            multiByteReadConsistentlyReturnsMinusOneAtEof(archive);
+        }
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingLZMA() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.LZMA);
-    }
-
-    @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingLZMA2() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.LZMA2);
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingAES() throws Exception {
+        assumeStrongCryptoIsAvailable();
+        try (SevenZFile archive = new SevenZFile(getFile("bla.encrypted.7z"), "foo".toCharArray())) {
+            multiByteReadConsistentlyReturnsMinusOneAtEof(archive);
+        }
     }
 
     @Test
@@ -183,37 +119,13 @@ public class SevenZTestCase extends AbstractTestCase {
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingAES() throws Exception {
-        assumeStrongCryptoIsAvailable();
-        try (SevenZFile archive = new SevenZFile(getFile("bla.encrypted.7z"), "foo".toCharArray())) {
-            multiByteReadConsistentlyReturnsMinusOneAtEof(archive);
-        }
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingLZMA() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.LZMA);
     }
 
-    private void multiByteReadConsistentlyReturnsMinusOneAtEof(final SevenZMethod method) throws Exception {
-        createArchive(method);
-        try (SevenZFile archive = new SevenZFile(output)) {
-            multiByteReadConsistentlyReturnsMinusOneAtEof(archive);
-        }
-    }
-
-    private void multiByteReadConsistentlyReturnsMinusOneAtEof(final SevenZFile archive) throws Exception {
-        final byte[] buf = new byte[2];
-        SevenZArchiveEntry entry = archive.getNextEntry();
-        entry = archive.getNextEntry();
-        readFully(archive);
-        assertEquals(-1, archive.read(buf));
-        assertEquals(-1, archive.read(buf));
-    }
-
-    private void copy(final File src, final SevenZOutputFile dst) throws IOException {
-        try (InputStream fis = Files.newInputStream(src.toPath())) {
-            final byte[] buffer = new byte[8*1024];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) >= 0) {
-                dst.write(buffer, 0, bytesRead);
-            }
-        }
+    @Test
+    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingLZMA2() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.LZMA2);
     }
 
     private void readFully(final SevenZFile archive) throws IOException {
@@ -224,7 +136,108 @@ public class SevenZTestCase extends AbstractTestCase {
         }
     }
 
-    private static void assumeStrongCryptoIsAvailable() throws NoSuchAlgorithmException {
-        Assume.assumeTrue("test requires strong crypto", Cipher.getMaxAllowedKeyLength("AES/ECB/PKCS5Padding") >= 256);
+    @Override
+    @BeforeEach
+    public void setUp() throws Exception {
+        super.setUp();
+        output = new File(dir, "bla.7z");
+    }
+
+    private void singleByteReadConsistentlyReturnsMinusOneAtEof(final SevenZFile archive) throws Exception {
+        SevenZArchiveEntry entry = archive.getNextEntry();
+        entry = archive.getNextEntry();
+        readFully(archive);
+        assertEquals(-1, archive.read());
+        assertEquals(-1, archive.read());
+    }
+
+    private void singleByteReadConsistentlyReturnsMinusOneAtEof(final SevenZMethod method) throws Exception {
+        createArchive(method);
+        try (SevenZFile archive = new SevenZFile(output)) {
+            singleByteReadConsistentlyReturnsMinusOneAtEof(archive);
+        }
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingAES() throws Exception {
+        assumeStrongCryptoIsAvailable();
+        try (SevenZFile archive = new SevenZFile(getFile("bla.encrypted.7z"), "foo".toCharArray())) {
+            singleByteReadConsistentlyReturnsMinusOneAtEof(archive);
+        }
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingBZIP2() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.BZIP2);
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingCopy() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.COPY);
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.DEFLATE);
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingLZMA() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.LZMA);
+    }
+
+    @Test
+    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingLZMA2() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.LZMA2);
+    }
+
+    private void testSevenZArchiveCreation(final SevenZMethod method) throws Exception {
+        createArchive(method);
+        try (SevenZFile archive = new SevenZFile(output)) {
+            SevenZArchiveEntry entry;
+
+            entry = archive.getNextEntry();
+            assertNotNull(entry);
+            assertEquals(file1.getName(),entry.getName());
+            BasicFileAttributes attributes = Files.readAttributes(file1.toPath(), BasicFileAttributes.class);
+            assertEquals(TimeUtils.truncateToHundredNanos(attributes.lastModifiedTime()), entry.getLastModifiedTime());
+            assertEquals(TimeUtils.truncateToHundredNanos(attributes.creationTime()), entry.getCreationTime());
+            assertNotNull(entry.getAccessTime());
+
+            entry = archive.getNextEntry();
+            assertNotNull(entry);
+            assertEquals(file2.getName(), entry.getName());
+            attributes = Files.readAttributes(file2.toPath(), BasicFileAttributes.class);
+            assertEquals(TimeUtils.truncateToHundredNanos(attributes.lastModifiedTime()), entry.getLastModifiedTime());
+            assertEquals(TimeUtils.truncateToHundredNanos(attributes.creationTime()), entry.getCreationTime());
+            assertNotNull(entry.getAccessTime());
+
+            assertNull(archive.getNextEntry());
+        }
+    }
+
+    @Test
+    public void testSevenZArchiveCreationUsingBZIP2() throws Exception {
+        testSevenZArchiveCreation(SevenZMethod.BZIP2);
+    }
+
+    @Test
+    public void testSevenZArchiveCreationUsingCopy() throws Exception {
+        testSevenZArchiveCreation(SevenZMethod.COPY);
+    }
+
+    @Test
+    public void testSevenZArchiveCreationUsingDeflate() throws Exception {
+        testSevenZArchiveCreation(SevenZMethod.DEFLATE);
+    }
+
+    @Test
+    public void testSevenZArchiveCreationUsingLZMA() throws Exception {
+        testSevenZArchiveCreation(SevenZMethod.LZMA);
+    }
+
+    @Test
+    public void testSevenZArchiveCreationUsingLZMA2() throws Exception {
+        testSevenZArchiveCreation(SevenZMethod.LZMA2);
     }
 }

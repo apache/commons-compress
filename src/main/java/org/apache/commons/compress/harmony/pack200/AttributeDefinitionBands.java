@@ -19,8 +19,8 @@ package org.apache.commons.compress.harmony.pack200;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -31,32 +31,48 @@ import org.objectweb.asm.Attribute;
  */
 public class AttributeDefinitionBands extends BandSet {
 
+    public static class AttributeDefinition {
+
+        public int index;
+        public int contextType;
+        public CPUTF8 name;
+        public CPUTF8 layout;
+
+        public AttributeDefinition(final int index, final int contextType, final CPUTF8 name, final CPUTF8 layout) {
+            this.index = index;
+            this.contextType = contextType;
+            this.name = name;
+            this.layout = layout;
+        }
+
+    }
     public static final int CONTEXT_CLASS = 0;
     public static final int CONTEXT_CODE = 3;
     public static final int CONTEXT_FIELD = 1;
+
     public static final int CONTEXT_METHOD = 2;
+    private final List<AttributeDefinition> classAttributeLayouts = new ArrayList<>();
+    private final List<AttributeDefinition> methodAttributeLayouts = new ArrayList<>();
+    private final List<AttributeDefinition> fieldAttributeLayouts = new ArrayList<>();
 
-    private final List classAttributeLayouts = new ArrayList();
-    private final List methodAttributeLayouts = new ArrayList();
-    private final List fieldAttributeLayouts = new ArrayList();
-    private final List codeAttributeLayouts = new ArrayList();
+    private final List<AttributeDefinition> codeAttributeLayouts = new ArrayList<>();
 
-    private final List attributeDefinitions = new ArrayList();
-
+    private final List<AttributeDefinition> attributeDefinitions = new ArrayList<>();
     private final CpBands cpBands;
+
     private final Segment segment;
 
     public AttributeDefinitionBands(final Segment segment, final int effort, final Attribute[] attributePrototypes) {
         super(effort, segment.getSegmentHeader());
         this.cpBands = segment.getCpBands();
         this.segment = segment;
-        final Map classLayouts = new HashMap();
-        final Map methodLayouts = new HashMap();
-        final Map fieldLayouts = new HashMap();
-        final Map codeLayouts = new HashMap();
+        final Map<String, String> classLayouts = new HashMap<>();
+        final Map<String, String> methodLayouts = new HashMap<>();
+        final Map<String, String> fieldLayouts = new HashMap<>();
+        final Map<String, String> codeLayouts = new HashMap<>();
 
-        for (int i = 0; i < attributePrototypes.length; i++) {
-            final NewAttribute newAttribute = (NewAttribute) attributePrototypes[i];
+        for (final Attribute attributePrototype : attributePrototypes) {
+            final NewAttribute newAttribute = (NewAttribute) attributePrototype;
             if (!(newAttribute instanceof NewAttribute.ErrorAttribute)
                 && !(newAttribute instanceof NewAttribute.PassAttribute)
                 && !(newAttribute instanceof NewAttribute.StripAttribute)) {
@@ -108,42 +124,36 @@ public class AttributeDefinitionBands extends BandSet {
         addAttributeDefinitions(codeLayouts, availableCodeIndices, CONTEXT_CODE);
     }
 
-    /**
-     * All input classes for the segment have now been read in, so this method is called so that this class can
-     * calculate/complete anything it could not do while classes were being read.
-     */
-    public void finaliseBands() {
-        addSyntheticDefinitions();
-        segmentHeader.setAttribute_definition_count(attributeDefinitions.size());
+    private void addAttributeDefinitions(final Map<String, String> layoutMap, final int[] availableIndices, final int contextType) {
+        final int i = 0;
+        layoutMap.forEach((name, layout) -> {
+            final int index = availableIndices[i];
+            final AttributeDefinition definition = new AttributeDefinition(index, contextType, cpBands.getCPUtf8(name), cpBands.getCPUtf8(layout));
+            attributeDefinitions.add(definition);
+            switch (contextType) {
+            case CONTEXT_CLASS:
+                classAttributeLayouts.add(definition);
+                break;
+            case CONTEXT_METHOD:
+                methodAttributeLayouts.add(definition);
+                break;
+            case CONTEXT_FIELD:
+                fieldAttributeLayouts.add(definition);
+                break;
+            case CONTEXT_CODE:
+                codeAttributeLayouts.add(definition);
+            }
+        });
     }
 
-    @Override
-    public void pack(final OutputStream out) throws IOException, Pack200Exception {
-        PackingUtils.log("Writing attribute definition bands...");
-        final int[] attributeDefinitionHeader = new int[attributeDefinitions.size()];
-        final int[] attributeDefinitionName = new int[attributeDefinitions.size()];
-        final int[] attributeDefinitionLayout = new int[attributeDefinitions.size()];
-        for (int i = 0; i < attributeDefinitionLayout.length; i++) {
-            final AttributeDefinition def = (AttributeDefinition) attributeDefinitions.get(i);
-            attributeDefinitionHeader[i] = def.contextType | (def.index + 1 << 2);
-            attributeDefinitionName[i] = def.name.getIndex();
-            attributeDefinitionLayout[i] = def.layout.getIndex();
+    private int[] addHighIndices(final int[] availableIndices) {
+        final int[] temp = Arrays.copyOf(availableIndices, availableIndices.length + 32);
+        int j = 32;
+        for (int i = availableIndices.length; i < temp.length; i++) {
+            temp[i] = j;
+            j++;
         }
-
-        byte[] encodedBand = encodeBandInt("attributeDefinitionHeader", attributeDefinitionHeader, Codec.BYTE1);
-        out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length + " bytes from attributeDefinitionHeader["
-            + attributeDefinitionHeader.length + "]");
-
-        encodedBand = encodeBandInt("attributeDefinitionName", attributeDefinitionName, Codec.UNSIGNED5);
-        out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length + " bytes from attributeDefinitionName["
-            + attributeDefinitionName.length + "]");
-
-        encodedBand = encodeBandInt("attributeDefinitionLayout", attributeDefinitionLayout, Codec.UNSIGNED5);
-        out.write(encodedBand);
-        PackingUtils.log("Wrote " + encodedBand.length + " bytes from attributeDefinitionLayout["
-            + attributeDefinitionLayout.length + "]");
+        return temp;
     }
 
     private void addSyntheticDefinitions() {
@@ -165,73 +175,57 @@ public class AttributeDefinitionBands extends BandSet {
         }
     }
 
-    private int[] addHighIndices(final int[] availableIndices) {
-        final int[] temp = new int[availableIndices.length + 32];
-        for (int i = 0; i < availableIndices.length; i++) {
-            temp[i] = availableIndices[i];
-        }
-        int j = 32;
-        for (int i = availableIndices.length; i < temp.length; i++) {
-            temp[i] = j;
-            j++;
-        }
-        return temp;
+    /**
+     * All input classes for the segment have now been read in, so this method is called so that this class can
+     * calculate/complete anything it could not do while classes were being read.
+     */
+    public void finaliseBands() {
+        addSyntheticDefinitions();
+        segmentHeader.setAttribute_definition_count(attributeDefinitions.size());
     }
 
-    private void addAttributeDefinitions(final Map layouts, final int[] availableIndices, final int contextType) {
-        final int i = 0;
-        for (final Iterator iterator = layouts.keySet().iterator(); iterator.hasNext();) {
-            final String name = (String) iterator.next();
-            final String layout = (String) layouts.get(name);
-            final int index = availableIndices[i];
-            final AttributeDefinition definition = new AttributeDefinition(index, contextType, cpBands.getCPUtf8(name),
-                cpBands.getCPUtf8(layout));
-            attributeDefinitions.add(definition);
-            switch (contextType) {
-            case CONTEXT_CLASS:
-                classAttributeLayouts.add(definition);
-                break;
-            case CONTEXT_METHOD:
-                methodAttributeLayouts.add(definition);
-                break;
-            case CONTEXT_FIELD:
-                fieldAttributeLayouts.add(definition);
-                break;
-            case CONTEXT_CODE:
-                codeAttributeLayouts.add(definition);
-            }
-        }
-    }
-
-    public List getClassAttributeLayouts() {
+    public List<AttributeDefinition> getClassAttributeLayouts() {
         return classAttributeLayouts;
     }
 
-    public List getMethodAttributeLayouts() {
-        return methodAttributeLayouts;
-    }
-
-    public List getFieldAttributeLayouts() {
-        return fieldAttributeLayouts;
-    }
-
-    public List getCodeAttributeLayouts() {
+    public List<AttributeDefinition> getCodeAttributeLayouts() {
         return codeAttributeLayouts;
     }
 
-    public static class AttributeDefinition {
+    public List<AttributeDefinition> getFieldAttributeLayouts() {
+        return fieldAttributeLayouts;
+    }
 
-        public int index;
-        public int contextType;
-        public CPUTF8 name;
-        public CPUTF8 layout;
+    public List<AttributeDefinition> getMethodAttributeLayouts() {
+        return methodAttributeLayouts;
+    }
 
-        public AttributeDefinition(final int index, final int contextType, final CPUTF8 name, final CPUTF8 layout) {
-            this.index = index;
-            this.contextType = contextType;
-            this.name = name;
-            this.layout = layout;
+    @Override
+    public void pack(final OutputStream out) throws IOException, Pack200Exception {
+        PackingUtils.log("Writing attribute definition bands...");
+        final int[] attributeDefinitionHeader = new int[attributeDefinitions.size()];
+        final int[] attributeDefinitionName = new int[attributeDefinitions.size()];
+        final int[] attributeDefinitionLayout = new int[attributeDefinitions.size()];
+        for (int i = 0; i < attributeDefinitionLayout.length; i++) {
+            final AttributeDefinition def = attributeDefinitions.get(i);
+            attributeDefinitionHeader[i] = def.contextType | (def.index + 1 << 2);
+            attributeDefinitionName[i] = def.name.getIndex();
+            attributeDefinitionLayout[i] = def.layout.getIndex();
         }
 
+        byte[] encodedBand = encodeBandInt("attributeDefinitionHeader", attributeDefinitionHeader, Codec.BYTE1);
+        out.write(encodedBand);
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from attributeDefinitionHeader["
+            + attributeDefinitionHeader.length + "]");
+
+        encodedBand = encodeBandInt("attributeDefinitionName", attributeDefinitionName, Codec.UNSIGNED5);
+        out.write(encodedBand);
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from attributeDefinitionName["
+            + attributeDefinitionName.length + "]");
+
+        encodedBand = encodeBandInt("attributeDefinitionLayout", attributeDefinitionLayout, Codec.UNSIGNED5);
+        out.write(encodedBand);
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from attributeDefinitionLayout["
+            + attributeDefinitionLayout.length + "]");
     }
 }
