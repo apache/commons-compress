@@ -161,6 +161,95 @@ see the ${project.name} website:
 Old Release Notes
 =================
 
+Release 1.22
+------------
+
+New features:
+o Migrate zip package to use NIO #236.
+  Issue: COMPRESS-602. Thanks to Postelnicu George, Gary Gregory. 
+o Add APK file extension constants: ArchiveStreamFactory.APK, APKM, APKS, XAPK. Thanks to Gary Gregory. 
+o ArchiveStreamFactory.createArchiveInputStream(String, InputStream, String) supports the "APK" format (it's a JAR). Thanks to Gary Gregory. 
+o Expander example now has NIO Path versions of IO File APIs. Thanks to Gary Gregory. 
+o Improve TAR support for file times #254.
+  Issue: COMPRESS-612. Thanks to Andre Brait, Gary Gregory. 
+o Add SevenZArchiveEntry.setContentMethods(SevenZMethodConfiguration...). Thanks to Gary Gregory. 
+
+Fixed Bugs:
+o Fix some compiler warnings in pack200 packages. Thanks to Gary Gregory. 
+o Close File input stream after unpacking in Pack200UnpackerAdapter.unpack(File, JarOutputStream). Thanks to Gary Gregory. 
+o Pack200UnpackerAdapter.unpack(InputStream, JarOutputStream) should not close its given input stream. Thanks to Gary Gregory. 
+o Fix minor problem in examples.
+  Issue: COMPRESS-596. Thanks to Tamas Mucs. 
+o Add a limit to the copy buffer in IOUtils.readRange() to
+  avoid reading more from a channel than asked for.
+  Github Pull Request #214.
+  Issue: COMPRESS-584. Thanks to Matthijs Laan, Peter Lee. 
+o Documentation nits #217. Thanks to Helder Magalhães, Gary Gregory, PeterAlfredLee. 
+o Replace wrapper Collections.sort is with an instance method directly. #245. Thanks to Arturo Bernal. 
+o Replace manual comparisons with Comparator.comparingInt() #244. Thanks to Arturo Bernal. 
+o Replace manual copy of array contents with System.arraycopy() #246. Thanks to Arturo Bernal. 
+o Fix thread safety issues when encoding 7z password #248. Thanks to Glavo, Bruno P. Kinoshita, PeterAlfredLee, Gary Gregory. 
+o bzip2: calculate median-of-3 on unsigned values #242. Thanks to Peter Dettman. 
+o Use Math.min and Math.max calculations. #247. Thanks to Arturo Bernal, Gary Gregory, Bruno P. Kinoshita. 
+o Expander should be able to work if an entry's name is "./".
+  Issue: COMPRESS-603. Thanks to Matt Sicker. 
+o Ensure compatibility with Java 8 #252.
+  Issue: COMPRESS-604. Thanks to Andre Brait. 
+o Use StringBuilder instead of StringBuffer. #284. Thanks to Arturo Bernal. 
+o Inline variable. Remove redundant local variable. #283. Thanks to Arturo Bernal. 
+o Use compare method #285. Thanks to Arturo Bernal. 
+o Remove Unnecessary interface modifiers #281. Thanks to Arturo Bernal. 
+o Avoid use C-style array declaration. #282. Thanks to Arturo Bernal. 
+o ChecksumVerifyingInputStream.read() does not always validate checksum at end-of-stream. Thanks to Gary Gregory. 
+o Fix TarFileTest #289. Thanks to Matt Juntunen. 
+o Update Wikipedia link in TarUtils.java:627.
+  Issue: COMPRESS-625. Thanks to MrBump, Gary Gregory. 
+o OutOfMemoryError on malformed pack200 input (attributes).
+  Issue: COMPRESS-626. Thanks to Andrii Hudz, Gary Gregory. 
+o OutOfMemoryError on malformed pack200 input (org.apache.commons.compress.harmony.pack200.NewAttributeBands.readNextUnionCase).
+  Issue: COMPRESS-628. Thanks to Andrii Hudz, Gary Gregory. 
+o OutOfMemoryError on malformed unpack200 input (org.apache.commons.compress.harmony.unpack200.NewAttributeBands.readNextUnionCase).
+  Issue: COMPRESS-628. Thanks to Gary Gregory. 
+o Some input streams are not closed in org.apache.commons.compress.harmony.pack200.PackingUtils. Thanks to Gary Gregory. 
+o Pack200 causes a 'archive.3E' error if it?s not in the system class loader.
+  Issue: COMPRESS-627. Thanks to anatawa12, Gary Gregory. 
+
+Changes:
+o Bump actions/cache from 2.1.6 to 3.0.10 #230, #257, #305, #320. Thanks to Dependabot, Gary Gregory. 
+o Bump actions/checkout from 2.3.4 to 3.1.0 #226, #227, #251, #300, #321. Thanks to Dependabot, Gary Gregory. 
+o Bump actions/setup-java from 2 to 3.5.1 #278. Thanks to Dependabot. 
+o Bump github/codeql-action from 1 to 2 #287. Thanks to Dependabot. 
+o Bump mockito-core from 3.11.1 to 4.6.1 #209, #224, #231, #235, #243, #253, #286, #294. Thanks to Dependabot. 
+o Bump org.apache.felix.framework from 7.0.0 to 7.0.1 #208. Thanks to Dependabot. 
+o Bump memoryfilesystem from 2.1.0 to 2.3.0 #212, #237. Thanks to Dependabot. 
+o Bump zstd-jni from 1.5.0-2 to 1.5.2-5 #215, #233, #238, #240, #250, #291, #326. Thanks to Dependabot, Gary Gregory. 
+o Bump Pack200 packages from ASM 3.2 to 9.2 #216. 
+  Breaks binary compatibility in the internals of the pack200 implementation:
+  - org.apache.commons.compress.harmony.pack200.Segment
+  - org.apache.commons.compress.harmony.pack200.SegmentMethodVisitor
+  - org.apache.commons.compress.harmony.pack200.SegmentAnnotationVisitor
+  - org.apache.commons.compress.harmony.pack200.SegmentFieldVisitor
+  Issue: COMPRESS-582. Thanks to Alex Landau, Stephan, Gary Gregory. 
+o Bump asm from 9.2 to 9.4 #279, #322. Thanks to Dependabot. 
+o Bump maven-javadoc-plugin from 3.3.0 to 3.4.1 #221, #249, #288, #308. Thanks to Dependabot. 
+o Bump maven-pmd-plugin from 3.14.0 to 3.19.0 #296, #309, #311. Thanks to Gary Gregory, Dependabot. 
+o Bump pmd from 6.44.0 to 6.50.0. Thanks to Gary Gregory. 
+o Bump commons.japicmp.version from 0.15.3 to 0.16.0. Thanks to Gary Gregory. 
+o Bump maven-bundle-plugin from 5.1.2 to 5.1.8 #234, #239, #290, #292, #301, #304. Thanks to Dependabot. 
+o Bump org.apache.felix.framework from 7.0.1 to 7.0.5 #232, #295. Thanks to Dependabot. 
+o Bump slf4j-api from 1.7.30 to 2.0.3 #213, #241, #258, #310, #314, #315, #318. Thanks to Dependabot. 
+o Bump commons-parent from 52 to 54 #280. Thanks to Dependabot, Gary Gregory. 
+o Bump commons.jacoco.version from 0.8.7 to 0.8.8. Thanks to Gary Gregory. 
+o Bump junit.version from 5.8.2 to 5.9.1 #302, #317. Thanks to Dependabot. 
+o Bump mockito.version from 4.6.1 to 4.8.0 #307, #312. Thanks to Dependabot. 
+o Bump maven-surefire-plugin from 3.0.0-M6 to 3.0.0-M7. Thanks to Gary Gregory. 
+
+For complete information on Apache Commons Compress, including instructions
+on how to submit bug reports, patches, or suggestions for improvement,
+see the Apache Commons Compress website:
+
+https://commons.apache.org/compress/
+
 Release 1.21
 ------------
 

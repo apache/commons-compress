@@ -5,6 +5,62 @@ compression and archive formats.  These include: bzip2, gzip, pack200,
 lzma, xz, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
 Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
+New features:
+o Use FileTime for time fields in SevenZipArchiveEntry #256.
+  Issue: COMPRESS-614. Thanks to Andre Brait, Gary Gregory. 
+o Fix calculation the offset of the first ZIP central directory entry #334.
+  Issue: COMPRESS-621. Thanks to Glavo. 
+o Add encryption support for SevenZ #332.
+  Issue: COMPRESS-633. Thanks to Daniel Santos, Bruno P. Kinoshita, Gary Gregory. 
+o Support for extra time data in Zip archives #345.
+  Issue: COMPRESS-613. Thanks to Andre Brait, Gary Gregory, Bruno P. Kinoshita. 
+o Add org.apache.commons.compress.archivers.zip.DefaultBackingStoreSupplier to write to a custom folder instead of the default temporary folder.
+  Issue: COMPRESS-621. Thanks to Gary Gregory. 
+o Add capability to configure Deflater strategy in GzipCompressorOutputStream: GzipParameters.setDeflateStrategy(int).
+  Issue: COMPRESS-600. Thanks to Gary Gregory, Pascal Davoust. 
+
+Fixed Bugs:
+o Implicit narrowing conversion in compound assignment. Thanks to CodeQL, Gary Gregory. 
+o Avoid NPE in FileNameUtils.getBaseName(Path) for paths with zero elements like root paths. Thanks to CodeQL, Gary Gregory. 
+o Avoid NPE in FileNameUtils.getExtension(Path) for paths with zero elements like root paths. Thanks to CodeQL, Gary Gregory. 
+o LZMA2Decoder.decode() looses original exception. Thanks to Gary Gregory. 
+o Extract conditions and avoid duplicate code. #297. Thanks to Arturo Bernal. 
+o Remove duplicate conditions. Use switch instead. #298. Thanks to Arturo Bernal. 
+o Replace JUnit 3 and 4 with JUnit 5 #344, #346. Thanks to Robin Schimpf. 
+o Make 'ZipFile.offsetComparator' static #353. Thanks to Glavo. 
+o The GzipCompressorOutputStream#writeHeader() uses ISO_8859_1 to write the file name and comment. 
+  If the strings contains non-ISO_8859_1 characters, unknown characters are displayed after decompression. 
+  Use percent encoding for non ISO_8859_1 characters.
+  Issue: COMPRESS-638. Thanks to Radar wen, Gary Gregory, Michael Osipov. 
+o Port some code from IO to NIO APIs. Thanks to Jonathan Leitschuh, Gary Gregory. 
+o pack200: Fix FileBands misusing InputStream#read(byte[]) #360. Thanks to Una, Gary Gregory, Jochen Wiedmann, quaternary, Bruno P. Kinoshita. 
+o Add TarArchiveEntry.getLinkFlag() #365.
+  Issue: COMPRESS-641. Thanks to XenoAmess, Gary Gregory, Bruno P. Kinoshita. 
+o Integer overflow ArithmeticException in TarArchiveOutputStream #368.
+  Issue: COMPRESS-642. Thanks to Anton Klarén, Gary Gregory. 
+o org.apache.commons.compress.archivers.zip.ZipFile.finalize() should not write to std err.
+  Issue: COMPRESS-642. Thanks to Dominik Stadler, Stefan Bodewig, Gary Gregory. 
+
+Changes:
+o Bump mockito.version from 4.8.0 to 4.11.0 #328, #331, #340, #348. Thanks to Dependabot. 
+o Bump pmd from 6.50.0 to 6.53.0. Thanks to Gary Gregory. 
+o Bump memoryfilesystem from 2.3.0 to 2.5.0 #330, #359. Thanks to Dependabot. 
+o Bump slf4j-api from 2.0.3 to 2.0.7 #329, #333, #341, #371. Thanks to Dependabot. 
+o Bump japicmp from 0.16.0 to 0.17.1. Thanks to Gary Gregory. 
+o Bump commons-parent from 54 to 56 #339, #349. Thanks to Dependabot. 
+o Bump zstd-jni from 1.5.2-5 to 1.5.4-2 #362, #364. Thanks to Dependabot. 
+
+Removed:
+o Remove BZip2CompressorOutputStream.finalize() which only wrote to std err. Thanks to Gary Gregory. 
+For complete information on Apache Commons Compress, including instructions
+on how to submit bug reports, patches, or suggestions for improvement,
+see the Apache Commons Compress website:
+
+https://commons.apache.org/compress/
+
+Old Release Notes
+=================
+
 Release 1.22
 ------------
 
@@ -93,9 +149,6 @@ on how to submit bug reports, patches, or suggestions for improvement,
 see the Apache Commons Compress website:
 
 https://commons.apache.org/compress/
-
-Old Release Notes
-=================
 
 Release 1.21
 ------------

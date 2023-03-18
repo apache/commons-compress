@@ -44,7 +44,7 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Compress Release Notes</title>
   </properties>
   <body>
-    <release version="1.23" date="2023-03-18">
+    <release version="1.23.0" date="2023-03-18">
       <!-- FIX -->
       <action type="fix" dev="ggregory" due-to="CodeQL, Gary Gregory">Implicit narrowing conversion in compound assignment.</action>
       <action type="fix" dev="ggregory" due-to="CodeQL, Gary Gregory">Avoid NPE in FileNameUtils.getBaseName(Path) for paths with zero elements like root paths.</action>
