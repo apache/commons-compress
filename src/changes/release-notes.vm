@@ -250,6 +250,8 @@ see the Apache Commons Compress website:
 
 https://commons.apache.org/compress/
 
+Download page: ${project.url}download_compress.cgi
+
 Release 1.21
 ------------
 
