@@ -1,6 +1,6 @@
               Apache Commons Compress RELEASE NOTES
 
-Apache Commons Compress software defines an API for working with
+Apache Commons Compress defines an API for working with
 compression and archive formats.  These include: bzip2, gzip, pack200,
 lzma, xz, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
 Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
@@ -57,6 +57,8 @@ on how to submit bug reports, patches, or suggestions for improvement,
 see the Apache Commons Compress website:
 
 https://commons.apache.org/compress/
+
+Download it from https://commons.apache.org/compress/download_compress.cgi
 
 Old Release Notes
 =================
