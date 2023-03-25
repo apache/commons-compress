@@ -26,7 +26,6 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  * Abstract superclass of all classes that have class-specific references to constant pool information. These classes
  * have a context (a string representing a pack200 class) i.e., they send getClassSpecificPoolEntry instead of
  * getConstantPoolEntry.
- *
  */
 public abstract class ClassSpecificReferenceForm extends ReferenceForm {
 

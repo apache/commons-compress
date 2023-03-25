@@ -31,7 +31,6 @@ import org.apache.commons.compress.harmony.unpack200.Segment;
 import org.junit.jupiter.api.Test;
 
 /**
- *
  */
 public class ClassBandsTest extends AbstractBandsTestCase {
 

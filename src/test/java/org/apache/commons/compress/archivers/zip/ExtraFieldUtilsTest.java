@@ -13,7 +13,6 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- *
  */
 
 package org.apache.commons.compress.archivers.zip;
@@ -29,7 +28,6 @@ import org.junit.jupiter.api.Test;
 
 /**
  * JUnit tests for org.apache.commons.compress.archivers.zip.ExtraFieldUtils.
- *
  */
 public class ExtraFieldUtilsTest implements UnixStat {
 

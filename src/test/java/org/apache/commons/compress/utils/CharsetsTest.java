@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Sanity checks for {@link Charsets}.
- *
  */
 public class CharsetsTest {
 

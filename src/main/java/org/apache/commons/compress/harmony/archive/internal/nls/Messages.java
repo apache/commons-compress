@@ -42,7 +42,6 @@ import java.util.ResourceBundle;
  * </code> resource bundle. Note that if this file is not available, or an invalid key is looked up, or resource bundle
  * support is not available, the key itself will be returned as the associated message. This means that the <em>KEY</em>
  * should a reasonable human-readable (english) string.
- *
  */
 public class Messages {
 

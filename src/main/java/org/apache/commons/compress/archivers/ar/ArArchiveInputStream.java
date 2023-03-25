@@ -32,7 +32,6 @@ import org.apache.commons.compress.utils.IOUtils;
  * Implements the "ar" archive format as an input stream.
  *
  * @NotThreadSafe
- *
  */
 public class ArArchiveInputStream extends ArchiveInputStream {
 

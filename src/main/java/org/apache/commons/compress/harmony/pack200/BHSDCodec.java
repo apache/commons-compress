@@ -64,7 +64,6 @@ import org.apache.commons.compress.utils.ExactMath;
  * character in the name ({@link #BYTE1}, {@link #UNSIGNED5}) gives a clue as to the B value. Those that start with U
  * ({@link #UDELTA5}, {@link #UNSIGNED5}) are unsigned; otherwise, in most cases, they are signed. The presence of the
  * word Delta ({@link #DELTA5}, {@link #UDELTA5}) indicates a delta encoding is used.
- *
  */
 public final class BHSDCodec extends Codec {
 

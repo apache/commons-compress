@@ -28,7 +28,6 @@ import java.util.zip.ZipException;
  * same, but they don't have to be.  {@link
  * java.util.zip.ZipOutputStream java.util.zip.ZipOutputStream} will
  * only use the local file data in both places.</p>
- *
  */
 public interface ZipExtraField {
     /**

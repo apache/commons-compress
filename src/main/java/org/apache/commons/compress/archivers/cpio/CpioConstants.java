@@ -24,7 +24,6 @@ package org.apache.commons.compress.archivers.cpio;
  * based on code from the jRPM project (jrpm.sourceforge.net)
  *
  * http://www.opengroup.org/onlinepubs/9699919799/basedefs/cpio.h.html has a list of the C_xxx constants.
- *
  */
 public interface CpioConstants {
     /** magic number of a cpio entry in the new format */

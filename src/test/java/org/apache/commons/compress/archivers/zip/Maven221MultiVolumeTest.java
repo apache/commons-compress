@@ -13,7 +13,6 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- *
  */
 
 package org.apache.commons.compress.archivers.zip;
@@ -40,7 +39,6 @@ import org.junit.jupiter.api.Test;
  * such a file. This test is intended to prove that this error doesn't occur
  * anymore. All entries but the last one are returned correctly, the last entry
  * yields an exception.
- *
  */
 public class Maven221MultiVolumeTest extends AbstractTestCase {
 
