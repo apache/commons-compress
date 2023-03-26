@@ -47,7 +47,7 @@ Apache Commons Compress
 [![Coverage Status](https://codecov.io/gh/apache/commons-compress/branch/master/graph/badge.svg)](https://app.codecov.io/gh/apache/commons-compress)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/badge.svg?gav=true)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/?gav=true)
 [![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-compress/1.23.0.svg)](https://javadoc.io/doc/org.apache.commons/commons-compress/1.23.0)
-[![CodeQL](https://github.com/apache/commons-compress/workflows/CodeQL/badge.svg)](hhttps://github.com/apache/commons-compress/actions/workflows/codeql-analysis.yml?query=workflow%3ACodeQL)
+[![CodeQL](https://github.com/apache/commons-compress/workflows/CodeQL/badge.svg)](https://github.com/apache/commons-compress/actions/workflows/codeql-analysis.yml?query=workflow%3ACodeQL)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/apache/commons-text/badge)](https://api.securityscorecards.dev/projects/github.com/apache/commons-text)
 [![Fuzzing Status](https://oss-fuzz-build-logs.storage.googleapis.com/badges/apache-commons.svg)](https://bugs.chromium.org/p/oss-fuzz/issues/list?sort=-opened&can=1&q=proj:apache-commons)
 
