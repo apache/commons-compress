@@ -83,6 +83,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump japicmp from 0.16.0 to 0.17.1.</action>
       <action type="update" dev="ggregory" due-to="Dependabot">Bump commons-parent from 54 to 56 #339, #349.</action>
       <action type="update" dev="kinow" due-to="Dependabot">Bump zstd-jni from 1.5.2-5 to 1.5.4-2 #362, #364.</action>
+      <action type="update" dev="kinow" due-to="Dependabot">Bump asm from 9.4 to 9.5 #376.</action>
     </release>
     <release version="1.22" date="2022-11-01">
       <!-- FIX -->
