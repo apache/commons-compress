@@ -610,7 +610,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Looks up an extra field by its header id.
+     * Gets an extra field by its header id.
      *
      * @param type the header id
      * @return null if no such field exists.
@@ -627,7 +627,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Retrieves all extra fields that have been parsed successfully.
+     * Gets all extra fields that have been parsed successfully.
      *
      * <p><b>Note</b>: The set of extra fields may be incomplete when
      * {@link ZipArchiveInputStream} has been used as some extra
@@ -641,7 +641,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Retrieves extra fields.
+     * Gets extra fields.
      * @param includeUnparseable whether to also return unparseable
      * extra fields as {@link UnparseableExtraFieldData} if such data
      * exists.
@@ -656,13 +656,12 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Retrieves extra fields.
+     * Gets extra fields.
+     *
      * @param parsingBehavior controls parsing of extra fields.
      * @return an array of the extra fields
-     *
      * @throws ZipException if parsing fails, can not happen if {@code
      * parsingBehavior} is {@link ExtraFieldParsingMode#BEST_EFFORT}.
-     *
      * @since 1.19
      */
     public ZipExtraField[] getExtraFields(final ExtraFieldParsingBehavior parsingBehavior)
@@ -710,7 +709,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Retrieves the internal file attributes.
+     * Gets the internal file attributes.
      *
      * <p><b>Note</b>: {@link ZipArchiveInputStream} is unable to fill
      * this field, you must use {@link ZipFile} if you want to read
@@ -736,7 +735,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Retrieves the extra data for the local file data.
+     * Gets the extra data for the local file data.
      * @return the extra data for local file
      */
     public byte[] getLocalFileDataExtra() {
@@ -744,7 +743,13 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
         return extra != null ? extra : ByteUtils.EMPTY_BYTE_ARRAY;
     }
 
-    protected long getLocalHeaderOffset() {
+    /**
+     * Gets the local header offset.
+     *
+     * @return the local header offset.
+     * @since 1.24.0
+     */
+    public long getLocalHeaderOffset() {
         return this.localHeaderOffset;
     }
 
@@ -755,7 +760,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Returns the compression method of this entry, or -1 if the
+     * Gets the compression method of this entry, or -1 if the
      * compression method has not been specified.
      *
      * @return compression method
@@ -872,7 +877,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Unix permission.
+     * Gets the Unix permission.
      * @return the unix permissions
      */
     public int getUnixMode() {
@@ -881,7 +886,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Looks up extra field data that couldn't be parsed correctly.
+     * Gets up extra field data that couldn't be parsed correctly.
      *
      * @return null if no such field exists.
      *
@@ -896,7 +901,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * The "version made by" field.
+     * Gets the "version made by" field.
      * @return "version made by" field
      * @since 1.11
      */
@@ -905,7 +910,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * The "version required to expand" field.
+     * Gets the "version required to expand" field.
      * @return "version required to expand" field
      * @since 1.11
      */
