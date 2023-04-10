@@ -30,6 +30,7 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -371,9 +372,14 @@ public class ZipFile implements Closeable {
     private final List<ZipArchiveEntry> entries = new LinkedList<>();
 
     /**
-     * Maps String to list of ZipArchiveEntrys, name -> actual entries.
+     * Maps a string to the first entry named it.
      */
-    private final Map<String, LinkedList<ZipArchiveEntry>> nameMap = new HashMap<>(HASH_SIZE);
+    private final Map<String, ZipArchiveEntry> nameMap = new HashMap<>(HASH_SIZE);
+
+    /**
+     * If multiple entries have the same name, maps the name to entries named it.
+     */
+    private Map<String, List<ZipArchiveEntry>> duplicateNameMap = null;
 
     /**
      * The encoding to use for file names and the file comment.
@@ -792,11 +798,24 @@ public class ZipFile implements Closeable {
 
     private void fillNameMap() {
         entries.forEach(ze -> {
-            // entries is filled in populateFromCentralDirectory and
+            // entries are filled in populateFromCentralDirectory and
             // never modified
             final String name = ze.getName();
-            final LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.computeIfAbsent(name, k -> new LinkedList<>());
-            entriesOfThatName.addLast(ze);
+            ZipArchiveEntry firstEntry = nameMap.putIfAbsent(name, ze);
+
+            if (firstEntry != null) {
+                if (duplicateNameMap == null) {
+                    duplicateNameMap = new HashMap<>();
+                }
+
+                List<ZipArchiveEntry> entriesOfThatName = duplicateNameMap.computeIfAbsent(name, k -> {
+                    ArrayList<ZipArchiveEntry> list = new ArrayList<>(2);
+                    list.add(firstEntry);
+                    return list;
+                });
+
+                entriesOfThatName.add(ze);
+            }
         });
     }
 
@@ -868,9 +887,12 @@ public class ZipFile implements Closeable {
      * @since 1.6
      */
     public Iterable<ZipArchiveEntry> getEntries(final String name) {
-        final List<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
-        return entriesOfThatName != null ? entriesOfThatName
-            : Collections.emptyList();
+        List<ZipArchiveEntry> entriesOfThatName = duplicateNameMap == null ? null : duplicateNameMap.get(name);
+        if (entriesOfThatName == null) {
+            ZipArchiveEntry entry = nameMap.get(name);
+            entriesOfThatName = entry == null ? Collections.emptyList() : Collections.singletonList(entry);
+        }
+        return entriesOfThatName;
     }
 
     /**
@@ -899,13 +921,17 @@ public class ZipFile implements Closeable {
      * @since 1.6
      */
     public Iterable<ZipArchiveEntry> getEntriesInPhysicalOrder(final String name) {
-        ZipArchiveEntry[] entriesOfThatName = ZipArchiveEntry.EMPTY_ARRAY;
-        final LinkedList<ZipArchiveEntry> linkedList = nameMap.get(name);
-        if (linkedList != null) {
-            entriesOfThatName = linkedList.toArray(entriesOfThatName);
-            Arrays.sort(entriesOfThatName, offsetComparator);
+        if (duplicateNameMap != null) {
+            List<ZipArchiveEntry> list = duplicateNameMap.get(name);
+            if (list != null) {
+                ZipArchiveEntry[] entriesOfThatName = list.toArray(ZipArchiveEntry.EMPTY_ARRAY);
+                Arrays.sort(entriesOfThatName, offsetComparator);
+                return Arrays.asList(entriesOfThatName);
+            }
         }
-        return Arrays.asList(entriesOfThatName);
+
+        final ZipArchiveEntry entry = nameMap.get(name);
+        return entry == null ? Collections.emptyList() : Collections.singletonList(entry);
     }
 
     /**
@@ -921,8 +947,7 @@ public class ZipFile implements Closeable {
      * {@code null} if not present.
      */
     public ZipArchiveEntry getEntry(final String name) {
-        final LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
-        return entriesOfThatName != null ? entriesOfThatName.getFirst() : null;
+        return nameMap.get(name);
     }
 
     /**
