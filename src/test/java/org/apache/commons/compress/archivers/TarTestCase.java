@@ -376,7 +376,7 @@ public final class TarTestCase extends AbstractTestCase {
             os2.putArchiveEntry(entry);
             Files.copy(file1.toPath(), os2);
             os2.closeArchiveEntry();
-        } catch(final IOException e) {
+        } catch (final IOException e) {
             assertTrue(true);
         } finally {
             if (os2 != null){
