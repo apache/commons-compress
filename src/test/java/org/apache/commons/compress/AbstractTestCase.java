@@ -41,6 +41,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -49,9 +50,6 @@ public abstract class AbstractTestCase {
     protected interface StreamWrapper<I extends InputStream> {
         I wrap(InputStream in) throws Exception;
     }
-
-    private static final boolean ON_WINDOWS =
-            System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows");
 
     public static File getFile(final String path) throws IOException {
         final URL url = AbstractTestCase.class.getClassLoader().getResource(path);
@@ -110,7 +108,7 @@ public abstract class AbstractTestCase {
      */
     public static boolean tryHardToDelete(final File f) {
         if (f != null && f.exists() && !f.delete()) {
-            if (ON_WINDOWS) {
+            if (SystemUtils.IS_OS_WINDOWS) {
                 System.gc();
             }
             try {
