@@ -16,6 +16,7 @@
  */
 package org.apache.commons.compress.utils;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -24,8 +25,7 @@ import java.io.InputStream;
  * @NotThreadSafe
  * @since 1.6
  */
-public class BoundedInputStream extends InputStream {
-    private final InputStream in;
+public class BoundedInputStream extends FilterInputStream {
     private long bytesRemaining;
 
     /**
@@ -35,7 +35,7 @@ public class BoundedInputStream extends InputStream {
      * @param size the maximum amount of bytes to read
      */
     public BoundedInputStream(final InputStream in, final long size) {
-        this.in = in;
+        super(in);
         bytesRemaining = size;
     }
 
