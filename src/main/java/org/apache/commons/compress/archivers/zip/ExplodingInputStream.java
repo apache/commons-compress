@@ -19,7 +19,6 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -39,7 +38,10 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  *
  * @since 1.7
  */
-class ExplodingInputStream extends FilterInputStream implements InputStreamStatistics {
+class ExplodingInputStream extends InputStream implements InputStreamStatistics {
+
+    /** The underlying stream containing the compressed data */
+    private final InputStream in;
 
     /** The stream of bits read from the input stream */
     private BitStream bits;
@@ -69,7 +71,7 @@ class ExplodingInputStream extends FilterInputStream implements InputStreamStati
     private long treeSizes;
 
     /**
-     * Constructs a new stream decompressing the content of the specified stream
+     * Create a new stream decompressing the content of the specified stream
      * using the explode algorithm.
      *
      * @param dictionarySize the size of the sliding dictionary (4096 or 8192)
@@ -77,7 +79,6 @@ class ExplodingInputStream extends FilterInputStream implements InputStreamStati
      * @param in             the compressed data stream
      */
     public ExplodingInputStream(final int dictionarySize, final int numberOfTrees, final InputStream in) {
-        super(in);
         if (dictionarySize != 4096 && dictionarySize != 8192) {
             throw new IllegalArgumentException("The dictionary size must be 4096 or 8192");
         }
@@ -87,10 +88,19 @@ class ExplodingInputStream extends FilterInputStream implements InputStreamStati
         this.dictionarySize = dictionarySize;
         this.numberOfTrees = numberOfTrees;
         this.minimumMatchLength = numberOfTrees;
+        this.in = in;
     }
 
     /**
-     * Fills the sliding dictionary with more data.
+     * @since 1.17
+     */
+    @Override
+    public void close() throws IOException {
+        in.close();
+    }
+
+    /**
+     * Fill the sliding dictionary with more data.
      * @throws IOException on error.
      */
     private void fillBuffer() throws IOException {
