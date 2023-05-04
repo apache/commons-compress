@@ -17,6 +17,7 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.ByteArrayInputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -114,40 +115,25 @@ class Coders {
     }
 
     static class DeflateDecoder extends AbstractCoder {
-        static class DeflateDecoderInputStream extends InputStream {
+        static class DeflateDecoderInputStream extends FilterInputStream {
 
-              final InflaterInputStream inflaterInputStream;
               Inflater inflater;
 
             public DeflateDecoderInputStream(final InflaterInputStream inflaterInputStream,
                 final Inflater inflater) {
-                this.inflaterInputStream = inflaterInputStream;
+                super(inflaterInputStream);
                 this.inflater = inflater;
             }
 
             @Override
             public void close() throws IOException {
                 try {
-                    inflaterInputStream.close();
+                    super.close();
                 } finally {
                     inflater.end();
                 }
             }
 
-            @Override
-            public int read() throws IOException {
-                return inflaterInputStream.read();
-            }
-
-            @Override
-            public int read(final byte[] b) throws IOException {
-                return inflaterInputStream.read(b);
-            }
-
-            @Override
-            public int read(final byte[] b, final int off, final int len) throws IOException {
-                return inflaterInputStream.read(b, off, len);
-            }
         }
         static class DeflateDecoderOutputStream extends OutputStream {
 
