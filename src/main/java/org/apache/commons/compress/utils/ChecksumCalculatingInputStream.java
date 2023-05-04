@@ -16,27 +16,24 @@
  */
 package org.apache.commons.compress.utils;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 import java.util.zip.Checksum;
 
 /**
- * A stream that calculates the checksum of the data read.
+ * Calculates the checksum of the data read.
+ *
  * @NotThreadSafe
  * @since 1.14
  */
-public class ChecksumCalculatingInputStream extends InputStream {
-    private final InputStream in;
+public class ChecksumCalculatingInputStream extends FilterInputStream {
     private final Checksum checksum;
 
     public ChecksumCalculatingInputStream(final Checksum checksum, final InputStream inputStream) {
-
-        Objects.requireNonNull(checksum, "checksum");
-        Objects.requireNonNull(inputStream, "inputStream");
-
-        this.checksum = checksum;
-        this.in = inputStream;
+        super(Objects.requireNonNull(inputStream, "inputStream"));
+        this.checksum = Objects.requireNonNull(checksum, "checksum");
     }
 
     /**
@@ -60,17 +57,6 @@ public class ChecksumCalculatingInputStream extends InputStream {
             checksum.update(ret);
         }
         return ret;
-    }
-
-    /**
-     * Reads a byte array from the stream
-     * @throws IOException if the underlying stream throws or the
-     * stream is exhausted and the Checksum doesn't match the expected
-     * value
-     */
-    @Override
-    public int read(final byte[] b) throws IOException {
-        return read(b, 0, b.length);
     }
 
     /**

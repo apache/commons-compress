@@ -26,6 +26,7 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
@@ -84,10 +85,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     /**
      * Bounded input stream adapted from commons-io
      */
-    private class BoundedInputStream extends InputStream {
-
-        /** the wrapped input stream */
-        private final InputStream in;
+    private class BoundedInputStream extends FilterInputStream {
 
         /** the max length to provide */
         private final long max;
@@ -103,8 +101,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
          * @param size The maximum number of bytes to return
          */
         public BoundedInputStream(final InputStream in, final long size) {
+            super(in);
             this.max = size;
-            this.in = in;
         }
 
         @Override
