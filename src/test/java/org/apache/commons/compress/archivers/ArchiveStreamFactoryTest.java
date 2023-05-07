@@ -32,7 +32,6 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 
 import org.apache.commons.compress.AbstractTestCase;
-import org.apache.commons.compress.MockEvilInputStream;
 import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
@@ -40,6 +39,7 @@ import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.io.input.BrokenInputStream;
 import org.junit.jupiter.api.Test;
 
 public class ArchiveStreamFactoryTest extends AbstractTestCase {
@@ -314,7 +314,7 @@ public class ArchiveStreamFactoryTest extends AbstractTestCase {
                 "shouldn't be able to detect null stream");
         assertEquals("Stream must not be null.", e2.getMessage());
 
-        final ArchiveException e3 = assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.detect(new BufferedInputStream(new MockEvilInputStream())),
+        final ArchiveException e3 = assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.detect(new BufferedInputStream(new BrokenInputStream())),
                 "Expected ArchiveException");
         assertEquals("IOException while reading signature.", e3.getMessage());
     }
