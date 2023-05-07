@@ -48,8 +48,8 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- UPDATE -->
       <action type="update" dev="kinow" due-to="Gary Gregory">Make ZipArchiveEntry.getLocalHeaderOffset() public.</action>
       <action type="update" dev="kinow" due-to="Dependabot">Bump zstd-jni from 1.5.4-2 to 1.5.5-2 #377, #383.</action>
-      <action type="update" dev="kinow" due-to="Dependabot">Bump memoryfilesystem from 2.5.0 to 2.5.1
- #381.</action>
+      <action type="update" dev="kinow" due-to="Dependabot">Bump memoryfilesystem from 2.5.0 to 2.5.1 #381.</action>
+      <action type="update" dev="kinow" due-to="Dependabot">Bump commons-parent from 56 to 57 #384.</action>
     </release>
     <release version="1.23.0" date="2023-03-18">
       <!-- FIX -->
