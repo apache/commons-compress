@@ -379,7 +379,7 @@ public class ZipFile implements Closeable {
     /**
      * If multiple entries have the same name, maps the name to entries named it.
      */
-    private Map<String, List<ZipArchiveEntry>> duplicateNameMap = null;
+    private Map<String, List<ZipArchiveEntry>> duplicateNameMap;
 
     /**
      * The encoding to use for file names and the file comment.
@@ -776,7 +776,7 @@ public class ZipFile implements Closeable {
         final Enumeration<ZipArchiveEntry> src = getEntriesInPhysicalOrder();
         while (src.hasMoreElements()) {
             final ZipArchiveEntry entry = src.nextElement();
-            if (predicate.test( entry)) {
+            if (predicate.test(entry)) {
                 target.addRawArchiveEntry(entry, getRawInputStream(entry));
             }
         }
@@ -801,7 +801,7 @@ public class ZipFile implements Closeable {
             // entries are filled in populateFromCentralDirectory and
             // never modified
             final String name = ze.getName();
-            ZipArchiveEntry firstEntry = nameMap.putIfAbsent(name, ze);
+            final ZipArchiveEntry firstEntry = nameMap.putIfAbsent(name, ze);
 
             if (firstEntry != null) {
                 if (duplicateNameMap == null) {
@@ -809,7 +809,7 @@ public class ZipFile implements Closeable {
                 }
 
                 List<ZipArchiveEntry> entriesOfThatName = duplicateNameMap.computeIfAbsent(name, k -> {
-                    ArrayList<ZipArchiveEntry> list = new ArrayList<>(2);
+                    final ArrayList<ZipArchiveEntry> list = new ArrayList<>(2);
                     list.add(firstEntry);
                     return list;
                 });
@@ -887,12 +887,13 @@ public class ZipFile implements Closeable {
      * @since 1.6
      */
     public Iterable<ZipArchiveEntry> getEntries(final String name) {
-        List<ZipArchiveEntry> entriesOfThatName = duplicateNameMap == null ? null : duplicateNameMap.get(name);
-        if (entriesOfThatName == null) {
-            ZipArchiveEntry entry = nameMap.get(name);
-            entriesOfThatName = entry == null ? Collections.emptyList() : Collections.singletonList(entry);
+        final List<ZipArchiveEntry> entriesOfThatName = duplicateNameMap == null ? null : duplicateNameMap.get(name);
+        if (entriesOfThatName != null) {
+            return Collections.unmodifiableList(entriesOfThatName);
+        } else {
+            final ZipArchiveEntry entry = nameMap.get(name);
+            return entry == null ? Collections.emptyList() : Collections.singletonList(entry);
         }
-        return entriesOfThatName;
     }
 
     /**
@@ -922,9 +923,9 @@ public class ZipFile implements Closeable {
      */
     public Iterable<ZipArchiveEntry> getEntriesInPhysicalOrder(final String name) {
         if (duplicateNameMap != null) {
-            List<ZipArchiveEntry> list = duplicateNameMap.get(name);
+            final List<ZipArchiveEntry> list = duplicateNameMap.get(name);
             if (list != null) {
-                ZipArchiveEntry[] entriesOfThatName = list.toArray(ZipArchiveEntry.EMPTY_ARRAY);
+                final ZipArchiveEntry[] entriesOfThatName = list.toArray(ZipArchiveEntry.EMPTY_ARRAY);
                 Arrays.sort(entriesOfThatName, offsetComparator);
                 return Arrays.asList(entriesOfThatName);
             }
