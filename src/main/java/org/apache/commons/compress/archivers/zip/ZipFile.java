@@ -888,11 +888,11 @@ public class ZipFile implements Closeable {
      */
     public Iterable<ZipArchiveEntry> getEntries(final String name) {
         final List<ZipArchiveEntry> entriesOfThatName = duplicateNameMap == null ? null : duplicateNameMap.get(name);
-        if (entriesOfThatName != null) {
-            return Collections.unmodifiableList(entriesOfThatName);
-        } else {
+        if (entriesOfThatName == null) {
             final ZipArchiveEntry entry = nameMap.get(name);
-            return entry == null ? Collections.emptyList() : Collections.singletonList(entry);
+            return entry != null ? Collections.singletonList(entry) : Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(entriesOfThatName);
         }
     }
 
@@ -932,7 +932,7 @@ public class ZipFile implements Closeable {
         }
 
         final ZipArchiveEntry entry = nameMap.get(name);
-        return entry == null ? Collections.emptyList() : Collections.singletonList(entry);
+        return entry != null ? Collections.singletonList(entry) : Collections.emptyList();
     }
 
     /**
