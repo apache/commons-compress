@@ -808,7 +808,7 @@ public class ZipFile implements Closeable {
                     duplicateNameMap = new HashMap<>();
                 }
 
-                List<ZipArchiveEntry> entriesOfThatName = duplicateNameMap.computeIfAbsent(name, k -> {
+                final List<ZipArchiveEntry> entriesOfThatName = duplicateNameMap.computeIfAbsent(name, k -> {
                     final ArrayList<ZipArchiveEntry> list = new ArrayList<>(2);
                     list.add(firstEntry);
                     return list;
