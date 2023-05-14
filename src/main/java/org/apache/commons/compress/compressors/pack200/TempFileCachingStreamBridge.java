@@ -39,6 +39,7 @@ class TempFileCachingStreamBridge extends StreamBridge {
         out = Files.newOutputStream(f);
     }
 
+    @SuppressWarnings("resource") // Caller closes
     @Override
     InputStream getInputView() throws IOException {
         out.close();
