@@ -269,9 +269,16 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             try {
                 tais = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader));
                 // COMPRESS-191 - verify the header checksum
-                // COMPRESS-644 - do not allow zero byte entries
+                // COMPRESS-644 - do not allow zero byte file entries
                 TarArchiveEntry tae = tais.getNextTarEntry();
-                if (tae.getSize() > 0l && tae.isCheckSumOK()) {
+                //try to find the first non-directory entry within the first 10 entries.
+                int max = 10;
+                int count = 0;
+                while (tae != null && tae.isDirectory() && count++ < max) {
+                    tae = tais.getNextTarEntry();
+                }
+                if (tae != null && !tae.isDirectory()
+                        && tae.getSize() > 0l && tae.isCheckSumOK()) {
                     return TAR;
                 }
             } catch (final Exception e) { // NOPMD NOSONAR
