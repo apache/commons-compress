@@ -150,7 +150,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
     public void ignoreZeroByteEntryInTarDetect_COMPRESS644() throws IOException {
         assertThrows(ArchiveException.class, () -> {
             try (InputStream in = new BufferedInputStream(Files.newInputStream(Paths.get(
-                    "src/test/resources/org/apache/commons" + "/compress/COMPRESS-644/ARW05UP.ICO")))) {
+                    "src/test/resources/org/apache/commons/compress/COMPRESS-644/ARW05UP.ICO")))) {
                 ArchiveStreamFactory.detect(in);
             }
         });
