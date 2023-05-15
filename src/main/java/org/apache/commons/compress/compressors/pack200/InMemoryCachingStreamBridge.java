@@ -30,6 +30,7 @@ import java.io.InputStream;
  * @since 1.3
  */
 class InMemoryCachingStreamBridge extends StreamBridge {
+
     InMemoryCachingStreamBridge() {
         super(new ByteArrayOutputStream());
     }
