@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * StreamBridge that caches all data written to the output side in
- * memory.
+ * StreamBridge that caches all data written to the output side in memory.
+ * 
  * @since 1.3
  */
 class InMemoryCachingStreamBridge extends StreamBridge {
@@ -36,7 +36,6 @@ class InMemoryCachingStreamBridge extends StreamBridge {
 
     @Override
     InputStream getInputView() throws IOException {
-        return new ByteArrayInputStream(((ByteArrayOutputStream) out)
-                                        .toByteArray());
+        return new ByteArrayInputStream(((ByteArrayOutputStream) out).toByteArray());
     }
 }
