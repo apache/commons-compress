@@ -22,14 +22,18 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
@@ -140,5 +144,18 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
     @Test
     public void testEmptyZipArchive() throws Exception {
         checkEmptyArchive("zip");
+    }
+
+    @Test
+    public void ignoreZeroByteEntryInTarDetect_COMPRESS644() throws IOException {
+        try (final InputStream in =
+                     new BufferedInputStream(Files.newInputStream(
+                             Paths.get("src/test/resources/org/apache/commons" +
+                             "/compress/COMPRESS-644/ARW05UP.ICO")))) {
+            ArchiveStreamFactory.detect(in);
+            fail("should have thrown ArchiveException");
+        } catch (ArchiveException e) {
+            //success
+        }
     }
 }

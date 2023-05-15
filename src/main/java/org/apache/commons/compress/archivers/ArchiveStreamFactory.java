@@ -40,6 +40,7 @@ import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -268,7 +269,9 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             try {
                 tais = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader));
                 // COMPRESS-191 - verify the header checksum
-                if (tais.getNextTarEntry().isCheckSumOK()) {
+                // COMPRESS-644 - do not allow zero byte entries
+                TarArchiveEntry tae = tais.getNextTarEntry();
+                if (tae.getSize() > 0l && tae.isCheckSumOK()) {
                     return TAR;
                 }
             } catch (final Exception e) { // NOPMD NOSONAR
