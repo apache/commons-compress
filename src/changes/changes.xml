@@ -50,6 +50,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="kinow" due-to="Dependabot">Bump zstd-jni from 1.5.4-2 to 1.5.5-2 #377, #383.</action>
       <action type="update" dev="kinow" due-to="Dependabot">Bump memoryfilesystem from 2.5.0 to 2.6.1 #381, #385, #387.</action>
       <action type="update" dev="kinow" due-to="Dependabot">Bump commons-parent from 56 to 57 #384.</action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">Bump commons-io:commons-io from 56 2.11.0 to 2.12.0.</action>
     </release>
     <release version="1.23.0" date="2023-03-18">
       <!-- FIX -->
