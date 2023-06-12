@@ -503,8 +503,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         if (CPIO_TRAILER.equals(entry.getName())) {
             inode = devMin = 0;
         } else if (inode == 0 && devMin == 0) {
-            inode = nextArtificalDeviceAndInode & 0xFFFFFFFF;
-            devMin = (nextArtificalDeviceAndInode++ >> 32) & 0xFFFFFFFF;
+            inode = nextArtificalDeviceAndInode;
+            devMin = (nextArtificalDeviceAndInode++ >> 32);
         } else {
             nextArtificalDeviceAndInode =
                 Math.max(nextArtificalDeviceAndInode,

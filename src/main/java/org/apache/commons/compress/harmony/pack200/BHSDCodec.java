@@ -245,7 +245,7 @@ public final class BHSDCodec extends Codec {
         if (isSigned()) {
             final int u = ((1 << s) - 1);
             if ((z & u) == u) {
-                z = z >>> s ^ -1L;
+                z = ~(z >>> s);
             } else {
                 z = z - (z >>> s);
             }

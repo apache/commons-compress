@@ -116,7 +116,7 @@ public class FileBands extends BandSet {
                 final String name = packingFile.getName();
                 if (options.isPassFile(name)) {
                     fileName[i] = cpBands.getCPUtf8(name);
-                    file_options[i] &= (1 << 1) ^ 0xFFFFFFFF;
+                    file_options[i] &= ~(1 << 1);
                 }
             }
             file_name[i] = fileName[i].getIndex();

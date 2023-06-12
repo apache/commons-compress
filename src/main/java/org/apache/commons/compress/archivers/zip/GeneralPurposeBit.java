@@ -28,7 +28,7 @@ public final class GeneralPurposeBit implements Cloneable {
     /**
      * Indicates that the file is encrypted.
      */
-    private static final int ENCRYPTION_FLAG = 1 << 0;
+    private static final int ENCRYPTION_FLAG = 1;
 
     /**
      * Indicates the size of the sliding dictionary used by the compression method 6 (imploding).

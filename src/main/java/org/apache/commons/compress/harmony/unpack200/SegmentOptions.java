@@ -50,7 +50,7 @@ public class SegmentOptions {
 
     private static final int HAVE_METHOD_FLAGS_HI = 1 << 11;
 
-    private static final int HAVE_SPECIAL_FORMATS = 1 << 0;
+    private static final int HAVE_SPECIAL_FORMATS = 1;
 
     /**
      * The bit flags that are defined as unused by the specification; specifically, every bit above bit 13 and bit 3.
