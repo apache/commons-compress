@@ -46,7 +46,8 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.24.0" date="202Y-MM-DD">
       <!-- FIX -->
-      <action type="update" dev="ggregory" due-to="Gary Gregory">Use try-with-resources in ArchiveStreamFactory #391.</action>
+      <action type="update" dev="ggregory" due-to="Daniele Galloppo">Use try-with-resources in ArchiveStreamFactory #391.</action>
+      <action type="update" dev="ggregory" due-to="Martin Wiesner">Javadoc and code comments: Sanitize grammar issues and typos #393.</action>
       <!-- UPDATE -->
       <action type="update" dev="kinow" due-to="Gary Gregory">Make ZipArchiveEntry.getLocalHeaderOffset() public.</action>
       <action type="update" dev="kinow" due-to="Dependabot">Bump zstd-jni from 1.5.4-2 to 1.5.5-4 #377, #383, #388, #390.</action>
