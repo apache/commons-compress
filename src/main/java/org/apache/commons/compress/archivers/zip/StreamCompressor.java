@@ -100,7 +100,7 @@ public abstract class StreamCompressor implements Closeable {
     }
     /*
      * Apparently Deflater.setInput gets slowed down a lot on Sun JVMs
-     * when it gets handed a really big buffer.  See
+     * when it gets handed a huge buffer.  See
      * https://issues.apache.org/bugzilla/show_bug.cgi?id=45396
      *
      * Using a buffer size of 8 kB proved to be a good compromise

@@ -158,7 +158,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         m.put("foo", "bar");
         try (InputStream is = new Pack200CompressorInputStream(newInputStream("bla.jar"),
                 m)) {
-            // packed file is a jar, which is a ZIP so it starts with
+            // packed file is a jar, which is a ZIP, so it starts with
             // a local file header
             assertTrue(is.markSupported());
             is.mark(5);

@@ -111,7 +111,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             assertEquals(0100000000000L, e.getSize());
         }
         // generates IOE because of unclosed entries.
-        // However we don't really want to create such large entries.
+        // However, we don't really want to create such large entries.
         closeQuietly(tos);
     }
 
@@ -132,7 +132,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             assertEquals(0100000000000L, e.getSize());
         }
         // generates IOE because of unclosed entries.
-        // However we don't really want to create such large entries.
+        // However, we don't really want to create such large entries.
         closeQuietly(tos);
     }
 
@@ -187,7 +187,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
 
     /**
      * When using long file names the longLinkEntry included the current timestamp as the Entry
-     * modification date. This was never exposed to the client but it caused identical archives to
+     * modification date. This was never exposed to the client, but it caused identical archives to
      * have different MD5 hashes.
      */
     @Test
@@ -209,7 +209,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         assertArrayEquals(digest1, digest2);
 
         // do I still have the correct modification date?
-        // let a second elapse so we don't get the current time
+        // let a second elapse, so we don't get the current time
         Thread.sleep(1000);
         try (TarArchiveInputStream tarIn = new TarArchiveInputStream(new ByteArrayInputStream(archive2))) {
             final ArchiveEntry nextEntry = tarIn.getNextEntry();
@@ -270,7 +270,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             assertEquals(cal.getTime(), e.getLastModifiedDate());
         }
         // generates IOE because of unclosed entries.
-        // However we don't really want to create such large entries.
+        // However, we don't really want to create such large entries.
         closeQuietly(tos);
     }
 
@@ -300,7 +300,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             assertEquals(cal.getTime(), e.getLastModifiedDate());
         }
         // generates IOE because of unclosed entries.
-        // However we don't really want to create such large entries.
+        // However, we don't really want to create such large entries.
         closeQuietly(tos);
     }
 

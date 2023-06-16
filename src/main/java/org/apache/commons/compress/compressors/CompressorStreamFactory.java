@@ -505,7 +505,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         this.memoryLimitInKb = memoryLimitInKb;
     }
     /**
-     * Create an compressor input stream from an input stream, autodetecting the
+     * Create a compressor input stream from an input stream, auto-detecting the
      * compressor type from the first few bytes of the stream. The InputStream
      * must support marks, like BufferedInputStream.
      *
@@ -637,7 +637,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     }
 
     /**
-     * Creates an compressor output stream from an compressor name and an output
+     * Creates a compressor output stream from a compressor name and an output
      * stream.
      *
      * @param name

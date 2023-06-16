@@ -570,8 +570,8 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Utility method to get the contents of the given stream, up to the next ']', (ignoring pairs of brackets '[' and
-     * ']')
+     * Utility method to get the contents of the given stream, up to the next {@code ]},
+     * (ignoring pairs of brackets {@code [} and {@code ]})
      *
      * @param reader
      * @return

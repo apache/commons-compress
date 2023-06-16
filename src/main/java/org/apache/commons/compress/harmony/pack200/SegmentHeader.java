@@ -26,7 +26,7 @@ import java.io.OutputStream;
 public class SegmentHeader extends BandSet {
 
     /**
-     * Counter for major/minor class file numbers so we can work out the default
+     * Counter for major/minor class file numbers, so we can work out the default
      */
     private static class Counter {
 

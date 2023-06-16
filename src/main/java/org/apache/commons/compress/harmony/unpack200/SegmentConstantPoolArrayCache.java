@@ -134,7 +134,7 @@ public class SegmentConstantPoolArrayCache {
         // If the search is one we've just done, don't even
         // bother looking and return the last indices. This
         // is a second cache within the cache. This is
-        // efficient because we usually are looking for
+        // efficient because we are usually looking for
         // several secondary elements with the same primary
         // key.
         if ((lastArray == array) && (lastKey == key)) {

@@ -139,7 +139,7 @@ public class X7875_NewUnixTest {
         final byte[] LENGTH_5 = {1, 5, 0, 0, 0, 0, 1, 5, 1, 0, 0, 0, 1};
 
         // Version=1, Len=8, 2^63 - 2, Len=8, 2^63 - 1
-        // Esoteric test:  can we handle 64 bit numbers?
+        // Esoteric test:  can we handle 64-bit numbers?
         final byte[] LENGTH_8 = {1, 8, -2, -1, -1, -1, -1, -1, -1, 127, 8, -1, -1, -1, -1, -1, -1, -1, 127};
 
         final long TWO_TO_32 = 0x100000000L;

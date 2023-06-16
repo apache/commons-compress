@@ -1395,7 +1395,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                 channel.position(entry.localDataStart  - 5 * ZipConstants.SHORT);
                 writeOut(ZipShort.getBytes(versionNeededToExtract(entry.entry.getMethod(), false, false)));
 
-                // * remove ZIP64 extra so it doesn't get written
+                // * remove ZIP64 extra, so it doesn't get written
                 //   to the central directory
                 entry.entry.removeExtraField(Zip64ExtendedInformationExtraField
                                              .HEADER_ID);
@@ -1895,7 +1895,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Write preamble data. For most of time, this is used to
+     * Write preamble data. For most of the time, this is used to
      * make self-extracting zips.
      *
      * @param preamble data to write
@@ -1907,7 +1907,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Write preamble data. For most of time, this is used to
+     * Write preamble data. For most of the time, this is used to
      * make self-extracting zips.
      *
      * @param preamble data to write

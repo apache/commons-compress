@@ -25,7 +25,7 @@ import java.util.LinkedList;
  */
 class Folder {
     static final Folder[] EMPTY_FOLDER_ARRAY = {};
-    /// List of coders used in this folder, eg. one for compression, one for encryption.
+    /// List of coders used in this folder, e.g. one for compression, one for encryption.
     Coder[] coders;
     /// Total number of input streams across all coders.
     /// this field is currently unused but technically part of the 7z API

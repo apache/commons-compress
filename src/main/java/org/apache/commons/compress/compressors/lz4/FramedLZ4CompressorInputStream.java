@@ -288,7 +288,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
             throw new IOException("Premature end of stream while reading frame BD byte");
         }
         contentHash.update(bdByte);
-        if (expectContentSize) { // for now we don't care, contains the uncompressed size
+        if (expectContentSize) { // for now, we don't care, contains the uncompressed size
             final byte[] contentSize = new byte[8];
             final int skipped = IOUtils.readFully(inputStream, contentSize);
             count(skipped);

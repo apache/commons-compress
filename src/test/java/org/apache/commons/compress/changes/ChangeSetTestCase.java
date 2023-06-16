@@ -65,7 +65,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * @throws Exception
      */
     @Test
-    public void testAddAllreadyExistingWithReplaceFalse() throws Exception {
+    public void testAddAlreadyExistingWithReplaceFalse() throws Exception {
         final String archivename = "zip";
         final Path input = createArchive(archivename);
 
@@ -99,7 +99,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * @throws Exception
      */
     @Test
-    public void testAddAllreadyExistingWithReplaceTrue() throws Exception {
+    public void testAddAlreadyExistingWithReplaceTrue() throws Exception {
         final String archivename = "zip";
         final Path input = createArchive(archivename);
 
@@ -244,7 +244,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      *
      * add dir1/bla.txt + mv dir1/test.text dir2/test.txt + delete dir1
      *
-     * Add dir1/bla.txt should be surpressed. All other dir1 files will be
+     * Add dir1/bla.txt should be suppressed. All other dir1 files will be
      * deleted, except dir1/test.text will be moved
      *
      * @throws Exception
@@ -631,7 +631,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     /**
-     * Adds a file to a ZIP archive. Deletes an other file.
+     * Adds a file to a ZIP archive. Deletes another file.
      *
      * @throws Exception
      */
@@ -662,7 +662,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     /**
-     * Adds a file to a ZIP archive. Deletes an other file.
+     * Adds a file to a ZIP archive. Deletes another file.
      *
      * @throws Exception
      */
