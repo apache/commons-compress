@@ -77,7 +77,7 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
     public void testCpioUnarchiveCreatedByRedlineRpm() throws Exception {
         int count = 0;
         try (final CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("redline.cpio"))) {
-            CpioArchiveEntry entry = null;
+            CpioArchiveEntry entry;
 
             while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
                 count++;
@@ -92,7 +92,7 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
     public void testCpioUnarchiveMultibyteCharName() throws Exception {
         int count = 0;
         try (final CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("COMPRESS-459.cpio"), "UTF-8")) {
-            CpioArchiveEntry entry = null;
+            CpioArchiveEntry entry;
 
             while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
                 count++;

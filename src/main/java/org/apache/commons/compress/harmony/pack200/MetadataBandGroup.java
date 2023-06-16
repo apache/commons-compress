@@ -266,7 +266,7 @@ public class MetadataBandGroup extends BandSet {
             } else {
                 contextStr = "Method";
             }
-            byte[] encodedBand = null;
+            byte[] encodedBand;
             if (!type.equals("AD")) {
                 if (type.indexOf('P') != -1) {
                     // Parameter annotation so we need to transmit param_NB

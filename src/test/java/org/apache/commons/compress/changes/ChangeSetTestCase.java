@@ -233,7 +233,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-            is.close();
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -276,7 +275,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             archiveList.add("bla/test.txt");
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-            is.close();
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -838,7 +836,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
 
-        File testtxt = null;
+        File testtxt;
         try (ArchiveInputStream ais = factory.createArchiveInputStream(archivename, Files.newInputStream(input));
                 ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
 
@@ -857,10 +855,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         }
 
         // Checks
-        File check = null;
         try (BufferedInputStream buf = new BufferedInputStream(Files.newInputStream(result.toPath()));
                 ArchiveInputStream in = factory.createArchiveInputStream(buf)) {
-            check = this.checkArchiveContent(in, archiveList, false);
+            File check = this.checkArchiveContent(in, archiveList, false);
             final File test3xml = new File(check, "result/test/test3.xml");
             assertEquals(testtxt.length(), test3xml.length());
 
@@ -871,8 +868,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                     "111111111111111111111111111000101011".equals(str);
                 }
             }
+            rmdir(check);
         }
-        rmdir(check);
     }
 
     /**
@@ -880,11 +877,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      *
      * mv dir1/test.text dir2/test.txt + delete dir1 Moves the file to dir2 and
      * deletes everything in dir1
-     *
-     * @throws Exception
      */
     @Test
-    public void testRenameAndDelete() throws Exception {
+    public void testRenameAndDelete() {
     }
 
 }

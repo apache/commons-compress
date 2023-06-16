@@ -152,7 +152,7 @@ public class Zip64SupportIT {
         try (InputStream fin = Files.newInputStream(f.toPath());
                 ZipArchiveInputStream zin = new ZipArchiveInputStream(fin)) {
             int files = 0;
-            ZipArchiveEntry zae = null;
+            ZipArchiveEntry zae;
             while ((zae = zin.getNextZipEntry()) != null) {
                 if (!zae.isDirectory()) {
                     files++;
@@ -532,7 +532,7 @@ public class Zip64SupportIT {
         write3EntriesCreatingBigArchiveToStream(final ZipArchiveOutputStream zos)
         throws IOException {
         final byte[] buf = new byte[ONE_MILLION];
-        ZipArchiveEntry zae = null;
+        ZipArchiveEntry zae;
         for (int i = 0; i < 2; i++) {
             zae = new ZipArchiveEntry(String.valueOf(i));
             zae.setSize(FIVE_BILLION / 2);

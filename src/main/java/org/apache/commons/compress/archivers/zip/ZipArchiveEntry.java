@@ -680,7 +680,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
             parsingBehavior)));
         final List<ZipExtraField> merged = new ArrayList<>();
         for (final ZipExtraField l : localFields) {
-            ZipExtraField c = null;
+            ZipExtraField c;
             if (l instanceof UnparseableExtraFieldData) {
                 c = findUnparseable(centralFields);
             } else {

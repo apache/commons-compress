@@ -96,12 +96,10 @@ public final class DetectCompressorTestCase {
     };
 
     private String detect(final String testFileName) throws IOException, CompressorException {
-        String name = null;
         try (InputStream is = new BufferedInputStream(
                 Files.newInputStream(getFile(testFileName).toPath()))) {
-            name = CompressorStreamFactory.detect(is);
+            return CompressorStreamFactory.detect(is);
         }
-        return name;
     }
 
     private CompressorInputStream getStreamFor(final String resource)

@@ -198,11 +198,10 @@ public class Expander {
      * @since 1.22
      */
     public void expand(final Path archive, final Path targetDirectory) throws IOException, ArchiveException {
-        String format = null;
         try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(archive))) {
-            format = ArchiveStreamFactory.detect(inputStream);
+            String format = ArchiveStreamFactory.detect(inputStream);
+            expand(format, archive, targetDirectory);
         }
-        expand(format, archive, targetDirectory);
     }
 
     /**

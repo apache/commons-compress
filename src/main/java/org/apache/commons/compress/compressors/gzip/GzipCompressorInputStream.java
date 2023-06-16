@@ -98,7 +98,7 @@ public class GzipCompressorInputStream extends CompressorInputStream
 
     private static byte[] readToNull(final DataInput inData) throws IOException {
         try (final ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-            int b = 0;
+            int b;
             while ((b = inData.readUnsignedByte()) != 0x00) { // NOPMD NOSONAR
                 bos.write(b);
             }

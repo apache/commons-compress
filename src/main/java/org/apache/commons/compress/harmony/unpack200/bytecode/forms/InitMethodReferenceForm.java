@@ -49,8 +49,7 @@ public abstract class InitMethodReferenceForm extends ClassSpecificReferenceForm
     protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset)
         throws Pack200Exception {
         final SegmentConstantPool globalPool = operandManager.globalConstantPool();
-        ClassFileEntry[] nested = null;
-        nested = new ClassFileEntry[] {
+        ClassFileEntry[] nested = new ClassFileEntry[] {
             globalPool.getInitMethodPoolEntry(SegmentConstantPool.CP_METHOD, offset, context(operandManager))};
         byteCode.setNested(nested);
         byteCode.setNestedPositions(new int[][] {{0, 2}});

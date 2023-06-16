@@ -52,7 +52,6 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTestCas
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read(buf));
             assertEquals(-1, in.read(buf));
-            in.close();
         }
     }
 
