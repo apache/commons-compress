@@ -349,7 +349,7 @@ public class TarFile implements Closeable {
         for (final TarArchiveStructSparse sparseHeader : sparseHeaders) {
             final long zeroBlockSize = sparseHeader.getOffset() - offset;
             if (zeroBlockSize < 0) {
-                // sparse header says to move backwards inside of the extracted entry
+                // sparse header says to move backwards inside the extracted entry
                 throw new IOException("Corrupted struct sparse detected");
             }
 
@@ -730,7 +730,7 @@ public class TarFile implements Closeable {
 
     /**
      * Tries to read the next record resetting the position in the
-     * archive if it is not a EOF record.
+     * archive if it is not an EOF record.
      *
      * <p>This is meant to protect against cases where a tar
      * implementation has written only one EOF record when two are

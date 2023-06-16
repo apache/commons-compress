@@ -133,12 +133,12 @@ public class ChangeSetPerformer {
 
     /**
      * Checks if an ArchiveEntry is deleted later in the ChangeSet. This is
-     * necessary if an file is added with this ChangeSet, but later became
+     * necessary if a file is added with this ChangeSet, but later became
      * deleted in the same set.
      *
      * @param entry
      *            the entry to check
-     * @return true, if this entry has an deletion change later, false otherwise
+     * @return true, if this entry has a deletion change later, false otherwise
      */
     private boolean isDeletedLater(final Set<Change> workingSet, final ArchiveEntry entry) {
         final String source = entry.getName();
@@ -171,7 +171,7 @@ public class ChangeSetPerformer {
      * @param out
      *            the resulting OutputStream with all modifications
      * @throws IOException
-     *             if an read/write error occurs
+     *             if a read/write error occurs
      * @return the results of this operation
      */
     private ChangeSetResults perform(final ArchiveEntryIterator entryIterator,
@@ -253,7 +253,7 @@ public class ChangeSetPerformer {
      * @param out
      *            the resulting OutputStream with all modifications
      * @throws IOException
-     *             if an read/write error occurs
+     *             if a read/write error occurs
      * @return the results of this operation
      */
     public ChangeSetResults perform(final ArchiveInputStream in, final ArchiveOutputStream out)
@@ -273,7 +273,7 @@ public class ChangeSetPerformer {
      * @param out
      *            the resulting OutputStream with all modifications
      * @throws IOException
-     *             if an read/write error occurs
+     *             if a read/write error occurs
      * @return the results of this operation
      * @since 1.5
      */

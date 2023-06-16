@@ -45,7 +45,7 @@ public class ZipSplitOutputStreamTest extends AbstractTestCase {
     @Test
     public void testCreateSplittedFiles() throws IOException {
         final File testOutputFile = new File(dir, "testCreateSplittedFiles.zip");
-        final int splitSize = 100 * 1024; /* 100KB */
+        final int splitSize = 100 * 1024; /* 100 KB */
         final ZipSplitOutputStream zipSplitOutputStream = new ZipSplitOutputStream(testOutputFile, splitSize);
 
         final File fileToTest = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");

@@ -299,14 +299,14 @@ public abstract class Pack200 {
     }
 
     /**
-     * Returns a new instance of a unpacker engine.
+     * Returns a new instance of an unpacker engine.
      * <p>
      * The implementation of the unpacker engine is defined by the system
-     * property {@code 'java.util.jar.Pack200.Unpacker'}. If this system
+     * property {@link Pack200.Unpacker}. If this system
      * property is defined an instance of the specified class is returned,
      * otherwise the system's default implementation is returned.
      *
-     * @return a instance of {@code Unpacker}.
+     * @return an instance of {@link Pack200.Unpacker}.
      */
     public static Pack200.Unpacker newUnpacker() {
         return (Unpacker) newInstance(SYSTEM_PROPERTY_UNPACKER, "org.apache.commons.compress.harmony.unpack200.Pack200UnpackerAdapter"); //$NON-NLS-1$

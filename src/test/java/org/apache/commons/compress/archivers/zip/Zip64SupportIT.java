@@ -440,7 +440,7 @@ public class Zip64SupportIT {
             );
 
             // grab third entry, verify offset is
-            // 0xFFFFFFFF and it has a ZIP64 extended
+            // 0xFFFFFFFF, and it has a ZIP64 extended
             // information extra field
             final byte[] header = new byte[12];
             a.readFully(header);
@@ -517,7 +517,7 @@ public class Zip64SupportIT {
             // read offset of LFH
             final byte[] offset = new byte[8];
             a.readFully(offset);
-            // verify there is a LFH where the CD claims it
+            // verify there is an LFH where the CD claims it
             a.seek(ZipEightByteInteger.getLongValue(offset));
             final byte[] sig = new byte[4];
             a.readFully(sig);
@@ -1325,7 +1325,7 @@ public class Zip64SupportIT {
             getLengthAndPositionAtCentralDirectory(a);
 
             // grab first CD entry, verify sizes are not
-            // 0xFFFFFFFF and it has a an empty ZIP64 extended
+            // 0xFFFFFFFF, and it has an empty ZIP64 extended
             // information extra field
             byte[] header = new byte[12];
             a.readFully(header);
@@ -1913,7 +1913,7 @@ public class Zip64SupportIT {
         try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
             getLengthAndPositionAtCentralDirectory(a);
 
-            // grab first CF entry, verify sizes are 1e6 and it
+            // grab first CF entry, verify sizes are 1e6, and it
             // has an empty ZIP64 extended information extra field
             byte[] header = new byte[12];
             a.readFully(header);

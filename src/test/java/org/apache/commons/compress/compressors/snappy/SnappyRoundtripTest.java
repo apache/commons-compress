@@ -134,7 +134,7 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
         // as the block size is only 32k. This means we never execute
         // the code for four-byte length copies in either stream class
         // using real-world Snappy files.
-        // This is an artifical stream using a bigger block size that
+        // This is an artificial stream using a bigger block size that
         // may not even be expandable by other Snappy implementations.
         // Start with the four byte sequence 0000 after that add > 64k
         // of random noise that doesn't contain any 0000 at all, then

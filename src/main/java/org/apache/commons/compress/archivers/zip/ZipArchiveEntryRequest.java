@@ -72,7 +72,7 @@ public class ZipArchiveEntryRequest {
 
 
     /**
-     * Gets the underlying entry. Do not use this methods from threads that did not create the instance itself !
+     * Gets the underlying entry. Do not use this method from threads that did not create the instance itself !
      * @return the zipArchiveEntry that is basis for this request
      */
     ZipArchiveEntry getZipArchiveEntry() {

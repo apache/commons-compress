@@ -152,7 +152,7 @@ public class ArchiveUtils {
     /**
      * Check if buffer contents matches Ascii String.
      *
-     * @param expected the expected strin
+     * @param expected the expected string
      * @param buffer the buffer
      * @return {@code true} if buffer is the same as the expected string
      */

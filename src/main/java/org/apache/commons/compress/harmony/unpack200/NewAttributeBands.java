@@ -138,7 +138,7 @@ public class NewAttributeBands extends BandSet {
         }
 
         /**
-         * Used by calls when adding band contents to attributes so they don't have to keep track of the internal index
+         * Used by calls when adding band contents to attributes, so they don't have to keep track of the internal index
          * of the callable.
          *
          * @param attribute TODO
@@ -636,8 +636,8 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Utility method to get the contents of the given stream, up to the next ']', (ignoring pairs of brackets '[' and
-     * ']')
+     * Utility method to get the contents of the given stream, up to the next {@code ]},
+     * (ignoring pairs of brackets {@code [} and {@code ]})
      *
      * @param stream
      * @return
@@ -892,7 +892,8 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Gets the contents of the given stream, up to the next ']', (ignoring pairs of brackets '[' and ']')
+     * Gets the contents of the given stream, up to the next {@code ]},
+     * (ignoring pairs of brackets {@code [} and {@code ]})
      *
      * @param stream input stream.
      * @return the contents of the given stream.

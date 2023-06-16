@@ -64,7 +64,7 @@ public interface CompressorStreamProvider {
             final boolean decompressUntilEOF) throws CompressorException;
 
     /**
-     * Creates a compressor output stream from an compressor name and an output
+     * Creates a compressor output stream from a compressor name and an output
      * stream.
      *
      * @param name

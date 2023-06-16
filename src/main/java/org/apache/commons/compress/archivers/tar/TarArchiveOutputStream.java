@@ -386,7 +386,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 // or where UTF-8 encoding isn't a single octet
                 // per character.
                 // Must be in loop as size may go from 99 to 100 in
-                // first pass so we'd need a second.
+                // first pass, so we'd need a second.
                 len = actualLength;
                 line = len + " " + k + "=" + v + "\n";
                 actualLength = line.getBytes(UTF_8).length;

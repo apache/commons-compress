@@ -144,7 +144,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     private static FileTime unixTimeToFileTime(final ZipLong unixTime) {
         return unixTime != null ? TimeUtils.unixTimeToFileTime(unixTime.getIntValue()) : null;
     }
-    // The 3 boolean fields (below) come from this flags byte.  The remaining 5 bits
+    // The 3 boolean fields (below) come from this flag's byte.  The remaining 5 bits
     // are ignored according to the current version of the spec (December 2012).
 
     private static ZipLong unixTimeToZipLong(final long unixTime) {

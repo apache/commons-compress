@@ -1093,7 +1093,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Get this entry's file size.
      *
-     * <p>This is the size the entry's data uses inside of the archive. Usually this is the same as {@link
+     * <p>This is the size the entry's data uses inside the archive. Usually this is the same as {@link
      * #getRealSize}, but it doesn't take the "holes" into account when the entry represents a sparse file.
      *
      * @return This entry's file size.
@@ -1290,7 +1290,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     private boolean isInvalidPrefix(final byte[] header) {
-        // prefix[130] is is guaranteed to be '\0' with XSTAR/XUSTAR
+        // prefix[130] is guaranteed to be '\0' with XSTAR/XUSTAR
         if (header[XSTAR_PREFIX_OFFSET + 130] != 0) {
             // except when typeflag is 'M'
             if (header[LF_OFFSET] != LF_MULTIVOLUME) {

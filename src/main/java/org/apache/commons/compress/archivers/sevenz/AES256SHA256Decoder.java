@@ -209,7 +209,7 @@ class AES256SHA256Decoder extends AbstractCoder {
                     flushBuffer();
 
                     if (len - gap >= cipherBlockSize) {
-                        // skip buffer to encrypt data chunks big enought to fit cipher block size
+                        // skip buffer to encrypt data chunks big enough to fit cipher block size
                         final int multipleCipherBlockSizeLen = (len - gap) / cipherBlockSize * cipherBlockSize;
                         cipherOutputStream.write(b, off + gap, multipleCipherBlockSizeLen);
                         gap += multipleCipherBlockSizeLen;

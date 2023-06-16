@@ -65,7 +65,7 @@ public class X5455_ExtendedTimestampTest {
      * was in local time.
      *
      * The archive read in {@link #testSampleFile} has been created
-     * with GMT-8 so we need to adjust for the difference.
+     * with GMT-8, so we need to adjust for the difference.
      */
     private static Date adjustFromGMTToExpectedOffset(final Date from) {
         final Calendar cal = Calendar.getInstance();
