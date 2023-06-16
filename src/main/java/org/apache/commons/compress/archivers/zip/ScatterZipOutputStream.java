@@ -64,9 +64,9 @@ public class ScatterZipOutputStream implements Closeable {
         }
 
         /**
-         * Updates the original {@link ZipArchiveEntry} with sizes/crc
-         * Do not use this method from threads that did not create the instance itself !
-         * @return the zipArchiveEntry that is basis for this request
+         * Updates the original {@link ZipArchiveEntry} with sizes/crc.
+         * Do not use this method from threads that did not create the instance itself!
+         * @return the zipArchiveEntry that is the basis for this request.
          */
 
         public ZipArchiveEntry transferToArchiveEntry() {
