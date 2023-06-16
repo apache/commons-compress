@@ -271,7 +271,7 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
     }
 
     private void writeUncompressedSize(long uncompressedSize) throws IOException {
-        boolean more = false;
+        boolean more;
         do {
             int currentByte = (int) (uncompressedSize & 0x7F);
             more = uncompressedSize > currentByte;

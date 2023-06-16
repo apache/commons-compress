@@ -201,7 +201,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
         boolean found = false;
         byte[] basicHeaderBytes = null;
         do {
-            int first = 0;
+            int first;
             int second = read8(in);
             do {
                 first = second;

@@ -19,7 +19,6 @@ package org.apache.commons.compress.harmony.unpack200.bytecode.forms;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
-import org.apache.commons.compress.harmony.unpack200.bytecode.CPString;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
@@ -52,8 +51,7 @@ public class StringRefForm extends SingleByteReferenceForm {
     protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset)
         throws Pack200Exception {
         final SegmentConstantPool globalPool = operandManager.globalConstantPool();
-        ClassFileEntry[] nested = null;
-        nested = new ClassFileEntry[] {((CPString) globalPool.getValue(getPoolID(), offset))};
+        ClassFileEntry[] nested = new ClassFileEntry[] {globalPool.getValue(getPoolID(), offset)};
         byteCode.setNested(nested);
         if (widened) {
             byteCode.setNestedPositions(new int[][] {{0, 2}});

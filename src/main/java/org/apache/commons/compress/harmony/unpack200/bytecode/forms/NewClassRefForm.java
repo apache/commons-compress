@@ -45,12 +45,11 @@ public class NewClassRefForm extends ClassRefForm {
     @Override
     public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager,
         final int codeLength) {
-        ClassFileEntry[] nested = null;
         final int offset = getOffset(operandManager);
         if (offset == 0) {
             // Use current class
             final SegmentConstantPool globalPool = operandManager.globalConstantPool();
-            nested = new ClassFileEntry[] {globalPool.getClassPoolEntry(operandManager.getCurrentClass())};
+            ClassFileEntry[] nested = new ClassFileEntry[] {globalPool.getClassPoolEntry(operandManager.getCurrentClass())};
             byteCode.setNested(nested);
             byteCode.setNestedPositions(new int[][] {{0, 2}});
         } else {

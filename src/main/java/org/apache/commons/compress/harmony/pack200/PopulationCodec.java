@@ -92,7 +92,7 @@ public class PopulationCodec extends Codec {
             } else {
                 // if k >= 256, b >= 2
                 int b = 1;
-                BHSDCodec codec = null;
+                BHSDCodec codec;
                 while (++b < 5) {
                     codec = new BHSDCodec(b, 256 - l, 0);
                     if (codec.encodes(k)) {

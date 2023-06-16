@@ -45,7 +45,6 @@ public class CpioArchiveOutputStreamTest extends AbstractTestCase {
             final CpioArchiveEntry e = in.getNextCPIOEntry();
             assertEquals("test1.xml", e.getName());
             assertNull(in.getNextEntry());
-        } finally {
         }
     }
 }

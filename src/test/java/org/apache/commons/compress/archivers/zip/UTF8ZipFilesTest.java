@@ -81,28 +81,26 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
 
         final ZipEncoding zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
 
-        ZipArchiveOutputStream zos = null;
-        try {
-            zos = new ZipArchiveOutputStream(file);
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(file)) {
             zos.setEncoding(encoding);
             zos.setUseLanguageEncodingFlag(withEFS);
             zos.setCreateUnicodeExtraFields(withExplicitUnicodeExtra ?
-                                            ZipArchiveOutputStream
-                                            .UnicodeExtraFieldPolicy.NEVER
-                                            : ZipArchiveOutputStream
-                                            .UnicodeExtraFieldPolicy.ALWAYS);
+                    ZipArchiveOutputStream
+                            .UnicodeExtraFieldPolicy.NEVER
+                    : ZipArchiveOutputStream
+                    .UnicodeExtraFieldPolicy.ALWAYS);
 
             ZipArchiveEntry ze = new ZipArchiveEntry(OIL_BARREL_TXT);
             if (withExplicitUnicodeExtra
-                && !zipEncoding.canEncode(ze.getName())) {
+                    && !zipEncoding.canEncode(ze.getName())) {
 
                 final ByteBuffer en = zipEncoding.encode(ze.getName());
 
                 ze.addExtraField(new UnicodePathExtraField(ze.getName(),
-                                                           en.array(),
-                                                           en.arrayOffset(),
-                                                           en.limit()
-                                                           - en.position()));
+                        en.array(),
+                        en.arrayOffset(),
+                        en.limit()
+                                - en.position()));
             }
 
             zos.putArchiveEntry(ze);
@@ -111,15 +109,15 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
 
             ze = new ZipArchiveEntry(EURO_FOR_DOLLAR_TXT);
             if (withExplicitUnicodeExtra
-                && !zipEncoding.canEncode(ze.getName())) {
+                    && !zipEncoding.canEncode(ze.getName())) {
 
                 final ByteBuffer en = zipEncoding.encode(ze.getName());
 
                 ze.addExtraField(new UnicodePathExtraField(ze.getName(),
-                                                           en.array(),
-                                                           en.arrayOffset(),
-                                                           en.limit()
-                                                           - en.position()));
+                        en.array(),
+                        en.arrayOffset(),
+                        en.limit()
+                                - en.position()));
             }
 
             zos.putArchiveEntry(ze);
@@ -129,15 +127,15 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             ze = new ZipArchiveEntry(ASCII_TXT);
 
             if (withExplicitUnicodeExtra
-                && !zipEncoding.canEncode(ze.getName())) {
+                    && !zipEncoding.canEncode(ze.getName())) {
 
                 final ByteBuffer en = zipEncoding.encode(ze.getName());
 
                 ze.addExtraField(new UnicodePathExtraField(ze.getName(),
-                                                           en.array(),
-                                                           en.arrayOffset(),
-                                                           en.limit()
-                                                           - en.position()));
+                        en.array(),
+                        en.arrayOffset(),
+                        en.limit()
+                                - en.position()));
             }
 
             zos.putArchiveEntry(ze);
@@ -145,12 +143,6 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             zos.closeArchiveEntry();
 
             zos.finish();
-        } finally {
-            if (zos != null) {
-                try {
-                    zos.close();
-                } catch (final IOException e) { /* swallow */ }
-            }
         }
     }
 

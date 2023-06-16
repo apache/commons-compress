@@ -148,7 +148,7 @@ public class Segment {
                         firstDollar = index;
                     }
                 }
-                String fileName = null;
+                String fileName;
 
                 if (firstDollar > -1 && (i <= firstDollar)) {
                     fileName = fullName.substring(i, firstDollar) + ".java";
@@ -235,11 +235,10 @@ public class Segment {
             final String outerClassString = icStored.outerClassString();
             final String simpleClassName = icStored.simpleClassName();
 
-            CPClass innerClass = null;
             CPUTF8 innerName = null;
             CPClass outerClass = null;
 
-            innerClass = innerClassIndex != -1 ? cpBands.cpClassValue(innerClassIndex)
+            CPClass innerClass = innerClassIndex != -1 ? cpBands.cpClassValue(innerClassIndex)
                 : cpBands.cpClassValue(innerClassString);
             if (!icStored.isAnonymous()) {
                 innerName = simpleClassNameIndex != -1 ? cpBands.cpUTF8Value(simpleClassNameIndex)

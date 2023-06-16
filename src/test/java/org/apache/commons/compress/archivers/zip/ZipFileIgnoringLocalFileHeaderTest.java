@@ -80,7 +80,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     public void testPhysicalOrder() throws IOException {
         try (final ZipFile zf = openZipWithoutLFH("ordertest.zip")) {
             final Enumeration<ZipArchiveEntry> e = zf.getEntriesInPhysicalOrder();
-            ZipArchiveEntry ze = null;
+            ZipArchiveEntry ze;
             do {
                 ze = e.nextElement();
             } while (e.hasMoreElements());

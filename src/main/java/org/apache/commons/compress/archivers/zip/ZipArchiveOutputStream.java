@@ -480,7 +480,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         def = new Deflater(level, true);
         OutputStream outputStream = null;
         SeekableByteChannel channel = null;
-        StreamCompressor streamCompressor = null;
+        StreamCompressor streamCompressor;
         try {
             channel = Files.newByteChannel(file,
                 EnumSet.of(StandardOpenOption.CREATE, StandardOpenOption.WRITE,

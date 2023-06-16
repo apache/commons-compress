@@ -35,7 +35,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -56,13 +55,12 @@ public abstract class AbstractTestCase {
         if (url == null) {
             throw new FileNotFoundException("couldn't find " + path);
         }
-        URI uri = null;
         try {
-            uri = url.toURI();
+            URI uri = url.toURI();
+            return new File(uri);
         } catch (final java.net.URISyntaxException ex) {
             throw new IOException(ex);
         }
-        return new File(uri);
     }
 
     public static Path getPath(final String path) throws IOException {
@@ -189,7 +187,7 @@ public abstract class AbstractTestCase {
         result.deleteOnExit();
 
         try {
-            ArchiveEntry entry = null;
+            ArchiveEntry entry;
             while ((entry = in.getNextEntry()) != null) {
                 final File outfile = new File(result.getCanonicalPath() + "/result/" + entry.getName());
                 long copied = 0;

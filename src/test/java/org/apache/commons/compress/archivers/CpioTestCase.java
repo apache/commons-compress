@@ -93,7 +93,7 @@ public final class CpioTestCase extends AbstractTestCase {
 
 
         final Map<String, File> result = new HashMap<>();
-        ArchiveEntry entry = null;
+        ArchiveEntry entry;
         while ((entry = in.getNextEntry()) != null) {
             final File cpioget = new File(dir, entry.getName());
             Files.copy(in, cpioget.toPath());

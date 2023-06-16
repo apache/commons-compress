@@ -63,7 +63,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
      * last block of the stream.
      */
     private boolean initializeBackReference() throws IOException {
-        int backReferenceOffset = 0;
+        int backReferenceOffset;
         try {
             backReferenceOffset = (int) ByteUtils.fromLittleEndian(supplier, 2);
         } catch (final IOException ex) {
