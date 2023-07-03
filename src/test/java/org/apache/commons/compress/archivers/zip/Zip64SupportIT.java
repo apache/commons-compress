@@ -39,6 +39,7 @@ import java.util.Random;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.io.RandomAccessFileMode;
 import org.junit.jupiter.api.Test;
 
 public class Zip64SupportIT {
@@ -308,7 +309,7 @@ public class Zip64SupportIT {
             zos.setUseZip64(mode);
         }
         write100KFilesToStream(zos);
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             final long end = a.length();
 
             // validate "end of central directory" is at
@@ -429,7 +430,7 @@ public class Zip64SupportIT {
         }
         write3EntriesCreatingBigArchiveToStream(zos);
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
             // skip first two entries
             a.skipBytes(2 * 47 /* CD entry of file with
@@ -618,7 +619,7 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             // grab first entry, verify
@@ -803,7 +804,7 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             final long cfhPos = a.getFilePointer();
@@ -1005,7 +1006,7 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             // grab first entry, verify sizes are 0xFFFFFFFF
@@ -1185,7 +1186,7 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             // grab first CD entry, verify sizes are not
@@ -1321,7 +1322,7 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             // grab first CD entry, verify sizes are not
@@ -1472,7 +1473,7 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             final long cfhPos = a.getFilePointer();
@@ -1604,7 +1605,7 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             final long cfhPos = a.getFilePointer();
@@ -1778,7 +1779,7 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             // grab first CF entry, verify sizes are 1e6 and it
@@ -1910,7 +1911,7 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             // grab first CF entry, verify sizes are 1e6, and it
