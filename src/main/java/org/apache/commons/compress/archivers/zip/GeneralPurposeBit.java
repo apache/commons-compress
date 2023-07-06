@@ -103,7 +103,7 @@ public final class GeneralPurposeBit implements Cloneable {
             return super.clone();
         } catch (final CloneNotSupportedException ex) {
             // impossible
-            throw new IllegalStateException("GeneralPurposeBit is not Cloneable?", ex); //NOSONAR
+            throw new UnsupportedOperationException("GeneralPurposeBit is not Cloneable?", ex); //NOSONAR
         }
     }
 

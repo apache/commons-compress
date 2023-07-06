@@ -109,7 +109,7 @@ public final class ZipShort implements Cloneable, Serializable {
             return super.clone();
         } catch (final CloneNotSupportedException cnfe) {
             // impossible
-            throw new IllegalStateException(cnfe); //NOSONAR
+            throw new UnsupportedOperationException(cnfe); //NOSONAR
         }
     }
 
