@@ -82,7 +82,7 @@ public final class ZipShort implements Cloneable, Serializable {
      * Create instance from bytes.
      * @param bytes the bytes to store as a ZipShort
      */
-    public ZipShort (final byte[] bytes) {
+    public ZipShort(final byte[] bytes) {
         this(bytes, 0);
     }
 
@@ -91,7 +91,7 @@ public final class ZipShort implements Cloneable, Serializable {
      * @param bytes the bytes to store as a ZipShort
      * @param offset the offset to start
      */
-    public ZipShort (final byte[] bytes, final int offset) {
+    public ZipShort(final byte[] bytes, final int offset) {
         value = ZipShort.getValue(bytes, offset);
     }
 
@@ -99,7 +99,7 @@ public final class ZipShort implements Cloneable, Serializable {
      * Create instance from a number.
      * @param value the int to store as a ZipShort
      */
-    public ZipShort (final int value) {
+    public ZipShort(final int value) {
         this.value = value;
     }
 

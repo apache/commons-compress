@@ -119,7 +119,7 @@ public final class ZipLong implements Cloneable, Serializable {
      * Create instance from bytes.
      * @param bytes the bytes to store as a ZipLong
      */
-    public ZipLong (final byte[] bytes) {
+    public ZipLong(final byte[] bytes) {
         this(bytes, 0);
     }
 
@@ -128,7 +128,7 @@ public final class ZipLong implements Cloneable, Serializable {
      * @param bytes the bytes to store as a ZipLong
      * @param offset the offset to start
      */
-    public ZipLong (final byte[] bytes, final int offset) {
+    public ZipLong(final byte[] bytes, final int offset) {
         value = ZipLong.getValue(bytes, offset);
     }
 
