@@ -147,8 +147,7 @@ public class CpBands extends BandSet {
 	}
 
     public boolean existsCpClass(final String className) {
-        final CPClass cpClass = stringsToCpClass.get(className);
-        return cpClass != null;
+        return stringsToCpClass.containsKey(className);
     }
 
     /**

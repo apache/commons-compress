@@ -1644,8 +1644,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                     .NUMBER_OF_THE_DISK_OF_CENTRAL_DIRECTORY_TOO_BIG_MESSAGE);
         }
 
-        final int numOfEntriesOnThisDisk = numberOfCDInDiskData.get(numberOfThisDisk) == null
-            ? 0 : numberOfCDInDiskData.get(numberOfThisDisk);
+        final int numOfEntriesOnThisDisk = numberOfCDInDiskData.getOrDefault(numberOfThisDisk, 0);
         if (numOfEntriesOnThisDisk >= ZipConstants.ZIP64_MAGIC_SHORT) {
             throw new Zip64RequiredException(Zip64RequiredException
                     .TOO_MANY_ENTRIES_ON_THIS_DISK_MESSAGE);
@@ -1762,7 +1761,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // total number of entries in the central directory on this disk
         final int numOfEntriesOnThisDisk = isSplitZip
-            ? numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk)
+            ? numberOfCDInDiskData.getOrDefault(numberOfThisDisk, 0)
             : numberOfEntries;
         final byte[] numOfEntriesOnThisDiskData = ZipShort
                 .getBytes(Math.min(numOfEntriesOnThisDisk, ZipConstants.ZIP64_MAGIC_SHORT));
@@ -1984,7 +1983,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // total number of entries in the central directory on this disk
         final int numOfEntriesOnThisDisk = isSplitZip
-            ? numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk)
+            ? numberOfCDInDiskData.getOrDefault(numberOfThisDisk, 0)
             : entries.size();
         final byte[] numOfEntriesOnThisDiskData = ZipEightByteInteger.getBytes(numOfEntriesOnThisDisk);
         writeOut(numOfEntriesOnThisDiskData);

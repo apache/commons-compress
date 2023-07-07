@@ -589,20 +589,14 @@ public class ClassBands extends BandSet {
 		}
 	}
 
-	public void currentClassReferencesInnerClass(final CPClass inner) {
-		if (!(index >= class_this.length)) {
-			final CPClass currentClass = class_this[index];
-			if (currentClass != null && !currentClass.equals(inner)
-					&& !isInnerClassOf(currentClass.toString(), inner)) {
-				Set<CPClass> referencedInnerClasses = classReferencesInnerClass.get(currentClass);
-				if (referencedInnerClasses == null) {
-					referencedInnerClasses = new HashSet<>();
-					classReferencesInnerClass.put(currentClass, referencedInnerClasses);
-				}
-				referencedInnerClasses.add(inner);
-			}
-		}
-	}
+    public void currentClassReferencesInnerClass(final CPClass inner) {
+        if (!(index >= class_this.length)) {
+            final CPClass currentClass = class_this[index];
+            if (currentClass != null && !currentClass.equals(inner) && !isInnerClassOf(currentClass.toString(), inner)) {
+                classReferencesInnerClass.computeIfAbsent(currentClass, c -> new HashSet<>()).add(inner);
+            }
+        }
+    }
 
 	public void doBciRenumbering(final IntList bciRenumbering, final Map<Label, Integer> labelsToOffsets) {
 		renumberBci(codeLineNumberTableBciP, bciRenumbering, labelsToOffsets);
