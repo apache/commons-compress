@@ -1603,7 +1603,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private boolean shouldUseZip64EOCD() {
         int numberOfThisDisk = 0;
         if (isSplitZip) {
-            numberOfThisDisk = ((ZipSplitOutputStream)this.outputStream).getCurrentSplitSegmentIndex();
+            numberOfThisDisk = ((ZipSplitOutputStream) this.outputStream).getCurrentSplitSegmentIndex();
         }
         final int numOfEntriesOnThisDisk = numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk);
         return numberOfThisDisk >= ZipConstants.ZIP64_MAGIC_SHORT            /* number of this disk */
