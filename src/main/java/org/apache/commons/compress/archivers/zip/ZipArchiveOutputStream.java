@@ -1605,7 +1605,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (isSplitZip) {
             numberOfThisDisk = ((ZipSplitOutputStream) this.outputStream).getCurrentSplitSegmentIndex();
         }
-        final int numOfEntriesOnThisDisk = numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk);
+        final int numOfEntriesOnThisDisk = numberOfCDInDiskData.getOrDefault(numberOfThisDisk, 0);
         return numberOfThisDisk >= ZipConstants.ZIP64_MAGIC_SHORT            /* number of this disk */
                 || cdDiskNumberStart >= ZipConstants.ZIP64_MAGIC_SHORT       /* number of the disk with the start of the central directory */
                 || numOfEntriesOnThisDisk >= ZipConstants.ZIP64_MAGIC_SHORT  /* total number of entries in the central directory on this disk */
