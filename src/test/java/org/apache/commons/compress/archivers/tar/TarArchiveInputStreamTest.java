@@ -363,11 +363,11 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
             final TarArchiveEntry entry = is.getNextTarEntry();
             assertEquals("package/package.json", entry.getName());
             assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
-            assertEquals(is.getCurrentEntry(),entry);
+            assertEquals(is.getCurrentEntry(), entry);
             final TarArchiveEntry weaselEntry = new TarArchiveEntry(entry.getName());
             weaselEntry.setSize(entry.getSize());
             is.setCurrentEntry(weaselEntry);
-            assertEquals(entry,is.getCurrentEntry());
+            assertEquals(entry, is.getCurrentEntry());
             assertNotSame(entry, is.getCurrentEntry());
             assertSame(weaselEntry, is.getCurrentEntry());
             assertThrows(IllegalStateException.class, () -> {

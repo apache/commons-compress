@@ -197,7 +197,7 @@ public class SevenZTestCase extends AbstractTestCase {
 
             entry = archive.getNextEntry();
             assertNotNull(entry);
-            assertEquals(file1.getName(),entry.getName());
+            assertEquals(file1.getName(), entry.getName());
             BasicFileAttributes attributes = Files.readAttributes(file1.toPath(), BasicFileAttributes.class);
             assertEquals(TimeUtils.truncateToHundredNanos(attributes.lastModifiedTime()), entry.getLastModifiedTime());
             assertEquals(TimeUtils.truncateToHundredNanos(attributes.creationTime()), entry.getCreationTime());

@@ -551,7 +551,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     public TarArchiveEntry(final Map<String, String> globalPaxHeaders, final byte[] headerBuf,
             final ZipEncoding encoding, final boolean lenient, final long dataOffset) throws IOException {
-        this(globalPaxHeaders,headerBuf, encoding, lenient);
+        this(globalPaxHeaders, headerBuf, encoding, lenient);
         setDataOffset(dataOffset);
     }
 
@@ -692,7 +692,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     public void addPaxHeader(final String name, final String value) {
         try {
-            processPaxHeader(name,value);
+            processPaxHeader(name, value);
         } catch (final IOException ex) {
             throw new IllegalArgumentException("Invalid input", ex);
         }
@@ -1725,7 +1725,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 }
                 break;
             default:
-                extraPaxHeaders.put(key,val);
+                extraPaxHeaders.put(key, val);
         }
     }
 

@@ -194,7 +194,7 @@ public abstract class Pack200 {
 
         /**
          * The String indicating if the unpacker should ignore all transmitted
-         * values,can be replaced by either {@code true} or {@code false}.
+         * values, can be replaced by either {@code true} or {@code false}.
          */
         String DEFLATE_HINT = "unpack.deflate.hint";//$NON-NLS-1$
 
