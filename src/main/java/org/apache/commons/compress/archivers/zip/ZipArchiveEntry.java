@@ -26,7 +26,6 @@ import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -229,7 +228,6 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     static final ZipArchiveEntry[] EMPTY_ARRAY = {};
-    static LinkedList<ZipArchiveEntry> EMPTY_LINKED_LIST = new LinkedList<>();
 
     public static final int PLATFORM_UNIX = 3;
     public static final int PLATFORM_FAT  = 0;
