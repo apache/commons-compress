@@ -172,7 +172,7 @@ public class ZipEncodingTest {
                      (byte) 0xF9, (byte) 0xFA, (byte) 0xFB, (byte) 0xFC,
                      (byte) 0xFD, (byte) 0xFE, (byte) 0xFF };
 
-        doSimpleEncodingTest("Cp1252",b);
+        doSimpleEncodingTest("Cp1252", b);
     }
 
     @Test

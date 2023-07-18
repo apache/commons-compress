@@ -480,7 +480,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         def = new Deflater(level, true);
         OutputStream outputStream = null;
         SeekableByteChannel channel = null;
-        StreamCompressor streamCompressor = null;
+        StreamCompressor streamCompressor;
         try {
             channel = Files.newByteChannel(file,
                 EnumSet.of(StandardOpenOption.CREATE, StandardOpenOption.WRITE,
@@ -785,7 +785,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (isSplitZip) {
             // calculate the disk number for every central file header,
             // this will be used in writing End Of Central Directory and Zip64 End Of Central Directory
-            final int currentSplitSegment = ((ZipSplitOutputStream)this.outputStream).getCurrentSplitSegmentIndex();
+            final int currentSplitSegment = ((ZipSplitOutputStream) this.outputStream).getCurrentSplitSegmentIndex();
             if (numberOfCDInDiskData.get(currentSplitSegment) == null) {
                 numberOfCDInDiskData.put(currentSplitSegment, 1);
             } else {
@@ -1395,7 +1395,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                 channel.position(entry.localDataStart  - 5 * ZipConstants.SHORT);
                 writeOut(ZipShort.getBytes(versionNeededToExtract(entry.entry.getMethod(), false, false)));
 
-                // * remove ZIP64 extra so it doesn't get written
+                // * remove ZIP64 extra, so it doesn't get written
                 //   to the central directory
                 entry.entry.removeExtraField(Zip64ExtendedInformationExtraField
                                              .HEADER_ID);
@@ -1603,9 +1603,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     private boolean shouldUseZip64EOCD() {
         int numberOfThisDisk = 0;
         if (isSplitZip) {
-            numberOfThisDisk = ((ZipSplitOutputStream)this.outputStream).getCurrentSplitSegmentIndex();
+            numberOfThisDisk = ((ZipSplitOutputStream) this.outputStream).getCurrentSplitSegmentIndex();
         }
-        final int numOfEntriesOnThisDisk = numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk);
+        final int numOfEntriesOnThisDisk = numberOfCDInDiskData.getOrDefault(numberOfThisDisk, 0);
         return numberOfThisDisk >= ZipConstants.ZIP64_MAGIC_SHORT            /* number of this disk */
                 || cdDiskNumberStart >= ZipConstants.ZIP64_MAGIC_SHORT       /* number of the disk with the start of the central directory */
                 || numOfEntriesOnThisDisk >= ZipConstants.ZIP64_MAGIC_SHORT  /* total number of entries in the central directory on this disk */
@@ -1644,8 +1644,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                     .NUMBER_OF_THE_DISK_OF_CENTRAL_DIRECTORY_TOO_BIG_MESSAGE);
         }
 
-        final int numOfEntriesOnThisDisk = numberOfCDInDiskData.get(numberOfThisDisk) == null
-            ? 0 : numberOfCDInDiskData.get(numberOfThisDisk);
+        final int numOfEntriesOnThisDisk = numberOfCDInDiskData.getOrDefault(numberOfThisDisk, 0);
         if (numOfEntriesOnThisDisk >= ZipConstants.ZIP64_MAGIC_SHORT) {
             throw new Zip64RequiredException(Zip64RequiredException
                     .TOO_MANY_ENTRIES_ON_THIS_DISK_MESSAGE);
@@ -1762,7 +1761,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // total number of entries in the central directory on this disk
         final int numOfEntriesOnThisDisk = isSplitZip
-            ? numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk)
+            ? numberOfCDInDiskData.getOrDefault(numberOfThisDisk, 0)
             : numberOfEntries;
         final byte[] numOfEntriesOnThisDiskData = ZipShort
                 .getBytes(Math.min(numOfEntriesOnThisDisk, ZipConstants.ZIP64_MAGIC_SHORT));
@@ -1895,7 +1894,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Write preamble data. For most of time, this is used to
+     * Write preamble data. For most of the time, this is used to
      * make self-extracting zips.
      *
      * @param preamble data to write
@@ -1907,7 +1906,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Write preamble data. For most of time, this is used to
+     * Write preamble data. For most of the time, this is used to
      * make self-extracting zips.
      *
      * @param preamble data to write
@@ -1984,7 +1983,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         // total number of entries in the central directory on this disk
         final int numOfEntriesOnThisDisk = isSplitZip
-            ? numberOfCDInDiskData.get(numberOfThisDisk) == null ? 0 : numberOfCDInDiskData.get(numberOfThisDisk)
+            ? numberOfCDInDiskData.getOrDefault(numberOfThisDisk, 0)
             : entries.size();
         final byte[] numOfEntriesOnThisDiskData = ZipEightByteInteger.getBytes(numOfEntriesOnThisDisk);
         writeOut(numOfEntriesOnThisDiskData);

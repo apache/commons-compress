@@ -27,19 +27,21 @@ import org.junit.jupiter.api.Test;
 
 public class PkWareExtraHeaderTest {
 
-    @Test public void testEncryptionAlgorithm() {
+    @Test
+    public void testEncryptionAlgorithm() {
         final String name = "AES256";
         final int code = EncryptionAlgorithm.AES256.getCode();
         final EncryptionAlgorithm e = EncryptionAlgorithm.valueOf(name);
-        assertEquals(code,e.getCode());
+        assertEquals(code, e.getCode());
         assertNotNull(e);
     }
 
-    @Test public void testHashAlgorithm() {
+    @Test
+    public void testHashAlgorithm() {
         final String name = "SHA256";
         final int code = HashAlgorithm.SHA256.getCode();
         final HashAlgorithm e = HashAlgorithm.valueOf(name);
-        assertEquals(code,e.getCode());
+        assertEquals(code, e.getCode());
         assertNotNull(e);
     }
 

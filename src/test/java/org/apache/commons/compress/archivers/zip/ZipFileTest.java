@@ -397,7 +397,7 @@ public class ZipFileTest extends AbstractTestCase {
 
     @Test
     public void testCDOrderInMemory() throws Exception {
-        byte[] data = null;
+        byte[] data;
         try (InputStream fis = newInputStream("ordertest.zip")) {
             data = IOUtils.toByteArray(fis);
         }
@@ -463,7 +463,7 @@ public class ZipFileTest extends AbstractTestCase {
     @Test
     public void testConcurrentReadSeekable() throws Exception {
         // mixed.zip contains both inflated and stored files
-        byte[] data = null;
+        byte[] data;
         try (InputStream fis = newInputStream("mixed.zip")) {
             data = IOUtils.toByteArray(fis);
         }

@@ -81,7 +81,6 @@ public class LongPathTest extends AbstractTestCase {
                     FILELIST.add(line);
                 }
             }
-            br.close();
         }
     }
 

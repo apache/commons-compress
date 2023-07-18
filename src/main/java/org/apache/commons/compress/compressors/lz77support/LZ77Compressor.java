@@ -244,8 +244,8 @@ public class LZ77Compressor {
     // the hash of the three bytes stating at the current position
     private int insertHash;
 
-    // the position inside of the window where the current literal
-    // block starts (in case we are inside of a literal block).
+    // the position inside the window where the current literal
+    // block starts (in case we are inside a literal block).
     private int blockStart;
 
     // position of the current match
@@ -303,7 +303,7 @@ public class LZ77Compressor {
             }
             if (matchLength >= minMatch) {
                 if (blockStart != currentPosition) {
-                    // emit preceeding literal block
+                    // emit preceding literal block
                     flushLiteralBlock();
                     blockStart = NO_MATCH;
                 }

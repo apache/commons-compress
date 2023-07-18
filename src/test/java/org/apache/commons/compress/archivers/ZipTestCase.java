@@ -618,13 +618,13 @@ public final class ZipTestCase extends AbstractTestCase {
         try (final InputStream fis = Files.newInputStream(input.toPath());
             ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fis)) {
 
-            ZipArchiveEntry entry = null;
+            ZipArchiveEntry entry;
             while ((entry = (ZipArchiveEntry) in.getNextEntry()) != null) {
                 results.add(entry.getName());
 
                 final ArchiveInputStream nestedIn = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", in);
                 try {
-                    ZipArchiveEntry nestedEntry = null;
+                    ZipArchiveEntry nestedEntry;
                     while ((nestedEntry = (ZipArchiveEntry) nestedIn.getNextEntry()) != null) {
                         results.add(nestedEntry.getName());
                     }
@@ -746,7 +746,7 @@ public final class ZipTestCase extends AbstractTestCase {
         try (final InputStream fileInputStream = Files.newInputStream(output.toPath())) {
             try (ArchiveInputStream archiveInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip",
                 fileInputStream)) {
-                ZipArchiveEntry entry = null;
+                ZipArchiveEntry entry;
                 while ((entry = (ZipArchiveEntry) archiveInputStream.getNextEntry()) != null) {
                     final File outfile = new File(resultDir.getCanonicalPath() + "/result/" + entry.getName());
                     outfile.getParentFile().mkdirs();
@@ -809,7 +809,7 @@ public final class ZipTestCase extends AbstractTestCase {
     public void testZipArchiveEntryNewFromPath() throws Exception {
         final File[] tmp = createTempDirAndFile();
         File archiveFile = null;
-        Path archivePath = null;
+        Path archivePath;
         ZipArchiveOutputStream zos = null;
         ZipFile zf = null;
         InputStream fis = null;

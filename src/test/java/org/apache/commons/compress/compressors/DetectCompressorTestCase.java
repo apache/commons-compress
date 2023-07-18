@@ -32,7 +32,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 import org.apache.commons.compress.MemoryLimitException;
-import org.apache.commons.compress.MockEvilInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -40,6 +39,7 @@ import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStr
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.io.input.BrokenInputStream;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("deprecation") // deliberately tests setDecompressConcatenated
@@ -96,12 +96,10 @@ public final class DetectCompressorTestCase {
     };
 
     private String detect(final String testFileName) throws IOException, CompressorException {
-        String name = null;
         try (InputStream is = new BufferedInputStream(
                 Files.newInputStream(getFile(testFileName).toPath()))) {
-            name = CompressorStreamFactory.detect(is);
+            return CompressorStreamFactory.detect(is);
         }
-        return name;
     }
 
     private CompressorInputStream getStreamFor(final String resource)
@@ -137,7 +135,6 @@ public final class DetectCompressorTestCase {
 
     @Test
     public void testDetect() throws Exception {
-
         assertEquals(CompressorStreamFactory.BZIP2, detect("bla.txt.bz2"));
         assertEquals(CompressorStreamFactory.GZIP, detect("bla.tgz"));
         assertEquals(CompressorStreamFactory.PACK200, detect("bla.pack"));
@@ -159,7 +156,7 @@ public final class DetectCompressorTestCase {
                 "shouldn't be able to detect null stream");
         assertEquals("Stream must not be null.", e.getMessage());
 
-        final CompressorException ce = assertThrows(CompressorException.class, () -> CompressorStreamFactory.detect(new BufferedInputStream(new MockEvilInputStream())),
+        final CompressorException ce = assertThrows(CompressorException.class, () -> CompressorStreamFactory.detect(new BufferedInputStream(new BrokenInputStream())),
                 "Expected IOException");
         assertEquals("IOException while reading signature.", ce.getMessage());
     }

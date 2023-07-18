@@ -80,7 +80,7 @@ public class NewAttributeBandsTest {
                 "B", new byte[] { 3 }, null, 0, null));
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         newAttributeBands.pack(out);
-        // BYTE1 is used for B layouts so we don't need to unpack to test the
+        // BYTE1 is used for B layouts, so we don't need to unpack to test the
         // results
         final byte[] bytes = out.toByteArray();
         assertEquals(3, bytes.length);

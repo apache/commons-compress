@@ -334,12 +334,12 @@ public interface TarConstants {
     String MAGIC_GNU = "ustar ";
 
     /**
-     * One of two two possible GNU versions
+     * One of two possible GNU versions
      */
     String VERSION_GNU_SPACE = " \0";
 
     /**
-     * One of two two possible GNU versions
+     * One of two possible GNU versions
      */
     String VERSION_GNU_ZERO  = "0\0";
 

@@ -26,6 +26,7 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
@@ -84,10 +85,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     /**
      * Bounded input stream adapted from commons-io
      */
-    private class BoundedInputStream extends InputStream {
-
-        /** the wrapped input stream */
-        private final InputStream in;
+    private class BoundedInputStream extends FilterInputStream {
 
         /** the max length to provide */
         private final long max;
@@ -103,8 +101,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
          * @param size The maximum number of bytes to return
          */
         public BoundedInputStream(final InputStream in, final long size) {
+            super(in);
             this.max = size;
-            this.in = in;
         }
 
         @Override
@@ -331,8 +329,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
 
     /**
      * Whether the stream will try to read STORED entries that use a data descriptor.
-     * Setting it to true means we will not stop reading a entry with the compressed
-     * size, instead we will stoping reading a entry when a data descriptor is met(by
+     * Setting it to true means we will not stop reading an entry with the compressed
+     * size, instead we will stop reading an entry when a data descriptor is met (by
      * finding the Data Descriptor Signature). This will completely break down in some
      * cases - like JARs in WARs.
      * <p>
@@ -457,7 +455,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
                 if (i >= expectedDDLen &&
                     (buf.array()[i + 2] == LFH[2] && buf.array()[i + 3] == LFH[3])
                     || (buf.array()[i + 2] == CFH[2] && buf.array()[i + 3] == CFH[3])) {
-                    // found a LFH or CFH:
+                    // found an LFH or CFH:
                     expectDDPos = i - expectedDDLen;
                     done = true;
                 }
@@ -488,12 +486,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
      * <p>Data descriptor plus incomplete signature (3 bytes in the
      * worst case) can be 20 bytes max.</p>
      */
-    private int cacheBytesRead(final ByteArrayOutputStream bos, int offset, final int lastRead, final int expecteDDLen) {
-        final int cacheable = offset + lastRead - expecteDDLen - 3;
+    private int cacheBytesRead(final ByteArrayOutputStream bos, int offset, final int lastRead, final int expectedDDLen) {
+        final int cacheable = offset + lastRead - expectedDDLen - 3;
         if (cacheable > 0) {
             bos.write(buf.array(), 0, cacheable);
-            System.arraycopy(buf.array(), cacheable, buf.array(), 0, expecteDDLen + 3);
-            offset = expecteDDLen + 3;
+            System.arraycopy(buf.array(), cacheable, buf.array(), 0, expectedDDLen + 3);
+            offset = expectedDDLen + 3;
         } else {
             offset += lastRead;
         }
@@ -888,7 +886,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
      * @param suspectLocalFileHeader the bytes read from the underlying stream in the expectation that they would hold
      * the local file header of the next entry.
      *
-     * @return true if this looks like a APK signing block
+     * @return true if this looks like an APK signing block
      *
      * @see <a href="https://source.android.com/security/apksigning/v2">https://source.android.com/security/apksigning/v2</a>
      */
@@ -1360,7 +1358,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     private void skipRemainderOfArchive() throws IOException {
         // skip over central directory. One LFH has been read too much
         // already.  The calculation discounts file names and extra
-        // data so it will be too short.
+        // data, so it will be too short.
         if (entriesRead > 0) {
             realSkip((long) entriesRead * CFH_LEN - LFH_LEN);
             final boolean foundEocd = findEocdRecord();

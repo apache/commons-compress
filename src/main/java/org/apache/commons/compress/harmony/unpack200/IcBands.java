@@ -217,12 +217,7 @@ public class IcBands extends BandSet {
 
                 // add tuple to corresponding bucket
                 final String key = tuple.outerClassString();
-                List<IcTuple> bucket = outerClassToTuples.get(key);
-                if (bucket == null) {
-                    bucket = new ArrayList<>();
-                    outerClassToTuples.put(key, bucket);
-                }
-                bucket.add(tuple);
+                outerClassToTuples.computeIfAbsent(key, k -> new ArrayList<>()).add(tuple);
             }
         }
     }

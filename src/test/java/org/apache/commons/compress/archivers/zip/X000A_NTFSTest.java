@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 public class X000A_NTFSTest {
 
     @Test
-    public void simpleRountrip() throws Exception {
+    public void simpleRoundtrip() throws Exception {
         final X000A_NTFS xf = new X000A_NTFS();
         xf.setModifyJavaTime(new Date(0));
         // one second past midnight
@@ -44,7 +44,7 @@ public class X000A_NTFSTest {
     }
 
     @Test
-    public void simpleRountripWithHighPrecisionDatesWithBigValues() throws Exception {
+    public void simpleRoundtripWithHighPrecisionDatesWithBigValues() throws Exception {
         final X000A_NTFS xf = new X000A_NTFS();
         xf.setModifyFileTime(FileTime.from(Instant.ofEpochSecond(123456789101L, 123456700)));
         // one second past midnight
@@ -64,7 +64,7 @@ public class X000A_NTFSTest {
     }
 
     @Test
-    public void simpleRountripWithHighPrecisionDatesWithSmallValues() throws Exception {
+    public void simpleRoundtripWithHighPrecisionDatesWithSmallValues() throws Exception {
         final X000A_NTFS xf = new X000A_NTFS();
         // The last 2 digits should not be written due to the 100ns precision
         xf.setModifyFileTime(FileTime.from(Instant.ofEpochSecond(0, 1234)));

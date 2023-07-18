@@ -97,7 +97,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
             return cloned;
         } catch (final CloneNotSupportedException cnfe) {
             // impossible
-            throw new IllegalStateException(cnfe); //NOSONAR
+            throw new UnsupportedOperationException(cnfe); //NOSONAR
         }
     }
 

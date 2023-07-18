@@ -123,7 +123,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * Concatenates the given files.
      *
      * @param files the files to concatenate, note that the LAST FILE of files should be the LAST SEGMENT(.zip)
-     *              and theses files should be added in correct order (e.g. .z01, .z02... .z99, .zip)
+     *              and these files should be added in correct order (e.g. .z01, .z02... .z99, .zip)
      * @return SeekableByteChannel that concatenates all provided files
      * @throws NullPointerException if files is null
      * @throws IOException          if opening a channel for one of the files fails
@@ -144,7 +144,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      *
      * @param lastSegmentFile the last segment of split ZIP segments, its extension should be .zip
      * @param files           the files to concatenate except for the last segment,
-     *                        note theses files should be added in correct order (e.g. .z01, .z02... .z99)
+     *                        note these files should be added in correct order (e.g. .z01, .z02... .z99)
      * @return SeekableByteChannel that concatenates all provided files
      * @throws IOException if the first channel doesn't seem to hold
      * the beginning of a split archive
@@ -164,7 +164,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * Concatenates the given channels.
      *
      * @param channels the channels to concatenate, note that the LAST CHANNEL of channels should be the LAST SEGMENT(.zip)
-     *                 and theses channels should be added in correct order (e.g. .z01, .z02... .z99, .zip)
+     *                 and these channels should be added in correct order (e.g. .z01, .z02... .z99, .zip)
      * @return SeekableByteChannel that concatenates all provided channels
      * @throws NullPointerException if channels is null
      * @throws IOException if reading channels fails
@@ -181,7 +181,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      *
      * @param lastSegmentChannel channel of the last segment of split ZIP segments, its extension should be .zip
      * @param channels           the channels to concatenate except for the last segment,
-     *                           note theses channels should be added in correct order (e.g. .z01, .z02... .z99)
+     *                           note these channels should be added in correct order (e.g. .z01, .z02... .z99)
      * @return SeekableByteChannel that concatenates all provided channels
      * @throws NullPointerException if lastSegmentChannel or channels is null
      * @throws IOException if the first channel doesn't seem to hold

@@ -203,7 +203,7 @@ public class ExtraFieldUtilsTest implements UnixStat {
 
     @Test
     public void testParseCentral() throws Exception {
-        final ZipExtraField[] ze = ExtraFieldUtils.parse(data,false);
+        final ZipExtraField[] ze = ExtraFieldUtils.parse(data, false);
         assertEquals(2, ze.length, "number of fields");
         assertTrue(ze[0] instanceof AsiExtraField, "type field 1");
         assertEquals(040755, ((AsiExtraField) ze[0]).getMode(), "mode field 1");

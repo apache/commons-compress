@@ -120,7 +120,7 @@ import java.util.zip.ZipException;
  *          The IVData can be completely random data.  If the size of
  *          the randomly generated data does not match the block size
  *          it should be complemented with zero's or truncated as
- *          necessary.  If IVSize is 0,then IV = CRC32 + Uncompressed
+ *          necessary.  If IVSize is 0, then IV = CRC32 + Uncompressed
  *          File Size (as a 64 bit little-endian, unsigned integer value).
  *
  * Format -  the data format identifier for this record.  The only

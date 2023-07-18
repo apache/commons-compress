@@ -151,7 +151,7 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
 
                 final int spaceForSurrogate = estimateIncrementalEncodingSize(enc, 6 * res.length());
                 if (spaceForSurrogate > out.remaining()) {
-                    // if the destination buffer isn't over sized, assume that the presence of one
+                    // if the destination buffer isn't oversized, assume that the presence of one
                     // unmappable character makes it likely that there will be more. Find all the
                     // un-encoded characters and allocate space based on those estimates.
                     int charCount = 0;

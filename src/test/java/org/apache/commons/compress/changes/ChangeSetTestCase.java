@@ -65,7 +65,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * @throws Exception
      */
     @Test
-    public void testAddAllreadyExistingWithReplaceFalse() throws Exception {
+    public void testAddAlreadyExistingWithReplaceFalse() throws Exception {
         final String archivename = "zip";
         final Path input = createArchive(archivename);
 
@@ -99,7 +99,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      * @throws Exception
      */
     @Test
-    public void testAddAllreadyExistingWithReplaceTrue() throws Exception {
+    public void testAddAlreadyExistingWithReplaceTrue() throws Exception {
         final String archivename = "zip";
         final Path input = createArchive(archivename);
 
@@ -233,7 +233,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
 
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-            is.close();
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -244,7 +243,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      *
      * add dir1/bla.txt + mv dir1/test.text dir2/test.txt + delete dir1
      *
-     * Add dir1/bla.txt should be surpressed. All other dir1 files will be
+     * Add dir1/bla.txt should be suppressed. All other dir1 files will be
      * deleted, except dir1/test.text will be moved
      *
      * @throws Exception
@@ -276,7 +275,6 @@ public final class ChangeSetTestCase extends AbstractTestCase {
             archiveList.add("bla/test.txt");
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, out);
-            is.close();
         }
 
         this.checkArchiveContent(result, archiveList);
@@ -631,7 +629,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     /**
-     * Adds a file to a ZIP archive. Deletes an other file.
+     * Adds a file to a ZIP archive. Deletes another file.
      *
      * @throws Exception
      */
@@ -662,7 +660,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
     }
 
     /**
-     * Adds a file to a ZIP archive. Deletes an other file.
+     * Adds a file to a ZIP archive. Deletes another file.
      *
      * @throws Exception
      */
@@ -838,7 +836,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         final File result = File.createTempFile("test", "." + archivename);
         result.deleteOnExit();
 
-        File testtxt = null;
+        File testtxt;
         try (ArchiveInputStream ais = factory.createArchiveInputStream(archivename, Files.newInputStream(input));
                 ArchiveOutputStream out = factory.createArchiveOutputStream(archivename, Files.newOutputStream(result.toPath()))) {
 
@@ -857,10 +855,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         }
 
         // Checks
-        File check = null;
         try (BufferedInputStream buf = new BufferedInputStream(Files.newInputStream(result.toPath()));
                 ArchiveInputStream in = factory.createArchiveInputStream(buf)) {
-            check = this.checkArchiveContent(in, archiveList, false);
+            File check = this.checkArchiveContent(in, archiveList, false);
             final File test3xml = new File(check, "result/test/test3.xml");
             assertEquals(testtxt.length(), test3xml.length());
 
@@ -871,8 +868,8 @@ public final class ChangeSetTestCase extends AbstractTestCase {
                     "111111111111111111111111111000101011".equals(str);
                 }
             }
+            rmdir(check);
         }
-        rmdir(check);
     }
 
     /**
@@ -880,11 +877,9 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      *
      * mv dir1/test.text dir2/test.txt + delete dir1 Moves the file to dir2 and
      * deletes everything in dir1
-     *
-     * @throws Exception
      */
     @Test
-    public void testRenameAndDelete() throws Exception {
+    public void testRenameAndDelete() {
     }
 
 }

@@ -62,9 +62,8 @@ public class ClassRefForm extends ReferenceForm {
         // the spec except for multianewarray, which has
         // its own form.)
         final SegmentConstantPool globalPool = operandManager.globalConstantPool();
-        ClassFileEntry[] nested = null;
         // How do I get this class?
-        nested = new ClassFileEntry[] {globalPool.getClassPoolEntry(operandManager.getCurrentClass())};
+        ClassFileEntry[] nested = new ClassFileEntry[] {globalPool.getClassPoolEntry(operandManager.getCurrentClass())};
         byteCode.setNested(nested);
         byteCode.setNestedPositions(new int[][] {{0, 2}});
     }

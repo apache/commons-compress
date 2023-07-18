@@ -39,6 +39,7 @@ import java.util.Random;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.io.RandomAccessFileMode;
 import org.junit.jupiter.api.Test;
 
 public class Zip64SupportIT {
@@ -152,7 +153,7 @@ public class Zip64SupportIT {
         try (InputStream fin = Files.newInputStream(f.toPath());
                 ZipArchiveInputStream zin = new ZipArchiveInputStream(fin)) {
             int files = 0;
-            ZipArchiveEntry zae = null;
+            ZipArchiveEntry zae;
             while ((zae = zin.getNextZipEntry()) != null) {
                 if (!zae.isDirectory()) {
                     files++;
@@ -308,7 +309,7 @@ public class Zip64SupportIT {
             zos.setUseZip64(mode);
         }
         write100KFilesToStream(zos);
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             final long end = a.length();
 
             // validate "end of central directory" is at
@@ -429,7 +430,7 @@ public class Zip64SupportIT {
         }
         write3EntriesCreatingBigArchiveToStream(zos);
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
             // skip first two entries
             a.skipBytes(2 * 47 /* CD entry of file with
@@ -440,7 +441,7 @@ public class Zip64SupportIT {
             );
 
             // grab third entry, verify offset is
-            // 0xFFFFFFFF and it has a ZIP64 extended
+            // 0xFFFFFFFF, and it has a ZIP64 extended
             // information extra field
             final byte[] header = new byte[12];
             a.readFully(header);
@@ -517,7 +518,7 @@ public class Zip64SupportIT {
             // read offset of LFH
             final byte[] offset = new byte[8];
             a.readFully(offset);
-            // verify there is a LFH where the CD claims it
+            // verify there is an LFH where the CD claims it
             a.seek(ZipEightByteInteger.getLongValue(offset));
             final byte[] sig = new byte[4];
             a.readFully(sig);
@@ -532,7 +533,7 @@ public class Zip64SupportIT {
         write3EntriesCreatingBigArchiveToStream(final ZipArchiveOutputStream zos)
         throws IOException {
         final byte[] buf = new byte[ONE_MILLION];
-        ZipArchiveEntry zae = null;
+        ZipArchiveEntry zae;
         for (int i = 0; i < 2; i++) {
             zae = new ZipArchiveEntry(String.valueOf(i));
             zae.setSize(FIVE_BILLION / 2);
@@ -618,7 +619,7 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             // grab first entry, verify
@@ -803,7 +804,7 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             final long cfhPos = a.getFilePointer();
@@ -1005,7 +1006,7 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             // grab first entry, verify sizes are 0xFFFFFFFF
@@ -1185,7 +1186,7 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             // grab first CD entry, verify sizes are not
@@ -1321,11 +1322,11 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             // grab first CD entry, verify sizes are not
-            // 0xFFFFFFFF and it has a an empty ZIP64 extended
+            // 0xFFFFFFFF, and it has an empty ZIP64 extended
             // information extra field
             byte[] header = new byte[12];
             a.readFully(header);
@@ -1472,7 +1473,7 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             final long cfhPos = a.getFilePointer();
@@ -1604,7 +1605,7 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             final long cfhPos = a.getFilePointer();
@@ -1778,7 +1779,7 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
             // grab first CF entry, verify sizes are 1e6 and it
@@ -1910,10 +1911,10 @@ public class Zip64SupportIT {
         zos.closeArchiveEntry();
         zos.close();
 
-        try (RandomAccessFile a = new RandomAccessFile(f, "r")) {
+        try (RandomAccessFile a = RandomAccessFileMode.READ_ONLY.create(f)) {
             getLengthAndPositionAtCentralDirectory(a);
 
-            // grab first CF entry, verify sizes are 1e6 and it
+            // grab first CF entry, verify sizes are 1e6, and it
             // has an empty ZIP64 extended information extra field
             byte[] header = new byte[12];
             a.readFully(header);

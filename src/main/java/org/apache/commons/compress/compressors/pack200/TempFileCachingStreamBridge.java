@@ -28,6 +28,7 @@ import java.nio.file.Path;
 /**
  * StreamBridge that caches all data written to the output side in
  * a temporary file.
+ *
  * @since 1.3
  */
 class TempFileCachingStreamBridge extends StreamBridge {
@@ -39,6 +40,7 @@ class TempFileCachingStreamBridge extends StreamBridge {
         out = Files.newOutputStream(f);
     }
 
+    @SuppressWarnings("resource") // Caller closes
     @Override
     InputStream getInputView() throws IOException {
         out.close();

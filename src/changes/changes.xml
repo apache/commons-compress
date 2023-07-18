@@ -45,8 +45,19 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.24.0" date="202Y-MM-DD">
-      <action type="update" dev="kinow" due-to="Gary Gregory">Make ZipArchiveEntry.getLocalHeaderOffset() public.</action>
-      <action type="update" dev="kinow" due-to="Dependabot">Bump zstd-jni from 1.5.4-2 to 1.5.5-1 #377.</action>
+      <!-- ADD -->
+      <action type="add" dev="kinow" due-to="Gary Gregory">Make ZipArchiveEntry.getLocalHeaderOffset() public.</action>
+      <!-- FIX -->
+      <action type="fix" dev="ggregory" due-to="Daniele Galloppo">Use try-with-resources in ArchiveStreamFactory #391.</action>
+      <action type="fix" dev="ggregory" due-to="Martin Wiesner">Javadoc and code comments: Sanitize grammar issues and typos #393.</action>
+      <action type="fix" dev="ggregory" due-to="Martin Wiesner">Remove redundant (null) initializations #394.</action>
+      <action dev="ggregory" type="fix" due-to="step-security-bot, Gary Gregory">[StepSecurity] ci: Harden GitHub Actions #396.</action>
+      
+      <!-- UPDATE -->
+      <action type="update" dev="kinow" due-to="Dependabot">Bump zstd-jni from 1.5.4-2 to 1.5.5-4 #377, #383, #388, #390.</action>
+      <action type="update" dev="kinow" due-to="Dependabot">Bump memoryfilesystem from 2.5.0 to 2.6.1 #381, #385, #387.</action>
+      <action type="update" dev="kinow" due-to="Dependabot">Bump commons-parent from 56 to 58 #384.</action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">Bump commons-io:commons-io from 2.11.0 to 2.13.0.</action>
     </release>
     <release version="1.23.0" date="2023-03-18">
       <!-- FIX -->

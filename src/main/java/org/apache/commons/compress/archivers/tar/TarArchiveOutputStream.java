@@ -40,7 +40,6 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CountingOutputStream;
-import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.FixedLengthBlockOutputStream;
 import org.apache.commons.compress.utils.TimeUtils;
 
@@ -386,7 +385,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
                 // or where UTF-8 encoding isn't a single octet
                 // per character.
                 // Must be in loop as size may go from 99 to 100 in
-                // first pass so we'd need a second.
+                // first pass, so we'd need a second.
                 len = actualLength;
                 line = len + " " + k + "=" + v + "\n";
                 actualLength = line.getBytes(UTF_8).length;

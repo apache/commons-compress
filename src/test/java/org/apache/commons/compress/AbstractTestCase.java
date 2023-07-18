@@ -35,12 +35,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -50,21 +50,17 @@ public abstract class AbstractTestCase {
         I wrap(InputStream in) throws Exception;
     }
 
-    private static final boolean ON_WINDOWS =
-            System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows");
-
     public static File getFile(final String path) throws IOException {
         final URL url = AbstractTestCase.class.getClassLoader().getResource(path);
         if (url == null) {
             throw new FileNotFoundException("couldn't find " + path);
         }
-        URI uri = null;
         try {
-            uri = url.toURI();
+            URI uri = url.toURI();
+            return new File(uri);
         } catch (final java.net.URISyntaxException ex) {
             throw new IOException(ex);
         }
-        return new File(uri);
     }
 
     public static Path getPath(final String path) throws IOException {
@@ -110,7 +106,7 @@ public abstract class AbstractTestCase {
      */
     public static boolean tryHardToDelete(final File f) {
         if (f != null && f.exists() && !f.delete()) {
-            if (ON_WINDOWS) {
+            if (SystemUtils.IS_OS_WINDOWS) {
                 System.gc();
             }
             try {
@@ -191,7 +187,7 @@ public abstract class AbstractTestCase {
         result.deleteOnExit();
 
         try {
-            ArchiveEntry entry = null;
+            ArchiveEntry entry;
             while ((entry = in.getNextEntry()) != null) {
                 final File outfile = new File(result.getCanonicalPath() + "/result/" + entry.getName());
                 long copied = 0;
@@ -256,7 +252,7 @@ public abstract class AbstractTestCase {
     }
 
     /**
-     * Creates an archive of textbased files in several directories. The
+     * Creates an archive of text-based files in several directories. The
      * archivename is the factory identifier for the archiver, for example zip,
      * tar, cpio, jar, ar. The archive is created as a temp file.
      *

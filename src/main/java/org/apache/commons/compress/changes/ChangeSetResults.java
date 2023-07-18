@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Stores the results of an performed ChangeSet operation.
+ * Stores the results of a performed ChangeSet operation.
  */
 public class ChangeSetResults {
     private final List<String> addedFromChangeSet = new ArrayList<>();
@@ -80,7 +80,7 @@ public class ChangeSetResults {
     }
 
     /**
-     * Checks if an file name already has been added to the result list
+     * Checks if a file name already has been added to the result list
      * @param fileName the file name to check
      * @return true, if this file name already has been added
      */

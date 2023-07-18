@@ -118,7 +118,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         exactly like InfoZip (requires changes to unit tests, though).
 
         And I am sorry that the time you spent reading this comment is now
-        gone and you can never have it back.
+        gone, and you can never have it back.
 
         */
         final int MIN_LENGTH = 1;
@@ -281,7 +281,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     @Override
     public int hashCode() {
         int hc = -1234567 * version;
-        // Since most UID's and GID's are below 65,536, this is (hopefully!)
+        // Since most UIDs and GIDs are below 65,536, this is (hopefully!)
         // a nice way to make sure typical UID and GID values impact the hash
         // as much as possible.
         hc ^= Integer.rotateLeft(uid.hashCode(), 16);

@@ -37,7 +37,7 @@ import org.apache.commons.compress.utils.IOUtils;
  *
  * <p>
  * The stream can be read by extracting a cpio entry (containing all
- * informations about a entry) and afterwards reading from the stream the file
+ * information about an entry) and afterwards reading from the stream the file
  * specified by the entry.
  * </p>
  * <pre>

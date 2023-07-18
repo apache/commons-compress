@@ -254,7 +254,7 @@ public class FixedLengthBlockOutputStreamTest {
         for (int i = 0; i < expectedFileSize - expectedDataSize; i++) {
             assertEquals(0, din.read());
         }
-        assertEquals(-1,din.read());
+        assertEquals(-1, din.read());
     }
 
     private void testWriteAndPad(final int blockSize, final String text, final boolean doPartialWrite)

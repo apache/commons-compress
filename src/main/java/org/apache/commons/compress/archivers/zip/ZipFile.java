@@ -357,7 +357,7 @@ public class ZipFile implements Closeable {
             .thenComparingLong(ZipArchiveEntry::getLocalHeaderOffset);
 
     /**
-     * Closes a ZIP file quietly; throwing no IOException, dooes nothing
+     * Closes a ZIP file quietly; throwing no IOException, does nothing
      * on null input.
      * @param zipFile file to close, can be null
      */
@@ -839,7 +839,7 @@ public class ZipFile implements Closeable {
      * Gets an InputStream for reading the content before the first local file header.
      *
      * @return null if there is no content before the first local file header.
-     * Otherwise returns a stream to read the content before the first local file header.
+     * Otherwise, returns a stream to read the content before the first local file header.
      * @since 1.23
      */
     public InputStream getContentBeforeFirstLocalFileHeader() {
@@ -1089,7 +1089,7 @@ public class ZipFile implements Closeable {
      * the central directory alone, but not the data that requires the
      * local file header or additional data to be read.</p>
      *
-     * @return a map of zipentries that didn't have the language
+     * @return a map of zip entries that didn't have the language
      * encoding flag set when read.
      */
     private Map<ZipArchiveEntry, NameAndComment> populateFromCentralDirectory()
@@ -1264,7 +1264,7 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * Reads an individual entry of the central directory, creats an
+     * Reads an individual entry of the central directory, creates an
      * ZipArchiveEntry from it and adds it to the global maps.
      *
      * @param noUTF8Flag map used to collect entries that don't have
@@ -1402,7 +1402,7 @@ public class ZipFile implements Closeable {
                                             entriesWithoutUTF8Flag)
         throws IOException {
         for (final ZipArchiveEntry zipArchiveEntry : entries) {
-            // entries is filled in populateFromCentralDirectory and
+            // entries are filled in populateFromCentralDirectory and
             // never modified
             final Entry ze = (Entry) zipArchiveEntry;
             final int[] lens = setDataOffset(ze);
@@ -1550,7 +1550,7 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * Checks whether the archive starts with a LFH.  If it doesn't,
+     * Checks whether the archive starts with an LFH. If it doesn't,
      * it may be an empty archive.
      */
     private boolean startsWithLocalFileHeader() throws IOException {

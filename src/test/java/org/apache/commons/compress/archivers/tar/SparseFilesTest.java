@@ -31,7 +31,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.IOUtils;
@@ -41,8 +40,6 @@ import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
 public class SparseFilesTest extends AbstractTestCase {
-
-    private final boolean isOnWindows = System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows");
 
     private void assertPaxGNUEntry(final TarArchiveEntry entry, final String suffix) {
         assertEquals("sparsefile-" + suffix, entry.getName());

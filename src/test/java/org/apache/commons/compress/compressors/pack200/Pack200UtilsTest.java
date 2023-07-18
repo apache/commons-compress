@@ -54,7 +54,6 @@ public final class Pack200UtilsTest extends AbstractTestCase {
                     entry = in.getNextEntry();
                 }
 
-                in.close();
             }
         } finally {
             output[1].delete();

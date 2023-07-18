@@ -53,19 +53,19 @@ public class TarUtilsTest extends AbstractTestCase {
     }
 
     private void checkRoundTripOctal(final long value, final int bufsize) {
-        final byte [] buffer = new byte[bufsize];
+        final byte[] buffer = new byte[bufsize];
         long parseValue;
         TarUtils.formatLongOctalBytes(value, buffer, 0, buffer.length);
-        parseValue = TarUtils.parseOctal(buffer,0, buffer.length);
-        assertEquals(value,parseValue);
+        parseValue = TarUtils.parseOctal(buffer, 0, buffer.length);
+        assertEquals(value, parseValue);
     }
 
     private void checkRoundTripOctalOrBinary(final long value, final int bufsize) {
-        final byte [] buffer = new byte[bufsize];
+        final byte[] buffer = new byte[bufsize];
         long parseValue;
         TarUtils.formatLongOctalOrBinaryBytes(value, buffer, 0, buffer.length);
-        parseValue = TarUtils.parseOctalOrBinary(buffer,0, buffer.length);
-        assertEquals(value,parseValue);
+        parseValue = TarUtils.parseOctalOrBinary(buffer, 0, buffer.length);
+        assertEquals(value, parseValue);
     }
 
     @Test
@@ -386,21 +386,21 @@ public class TarUtilsTest extends AbstractTestCase {
     }
 
     @Test
-    public void testName(){
-        byte [] buff = new byte[20];
+    public void testName() {
+        byte[] buff = new byte[20];
         final String sb1 = "abcdefghijklmnopqrstuvwxyz";
-        int off = TarUtils.formatNameBytes(sb1, buff, 1, buff.length-1);
+        int off = TarUtils.formatNameBytes(sb1, buff, 1, buff.length - 1);
         assertEquals(off, 20);
         String sb2 = TarUtils.parseName(buff, 1, 10);
-        assertEquals(sb2,sb1.substring(0,10));
+        assertEquals(sb2, sb1.substring(0, 10));
         sb2 = TarUtils.parseName(buff, 1, 19);
-        assertEquals(sb2,sb1.substring(0,19));
+        assertEquals(sb2, sb1.substring(0, 19));
         buff = new byte[30];
-        off = TarUtils.formatNameBytes(sb1, buff, 1, buff.length-1);
+        off = TarUtils.formatNameBytes(sb1, buff, 1, buff.length - 1);
         assertEquals(off, 30);
-        sb2 = TarUtils.parseName(buff, 1, buff.length-1);
+        sb2 = TarUtils.parseName(buff, 1, buff.length - 1);
         assertEquals(sb1, sb2);
-        buff = new byte[]{0, 1, 0};
+        buff = new byte[] { 0, 1, 0 };
         sb2 = TarUtils.parseName(buff, 0, 3);
         assertEquals("", sb2);
     }

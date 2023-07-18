@@ -45,7 +45,7 @@ public class NewAttribute extends Attribute {
 
     }
     /**
-     * PassAttribute extends {@code NewAttribute} and manages attributes encountered by ASM that have had an pass
+     * PassAttribute extends {@code NewAttribute} and manages attributes encountered by ASM that have had a pass
      * action specified to pack200 (e.g. via one of the -C, -M, -F or -D command line options such as
      * -Cattribute-name=pass)
      */
@@ -63,7 +63,7 @@ public class NewAttribute extends Attribute {
 
     }
     /**
-     * StripAttribute extends {@code NewAttribute} and manages attributes encountered by ASM that have had an strip
+     * StripAttribute extends {@code NewAttribute} and manages attributes encountered by ASM that have had a strip
      * action specified to pack200 (e.g. via one of the -C, -M, -F or -D command line options such as
      * -Cattribute-name=strip)
      */

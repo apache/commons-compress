@@ -417,7 +417,7 @@ public class SevenZFile implements Closeable {
     }
 
     /**
-     * Reads a SeekableByteChannel as 7z archive with addtional options.
+     * Reads a SeekableByteChannel as 7z archive with additional options.
      *
      * <p>{@link
      * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
@@ -511,7 +511,7 @@ public class SevenZFile implements Closeable {
     }
 
     /**
-     * Reads a SeekableByteChannel as 7z archive with addtional options.
+     * Reads a SeekableByteChannel as 7z archive with additional options.
      *
      * <p>{@link
      * org.apache.commons.compress.utils.SeekableInMemoryByteChannel}
@@ -726,9 +726,7 @@ public class SevenZFile implements Closeable {
     }
 
     private void checkEntryIsInitialized(final Map<Integer, SevenZArchiveEntry> archiveEntries, final int index) {
-        if (archiveEntries.get(index) == null) {
-            archiveEntries.put(index, new SevenZArchiveEntry());
-        }
+        archiveEntries.computeIfAbsent(index, i -> new SevenZArchiveEntry());
     }
 
     /**
@@ -780,10 +778,10 @@ public class SevenZFile implements Closeable {
      * then its command line and GUI tools will use this default name
      * when extracting the entries.</p>
      *
-     * @return null if the name of the archive is unknown. Otherwise
+     * @return null if the name of the archive is unknown. Otherwise,
      * if the name of the archive has got any extension, it is
-     * stripped and the remainder returned. Finally if the name of the
-     * archive hasn't got any extension then a {@code ~} character is
+     * stripped and the remainder returned. Finally, if the name of the
+     * archive hasn't got any extension, then a {@code ~} character is
      * appended to the archive name.
      *
      * @since 1.19

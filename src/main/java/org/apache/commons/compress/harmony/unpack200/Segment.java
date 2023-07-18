@@ -53,7 +53,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.SourceFileAttribut
 /**
  * A Pack200 archive consists of one or more segments. Each segment is stand-alone, in the sense that every segment has
  * the magic number header; thus, every segment is also a valid archive. However, it is possible to combine
- * (non-GZipped) archives into a single large archive by concatenation alone. Thus all the hard work in unpacking an
+ * (non-GZipped) archives into a single large archive by concatenation alone. Thus, all the hard work in unpacking an
  * archive falls to understanding a segment.
  *
  * The first component of a segment is the header; this contains (amongst other things) the expected counts of constant
@@ -148,7 +148,7 @@ public class Segment {
                         firstDollar = index;
                     }
                 }
-                String fileName = null;
+                String fileName;
 
                 if (firstDollar > -1 && (i <= firstDollar)) {
                     fileName = fullName.substring(i, firstDollar) + ".java";
@@ -235,11 +235,10 @@ public class Segment {
             final String outerClassString = icStored.outerClassString();
             final String simpleClassName = icStored.simpleClassName();
 
-            CPClass innerClass = null;
             CPUTF8 innerName = null;
             CPClass outerClass = null;
 
-            innerClass = innerClassIndex != -1 ? cpBands.cpClassValue(innerClassIndex)
+            CPClass innerClass = innerClassIndex != -1 ? cpBands.cpClassValue(innerClassIndex)
                 : cpBands.cpClassValue(innerClassString);
             if (!icStored.isAnonymous()) {
                 innerName = simpleClassNameIndex != -1 ? cpBands.cpUTF8Value(simpleClassNameIndex)
@@ -254,7 +253,7 @@ public class Segment {
             innerClassesAttribute.addInnerClassesEntry(innerClass, outerClass, innerName, flags);
             addInnerClassesAttr = true;
         }
-        // If ic_local is sent and it's empty, don't add
+        // If ic_local is sent, and it's empty, don't add
         // the inner classes attribute.
         if (icLocalSent && (icLocal.length == 0)) {
             addInnerClassesAttr = false;

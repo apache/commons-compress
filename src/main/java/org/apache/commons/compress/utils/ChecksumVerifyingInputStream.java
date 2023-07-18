@@ -16,19 +16,20 @@
  */
 package org.apache.commons.compress.utils;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.Checksum;
 
 /**
- * A stream that verifies the checksum of the data read once the stream is
+ * Verifies the checksum of the data read once the stream is
  * exhausted.
+ *
  * @NotThreadSafe
  * @since 1.7
  */
-public class ChecksumVerifyingInputStream extends InputStream {
+public class ChecksumVerifyingInputStream extends FilterInputStream {
 
-    private final InputStream in;
     private long bytesRemaining;
     private final long expectedChecksum;
     private final Checksum checksum;
@@ -43,15 +44,10 @@ public class ChecksumVerifyingInputStream extends InputStream {
      */
     public ChecksumVerifyingInputStream(final Checksum checksum, final InputStream in,
                                         final long size, final long expectedChecksum) {
+        super(in);
         this.checksum = checksum;
-        this.in = in;
         this.expectedChecksum = expectedChecksum;
         this.bytesRemaining = size;
-    }
-
-    @Override
-    public void close() throws IOException {
-        in.close();
     }
 
     /**
@@ -80,17 +76,6 @@ public class ChecksumVerifyingInputStream extends InputStream {
         }
         verify();
         return ret;
-    }
-
-    /**
-     * Reads a byte array from the stream
-     * @throws IOException if the underlying stream throws or the
-     * stream is exhausted and the Checksum doesn't match the expected
-     * value
-     */
-    @Override
-    public int read(final byte[] b) throws IOException {
-        return read(b, 0, b.length);
     }
 
     /**

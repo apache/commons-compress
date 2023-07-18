@@ -264,9 +264,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
         // COMPRESS-117 - improve auto-recognition
         if (signatureLength >= TAR_HEADER_SIZE) {
-            TarArchiveInputStream tais = null;
-            try {
-                tais = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader));
+            try (TarArchiveInputStream tais = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader))) {
                 // COMPRESS-191 - verify the header checksum
                 if (tais.getNextTarEntry().isCheckSumOK()) {
                     return TAR;
@@ -276,8 +274,6 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
                 // as IOException
                 // autodetection, simply not a TAR
                 // ignored
-            } finally {
-                IOUtils.closeQuietly(tais);
             }
         }
         throw new ArchiveException("No Archiver found for the stream signature");

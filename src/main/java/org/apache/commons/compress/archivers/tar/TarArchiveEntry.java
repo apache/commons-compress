@@ -551,7 +551,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     public TarArchiveEntry(final Map<String, String> globalPaxHeaders, final byte[] headerBuf,
             final ZipEncoding encoding, final boolean lenient, final long dataOffset) throws IOException {
-        this(globalPaxHeaders,headerBuf, encoding, lenient);
+        this(globalPaxHeaders, headerBuf, encoding, lenient);
         setDataOffset(dataOffset);
     }
 
@@ -692,7 +692,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     public void addPaxHeader(final String name, final String value) {
         try {
-            processPaxHeader(name,value);
+            processPaxHeader(name, value);
         } catch (final IOException ex) {
             throw new IllegalArgumentException("Invalid input", ex);
         }
@@ -1093,7 +1093,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Get this entry's file size.
      *
-     * <p>This is the size the entry's data uses inside of the archive. Usually this is the same as {@link
+     * <p>This is the size the entry's data uses inside the archive. Usually this is the same as {@link
      * #getRealSize}, but it doesn't take the "holes" into account when the entry represents a sparse file.
      *
      * @return This entry's file size.
@@ -1290,7 +1290,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     private boolean isInvalidPrefix(final byte[] header) {
-        // prefix[130] is is guaranteed to be '\0' with XSTAR/XUSTAR
+        // prefix[130] is guaranteed to be '\0' with XSTAR/XUSTAR
         if (header[XSTAR_PREFIX_OFFSET + 130] != 0) {
             // except when typeflag is 'M'
             if (header[LF_OFFSET] != LF_MULTIVOLUME) {
@@ -1725,7 +1725,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 }
                 break;
             default:
-                extraPaxHeaders.put(key,val);
+                extraPaxHeaders.put(key, val);
         }
     }
 

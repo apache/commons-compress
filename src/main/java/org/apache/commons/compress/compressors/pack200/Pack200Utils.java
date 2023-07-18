@@ -39,7 +39,7 @@ import org.apache.commons.compress.java.util.jar.Pack200;
  */
 public class Pack200Utils {
     /**
-     * Normalizes a JAR archive in-place so it can be safely signed
+     * Normalizes a JAR archive in-place, so it can be safely signed
      * and packed.
      *
      * <p>As stated in <a
@@ -61,7 +61,7 @@ public class Pack200Utils {
     }
 
     /**
-     * Normalizes a JAR archive so it can be safely signed and packed.
+     * Normalizes a JAR archive, so it can be safely signed and packed.
      *
      * <p>As stated in <a
      * href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a>
@@ -86,7 +86,7 @@ public class Pack200Utils {
     }
 
     /**
-     * Normalizes a JAR archive so it can be safely signed and packed.
+     * Normalizes a JAR archive, so it can be safely signed and packed.
      *
      * <p>As stated in <a
      * href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a>
@@ -128,7 +128,7 @@ public class Pack200Utils {
     }
 
     /**
-     * Normalizes a JAR archive in-place so it can be safely signed
+     * Normalizes a JAR archive in-place, so it can be safely signed
      * and packed.
      *
      * <p>As stated in <a

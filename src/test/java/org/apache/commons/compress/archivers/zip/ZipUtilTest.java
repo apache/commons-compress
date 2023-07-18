@@ -197,12 +197,12 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testMinTime(){
+    public void testMinTime() {
         final byte[] b1 = ZipUtil.toDosTime(0);
         final byte b10 = b1[0]; // Save the first byte
         b1[0]++; // change it
         final byte[] b2 = ZipUtil.toDosTime(0); // get the same time
-        assertEquals(b10,b2[0]); // first byte should still be the same
+        assertEquals(b10, b2[0]); // first byte should still be the same
     }
 
     @Test

@@ -100,7 +100,7 @@ public class SevenZArchiverTest extends AbstractTestCase {
         target = new File(resultDir, "test.7z");
     }
 
-    // not really a 7z test but I didn't feel like adding a new test just for this
+    // not really a 7z test, but I didn't feel like adding a new test just for this
     @Test
     public void unknownFormat() throws IOException {
         try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE, StandardOpenOption.CREATE,

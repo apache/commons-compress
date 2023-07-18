@@ -45,8 +45,7 @@ public abstract class ClassSpecificReferenceForm extends ReferenceForm {
     protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset)
         throws Pack200Exception {
         final SegmentConstantPool globalPool = operandManager.globalConstantPool();
-        ClassFileEntry[] nested = null;
-        nested = new ClassFileEntry[] {
+        ClassFileEntry[] nested = new ClassFileEntry[] {
             globalPool.getClassSpecificPoolEntry(getPoolID(), offset, context(operandManager))};
         byteCode.setNested(nested);
         byteCode.setNestedPositions(new int[][] {{0, 2}});
