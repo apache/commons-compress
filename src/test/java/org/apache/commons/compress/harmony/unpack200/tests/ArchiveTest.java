@@ -176,7 +176,7 @@ public class ArchiveTest {
         archive.setLogFile(logFile.getPath(), false);
         archive.setVerbose(true);
         archive.unpack();
-        assertTrue(logFile.length() == length);
+        assertEquals(logFile.length(), length);
 
         // test setting quiet explicitly
         in = Archive.class
