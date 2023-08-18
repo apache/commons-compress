@@ -36,7 +36,7 @@ import org.apache.commons.compress.java.util.jar.Pack200;
 public class Pack200CompressorOutputStream extends CompressorOutputStream {
     private boolean finished;
     private final OutputStream originalOutput;
-    private final StreamBridge streamBridge;
+    private final AbstractStreamBridge abstractStreamBridge;
     private final Map<String, String> properties;
 
     /**
@@ -93,7 +93,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
                                          final Map<String, String> props)
         throws IOException {
         originalOutput = out;
-        streamBridge = mode.newStreamBridge();
+        abstractStreamBridge = mode.newStreamBridge();
         properties = props;
     }
 
@@ -103,7 +103,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
             finish();
         } finally {
             try {
-                streamBridge.stop();
+                abstractStreamBridge.stop();
             } finally {
                 originalOutput.close();
             }
@@ -117,7 +117,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
             if (properties != null) {
                 p.properties().putAll(properties);
             }
-            try (JarInputStream ji = new JarInputStream(streamBridge.getInput())) {
+            try (JarInputStream ji = new JarInputStream(abstractStreamBridge.getInput())) {
                 p.pack(ji, originalOutput);
             }
         }
@@ -125,16 +125,16 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
 
     @Override
     public void write(final byte[] b) throws IOException {
-        streamBridge.write(b);
+        abstractStreamBridge.write(b);
     }
 
     @Override
     public void write(final byte[] b, final int from, final int length) throws IOException {
-        streamBridge.write(b, from, length);
+        abstractStreamBridge.write(b, from, length);
     }
 
     @Override
     public void write(final int b) throws IOException {
-        streamBridge.write(b);
+        abstractStreamBridge.write(b);
     }
 }

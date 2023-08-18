@@ -30,17 +30,17 @@ public enum Pack200Strategy {
     /** Cache output in memory */
     IN_MEMORY() {
         @Override
-        StreamBridge newStreamBridge() {
+        AbstractStreamBridge newStreamBridge() {
             return new InMemoryCachingStreamBridge();
         }
     },
     /** Cache output in a temporary file */
     TEMP_FILE() {
         @Override
-        StreamBridge newStreamBridge() throws IOException {
+        AbstractStreamBridge newStreamBridge() throws IOException {
             return new TempFileCachingStreamBridge();
         }
     };
 
-    abstract StreamBridge newStreamBridge() throws IOException;
+    abstract AbstractStreamBridge newStreamBridge() throws IOException;
 }

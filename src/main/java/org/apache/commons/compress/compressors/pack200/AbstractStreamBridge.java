@@ -31,15 +31,15 @@ import java.io.OutputStream;
  * @ThreadSafe
  * @since 1.3
  */
-abstract class StreamBridge extends FilterOutputStream {
+abstract class AbstractStreamBridge extends FilterOutputStream {
     private InputStream input;
     private final Object inputLock = new Object();
 
-    protected StreamBridge() {
+    protected AbstractStreamBridge() {
         this(null);
     }
 
-    protected StreamBridge(final OutputStream out) {
+    protected AbstractStreamBridge(final OutputStream out) {
         super(out);
     }
 

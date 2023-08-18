@@ -75,7 +75,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
 
     private final InputStream originalInput;
 
-    private final StreamBridge streamBridge;
+    private final AbstractStreamBridge abstractStreamBridge;
 
     /**
      * Decompresses the given file, caching the decompressed data in
@@ -150,8 +150,8 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
                                          final Map<String, String> props)
             throws IOException {
         originalInput = in;
-        streamBridge = mode.newStreamBridge();
-        try (final JarOutputStream jarOut = new JarOutputStream(streamBridge)) {
+        abstractStreamBridge = mode.newStreamBridge();
+        try (final JarOutputStream jarOut = new JarOutputStream(abstractStreamBridge)) {
             final Pack200.Unpacker u = Pack200.newUnpacker();
             if (props != null) {
                 u.properties().putAll(props);
@@ -223,13 +223,13 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
 
     @Override
     public int available() throws IOException {
-        return streamBridge.getInput().available();
+        return abstractStreamBridge.getInput().available();
     }
 
     @Override
     public void close() throws IOException {
         try {
-            streamBridge.stop();
+            abstractStreamBridge.stop();
         } finally {
             if (originalInput != null) {
                 originalInput.close();
@@ -240,7 +240,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     @Override
     public synchronized void mark(final int limit) {
         try {
-            streamBridge.getInput().mark(limit);
+            abstractStreamBridge.getInput().mark(limit);
         } catch (final IOException ex) {
             throw new UncheckedIOException(ex); //NOSONAR
         }
@@ -249,7 +249,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     @Override
     public boolean markSupported() {
         try {
-            return streamBridge.getInput().markSupported();
+            return abstractStreamBridge.getInput().markSupported();
         } catch (final IOException ex) { // NOSONAR
             return false;
         }
@@ -257,25 +257,25 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
 
     @Override
     public int read() throws IOException {
-        return streamBridge.getInput().read();
+        return abstractStreamBridge.getInput().read();
     }
 
     @Override
     public int read(final byte[] b) throws IOException {
-        return streamBridge.getInput().read(b);
+        return abstractStreamBridge.getInput().read(b);
     }
 
     @Override
     public int read(final byte[] b, final int off, final int count) throws IOException {
-        return streamBridge.getInput().read(b, off, count);
+        return abstractStreamBridge.getInput().read(b, off, count);
     }
     @Override
     public synchronized void reset() throws IOException {
-        streamBridge.getInput().reset();
+        abstractStreamBridge.getInput().reset();
     }
 
     @Override
     public long skip(final long count) throws IOException {
-        return IOUtils.skip(streamBridge.getInput(), count);
+        return IOUtils.skip(abstractStreamBridge.getInput(), count);
     }
 }

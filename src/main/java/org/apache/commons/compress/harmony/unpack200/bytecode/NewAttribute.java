@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class NewAttribute extends BCIRenumberedAttribute {
 
-    private static class BCIndex extends BCValue {
+    private static class BCIndex extends AbstractBcValue {
 
         private final int index;
 
@@ -34,7 +34,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
             this.index = index;
         }
     }
-    private static class BCLength extends BCValue {
+    private static class BCLength extends AbstractBcValue {
 
         private final int length;
 
@@ -42,7 +42,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
             this.length = length;
         }
     }
-    private static class BCOffset extends BCValue {
+    private static class BCOffset extends AbstractBcValue {
 
         private final int offset;
         private int index;
@@ -57,7 +57,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
 
     }
     // Bytecode-related value (either a bytecode index or a length)
-    private static abstract class BCValue {
+    private static abstract class AbstractBcValue {
 
         int actualValue;
 
@@ -221,8 +221,8 @@ public class NewAttribute extends BCIRenumberedAttribute {
                 value = ((Long) obj).longValue();
             } else if (obj instanceof ClassFileEntry) {
                 value = pool.indexOf(((ClassFileEntry) obj));
-            } else if (obj instanceof BCValue) {
-                value = ((BCValue) obj).actualValue;
+            } else if (obj instanceof AbstractBcValue) {
+                value = ((AbstractBcValue) obj).actualValue;
             }
             // Write
             switch (length) {
