@@ -305,7 +305,7 @@ public class ArchiveTest {
 
     @ParameterizedTest
     @MethodSource("loadMultipleJars")
-    public void testMultipleJars(final Path path) throws URISyntaxException, IOException, Pack200Exception {
+    public void testMultipleJars(final Path path) throws IOException, Pack200Exception {
         final File inputFile = path.toFile();
         in = new JarFile(inputFile);
         file = File.createTempFile("temp", ".pack.gz");

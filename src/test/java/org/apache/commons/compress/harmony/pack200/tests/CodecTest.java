@@ -82,8 +82,7 @@ public class CodecTest {
         return (value);
     }
 
-    private void decodeFail(final Codec codec, final byte[] data)
-            throws IOException, Pack200Exception {
+    private void decodeFail(final Codec codec, final byte[] data) {
         assertThrowsExactly(EOFException.class, () -> decode(codec, data, 0, 0), "Should have detected an EOFException");
     }
 
