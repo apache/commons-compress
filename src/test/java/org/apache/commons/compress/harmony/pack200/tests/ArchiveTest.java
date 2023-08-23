@@ -232,7 +232,7 @@ public class ArchiveTest {
                     String line2 = reader2.readLine();
                     int i = 1;
                     while (line1 != null || line2 != null) {
-                        assertEquals(line2, line1, "Unpacked class files differ");
+                        assertEquals(line2, line1, "Unpacked class files differ, i = " + i);
                         line1 = reader1.readLine();
                         line2 = reader2.readLine();
                         i++;
