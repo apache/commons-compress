@@ -213,34 +213,33 @@ public class ArchiveTest {
         out2.close();
         in2.close();
 
-        final JarFile jarFile = new JarFile(file2);
-        final JarEntry entry = jarFile
-                .getJarEntry("org/apache/harmony/archive/tests/internal/pack200/HelloWorld.class");
-        assertNotNull(entry);
-        final InputStream ours = jarFile.getInputStream(entry);
+        try (JarFile jarFile = new JarFile(file2)) {
+            final JarEntry entry = jarFile
+                    .getJarEntry("org/apache/harmony/archive/tests/internal/pack200/HelloWorld.class");
+            assertNotNull(entry);
+            try (InputStream ours = jarFile.getInputStream(entry)) {
 
-        final JarFile jarFile2 = new JarFile(new File(Segment.class.getResource(
-                "/pack200/hw.jar").toURI()));
-        final JarEntry entry2 = jarFile2
-                .getJarEntry("org/apache/harmony/archive/tests/internal/pack200/HelloWorld.class");
-        assertNotNull(entry2);
+                final JarFile jarFile2 = new JarFile(new File(Segment.class.getResource("/pack200/hw.jar").toURI()));
+                final JarEntry entry2 = jarFile2
+                        .getJarEntry("org/apache/harmony/archive/tests/internal/pack200/HelloWorld.class");
+                assertNotNull(entry2);
 
-        final InputStream expected = jarFile2.getInputStream(entry2);
+                final InputStream expected = jarFile2.getInputStream(entry2);
 
-        final BufferedReader reader1 = new BufferedReader(new InputStreamReader(ours));
-        final BufferedReader reader2 = new BufferedReader(new InputStreamReader(
-                expected));
-        String line1 = reader1.readLine();
-        String line2 = reader2.readLine();
-        int i = 1;
-        while (line1 != null || line2 != null) {
-            assertEquals(line2, line1, "Unpacked class files differ");
-            line1 = reader1.readLine();
-            line2 = reader2.readLine();
-            i++;
+                try (BufferedReader reader1 = new BufferedReader(new InputStreamReader(ours));
+                        BufferedReader reader2 = new BufferedReader(new InputStreamReader(expected))) {
+                    String line1 = reader1.readLine();
+                    String line2 = reader2.readLine();
+                    int i = 1;
+                    while (line1 != null || line2 != null) {
+                        assertEquals(line2, line1, "Unpacked class files differ");
+                        line1 = reader1.readLine();
+                        line2 = reader2.readLine();
+                        i++;
+                    }
+                }
+            }
         }
-        reader1.close();
-        reader2.close();
     }
 
     @Test
