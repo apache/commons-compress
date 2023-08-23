@@ -177,7 +177,7 @@ public class CodeAttributeTest {
         assertEquals("aload_0_putfield_this", attribute.byteCodes
                 .get(4).toString());
 
-        final int expectedLabels[] = { 0, 1, 4, 5, 8, 9, 10, 13, 14 };
+        final int[] expectedLabels = { 0, 1, 4, 5, 8, 9, 10, 13, 14 };
         for (int index = 0; index < expectedLabels.length; index++) {
             assertEquals(expectedLabels[index],
                     attribute.byteCodeOffsets.get(index).intValue());
@@ -201,7 +201,7 @@ public class CodeAttributeTest {
         assertEquals("invokespecial_this", attribute.byteCodes
                 .get(3).toString());
 
-        final int expectedLabels[] = { 0, 1, 2, 4 };
+        final int[] expectedLabels = { 0, 1, 2, 4 };
         for (int index = 0; index < expectedLabels.length; index++) {
             assertEquals(expectedLabels[index],
                     attribute.byteCodeOffsets.get(index).intValue());
