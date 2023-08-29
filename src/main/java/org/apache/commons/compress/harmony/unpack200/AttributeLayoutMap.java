@@ -132,7 +132,8 @@ public class AttributeLayoutMap {
      * All elements are of type {@code Map<Integer, AttributeLayout>}.
      * </p>
      */
-    private final Map[] layouts = { classLayouts, fieldLayouts, methodLayouts, codeLayouts };
+    @SuppressWarnings("unchecked") // Cannot create a generic array
+    private final Map<Integer, AttributeLayout>[] layouts = new Map[] { classLayouts, fieldLayouts, methodLayouts, codeLayouts };
 
     private final Map<AttributeLayout, NewAttributeBands> layoutsToBands = new HashMap<>();
 
