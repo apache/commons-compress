@@ -125,8 +125,8 @@ public class ExpanderTest extends AbstractTestCase {
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }
-        try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
-             .createArchiveOutputStream("tar", Files.newOutputStream(archive.toPath()))) {
+        try (@SuppressWarnings("resource") // Files.newOutputStream result closed by ArchiveOutputStream
+        ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("tar", Files.newOutputStream(archive.toPath()))) {
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "a"));
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b"));
@@ -149,8 +149,8 @@ public class ExpanderTest extends AbstractTestCase {
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }
-        try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
-                .createArchiveOutputStream("tar", Files.newOutputStream(archive.toPath()))) {
+        try (@SuppressWarnings("resource") // Files.newOutputStream result closed by ArchiveOutputStream
+        ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("tar", Files.newOutputStream(archive.toPath()))) {
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "./"));
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "./a"));
@@ -175,8 +175,8 @@ public class ExpanderTest extends AbstractTestCase {
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }
-        try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
-             .createArchiveOutputStream("zip", Files.newOutputStream(archive.toPath()))) {
+        try (@SuppressWarnings("resource") // // Files.newOutputStream result closed by ArchiveOutputStream
+        ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("zip", Files.newOutputStream(archive.toPath()))) {
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "a"));
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b"));
@@ -199,8 +199,8 @@ public class ExpanderTest extends AbstractTestCase {
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }
-        try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
-             .createArchiveOutputStream("zip", Files.newOutputStream(archive.toPath()))) {
+        try (@SuppressWarnings("resource") // Files.newOutputStream result closed by ArchiveOutputStream
+        ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("zip", Files.newOutputStream(archive.toPath()))) {
             aos.putArchiveEntry(aos.createArchiveEntry(dummy, entry));
             aos.write("Hello, world 1".getBytes(UTF_8));
             aos.closeArchiveEntry();
