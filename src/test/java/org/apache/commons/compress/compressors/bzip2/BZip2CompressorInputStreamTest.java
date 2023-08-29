@@ -54,13 +54,11 @@ public class BZip2CompressorInputStreamTest extends AbstractTestCase {
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.txt.bz2");
         final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final BZip2CompressorInputStream in =
-                    new BZip2CompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                final BZip2CompressorInputStream in = new BZip2CompressorInputStream(is)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read(buf));
             assertEquals(-1, in.read(buf));
-            in.close();
         }
     }
 
@@ -71,27 +69,27 @@ public class BZip2CompressorInputStreamTest extends AbstractTestCase {
     public void readOfLength0ShouldReturn0() throws Exception {
         // Create a big random piece of data
         final byte[] rawData = new byte[1048576];
-        for (int i=0; i < rawData.length; ++i) {
-            rawData[i] = (byte) Math.floor(Math.random()*256);
+        for (int i = 0; i < rawData.length; ++i) {
+            rawData[i] = (byte) Math.floor(Math.random() * 256);
         }
 
         // Compress it
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final BZip2CompressorOutputStream bzipOut = new BZip2CompressorOutputStream(baos);
-        bzipOut.write(rawData);
-        bzipOut.flush();
-        bzipOut.close();
-        baos.flush();
-        baos.close();
+        try (BZip2CompressorOutputStream bzipOut = new BZip2CompressorOutputStream(baos)) {
+            bzipOut.write(rawData);
+            bzipOut.flush();
+            bzipOut.close();
+            baos.flush();
+        }
 
         // Try to read it back in
         final ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        final BZip2CompressorInputStream bzipIn = new BZip2CompressorInputStream(bais);
-        final byte[] buffer = new byte[1024];
-        assertEquals(1024, bzipIn.read(buffer, 0, 1024));
-        assertEquals(0, bzipIn.read(buffer, 1024, 0));
-        assertEquals(1024, bzipIn.read(buffer, 0, 1024));
-        bzipIn.close();
+        try (BZip2CompressorInputStream bzipIn = new BZip2CompressorInputStream(bais)) {
+            final byte[] buffer = new byte[1024];
+            assertEquals(1024, bzipIn.read(buffer, 0, 1024));
+            assertEquals(0, bzipIn.read(buffer, 1024, 0));
+            assertEquals(1024, bzipIn.read(buffer, 0, 1024));
+        }
     }
 
     @Test
@@ -150,13 +148,11 @@ public class BZip2CompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.txt.bz2");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final BZip2CompressorInputStream in =
-                    new BZip2CompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                final BZip2CompressorInputStream in = new BZip2CompressorInputStream(is)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
-            in.close();
         }
     }
 }

@@ -57,9 +57,9 @@ public class PythonTruncatedBzip2Test {
     @BeforeAll
     public static void initializeTestData() throws IOException {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        final BZip2CompressorOutputStream bz2out = new BZip2CompressorOutputStream(out);
-        bz2out.write(TEXT.getBytes(), 0, TEXT.getBytes().length);
-        bz2out.close();
+        try (BZip2CompressorOutputStream bz2out = new BZip2CompressorOutputStream(out)) {
+            bz2out.write(TEXT.getBytes(), 0, TEXT.getBytes().length);
+        }
         DATA = out.toByteArray();
 
         // Drop the eos_magic field (6 bytes) and CRC (4 bytes).
