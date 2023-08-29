@@ -53,19 +53,20 @@ public class CompressorStreamFactoryRoundtripTest {
     public void testCompressorStreamFactoryRoundtrip(final String compressorName) throws Exception {
         final CompressorStreamProvider factory = new CompressorStreamFactory();
         final ByteArrayOutputStream compressedOs = new ByteArrayOutputStream();
-        final CompressorOutputStream compressorOutputStream = factory.createCompressorOutputStream(compressorName, compressedOs);
         final String fixture = "The quick brown fox jumps over the lazy dog";
-        compressorOutputStream.write(fixture.getBytes(UTF_8));
-        compressorOutputStream.flush();
-        compressorOutputStream.close();
+        try (CompressorOutputStream compressorOutputStream = factory.createCompressorOutputStream(compressorName, compressedOs)) {
+            compressorOutputStream.write(fixture.getBytes(UTF_8));
+            compressorOutputStream.flush();
+        }
         final ByteArrayInputStream is = new ByteArrayInputStream(compressedOs.toByteArray());
-        final CompressorInputStream compressorInputStream = factory.createCompressorInputStream(compressorName, is, false);
-        final ByteArrayOutputStream decompressedOs = new ByteArrayOutputStream();
-        IOUtils.copy(compressorInputStream, decompressedOs);
-        compressorInputStream.close();
-        decompressedOs.flush();
-        decompressedOs.close();
-        assertEquals(fixture, decompressedOs.toString("UTF-8"));
+        try (CompressorInputStream compressorInputStream = factory.createCompressorInputStream(compressorName, is, false)) {
+            final ByteArrayOutputStream decompressedOs = new ByteArrayOutputStream();
+            IOUtils.copy(compressorInputStream, decompressedOs);
+            compressorInputStream.close();
+            decompressedOs.flush();
+            decompressedOs.close();
+            assertEquals(fixture, decompressedOs.toString("UTF-8"));
+        }
     }
 
 }
