@@ -154,12 +154,12 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     /**
      * Constructs an Ar input stream with the referenced stream
      *
-     * @param pInput
+     * @param inputStream
      *            the ar input stream
      */
-    public ArArchiveInputStream(final InputStream pInput) {
-        input = pInput;
-        closed = false;
+    public ArArchiveInputStream(final InputStream inputStream) {
+        this.input = inputStream;
+        this.closed = false;
     }
 
     private int asInt(final byte[] byteArray, final int offset, final int len) {
