@@ -20,10 +20,10 @@ package org.apache.commons.compress.compressors.lz4;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
@@ -43,18 +43,18 @@ public class FactoryTest extends AbstractTestCase {
     }
 
     private void roundtripViaFactory(final String format) throws Exception {
-        final File input = getFile("bla.tar");
+        final Path input = getPath("bla.tar");
         long start = System.currentTimeMillis();
-        final File outputSz = new File(dir, input.getName() + "." + format + ".lz4");
-        try (OutputStream os = Files.newOutputStream(outputSz.toPath());
+        final Path outputSz = dir.toPath().resolve(input.getFileName() + "." + format + ".lz4");
+        try (OutputStream os = Files.newOutputStream(outputSz);
                 OutputStream los = new CompressorStreamFactory().createCompressorOutputStream(format, os)) {
-            Files.copy(input.toPath(), los);
+            Files.copy(input, los);
         }
         // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
         // + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
-        try (InputStream is = Files.newInputStream(input.toPath());
-                InputStream sis = new CompressorStreamFactory().createCompressorInputStream(format, Files.newInputStream(outputSz.toPath()))) {
+        try (InputStream is = Files.newInputStream(input);
+                InputStream sis = new CompressorStreamFactory().createCompressorInputStream(format, Files.newInputStream(outputSz))) {
             final byte[] expected = IOUtils.toByteArray(is);
             final byte[] actual = IOUtils.toByteArray(sis);
             assertArrayEquals(expected, actual);
