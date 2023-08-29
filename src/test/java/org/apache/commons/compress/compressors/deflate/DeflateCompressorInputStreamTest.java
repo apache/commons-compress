@@ -35,11 +35,9 @@ public class DeflateCompressorInputStreamTest {
     @Test
     public void availableShouldReturnNonZero() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final DeflateCompressorInputStream in =
-                    new DeflateCompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                DeflateCompressorInputStream in = new DeflateCompressorInputStream(is)) {
             assertTrue(in.available() > 0);
-            in.close();
         }
     }
 
@@ -47,49 +45,41 @@ public class DeflateCompressorInputStreamTest {
     public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
         final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final DeflateCompressorInputStream in =
-                    new DeflateCompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                DeflateCompressorInputStream in = new DeflateCompressorInputStream(is)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read(buf));
             assertEquals(-1, in.read(buf));
-            in.close();
         }
     }
 
     @Test
     public void shouldBeAbleToSkipAByte() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final DeflateCompressorInputStream in =
-                    new DeflateCompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                DeflateCompressorInputStream in = new DeflateCompressorInputStream(is)) {
             assertEquals(1, in.skip(1));
-            in.close();
         }
     }
 
     @Test
     public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final DeflateCompressorInputStream in =
-                    new DeflateCompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                DeflateCompressorInputStream in = new DeflateCompressorInputStream(is)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
-            in.close();
         }
     }
 
     @Test
     public void singleByteReadWorksAsExpected() throws IOException {
         final File input = AbstractTestCase.getFile("bla.tar.deflatez");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            final DeflateCompressorInputStream in =
-                    new DeflateCompressorInputStream(is);
+        try (InputStream is = Files.newInputStream(input.toPath());
+                DeflateCompressorInputStream in = new DeflateCompressorInputStream(is)) {
             // tar header starts with filename "test1.xml"
             assertEquals('t', in.read());
-            in.close();
         }
     }
 
