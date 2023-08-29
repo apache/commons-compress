@@ -570,15 +570,16 @@ public class ZipArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void testSplitZipCreatedByZipThrowsException() throws IOException {
         final File zipSplitFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
-        final InputStream fileInputStream = Files.newInputStream(zipSplitFile.toPath());
-        final ZipArchiveInputStream inputStream = new ZipArchiveInputStream(fileInputStream, ZipEncodingHelper.UTF8, true, false, true);
+        try (ZipArchiveInputStream inputStream = new ZipArchiveInputStream(Files.newInputStream(zipSplitFile.toPath()), ZipEncodingHelper.UTF8, true, false,
+                true)) {
 
-        assertThrows(EOFException.class, () -> {
-            ArchiveEntry entry = inputStream.getNextEntry();
-            while (entry != null) {
-                entry = inputStream.getNextEntry();
-            }
-        });
+            assertThrows(EOFException.class, () -> {
+                ArchiveEntry entry = inputStream.getNextEntry();
+                while (entry != null) {
+                    entry = inputStream.getNextEntry();
+                }
+            });
+        }
     }
 
     /**
@@ -587,10 +588,7 @@ public class ZipArchiveInputStreamTest extends AbstractTestCase {
      */
     @Test
     public void testThrowOnInvalidEntry() throws Exception {
-        final InputStream is = ZipArchiveInputStreamTest.class
-                .getResourceAsStream("/invalid-zip.zip");
-
-        try (final ZipArchiveInputStream zip = new ZipArchiveInputStream(is)) {
+        try (final ZipArchiveInputStream zip = new ZipArchiveInputStream(ZipArchiveInputStreamTest.class.getResourceAsStream("/invalid-zip.zip"))) {
             final ZipException expected = assertThrows(ZipException.class, zip::getNextZipEntry, "IOException expected");
             assertTrue(expected.getMessage().contains("Unexpected record signature"));
         }
@@ -598,28 +596,26 @@ public class ZipArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testUnshrinkEntry() throws Exception {
-        final ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("SHRUNK.ZIP"));
+        try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("SHRUNK.ZIP"))) {
+            ZipArchiveEntry entry = in.getNextZipEntry();
+            assertEquals(ZipMethod.UNSHRINKING.getCode(), entry.getMethod(), "method");
+            assertTrue(in.canReadEntryData(entry));
 
-        ZipArchiveEntry entry = in.getNextZipEntry();
-        assertEquals(ZipMethod.UNSHRINKING.getCode(), entry.getMethod(), "method");
-        assertTrue(in.canReadEntryData(entry));
+            try (InputStream original = newInputStream("test1.xml")) {
+                try {
+                    assertArrayEquals(IOUtils.toByteArray(original), IOUtils.toByteArray(in));
+                } finally {
+                    original.close();
+                }
 
-        InputStream original = newInputStream("test1.xml");
-        try {
-            assertArrayEquals(IOUtils.toByteArray(original), IOUtils.toByteArray(in));
-        } finally {
-            original.close();
-        }
+                entry = in.getNextZipEntry();
+                assertEquals(ZipMethod.UNSHRINKING.getCode(), entry.getMethod(), "method");
+                assertTrue(in.canReadEntryData(entry));
+            }
 
-        entry = in.getNextZipEntry();
-        assertEquals(ZipMethod.UNSHRINKING.getCode(), entry.getMethod(), "method");
-        assertTrue(in.canReadEntryData(entry));
-
-        original = newInputStream("test2.xml");
-        try {
-            assertArrayEquals(IOUtils.toByteArray(original), IOUtils.toByteArray(in));
-        } finally {
-            original.close();
+            try (InputStream original = newInputStream("test2.xml")) {
+                assertArrayEquals(IOUtils.toByteArray(original), IOUtils.toByteArray(in));
+            }
         }
     }
 

@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Enumeration;
 
@@ -50,7 +51,9 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     public void getRawInputStreamReturnsNotNull() throws IOException {
         try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
             final ZipArchiveEntry ze = zf.getEntry("test1.xml");
-            assertNotNull(zf.getRawInputStream(ze));
+            try (InputStream rawInputStream = zf.getRawInputStream(ze)) {
+                assertNotNull(rawInputStream);
+            }
         }
     }
 
@@ -70,7 +73,9 @@ public class ZipFileIgnoringLocalFileHeaderTest {
             int numberOfEntries = 0;
             for (final ZipArchiveEntry entry : zf.getEntries("test1.txt")) {
                 numberOfEntries++;
-                assertNotNull(zf.getInputStream(entry));
+                try (InputStream inputStream = zf.getInputStream(entry)) {
+                    assertNotNull(inputStream);
+                }
             }
             assertEquals(2, numberOfEntries);
         }
@@ -97,7 +102,9 @@ public class ZipFileIgnoringLocalFileHeaderTest {
         try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
             for (final Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements();) {
                 final ZipArchiveEntry entry = e.nextElement();
-                Files.copy(zf.getInputStream(entry), new File(dir, entry.getName()).toPath());
+                try (InputStream inputStream = zf.getInputStream(entry)) {
+                    Files.copy(inputStream, new File(dir, entry.getName()).toPath());
+                }
             }
         }
     }

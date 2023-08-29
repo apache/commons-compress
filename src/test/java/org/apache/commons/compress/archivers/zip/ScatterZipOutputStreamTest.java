@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.parallel.InputStreamSupplier;
@@ -69,13 +70,17 @@ public class ScatterZipOutputStreamTest {
         }
 
         try (ZipFile zf = new ZipFile(target)) {
-            final ZipArchiveEntry b_entry = zf.getEntries("b.txt").iterator().next();
-            assertEquals(8, b_entry.getSize());
-            assertArrayEquals(B_PAYLOAD, IOUtils.toByteArray(zf.getInputStream(b_entry)));
+            final ZipArchiveEntry bEntry = zf.getEntries("b.txt").iterator().next();
+            assertEquals(8, bEntry.getSize());
+            try (InputStream inputStream = zf.getInputStream(bEntry)) {
+                assertArrayEquals(B_PAYLOAD, IOUtils.toByteArray(inputStream));
+            }
 
-            final ZipArchiveEntry a_entry = zf.getEntries("a.txt").iterator().next();
-            assertEquals(4, a_entry.getSize());
-            assertArrayEquals(A_PAYLOAD, IOUtils.toByteArray(zf.getInputStream(a_entry)));
+            final ZipArchiveEntry aEntry = zf.getEntries("a.txt").iterator().next();
+            assertEquals(4, aEntry.getSize());
+            try (InputStream inputStream = zf.getInputStream(aEntry)) {
+                assertArrayEquals(A_PAYLOAD, IOUtils.toByteArray(inputStream));
+            }
         }
     }
 }

@@ -193,12 +193,9 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     private void assertCanRead(final ZipFile zf, final String fileName) throws IOException {
         final ZipArchiveEntry entry = zf.getEntry(fileName);
         assertNotNull(entry, "Entry doesn't exist");
-        final InputStream is = zf.getInputStream(entry);
-        assertNotNull(is, "InputStream is null");
-        try {
+        try (InputStream is = zf.getInputStream(entry)) {
+            assertNotNull(is, "InputStream is null");
             is.read();
-        } finally {
-            is.close();
         }
     }
 
@@ -240,11 +237,8 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     }
 
     @Test
-    public void testRawNameReadFromStream()
-        throws IOException {
-        final InputStream archive =
-            newInputStream("utf8-7zip-test.zip");
-        try (ZipArchiveInputStream zi = new ZipArchiveInputStream(archive, CP437, false)) {
+    public void testRawNameReadFromStream() throws IOException {
+        try (ZipArchiveInputStream zi = new ZipArchiveInputStream(newInputStream("utf8-7zip-test.zip"), CP437, false)) {
             assertRawNameOfAcsiiTxt((ZipArchiveEntry) zi.getNextEntry());
         }
     }
@@ -284,9 +278,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
 
     @Test
     public void testRead7ZipArchiveForStream() throws IOException {
-        final InputStream archive =
-                newInputStream("utf8-7zip-test.zip");
-        try (ZipArchiveInputStream zi = new ZipArchiveInputStream(archive, CP437, false)) {
+        try (ZipArchiveInputStream zi = new ZipArchiveInputStream(newInputStream("utf8-7zip-test.zip"), CP437, false)) {
             assertEquals(ASCII_TXT, zi.getNextEntry().getName());
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
             assertEquals(EURO_FOR_DOLLAR_TXT, zi.getNextEntry().getName());
@@ -391,8 +383,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         ZipArchiveInputStream zi = null;
         try {
             createTestFile(file, CharsetNames.US_ASCII, false, true);
-            final InputStream archive = Files.newInputStream(file.toPath());
-            zi = new ZipArchiveInputStream(archive, CharsetNames.US_ASCII, true);
+            zi = new ZipArchiveInputStream(Files.newInputStream(file.toPath()), CharsetNames.US_ASCII, true);
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
             assertEquals(EURO_FOR_DOLLAR_TXT, zi.getNextEntry().getName());
             assertEquals(ASCII_TXT, zi.getNextEntry().getName());

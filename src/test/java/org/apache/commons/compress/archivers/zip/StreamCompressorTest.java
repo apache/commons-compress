@@ -35,36 +35,37 @@ public class StreamCompressorTest {
     @Test
     public void deflatedEntries() throws Exception {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final StreamCompressor sc = StreamCompressor.create( baos);
-        sc.deflate(new ByteArrayInputStream("AAAAAABBBBBB".getBytes()), ZipEntry.DEFLATED);
-        assertEquals(12, sc.getBytesRead());
-        assertEquals(8, sc.getBytesWrittenForLastEntry());
-        assertEquals(3299542, sc.getCrc32());
+        try (StreamCompressor sc = StreamCompressor.create(baos)) {
+            sc.deflate(new ByteArrayInputStream("AAAAAABBBBBB".getBytes()), ZipEntry.DEFLATED);
+            assertEquals(12, sc.getBytesRead());
+            assertEquals(8, sc.getBytesWrittenForLastEntry());
+            assertEquals(3299542, sc.getCrc32());
 
-        final byte[] actuals = baos.toByteArray();
-        final byte[] expected = {115,116,4,1,39,48,0,0};
-        // Note that this test really asserts stuff about the java Deflater, which might be a little bit brittle
-        assertArrayEquals(expected, actuals);
+            final byte[] actuals = baos.toByteArray();
+            final byte[] expected = { 115, 116, 4, 1, 39, 48, 0, 0 };
+            // Note that this test really asserts stuff about the java Deflater, which might be a little bit brittle
+            assertArrayEquals(expected, actuals);
+        }
     }
 
     @Test
     public void storedEntries() throws Exception {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final StreamCompressor sc = StreamCompressor.create( baos);
-        sc.deflate(new ByteArrayInputStream("A".getBytes()), ZipEntry.STORED);
-        sc.deflate(new ByteArrayInputStream("BAD".getBytes()), ZipEntry.STORED);
-        assertEquals(3, sc.getBytesRead());
-        assertEquals(3, sc.getBytesWrittenForLastEntry());
-        assertEquals(344750961, sc.getCrc32());
-        sc.deflate(new ByteArrayInputStream("CAFE".getBytes()), ZipEntry.STORED);
-        assertEquals("ABADCAFE", baos.toString());
-   }
+        try (StreamCompressor sc = StreamCompressor.create(baos)) {
+            sc.deflate(new ByteArrayInputStream("A".getBytes()), ZipEntry.STORED);
+            sc.deflate(new ByteArrayInputStream("BAD".getBytes()), ZipEntry.STORED);
+            assertEquals(3, sc.getBytesRead());
+            assertEquals(3, sc.getBytesWrittenForLastEntry());
+            assertEquals(344750961, sc.getCrc32());
+            sc.deflate(new ByteArrayInputStream("CAFE".getBytes()), ZipEntry.STORED);
+            assertEquals("ABADCAFE", baos.toString());
+        }
+    }
 
     @Test
     public void testCreateDataOutputCompressor() throws IOException {
         final DataOutput dataOutputStream = new DataOutputStream(new ByteArrayOutputStream());
-        try (StreamCompressor streamCompressor = StreamCompressor
-            .create(dataOutputStream, new Deflater(9))) {
+        try (StreamCompressor streamCompressor = StreamCompressor.create(dataOutputStream, new Deflater(9))) {
             assertNotNull(streamCompressor);
         }
     }

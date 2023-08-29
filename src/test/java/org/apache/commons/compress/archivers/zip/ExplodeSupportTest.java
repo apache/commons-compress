@@ -85,21 +85,22 @@ public class ExplodeSupportTest {
     }
 
     private void testZipStreamWithImplodeCompression(final String filename, final String entryName) throws IOException {
-        final ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(new File(filename).toPath()));
-        final ZipArchiveEntry entry = zin.getNextZipEntry();
-        assertEquals(entryName, entry.getName(), "entry name");
-        assertTrue(zin.canReadEntryData(entry), "entry can't be read");
-        assertEquals(ZipMethod.IMPLODING.getCode(), entry.getMethod(), "method");
+        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(new File(filename).toPath()))) {
+            final ZipArchiveEntry entry = zin.getNextZipEntry();
+            assertEquals(entryName, entry.getName(), "entry name");
+            assertTrue(zin.canReadEntryData(entry), "entry can't be read");
+            assertEquals(ZipMethod.IMPLODING.getCode(), entry.getMethod(), "method");
 
-        final InputStream bio = new BoundedInputStream(zin, entry.getSize());
+            final InputStream bio = new BoundedInputStream(zin, entry.getSize());
 
-        final ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        final CheckedOutputStream out = new CheckedOutputStream(bout, new CRC32());
-        IOUtils.copy(bio, out);
+            final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            final CheckedOutputStream out = new CheckedOutputStream(bout, new CRC32());
+            IOUtils.copy(bio, out);
 
-        out.flush();
+            out.flush();
 
-        assertEquals(entry.getCrc(), out.getChecksum().getValue(), "CRC32");
+            assertEquals(entry.getCrc(), out.getChecksum().getValue(), "CRC32");
+        }
     }
 
     @Test
