@@ -159,7 +159,6 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      */
     public ArArchiveInputStream(final InputStream inputStream) {
         this.input = inputStream;
-        this.closed = false;
     }
 
     private int asInt(final byte[] byteArray, final int offset, final int len) {
