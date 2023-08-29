@@ -128,6 +128,9 @@ public class AttributeLayoutMap {
     /**
      * The order of the maps in this array should not be changed as their indices correspond to the value of their context constants
      * (AttributeLayout.CONTEXT_CLASS etc.)
+     * <p>
+     * All elements are of type {@code Map<Integer, AttributeLayout>}.
+     * </p>
      */
     private final Map[] layouts = { classLayouts, fieldLayouts, methodLayouts, codeLayouts };
 
