@@ -91,7 +91,7 @@ public abstract class AbstractTestCase {
         }
         tryHardToDelete(f); // safer to delete and check
         if (f.exists()) {
-            throw new Error("Failed to delete " + f.getPath());
+            fail("Failed to delete " + f.getPath());
         }
     }
 
