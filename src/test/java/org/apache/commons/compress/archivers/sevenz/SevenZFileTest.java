@@ -565,6 +565,7 @@ public class SevenZFileTest extends AbstractTestCase {
                 }
             }
 
+            assertNotNull(testTxtEntry, "testTxtEntry");
             final byte[] contents = new byte[(int) testTxtEntry.getSize()];
             int numberOfReads = 10;
             while (numberOfReads-- > 0) {
