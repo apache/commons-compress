@@ -82,15 +82,17 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void cantPositionToANegativePosition() {
-        final SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty());
-        assertThrows(IllegalArgumentException.class, () -> s.position(-1));
+    public void cantPositionToANegativePosition() throws IOException {
+        try (SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty())) {
+            assertThrows(IllegalArgumentException.class, () -> s.position(-1));
+        }
     }
 
     @Test
-    public void cantTruncate() {
-        final SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty());
-        assertThrows(NonWritableChannelException.class, () -> s.truncate(1));
+    public void cantTruncate() throws IOException {
+        try (SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty())) {
+            assertThrows(NonWritableChannelException.class, () -> s.truncate(1));
+        }
     }
 
     @Test
@@ -102,9 +104,13 @@ public class MultiReadOnlySeekableByteChannelTest {
     private void check(final byte[] expected) throws IOException {
         for (int channelSize = 1; channelSize <= expected.length; channelSize++) {
             // Sanity check that all operations work for SeekableInMemoryByteChannel
-            check(expected, makeSingle(expected));
+            try (SeekableByteChannel single = makeSingle(expected)) {
+                check(expected, single);
+            }
             // Checks against our MultiReadOnlySeekableByteChannel instance
-            check(expected, makeMulti(grouped(expected, channelSize)));
+            try (SeekableByteChannel multi = makeMulti(grouped(expected, channelSize))) {
+                check(expected, multi);
+            }
         }
     }
 
@@ -345,7 +351,9 @@ public class MultiReadOnlySeekableByteChannelTest {
 
     @Test
     public void twoEmptyChannelsConcatenateAsEmptyChannel() throws IOException {
-        checkEmpty(MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty()));
+        try (SeekableByteChannel channel = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty())) {
+            checkEmpty(channel);
+        }
     }
 
     @Test
