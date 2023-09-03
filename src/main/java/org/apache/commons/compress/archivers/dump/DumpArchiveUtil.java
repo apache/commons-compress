@@ -28,6 +28,7 @@ import org.apache.commons.compress.utils.ByteUtils;
  * Various utilities for dump archives.
  */
 class DumpArchiveUtil {
+
     /**
      * Calculate checksum for buffer.
      *
@@ -46,33 +47,33 @@ class DumpArchiveUtil {
     }
 
     /**
-     * Read 2-byte integer from buffer.
+     * Reads 2-byte integer from buffer.
      *
-     * @param buffer
-     * @param offset
-     * @return the 2-byte entry as an int
+     * @param buffer The source buffer.
+     * @param offset Where to start reading.
+     * @return the 2-byte entry as an int.
      */
     public static final int convert16(final byte[] buffer, final int offset) {
         return (int) ByteUtils.fromLittleEndian(buffer, offset, 2);
     }
 
     /**
-     * Read 4-byte integer from buffer.
+     * Reads 4-byte integer from buffer.
      *
-     * @param buffer
-     * @param offset
-     * @return the 4-byte entry as an int
+     * @param buffer The source buffer.
+     * @param offset Where to start reading.
+     * @return the 4-byte entry as an int.
      */
     public static final int convert32(final byte[] buffer, final int offset) {
         return (int) ByteUtils.fromLittleEndian(buffer, offset, 4);
     }
 
     /**
-     * Read 8-byte integer from buffer.
+     * Reads 8-byte integer from buffer.
      *
-     * @param buffer
-     * @param offset
-     * @return the 8-byte entry as a long
+     * @param buffer The source buffer.
+     * @param offset Where to start reading.
+     * @return the 8-byte entry as a long.
      */
     public static final long convert64(final byte[] buffer, final int offset) {
         return ByteUtils.fromLittleEndian(buffer, offset, 8);
@@ -89,7 +90,7 @@ class DumpArchiveUtil {
     /**
      * Gets the ino associated with this buffer.
      *
-     * @param buffer
+     * @param buffer The source buffer.
      * @return the ino associated with this buffer.
      */
     public static final int getIno(final byte[] buffer) {
@@ -99,7 +100,7 @@ class DumpArchiveUtil {
     /**
      * Verifies that the buffer contains a tape segment header.
      *
-     * @param buffer
+     * @param buffer The source buffer.
      * @return Whether the buffer contains a tape segment header.
      */
     public static final boolean verify(final byte[] buffer) {
