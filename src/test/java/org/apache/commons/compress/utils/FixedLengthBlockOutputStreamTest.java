@@ -298,18 +298,18 @@ public class FixedLengthBlockOutputStreamTest {
 
 
     @Test
-    public void testWriteFailsAfterDestClosedThrowsException() {
+    public void testWriteFailsAfterDestClosedThrowsException() throws IOException {
         final int blockSize = 2;
-        final MockOutputStream mock = new MockOutputStream(blockSize, false);
-        final FixedLengthBlockOutputStream out =
-            new FixedLengthBlockOutputStream(mock, blockSize);
-        assertThrows(IOException.class, () -> {
-            out.write(1);
-            assertTrue(out.isOpen());
-            mock.close();
-            out.write(1);
-        }, "expected IO Exception");
-        assertFalse(out.isOpen());
+        try (MockOutputStream mock = new MockOutputStream(blockSize, false);
+             FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(mock, blockSize)) {
+            assertThrows(IOException.class, () -> {
+                out.write(1);
+                assertTrue(out.isOpen());
+                mock.close();
+                out.write(1);
+            }, "expected IO Exception");
+            assertFalse(out.isOpen());
+        }
     }
 
     @Test
