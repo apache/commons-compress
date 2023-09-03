@@ -688,6 +688,7 @@ public class SevenZFileTest extends AbstractTestCase {
             }
 
             // jump backwards
+            assertNotNull(testTxtEntry, "testTxtEntry");
             final byte[] contents = new byte[(int) testTxtEntry.getSize()];
             try (InputStream inputStream = sevenZFile.getInputStream(testTxtEntry)) {
                 off = 0;
@@ -751,6 +752,7 @@ public class SevenZFileTest extends AbstractTestCase {
             sevenZFile.read(contents);
 
             // and then read a file after the first entry using random access
+            assertNotNull(testTxtEntry, "testTxtEntry");
             contents = new byte[(int) testTxtEntry.getSize()];
             int numberOfReads = 10;
             while (numberOfReads-- > 0) {
