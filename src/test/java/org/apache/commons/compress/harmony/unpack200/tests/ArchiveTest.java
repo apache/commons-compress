@@ -83,28 +83,27 @@ public class ArchiveTest {
 
     @Test
     public void testDeflateHint() throws Exception {
-        in = Archive.class
-                .getResourceAsStream("/pack200/sql.pack.gz");
+        in = Archive.class.getResourceAsStream("/pack200/sql.pack.gz");
         file = File.createTempFile("sql", ".jar");
         file.deleteOnExit();
         out = new JarOutputStream(new FileOutputStream(file));
         Archive archive = new Archive(in, out);
         archive.setDeflateHint(true);
         archive.unpack();
-        JarFile jarFile = new JarFile(file);
-        assertEquals(ZipEntry.DEFLATED, jarFile.getEntry("bin/test/org/apache/harmony/sql/tests/internal/rowset/CachedRowSetImplTest.class").getMethod());
+        try (JarFile jarFile = new JarFile(file)) {
+            assertEquals(ZipEntry.DEFLATED, jarFile.getEntry("bin/test/org/apache/harmony/sql/tests/internal/rowset/CachedRowSetImplTest.class").getMethod());
 
-        in = Archive.class
-                .getResourceAsStream("/pack200/sql.pack.gz");
-        file = File.createTempFile("sql", ".jar");
-        file.deleteOnExit();
-        out = new JarOutputStream(new FileOutputStream(file));
-        archive = new Archive(in, out);
-        archive.setDeflateHint(false);
-        archive.unpack();
-        jarFile = new JarFile(file);
-        assertEquals(ZipEntry.STORED, jarFile.getEntry("bin/test/org/apache/harmony/sql/tests/internal/rowset/CachedRowSetImplTest.class").getMethod());
-
+            in = Archive.class.getResourceAsStream("/pack200/sql.pack.gz");
+            file = File.createTempFile("sql", ".jar");
+            file.deleteOnExit();
+            out = new JarOutputStream(new FileOutputStream(file));
+            archive = new Archive(in, out);
+            archive.setDeflateHint(false);
+            archive.unpack();
+        }
+        try (JarFile jarFile = new JarFile(file)) {
+            assertEquals(ZipEntry.STORED, jarFile.getEntry("bin/test/org/apache/harmony/sql/tests/internal/rowset/CachedRowSetImplTest.class").getMethod());
+        }
     }
 
     @Test
@@ -133,9 +132,9 @@ public class ArchiveTest {
         archive.unpack();
 
         // log file should be empty
-        FileReader reader = new FileReader(logFile);
-        assertFalse(reader.ready());
-        reader.close();
+        try (FileReader reader = new FileReader(logFile)) {
+            assertFalse(reader.ready());
+        }
 
         // test verbose
         in = Archive.class
@@ -151,9 +150,9 @@ public class ArchiveTest {
         archive.unpack();
 
         // log file should not be empty
-        reader = new FileReader(logFile);
-        assertTrue(reader.ready());
-        reader.close();
+        try (FileReader reader = new FileReader(logFile)) {
+            assertTrue(reader.ready());
+        }
 
         // test append option
         final long length = logFile.length();
@@ -192,9 +191,9 @@ public class ArchiveTest {
         archive.unpack();
 
         // log file should be empty
-        reader = new FileReader(logFile);
-        assertFalse(reader.ready());
-        reader.close();
+        try (FileReader reader = new FileReader(logFile)) {
+            assertFalse(reader.ready());
+        }
     }
 
     @Test
