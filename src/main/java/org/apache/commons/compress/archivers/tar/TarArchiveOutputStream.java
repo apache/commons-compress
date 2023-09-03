@@ -115,7 +115,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     /**
      * Indicates if putArchiveEntry has been called without closeArchiveEntry
      */
+
     private boolean haveUnclosedEntry;
+
     /**
      * indicates if this archive is finished
      */
@@ -126,13 +128,16 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     private final CountingOutputStream countingOut;
 
     private final ZipEncoding zipEncoding;
-    // the provided encoding (for unit tests)
+    
+    /** 
+     * The provided encoding (for unit tests).
+     */
     final String encoding;
 
     private boolean addPaxHeadersForNonAsciiNames;
 
     /**
-     * Constructor for TarArchiveOutputStream.
+     * Constructs a new instance.
      *
      * <p>Uses a block size of 512 bytes.</p>
      *
@@ -143,7 +148,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Constructor for TarArchiveOutputStream.
+     * Constructs a new instance.
      *
      * @param os the output stream to use
      * @param blockSize the block size to use. Must be a multiple of 512 bytes.
@@ -153,7 +158,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Constructor for TarArchiveOutputStream.
+     * Constructs a new instance.
      *
      * @param os the output stream to use
      * @param blockSize the block size to use
@@ -169,7 +174,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
 
 
     /**
-     * Constructor for TarArchiveOutputStream.
+     * Constructs a new instance.
      *
      * @param os the output stream to use
      * @param blockSize the block size to use . Must be a multiple of 512 bytes.
@@ -191,7 +196,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Constructor for TarArchiveOutputStream.
+     * Constructs a new instance.
      *
      * @param os the output stream to use
      * @param blockSize the block size to use. Must be a multiple of 512 bytes.
@@ -220,7 +225,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Constructor for TarArchiveOutputStream.
+     * Constructs a new instance.
      *
      * <p>Uses a block size of 512 bytes.</p>
      *
@@ -325,7 +330,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Close an entry. This method MUST be called for all file entries that contain data. The reason
+     * Closes an entry. This method MUST be called for all file entries that contain data. The reason
      * is that we must buffer data written to the stream in order to satisfy the buffer's record
      * based writes. Thus, there may be data fragments still being assembled that must be written to
      * the output stream before this entry is closed and the next entry written.
@@ -429,7 +434,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Ends the TAR archive without closing the underlying OutputStream.
+     * Finishes the TAR archive without closing the underlying OutputStream.
      *
      * An archive consists of a series of file entries terminated by an
      * end-of-archive entry, which consists of two 512 blocks of zero bytes.
@@ -470,7 +475,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Get the record size being used by this stream's TarBuffer.
+     * Gets the record size being used by this stream's TarBuffer.
      *
      * @return The TarBuffer record size.
      * @deprecated
@@ -543,7 +548,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Put an entry on the output stream. This writes the entry's header record and positions the
+     * Puts an entry on the output stream. This writes the entry's header record and positions the
      * output stream for writing the contents of the entry. Once this method is called, the stream
      * is ready for calls to write() to write the entry's contents. Once the contents are written,
      * closeArchiveEntry() <B>MUST</B> be called to ensure that all buffered data is completely
@@ -623,7 +628,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Whether to add a PAX extension header for non-ASCII file names.
+     * Sets whether to add a PAX extension header for non-ASCII file names.
      *
      * @param b whether to add a PAX extension header for non-ASCII file names.
      * @since 1.4
@@ -633,7 +638,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Set the big number mode. This can be BIGNUMBER_ERROR(0), BIGNUMBER_STAR(1) or
+     * Sets the big number mode. This can be BIGNUMBER_ERROR(0), BIGNUMBER_STAR(1) or
      * BIGNUMBER_POSIX(2). This specifies the treatment of big files (sizes &gt;
      * TarConstants.MAXSIZE) and other numeric values too big to fit into a traditional tar header.
      * Default is BIGNUMBER_ERROR.
@@ -646,7 +651,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Set the long file mode. This can be LONGFILE_ERROR(0), LONGFILE_TRUNCATE(1), LONGFILE_GNU(2) or
+     * Sets the long file mode. This can be LONGFILE_ERROR(0), LONGFILE_TRUNCATE(1), LONGFILE_GNU(2) or
      * LONGFILE_POSIX(3). This specifies the treatment of long file names (names &gt;=
      * TarConstants.NAMELEN). Default is LONGFILE_ERROR.
      *
@@ -657,6 +662,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
+     * Tests whether the character could lead to problems when used inside a TarArchiveEntry name
+     * for a PAX header.
+     *
      * @return true if the character could lead to problems when used inside a TarArchiveEntry name
      * for a PAX header.
      */
@@ -714,7 +722,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Write an EOF (end of archive) record to the tar archive. An EOF record consists of a record
+     * Writes an EOF (end of archive) record to the tar archive. An EOF record consists of a record
      * of all zeros.
      */
     private void writeEOFRecord() throws IOException {
@@ -746,7 +754,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     /**
-     * Write an archive record to the archive.
+     * Writes an archive record to the archive.
      *
      * @param record The record data to write to the archive.
      * @throws IOException on error
