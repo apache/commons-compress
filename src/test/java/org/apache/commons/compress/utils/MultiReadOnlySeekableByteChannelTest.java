@@ -224,10 +224,11 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void forSeekableByteChannelsReturnsIdentityForSingleElement() {
-        final SeekableByteChannel e = makeEmpty();
-        final SeekableByteChannel m = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(e);
-        assertSame(e, m);
+    public void forSeekableByteChannelsReturnsIdentityForSingleElement() throws IOException {
+        try (SeekableByteChannel e = makeEmpty();
+                SeekableByteChannel m = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(e)) {
+            assertSame(e, m);
+        }
     }
 
     @Test

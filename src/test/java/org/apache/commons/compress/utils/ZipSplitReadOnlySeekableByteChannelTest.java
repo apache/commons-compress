@@ -82,11 +82,13 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
         list.add(firstFile);
         list.add(secondFile);
 
-        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forFiles(lastFile, list);
-        assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
+        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forFiles(lastFile, list)) {
+            assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
+        }
 
-        channel = ZipSplitReadOnlySeekableByteChannel.forFiles(firstFile, secondFile, lastFile);
-        assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
+        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forFiles(firstFile, secondFile, lastFile)) {
+            assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
+        }
     }
 
     @Test
@@ -123,9 +125,10 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
 
     @Test
     public void forOrderedSeekableByteChannelsReturnsIdentityForSingleElement() throws IOException {
-        final SeekableByteChannel emptyChannel = new SeekableInMemoryByteChannel(ByteUtils.EMPTY_BYTE_ARRAY);
-        final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(emptyChannel);
-        assertSame(emptyChannel, channel);
+        try (SeekableByteChannel emptyChannel = new SeekableInMemoryByteChannel(ByteUtils.EMPTY_BYTE_ARRAY);
+                final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(emptyChannel)) {
+            assertSame(emptyChannel, channel);
+        }
     }
 
     @Test
@@ -148,11 +151,13 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
         list.add(firstFile);
         list.add(secondFile);
 
-        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forPaths(lastFile, list);
-        assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
+        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forPaths(lastFile, list)) {
+            assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
+        }
 
-        channel = ZipSplitReadOnlySeekableByteChannel.forPaths(firstFile, secondFile, lastFile);
-        assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
+        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forPaths(firstFile, secondFile, lastFile)) {
+            assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
+        }
     }
 
     @Test
@@ -189,13 +194,15 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
         final int randomDiskNumber = random.nextInt(3);
         final int randomOffset = randomDiskNumber < 2 ? random.nextInt(firstFileSize) : random.nextInt(lastFileSize);
 
-        final ZipSplitReadOnlySeekableByteChannel channel = (ZipSplitReadOnlySeekableByteChannel) ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
-        channel.position(randomDiskNumber, randomOffset);
-        long expectedPosition = randomOffset;
+        try (ZipSplitReadOnlySeekableByteChannel channel = (ZipSplitReadOnlySeekableByteChannel) ZipSplitReadOnlySeekableByteChannel
+                .buildFromLastSplitSegment(lastFile)) {
+            channel.position(randomDiskNumber, randomOffset);
+            long expectedPosition = randomOffset;
 
-        expectedPosition += randomDiskNumber > 0 ? firstFileSize : 0;
-        expectedPosition += randomDiskNumber > 1 ? secondFileSize : 0;
+            expectedPosition += randomDiskNumber > 0 ? firstFileSize : 0;
+            expectedPosition += randomDiskNumber > 1 ? secondFileSize : 0;
 
-        assertEquals(expectedPosition, channel.position());
+            assertEquals(expectedPosition, channel.position());
+        }
     }
 }
