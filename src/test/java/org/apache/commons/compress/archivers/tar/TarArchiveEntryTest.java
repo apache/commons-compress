@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
@@ -404,6 +405,29 @@ public class TarArchiveEntryTest implements TarConstants {
         assertThrows(IllegalArgumentException.class, () -> t.setSize(-1));
         t.setSize(077777777777L);
         t.setSize(0100000000000L);
+    }
+
+    @Test
+    public void testPaxTimeFieldsForInvalidValues() {
+        final String[] headerNames = { "LIBARCHIVE.creationtime", "atime", "mtime", "ctime" };
+        // @formatter:off
+        final String[] testValues = {
+                // Generate a number with a very large integer or fractional component
+                new Random().nextLong() + "." + String.join("",
+                        Collections.nCopies(15000, String.valueOf(Long.MAX_VALUE))),
+                // These two examples use the exponent notation
+                "9e9999999",
+                "9E9999999"
+        };
+        // @formatter:on
+
+        final TarArchiveEntry entry = new TarArchiveEntry("test.txt");
+        for (String name : headerNames) {
+            for (String value : testValues) {
+                Exception exp = assertThrows(IllegalArgumentException.class, () -> entry.addPaxHeader(name, value));
+                assert(exp.getCause().getMessage().startsWith("Corrupted PAX header. Time field value is invalid"));
+            }
+        }
     }
 
     @Test

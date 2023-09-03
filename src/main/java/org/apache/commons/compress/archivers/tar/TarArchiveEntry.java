@@ -217,6 +217,17 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     @Deprecated
     public static final int MILLIS_PER_SECOND = 1000;
 
+    /**
+     * Regular expression pattern for validating values in pax extended header file time fields.
+     * These fields contain two numeric values (seconds and sub-second values) as per this definition:
+     * https://pubs.opengroup.org/onlinepubs/9699919799/utilities/pax.html#tag_20_92_13_05
+     * <p>
+     * Since they are parsed into long values, maximum length of each is the same as Long.MAX_VALUE
+     * which is 19 digits.
+     * </p>
+     */
+    private static final String PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN = "-?\\d{1,19}(?:\\.\\d{1,19})?";
+
     private static FileTime fileTimeFromOptionalSeconds(final long seconds) {
         if (seconds <= 0) {
             return null;
@@ -265,7 +276,12 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         return fileName;
     }
 
-    private static Instant parseInstantFromDecimalSeconds(final String value) {
+    private static Instant parseInstantFromDecimalSeconds(final String value) throws IOException {
+        // Validate field values to prevent denial of service attacks with BigDecimal values (see JDK-6560193)
+        if (!value.matches(TarArchiveEntry.PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN)) {
+            throw new IOException("Corrupted PAX header. Time field value is invalid '" + value + "'");
+        }
+
         final BigDecimal epochSeconds = new BigDecimal(value);
         final long seconds = epochSeconds.longValue();
         final long nanos = epochSeconds.remainder(BigDecimal.ONE).movePointRight(9).longValue();
@@ -289,12 +305,12 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /** The entry's size. */
     private long size;
-
     /**
      * The entry's modification time.
      * Corresponds to the POSIX {@code mtime} attribute.
      */
     private FileTime mTime;
+
     /**
      * The entry's status change time.
      * Corresponds to the POSIX {@code ctime} attribute.
