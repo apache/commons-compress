@@ -232,7 +232,8 @@ public class FixedLengthBlockOutputStreamTest {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
                 Files.deleteIfExists(tempFile);
-            } catch (final IOException e) {
+            } catch (final IOException ignore) {
+                // ignore
             }
         }));
         final int blockSize = 512;
