@@ -63,6 +63,7 @@ public class LZMACompressorOutputStream extends CompressorOutputStream {
      */
     @Override
     public void flush() throws IOException {
+        // noop
     }
 
     /** {@inheritDoc} */
