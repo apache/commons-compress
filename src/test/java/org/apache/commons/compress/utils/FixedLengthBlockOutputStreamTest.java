@@ -315,18 +315,21 @@ public class FixedLengthBlockOutputStreamTest {
     @Test
     public void testWriteFailsAfterFLClosedThrowsException() {
         assertThrowsExactly(ClosedChannelException.class, () -> {
-            final FixedLengthBlockOutputStream out = newClosedFLBOS();
-            out.write(1);
+            try (FixedLengthBlockOutputStream out = newClosedFLBOS()) {
+                out.write(1);
+            }
         }, "expected Closed Channel Exception");
 
         assertThrowsExactly(ClosedChannelException.class, () -> {
-            final FixedLengthBlockOutputStream out = newClosedFLBOS();
-            out.write(new byte[]{0, 1, 2, 3});
+            try (FixedLengthBlockOutputStream out = newClosedFLBOS()) {
+                out.write(new byte[] { 0, 1, 2, 3 });
+            }
         }, "expected Closed Channel Exception");
 
         assertThrowsExactly(ClosedChannelException.class, () -> {
-            final FixedLengthBlockOutputStream out = newClosedFLBOS();
-            out.write(ByteBuffer.wrap(new byte[]{0, 1, 2, 3}));
+            try (FixedLengthBlockOutputStream out = newClosedFLBOS()) {
+                out.write(ByteBuffer.wrap(new byte[] { 0, 1, 2, 3 }));
+            }
         }, "expected Closed Channel Exception");
     }
 
