@@ -611,7 +611,9 @@ public class SevenZOutputFileTest extends AbstractTestCase {
         methods.add(new SevenZMethodConfiguration(SevenZMethod.COPY));
         methods.add(new SevenZMethodConfiguration(SevenZMethod.DEFLATE));
         methods.add(new SevenZMethodConfiguration(SevenZMethod.BZIP2));
-        createAndReadBack(new SeekableInMemoryByteChannel(), methods);
+        try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel()) {
+            createAndReadBack(channel, methods);
+        }
     }
 
     @Test
