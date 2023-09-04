@@ -1,4 +1,36 @@
-              Apache Commons Compress RELEASE NOTES
+              Apache Commons Compress 1.24.0 RELEASE NOTES
+
+Apache Commons Compress defines an API for working with
+compression and archive formats.  These include: bzip2, gzip, pack200,
+lzma, xz, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
+Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
+
+New features:
+o Make ZipArchiveEntry.getLocalHeaderOffset() public. Thanks to Gary Gregory. 
+
+Fixed Bugs:
+o Use try-with-resources in ArchiveStreamFactory #391. Thanks to Daniele Galloppo. 
+o Javadoc and code comments: Sanitize grammar issues and typos #393. Thanks to Martin Wiesner. 
+o Remove redundant (null) initializations #394. Thanks to Martin Wiesner. 
+o [StepSecurity] ci: Harden GitHub Actions #396. Thanks to step-security-bot, Gary Gregory. 
+
+Changes:
+o Bump zstd-jni from 1.5.4-2 to 1.5.5-5 #377, #383, #388, #390, #400. Thanks to Dependabot. 
+o Bump memoryfilesystem from 2.5.0 to 2.6.1 #381, #385, #387. Thanks to Dependabot. 
+o Bump commons-parent from 56 to 61 #384. Thanks to Dependabot, Gary Gregory. 
+o Bump commons-io:commons-io from 2.11.0 to 2.13.0. Thanks to Gary Gregory. 
+o Bump commons-lang3 from 3.12.0 to 3.13.0. Thanks to Gary Gregory. 
+o Bump org.slf4j:slf4j-api from 2.0.7 to 2.0.8. Thanks to Gary Gregory. 
+
+For complete information on Apache Commons Compress, including instructions
+on how to submit bug reports, patches, or suggestions for improvement,
+see the Apache Commons Compress website:
+
+https://commons.apache.org/compress/
+
+=============================================================================
+
+              Apache Commons Compress 1.23.0 RELEASE NOTES
 
 Apache Commons Compress defines an API for working with
 compression and archive formats.  These include: bzip2, gzip, pack200,
@@ -60,8 +92,10 @@ https://commons.apache.org/compress/
 
 Download it from https://commons.apache.org/compress/download_compress.cgi
 
-Old Release Notes
-=================
+=============================================================================
+
+Previous Release Notes
+======================
 
 Release 1.22
 ------------
