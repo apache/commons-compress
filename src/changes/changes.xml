@@ -44,7 +44,7 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Compress Release Notes</title>
   </properties>
   <body>
-    <release version="1.24.0" date="202Y-MM-DD">
+    <release version="1.24.0" date="2023-09-04">
       <!-- ADD -->
       <action type="add" dev="kinow" due-to="Gary Gregory">Make ZipArchiveEntry.getLocalHeaderOffset() public.</action>
       <!-- FIX -->
