@@ -64,33 +64,25 @@ public class PackingOptionsTest {
             final JarEntry entry2 = jarFile2.getJarEntry(name);
             assertNotNull(entry2, "Missing Entry: " + name);
             // assertEquals(entry.getTime(), entry2.getTime());
-            if (!name.equals("META-INF/MANIFEST.MF")) { // Manifests aren't
-                                                        // necessarily
-                                                        // byte-for-byte
-                                                        // identical
-
+            if (!name.equals("META-INF/MANIFEST.MF")) {
+                // Manifests aren't necessarily byte-for-byte identical
                 final InputStream ours = jarFile.getInputStream(entry);
                 final InputStream expected = jarFile2.getInputStream(entry2);
 
-                final BufferedReader reader1 = new BufferedReader(
-                        new InputStreamReader(ours));
-                final BufferedReader reader2 = new BufferedReader(
-                        new InputStreamReader(expected));
-                String line1 = reader1.readLine();
-                String line2 = reader2.readLine();
-                int i = 1;
-                while (line1 != null || line2 != null) {
-                    assertEquals(line2, line1, "Unpacked files differ for " + name);
-                    line1 = reader1.readLine();
-                    line2 = reader2.readLine();
-                    i++;
+                try (BufferedReader reader1 = new BufferedReader(new InputStreamReader(ours));
+                        final BufferedReader reader2 = new BufferedReader(new InputStreamReader(expected))) {
+                    String line1 = reader1.readLine();
+                    String line2 = reader2.readLine();
+                    int i = 1;
+                    while (line1 != null || line2 != null) {
+                        assertEquals(line2, line1, "Unpacked files differ for " + name + " at line " + i);
+                        line1 = reader1.readLine();
+                        line2 = reader2.readLine();
+                        i++;
+                    }
                 }
-                reader1.close();
-                reader2.close();
             }
         }
-        jarFile.close();
-        jarFile2.close();
     }
 
     private void compareJarEntries(final JarFile jarFile, final JarFile jarFile2) {
@@ -122,8 +114,7 @@ public class PackingOptionsTest {
     @Test
     public void testE0() throws Pack200Exception, IOException,
             URISyntaxException {
-        final File f1 = new File(Archive.class.getResource(
-                "/pack200/jndi.jar").toURI());
+        final File f1 = new File(Archive.class.getResource("/pack200/jndi.jar").toURI());
         in = new JarFile(f1);
         file = File.createTempFile("jndiE0", ".pack");
         file.deleteOnExit();
@@ -135,8 +126,9 @@ public class PackingOptionsTest {
         archive.pack();
         in.close();
         out.close();
-        compareFiles(new JarFile(f1), new JarFile(file));
-
+        try (JarFile jf1 = new JarFile(f1); JarFile jf2 = new JarFile(file)) {
+            compareFiles(jf1, jf2);
+        }
     }
 
     @Test
@@ -274,8 +266,7 @@ public class PackingOptionsTest {
         options.setLogFile(logFile.getPath());
         assertEquals(logFile.getPath(), options.getLogFile());
 
-        in = new JarFile(new File(Archive.class.getResource(
-                "/pack200/hw.jar").toURI()));
+        in = new JarFile(new File(Archive.class.getResource("/pack200/hw.jar").toURI()));
         file = File.createTempFile("helloworld", ".pack.gz");
         file.deleteOnExit();
         out = new FileOutputStream(file);
@@ -284,13 +275,12 @@ public class PackingOptionsTest {
         out.close();
 
         // log file should be empty
-        FileReader reader = new FileReader(logFile);
-        assertFalse(reader.ready());
-        reader.close();
+        try (FileReader reader = new FileReader(logFile)) {
+            assertFalse(reader.ready());
+        }
 
         options.setVerbose(true);
-        in = new JarFile(new File(Archive.class.getResource(
-                "/pack200/hw.jar").toURI()));
+        in = new JarFile(new File(Archive.class.getResource("/pack200/hw.jar").toURI()));
         file = File.createTempFile("helloworld", ".pack.gz");
         file.deleteOnExit();
         out = new FileOutputStream(file);
@@ -299,9 +289,9 @@ public class PackingOptionsTest {
         out.close();
 
         // log file should not be empty
-        reader = new FileReader(logFile);
-        assertTrue(reader.ready());
-        reader.close();
+        try (FileReader reader = new FileReader(logFile)) {
+            assertTrue(reader.ready());
+        }
     }
 
     @Test
@@ -412,116 +402,88 @@ public class PackingOptionsTest {
 
     @Test
     public void testNewAttributes() throws Exception {
-        in = new JarFile(
-                new File(
-                        Archive.class
-                                .getResource(
-                                        "/pack200/jndiWithUnknownAttributes.jar")
-                                .toURI()));
         file = File.createTempFile("unknown", ".pack");
-        file.deleteOnExit();
-        out = new FileOutputStream(file);
-        final PackingOptions options = new PackingOptions();
-        options.addClassAttributeAction("Pack200", "I");
-        final Archive ar = new Archive(in, out, options);
-        ar.pack();
-        in.close();
-        out.close();
+        try (FileOutputStream out = new FileOutputStream(file);
+                JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/jndiWithUnknownAttributes.jar").toURI()))) {
+            file.deleteOnExit();
+            final PackingOptions options = new PackingOptions();
+            options.addClassAttributeAction("Pack200", "I");
+            final Archive ar = new Archive(in, out, options);
+            ar.pack();
+        }
 
         // unpack and check this was done right
-        final InputStream in2 = new FileInputStream(file);
         final File file2 = File.createTempFile("unknown", ".jar");
         file2.deleteOnExit();
-        final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
-        final org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(
-                in2, out2);
-        u2archive.unpack();
+        try (InputStream in2 = new FileInputStream(file); JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2))) {
+            final org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(in2, out2);
+            u2archive.unpack();
 
-        // compare with original
-        final File compareFile = new File(Archive.class.getResource(
-                "/pack200/jndiWithUnknownAttributes.jar").toURI());
-        final JarFile jarFile = new JarFile(file2);
-
-        final JarFile jarFile2 = new JarFile(compareFile);
-        assertEquals(jarFile2.size(), jarFile.size());
-        compareJarEntries(jarFile, jarFile2);
+            // compare with original
+            final File compareFile = new File(Archive.class.getResource("/pack200/jndiWithUnknownAttributes.jar").toURI());
+            try (JarFile jarFile = new JarFile(file2); JarFile jarFile2 = new JarFile(compareFile)) {
+                assertEquals(jarFile2.size(), jarFile.size());
+                compareJarEntries(jarFile, jarFile2);
 //        compareFiles(jarFile, jarFile2);
+            }
+        }
     }
 
     @Test
     public void testNewAttributes2() throws Exception {
-        in = new JarFile(
-                new File(
-                        Archive.class
-                                .getResource(
-                                        "/pack200/p200WithUnknownAttributes.jar")
-                                .toURI()));
         file = File.createTempFile("unknown", ".pack");
         file.deleteOnExit();
-        out = new FileOutputStream(file);
-        final PackingOptions options = new PackingOptions();
-        options.addFieldAttributeAction("Pack200", "I");
-        options.addMethodAttributeAction("Pack200", "I");
-        options.addCodeAttributeAction("Pack200", "I");
-        final Archive ar = new Archive(in, out, options);
-        ar.pack();
-        in.close();
-        out.close();
-
+        try (FileOutputStream out = new FileOutputStream(file);
+                JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/p200WithUnknownAttributes.jar").toURI()))) {
+            final PackingOptions options = new PackingOptions();
+            options.addFieldAttributeAction("Pack200", "I");
+            options.addMethodAttributeAction("Pack200", "I");
+            options.addCodeAttributeAction("Pack200", "I");
+            final Archive ar = new Archive(in, out, options);
+            ar.pack();
+        }
         // unpack and check this was done right
-        final InputStream in2 = new FileInputStream(file);
         final File file2 = File.createTempFile("unknown", ".jar");
         file2.deleteOnExit();
-        final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
-        final org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(
-                in2, out2);
-        u2archive.unpack();
+        try (InputStream in2 = new FileInputStream(file); JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2))) {
+            final org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(in2, out2);
+            u2archive.unpack();
+        }
 
         // compare with original
-        final File compareFile = new File(Archive.class.getResource(
-                "/pack200/p200WithUnknownAttributes.jar").toURI());
-        final JarFile jarFile = new JarFile(file2);
-
-        final JarFile jarFile2 = new JarFile(compareFile);
-        assertEquals(jarFile2.size(), jarFile.size());
-        compareJarEntries(jarFile, jarFile2);
+        final File compareFile = new File(Archive.class.getResource("/pack200/p200WithUnknownAttributes.jar").toURI());
+        try (JarFile jarFile = new JarFile(file2); JarFile jarFile2 = new JarFile(compareFile)) {
+            assertEquals(jarFile2.size(), jarFile.size());
+            compareJarEntries(jarFile, jarFile2);
+        }
     }
 
     @Test
     public void testPassAttributes() throws Exception {
-        in = new JarFile(
-                new File(
-                        Archive.class
-                                .getResource(
-                                        "/pack200/jndiWithUnknownAttributes.jar")
-                                .toURI()));
         file = File.createTempFile("unknown", ".pack");
         file.deleteOnExit();
-        out = new FileOutputStream(file);
-        final PackingOptions options = new PackingOptions();
-        options.addClassAttributeAction("Pack200", "pass");
-        final Archive ar = new Archive(in, out, options);
-        ar.pack();
-        in.close();
-        out.close();
+        try (FileOutputStream out = new FileOutputStream(file);
+                JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/jndiWithUnknownAttributes.jar").toURI()))) {
+            final PackingOptions options = new PackingOptions();
+            options.addClassAttributeAction("Pack200", "pass");
+            final Archive ar = new Archive(in, out, options);
+            ar.pack();
+        }
 
         // now unpack
-        final InputStream in2 = new FileInputStream(file);
         final File file2 = File.createTempFile("unknown", ".jar");
         file2.deleteOnExit();
-        final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
-        final org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(
-                in2, out2);
-        u2archive.unpack();
+        try (InputStream in2 = new FileInputStream(file); JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2))) {
+            final org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(in2, out2);
+            u2archive.unpack();
+        }
 
         // compare with original
-        final File compareFile = new File(Archive.class.getResource(
-                "/pack200/jndiWithUnknownAttributes.jar").toURI());
-        final JarFile jarFile = new JarFile(file2);
-
-        final JarFile jarFile2 = new JarFile(compareFile);
-        assertEquals(jarFile2.size(), jarFile.size());
-        compareJarEntries(jarFile, jarFile2);
+        final File compareFile = new File(Archive.class.getResource("/pack200/jndiWithUnknownAttributes.jar").toURI());
+        try (JarFile jarFile = new JarFile(file2); JarFile jarFile2 = new JarFile(compareFile)) {
+            assertEquals(jarFile2.size(), jarFile.size());
+            compareJarEntries(jarFile, jarFile2);
+        }
     }
 
     @Test
@@ -580,32 +542,30 @@ public class PackingOptionsTest {
                 "If more files are passed then the pack file should be larger");
 
         // now unpack
-        final InputStream in2 = new FileInputStream(file);
         final File file3 = File.createTempFile("sql", ".jar");
         file3.deleteOnExit();
+        final InputStream in2 = new FileInputStream(file);
         final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file3));
         org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(
                 in2, out2);
         u2archive.unpack();
 
-        final File compareFile = new File(Archive.class.getResource(
-                "/pack200/sqlUnpacked.jar").toURI());
-        JarFile jarFile = new JarFile(file3);
-
-        JarFile jarFile2 = new JarFile(compareFile);
-        // Check that both jars have the same entries
-        compareJarEntries(jarFile, jarFile2);
-
+        final File compareFile = new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI());
+        try (JarFile jarFile = new JarFile(file3);
+                JarFile jarFile2 = new JarFile(compareFile)) {
+            // Check that both jars have the same entries
+            compareJarEntries(jarFile, jarFile2);
+        }
         // now unpack the file with lots of passed files
-        final InputStream in3 = new FileInputStream(file2);
         final File file4 = File.createTempFile("sql", ".jar");
         file4.deleteOnExit();
-        final JarOutputStream out3 = new JarOutputStream(new FileOutputStream(file4));
-        u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(in3, out3);
-        u2archive.unpack();
-        jarFile = new JarFile(file4);
-        jarFile2 = new JarFile(compareFile);
-        compareJarEntries(jarFile, jarFile2);
+        try (InputStream in3 = new FileInputStream(file2); JarOutputStream out3 = new JarOutputStream(new FileOutputStream(file4))) {
+            u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(in3, out3);
+            u2archive.unpack();
+        }
+        try (JarFile jarFile = new JarFile(file4); JarFile jarFile2 = new JarFile(compareFile)) {
+            compareJarEntries(jarFile, jarFile2);
+        }
     }
 
     // public void testE0again() throws IOException, Pack200Exception,
@@ -627,77 +587,64 @@ public class PackingOptionsTest {
     @Test
     public void testSegmentLimits() throws IOException, Pack200Exception,
             URISyntaxException {
-        in = new JarFile(new File(Archive.class.getResource(
-                "/pack200/hw.jar").toURI()));
         file = File.createTempFile("helloworld", ".pack.gz");
         file.deleteOnExit();
-        out = new FileOutputStream(file);
-        PackingOptions options = new PackingOptions();
-        options.setSegmentLimit(0);
-        Archive archive = new Archive(in, out, options);
-        archive.pack();
-        in.close();
-        out.close();
+        try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/hw.jar").toURI()));
+                FileOutputStream out = new FileOutputStream(file)) {
+            PackingOptions options = new PackingOptions();
+            options.setSegmentLimit(0);
+            Archive archive = new Archive(in, out, options);
+            archive.pack();
+        }
 
-        in = new JarFile(new File(Archive.class.getResource(
-                "/pack200/hw.jar").toURI()));
         file = File.createTempFile("helloworld", ".pack.gz");
         file.deleteOnExit();
-        out = new FileOutputStream(file);
-        options = new PackingOptions();
-        options.setSegmentLimit(-1);
-        archive = new Archive(in, out, options);
-        archive.pack();
-        in.close();
-        out.close();
+        try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/hw.jar").toURI()));
+                FileOutputStream out = new FileOutputStream(file)) {
+            PackingOptions options = new PackingOptions();
+            options.setSegmentLimit(-1);
+            Archive archive = new Archive(in, out, options);
+            archive.pack();
+        }
 
-        in = new JarFile(new File(Archive.class.getResource(
-                "/pack200/hw.jar").toURI()));
         file = File.createTempFile("helloworld", ".pack.gz");
         file.deleteOnExit();
-        out = new FileOutputStream(file);
-        options = new PackingOptions();
-        options.setSegmentLimit(5000);
-        archive = new Archive(in, out, options);
-        archive.pack();
-        in.close();
-        out.close();
+        try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/hw.jar").toURI()));
+                FileOutputStream out = new FileOutputStream(file)) {
+            PackingOptions options = new PackingOptions();
+            options.setSegmentLimit(5000);
+            Archive archive = new Archive(in, out, options);
+            archive.pack();
+        }
     }
 
     @Test
     public void testStripDebug() throws IOException, Pack200Exception,
             URISyntaxException {
-        in = new JarFile(new File(Archive.class.getResource(
-                "/pack200/sqlUnpacked.jar").toURI()));
         file = File.createTempFile("sql", ".pack");
         file.deleteOnExit();
-        out = new FileOutputStream(file);
-        final PackingOptions options = new PackingOptions();
-        options.setGzip(false);
-        options.setStripDebug(true);
-        final Archive archive = new Archive(in, out, options);
-        archive.pack();
-        in.close();
-        out.close();
+        try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
+                FileOutputStream out = new FileOutputStream(file)) {
+            final PackingOptions options = new PackingOptions();
+            options.setGzip(false);
+            options.setStripDebug(true);
+            final Archive archive = new Archive(in, out, options);
+            archive.pack();
+        }
 
         // now unpack
-        final InputStream in2 = new FileInputStream(file);
         final File file2 = File.createTempFile("sqloutNoDebug", ".jar");
         file2.deleteOnExit();
-        final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
-        final org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(
-                in2, out2);
-        u2archive.unpack();
+        try (InputStream in2 = new FileInputStream(file); final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2))) {
+            org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(in2, out2);
+            u2archive.unpack();
+        }
 
-        final File compareFile = new File(Archive.class.getResource(
-                "/pack200/sqlUnpackedNoDebug.jar")
-                .toURI());
-        final JarFile jarFile = new JarFile(file2);
-        assertTrue(file2.length() < 250000);
-
-        final JarFile jarFile2 = new JarFile(compareFile);
-
-        compareFiles(jarFile, jarFile2);
+        final File compareFile = new File(Archive.class.getResource("/pack200/sqlUnpackedNoDebug.jar").toURI());
+        try (JarFile jarFile = new JarFile(file2); JarFile jarFile2 = new JarFile(compareFile)) {
+            assertTrue(file2.length() < 250000);
+            compareFiles(jarFile, jarFile2);
+        }
     }
 
 }
