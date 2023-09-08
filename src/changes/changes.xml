@@ -46,6 +46,12 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.24.0" date="2023-09-04" description="Minor feature and maintenance release.">
       <!-- ADD -->
+      <!-- FIX -->
+      <!-- UPDATE -->
+      <action type="update" dev="ggregory" due-to="Dependabot">Bump org.slf4j:slf4j-api from 2.0.8 to 2.0.9 #413.</action>
+    </release>
+    <release version="1.24.0" date="2023-09-04" description="Minor feature and maintenance release.">
+      <!-- ADD -->
       <action type="add" dev="kinow" due-to="Gary Gregory">Make ZipArchiveEntry.getLocalHeaderOffset() public.</action>
       <!-- FIX -->
       <action type="fix" dev="ggregory" due-to="Daniele Galloppo">Use try-with-resources in ArchiveStreamFactory #391.</action>
