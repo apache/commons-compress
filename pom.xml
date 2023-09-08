@@ -24,7 +24,7 @@
   </parent>
 
   <artifactId>commons-compress</artifactId>
-  <version>1.24.0</version>
+  <version>1.24.1-SNAPSHOT</version>
   <name>Apache Commons Compress</name>
   <url>https://commons.apache.org/proper/commons-compress/</url>
   <inceptionYear>2002</inceptionYear> <!-- from NOTICE file -->
