@@ -73,7 +73,7 @@ public class ChecksumCalculatingInputStreamTest {
             final int inputStreamReadResult = bufferedInputStream.read(byteArray, 0, 1);
             final int checkSumCalculationReadResult = checksumCalculatingInputStream.read();
             assertNotEquals(checkSumCalculationReadResult, inputStreamReadResult);
-            assertEquals((-1), checkSumCalculationReadResult);
+            assertEquals(-1, checkSumCalculationReadResult);
             assertEquals(0, byteArrayInputStream.available());
             assertEquals(393217L, checksumCalculatingInputStream.getValue());
         }

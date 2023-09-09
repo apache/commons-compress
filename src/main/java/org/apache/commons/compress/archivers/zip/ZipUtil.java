@@ -74,7 +74,7 @@ public abstract class ZipUtil {
      *
      * @since 1.23
      */
-    private static final long DOSTIME_BEFORE_1980 = (1 << 21) | (1 << 16); // 0x210000
+    private static final long DOSTIME_BEFORE_1980 = 1 << 21 | 1 << 16; // 0x210000
 
     /**
      * Approximately 128 years, in milliseconds (ignoring leap years, etc.).
@@ -110,7 +110,7 @@ public abstract class ZipUtil {
      */
     public static long adjustToLong(final int i) {
         if (i < 0) {
-            return 2 * ((long) Integer.MAX_VALUE) + 2 + i;
+            return 2 * (long) Integer.MAX_VALUE + 2 + i;
         }
         return i;
     }
@@ -179,8 +179,8 @@ public abstract class ZipUtil {
     private static Date dosToJavaDate(final long dosTime) {
         final Calendar cal = Calendar.getInstance();
         // CheckStyle:MagicNumberCheck OFF - no point
-        cal.set(Calendar.YEAR, (int) ((dosTime >> 25) & 0x7f) + 1980);
-        cal.set(Calendar.MONTH, (int) ((dosTime >> 21) & 0x0f) - 1);
+        cal.set(Calendar.YEAR, (int) (dosTime >> 25 & 0x7f) + 1980);
+        cal.set(Calendar.MONTH, (int) (dosTime >> 21 & 0x0f) - 1);
         cal.set(Calendar.DATE, (int) (dosTime >> 16) & 0x1f);
         cal.set(Calendar.HOUR_OF_DAY, (int) (dosTime >> 11) & 0x1f);
         cal.set(Calendar.MINUTE, (int) (dosTime >> 5) & 0x3f);
@@ -262,7 +262,7 @@ public abstract class ZipUtil {
         if (ldt.getYear() < 1980) {
             return DOSTIME_BEFORE_1980;
         }
-        return ((ldt.getYear() - 1980) << 25
+        return (ldt.getYear() - 1980 << 25
                 | ldt.getMonthValue() << 21
                 | ldt.getDayOfMonth() << 16
                 | ldt.getHour() << 11

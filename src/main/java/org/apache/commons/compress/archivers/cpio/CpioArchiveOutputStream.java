@@ -504,7 +504,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
             inode = devMin = 0;
         } else if (inode == 0 && devMin == 0) {
             inode = nextArtificalDeviceAndInode & 0xFFFFFFFF;
-            devMin = (nextArtificalDeviceAndInode++ >> 32) & 0xFFFFFFFF;
+            devMin = nextArtificalDeviceAndInode++ >> 32 & 0xFFFFFFFF;
         } else {
             nextArtificalDeviceAndInode =
                 Math.max(nextArtificalDeviceAndInode,
@@ -537,7 +537,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
             inode = device = 0;
         } else if (inode == 0 && device == 0) {
             inode = nextArtificalDeviceAndInode & 0777777;
-            device = (nextArtificalDeviceAndInode++ >> 18) & 0777777;
+            device = nextArtificalDeviceAndInode++ >> 18 & 0777777;
         } else {
             nextArtificalDeviceAndInode =
                 Math.max(nextArtificalDeviceAndInode,
@@ -566,7 +566,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
             inode = device = 0;
         } else if (inode == 0 && device == 0) {
             inode = nextArtificalDeviceAndInode & 0xFFFF;
-            device = (nextArtificalDeviceAndInode++ >> 16) & 0xFFFF;
+            device = nextArtificalDeviceAndInode++ >> 16 & 0xFFFF;
         } else {
             nextArtificalDeviceAndInode =
                 Math.max(nextArtificalDeviceAndInode,

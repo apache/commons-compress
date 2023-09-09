@@ -121,7 +121,7 @@ public final class ByteUtils {
         checkReadLength(length);
         long l = 0;
         for (int i = 0; i < length; i++) {
-            l |= (bytes[off + i] & 0xffL) << (8 * i);
+            l |= (bytes[off + i] & 0xffL) << 8 * i;
         }
         return l;
     }
@@ -147,7 +147,7 @@ public final class ByteUtils {
             if (b == -1) {
                 throw new IOException("Premature end of data");
             }
-            l |= (b << (i * 8));
+            l |= b << i * 8;
         }
         return l;
     }
@@ -167,7 +167,7 @@ public final class ByteUtils {
         long l = 0;
         for (int i = 0; i < length; i++) {
             final long b = in.readUnsignedByte();
-            l |= (b << (i * 8));
+            l |= b << i * 8;
         }
         return l;
     }
@@ -190,7 +190,7 @@ public final class ByteUtils {
             if (b == -1) {
                 throw new IOException("Premature end of data");
             }
-            l |= (b << (i * 8));
+            l |= b << i * 8;
         }
         return l;
     }

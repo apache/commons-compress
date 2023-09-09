@@ -16,6 +16,7 @@
  */
 package org.apache.commons.compress.harmony.pack200;
 
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -109,7 +110,7 @@ public class PackingOptions {
      * @param passFileName the file name
      */
     public void addPassFile(String passFileName) {
-        String fileSeparator = System.getProperty("file.separator");
+        String fileSeparator = FileSystems.getDefault().getSeparator();
         if (fileSeparator.equals("\\")) {
             // Need to escape backslashes for replaceAll(), which uses regex
             fileSeparator += "\\";

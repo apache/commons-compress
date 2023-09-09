@@ -180,7 +180,7 @@ public class BlockLZ4CompressorOutputStreamTest {
             // back-reference
             final byte[] compressed = compress(i);
             final byte[] expected = prepareExpected(17);
-            expected[0] = (byte) ((1<<4) | i - 17);
+            expected[0] = (byte) (1<<4 | i - 17);
             // two-byte offset
             expected[2] = 1;
             expected[3] = 0;
@@ -198,7 +198,7 @@ public class BlockLZ4CompressorOutputStreamTest {
             // we can split the back-reference and merge it with the literal
             final byte[] compressed = compress(16, i);
             final byte[] expected = prepareExpected(17);
-            expected[0] = (byte) ((1<<4) | i - 1);
+            expected[0] = (byte) (1<<4 | i - 1);
             // two-byte offset
             expected[2] = 1;
             expected[3] = 0;
@@ -218,7 +218,7 @@ public class BlockLZ4CompressorOutputStreamTest {
             // algorithm will chip off a few bytes from the first Pair
             final byte[] compressed = compress(16, i);
             final byte[] expected = prepareExpected(17);
-            expected[0] = (byte) ((1<<4) | i - 1);
+            expected[0] = (byte) (1<<4 | i - 1);
             // two-byte offset
             expected[2] = 1;
             expected[3] = 0;
@@ -237,7 +237,7 @@ public class BlockLZ4CompressorOutputStreamTest {
             // rewriting the second one is sufficient
             final byte[] compressed = compress(16, i);
             final byte[] expected = prepareExpected(i + 5);
-            expected[0] = (byte) ((1<<4) | 11);
+            expected[0] = (byte) (1<<4 | 11);
             // two-byte offset
             expected[2] = 1;
             expected[3] = 0;
@@ -286,7 +286,7 @@ public class BlockLZ4CompressorOutputStreamTest {
         // we'll need to split the back-reference and chop off the last 12 bytes
         final byte[] compressed = compress(toCompress);
         final byte[] expected = prepareExpected(1 + 4 + 2 + 1 + 12);
-        expected[0] = (byte) ((4<<4) | 5);
+        expected[0] = (byte) (4<<4 | 5);
         expected[1] = 1;
         expected[5] = 4;
         expected[6] = 0;

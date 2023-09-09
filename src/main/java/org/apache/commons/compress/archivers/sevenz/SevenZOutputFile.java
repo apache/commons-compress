@@ -520,7 +520,7 @@ public class SevenZOutputFile implements Closeable {
         int cache = 0;
         int shift = 7;
         for (int i = 0; i < length; i++) {
-            cache |= ((bits.get(i) ? 1 : 0) << shift);
+            cache |= (bits.get(i) ? 1 : 0) << shift;
             if (--shift < 0) {
                 header.write(cache);
                 shift = 7;
@@ -868,8 +868,8 @@ public class SevenZOutputFile implements Closeable {
         int mask = 0x80;
         int i;
         for (i = 0; i < 8; i++) {
-            if (value < ((1L << ( 7  * (i + 1))))) {
-                firstByte |= (value >>> (8 * i));
+            if (value < 1L << 7  * (i + 1)) {
+                firstByte |= value >>> 8 * i;
                 break;
             }
             firstByte |= mask;

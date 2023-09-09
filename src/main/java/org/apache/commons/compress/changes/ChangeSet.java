@@ -104,8 +104,8 @@ public final class ChangeSet {
      *            the change which should result in a deletion
      */
     private void addDeletion(final Change pChange) {
-        if ((Change.TYPE_DELETE != pChange.type() &&
-            Change.TYPE_DELETE_DIR != pChange.type()) ||
+        if (Change.TYPE_DELETE != pChange.type() &&
+            Change.TYPE_DELETE_DIR != pChange.type() ||
             pChange.targetFile() == null) {
             return;
         }
@@ -123,7 +123,7 @@ public final class ChangeSet {
                     }
 
                     if (Change.TYPE_DELETE == pChange.type() && source.equals(target) ||
-                            (Change.TYPE_DELETE_DIR == pChange.type() && target.matches(source + "/.*"))) {
+                            Change.TYPE_DELETE_DIR == pChange.type() && target.matches(source + "/.*")) {
                         it.remove();
                     }
                 }

@@ -1833,7 +1833,7 @@ public class Zip64SupportIT {
             // unknown and mode was not Never or the mode was
             // Always (regardless of size)
             final boolean hasExtra = mode == Zip64Mode.Always
-                    || (mode == Zip64Mode.AsNeeded && !knownSize);
+                    || mode == Zip64Mode.AsNeeded && !knownSize;
             a.seek(0);
             header = new byte[10];
             a.readFully(header);

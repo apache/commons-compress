@@ -1782,17 +1782,18 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                     // ctime is not supported
                 }
             }
-        } else if (availableAttributeViews.contains("dos")) {
-            final DosFileAttributes dosFileAttributes = Files.readAttributes(file, DosFileAttributes.class, options);
-            setLastModifiedTime(dosFileAttributes.lastModifiedTime());
-            setCreationTime(dosFileAttributes.creationTime());
-            setLastAccessTime(dosFileAttributes.lastAccessTime());
-            this.userName = Files.getOwner(file, options).getName();
         } else {
-            final BasicFileAttributes basicFileAttributes = Files.readAttributes(file, BasicFileAttributes.class, options);
-            setLastModifiedTime(basicFileAttributes.lastModifiedTime());
-            setCreationTime(basicFileAttributes.creationTime());
-            setLastAccessTime(basicFileAttributes.lastAccessTime());
+            if (availableAttributeViews.contains("dos")) {
+                final DosFileAttributes dosFileAttributes = Files.readAttributes(file, DosFileAttributes.class, options);
+                setLastModifiedTime(dosFileAttributes.lastModifiedTime());
+                setCreationTime(dosFileAttributes.creationTime());
+                setLastAccessTime(dosFileAttributes.lastAccessTime());
+            } else {
+                final BasicFileAttributes basicFileAttributes = Files.readAttributes(file, BasicFileAttributes.class, options);
+                setLastModifiedTime(basicFileAttributes.lastModifiedTime());
+                setCreationTime(basicFileAttributes.creationTime());
+                setLastAccessTime(basicFileAttributes.lastAccessTime());
+            }
             this.userName = Files.getOwner(file, options).getName();
         }
     }

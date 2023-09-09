@@ -95,7 +95,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
             // it can happen, if the compressor mixed small and large
             // blocks. Normally only the last block will be smaller
             // than others.
-            if ((ttShadow == null) || (ttShadow.length < length)) {
+            if (ttShadow == null || ttShadow.length < length) {
                 this.tt = ttShadow = new int[length];
             }
 
@@ -189,7 +189,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         }
 
         for (int i = minLen + 1; i <= maxLen; i++) {
-            base[i] = ((limit[i - 1] + 1) << 1) - base[i];
+            base[i] = (limit[i - 1] + 1 << 1) - base[i];
         }
     }
     /**
@@ -359,15 +359,15 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         if (this.storedBlockCRC != this.computedBlockCRC) {
             // make next blocks readable without error
             // (repair feature, not yet documented, not tested)
-            this.computedCombinedCRC = (this.storedCombinedCRC << 1)
-                | (this.storedCombinedCRC >>> 31);
+            this.computedCombinedCRC = this.storedCombinedCRC << 1
+                | this.storedCombinedCRC >>> 31;
             this.computedCombinedCRC ^= this.storedBlockCRC;
 
             throw new IOException("BZip2 CRC error");
         }
 
-        this.computedCombinedCRC = (this.computedCombinedCRC << 1)
-            | (this.computedCombinedCRC >>> 31);
+        this.computedCombinedCRC = this.computedCombinedCRC << 1
+            | this.computedCombinedCRC >>> 31;
         this.computedCombinedCRC ^= this.computedBlockCRC;
     }
 
@@ -411,7 +411,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         int minLens_zt = minLens[zt];
 
         while (nextSym != eob) {
-            if ((nextSym == RUNA) || (nextSym == RUNB)) {
+            if (nextSym == RUNA || nextSym == RUNB) {
                 int s = -1;
 
                 for (int n = 1; true; n <<= 1) {
@@ -441,7 +441,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
                     int zvec = bsR(bin, zn);
                     while(zvec > limit_zt[zn]) {
                         checkBounds(++zn, MAX_ALPHA_SIZE, "zn");
-                        zvec = (zvec << 1) | bsR(bin, 1);
+                        zvec = zvec << 1 | bsR(bin, 1);
                     }
                     final int tmp = zvec - base_zt[zn];
                     checkBounds(tmp, MAX_ALPHA_SIZE, "zvec");
@@ -508,7 +508,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
                 int zvec = bsR(bin, zn);
                 while(zvec > limit_zt[zn]) {
                     checkBounds(++zn, MAX_ALPHA_SIZE, "zn");
-                    zvec = (zvec << 1) | bsR(bin, 1);
+                    zvec = zvec << 1 | bsR(bin, 1);
                 }
                 final int idx = zvec - base_zt[zn];
                 checkBounds(idx, MAX_ALPHA_SIZE, "zvec");
@@ -529,7 +529,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         int zvec = bsR(bin, zn);
         while (zvec > limit_zt[zn]) {
             checkBounds(++zn, MAX_ALPHA_SIZE, "zn");
-            zvec = (zvec << 1) | bsR(bin, 1);
+            zvec = zvec << 1 | bsR(bin, 1);
         }
         final int tmp = zvec - dataShadow.base[zt][zn];
         checkBounds(tmp, MAX_ALPHA_SIZE, "zvec");
@@ -568,7 +568,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         }
 
         final int blockSize = readNextByte(this.bin);
-        if ((blockSize < '1') || (blockSize > '9')) {
+        if (blockSize < '1' || blockSize > '9') {
             throw new IOException("BZip2 block size is invalid");
         }
 
@@ -692,12 +692,12 @@ public class BZip2CompressorInputStream extends CompressorInputStream
         final int hi = offs + len;
         int destOffs = offs;
         int b;
-        while (destOffs < hi && ((b = read0()) >= 0)) {
+        while (destOffs < hi && (b = read0()) >= 0) {
             dest[destOffs++] = (byte) b;
             count(1);
         }
 
-        return (destOffs == offs) ? -1 : (destOffs - offs);
+        return destOffs == offs ? -1 : destOffs - offs;
     }
 
     private int read0() throws IOException {
@@ -755,7 +755,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
 
         Arrays.fill(inUse, false);
         for (int i = 0; i < 16; i++) {
-            if ((inUse16 & (1 << i)) != 0) {
+            if ((inUse16 & 1 << i) != 0) {
                 final int i16 = i << 4;
                 for (int j = 0; j < 16; j++) {
                     if (bsGetBit(bin)) {
@@ -850,7 +850,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
             tt[tmp] = i;
         }
 
-        if ((this.origPtr < 0) || (this.origPtr >= tt.length)) {
+        if (this.origPtr < 0 || this.origPtr >= tt.length) {
             throw new IOException("Stream corrupted");
         }
 
@@ -927,7 +927,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream
             } else {
                 this.su_rNToGo--;
             }
-            this.su_ch2 = su_ch2Shadow ^= (this.su_rNToGo == 1) ? 1 : 0;
+            this.su_ch2 = su_ch2Shadow ^= this.su_rNToGo == 1 ? 1 : 0;
             this.su_i2++;
             this.currentState = RAND_PART_B_STATE;
             this.crc.updateCRC(su_ch2Shadow);

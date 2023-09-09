@@ -407,11 +407,11 @@ public abstract class ByteCodeForm {
     public boolean hasMultipleByteCodes() {
         // Currently, all multi-bytecode instructions
         // begin with aload_0, so this is how we test.
-        if ((rewrite.length > 1) && (rewrite[0] == 42)) {
+        if (rewrite.length > 1 && rewrite[0] == 42) {
             // If there's an instruction (not a negative
             // number, which is an operand) after the
             // aload_0, it's a multibytecode instruction.
-            return (rewrite[1] > 0);
+            return rewrite[1] > 0;
         }
         return false;
     }

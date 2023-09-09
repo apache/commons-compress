@@ -312,10 +312,10 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
         }
         out.write(flags);
         contentHash.update(flags);
-        final int bd = (params.blockSize.getIndex() << 4) & FramedLZ4CompressorInputStream.BLOCK_MAX_SIZE_MASK;
+        final int bd = params.blockSize.getIndex() << 4 & FramedLZ4CompressorInputStream.BLOCK_MAX_SIZE_MASK;
         out.write(bd);
         contentHash.update(bd);
-        out.write((int) ((contentHash.getValue() >> 8) & 0xff));
+        out.write((int) (contentHash.getValue() >> 8 & 0xff));
         contentHash.reset();
     }
 

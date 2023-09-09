@@ -214,7 +214,7 @@ public class NewAttributeBands extends BandSet {
                 attribute.addInteger(2, value);
             } else if (tag.equals("SH")) {
                 attribute.addInteger(2, (short) value);
-            } else if ((tag.equals("I") || tag.equals("FI")) || tag.equals("SI")) {
+            } else if (tag.equals("I") || tag.equals("FI") || tag.equals("SI")) {
                 attribute.addInteger(4, value);
             } else if (tag.equals("V") || tag.equals("FV") || tag.equals("SV")) {
                 // Don't add V's - they shouldn't be written out to the class
@@ -876,7 +876,7 @@ public class NewAttributeBands extends BandSet {
         stream.mark(100);
         int i;
         int length = 0;
-        while ((i = (stream.read())) != -1 && Character.isDigit((char) i)) {
+        while ((i = stream.read()) != -1 && Character.isDigit((char) i)) {
             length++;
         }
         stream.reset();

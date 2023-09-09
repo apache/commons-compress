@@ -279,7 +279,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
      * @param codeSize code size
      */
     protected void setClearCode(final int codeSize) {
-        clearCode = (1 << (codeSize - 1));
+        clearCode = 1 << codeSize - 1;
     }
 
     protected void setCodeSize(final int cs) {

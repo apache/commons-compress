@@ -76,17 +76,17 @@ public class ZipSplitOutputStreamTest extends AbstractTestCase {
         assertEquals(zipFile.length(), splitSize);
 
         zipFile = new File(dir.getPath(), "testCreateSplittedFiles.zip");
-        assertEquals(zipFile.length(), (fileToTest.length() + 4 - splitSize * 5));
+        assertEquals(zipFile.length(), fileToTest.length() + 4 - splitSize * 5);
     }
 
     @Test
     public void throwsExceptionIfSplitSizeIsTooLarge() {
-        assertThrows(IllegalArgumentException.class, () -> new ZipSplitOutputStream(File.createTempFile("temp", "zip"), (4 * 1024 * 1024 * 1024L)));
+        assertThrows(IllegalArgumentException.class, () -> new ZipSplitOutputStream(File.createTempFile("temp", "zip"), 4 * 1024 * 1024 * 1024L));
     }
 
     @Test
     public void throwsExceptionIfSplitSizeIsTooSmall() {
-        assertThrows(IllegalArgumentException.class, () -> new ZipSplitOutputStream(File.createTempFile("temp", "zip"), (64 * 1024 - 1)));
+        assertThrows(IllegalArgumentException.class, () -> new ZipSplitOutputStream(File.createTempFile("temp", "zip"), 64 * 1024 - 1));
     }
 
     @Test

@@ -59,7 +59,7 @@ public class GzipParameters {
 
     /**
      * Gets the deflater strategy.
-     * 
+     *
      * @return the deflater strategy, {@link Deflater#DEFAULT_STRATEGY} by default.
      * @see #setDeflateStrategy(int)
      * @see Deflater#setStrategy(int)
@@ -122,7 +122,7 @@ public class GzipParameters {
      * @see Deflater#setStrategy(int)
      * @since 1.23
      */
-    public void setDeflateStrategy(int deflateStrategy) {
+    public void setDeflateStrategy(final int deflateStrategy) {
         this.deflateStrategy = deflateStrategy;
     }
 

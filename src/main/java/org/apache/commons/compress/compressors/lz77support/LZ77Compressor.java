@@ -499,7 +499,7 @@ public class LZ77Compressor {
      */
     private int nextHash(final int oldHash, final byte nextByte) {
         final int nextVal = nextByte & 0xFF;
-        return ((oldHash << H_SHIFT) ^ nextVal) & HASH_MASK;
+        return (oldHash << H_SHIFT ^ nextVal) & HASH_MASK;
     }
 
     /**

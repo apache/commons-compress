@@ -144,7 +144,7 @@ public class InnerClassesAttribute extends Attribute {
 
     @Override
     protected int getLength() {
-        return 2 + ((2 + 2 + 2 + 2) * innerClasses.size());
+        return 2 + (2 + 2 + 2 + 2) * innerClasses.size();
     }
 
     @Override
@@ -156,7 +156,7 @@ public class InnerClassesAttribute extends Attribute {
     public int hashCode() {
         final int PRIME = 31;
         int result = super.hashCode();
-        result = PRIME * result + ((getAttributeName() == null) ? 0 : getAttributeName().hashCode());
+        result = PRIME * result + (getAttributeName() == null ? 0 : getAttributeName().hashCode());
         return result;
     }
 

@@ -56,7 +56,7 @@ public abstract class AbstractTestCase {
             throw new FileNotFoundException("couldn't find " + path);
         }
         try {
-            URI uri = url.toURI();
+            final URI uri = url.toURI();
             return new File(uri);
         } catch (final java.net.URISyntaxException ex) {
             throw new IOException(ex);

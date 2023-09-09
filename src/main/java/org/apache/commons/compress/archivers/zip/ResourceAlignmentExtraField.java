@@ -129,7 +129,7 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
             throw new ZipException("Too short content for ResourceAlignmentExtraField (0xa11e): " + length);
         }
         final int alignmentValue = ZipShort.getValue(buffer, offset);
-        this.alignment = (short) (alignmentValue & (ALLOW_METHOD_MESSAGE_CHANGE_FLAG - 1));
+        this.alignment = (short) (alignmentValue & ALLOW_METHOD_MESSAGE_CHANGE_FLAG - 1);
         this.allowMethodChange = (alignmentValue & ALLOW_METHOD_MESSAGE_CHANGE_FLAG) != 0;
     }
 

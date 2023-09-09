@@ -26,7 +26,7 @@ import java.io.InputStream;
 
 /**
  * StreamBridge that caches all data written to the output side in memory.
- * 
+ *
  * @since 1.3
  */
 class InMemoryCachingStreamBridge extends AbstractStreamBridge {

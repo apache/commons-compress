@@ -711,8 +711,8 @@ public class TarFile implements Closeable {
      */
     private void skipRecordPadding() throws IOException {
         if (!isDirectory() && currEntry.getSize() > 0 && currEntry.getSize() % recordSize != 0) {
-            final long numRecords = (currEntry.getSize() / recordSize) + 1;
-            final long padding = (numRecords * recordSize) - currEntry.getSize();
+            final long numRecords = currEntry.getSize() / recordSize + 1;
+            final long padding = numRecords * recordSize - currEntry.getSize();
             repositionForwardBy(padding);
             throwExceptionIfPositionIsNotInArchive();
         }

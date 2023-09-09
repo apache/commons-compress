@@ -237,7 +237,7 @@ public abstract class BandSet {
 
             // Note: these values have been tuned - please test carefully if changing them
             if (numDistinctValues < 100 || distinctValuesAsProportion < 0.02
-                || (effort > 6 && distinctValuesAsProportion < 0.04)) { // TODO: tweak
+                || effort > 6 && distinctValuesAsProportion < 0.04) { // TODO: tweak
                 encodeWithPopulationCodec(name, band, defaultCodec, bandData, results);
                 if (timeToStop(results)) {
                     return results;
@@ -357,7 +357,7 @@ public abstract class BandSet {
 //        if (ints.length > 0) {
 //            System.out.println("encoding " + name + " " + ints.length);
 //        }
-        if (effort > 1 && (ints.length >= effortThresholds[effort])) {
+        if (effort > 1 && ints.length >= effortThresholds[effort]) {
             final BandAnalysisResults results = analyseBand(name, ints, defaultCodec);
             final Codec betterCodec = results.betterCodec;
             encodedBand = results.encodedBand;
@@ -622,7 +622,7 @@ public abstract class BandSet {
         final Codec favouredCodec = favouredResults.betterCodec;
         final Codec unfavouredCodec = unfavouredResults.betterCodec;
 
-        int specifier = 141 + (favouredCodec == null ? 1 : 0) + (4 * tdefL) + (unfavouredCodec == null ? 2 : 0);
+        int specifier = 141 + (favouredCodec == null ? 1 : 0) + 4 * tdefL + (unfavouredCodec == null ? 2 : 0);
         final IntList extraBandMetadata = new IntList(3);
         if (favouredCodec != null) {
             IntStream.of(CodecEncoding.getSpecifier(favouredCodec, null)).forEach(extraBandMetadata::add);

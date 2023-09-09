@@ -114,7 +114,7 @@ class BinaryTree {
             code = code + codeIncrement;
             if (sortedBitLengths[i] != lastBitLength) {
                 lastBitLength = sortedBitLengths[i];
-                codeIncrement = 1 << (16 - lastBitLength);
+                codeIncrement = 1 << 16 - lastBitLength;
             }
             codes[permutation[i]] = code;
         }
@@ -143,7 +143,7 @@ class BinaryTree {
             throw new IllegalArgumentException("depth must be bigger than 0 and not bigger than 30"
                 + " but is " + depth);
         }
-        tree = new int[(int) ((1L << (depth + 1)) - 1)];
+        tree = new int[(int) ((1L << depth + 1) - 1)];
         Arrays.fill(tree, UNDEFINED);
     }
 

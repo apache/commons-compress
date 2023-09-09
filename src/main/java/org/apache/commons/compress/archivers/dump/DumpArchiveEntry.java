@@ -310,7 +310,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
         final int m = DumpArchiveUtil.convert16(buffer, 32);
 
         // determine the type of the file.
-        entry.setType(TYPE.find((m >> 12) & 0x0F));
+        entry.setType(TYPE.find(m >> 12 & 0x0F));
 
         // determine the standard permissions
         entry.setMode(m);
@@ -319,14 +319,14 @@ public class DumpArchiveEntry implements ArchiveEntry {
         // inumber, oldids?
         entry.setSize(DumpArchiveUtil.convert64(buffer, 40));
 
-        long t = (1000L * DumpArchiveUtil.convert32(buffer, 48)) +
-            (DumpArchiveUtil.convert32(buffer, 52) / 1000);
+        long t = 1000L * DumpArchiveUtil.convert32(buffer, 48) +
+            DumpArchiveUtil.convert32(buffer, 52) / 1000;
         entry.setAccessTime(new Date(t));
-        t = (1000L * DumpArchiveUtil.convert32(buffer, 56)) +
-            (DumpArchiveUtil.convert32(buffer, 60) / 1000);
+        t = 1000L * DumpArchiveUtil.convert32(buffer, 56) +
+            DumpArchiveUtil.convert32(buffer, 60) / 1000;
         entry.setLastModifiedDate(new Date(t));
-        t = (1000L * DumpArchiveUtil.convert32(buffer, 64)) +
-            (DumpArchiveUtil.convert32(buffer, 68) / 1000);
+        t = 1000L * DumpArchiveUtil.convert32(buffer, 64) +
+            DumpArchiveUtil.convert32(buffer, 68) / 1000;
         entry.ctime = t;
 
         // db: 72-119 - direct blocks
@@ -341,7 +341,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
         header.holes = 0;
 
-        for (int i = 0; (i < 512) && (i < header.count); i++) {
+        for (int i = 0; i < 512 && i < header.count; i++) {
             if (buffer[164 + i] == 0) {
                 header.holes++;
             }
@@ -436,8 +436,8 @@ public class DumpArchiveEntry implements ArchiveEntry {
         }
 
         // summary is always null right now, but this may change some day
-        if ((summary == null && rhs.summary != null) // NOSONAR
-                || (summary != null && !summary.equals(rhs.summary))) { // NOSONAR
+        if (summary == null && rhs.summary != null // NOSONAR
+                || summary != null && !summary.equals(rhs.summary)) { // NOSONAR
             return false;
         }
 
@@ -832,7 +832,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
         header.holes = 0;
 
-        for (int i = 0; (i < 512) && (i < header.count); i++) {
+        for (int i = 0; i < 512 && i < header.count; i++) {
             if (buffer[164 + i] == 0) {
                 header.holes++;
             }

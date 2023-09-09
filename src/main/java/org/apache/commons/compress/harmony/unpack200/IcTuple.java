@@ -104,7 +104,7 @@ public class IcTuple {
 
     @Override
     public boolean equals(final Object object) {
-        if ((object == null) || (object.getClass() != this.getClass())) {
+        if (object == null || object.getClass() != this.getClass()) {
             return false;
         }
         final IcTuple compareTuple = (IcTuple) object;

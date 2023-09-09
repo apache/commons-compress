@@ -203,7 +203,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
         maybeFinishCurrentBlock();
         final long len = ByteUtils.fromLittleEndian(supplier, 4);
         final boolean uncompressed = (len & UNCOMPRESSED_FLAG_MASK) != 0;
-        final int realLen = (int) (len & (~UNCOMPRESSED_FLAG_MASK));
+        final int realLen = (int) (len & ~UNCOMPRESSED_FLAG_MASK);
         if (realLen == 0) {
             verifyContentChecksum();
             if (!decompressConcatenated) {
@@ -301,7 +301,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
         if (headerHash == -1) { // partial hash of header.
             throw new IOException("Premature end of stream while reading frame header checksum");
         }
-        final int expectedHash = (int) ((contentHash.getValue() >> 8) & 0xff);
+        final int expectedHash = (int) (contentHash.getValue() >> 8 & 0xff);
         contentHash.reset();
         if (headerHash != expectedHash) {
             throw new IOException("Frame header checksum mismatch");

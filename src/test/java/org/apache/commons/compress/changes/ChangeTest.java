@@ -46,7 +46,7 @@ public class ChangeTest {
 
     @Test
     public void testFailsToCreateChangeTakingThreeArgumentsThrowsNullPointerException() {
-        assertThrows(NullPointerException.class, () -> new Change(null, (-407)));
+        assertThrows(NullPointerException.class, () -> new Change(null, -407));
     }
 
 }

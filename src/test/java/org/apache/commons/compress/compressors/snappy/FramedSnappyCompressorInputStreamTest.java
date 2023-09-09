@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 public final class FramedSnappyCompressorInputStreamTest extends AbstractTestCase {
 
     private long mask(final long x) {
-        return (((x >>> 15) | (x << 17)) + FramedSnappyCompressorInputStream.MASK_OFFSET) & 0xffffFFFFL;
+        return (x >>> 15 | x << 17) + FramedSnappyCompressorInputStream.MASK_OFFSET & 0xffffFFFFL;
     }
 
     @Test

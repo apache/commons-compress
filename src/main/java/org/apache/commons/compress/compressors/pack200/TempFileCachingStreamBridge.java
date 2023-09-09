@@ -52,7 +52,7 @@ class TempFileCachingStreamBridge extends AbstractStreamBridge {
                 } finally {
                     try {
                         Files.deleteIfExists(f);
-                    } catch (IOException ignore) {
+                    } catch (final IOException ignore) {
                         // if this fails the only thing we can do is to rely on deleteOnExit
                     }
                 }

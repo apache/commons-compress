@@ -191,7 +191,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
 
             // The ZipLong==ZipLong clauses handle the cases where both are null.
             // and only last 3 bits of flags matter.
-            return ((flags & 0x07) == (xf.flags & 0x07)) &&
+            return (flags & 0x07) == (xf.flags & 0x07) &&
                     Objects.equals(modifyTime, xf.modifyTime) &&
                     Objects.equals(accessTime, xf.accessTime) &&
                     Objects.equals(createTime, xf.createTime);
@@ -421,7 +421,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
 
     @Override
     public int hashCode() {
-        int hc = (-123 * (flags & 0x07)); // only last 3 bits of flags matter
+        int hc = -123 * (flags & 0x07); // only last 3 bits of flags matter
         if (modifyTime != null) {
             hc ^= modifyTime.hashCode();
         }
@@ -575,7 +575,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      */
     public void setAccessTime(final ZipLong l) {
         bit1_accessTimePresent = l != null;
-        flags = (byte) (l != null ? (flags | ACCESS_TIME_BIT) : (flags & ~ACCESS_TIME_BIT));
+        flags = (byte) (l != null ? flags | ACCESS_TIME_BIT : flags & ~ACCESS_TIME_BIT);
         this.accessTime = l;
     }
 
@@ -626,7 +626,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      */
     public void setCreateTime(final ZipLong l) {
         bit2_createTimePresent = l != null;
-        flags = (byte) (l != null ? (flags | CREATE_TIME_BIT) : (flags & ~CREATE_TIME_BIT));
+        flags = (byte) (l != null ? flags | CREATE_TIME_BIT : flags & ~CREATE_TIME_BIT);
         this.createTime = l;
     }
 
@@ -700,7 +700,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      */
     public void setModifyTime(final ZipLong l) {
         bit0_modifyTimePresent = l != null;
-        flags = (byte) (l != null ? (flags | MODIFY_TIME_BIT) : (flags & ~MODIFY_TIME_BIT));
+        flags = (byte) (l != null ? flags | MODIFY_TIME_BIT : flags & ~MODIFY_TIME_BIT);
         this.modifyTime = l;
     }
 

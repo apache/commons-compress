@@ -208,7 +208,7 @@ public class AttributeDefinitionBands extends BandSet {
         final int[] attributeDefinitionLayout = new int[attributeDefinitions.size()];
         for (int i = 0; i < attributeDefinitionLayout.length; i++) {
             final AttributeDefinition def = attributeDefinitions.get(i);
-            attributeDefinitionHeader[i] = def.contextType | (def.index + 1 << 2);
+            attributeDefinitionHeader[i] = def.contextType | def.index + 1 << 2;
             attributeDefinitionName[i] = def.name.getIndex();
             attributeDefinitionLayout[i] = def.layout.getIndex();
         }

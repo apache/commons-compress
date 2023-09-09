@@ -81,7 +81,7 @@ public abstract class BandSet {
         final int first = getFirst[0];
         if (codec.isSigned() && first >= -256 && first <= -1) {
             // Non-default codec should be used
-            codecUsed = CodecEncoding.getCodec((-1 - first), header.getBandHeadersInputStream(), codec);
+            codecUsed = CodecEncoding.getCodec(-1 - first, header.getBandHeadersInputStream(), codec);
             band = codecUsed.decodeInts(count, in);
         } else if (!codec.isSigned() && first >= codec.getL() && first <= codec.getL() + 255) {
             // Non-default codec should be used
@@ -358,7 +358,7 @@ public abstract class BandSet {
 
     public long[] parseFlags(final String name, final InputStream in, final int count, final BHSDCodec codec,
         final boolean hasHi) throws IOException, Pack200Exception {
-        return parseFlags(name, in, new int[] {count}, (hasHi ? codec : null), codec)[0];
+        return parseFlags(name, in, new int[] {count}, hasHi ? codec : null, codec)[0];
     }
 
     public long[][] parseFlags(final String name, final InputStream in, final int[] counts, final BHSDCodec hiCodec,
@@ -384,7 +384,7 @@ public abstract class BandSet {
         for (int i = 0; i < result.length; i++) {
             for (int j = 0; j < result[i].length; j++) {
                 if (hi != null) {
-                    result[i][j] = ((long) hi[index] << 32) | (lo[index] & 4294967295L);
+                    result[i][j] = (long) hi[index] << 32 | lo[index] & 4294967295L;
                 } else {
                     result[i][j] = lo[index];
                 }
@@ -396,7 +396,7 @@ public abstract class BandSet {
 
     public long[][] parseFlags(final String name, final InputStream in, final int[] counts, final BHSDCodec codec,
         final boolean hasHi) throws IOException, Pack200Exception {
-        return parseFlags(name, in, counts, (hasHi ? codec : null), codec);
+        return parseFlags(name, in, counts, hasHi ? codec : null, codec);
     }
 
     /**

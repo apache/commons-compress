@@ -337,7 +337,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
                 writeIndex += backReferenceOffset;
             }
 
-            final int pad = copy - (backReferenceOffset * fullRots);
+            final int pad = copy - backReferenceOffset * fullRots;
             if (pad > 0) {
                 System.arraycopy(buf, writeIndex - backReferenceOffset, buf, writeIndex, pad);
                 writeIndex += pad;

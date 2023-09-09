@@ -220,7 +220,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
             if (obj instanceof Long) {
                 value = ((Long) obj).longValue();
             } else if (obj instanceof ClassFileEntry) {
-                value = pool.indexOf(((ClassFileEntry) obj));
+                value = pool.indexOf((ClassFileEntry) obj);
             } else if (obj instanceof AbstractBcValue) {
                 value = ((AbstractBcValue) obj).actualValue;
             }

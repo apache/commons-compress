@@ -157,7 +157,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
      */
     @Test
     public void testAddChangeTwiceWithoutReplace() throws Exception {
-        try (InputStream in = newInputStream("test.txt"); 
+        try (InputStream in = newInputStream("test.txt");
                 InputStream in2 = newInputStream("test2.xml")) {
 
             final ArchiveEntry e = new ZipArchiveEntry("test.txt");
@@ -615,7 +615,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         changes.add(entry, Files.newInputStream(file1.toPath()));
 
         final File input = getFile("bla.tar");
-        File temp = new File(dir, "bla.tar");
+        final File temp = new File(dir, "bla.tar");
         try (ArchiveInputStream ais = factory.createArchiveInputStream("tar", Files.newInputStream(input.toPath()));
                 ArchiveOutputStream out = factory.createArchiveOutputStream("tar", Files.newOutputStream(temp.toPath()))) {
             final ChangeSetPerformer performer = new ChangeSetPerformer(changes);
@@ -857,7 +857,7 @@ public final class ChangeSetTestCase extends AbstractTestCase {
         // Checks
         try (BufferedInputStream buf = new BufferedInputStream(Files.newInputStream(result.toPath()));
                 ArchiveInputStream in = factory.createArchiveInputStream(buf)) {
-            File check = this.checkArchiveContent(in, archiveList, false);
+            final File check = this.checkArchiveContent(in, archiveList, false);
             final File test3xml = new File(check, "result/test/test3.xml");
             assertEquals(testtxt.length(), test3xml.length());
 

@@ -80,11 +80,11 @@ public class BcBands extends BandSet {
     }
 
     private boolean endsWithLoad(final int codePacked) {
-        return (codePacked >= 21 && codePacked <= 25);
+        return codePacked >= 21 && codePacked <= 25;
     }
 
     private boolean endsWithStore(final int codePacked) {
-        return (codePacked >= 54 && codePacked <= 58);
+        return codePacked >= 54 && codePacked <= 58;
     }
 
     public int[] getBcByte() {
@@ -424,7 +424,7 @@ public class BcBands extends BandSet {
     }
 
     private boolean startsWithIf(final int codePacked) {
-        return (codePacked >= 153 && codePacked <= 166) || (codePacked == 198) || (codePacked == 199);
+        return codePacked >= 153 && codePacked <= 166 || codePacked == 198 || codePacked == 199;
     }
 
     @Override
@@ -506,7 +506,7 @@ public class BcBands extends BandSet {
                     int indexForCodeAttr = 0;
                     for (final Attribute attribute : methodAttributesList) {
                         if (!(attribute instanceof NewAttribute)
-                            || (((NewAttribute) attribute).getLayoutIndex() >= 15)) {
+                            || ((NewAttribute) attribute).getLayoutIndex() >= 15) {
                             break;
                         }
                         indexForCodeAttr++;

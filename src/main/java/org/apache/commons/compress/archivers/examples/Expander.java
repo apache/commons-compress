@@ -199,7 +199,7 @@ public class Expander {
      */
     public void expand(final Path archive, final Path targetDirectory) throws IOException, ArchiveException {
         try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(archive))) {
-            String format = ArchiveStreamFactory.detect(inputStream);
+            final String format = ArchiveStreamFactory.detect(inputStream);
             expand(format, archive, targetDirectory);
         }
     }

@@ -65,8 +65,8 @@ public class CPFieldRef extends ConstantPoolEntry {
         hashCodeComputed = true;
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result + ((className == null) ? 0 : className.hashCode());
-        result = PRIME * result + ((nameAndType == null) ? 0 : nameAndType.hashCode());
+        result = PRIME * result + (className == null ? 0 : className.hashCode());
+        result = PRIME * result + (nameAndType == null ? 0 : nameAndType.hashCode());
         cachedHashCode = result;
     }
 

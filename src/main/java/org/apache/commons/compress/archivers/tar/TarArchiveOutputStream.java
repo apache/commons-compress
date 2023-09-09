@@ -128,8 +128,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     private final CountingOutputStream countingOut;
 
     private final ZipEncoding zipEncoding;
-    
-    /** 
+
+    /**
      * The provided encoding (for unit tests).
      */
     final String encoding;

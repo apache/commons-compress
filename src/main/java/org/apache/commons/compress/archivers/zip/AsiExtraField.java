@@ -215,7 +215,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
         } else if (isDirectory()) {
             type = DIR_FLAG;
         }
-        return type | (mode & PERM_MASK);
+        return type | mode & PERM_MASK;
     }
 
     /**

@@ -497,13 +497,13 @@ public class ZipArchiveEntryTest {
         ze.setUnixMode(0755);
         assertEquals(3, ze.getPlatform());
         assertEquals(0755,
-                     (ze.getExternalAttributes() >> 16) & 0xFFFF);
+                     ze.getExternalAttributes() >> 16 & 0xFFFF);
         assertEquals(0, ze.getExternalAttributes()  & 0xFFFF);
 
         ze.setUnixMode(0444);
         assertEquals(3, ze.getPlatform());
         assertEquals(0444,
-                     (ze.getExternalAttributes() >> 16) & 0xFFFF);
+                     ze.getExternalAttributes() >> 16 & 0xFFFF);
         assertEquals(1, ze.getExternalAttributes()  & 0xFFFF);
 
         ze = new ZipArchiveEntry("foo/");
@@ -511,13 +511,13 @@ public class ZipArchiveEntryTest {
         ze.setUnixMode(0777);
         assertEquals(3, ze.getPlatform());
         assertEquals(0777,
-                     (ze.getExternalAttributes() >> 16) & 0xFFFF);
+                     ze.getExternalAttributes() >> 16 & 0xFFFF);
         assertEquals(0x10, ze.getExternalAttributes()  & 0xFFFF);
 
         ze.setUnixMode(0577);
         assertEquals(3, ze.getPlatform());
         assertEquals(0577,
-                     (ze.getExternalAttributes() >> 16) & 0xFFFF);
+                     ze.getExternalAttributes() >> 16 & 0xFFFF);
         assertEquals(0x11, ze.getExternalAttributes()  & 0xFFFF);
     }
 

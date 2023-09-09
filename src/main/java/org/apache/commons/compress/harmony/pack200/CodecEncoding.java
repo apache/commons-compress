@@ -108,8 +108,8 @@ public class CodecEncoding {
             if (code == -1) {
                 throw new EOFException("End of buffer read whilst trying to decode codec");
             }
-            final int d = (code & 0x01);
-            final int s = (code >> 1 & 0x03);
+            final int d = code & 0x01;
+            final int s = code >> 1 & 0x03;
             final int b = (code >> 3 & 0x07) + 1; // this might result in an invalid
             // number, but it's checked in the
             // Codec constructor
@@ -132,7 +132,7 @@ public class CodecEncoding {
             if (adef && bdef) {
                 throw new Pack200Exception("ADef and BDef should never both be true");
             }
-            final int kb = (kbflag ? in.read() : 3);
+            final int kb = kbflag ? in.read() : 3;
             final int k = (kb + 1) * (int) Math.pow(16, kx);
             Codec aCodec, bCodec;
             if (adef) {
@@ -147,7 +147,7 @@ public class CodecEncoding {
             }
             return new RunCodec(k, aCodec, bCodec);
         }
-        if ((value < 141) || (value > 188)) {
+        if (value < 141 || value > 188) {
             throw new Pack200Exception("Invalid codec encoding byte (" + value + ") found");
         }
         final int offset = value - 141;
@@ -162,8 +162,8 @@ public class CodecEncoding {
         // which
         // they are read from the stream is important
         if (tdef) {
-            final Codec fCodec = (fdef ? defaultCodec : getCodec(in.read(), in, defaultCodec));
-            final Codec uCodec = (udef ? defaultCodec : getCodec(in.read(), in, defaultCodec));
+            final Codec fCodec = fdef ? defaultCodec : getCodec(in.read(), in, defaultCodec);
+            final Codec uCodec = udef ? defaultCodec : getCodec(in.read(), in, defaultCodec);
             // Unfortunately, if tdef, then tCodec depends both on l and
             // also on k, the
             // number of items read from the fCodec. So we don't know in
@@ -171,9 +171,9 @@ public class CodecEncoding {
             // the codec will be.
             return new PopulationCodec(fCodec, l, uCodec);
         }
-        final Codec fCodec = (fdef ? defaultCodec : getCodec(in.read(), in, defaultCodec));
+        final Codec fCodec = fdef ? defaultCodec : getCodec(in.read(), in, defaultCodec);
         final Codec tCodec = getCodec(in.read(), in, defaultCodec);
-        final Codec uCodec = (udef ? defaultCodec : getCodec(in.read(), in, defaultCodec));
+        final Codec uCodec = udef ? defaultCodec : getCodec(in.read(), in, defaultCodec);
         return new PopulationCodec(fCodec, tCodec, uCodec);
     }
 
@@ -225,7 +225,7 @@ public class CodecEncoding {
             } else if (bCodec.equals(defaultForBand)) {
                 abDef = 2;
             }
-            final int first = 117 + kb + (kx == 3 ? 0 : 4) + (8 * abDef);
+            final int first = 117 + kb + (kx == 3 ? 0 : 4) + 8 * abDef;
             final int[] aSpecifier = abDef == 1 ? new int[0] : getSpecifier(aCodec, defaultForBand);
             final int[] bSpecifier = abDef == 2 ? new int[0] : getSpecifier(bCodec, defaultForBand);
             final int[] specifier = new int[1 + (kx == 3 ? 0 : 1) + aSpecifier.length + bSpecifier.length];
@@ -270,7 +270,7 @@ public class CodecEncoding {
                     }
                 }
             }
-            final int first = 141 + fDef + (2 * uDef) + (4 * tDefL);
+            final int first = 141 + fDef + 2 * uDef + 4 * tDefL;
             final int[] favouredSpecifier = fDef == 1 ? new int[0] : getSpecifier(favouredCodec, defaultForBand);
             final int[] tokenSpecifier = tDefL != 0 ? new int[0] : getSpecifier(tokenCodec, defaultForBand);
             final int[] unfavouredSpecifier = uDef == 1 ? new int[0] : getSpecifier(unfavouredCodec, defaultForBand);

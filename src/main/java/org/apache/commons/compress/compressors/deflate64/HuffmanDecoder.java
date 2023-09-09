@@ -103,7 +103,7 @@ class HuffmanDecoder implements Closeable {
         }
 
         private int incCounter(final int counter) {
-            final int newCounter = (counter + 1) & mask;
+            final int newCounter = counter + 1 & mask;
             if (!wrappedAround && newCounter < counter) {
                 wrappedAround = true;
             }
@@ -114,7 +114,7 @@ class HuffmanDecoder implements Closeable {
             if (distance > memory.length) {
                 throw new IllegalStateException("Illegal distance parameter: " + distance);
             }
-            final int start = (wHead - distance) & mask;
+            final int start = wHead - distance & mask;
             if (!wrappedAround && start >= wHead) {
                 throw new IllegalStateException("Attempt to read beyond memory: dist=" + distance);
             }
@@ -375,7 +375,7 @@ class HuffmanDecoder implements Closeable {
                 BinaryTreeNode node = root;
                 final int lit = literalCodes[len - 1];
                 for (int p = len - 1; p >= 0; p--) {
-                    final int bit = lit & (1 << p);
+                    final int bit = lit & 1 << p;
                     node = bit == 0 ? node.left() : node.right();
                     if (node == null) {
                         throw new IllegalStateException("node doesn't exist in Huffman tree");
@@ -405,7 +405,7 @@ class HuffmanDecoder implements Closeable {
         int code = 0;
         final int[] nextCode = new int[max + 1];
         for (int i = 0; i <= max; i++) {
-            code = (code + blCount[i]) << 1;
+            code = code + blCount[i] << 1;
             nextCode[i] = code;
         }
 

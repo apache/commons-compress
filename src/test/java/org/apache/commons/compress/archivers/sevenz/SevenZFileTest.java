@@ -96,9 +96,9 @@ public class SevenZFileTest extends AbstractTestCase {
             assertDates(entry, "2013-05-07T19:40:48Z", null, null);
             final byte[] contents = new byte[(int) entry.getSize()];
             int off = 0;
-            while ((off < contents.length)) {
+            while (off < contents.length) {
                 final int bytesRead = sevenZFile.read(contents, off, contents.length - off);
-                assert (bytesRead >= 0);
+                assert bytesRead >= 0;
                 off += bytesRead;
             }
             assertEquals("Hello, world!\n", new String(contents, UTF_8));
@@ -136,7 +136,7 @@ public class SevenZFileTest extends AbstractTestCase {
                     final InputStream inputStream = sevenZFile.getInputStream(entry);
                     while (off < contents.length) {
                         final int bytesRead = inputStream.read(contents, off, contents.length - off);
-                        assert (bytesRead >= 0);
+                        assert bytesRead >= 0;
                         off += bytesRead;
                     }
                     assertEquals(testTxtContents, new String(contents, UTF_8));
@@ -456,9 +456,9 @@ public class SevenZFileTest extends AbstractTestCase {
         assertEquals(m, entry.getContentMethods().iterator().next().getMethod());
         final byte[] contents = new byte[(int) entry.getSize()];
         int off = 0;
-        while ((off < contents.length)) {
+        while (off < contents.length) {
             final int bytesRead = sevenZFile.read(contents, off, contents.length - off);
-            assert (bytesRead >= 0);
+            assert bytesRead >= 0;
             off += bytesRead;
         }
         assertEquals(TEST2_CONTENT, new String(contents, UTF_8));
@@ -573,7 +573,7 @@ public class SevenZFileTest extends AbstractTestCase {
                     int off = 0;
                     while (off < contents.length) {
                         final int bytesRead = inputStream.read(contents, off, contents.length - off);
-                        assert (bytesRead >= 0);
+                        assert bytesRead >= 0;
                         off += bytesRead;
                     }
                     assertEquals(SevenZMethod.LZMA2, testTxtEntry.getContentMethods().iterator().next().getMethod());
@@ -612,7 +612,7 @@ public class SevenZFileTest extends AbstractTestCase {
             // just read them
             while (off < contents.length) {
                 final int bytesRead = sevenZFile.read(contents, off, contents.length - off);
-                assert (bytesRead >= 0);
+                assert bytesRead >= 0;
                 off += bytesRead;
             }
 
@@ -627,7 +627,7 @@ public class SevenZFileTest extends AbstractTestCase {
                     final InputStream inputStream = sevenZFile.getInputStream(entry);
                     while (off < contents.length) {
                         final int bytesRead = inputStream.read(contents, off, contents.length - off);
-                        assert (bytesRead >= 0);
+                        assert bytesRead >= 0;
                         off += bytesRead;
                     }
                     assertEquals(SevenZMethod.LZMA2, entry.getContentMethods().iterator().next().getMethod());
@@ -646,7 +646,7 @@ public class SevenZFileTest extends AbstractTestCase {
             off = 0;
             while (off < contents.length) {
                 final int bytesRead = sevenZFile.read(contents, off, contents.length - off);
-                assert (bytesRead >= 0);
+                assert bytesRead >= 0;
                 off += bytesRead;
             }
             assertEquals(SevenZMethod.LZMA2, nextEntry.getContentMethods().iterator().next().getMethod());
@@ -683,7 +683,7 @@ public class SevenZFileTest extends AbstractTestCase {
             int off = 0;
             while (off < entryAfterTestTxtEntryContents.length) {
                 final int bytesRead = sevenZFile.read(entryAfterTestTxtEntryContents, off, entryAfterTestTxtEntryContents.length - off);
-                assert (bytesRead >= 0);
+                assert bytesRead >= 0;
                 off += bytesRead;
             }
 
@@ -694,7 +694,7 @@ public class SevenZFileTest extends AbstractTestCase {
                 off = 0;
                 while (off < contents.length) {
                     final int bytesRead = inputStream.read(contents, off, contents.length - off);
-                    assert (bytesRead >= 0);
+                    assert bytesRead >= 0;
                     off += bytesRead;
                 }
                 assertEquals(SevenZMethod.LZMA2, testTxtEntry.getContentMethods().iterator().next().getMethod());
@@ -707,7 +707,7 @@ public class SevenZFileTest extends AbstractTestCase {
             off = 0;
             while (off < nextTestContents.length) {
                 final int bytesRead = sevenZFile.read(nextTestContents, off, nextTestContents.length - off);
-                assert (bytesRead >= 0);
+                assert bytesRead >= 0;
                 off += bytesRead;
             }
 
@@ -733,9 +733,8 @@ public class SevenZFileTest extends AbstractTestCase {
 
             SevenZArchiveEntry testTxtEntry = null;
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
-            final Iterator<SevenZArchiveEntry> iter = entries.iterator();
-            while(iter.hasNext()) {
-                testTxtEntry = iter.next();
+            for (SevenZArchiveEntry Entry : entries) {
+                testTxtEntry = Entry;
                 if (testTxtEntry.getName().equals("commons-compress-1.7-src/src/test/resources/test.txt")) {
                     break;
                 }
@@ -760,7 +759,7 @@ public class SevenZFileTest extends AbstractTestCase {
                     int off = 0;
                     while (off < contents.length) {
                         final int bytesRead = inputStream.read(contents, off, contents.length - off);
-                        assert (bytesRead >= 0);
+                        assert bytesRead >= 0;
                         off += bytesRead;
                     }
                     assertEquals(SevenZMethod.LZMA2, testTxtEntry.getContentMethods().iterator().next().getMethod());

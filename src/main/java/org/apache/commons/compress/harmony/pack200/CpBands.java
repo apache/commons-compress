@@ -301,8 +301,8 @@ public class CpBands extends BandSet {
                         final StringBuilder className = new StringBuilder();
                         for (int j = i + 1; j < chars.length; j++) {
                             final char c = chars[j];
-                            if (!Character.isLetter(c) && !Character.isDigit(c) && (c != '/') && (c != '$')
-                                && (c != '_')) {
+                            if (!Character.isLetter(c) && !Character.isDigit(c) && c != '/' && c != '$'
+                                && c != '_') {
                                 classes.add(className.toString());
                                 i = j - 1;
                                 break;
@@ -370,7 +370,7 @@ public class CpBands extends BandSet {
 
     private void removeCpUtf8(final String string) {
         final CPUTF8 utf8 = stringsToCpUtf8.get(string);
-        if ((utf8 != null) && (stringsToCpClass.get(string) == null)) { // don't remove if strings are also in cpclass
+        if (utf8 != null && stringsToCpClass.get(string) == null) { // don't remove if strings are also in cpclass
             stringsToCpUtf8.remove(string);
             cp_Utf8.remove(utf8);
         }

@@ -54,8 +54,8 @@ public class IcBands extends BandSet {
         public boolean equals(final Object o) {
             if (o instanceof IcTuple) {
                 final IcTuple icT = (IcTuple) o;
-                return C.equals(icT.C) && F == icT.F && (Objects.equals(C2, icT.C2))
-                    && (Objects.equals(N, icT.N));
+                return C.equals(icT.C) && F == icT.F && Objects.equals(C2, icT.C2)
+                    && Objects.equals(N, icT.N);
             }
             return false;
         }
@@ -90,7 +90,7 @@ public class IcBands extends BandSet {
                 addToMap(outerName, innerClass);
                 innerClasses.add(innerClass);
             } else {
-                flags |= (1 << 16);
+                flags |= 1 << 16;
                 final IcTuple icTuple = new IcTuple(cpBands.getCPClass(name), flags, cpBands.getCPClass(outerName),
                     cpBands.getCPUtf8(innerName));
                 final boolean added = innerClasses.add(icTuple);
@@ -111,15 +111,14 @@ public class IcBands extends BandSet {
         if (tuples == null) {
             tuples = new ArrayList<>();
             outerToInner.put(outerName, tuples);
-            tuples.add(icTuple);
         } else {
             for (final IcTuple tuple : tuples) {
                 if (icTuple.equals(tuple)) {
                     return;
                 }
             }
-            tuples.add(icTuple);
         }
+        tuples.add(icTuple);
     }
 
     /**
@@ -166,7 +165,7 @@ public class IcBands extends BandSet {
             final IcTuple icTuple = innerClassesList.get(i);
             ic_this_class[i] = icTuple.C.getIndex();
             ic_flags[i] = icTuple.F;
-            if ((icTuple.F & (1 << 16)) != 0) {
+            if ((icTuple.F & 1 << 16) != 0) {
                 ic_outer_class[index2] = icTuple.C2 == null ? 0 : icTuple.C2.getIndex() + 1;
                 ic_name[index2] = icTuple.N == null ? 0 : icTuple.N.getIndex() + 1;
                 index2++;

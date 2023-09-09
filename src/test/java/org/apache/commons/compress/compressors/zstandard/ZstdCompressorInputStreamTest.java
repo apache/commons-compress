@@ -78,7 +78,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
         final File original = getFile("zstandard.testdata");
         final long originalFileLength = original.length();
 
-        final byte[] originalFileContent = new byte[((int) originalFileLength)];
+        final byte[] originalFileContent = new byte[(int) originalFileLength];
 
         try (InputStream ois = Files.newInputStream(original.toPath())) {
             ois.read(originalFileContent);

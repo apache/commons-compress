@@ -768,7 +768,7 @@ public class TarUtils {
                     while((ch = inputStream.read()) != -1) {
                         read++;
                         totalRead++;
-                        if (totalRead < 0 || (headerSize >= 0 && totalRead >= headerSize)) {
+                        if (totalRead < 0 || headerSize >= 0 && totalRead >= headerSize) {
                             break;
                         }
                         if (ch == '='){ // end of keyword

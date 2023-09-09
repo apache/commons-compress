@@ -88,7 +88,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
         // overflow
         x -= MASK_OFFSET;
         x &= 0xffffFFFFL;
-        return ((x >> 17) | (x << 15)) & 0xffffFFFFL;
+        return (x >> 17 | x << 15) & 0xffffFFFFL;
     }
 
     private long unreadBytes;
@@ -245,7 +245,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
             readStreamIdentifier();
             readNextBlock();
         } else if (type == PADDING_CHUNK_TYPE
-                   || (type > MAX_UNSKIPPABLE_TYPE && type <= MAX_SKIPPABLE_TYPE)) {
+                   || type > MAX_UNSKIPPABLE_TYPE && type <= MAX_SKIPPABLE_TYPE) {
             skipBlock();
             readNextBlock();
         } else if (type >= MIN_UNSKIPPABLE_TYPE && type <= MAX_UNSKIPPABLE_TYPE) {

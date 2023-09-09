@@ -119,7 +119,7 @@ public class ArchiveUtilsTest extends AbstractTestCase {
     @Test
     public void testIsEqualWithNullWithPositive() {
         final byte[] byteArray = new byte[8];
-        byteArray[1] = (byte) (-77);
+        byteArray[1] = (byte) -77;
         assertFalse(ArchiveUtils.isEqualWithNull(byteArray, 0, (byte) 0, byteArray, (byte) 0, (byte) 80));
     }
 

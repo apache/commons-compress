@@ -259,7 +259,7 @@ public class ArchiveStreamFactoryTest extends AbstractTestCase {
     @Test
     public void shortTextFilesAreNoTARs() {
         final ArchiveException ae = assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(
-                new ByteArrayInputStream(("This certainly is not a tar archive, really, no kidding").getBytes())), "created an input stream for a non-archive");
+                new ByteArrayInputStream("This certainly is not a tar archive, really, no kidding".getBytes())), "created an input stream for a non-archive");
         assertTrue(ae.getMessage().startsWith("No Archiver found"));
     }
 

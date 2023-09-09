@@ -136,12 +136,12 @@ class BlockSort {
 
     private static final int DEPTH_THRESH = 10;
     private static final int WORK_FACTOR = 30;
-    private static final int SETMASK = (1 << 21);
+    private static final int SETMASK = 1 << 21;
 
-    private static final int CLEARMASK = (~SETMASK);
+    private static final int CLEARMASK = ~SETMASK;
     private static int med3(final int a, final int b, final int c) {
-        return (a < b) ? (b < c ? b : a < c ? c : a) : (b > c ? b : a > c ? c
-                                                        : a);
+        return a < b ? b < c ? b : a < c ? c : a : b > c ? b : a > c ? c
+                                                        : a;
     }
     private static void vswap(final int[] fmap, int p1, int p2, int n) {
         n += p1;
@@ -259,7 +259,7 @@ class BlockSort {
         } else {
             mainSort(data, last);
 
-            if (this.firstAttempt && (this.workDone > this.workLimit)) {
+            if (this.firstAttempt && this.workDone > this.workLimit) {
                 fallbackSort(data, last);
             }
         }
@@ -322,13 +322,13 @@ class BlockSort {
                7621 and 32768 is taken from Sedgewick's algorithms
                book, chapter 35.
             */
-            r = ((r * 7621) + 1) % 32768;
+            r = (r * 7621 + 1) % 32768;
             final long r3 = r % 3;
             final long med;
             if (r3 == 0) {
                 med = eclass[fmap[lo]];
             } else if (r3 == 1) {
-                med = eclass[fmap[(lo + hi) >>> 1]];
+                med = eclass[fmap[lo + hi >>> 1]];
             } else {
                 med = eclass[fmap[hi]];
             }
@@ -556,7 +556,7 @@ class BlockSort {
 
                 /*-- LBZ2: now [l, r] bracket current bucket --*/
                 if (r > l) {
-                    nNotDone += (r - l + 1);
+                    nNotDone += r - l + 1;
                     fallbackQSort3(fmap, eclass, l, r);
 
                     /*-- LBZ2: scan bucket and generate header bits-- */
@@ -632,7 +632,7 @@ class BlockSort {
             final int hi = stack_hh[sp];
             final int d = stack_dd[sp];
 
-            if ((hi - lo < SMALL_THRESH) || (d > DEPTH_THRESH)) {
+            if (hi - lo < SMALL_THRESH || d > DEPTH_THRESH) {
                 if (mainSimpleSort(dataShadow, lo, hi, d, last)) {
                     return;
                 }
@@ -640,7 +640,7 @@ class BlockSort {
                 final int d1 = d + 1;
                 final int med = med3(block[fmap[lo] + d1] & 0xff,
                                      block[fmap[hi] + d1] & 0xff,
-                                     block[fmap[(lo + hi) >>> 1] + d1] & 0xff);
+                                     block[fmap[lo + hi >>> 1] + d1] & 0xff);
 
                 int unLo = lo;
                 int unHi = hi;
@@ -730,7 +730,7 @@ class BlockSort {
                                    final int lastShadow) {
         final int bigN = hi - lo + 1;
         if (bigN < 2) {
-            return this.firstAttempt && (this.workDone > this.workLimit);
+            return this.firstAttempt && this.workDone > this.workLimit;
         }
 
         int hp = 0;
@@ -755,7 +755,7 @@ class BlockSort {
 
             for (int i = lo + h; i <= hi;) {
                 // copy
-                for (int k = 3; (i <= hi) && (--k >= 0); i++) {
+                for (int k = 3; i <= hi && --k >= 0; i++) {
                     final int v = fmap[i];
                     final int vd = v + d;
                     int j = i;
@@ -794,7 +794,7 @@ class BlockSort {
                                 if (block[i1 + 3] == block[i2 + 3]) {
                                     if (block[i1 + 4] == block[i2 + 4]) {
                                         if (block[i1 + 5] == block[i2 + 5]) {
-                                            if (block[(i1 += 6)] == block[(i2 += 6)]) { //NOSONAR
+                                            if (block[i1 += 6] == block[i2 += 6]) { //NOSONAR
                                                 int x = lastShadow;
                                                 X: while (x > 0) {
                                                     x -= 4;
@@ -815,7 +815,7 @@ class BlockSort {
                                                                                     workDoneShadow++;
                                                                                     continue X;
                                                                                 }
-                                                                                if ((quadrant[i1 + 3] > quadrant[i2 + 3])) {
+                                                                                if (quadrant[i1 + 3] > quadrant[i2 + 3]) {
                                                                                     continue HAMMER;
                                                                                 }
                                                                                 break HAMMER;
@@ -825,7 +825,7 @@ class BlockSort {
                                                                             }
                                                                             break HAMMER;
                                                                         }
-                                                                        if ((quadrant[i1 + 2] > quadrant[i2 + 2])) {
+                                                                        if (quadrant[i1 + 2] > quadrant[i2 + 2]) {
                                                                             continue HAMMER;
                                                                         }
                                                                         break HAMMER;
@@ -835,7 +835,7 @@ class BlockSort {
                                                                     }
                                                                     break HAMMER;
                                                                 }
-                                                                if ((quadrant[i1 + 1] > quadrant[i2 + 1])) {
+                                                                if (quadrant[i1 + 1] > quadrant[i2 + 1]) {
                                                                     continue HAMMER;
                                                                 }
                                                                 break HAMMER;
@@ -845,7 +845,7 @@ class BlockSort {
                                                             }
                                                             break HAMMER;
                                                         }
-                                                        if ((quadrant[i1] > quadrant[i2])) {
+                                                        if (quadrant[i1] > quadrant[i2]) {
                                                             continue HAMMER;
                                                         }
                                                         break HAMMER;
@@ -894,15 +894,15 @@ class BlockSort {
                     fmap[j] = v;
                 }
 
-                if (firstAttemptShadow && (i <= hi)
-                    && (workDoneShadow > workLimitShadow)) {
+                if (firstAttemptShadow && i <= hi
+                    && workDoneShadow > workLimitShadow) {
                     break HP;
                 }
             }
         }
 
         this.workDone = workDoneShadow;
-        return firstAttemptShadow && (workDoneShadow > workLimitShadow);
+        return firstAttemptShadow && workDoneShadow > workLimitShadow;
     }
 
     final void mainSort(final BZip2CompressorOutputStream.Data dataShadow,
@@ -926,7 +926,7 @@ class BlockSort {
          * for block.
          */
         for (int i = 0; i < BZip2Constants.NUM_OVERSHOOT_BYTES; i++) {
-            block[lastShadow + i + 2] = block[(i % (lastShadow + 1)) + 1];
+            block[lastShadow + i + 2] = block[i % (lastShadow + 1) + 1];
         }
         for (int i = lastShadow + BZip2Constants.NUM_OVERSHOOT_BYTES +1; --i >= 0;) {
             quadrant[i] = 0;
@@ -969,10 +969,10 @@ class BlockSort {
             h /= 3;
             for (int i = h; i <= 255; i++) {
                 final int vv = runningOrder[i];
-                final int a = ftab[(vv + 1) << 8] - ftab[vv << 8];
+                final int a = ftab[vv + 1 << 8] - ftab[vv << 8];
                 final int b = h - 1;
                 int j = i;
-                for (int ro = runningOrder[j - h]; (ftab[(ro + 1) << 8] - ftab[ro << 8]) > a; ro = runningOrder[j
+                for (int ro = runningOrder[j - h]; ftab[ro + 1 << 8] - ftab[ro << 8] > a; ro = runningOrder[j
                                                                                                                 - h]) {
                     runningOrder[j] = ro;
                     j -= h;
@@ -1009,7 +1009,7 @@ class BlockSort {
                     if (hi > lo) {
                         mainQSort3(dataShadow, lo, hi, 2, lastShadow);
                         if (firstAttemptShadow
-                            && (this.workDone > workLimitShadow)) {
+                            && this.workDone > workLimitShadow) {
                             return;
                         }
                     }
@@ -1025,11 +1025,11 @@ class BlockSort {
                 copy[j] = ftab[(j << 8) + ss] & CLEARMASK;
             }
 
-            for (int j = ftab[ss << 8] & CLEARMASK, hj = (ftab[(ss + 1) << 8] & CLEARMASK); j < hj; j++) {
+            for (int j = ftab[ss << 8] & CLEARMASK, hj = ftab[ss + 1 << 8] & CLEARMASK; j < hj; j++) {
                 final int fmap_j = fmap[j];
                 c1 = block[fmap_j] & 0xff;
                 if (!bigDone[c1]) {
-                    fmap[copy[c1]] = (fmap_j == 0) ? lastShadow : (fmap_j - 1);
+                    fmap[copy[c1]] = fmap_j == 0 ? lastShadow : fmap_j - 1;
                     copy[c1]++;
                 }
             }
@@ -1050,10 +1050,10 @@ class BlockSort {
 
             if (i < 255) {
                 final int bbStart = ftab[ss << 8] & CLEARMASK;
-                final int bbSize = (ftab[(ss + 1) << 8] & CLEARMASK) - bbStart;
+                final int bbSize = (ftab[ss + 1 << 8] & CLEARMASK) - bbStart;
                 int shifts = 0;
 
-                while ((bbSize >> shifts) > 65534) {
+                while (bbSize >> shifts > 65534) {
                     shifts++;
                 }
 

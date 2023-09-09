@@ -74,7 +74,7 @@ public class BitInputStream implements Closeable {
      * @since 1.16
      */
     public long bitsAvailable() throws IOException {
-        return bitsCachedSize + ((long) Byte.SIZE) * in.available();
+        return bitsCachedSize + (long) Byte.SIZE * in.available();
     }
 
     /**
@@ -114,7 +114,7 @@ public class BitInputStream implements Closeable {
                 return true;
             }
             if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
-                bitsCached |= (nextByte << bitsCachedSize);
+                bitsCached |= nextByte << bitsCachedSize;
             } else {
                 bitsCached <<= Byte.SIZE;
                 bitsCached |= nextByte;
@@ -150,11 +150,11 @@ public class BitInputStream implements Closeable {
         }
         if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
             final long bitsToAdd = nextByte & MASKS[bitsToAddCount];
-            bitsCached |= (bitsToAdd << bitsCachedSize);
-            overflow = (nextByte >>> bitsToAddCount) & MASKS[overflowBits];
+            bitsCached |= bitsToAdd << bitsCachedSize;
+            overflow = nextByte >>> bitsToAddCount & MASKS[overflowBits];
         } else {
             bitsCached <<= bitsToAddCount;
-            final long bitsToAdd = (nextByte >>> (overflowBits)) & MASKS[bitsToAddCount];
+            final long bitsToAdd = nextByte >>> overflowBits & MASKS[bitsToAddCount];
             bitsCached |= bitsToAdd;
             overflow = nextByte & MASKS[overflowBits];
         }
@@ -191,10 +191,10 @@ public class BitInputStream implements Closeable {
     private long readCachedBits(final int count) {
         final long bitsOut;
         if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
-            bitsOut = (bitsCached & MASKS[count]);
+            bitsOut = bitsCached & MASKS[count];
             bitsCached >>>= count;
         } else {
-            bitsOut = (bitsCached >> (bitsCachedSize - count)) & MASKS[count];
+            bitsOut = bitsCached >> bitsCachedSize - count & MASKS[count];
         }
         bitsCachedSize -= count;
         return bitsOut;

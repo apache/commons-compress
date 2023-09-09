@@ -870,8 +870,8 @@ public class TarArchiveInputStream extends ArchiveInputStream {
     private void skipRecordPadding() throws IOException {
         if (!isDirectory() && this.entrySize > 0 && this.entrySize % this.recordSize != 0) {
             final long available = inputStream.available();
-            final long numRecords = (this.entrySize / this.recordSize) + 1;
-            final long padding = (numRecords * this.recordSize) - this.entrySize;
+            final long numRecords = this.entrySize / this.recordSize + 1;
+            final long padding = numRecords * this.recordSize - this.entrySize;
             long skipped = IOUtils.skip(inputStream, padding);
 
             skipped = getActuallySkipped(available, skipped, padding);

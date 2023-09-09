@@ -79,7 +79,7 @@ public class CodecTest {
         final ByteArrayInputStream in = new ByteArrayInputStream(data);
         assertEquals(value, codec.decode(in, last));
         assertEquals(-1, in.read());
-        return (value);
+        return value;
     }
 
     private void decodeFail(final Codec codec, final byte[] data) {

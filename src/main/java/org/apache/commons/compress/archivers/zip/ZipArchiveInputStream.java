@@ -453,8 +453,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
             if (buf.array()[i] == LFH[0] && buf.array()[i + 1] == LFH[1]) {
                 int expectDDPos = i;
                 if (i >= expectedDDLen &&
-                    (buf.array()[i + 2] == LFH[2] && buf.array()[i + 3] == LFH[3])
-                    || (buf.array()[i + 2] == CFH[2] && buf.array()[i + 3] == CFH[3])) {
+                    buf.array()[i + 2] == LFH[2] && buf.array()[i + 3] == LFH[3]
+                    || buf.array()[i + 2] == CFH[2] && buf.array()[i + 3] == CFH[3]) {
                     // found an LFH or CFH:
                     expectDDPos = i - expectedDDLen;
                     done = true;
@@ -766,7 +766,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
 
         final int versionMadeBy = ZipShort.getValue(lfhBuf, off);
         off += SHORT;
-        current.entry.setPlatform((versionMadeBy >> ZipFile.BYTE_SHIFT) & ZipFile.NIBLET_MASK);
+        current.entry.setPlatform(versionMadeBy >> ZipFile.BYTE_SHIFT & ZipFile.NIBLET_MASK);
 
         final GeneralPurposeBit gpFlag = GeneralPurposeBit.parse(lfhBuf, off);
         final boolean hasUTF8Flag = gpFlag.usesUTF8ForNames();
@@ -1232,7 +1232,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         }
 
         int toRead = Math.min(buf.remaining(), length);
-        if ((csize - current.bytesRead) < toRead) {
+        if (csize - current.bytesRead < toRead) {
             // if it is smaller than toRead then it fits into an int
             toRead = (int) (csize - current.bytesRead);
         }
@@ -1384,9 +1384,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         return entry.getCompressedSize() != ArchiveEntry.SIZE_UNKNOWN
             || entry.getMethod() == ZipEntry.DEFLATED
             || entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode()
-            || (entry.getGeneralPurposeBit().usesDataDescriptor()
+            || entry.getGeneralPurposeBit().usesDataDescriptor()
                 && allowStoredEntriesWithDataDescriptor
-                && entry.getMethod() == ZipEntry.STORED);
+                && entry.getMethod() == ZipEntry.STORED;
     }
 
     /**
@@ -1398,7 +1398,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
      */
     private boolean supportsDataDescriptorFor(final ZipArchiveEntry entry) {
         return !entry.getGeneralPurposeBit().usesDataDescriptor()
-                || (allowStoredEntriesWithDataDescriptor && entry.getMethod() == ZipEntry.STORED)
+                || allowStoredEntriesWithDataDescriptor && entry.getMethod() == ZipEntry.STORED
                 || entry.getMethod() == ZipEntry.DEFLATED
                 || entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode();
     }

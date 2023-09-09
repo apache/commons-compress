@@ -114,20 +114,20 @@ class CRC {
         }
 
         void updateCRC(final int inCh) {
-            int temp = (globalCrc >> 24) ^ inCh;
+            int temp = globalCrc >> 24 ^ inCh;
             if (temp < 0) {
                 temp = 256 + temp;
             }
-            globalCrc = (globalCrc << 8) ^ CRC.crc32Table[temp];
+            globalCrc = globalCrc << 8 ^ CRC.crc32Table[temp];
         }
 
         void updateCRC(final int inCh, int repeat) {
             int globalCrcShadow = this.globalCrc;
             while (repeat-- > 0) {
-                final int temp = (globalCrcShadow >> 24) ^ inCh;
-                globalCrcShadow = (globalCrcShadow << 8) ^ crc32Table[(temp >= 0)
+                final int temp = globalCrcShadow >> 24 ^ inCh;
+                globalCrcShadow = globalCrcShadow << 8 ^ crc32Table[temp >= 0
                                                           ? temp
-                                                          : (temp + 256)];
+                                                          : temp + 256];
             }
             this.globalCrc = globalCrcShadow;
         }

@@ -45,12 +45,12 @@ public class ZipUtilTest {
             final int minute,
             final int second) {
         int pos = 0;
-        assertEquals((year - 1980), ((int) (value << pos)) >>> (32 - 7));
-        assertEquals(month, ((int) (value << (pos += 7))) >>> (32 - 4));
-        assertEquals(day, ((int) (value << (pos += 4))) >>> (32 - 5));
-        assertEquals(hour, ((int) (value << (pos += 5))) >>> (32 - 5));
-        assertEquals(minute, ((int) (value << (pos += 5))) >>> (32 - 6));
-        assertEquals(second, ((int) (value << (pos + 6))) >>> (32 - 5) << 1); // DOS dates only store even seconds
+        assertEquals(year - 1980, (int) (value << pos) >>> 32 - 7);
+        assertEquals(month, (int) (value << (pos += 7)) >>> 32 - 4);
+        assertEquals(day, (int) (value << (pos += 4)) >>> 32 - 5);
+        assertEquals(hour, (int) (value << (pos += 5)) >>> 32 - 5);
+        assertEquals(minute, (int) (value << (pos += 5)) >>> 32 - 6);
+        assertEquals(second, (int) (value << pos + 6) >>> 32 - 5 << 1); // DOS dates only store even seconds
     }
     static Instant toLocalInstant(final String date) {
         return LocalDateTime.parse(date).atZone(ZoneId.systemDefault()).toInstant();
@@ -68,16 +68,16 @@ public class ZipUtilTest {
         final int year = cal.get(Calendar.YEAR);
         final int month = cal.get(Calendar.MONTH) + 1;
         // @formatter:off
-        final long value = ((year - 1980) << 25)
-            | (month << 21)
-            | (cal.get(Calendar.DAY_OF_MONTH) << 16)
-            | (cal.get(Calendar.HOUR_OF_DAY) << 11)
-            | (cal.get(Calendar.MINUTE) << 5)
-            | (cal.get(Calendar.SECOND) >> 1);
+        final long value = year - 1980 << 25
+            | month << 21
+            | cal.get(Calendar.DAY_OF_MONTH) << 16
+            | cal.get(Calendar.HOUR_OF_DAY) << 11
+            | cal.get(Calendar.MINUTE) << 5
+            | cal.get(Calendar.SECOND) >> 1;
         // @formatter:on
 
         final byte[] result = new byte[4];
-        result[0] = (byte) ((value & 0xFF));
+        result[0] = (byte) (value & 0xFF);
         result[1] = (byte) ((value & 0xFF00) >> 8);
         result[2] = (byte) ((value & 0xFF0000) >> 16);
         result[3] = (byte) ((value & 0xFF000000L) >> 24);
@@ -88,9 +88,9 @@ public class ZipUtilTest {
     public void testAdjustToLong() {
         assertEquals(Integer.MAX_VALUE,
                      ZipUtil.adjustToLong(Integer.MAX_VALUE));
-        assertEquals(((long) Integer.MAX_VALUE) + 1,
+        assertEquals((long) Integer.MAX_VALUE + 1,
                      ZipUtil.adjustToLong(Integer.MAX_VALUE + 1));
-        assertEquals(2 * ((long) Integer.MAX_VALUE),
+        assertEquals(2 * (long) Integer.MAX_VALUE,
                      ZipUtil.adjustToLong(2 * Integer.MAX_VALUE));
     }
 
@@ -130,7 +130,7 @@ public class ZipUtilTest {
         testDosTime = ZipUtil.toDosTime(time);
         testDate = ZipUtil.fromDosTime(testDosTime);
         // the minimal time unit for dos time is 2 seconds
-        assertEquals(testDate.getTime() / 2000, (time.getTime() / 2000));
+        assertEquals(testDate.getTime() / 2000, time.getTime() / 2000);
     }
 
     @Test

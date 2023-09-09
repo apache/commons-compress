@@ -136,7 +136,7 @@ public class SegmentConstantPoolArrayCache {
         // efficient because we are usually looking for
         // several secondary elements with the same primary
         // key.
-        if ((lastArray == array) && (lastKey == key)) {
+        if (lastArray == array && lastKey == key) {
             return lastIndexes;
         }
 

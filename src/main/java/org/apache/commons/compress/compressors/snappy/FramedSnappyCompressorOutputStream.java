@@ -45,7 +45,7 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
     static long mask(long x) {
         // ugly, maybe we should just have used ints and deal with the
         // overflow
-        x = ((x >> 15) | (x << 17));
+        x = x >> 15 | x << 17;
         x += FramedSnappyCompressorInputStream.MASK_OFFSET;
         x &= 0xffffFFFFL;
         return x;

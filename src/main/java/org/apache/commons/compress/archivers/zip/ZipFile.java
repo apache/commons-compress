@@ -678,7 +678,7 @@ public class ZipFile implements Closeable {
                     final String encoding, final boolean useUnicodeExtraFields,
                     final boolean closeOnError, final boolean ignoreLocalFileHeader)
         throws IOException {
-        isSplitZipArchive = (channel instanceof ZipSplitReadOnlySeekableByteChannel);
+        isSplitZipArchive = channel instanceof ZipSplitReadOnlySeekableByteChannel;
 
         this.archiveName = archiveName;
         this.encoding = encoding;
@@ -1255,7 +1255,7 @@ public class ZipFile implements Closeable {
         final int versionMadeBy = ZipShort.getValue(cfhBuf, off);
         off += ZipConstants.SHORT;
         ze.setVersionMadeBy(versionMadeBy);
-        ze.setPlatform((versionMadeBy >> BYTE_SHIFT) & NIBLET_MASK);
+        ze.setPlatform(versionMadeBy >> BYTE_SHIFT & NIBLET_MASK);
 
         ze.setVersionRequired(ZipShort.getValue(cfhBuf, off));
         off += ZipConstants.SHORT; // version required

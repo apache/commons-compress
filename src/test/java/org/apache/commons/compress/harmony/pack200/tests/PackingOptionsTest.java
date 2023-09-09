@@ -591,9 +591,9 @@ public class PackingOptionsTest {
         file.deleteOnExit();
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/hw.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
-            PackingOptions options = new PackingOptions();
+            final PackingOptions options = new PackingOptions();
             options.setSegmentLimit(0);
-            Archive archive = new Archive(in, out, options);
+            final Archive archive = new Archive(in, out, options);
             archive.pack();
         }
 
@@ -601,9 +601,9 @@ public class PackingOptionsTest {
         file.deleteOnExit();
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/hw.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
-            PackingOptions options = new PackingOptions();
+            final PackingOptions options = new PackingOptions();
             options.setSegmentLimit(-1);
-            Archive archive = new Archive(in, out, options);
+            final Archive archive = new Archive(in, out, options);
             archive.pack();
         }
 
@@ -611,9 +611,9 @@ public class PackingOptionsTest {
         file.deleteOnExit();
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/hw.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
-            PackingOptions options = new PackingOptions();
+            final PackingOptions options = new PackingOptions();
             options.setSegmentLimit(5000);
-            Archive archive = new Archive(in, out, options);
+            final Archive archive = new Archive(in, out, options);
             archive.pack();
         }
     }
@@ -636,7 +636,7 @@ public class PackingOptionsTest {
         final File file2 = File.createTempFile("sqloutNoDebug", ".jar");
         file2.deleteOnExit();
         try (InputStream in2 = new FileInputStream(file); final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2))) {
-            org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(in2, out2);
+            final org.apache.commons.compress.harmony.unpack200.Archive u2archive = new org.apache.commons.compress.harmony.unpack200.Archive(in2, out2);
             u2archive.unpack();
         }
 

@@ -51,7 +51,7 @@ public class StringRefForm extends SingleByteReferenceForm {
     protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset)
         throws Pack200Exception {
         final SegmentConstantPool globalPool = operandManager.globalConstantPool();
-        ClassFileEntry[] nested = new ClassFileEntry[] {globalPool.getValue(getPoolID(), offset)};
+        final ClassFileEntry[] nested = {globalPool.getValue(getPoolID(), offset)};
         byteCode.setNested(nested);
         if (widened) {
             byteCode.setNestedPositions(new int[][] {{0, 2}});

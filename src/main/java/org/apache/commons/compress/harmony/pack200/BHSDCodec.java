@@ -186,12 +186,12 @@ public final class BHSDCodec extends Codec {
             result = cardinality() / 2 - 1;
             break;
         case 2:
-            result = (3L * cardinality()) / 4 - 1;
+            result = 3L * cardinality() / 4 - 1;
             break;
         default:
             throw new Error("Unknown s value");
         }
-        return Math.min((s == 0 ? ((long) Integer.MAX_VALUE) << 1 : Integer.MAX_VALUE) - 1, result);
+        return Math.min((s == 0 ? (long) Integer.MAX_VALUE << 1 : Integer.MAX_VALUE) - 1, result);
     }
 
     private long calculateSmallest() {
@@ -243,7 +243,7 @@ public final class BHSDCodec extends Codec {
         }
 
         if (isSigned()) {
-            final int u = ((1 << s) - 1);
+            final int u = (1 << s) - 1;
             if ((z & u) == u) {
                 z = z >>> s ^ -1L;
             } else {

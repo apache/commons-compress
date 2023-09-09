@@ -96,7 +96,7 @@ class Folder {
         if (totalOutputStreams == 0) {
             return 0;
         }
-        for (int i = ((int) totalOutputStreams) - 1; i >= 0; i--) {
+        for (int i = (int) totalOutputStreams - 1; i >= 0; i--) {
             if (findBindPairForOutStream(i) < 0) {
                 return unpackSizes[i];
             }

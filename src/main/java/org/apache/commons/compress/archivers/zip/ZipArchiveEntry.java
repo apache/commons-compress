@@ -553,7 +553,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
 
     private ZipExtraField[] getAllExtraFields() {
         final ZipExtraField[] allExtraFieldsNoCopy = getAllExtraFieldsNoCopy();
-        return (allExtraFieldsNoCopy == extraFields) ? copyOf(allExtraFieldsNoCopy, allExtraFieldsNoCopy.length)
+        return allExtraFieldsNoCopy == extraFields ? copyOf(allExtraFieldsNoCopy, allExtraFieldsNoCopy.length)
             : allExtraFieldsNoCopy;
     }
 
@@ -799,7 +799,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
 
     private ZipExtraField[] getParseableExtraFields() {
         final ZipExtraField[] parseableExtraFields = getParseableExtraFieldsNoCopy();
-        return (parseableExtraFields == extraFields) ? copyOf(parseableExtraFields, parseableExtraFields.length)
+        return parseableExtraFields == extraFields ? copyOf(parseableExtraFields, parseableExtraFields.length)
             : parseableExtraFields;
     }
 
@@ -886,7 +886,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      */
     public int getUnixMode() {
         return platform != PLATFORM_UNIX ? 0 :
-            (int) ((getExternalAttributes() >> SHORT_SHIFT) & SHORT_MASK);
+            (int) (getExternalAttributes() >> SHORT_SHIFT & SHORT_MASK);
     }
 
     /**
@@ -1089,7 +1089,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      * @since 1.14
      */
     public void setAlignment(final int alignment) {
-        if ((alignment & (alignment - 1)) != 0 || alignment > 0xffff) {
+        if ((alignment & alignment - 1) != 0 || alignment > 0xffff) {
             throw new IllegalArgumentException("Invalid value for alignment, must be power of two and no bigger than "
                 + 0xffff + " but is " + alignment);
         }
@@ -1398,7 +1398,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      */
     public void setUnixMode(final int mode) {
         // CheckStyle:MagicNumberCheck OFF - no point
-        setExternalAttributes((mode << SHORT_SHIFT)
+        setExternalAttributes(mode << SHORT_SHIFT
                               // MS-DOS read-only attribute
                               | ((mode & 0200) == 0 ? 1 : 0)
                               // MS-DOS directory flag

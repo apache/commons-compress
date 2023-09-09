@@ -257,20 +257,20 @@ public class ClassBands extends BandSet {
 			if (visible) {
 				class_RVA_bands.addAnnotation(desc, nameRU, tags, values, caseArrayN, nestTypeRS, nestNameRU,
 						nestPairN);
-				if ((class_flags[index] & (1 << 21)) != 0) {
+				if ((class_flags[index] & 1 << 21) != 0) {
 					class_RVA_bands.incrementAnnoN();
 				} else {
 					class_RVA_bands.newEntryInAnnoN();
-					class_flags[index] = class_flags[index] | (1 << 21);
+					class_flags[index] = class_flags[index] | 1 << 21;
 				}
 			} else {
 				class_RIA_bands.addAnnotation(desc, nameRU, tags, values, caseArrayN, nestTypeRS, nestNameRU,
 						nestPairN);
-				if ((class_flags[index] & (1 << 22)) != 0) {
+				if ((class_flags[index] & 1 << 22) != 0) {
 					class_RIA_bands.incrementAnnoN();
 				} else {
 					class_RIA_bands.newEntryInAnnoN();
-					class_flags[index] = class_flags[index] | (1 << 22);
+					class_flags[index] = class_flags[index] | 1 << 22;
 				}
 			}
 			break;
@@ -279,22 +279,22 @@ public class ClassBands extends BandSet {
 				field_RVA_bands.addAnnotation(desc, nameRU, tags, values, caseArrayN, nestTypeRS, nestNameRU,
 						nestPairN);
 				final Long flag = tempFieldFlags.remove(tempFieldFlags.size() - 1);
-				if ((flag.intValue() & (1 << 21)) != 0) {
+				if ((flag.intValue() & 1 << 21) != 0) {
 					field_RVA_bands.incrementAnnoN();
 				} else {
 					field_RVA_bands.newEntryInAnnoN();
 				}
-				tempFieldFlags.add(Long.valueOf(flag.intValue() | (1 << 21)));
+				tempFieldFlags.add(Long.valueOf(flag.intValue() | 1 << 21));
 			} else {
 				field_RIA_bands.addAnnotation(desc, nameRU, tags, values, caseArrayN, nestTypeRS, nestNameRU,
 						nestPairN);
 				final Long flag = tempFieldFlags.remove(tempFieldFlags.size() - 1);
-				if ((flag.intValue() & (1 << 22)) != 0) {
+				if ((flag.intValue() & 1 << 22) != 0) {
 					field_RIA_bands.incrementAnnoN();
 				} else {
 					field_RIA_bands.newEntryInAnnoN();
 				}
-				tempFieldFlags.add(Long.valueOf(flag.intValue() | (1 << 22)));
+				tempFieldFlags.add(Long.valueOf(flag.intValue() | 1 << 22));
 			}
 			break;
 		case MetadataBandGroup.CONTEXT_METHOD:
@@ -302,22 +302,22 @@ public class ClassBands extends BandSet {
 				method_RVA_bands.addAnnotation(desc, nameRU, tags, values, caseArrayN, nestTypeRS, nestNameRU,
 						nestPairN);
 				final Long flag = tempMethodFlags.remove(tempMethodFlags.size() - 1);
-				if ((flag.intValue() & (1 << 21)) != 0) {
+				if ((flag.intValue() & 1 << 21) != 0) {
 					method_RVA_bands.incrementAnnoN();
 				} else {
 					method_RVA_bands.newEntryInAnnoN();
 				}
-				tempMethodFlags.add(Long.valueOf(flag.intValue() | (1 << 21)));
+				tempMethodFlags.add(Long.valueOf(flag.intValue() | 1 << 21));
 			} else {
 				method_RIA_bands.addAnnotation(desc, nameRU, tags, values, caseArrayN, nestTypeRS, nestNameRU,
 						nestPairN);
 				final Long flag = tempMethodFlags.remove(tempMethodFlags.size() - 1);
-				if ((flag.intValue() & (1 << 22)) != 0) {
+				if ((flag.intValue() & 1 << 22) != 0) {
 					method_RIA_bands.incrementAnnoN();
 				} else {
 					method_RIA_bands.newEntryInAnnoN();
 				}
-				tempMethodFlags.add(Long.valueOf(flag.intValue() | (1 << 22)));
+				tempMethodFlags.add(Long.valueOf(flag.intValue() | 1 << 22));
 			}
 			break;
 		}
@@ -328,7 +328,7 @@ public class ClassBands extends BandSet {
 			final List<Integer> nestPairN) {
 		method_AD_bands.addAnnotation(null, nameRU, tags, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
 		final Long flag = tempMethodFlags.remove(tempMethodFlags.size() - 1);
-		tempMethodFlags.add(Long.valueOf(flag.longValue() | (1 << 25)));
+		tempMethodFlags.add(Long.valueOf(flag.longValue() | 1 << 25));
 	}
 
 	public void addClass(final int major, final int flags, final String className, final String signature,
@@ -340,7 +340,7 @@ public class ClassBands extends BandSet {
         Arrays.setAll(class_interface[index], i -> cpBands.getCPClass(interfaces[i]));
 		major_versions[index] = major;
 		class_flags[index] = flags;
-		if (!anySyntheticClasses && ((flags & (1 << 12)) != 0)
+		if (!anySyntheticClasses && (flags & 1 << 12) != 0
 				&& segment.getCurrentClassReader().hasSyntheticAttributes()) {
 			cpBands.addCPUtf8("Synthetic");
 			anySyntheticClasses = true;
@@ -350,7 +350,7 @@ public class ClassBands extends BandSet {
 //			flags = flags | (1 << 20);
 //		}
 		if (signature != null) {
-			class_flags[index] |= (1 << 19);
+			class_flags[index] |= 1 << 19;
 			classSignature.add(cpBands.getCPSignature(signature));
 		}
 	}
@@ -362,7 +362,7 @@ public class ClassBands extends BandSet {
 			if (bands.getAttributeName().equals(attributeName)) {
 				bands.addAttribute(attribute);
 				final int flagIndex = bands.getFlagIndex();
-				class_flags[index] |= (1 << flagIndex);
+				class_flags[index] |= 1 << flagIndex;
 				return;
 			}
 		}
@@ -384,7 +384,7 @@ public class ClassBands extends BandSet {
 				bands.addAttribute(attribute);
 				final int flagIndex = bands.getFlagIndex();
 				final Long flags = codeFlags.remove(codeFlags.size() - 1);
-				codeFlags.add(Long.valueOf(flags.longValue() | (1 << flagIndex)));
+				codeFlags.add(Long.valueOf(flags.longValue() | 1 << flagIndex));
 				return;
 			}
 		}
@@ -392,7 +392,7 @@ public class ClassBands extends BandSet {
 	}
 
 	public void addEnclosingMethod(final String owner, final String name, final String desc) {
-		class_flags[index] |= (1 << 18);
+		class_flags[index] |= 1 << 18;
 		classEnclosingMethodClass.add(cpBands.getCPClass(owner));
 		classEnclosingMethodDesc.add(name == null ? null : cpBands.getCPNameAndType(name, desc));
 	}
@@ -402,17 +402,17 @@ public class ClassBands extends BandSet {
 		tempFieldDesc.add(cpBands.getCPNameAndType(name, desc));
 		if (signature != null) {
 			fieldSignature.add(cpBands.getCPSignature(signature));
-			flags |= (1 << 19);
+			flags |= 1 << 19;
 		}
 		if ((flags & Opcodes.ACC_DEPRECATED) != 0) { // ASM uses (1<<17) flag for deprecated
 			flags = flags & ~Opcodes.ACC_DEPRECATED;
-			flags = flags | (1 << 20);
+			flags = flags | 1 << 20;
 		}
 		if (value != null) {
 			fieldConstantValueKQ.add(cpBands.getConstant(value));
-			flags |= (1 << 17);
+			flags |= 1 << 17;
 		}
-		if (!anySyntheticFields && ((flags & (1 << 12)) != 0)
+		if (!anySyntheticFields && (flags & 1 << 12) != 0
 				&& segment.getCurrentClassReader().hasSyntheticAttributes()) {
 			cpBands.addCPUtf8("Synthetic");
 			anySyntheticFields = true;
@@ -427,7 +427,7 @@ public class ClassBands extends BandSet {
 				bands.addAttribute(attribute);
 				final int flagIndex = bands.getFlagIndex();
 				final Long flags = tempFieldFlags.remove(tempFieldFlags.size() - 1);
-				tempFieldFlags.add(Long.valueOf(flags.longValue() | (1 << flagIndex)));
+				tempFieldFlags.add(Long.valueOf(flags.longValue() | 1 << flagIndex));
 				return;
 			}
 		}
@@ -445,9 +445,9 @@ public class ClassBands extends BandSet {
 
 	public void addLineNumber(final int line, final Label start) {
 		final Long latestCodeFlag = codeFlags.get(codeFlags.size() - 1);
-		if ((latestCodeFlag.intValue() & (1 << 1)) == 0) {
+		if ((latestCodeFlag.intValue() & 1 << 1) == 0) {
 			codeFlags.remove(codeFlags.size() - 1);
-			codeFlags.add(Long.valueOf(latestCodeFlag.intValue() | (1 << 1)));
+			codeFlags.add(Long.valueOf(latestCodeFlag.intValue() | 1 << 1));
 			codeLineNumberTableN.add(1);
 		} else {
 			codeLineNumberTableN.increment(codeLineNumberTableN.size() - 1);
@@ -460,9 +460,9 @@ public class ClassBands extends BandSet {
 			final Label end, final int indx) {
 		if (signature != null) { // LocalVariableTypeTable attribute
 			final Long latestCodeFlag = codeFlags.get(codeFlags.size() - 1);
-			if ((latestCodeFlag.intValue() & (1 << 3)) == 0) {
+			if ((latestCodeFlag.intValue() & 1 << 3) == 0) {
 				codeFlags.remove(codeFlags.size() - 1);
-				codeFlags.add(Long.valueOf(latestCodeFlag.intValue() | (1 << 3)));
+				codeFlags.add(Long.valueOf(latestCodeFlag.intValue() | 1 << 3));
 				codeLocalVariableTypeTableN.add(1);
 			} else {
 				codeLocalVariableTypeTableN.increment(codeLocalVariableTypeTableN.size() - 1);
@@ -484,10 +484,10 @@ public class ClassBands extends BandSet {
 
 	public void addMaxStack(final int maxStack, int maxLocals) {
 		final Long latestFlag = tempMethodFlags.remove(tempMethodFlags.size() - 1);
-		final Long newFlag = Long.valueOf(latestFlag.intValue() | (1 << 17));
+		final Long newFlag = Long.valueOf(latestFlag.intValue() | 1 << 17);
 		tempMethodFlags.add(newFlag);
 		codeMaxStack.add(maxStack);
-		if ((newFlag.longValue() & (1 << 3)) == 0) { // not static
+		if ((newFlag.longValue() & 1 << 3) == 0) { // not static
 			maxLocals--; // minus 'this' local
 		}
 		maxLocals -= numMethodArgs;
@@ -500,22 +500,22 @@ public class ClassBands extends BandSet {
 		tempMethodDesc.add(nt);
 		if (signature != null) {
 			methodSignature.add(cpBands.getCPSignature(signature));
-			flags |= (1 << 19);
+			flags |= 1 << 19;
 		}
 		if (exceptions != null) {
 			methodExceptionNumber.add(exceptions.length);
 			for (final String exception : exceptions) {
 				methodExceptionClasses.add(cpBands.getCPClass(exception));
 			}
-			flags |= (1 << 18);
+			flags |= 1 << 18;
 		}
 		if ((flags & Opcodes.ACC_DEPRECATED) != 0) { // ASM uses (1<<17) flag for deprecated
 			flags = flags & ~Opcodes.ACC_DEPRECATED;
-			flags = flags | (1 << 20);
+			flags = flags | 1 << 20;
 		}
 		tempMethodFlags.add(Long.valueOf(flags));
 		numMethodArgs = countArgs(desc);
-		if (!anySyntheticMethods && ((flags & (1 << 12)) != 0)
+		if (!anySyntheticMethods && (flags & 1 << 12) != 0
 				&& segment.getCurrentClassReader().hasSyntheticAttributes()) {
 			cpBands.addCPUtf8("Synthetic");
 			anySyntheticMethods = true;
@@ -529,7 +529,7 @@ public class ClassBands extends BandSet {
 				bands.addAttribute(attribute);
 				final int flagIndex = bands.getFlagIndex();
 				final Long flags = tempMethodFlags.remove(tempMethodFlags.size() - 1);
-				tempMethodFlags.add(Long.valueOf(flags.longValue() | (1 << flagIndex)));
+				tempMethodFlags.add(Long.valueOf(flags.longValue() | 1 << flagIndex));
 				return;
 			}
 		}
@@ -547,7 +547,7 @@ public class ClassBands extends BandSet {
 						nestNameRU, nestPairN);
 			}
 			final Long flag = tempMethodFlags.remove(tempMethodFlags.size() - 1);
-			tempMethodFlags.add(Long.valueOf(flag.longValue() | (1 << 23)));
+			tempMethodFlags.add(Long.valueOf(flag.longValue() | 1 << 23));
 		} else {
 			if (tempMethodRIPA == null) {
 				tempMethodRIPA = new TempParamAnnotation(numMethodArgs);
@@ -555,7 +555,7 @@ public class ClassBands extends BandSet {
 						nestNameRU, nestPairN);
 			}
 			final Long flag = tempMethodFlags.remove(tempMethodFlags.size() - 1);
-			tempMethodFlags.add(Long.valueOf(flag.longValue() | (1 << 24)));
+			tempMethodFlags.add(Long.valueOf(flag.longValue() | 1 << 24));
 		}
 	}
 
@@ -571,7 +571,7 @@ public class ClassBands extends BandSet {
 		} else {
 			classSourceFile.add(cpBands.getCPUtf8(source));
 		}
-		class_flags[index] |= (1 << 17);
+		class_flags[index] |= 1 << 17;
 	}
 
 	private void createNewAttributeBands() throws IOException {
@@ -667,7 +667,7 @@ public class ClassBands extends BandSet {
 		if (codeFlags.size() > 0) {
 			final long latestCodeFlag = codeFlags.get(codeFlags.size() - 1).longValue();
 			final int latestLocalVariableTableN = codeLocalVariableTableN.get(codeLocalVariableTableN.size() - 1);
-			if (latestCodeFlag == (1 << 2) && latestLocalVariableTableN == 0) {
+			if (latestCodeFlag == 1 << 2 && latestLocalVariableTableN == 0) {
 				codeLocalVariableTableN.remove(codeLocalVariableTableN.size() - 1);
 				codeFlags.remove(codeFlags.size() - 1);
 				codeFlags.add(Long.valueOf(0));
@@ -758,7 +758,7 @@ public class ClassBands extends BandSet {
 				}
 				if (innerN != 0) {
 					innerClassesN.add(innerN);
-					class_flags[i] |= (1 << 23);
+					class_flags[i] |= 1 << 23;
 				}
 			}
 		}
@@ -769,7 +769,7 @@ public class ClassBands extends BandSet {
 		classInnerClassesNameRUN = new ArrayList<>();
 		for (int i = 0; i < class_InnerClasses_RC.length; i++) {
 			final IcTuple icTuple = icLocal.get(i);
-			class_InnerClasses_RC[i] = (icTuple.C);
+			class_InnerClasses_RC[i] = icTuple.C;
 			if (icTuple.C2 == null && icTuple.N == null) {
 				class_InnerClasses_F[i] = 0;
 			} else {
@@ -985,49 +985,49 @@ public class ClassBands extends BandSet {
 	public void removeCurrentClass() {
 		// Note - this doesn't remove any entries added to the constant pool but
 		// that shouldn't be a problem
-		if ((class_flags[index] & (1 << 17)) != 0) {
+		if ((class_flags[index] & 1 << 17) != 0) {
 			classSourceFile.remove(classSourceFile.size() - 1);
 		}
-		if ((class_flags[index] & (1 << 18)) != 0) {
+		if ((class_flags[index] & 1 << 18) != 0) {
 			classEnclosingMethodClass.remove(classEnclosingMethodClass.size() - 1);
 			classEnclosingMethodDesc.remove(classEnclosingMethodDesc.size() - 1);
 		}
-		if ((class_flags[index] & (1 << 19)) != 0) {
+		if ((class_flags[index] & 1 << 19) != 0) {
 			classSignature.remove(classSignature.size() - 1);
 		}
-		if ((class_flags[index] & (1 << 21)) != 0) {
+		if ((class_flags[index] & 1 << 21) != 0) {
 			class_RVA_bands.removeLatest();
 		}
-		if ((class_flags[index] & (1 << 22)) != 0) {
+		if ((class_flags[index] & 1 << 22) != 0) {
 			class_RIA_bands.removeLatest();
 		}
 		for (final Long flagsL : tempFieldFlags) {
 			final long flags = flagsL.longValue();
-			if ((flags & (1 << 19)) != 0) {
+			if ((flags & 1 << 19) != 0) {
 				fieldSignature.remove(fieldSignature.size() - 1);
 			}
-			if ((flags & (1 << 17)) != 0) {
+			if ((flags & 1 << 17) != 0) {
 				fieldConstantValueKQ.remove(fieldConstantValueKQ.size() - 1);
 			}
-			if ((flags & (1 << 21)) != 0) {
+			if ((flags & 1 << 21) != 0) {
 				field_RVA_bands.removeLatest();
 			}
-			if ((flags & (1 << 22)) != 0) {
+			if ((flags & 1 << 22) != 0) {
 				field_RIA_bands.removeLatest();
 			}
 		}
 		for (final Long flagsL : tempMethodFlags) {
 			final long flags = flagsL.longValue();
-			if ((flags & (1 << 19)) != 0) {
+			if ((flags & 1 << 19) != 0) {
 				methodSignature.remove(methodSignature.size() - 1);
 			}
-			if ((flags & (1 << 18)) != 0) {
+			if ((flags & 1 << 18) != 0) {
 				final int exceptions = methodExceptionNumber.remove(methodExceptionNumber.size() - 1);
 				for (int i = 0; i < exceptions; i++) {
 					methodExceptionClasses.remove(methodExceptionClasses.size() - 1);
 				}
 			}
-			if ((flags & (1 << 17)) != 0) { // has code attribute
+			if ((flags & 1 << 17) != 0) { // has code attribute
 				codeMaxLocals.remove(codeMaxLocals.size() - 1);
 				codeMaxStack.remove(codeMaxStack.size() - 1);
 				final int handlers = codeHandlerCount.remove(codeHandlerCount.size() - 1);
@@ -1049,7 +1049,7 @@ public class ClassBands extends BandSet {
 						codeLocalVariableTableTypeRS.remove(location);
 						codeLocalVariableTableSlot.remove(location);
 					}
-					if ((cdeFlags & (1 << 3)) != 0) {
+					if ((cdeFlags & 1 << 3) != 0) {
 						final int numLocalVariablesInTypeTable = codeLocalVariableTypeTableN
 								.remove(codeLocalVariableTypeTableN.size() - 1);
 						for (int i = 0; i < numLocalVariablesInTypeTable; i++) {
@@ -1061,7 +1061,7 @@ public class ClassBands extends BandSet {
 							codeLocalVariableTypeTableSlot.remove(location);
 						}
 					}
-					if ((cdeFlags & (1 << 1)) != 0) {
+					if ((cdeFlags & 1 << 1) != 0) {
 						final int numLineNumbers = codeLineNumberTableN.remove(codeLineNumberTableN.size() - 1);
 						for (int i = 0; i < numLineNumbers; i++) {
 							final int location = codeLineNumberTableBciP.size() - 1;
@@ -1071,19 +1071,19 @@ public class ClassBands extends BandSet {
 					}
 				}
 			}
-			if ((flags & (1 << 21)) != 0) {
+			if ((flags & 1 << 21) != 0) {
 				method_RVA_bands.removeLatest();
 			}
-			if ((flags & (1 << 22)) != 0) {
+			if ((flags & 1 << 22) != 0) {
 				method_RIA_bands.removeLatest();
 			}
-			if ((flags & (1 << 23)) != 0) {
+			if ((flags & 1 << 23) != 0) {
 				method_RVPA_bands.removeLatest();
 			}
-			if ((flags & (1 << 24)) != 0) {
+			if ((flags & 1 << 24) != 0) {
 				method_RIPA_bands.removeLatest();
 			}
-			if ((flags & (1 << 25)) != 0) {
+			if ((flags & 1 << 25) != 0) {
 				method_AD_bands.removeLatest();
 			}
 		}

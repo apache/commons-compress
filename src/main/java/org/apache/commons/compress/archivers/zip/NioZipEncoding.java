@@ -58,9 +58,9 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
         cb.put('%');
         cb.put('U');
 
-        cb.put(HEX_CHARS[(c >> 12) & 0x0f]);
-        cb.put(HEX_CHARS[(c >> 8) & 0x0f]);
-        cb.put(HEX_CHARS[(c >> 4) & 0x0f]);
+        cb.put(HEX_CHARS[c >> 12 & 0x0f]);
+        cb.put(HEX_CHARS[c >> 8 & 0x0f]);
+        cb.put(HEX_CHARS[c >> 4 & 0x0f]);
         cb.put(HEX_CHARS[c & 0x0f]);
         cb.flip();
         return cb;

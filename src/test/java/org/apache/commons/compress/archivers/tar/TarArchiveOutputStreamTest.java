@@ -765,7 +765,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
         tos.putArchiveEntry(t);
 
-        byte[] bytes = new byte[TarConstants.DEFAULT_RCDSIZE];
+        final byte[] bytes = new byte[TarConstants.DEFAULT_RCDSIZE];
         for (int i = 0; i < Integer.MAX_VALUE; i++) {
             tos.write(bytes);
         }

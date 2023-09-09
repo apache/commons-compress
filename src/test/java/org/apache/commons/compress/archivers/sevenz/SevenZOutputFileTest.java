@@ -123,7 +123,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
     private byte[] generateFileData(final int size) {
         final byte[] data = new byte[size];
         for (int i = 0; i < size; i++) {
-            data[i] = (byte) ('A' + (i % 26));
+            data[i] = (byte) ('A' + i % 26);
         }
         return data;
     }
@@ -347,13 +347,13 @@ public class SevenZOutputFileTest extends AbstractTestCase {
 
         try (SevenZFile archive = new SevenZFile(output)) {
             SevenZArchiveEntry entry = archive.getNextEntry();
-            assert (entry != null);
+            assert entry != null;
             assertEquals("foo/", entry.getName());
             assertTrue(entry.isDirectory());
             assertFalse(entry.isAntiItem());
 
             entry = archive.getNextEntry();
-            assert (entry != null);
+            assert entry != null;
             assertEquals("foo/bar", entry.getName());
             assertFalse(entry.isDirectory());
             assertFalse(entry.isAntiItem());
@@ -364,7 +364,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertEquals(creationDate, entry.getCreationDate());
 
             entry = archive.getNextEntry();
-            assert (entry != null);
+            assert entry != null;
             assertEquals("foo/bar/boo0", entry.getName());
             assertFalse(entry.isDirectory());
             assertFalse(entry.isAntiItem());
@@ -375,7 +375,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertEquals(creationDate, entry.getCreationDate());
 
             entry = archive.getNextEntry();
-            assert (entry != null);
+            assert entry != null;
             assertEquals("foo/bar/boo1", entry.getName());
             assertFalse(entry.isDirectory());
             assertFalse(entry.isAntiItem());
@@ -386,7 +386,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertEquals(creationDate, entry.getCreationDate());
 
             entry = archive.getNextEntry();
-            assert (entry != null);
+            assert entry != null;
             assertEquals("foo/bar/boo10000", entry.getName());
             assertFalse(entry.isDirectory());
             assertFalse(entry.isAntiItem());
@@ -397,7 +397,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertEquals(creationDate, entry.getCreationDate());
 
             entry = archive.getNextEntry();
-            assert (entry != null);
+            assert entry != null;
             assertEquals("foo/bar/test.txt", entry.getName());
             assertFalse(entry.isDirectory());
             assertFalse(entry.isAntiItem());
@@ -408,7 +408,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertEquals(creationDate, entry.getCreationDate());
 
             entry = archive.getNextEntry();
-            assert (entry != null);
+            assert entry != null;
             assertEquals("xyzzy", entry.getName());
             assertEquals(1, entry.getSize());
             assertFalse(entry.getHasAccessDate());
@@ -416,19 +416,19 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertEquals(0, archive.read());
 
             entry = archive.getNextEntry();
-            assert (entry != null);
+            assert entry != null;
             assertEquals("baz/", entry.getName());
             assertTrue(entry.isDirectory());
             assertTrue(entry.isAntiItem());
 
             entry = archive.getNextEntry();
-            assert (entry != null);
+            assert entry != null;
             assertEquals("baz2/", entry.getName());
             assertTrue(entry.isDirectory());
             assertTrue(entry.isAntiItem());
 
             entry = archive.getNextEntry();
-            assert (entry != null);
+            assert entry != null;
             assertEquals("dada", entry.getName());
             assertEquals(2, entry.getSize());
             final byte[] content = new byte[2];
@@ -437,7 +437,7 @@ public class SevenZOutputFileTest extends AbstractTestCase {
             assertEquals(42, content[1]);
             assertEquals(17, entry.getWindowsAttributes());
 
-            assert (archive.getNextEntry() == null);
+            assert archive.getNextEntry() == null;
         }
 
     }
@@ -455,12 +455,12 @@ public class SevenZOutputFileTest extends AbstractTestCase {
 
         try (SevenZFile archive = new SevenZFile(output)) {
             final SevenZArchiveEntry entry = archive.getNextEntry();
-            assert (entry != null);
+            assert entry != null;
             assertEquals("foo/", entry.getName());
             assertTrue(entry.isDirectory());
             assertFalse(entry.isAntiItem());
 
-            assert (archive.getNextEntry() == null);
+            assert archive.getNextEntry() == null;
         }
 
     }

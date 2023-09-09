@@ -63,7 +63,7 @@ public class ClassRefForm extends ReferenceForm {
         // its own form.)
         final SegmentConstantPool globalPool = operandManager.globalConstantPool();
         // How do I get this class?
-        ClassFileEntry[] nested = new ClassFileEntry[] {globalPool.getClassPoolEntry(operandManager.getCurrentClass())};
+        final ClassFileEntry[] nested = {globalPool.getClassPoolEntry(operandManager.getCurrentClass())};
         byteCode.setNested(nested);
         byteCode.setNestedPositions(new int[][] {{0, 2}});
     }

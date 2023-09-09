@@ -83,7 +83,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
 
     /**
      * Test bridge works fine.
-     * 
+     *
      * @throws IOException
      */
     @Test

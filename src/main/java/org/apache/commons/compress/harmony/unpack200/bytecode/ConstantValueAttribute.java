@@ -72,7 +72,7 @@ public class ConstantValueAttribute extends Attribute {
     public int hashCode() {
         final int PRIME = 31;
         int result = super.hashCode();
-        result = PRIME * result + ((entry == null) ? 0 : entry.hashCode());
+        result = PRIME * result + (entry == null ? 0 : entry.hashCode());
         return result;
     }
 

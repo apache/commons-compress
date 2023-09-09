@@ -72,7 +72,7 @@ public class FileBands extends BandSet {
             final PackingFile packingFile = fileList.get(i);
             final String name = packingFile.getName();
             if (name.endsWith(".class") && !options.isPassFile(name)) {
-                file_options[i] |= (1 << 1);
+                file_options[i] |= 1 << 1;
                 if (classNames.contains(name.substring(0, name.length() - 6))) {
                     fileName[i] = emptyString;
                 } else {
@@ -116,7 +116,7 @@ public class FileBands extends BandSet {
                 final String name = packingFile.getName();
                 if (options.isPassFile(name)) {
                     fileName[i] = cpBands.getCPUtf8(name);
-                    file_options[i] &= (1 << 1) ^ 0xFFFFFFFF;
+                    file_options[i] &= 1 << 1 ^ 0xFFFFFFFF;
                 }
             }
             file_name[i] = fileName[i].getIndex();

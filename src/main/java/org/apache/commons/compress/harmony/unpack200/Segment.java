@@ -132,7 +132,7 @@ public class Segment {
         SourceFileAttribute sourceFileAttribute = null;
         for (final Attribute classAttribute : classAttributes) {
             if (classAttribute.isSourceFileAttribute()) {
-                sourceFileAttribute = ((SourceFileAttribute) classAttribute);
+                sourceFileAttribute = (SourceFileAttribute) classAttribute;
             }
         }
 
@@ -150,7 +150,7 @@ public class Segment {
                 }
                 String fileName;
 
-                if (firstDollar > -1 && (i <= firstDollar)) {
+                if (firstDollar > -1 && i <= firstDollar) {
                     fileName = fullName.substring(i, firstDollar) + ".java";
                 } else {
                     fileName = fullName.substring(i) + ".java";
@@ -180,7 +180,7 @@ public class Segment {
             + classAttributesWithoutSourceFileAttribute.size()];
         System.arraycopy(originalAttributes, 0, classFile.attributes, 0, originalAttributes.length);
         for (int index = 0; index < classAttributesWithoutSourceFileAttribute.size(); index++) {
-            final Attribute attrib = (classAttributesWithoutSourceFileAttribute.get(index));
+            final Attribute attrib = classAttributesWithoutSourceFileAttribute.get(index);
             cp.add(attrib);
             classFile.attributes[originalAttributes.length + index] = attrib;
         }
@@ -238,7 +238,7 @@ public class Segment {
             CPUTF8 innerName = null;
             CPClass outerClass = null;
 
-            CPClass innerClass = innerClassIndex != -1 ? cpBands.cpClassValue(innerClassIndex)
+            final CPClass innerClass = innerClassIndex != -1 ? cpBands.cpClassValue(innerClassIndex)
                 : cpBands.cpClassValue(innerClassString);
             if (!icStored.isAnonymous()) {
                 innerName = simpleClassNameIndex != -1 ? cpBands.cpUTF8Value(simpleClassNameIndex)
@@ -255,13 +255,13 @@ public class Segment {
         }
         // If ic_local is sent, and it's empty, don't add
         // the inner classes attribute.
-        if (icLocalSent && (icLocal.length == 0)) {
+        if (icLocalSent && icLocal.length == 0) {
             addInnerClassesAttr = false;
         }
 
         // If ic_local is not sent and ic_relevant is empty,
         // don't add the inner class attribute.
-        if (!icLocalSent && (icRelevant.length == 0)) {
+        if (!icLocalSent && icRelevant.length == 0) {
             addInnerClassesAttr = false;
         }
 
@@ -405,7 +405,7 @@ public class Segment {
         for (int i = 0; i < numberOfFiles; i++) {
             String name = fileName[i];
 
-            final boolean nameIsEmpty = (name == null) || name.equals("");
+            final boolean nameIsEmpty = name == null || name.equals("");
             final boolean isClass = (fileOptions[i] & 2) == 2 || nameIsEmpty;
             if (isClass && nameIsEmpty) {
                 name = cpBands.getCpClass()[classBands.getClassThisInts()[classNum]] + ".class";

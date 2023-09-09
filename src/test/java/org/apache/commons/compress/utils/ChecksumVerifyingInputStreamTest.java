@@ -39,8 +39,8 @@ public class ChecksumVerifyingInputStreamTest {
         final Adler32 adler32 = new Adler32();
         final byte[] byteArray = new byte[3];
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
-        try (ChecksumVerifyingInputStream checksumVerifyingInputStream = new ChecksumVerifyingInputStream(adler32, byteArrayInputStream, (-1859L),
-                (byte) (-68))) {
+        try (ChecksumVerifyingInputStream checksumVerifyingInputStream = new ChecksumVerifyingInputStream(adler32, byteArrayInputStream, -1859L,
+                (byte) -68)) {
             assertThrows(IOException.class, () -> checksumVerifyingInputStream.read(byteArray));
         }
     }

@@ -471,7 +471,7 @@ public class ZipArchiveInputStreamTest extends AbstractTestCase {
     public void testOffsets() throws Exception {
         // mixed.zip contains both inflated and stored files
         try (InputStream archiveStream = ZipArchiveInputStream.class.getResourceAsStream("/mixed.zip");
-             ZipArchiveInputStream zipStream =  new ZipArchiveInputStream((archiveStream))
+             ZipArchiveInputStream zipStream =  new ZipArchiveInputStream(archiveStream)
         ) {
             final ZipArchiveEntry inflatedEntry = zipStream.getNextZipEntry();
             assertEquals("inflated.txt", inflatedEntry.getName());

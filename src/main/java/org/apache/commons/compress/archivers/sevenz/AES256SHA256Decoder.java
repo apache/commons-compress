@@ -46,7 +46,7 @@ class AES256SHA256Decoder extends AbstractCoder {
             throw new IllegalStateException("SHA-256 is unsupported by your Java implementation", noSuchAlgorithmException);
         }
         final byte[] extra = new byte[8];
-        for (long j = 0; j < (1L << numCyclesPower); j++) {
+        for (long j = 0; j < 1L << numCyclesPower; j++) {
             digest.update(salt);
             digest.update(password);
             digest.update(extra);
@@ -115,8 +115,8 @@ class AES256SHA256Decoder extends AbstractCoder {
                 final int byte0 = 0xff & coder.properties[0];
                 final int numCyclesPower = byte0 & 0x3f;
                 final int byte1 = 0xff & coder.properties[1];
-                final int ivSize = ((byte0 >> 6) & 1) + (byte1 & 0x0f);
-                final int saltSize = ((byte0 >> 7) & 1) + (byte1 >> 4);
+                final int ivSize = (byte0 >> 6 & 1) + (byte1 & 0x0f);
+                final int saltSize = (byte0 >> 7 & 1) + (byte1 >> 4);
                 if (2 + saltSize + ivSize > coder.properties.length) {
                     throw new IOException("Salt size + IV size too long in " + archiveName);
                 }
@@ -235,11 +235,11 @@ class AES256SHA256Decoder extends AbstractCoder {
         final byte[] props = new byte[2 + opts.getSalt().length + opts.getIv().length];
 
         // First byte : control (numCyclesPower + flags of salt or iv presence)
-        props[0] = (byte) (opts.getNumCyclesPower() | (opts.getSalt().length == 0 ? 0 : (1 << 7)) | (opts.getIv().length == 0 ? 0 : (1 << 6)));
+        props[0] = (byte) (opts.getNumCyclesPower() | (opts.getSalt().length == 0 ? 0 : 1 << 7) | (opts.getIv().length == 0 ? 0 : 1 << 6));
 
         if (opts.getSalt().length != 0 || opts.getIv().length != 0) {
             // second byte : size of salt/iv data
-            props[1] = (byte) (((opts.getSalt().length == 0 ? 0 : opts.getSalt().length - 1) << 4) | (opts.getIv().length == 0 ? 0 : opts.getIv().length - 1));
+            props[1] = (byte) ((opts.getSalt().length == 0 ? 0 : opts.getSalt().length - 1) << 4 | (opts.getIv().length == 0 ? 0 : opts.getIv().length - 1));
 
             // remain bytes : salt/iv data
             System.arraycopy(opts.getSalt(), 0, props, 2, opts.getSalt().length);

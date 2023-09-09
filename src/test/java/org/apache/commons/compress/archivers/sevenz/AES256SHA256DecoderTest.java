@@ -42,7 +42,7 @@ public class AES256SHA256DecoderTest {
         try (BufferedInputStream bufferedInputStream = new BufferedInputStream(null, 3138)) {
             final Coder coder = new Coder();
             final byte[] byteArray = new byte[8];
-            byteArray[1] = (byte) (-72);
+            byteArray[1] = (byte) -72;
             coder.properties = byteArray;
             try (InputStream inputStream = aES256SHA256Decoder.decode("x", bufferedInputStream, 3138, coder, coder.properties, Integer.MAX_VALUE)) {
                 final IOException e = assertThrows(IOException.class, () -> new ObjectInputStream(inputStream), "Expecting exception: IOException");
