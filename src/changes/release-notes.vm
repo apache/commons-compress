@@ -158,6 +158,8 @@ see the ${project.name} website:
 
 #fixurl ( ${project.url} )
 
+Download it from ${project.url}download_compress.cgi
+
 Old Release Notes
 =================
 

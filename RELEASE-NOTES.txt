@@ -28,6 +28,8 @@ see the Apache Commons Compress website:
 
 https://commons.apache.org/compress/
 
+Download it from https://commons.apache.org/compress/download_compress.cgi
+
 =============================================================================
 
               Apache Commons Compress 1.23.0 RELEASE NOTES
