@@ -95,13 +95,6 @@ public final class DetectCompressorTestCase {
         new TestData("multiple.xz", new char[]{'a'}, factory, false),
     };
 
-    private String detect(final String testFileName) throws IOException, CompressorException {
-        try (InputStream is = new BufferedInputStream(
-                Files.newInputStream(getFile(testFileName).toPath()))) {
-            return CompressorStreamFactory.detect(is);
-        }
-    }
-
     @SuppressWarnings("resource") // Caller closes.
     private CompressorInputStream createStreamFor(final String resource)
             throws CompressorException, IOException {
@@ -133,6 +126,13 @@ public final class DetectCompressorTestCase {
             throw e;
         }
 
+    }
+
+    private String detect(final String testFileName) throws IOException, CompressorException {
+        try (InputStream is = new BufferedInputStream(
+                Files.newInputStream(getFile(testFileName).toPath()))) {
+            return CompressorStreamFactory.detect(is);
+        }
     }
 
     @Test

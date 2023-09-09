@@ -50,13 +50,13 @@ import org.apache.commons.compress.utils.IOUtils;
 public class Expander {
 
     @FunctionalInterface
-    private interface ArchiveEntrySupplier<T extends ArchiveEntry> {
-        T get() throws IOException;
+    private interface ArchiveEntryBiConsumer<T extends ArchiveEntry> {
+        void accept(T entry, OutputStream out) throws IOException;
     }
 
     @FunctionalInterface
-    private interface ArchiveEntryBiConsumer<T extends ArchiveEntry> {
-        void accept(T entry, OutputStream out) throws IOException;
+    private interface ArchiveEntrySupplier<T extends ArchiveEntry> {
+        T get() throws IOException;
     }
 
     /**
