@@ -78,6 +78,5 @@ public class LabelForm extends ByteCodeForm {
         byteCode.setByteCodeTargets(new int[] {operandManager.nextLabel()});
         // The byte code operands actually get set later -
         // once we have all the bytecodes - in fixUpByteCodeTarget().
-        return;
     }
 }
