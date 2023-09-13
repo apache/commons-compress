@@ -379,7 +379,6 @@ public abstract class ByteCodeForm {
      */
     public void fixUpByteCodeTargets(final ByteCode byteCode, final CodeAttribute codeAttribute) {
         // Most ByteCodeForms don't have any fixing up to do.
-        return;
     }
 
     public String getName() {
