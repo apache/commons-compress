@@ -526,8 +526,11 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
     /**
      * Create a compressor input stream from an input stream, auto-detecting the
-     * compressor type from the first few bytes of the stream and comparing the detected type
+     * compressor type from the first few bytes of the stream while restricting the detected type
      * against the provided set of compressor names. The InputStream must support marks, like BufferedInputStream.
+     *
+     * The purpose of this method is to restrict autodetection to a smaller set of compressor names
+     * for applications that don't need to support decompression of all file types supported by the library.
      *
      * @param in
      *            the input stream
