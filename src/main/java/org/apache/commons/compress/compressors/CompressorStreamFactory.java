@@ -25,6 +25,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.SortedMap;
@@ -504,6 +505,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         this.decompressConcatenated = decompressUntilEOF;
         this.memoryLimitInKb = memoryLimitInKb;
     }
+
     /**
      * Create a compressor input stream from an input stream, auto-detecting the
      * compressor type from the first few bytes of the stream. The InputStream
@@ -520,6 +522,36 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      */
     public CompressorInputStream createCompressorInputStream(final InputStream in) throws CompressorException {
         return createCompressorInputStream(detect(in), in);
+    }
+
+    /**
+     * Create a compressor input stream from an input stream, auto-detecting the
+     * compressor type from the first few bytes of the stream and comparing the detected type
+     * against the provided set of compressor names. The InputStream must support marks, like BufferedInputStream.
+     *
+     * @param in
+     *            the input stream
+     * @param compressorNames
+     *            compressor names to limit autodetection
+     * @return the compressor input stream
+     * @throws CompressorException
+     *             if the autodetected compressor is not in the provided set of compressor names
+     * @throws IllegalArgumentException
+     *             if the stream is null or does not support mark
+     * @since 1.25
+     */
+    public CompressorInputStream createCompressorInputStream(final InputStream in, final Set<String> compressorNames)
+            throws CompressorException {
+        if (Objects.isNull(compressorNames) || compressorNames.isEmpty()) {
+            throw new IllegalArgumentException("Compressor names cannot be null or empty");
+        }
+
+        String detectedName = detect(in);
+        if (compressorNames.contains(detectedName)) {
+            return createCompressorInputStream(detectedName, in);
+        } else {
+            throw new CompressorException("Detected name " + detectedName + " not in the provided set of names");
+        }
     }
 
     /**
