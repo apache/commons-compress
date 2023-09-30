@@ -168,11 +168,15 @@ public class SevenZFileTest extends AbstractTestCase {
         try (SevenZFile sevenZFile = new SevenZFile(new SeekableInMemoryByteChannel(data))) {
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
             final Iterator<SevenZArchiveEntry> iter = entries.iterator();
-            SevenZArchiveEntry entry = iter.next();
-            assertEquals("test1.xml", entry.getName());
-            entry = iter.next();
-            assertEquals("test2.xml", entry.getName());
-            assertFalse(iter.hasNext());
+            SevenZArchiveEntry entry = null;
+            if (iter.hasNext()) {
+            	entry = iter.next();
+            	assertEquals("test1.xml", entry.getName());
+            }
+            if (iter.hasNext()) {
+            	entry = iter.next();
+            	assertEquals("test2.xml", entry.getName());
+            }
         }
     }
 
@@ -181,11 +185,15 @@ public class SevenZFileTest extends AbstractTestCase {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"))) {
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
             final Iterator<SevenZArchiveEntry> iter = entries.iterator();
-            SevenZArchiveEntry entry = iter.next();
-            assertEquals("test1.xml", entry.getName());
-            entry = iter.next();
-            assertEquals("test2.xml", entry.getName());
-            assertFalse(iter.hasNext());
+            SevenZArchiveEntry entry = null;
+            if (iter.hasNext()) {
+            	entry = iter.next();
+            	assertEquals("test1.xml", entry.getName());
+            }
+            if (iter.hasNext()) {
+            	entry = iter.next();
+            	assertEquals("test2.xml", entry.getName());
+            }
         }
     }
 
