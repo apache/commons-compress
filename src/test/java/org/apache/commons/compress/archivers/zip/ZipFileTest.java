@@ -55,6 +55,7 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+import org.apache.commons.io.function.IORunnable;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assume;
 import org.junit.jupiter.api.AfterEach;
@@ -84,13 +85,11 @@ public class ZipFileTest extends AbstractTestCase {
 
     private ZipFile zf = null;
 
-    private void assertAllReadMethods(final byte[] expected, final ZipFile zipFile, final ZipArchiveEntry entry) {
+    private void assertAllReadMethods(final byte[] expected, final ZipFile zipFile, final ZipArchiveEntry entry) throws IOException {
         // simple IOUtil read
         try (InputStream stream = zf.getInputStream(entry)) {
             final byte[] full = IOUtils.toByteArray(stream);
             assertArrayEquals(expected, full);
-        } catch (final IOException ex) {
-            throw new AssertionError(ex);
         }
 
         // big buffer at the beginning and then chunks by IOUtils read
@@ -445,14 +444,14 @@ public class ZipFileTest extends AbstractTestCase {
         }
 
         final AtomicInteger passedCount = new AtomicInteger();
-        final Runnable run = () -> {
+        final IORunnable run = () -> {
             for (final ZipArchiveEntry entry: Collections.list(zf.getEntries())) {
                 assertAllReadMethods(content.get(entry.getName()), zf, entry);
             }
             passedCount.incrementAndGet();
         };
-        final Thread t0 = new Thread(run);
-        final Thread t1 = new Thread(run);
+        final Thread t0 = new Thread(run.asRunnable());
+        final Thread t1 = new Thread(run.asRunnable());
         t0.start();
         t1.start();
         t0.join();
@@ -477,14 +476,14 @@ public class ZipFileTest extends AbstractTestCase {
                 }}
 
             final AtomicInteger passedCount = new AtomicInteger();
-            final Runnable run = () -> {
+            final IORunnable run = () -> {
                 for (final ZipArchiveEntry entry : Collections.list(zf.getEntries())) {
                     assertAllReadMethods(content.get(entry.getName()), zf, entry);
                 }
                 passedCount.incrementAndGet();
             };
-            final Thread t0 = new Thread(run);
-            final Thread t1 = new Thread(run);
+            final Thread t0 = new Thread(run.asRunnable());
+            final Thread t1 = new Thread(run.asRunnable());
             t0.start();
             t1.start();
             t0.join();
