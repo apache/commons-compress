@@ -277,7 +277,7 @@ public abstract class Pack200 {
             final String className = System.getProperty(systemProperty, defaultClassName);
             try {
                 // TODO Not sure if this will cause problems loading the class
-                return Pack200.class.getClassLoader().loadClass(className).newInstance();
+                return Pack200.class.getClassLoader().loadClass(className).getConstructor().newInstance();
             } catch (final Exception e) {
                 throw new Error(Messages.getString("archive.3E", className), e); //$NON-NLS-1$
             }
