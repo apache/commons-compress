@@ -103,8 +103,6 @@ public class ZipFileTest extends AbstractTestCase {
                 full = readStreamRest(bytes, read, stream);
             }
             assertArrayEquals(expected, full);
-        } catch (final IOException ex) {
-            throw new AssertionError(ex);
         }
 
         // small chunk / single byte and big buffer then
@@ -124,8 +122,6 @@ public class ZipFileTest extends AbstractTestCase {
                 }
             }
             assertArrayEquals(expected, full);
-        } catch (final IOException ex) {
-            throw new AssertionError(ex);
         }
     }
 
