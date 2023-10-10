@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
 
 public class FixedLengthBlockOutputStreamTest {
 
-    private static class MockOutputStream extends OutputStream {
+    private static final class MockOutputStream extends OutputStream {
 
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         private final int requiredWriteSize;
@@ -86,7 +86,7 @@ public class FixedLengthBlockOutputStreamTest {
         }
     }
 
-    private static class MockWritableByteChannel implements WritableByteChannel {
+    private static final class MockWritableByteChannel implements WritableByteChannel {
 
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         private final int requiredWriteSize;

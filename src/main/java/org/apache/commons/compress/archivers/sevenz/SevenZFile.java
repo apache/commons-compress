@@ -89,7 +89,7 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  * @since 1.6
  */
 public class SevenZFile implements Closeable {
-    private static class ArchiveStatistics {
+    private static final class ArchiveStatistics {
         private int numberOfPackedStreams;
         private long numberOfCoders;
         private long numberOfOutStreams;

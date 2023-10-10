@@ -35,7 +35,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * and whether to use ZipFile or ZipArchiveInputStream.</p>
  */
 public final class Lister {
-    private static class CommandLine {
+    private static final class CommandLine {
         String archive;
         boolean useStream = false;
         String encoding;

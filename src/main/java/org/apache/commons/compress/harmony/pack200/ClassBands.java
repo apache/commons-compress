@@ -38,7 +38,7 @@ import org.objectweb.asm.Opcodes;
  */
 public class ClassBands extends BandSet {
 
-	private static class TempParamAnnotation {
+	private static final class TempParamAnnotation {
 
 		int numParams;
 		int[] annoN;

@@ -29,7 +29,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class SegmentUtilsTest {
 
-    private static class MultipleMatches implements IMatcher {
+    private static final class MultipleMatches implements IMatcher {
 
         private final int divisor;
 

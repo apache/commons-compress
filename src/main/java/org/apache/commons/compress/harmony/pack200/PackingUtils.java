@@ -41,7 +41,7 @@ import org.apache.commons.compress.harmony.pack200.Archive.PackingFile;
 
 public class PackingUtils {
 
-    private static class PackingLogger extends Logger {
+    private static final class PackingLogger extends Logger {
 
         private boolean verbose = false;
 

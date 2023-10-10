@@ -36,7 +36,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
         }
 
     }
-    private static class BCIndex extends AbstractBcValue {
+    private static final class BCIndex extends AbstractBcValue {
 
         private final int index;
 
@@ -44,7 +44,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
             this.index = index;
         }
     }
-    private static class BCLength extends AbstractBcValue {
+    private static final class BCLength extends AbstractBcValue {
 
         private final int length;
 
@@ -52,7 +52,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
             this.length = length;
         }
     }
-    private static class BCOffset extends AbstractBcValue {
+    private static final class BCOffset extends AbstractBcValue {
 
         private final int offset;
         private int index;

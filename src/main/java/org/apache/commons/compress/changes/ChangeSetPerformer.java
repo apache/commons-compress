@@ -57,7 +57,7 @@ public class ChangeSetPerformer {
         ArchiveEntry next();
     }
 
-    private static class ArchiveInputStreamIterator
+    private static final class ArchiveInputStreamIterator
         implements ArchiveEntryIterator {
         private final ArchiveInputStream in;
         private ArchiveEntry next;
@@ -78,7 +78,7 @@ public class ChangeSetPerformer {
         }
     }
 
-    private static class ZipFileIterator
+    private static final class ZipFileIterator
         implements ArchiveEntryIterator {
         private final ZipFile in;
         private final Enumeration<ZipArchiveEntry> nestedEnum;

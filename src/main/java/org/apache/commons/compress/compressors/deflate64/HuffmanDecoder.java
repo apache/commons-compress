@@ -34,7 +34,7 @@ import org.apache.commons.compress.utils.ExactMath;
 
 class HuffmanDecoder implements Closeable {
 
-    private static class BinaryTreeNode {
+    private static final class BinaryTreeNode {
         private final int bits;
         int literal = -1;
         BinaryTreeNode leftNode;
@@ -75,7 +75,7 @@ class HuffmanDecoder implements Closeable {
         abstract HuffmanState state();
     }
 
-    private static class DecodingMemory {
+    private static final class DecodingMemory {
         private final byte[] memory;
         private final int mask;
         private int wHead;
@@ -214,7 +214,7 @@ class HuffmanDecoder implements Closeable {
             return endOfBlock ? INITIAL : state;
         }
     }
-    private static class InitialState extends DecoderState {
+    private static final class InitialState extends DecoderState {
         @Override
         int available() {
             return 0;

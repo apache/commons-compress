@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 
 public class AbstractLZ77CompressorInputStreamTest {
 
-    private static class TestStream extends AbstractLZ77CompressorInputStream {
+    private static final class TestStream extends AbstractLZ77CompressorInputStream {
 
         private boolean literal;
 

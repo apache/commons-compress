@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 
 public class SevenZNativeHeapTest extends AbstractTestCase {
 
-    private static class DelegatingDeflater extends Deflater {
+    private static final class DelegatingDeflater extends Deflater {
 
         private final Deflater deflater;
 
@@ -143,7 +143,7 @@ public class SevenZNativeHeapTest extends AbstractTestCase {
 
     }
 
-    private static class DelegatingInflater extends Inflater {
+    private static final class DelegatingInflater extends Inflater {
 
         private final Inflater inflater;
 

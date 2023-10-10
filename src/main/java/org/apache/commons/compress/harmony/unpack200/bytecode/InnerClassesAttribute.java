@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class InnerClassesAttribute extends Attribute {
 
-    private static class InnerClassesEntry {
+    private static final class InnerClassesEntry {
 
         CPClass innerClassInfo;
         CPClass outerClassInfo;

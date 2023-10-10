@@ -106,7 +106,7 @@ public class ZipFile implements Closeable {
     /**
      * Extends ZipArchiveEntry to store the offset within the archive.
      */
-    private static class Entry extends ZipArchiveEntry {
+    private static final class Entry extends ZipArchiveEntry {
 
         Entry() {
         }
@@ -140,7 +140,7 @@ public class ZipFile implements Closeable {
             this.comment = comment;
         }
     }
-    private static class StoredStatisticsStream extends CountingInputStream implements InputStreamStatistics {
+    private static final class StoredStatisticsStream extends CountingInputStream implements InputStreamStatistics {
         StoredStatisticsStream(final InputStream in) {
             super(in);
         }
