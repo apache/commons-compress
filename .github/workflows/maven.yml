@@ -52,4 +52,4 @@ jobs:
         java-version: ${{ matrix.java }}
     - name: Build with Maven
       # TEMP -Ddoclint=none
-      run: mvn -V --file pom.xml --no-transfer-progress -Ddoclint=none -Darguments=-Xdoclint:none
+      run: mvn --show-version --batch-mode --no-transfer-progress -Ddoclint=none -Darguments=-Xdoclint:none
