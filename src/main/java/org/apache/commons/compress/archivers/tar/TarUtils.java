@@ -936,7 +936,7 @@ public class TarUtils {
      * Wikipedia <a href="https://en.wikipedia.org/wiki/Tar_(computing)#File_header">says</a>:
      * <blockquote>
      * The checksum is calculated by taking the sum of the unsigned byte values
-     * of the header block with the eight checksum bytes taken to be ascii
+     * of the header block with the eight checksum bytes taken to be ASCII
      * spaces (decimal value 32). It is stored as a six digit octal number with
      * leading zeroes followed by a NUL and then a space. Various
      * implementations do not adhere to this format. For better compatibility,
