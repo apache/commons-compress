@@ -87,7 +87,7 @@ public class TarUtils {
         };
 
     /**
-     * Compute the checksum of a tar entry header.
+     * Computes the checksum of a tar entry header.
      *
      * @param buf The tar entry's header buffer.
      * @return The computed checksum.
@@ -184,7 +184,7 @@ public class TarUtils {
     }
 
     /**
-     * Write an octal long integer into a buffer.
+     * Writes an octal long integer into a buffer.
      *
      * Uses {@link #formatUnsignedOctalString} to format
      * the value as an octal string with leading zeros.
@@ -208,7 +208,7 @@ public class TarUtils {
     }
 
     /**
-     * Write a long integer into a buffer as an octal string if this
+     * Writes a long integer into a buffer as an octal string if this
      * will fit, or as a binary number otherwise.
      *
      * Uses {@link #formatUnsignedOctalString} to format
@@ -246,7 +246,7 @@ public class TarUtils {
     }
 
     /**
-     * Copy a name into a buffer.
+     * Copies a name into a buffer.
      * Copies characters from the name into the buffer
      * starting at the specified offset.
      * If the buffer is longer than the name, the buffer
@@ -275,7 +275,7 @@ public class TarUtils {
     }
 
     /**
-     * Copy a name into a buffer.
+     * Copies a name into a buffer.
      * Copies characters from the name into the buffer
      * starting at the specified offset.
      * If the buffer is longer than the name, the buffer
@@ -313,7 +313,7 @@ public class TarUtils {
     }
 
     /**
-     * Write an octal integer into a buffer.
+     * Writes an octal integer into a buffer.
      *
      * Uses {@link #formatUnsignedOctalString} to format
      * the value as an octal string with leading zeros.
@@ -338,7 +338,7 @@ public class TarUtils {
     }
 
     /**
-     * Fill buffer with unsigned octal number, padded with leading zeroes.
+     * Fills a buffer with unsigned octal number, padded with leading zeroes.
      *
      * @param value number to convert to octal - treated as unsigned
      * @param buffer destination buffer
@@ -413,7 +413,7 @@ public class TarUtils {
     }
 
     /**
-     * Parse a boolean byte from a buffer.
+     * Parses a boolean byte from a buffer.
      * Leading spaces and NUL are ignored.
      * The buffer may contain trailing spaces or NULs.
      *
@@ -474,7 +474,7 @@ public class TarUtils {
     }
 
     /**
-     * Parse an entry name from a buffer.
+     * Parses an entry name from a buffer.
      * Parsing stops when a NUL is found
      * or the buffer length is reached.
      *
@@ -497,7 +497,7 @@ public class TarUtils {
     }
 
     /**
-     * Parse an entry name from a buffer.
+     * Parses an entry name from a buffer.
      * Parsing stops when a NUL is found
      * or the buffer length is reached.
      *
@@ -527,7 +527,7 @@ public class TarUtils {
     }
 
     /**
-     * Parse an octal string from a buffer.
+     * Parses an octal string from a buffer.
      *
      * <p>Leading spaces are ignored.
      * The buffer must contain a trailing space or NUL,
@@ -592,7 +592,7 @@ public class TarUtils {
     }
 
     /**
-     * Compute the value contained in a byte buffer.  If the most
+     * Computes the value contained in a byte buffer.  If the most
      * significant bit of the first byte in the buffer is set, this
      * bit is ignored and the rest of the buffer is interpreted as a
      * binary number.  Otherwise, the buffer is interpreted as an
@@ -623,11 +623,15 @@ public class TarUtils {
 
     /**
      * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
-     * GNU.sparse.map
+     * 
+     * <p>
+     * <em>GNU.sparse.map</em>:
      *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
-     *
-     * <p>Will internally invoke {@link #parseFromPAX01SparseHeaders} and map IOExceptions to a RzuntimeException, You
+     * </p>
+     * <p>
+     * Will internally invoke {@link #parseFromPAX01SparseHeaders} and map IOExceptions to a RzuntimeException, You
      * should use {@link #parseFromPAX01SparseHeaders} directly instead.
+     * </p>
      *
      * @param sparseMap the sparse map string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
      * @return sparse headers parsed from sparse map
@@ -693,18 +697,21 @@ public class TarUtils {
     /**
      * For PAX Format 0.0, the sparse headers(GNU.sparse.offset and GNU.sparse.numbytes)
      * may appear multi times, and they look like:
-     *
+     * <pre>
      * GNU.sparse.size=size
      * GNU.sparse.numblocks=numblocks
      * repeat numblocks times
      *   GNU.sparse.offset=offset
      *   GNU.sparse.numbytes=numbytes
      * end repeat
-     *
-     * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
-     *
-     * GNU.sparse.map
+     * </pre>
+     * <p>
+     * For PAX Format 0.1, the sparse headers are stored in a single variable: GNU.sparse.map
+     * </p>
+     * <p>
+     * <em>GNU.sparse.map</em>:
      *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
+     * </p>
      *
      * @param inputStream input stream to read keys and values
      * @param sparseHeaders used in PAX Format 0.0 &amp; 0.1, as it may appear multiple times,
@@ -723,18 +730,21 @@ public class TarUtils {
     /**
      * For PAX Format 0.0, the sparse headers(GNU.sparse.offset and GNU.sparse.numbytes)
      * may appear multi times, and they look like:
-     *
+     * <pre>
      * GNU.sparse.size=size
      * GNU.sparse.numblocks=numblocks
      * repeat numblocks times
      *   GNU.sparse.offset=offset
      *   GNU.sparse.numbytes=numbytes
      * end repeat
-     *
+     * </pre>
+     * <p>
      * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
-     *
-     * GNU.sparse.map
+     * </p>
+     * <p>
+     * <em>GNU.sparse.map</em>:
      *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
+     * </p>
      *
      * @param inputStream input stream to read keys and values
      * @param sparseHeaders used in PAX Format 0.0 &amp; 0.1, as it may appear multiple times,
@@ -951,6 +961,7 @@ public class TarUtils {
      * heuristic rather than an absolute and final truth. The checksum
      * verification logic may well evolve over time as more special cases
      * are encountered.
+     * </p>
      *
      * @param header tar header
      * @return whether the checksum is reasonably good
@@ -973,7 +984,7 @@ public class TarUtils {
         return storedSum == unsignedSum || storedSum == signedSum;
     }
 
-    /** Private constructor to prevent instantiation of this utility class. */
+    /** Prevents instantiation. */
     private TarUtils(){
     }
 
