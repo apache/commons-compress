@@ -135,8 +135,8 @@ import org.apache.commons.compress.utils.TimeUtils;
  * fields for all numbers and separates device numbers into separate
  * fields for major and minor numbers.</p>
  *
- * <p>The pathname is followed by NUL bytes so that the total size of
- * the fixed header plus pathname is a multiple of four. Likewise, the
+ * <p>The path name is followed by NUL bytes so that the total size of
+ * the fixed header plus path name is a multiple of four. Likewise, the
  * file data is padded to a multiple of four bytes.</p>
  *
  * <p>This class uses mutable fields and is not considered to be
