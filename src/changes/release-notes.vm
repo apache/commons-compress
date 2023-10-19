@@ -459,7 +459,7 @@ o Checked the sizes read for archive entries and reject archives
   several formats.
   Issue: COMPRESS-569.
 o OSGi detection was broken and so we always cached whether
-  xz/brotli/zstd/lzma have been available even in OSGi
+  xz/brotli/zstd/LZMA have been available even in OSGi
   environments.
   Issue: COMPRESS-552.
 o SevenZFile.getEntries now return a copy of entries.

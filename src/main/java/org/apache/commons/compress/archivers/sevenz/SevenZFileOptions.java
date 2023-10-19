@@ -47,8 +47,8 @@ public class SevenZFileOptions {
          * Sets the maximum amount of memory to use for parsing the
          * archive and during extraction.
          *
-         * <p>Not all codecs will honor this setting. Currently only lzma
-         * and lzma2 are supported.</p>
+         * <p>Not all codecs will honor this setting. Currently only LZMA
+         * and LZMA2 are supported.</p>
          *
          * @param maxMemoryLimitInKb limit of the maximum amount of memory to use
          * @return the reconfigured builder
@@ -131,8 +131,8 @@ public class SevenZFileOptions {
      * Gets the maximum amount of memory to use for parsing the
      * archive and during extraction.
      *
-     * <p>Not all codecs will honor this setting. Currently only lzma
-     * and lzma2 are supported.</p>
+     * <p>Not all codecs will honor this setting. Currently only LZMA
+     * and LZMA2 are supported.</p>
      *
      * @return the maximum amount of memory to use for extraction
      */

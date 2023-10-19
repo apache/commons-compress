@@ -31,7 +31,7 @@
         collect multiple entries inside a single (potentially
         compressed) archive are archiver formats.</p>
 
-        <p>The compressor formats supported are gzip, bzip2, xz, lzma,
+        <p>The compressor formats supported are gzip, bzip2, xz, LZMA,
         Pack200, DEFLATE, Brotli, DEFLATE64, ZStandard and Z, the archiver formats are 7z, ar, arj,
         cpio, dump, tar and zip.  Pack200 is a special case as it can
         only compress JAR files.</p>
@@ -82,7 +82,7 @@ CompressorInputStream input = new CompressorStreamFactory()
     .createCompressorInputStream(originalInput);
 ]]></source>
 
-        <p>Note that there is no way to detect the lzma or Brotli formats so only
+        <p>Note that there is no way to detect the LZMA or Brotli formats so only
         the two-arg version of
         <code>createCompressorInputStream</code> can be used.  Prior
         to Compress 1.9 the .Z format hasn't been auto-detected
@@ -991,7 +991,7 @@ in.close();
           public domain <a href="https://tukaani.org/xz/java.html">XZ
           for Java</a> library.</p>
 
-        <p>Uncompressing a given lzma compressed file (you would
+        <p>Uncompressing a given LZMA compressed file (you would
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
@@ -1008,7 +1008,7 @@ out.close();
 lzmaIn.close();
 ]]></source>
 
-        <p>Compressing a given file using lzma (you would
+        <p>Compressing a given file using LZMA (you would
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
