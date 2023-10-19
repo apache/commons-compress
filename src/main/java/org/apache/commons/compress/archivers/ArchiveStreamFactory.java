@@ -511,7 +511,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             final String archiverName, final OutputStream out, final String actualEncoding)
             throws ArchiveException {
         if (archiverName == null) {
-            throw new IllegalArgumentException("Archivername must not be null.");
+            throw new IllegalArgumentException("Archiver name must not be null.");
         }
         if (out == null) {
             throw new IllegalArgumentException("OutputStream must not be null.");
