@@ -109,8 +109,28 @@ public class XZUtils {
      *
      * @param fileName name of a file
      * @return name of the corresponding uncompressed file
+     * @deprecated Use {@link #getUncompressedFileName(String)}.
      */
+    @Deprecated
     public static String getUncompressedFilename(final String fileName) {
+        return fileNameUtil.getUncompressedFileName(fileName);
+    }
+
+    /**
+     * Maps the given name of a xz-compressed file to the name that the
+     * file should have after uncompression. Commonly used file type specific
+     * suffixes like ".txz" are automatically detected and
+     * correctly mapped. For example the name "package.txz" is mapped to
+     * "package.tar". And any file names with the generic ".xz" suffix
+     * (or any other generic xz suffix) is mapped to a name without that
+     * suffix. If no xz suffix is detected, then the file name is returned
+     * unmapped.
+     *
+     * @param fileName name of a file
+     * @return name of the corresponding uncompressed file
+     * @since 1.25.0
+     */
+    public static String getUncompressedFileName(final String fileName) {
         return fileNameUtil.getUncompressedFileName(fileName);
     }
 
@@ -129,8 +149,22 @@ public class XZUtils {
      * @param fileName name of a file
      * @return {@code true} if the file name has a common xz suffix,
      *         {@code false} otherwise
+     * @deprecated Use {@link #isCompressedFileName(String)}.
      */
+    @Deprecated
     public static boolean isCompressedFilename(final String fileName) {
+        return fileNameUtil.isCompressedFileName(fileName);
+    }
+
+    /**
+     * Detects common xz suffixes in the given file name.
+     *
+     * @param fileName name of a file
+     * @return {@code true} if the file name has a common xz suffix,
+     *         {@code false} otherwise
+     * @since 1.25.0
+     */
+    public static boolean isCompressedFileName(final String fileName) {
         return fileNameUtil.isCompressedFileName(fileName);
     }
 

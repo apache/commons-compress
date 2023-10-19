@@ -57,6 +57,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add LZMAUtils.getCompressedFileName(String) and deprecate getCompressedFilename(String).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add LZMAUtils.getUncompressedFileName(String) and deprecate getUncompressedFilename(String).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add LZMAUtils.isCompressedFileName(String) and deprecate isCompressedFilename(String).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add XYUtils.getCompressedFileName(String) and deprecate getCompressedFilename(String).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add XYUtils.getUncompressedFileName(String) and deprecate getUncompressedFilename(String).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add XYUtils.isCompressedFileName(String) and deprecate isCompressedFilename(String).</action>
       <!-- FIX -->
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot">Bump org.slf4j:slf4j-api from 2.0.8 to 2.0.9 #413.</action>
@@ -640,7 +643,7 @@ you relied on the recovery attempt.">
       </action>
       <action issue="COMPRESS-552" type="fix" date="2021-03-07">
         OSGi detection was broken and so we always cached whether
-        xz/brotli/zstd/lzma have been available even in OSGi
+        xz/brotli/zstd/LZMA have been available even in OSGi
         environments.
       </action>
       <action issue="COMPRESS-571" type="fix" date="2021-03-17">
