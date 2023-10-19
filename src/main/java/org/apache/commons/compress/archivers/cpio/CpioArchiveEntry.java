@@ -126,7 +126,7 @@ import org.apache.commons.compress.utils.TimeUtils;
  * c_min[8]
  * c_rmaj[8]        only valid for chr and blk special files
  * c_rmin[8]        only valid for chr and blk special files
- * c_namesize[8]    count includes terminating NUL in pathname
+ * c_namesize[8]    count includes terminating NUL in path name
  * c_check[8]       0 for "new" portable format; for CRC format
  *                  the sum of all the bytes in the file
  * </pre>

@@ -253,7 +253,7 @@ public abstract class AbstractTestCase {
 
     /**
      * Creates an archive of text-based files in several directories. The
-     * archivename is the factory identifier for the archiver, for example zip,
+     * archive name is the factory identifier for the archiver, for example zip,
      * tar, cpio, jar, ar. The archive is created as a temp file.
      *
      * The archive contains the following files:
@@ -269,22 +269,22 @@ public abstract class AbstractTestCase {
      * <li>test with spaces.txt</li>
      * </ul>
      *
-     * @param archivename
+     * @param archiveName
      *            the identifier of this archive
      * @return the newly created file
      * @throws Exception
      *             in case something goes wrong
      */
-    protected Path createArchive(final String archivename) throws Exception {
+    protected Path createArchive(final String archiveName) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
         try {
-            archive = Files.createTempFile("test", "." + archivename);
+            archive = Files.createTempFile("test", "." + archiveName);
             archive.toFile().deleteOnExit();
             archiveList = new ArrayList<>();
 
             stream = Files.newOutputStream(archive);
-            out = factory.createArchiveOutputStream(archivename, stream);
+            out = factory.createArchiveOutputStream(archiveName, stream);
 
             final File file1 = getFile("test1.xml");
             final File file2 = getFile("test2.xml");
@@ -316,19 +316,19 @@ public abstract class AbstractTestCase {
 
     /**
      * Create an empty archive.
-     * @param archivename
+     * @param archiveName
      * @return the archive File
      * @throws Exception
      */
-    protected Path createEmptyArchive(final String archivename) throws Exception {
+    protected Path createEmptyArchive(final String archiveName) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
         archiveList = new ArrayList<>();
         try {
-            archive = Files.createTempFile("empty", "." + archivename);
+            archive = Files.createTempFile("empty", "." + archiveName);
             archive.toFile().deleteOnExit();
             stream = Files.newOutputStream(archive);
-            out = factory.createArchiveOutputStream(archivename, stream);
+            out = factory.createArchiveOutputStream(archiveName, stream);
             out.finish();
         } finally {
             if (out != null) {
@@ -343,19 +343,19 @@ public abstract class AbstractTestCase {
     /**
      * Create an archive with a single file "test1.xml".
      *
-     * @param archivename
+     * @param archiveName
      * @return the archive File
      * @throws Exception
      */
-    protected Path createSingleEntryArchive(final String archivename) throws Exception {
+    protected Path createSingleEntryArchive(final String archiveName) throws Exception {
         ArchiveOutputStream out = null;
         OutputStream stream = null;
         archiveList = new ArrayList<>();
         try {
-            archive = Files.createTempFile("empty", "." + archivename);
+            archive = Files.createTempFile("empty", "." + archiveName);
             archive.toFile().deleteOnExit();
             stream = Files.newOutputStream(archive);
-            out = factory.createArchiveOutputStream(archivename, stream);
+            out = factory.createArchiveOutputStream(archiveName, stream);
             // Use short file name so does not cause problems for ar
             addArchiveEntry(out, "test1.xml", getFile("test1.xml"));
             out.finish();

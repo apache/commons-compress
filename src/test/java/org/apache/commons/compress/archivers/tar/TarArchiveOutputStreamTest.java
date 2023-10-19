@@ -53,7 +53,7 @@ import org.junit.jupiter.api.Test;
 
 public class TarArchiveOutputStreamTest extends AbstractTestCase {
 
-    private static byte[] createTarArchiveContainingOneDirectory(final String fname, final Date modificationDate) throws IOException {
+    private static byte[] createTarArchiveContainingOneDirectory(final String fileName, final Date modificationDate) throws IOException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (TarArchiveOutputStream tarOut = new TarArchiveOutputStream(baos, 1024)) {
             tarOut.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
@@ -61,7 +61,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
             tarEntry.setModTime(modificationDate);
             tarEntry.setMode(TarArchiveEntry.DEFAULT_DIR_MODE);
             tarEntry.setModTime(modificationDate.getTime());
-            tarEntry.setName(fname);
+            tarEntry.setName(fileName);
             tarOut.putArchiveEntry(tarEntry);
             tarOut.closeArchiveEntry();
         }
@@ -569,11 +569,11 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-237"
      */
     private void testWriteLongLinkName(final int mode) throws Exception {
-        final String linkname = "01234567890123456789012345678901234567890123456789"
+        final String linkName = "01234567890123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789/test";
         final TarArchiveEntry entry = new TarArchiveEntry("test", TarConstants.LF_SYMLINK);
-        entry.setLinkName(linkname);
+        entry.setLinkName(linkName);
 
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII")) {
@@ -586,7 +586,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(data))) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertEquals("test", e.getName(), "Entry name");
-            assertEquals(linkname, e.getLinkName(), "Link name");
+            assertEquals(linkName, e.getLinkName(), "Link name");
             assertTrue(e.isSymbolicLink(), "The entry is not a symbolic link");
             assertEquals(TarConstants.LF_SYMLINK, e.getLinkFlag(), "Link flag");
         }
@@ -597,11 +597,11 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
      */
     @Test
     public void testWriteLongLinkNameErrorMode() throws Exception {
-        final String linkname = "01234567890123456789012345678901234567890123456789"
+        final String linkName = "01234567890123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789/test";
         final TarArchiveEntry entry = new TarArchiveEntry("test", TarConstants.LF_SYMLINK);
-        entry.setLinkName(linkname);
+        entry.setLinkName(linkName);
 
         assertThrows(RuntimeException.class, () -> {
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -631,11 +631,11 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
 
     @Test
     public void testWriteLongLinkNameTruncateMode() throws Exception {
-        final String linkname = "01234567890123456789012345678901234567890123456789"
+        final String linkName = "01234567890123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789"
             + "01234567890123456789012345678901234567890123456789/";
         final TarArchiveEntry entry = new TarArchiveEntry("test", TarConstants.LF_SYMLINK);
-        entry.setLinkName(linkname);
+        entry.setLinkName(linkName);
 
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII")) {
@@ -647,7 +647,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         final byte[] data = bos.toByteArray();
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(data))) {
             final TarArchiveEntry e = tin.getNextTarEntry();
-            assertEquals(linkname.substring(0, TarConstants.NAMELEN), e.getLinkName(), "Link name");
+            assertEquals(linkName.substring(0, TarConstants.NAMELEN), e.getLinkName(), "Link name");
             assertEquals(TarConstants.LF_SYMLINK, e.getLinkFlag(), "Link flag");
         }
     }

@@ -72,7 +72,7 @@ public class DeflateCompressorInputStreamTest {
     public void singleByteReadWorksAsExpected() throws IOException {
         try (InputStream is = Files.newInputStream(AbstractTestCase.getPath("bla.tar.deflatez"));
                 DeflateCompressorInputStream in = new DeflateCompressorInputStream(is)) {
-            // tar header starts with filename "test1.xml"
+            // tar header starts with file name "test1.xml"
             assertEquals('t', in.read());
         }
     }

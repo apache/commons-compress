@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 public class ExceptionMessageTest {
 
-    private static final String ARCHIVER_NULL_MESSAGE = "Archivername must not be null.";
+    private static final String ARCHIVER_NULL_MESSAGE = "Archiver name must not be null.";
 
     private static final String INPUTSTREAM_NULL_MESSAGE = "InputStream must not be null.";
 
