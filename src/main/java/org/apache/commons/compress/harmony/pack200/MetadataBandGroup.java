@@ -48,10 +48,10 @@ public class MetadataBandGroup extends BandSet {
     public List<CPSignature> caseet_RS = new ArrayList<>();
     public List<CPUTF8> caseec_RU = new ArrayList<>();
     public List<CPUTF8> cases_RU = new ArrayList<>();
-    public IntList caseArray_N = new IntList();
-    public List<CPSignature> nestType_RS = new ArrayList<>();
-    public IntList nestPair_N = new IntList();
-    public List<CPUTF8> nestName_RU = new ArrayList<>();
+    public IntList casearray_N = new IntList();
+    public List<CPSignature> nesttype_RS = new ArrayList<>();
+    public IntList nestpair_N = new IntList();
+    public List<CPUTF8> nestname_RU = new ArrayList<>();
 
     private final CpBands cpBands;
     private final int context;
@@ -134,13 +134,13 @@ public class MetadataBandGroup extends BandSet {
 		}
 		for (final Integer element : caseArrayN) {
 			final int arraySize = element.intValue();
-			caseArray_N.add(arraySize);
+			casearray_N.add(arraySize);
 			numBackwardsCalls += arraySize;
 		}
-		nestTypeRS.forEach(element -> nestType_RS.add(cpBands.getCPSignature(element)));
-		nestNameRU.forEach(element -> nestName_RU.add(cpBands.getCPUtf8(element)));
+		nestTypeRS.forEach(element -> nesttype_RS.add(cpBands.getCPSignature(element)));
+		nestNameRU.forEach(element -> nestname_RU.add(cpBands.getCPUtf8(element)));
 		for (final Integer numPairs : nestPairN) {
-			nestPair_N.add(numPairs.intValue());
+			nestpair_N.add(numPairs.intValue());
 			numBackwardsCalls += numPairs.intValue();
 		}
 	}
@@ -213,13 +213,13 @@ public class MetadataBandGroup extends BandSet {
 		}
 		for (final Integer element : caseArrayN) {
 			final int arraySize = element.intValue();
-			caseArray_N.add(arraySize);
+			casearray_N.add(arraySize);
 			numBackwardsCalls += arraySize;
 		}
-		nestTypeRS.forEach(type -> nestType_RS.add(cpBands.getCPSignature(type)));
-		nestNameRU.forEach(name -> nestName_RU.add(cpBands.getCPUtf8(name)));
+		nestTypeRS.forEach(type -> nesttype_RS.add(cpBands.getCPSignature(type)));
+		nestNameRU.forEach(name -> nestname_RU.add(cpBands.getCPUtf8(name)));
 		for (final Integer numPairs : nestPairN) {
-			nestPair_N.add(numPairs.intValue());
+			nestpair_N.add(numPairs.intValue());
 			numBackwardsCalls += numPairs.intValue();
 		}
 	}
@@ -350,28 +350,28 @@ public class MetadataBandGroup extends BandSet {
             PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " cases_RU["
                 + cases_RU.size() + "]");
 
-            encodedBand = encodeBandInt(contextStr + "_" + type + " casearray_N", caseArray_N.toArray(),
+            encodedBand = encodeBandInt(contextStr + "_" + type + " casearray_N", casearray_N.toArray(),
                 Codec.UNSIGNED5);
             out.write(encodedBand);
             PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " casearray_N["
-                + caseArray_N.size() + "]");
+                + casearray_N.size() + "]");
 
-            encodedBand = encodeBandInt(contextStr + "_" + type + " nesttype_RS", cpEntryListToArray(nestType_RS),
+            encodedBand = encodeBandInt(contextStr + "_" + type + " nesttype_RS", cpEntryListToArray(nesttype_RS),
                 Codec.UNSIGNED5);
             out.write(encodedBand);
             PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " nesttype_RS["
-                + nestType_RS.size() + "]");
+                + nesttype_RS.size() + "]");
 
-            encodedBand = encodeBandInt(contextStr + "_" + type + " nestpair_N", nestPair_N.toArray(), Codec.UNSIGNED5);
+            encodedBand = encodeBandInt(contextStr + "_" + type + " nestpair_N", nestpair_N.toArray(), Codec.UNSIGNED5);
             out.write(encodedBand);
             PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " nestpair_N["
-                + nestPair_N.size() + "]");
+                + nestpair_N.size() + "]");
 
-            encodedBand = encodeBandInt(contextStr + "_" + type + " nestname_RU", cpEntryListToArray(nestName_RU),
+            encodedBand = encodeBandInt(contextStr + "_" + type + " nestname_RU", cpEntryListToArray(nestname_RU),
                 Codec.UNSIGNED5);
             out.write(encodedBand);
             PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + contextStr + "_" + type + " nestname_RU["
-                + nestName_RU.size() + "]");
+                + nestname_RU.size() + "]");
         }
     }
 
@@ -419,15 +419,15 @@ public class MetadataBandGroup extends BandSet {
                 cases_RU.remove(cases_RU.size() - 1);
                 break;
             case "[":
-                final int arraySize = caseArray_N.remove(caseArray_N.size() - 1);
+                final int arraySize = casearray_N.remove(casearray_N.size() - 1);
                 numBackwardsCalls -= arraySize;
                 for (int k = 0; k < arraySize; k++) {
                     removeOnePair();
                 }
                 break;
             case "@":
-                nestType_RS.remove(nestType_RS.size() - 1);
-                final int numPairs = nestPair_N.remove(nestPair_N.size() - 1);
+                nesttype_RS.remove(nesttype_RS.size() - 1);
+                final int numPairs = nestpair_N.remove(nestpair_N.size() - 1);
                 numBackwardsCalls -= numPairs;
                 for (int i = 0; i < numPairs; i++) {
                     removeOnePair();
