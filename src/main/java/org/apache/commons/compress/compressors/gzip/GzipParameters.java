@@ -73,7 +73,7 @@ public class GzipParameters {
      * Gets the file name.
      *
      * @return the file name.
-     * @deprecated
+     * @deprecated Use {@link #getFileName()}.
      */
     @Deprecated
     public String getFilename() {
