@@ -68,7 +68,7 @@ public class LZMAUtils {
      * @return name of the corresponding compressed file
      */
     public static String getCompressedFilename(final String fileName) {
-        return fileNameUtil.getCompressedFilename(fileName);
+        return fileNameUtil.getCompressedFileName(fileName);
     }
 
     /**
@@ -82,7 +82,7 @@ public class LZMAUtils {
      * @return name of the corresponding uncompressed file
      */
     public static String getUncompressedFilename(final String fileName) {
-        return fileNameUtil.getUncompressedFilename(fileName);
+        return fileNameUtil.getUncompressedFileName(fileName);
     }
 
     private static boolean internalIsLZMACompressionAvailable() {
@@ -102,7 +102,7 @@ public class LZMAUtils {
      *         {@code false} otherwise
      */
     public static boolean isCompressedFilename(final String fileName) {
-        return fileNameUtil.isCompressedFilename(fileName);
+        return fileNameUtil.isCompressedFileName(fileName);
     }
 
     /**

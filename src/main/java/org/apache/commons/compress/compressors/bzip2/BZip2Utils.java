@@ -56,7 +56,7 @@ public abstract class BZip2Utils {
      * @return name of the corresponding compressed file
      */
     public static String getCompressedFilename(final String fileName) {
-        return fileNameUtil.getCompressedFilename(fileName);
+        return fileNameUtil.getCompressedFileName(fileName);
     }
 
     /**
@@ -73,7 +73,7 @@ public abstract class BZip2Utils {
      * @return name of the corresponding uncompressed file
      */
     public static String getUncompressedFilename(final String fileName) {
-        return fileNameUtil.getUncompressedFilename(fileName);
+        return fileNameUtil.getUncompressedFileName(fileName);
     }
 
     /**
@@ -84,7 +84,7 @@ public abstract class BZip2Utils {
      *         {@code false} otherwise
      */
     public static boolean isCompressedFilename(final String fileName) {
-        return fileNameUtil.isCompressedFilename(fileName);
+        return fileNameUtil.isCompressedFileName(fileName);
     }
 
     /** Private constructor to prevent instantiation of this utility class. */
