@@ -46,7 +46,8 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.25.0" date="202Y-MM-DD" description="Minor feature and maintenance release.">
       <!-- ADD -->
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.getFileName() and deprecated getFilename().</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.getFileName() and deprecate getFilename().</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.setFileName(String) and deprecate setFilename(String).</action>
       <!-- FIX -->
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot">Bump org.slf4j:slf4j-api from 2.0.8 to 2.0.9 #413.</action>

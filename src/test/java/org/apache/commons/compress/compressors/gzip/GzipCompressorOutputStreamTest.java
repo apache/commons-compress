@@ -40,6 +40,9 @@ public class GzipCompressorOutputStreamTest {
         final Path targetFile = Files.createTempFile("test", ".gz");
         final GzipParameters parameters = new GzipParameters();
         parameters.setFilename(sourceFile);
+        assertEquals(parameters.getFilename(), parameters.getFileName());
+        parameters.setFileName(sourceFile);
+        assertEquals(parameters.getFilename(), parameters.getFileName());
         try (OutputStream fos = Files.newOutputStream(targetFile); GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters)) {
             Files.copy(tempSourceFile, gos);
         }

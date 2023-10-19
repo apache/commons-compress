@@ -147,8 +147,19 @@ public class GzipParameters {
      * Sets the name of the compressed file.
      *
      * @param fileName the name of the file without the directory path
+     * @deprecated Use {@link #setFileName(String)}.
      */
+    @Deprecated
     public void setFilename(final String fileName) {
+        this.fileName = fileName;
+    }
+
+    /**
+     * Sets the name of the compressed file.
+     *
+     * @param fileName the name of the file without the directory path
+     */
+    public void setFileName(final String fileName) {
         this.fileName = fileName;
     }
 

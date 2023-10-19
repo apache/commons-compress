@@ -170,6 +170,9 @@ public final class GZipTestCase extends AbstractTestCase {
         parameters.setCompressionLevel(Deflater.BEST_COMPRESSION);
         parameters.setOperatingSystem(3);
         parameters.setFilename("test3.xml");
+        assertEquals(parameters.getFilename(), parameters.getFileName());
+        parameters.setFileName("test3.xml");
+        assertEquals(parameters.getFilename(), parameters.getFileName());
         parameters.setComment("Test file");
         parameters.setModificationTime(System.currentTimeMillis());
         try (GzipCompressorOutputStream out = new GzipCompressorOutputStream(bout, parameters)) {
@@ -196,6 +199,9 @@ public final class GZipTestCase extends AbstractTestCase {
         parameters.setCompressionLevel(Deflater.BEST_COMPRESSION);
         parameters.setOperatingSystem(3);
         parameters.setFilename("test3.xml");
+        assertEquals(parameters.getFilename(), parameters.getFileName());
+        parameters.setFileName("test3.xml");
+        assertEquals(parameters.getFilename(), parameters.getFileName());
         parameters.setComment("Test file");
         parameters.setModificationTime(System.currentTimeMillis());
         try (GzipCompressorOutputStream out = new GzipCompressorOutputStream(bout, parameters)) {
@@ -234,6 +240,9 @@ public final class GZipTestCase extends AbstractTestCase {
         parameters.setModificationTime(123456000);
         parameters.setOperatingSystem(13);
         parameters.setFilename("test3.xml");
+        assertEquals(parameters.getFilename(), parameters.getFileName());
+        parameters.setFileName("test3.xml");
+        assertEquals(parameters.getFilename(), parameters.getFileName());
         parameters.setComment("Umlaute möglich?");
         try (GzipCompressorOutputStream out = new GzipCompressorOutputStream(bout, parameters)) {
             Files.copy(getFile("test3" + ".xml").toPath(), out);
