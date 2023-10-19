@@ -462,7 +462,7 @@ public class CpBands extends BandSet {
     /**
      * Parses the constant pool signature classes, using {@link #cpSignatureCount} to populate {@link #cpSignature}. A
      * signature form is akin to the bytecode representation of a class; Z for boolean, I for int, [ for array etc.
-     * However, although classes are started with L, the classname does not follow the form; instead, there is a
+     * However, although classes are started with L, the class name does not follow the form; instead, there is a
      * separate array of classes. So an array corresponding to {@code public static void main(String args[])} has a
      * form of {@code [L(V)} and a classes array of {@code [java.lang.String]}. The {@link #cpSignature} is a
      * string representation identical to the bytecode equivalent {@code [Ljava/lang/String;(V)} TODO Check that
