@@ -25,7 +25,8 @@ import org.apache.commons.compress.compressors.FileNameUtil;
 import org.apache.commons.compress.utils.OsgiUtils;
 
 /**
- * Utility code for the xz compression format.
+ * Utility code for the XZ compression format.
+ *
  * @ThreadSafe
  * @since 1.4
  */

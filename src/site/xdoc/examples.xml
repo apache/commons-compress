@@ -31,7 +31,7 @@
         collect multiple entries inside a single (potentially
         compressed) archive are archiver formats.</p>
 
-        <p>The compressor formats supported are gzip, bzip2, xz, LZMA,
+        <p>The compressor formats supported are gzip, bzip2, XZ, LZMA,
         Pack200, DEFLATE, Brotli, DEFLATE64, ZStandard and Z, the archiver formats are 7z, ar, arj,
         cpio, dump, tar and zip.  Pack200 is a special case as it can
         only compress JAR files.</p>
@@ -757,7 +757,7 @@ public class ScatterSample {
     <section name="Compressors">
 
       <subsection name="Concatenated Streams">
-        <p>For the bzip2, gzip and xz formats as well as the framed
+        <p>For the bzip2, gzip and XZ formats as well as the framed
         lz4 format a single compressed file
         may actually consist of several streams that will be
         concatenated by the command line utilities when decompressing

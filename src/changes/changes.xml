@@ -643,7 +643,7 @@ you relied on the recovery attempt.">
       </action>
       <action issue="COMPRESS-552" type="fix" date="2021-03-07">
         OSGi detection was broken and so we always cached whether
-        xz/brotli/zstd/LZMA have been available even in OSGi
+        XZ/brotli/zstd/LZMA have been available even in OSGi
         environments.
       </action>
       <action issue="COMPRESS-571" type="fix" date="2021-03-17">
