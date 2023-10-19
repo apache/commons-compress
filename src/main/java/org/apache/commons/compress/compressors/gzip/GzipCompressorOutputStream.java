@@ -194,7 +194,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     }
 
     private void writeHeader(final GzipParameters parameters) throws IOException {
-        final String fileName = parameters.getFilename();
+        final String fileName = parameters.getFileName();
         final String comment = parameters.getComment();
 
         final ByteBuffer buffer = ByteBuffer.allocate(10);

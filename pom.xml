@@ -24,7 +24,7 @@
   </parent>
 
   <artifactId>commons-compress</artifactId>
-  <version>1.24.1-SNAPSHOT</version>
+  <version>1.25.0-SNAPSHOT</version>
   <name>Apache Commons Compress</name>
   <url>https://commons.apache.org/proper/commons-compress/</url>
   <inceptionYear>2002</inceptionYear> <!-- from NOTICE file -->
@@ -45,8 +45,8 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.jira.id>COMPRESS</commons.jira.id>
     <commons.jira.pid>12310904</commons.jira.pid>
     <!-- configuration bits for cutting a release candidate -->
-    <commons.release.version>1.24.0</commons.release.version>
-    <commons.bc.version>1.23.0</commons.bc.version>
+    <commons.release.version>1.25.0</commons.release.version>
+    <commons.bc.version>1.24.0</commons.bc.version>
     <commons.rc.version>RC1</commons.rc.version>
     <mockito.version>4.11.0</mockito.version>
 

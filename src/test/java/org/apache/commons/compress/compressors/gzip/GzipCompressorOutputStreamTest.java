@@ -44,6 +44,7 @@ public class GzipCompressorOutputStreamTest {
             Files.copy(tempSourceFile, gos);
         }
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
+            assertEquals(expected, gis.getMetaData().getFileName());
             assertEquals(expected, gis.getMetaData().getFilename());
         }
     }

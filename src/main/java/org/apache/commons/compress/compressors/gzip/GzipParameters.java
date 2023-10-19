@@ -69,7 +69,24 @@ public class GzipParameters {
         return deflateStrategy;
     }
 
+    /**
+     * Gets the file name.
+     *
+     * @return the file name.
+     * @deprecated
+     */
+    @Deprecated
     public String getFilename() {
+        return fileName;
+    }
+
+    /**
+     * Gets the file name.
+     *
+     * @return the file name.
+     * @since 2.25.0
+     */
+    public String getFileName() {
         return fileName;
     }
 

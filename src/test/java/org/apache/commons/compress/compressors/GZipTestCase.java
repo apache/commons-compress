@@ -245,6 +245,7 @@ public final class GZipTestCase extends AbstractTestCase {
         assertEquals(Deflater.BEST_COMPRESSION, readParams.getCompressionLevel());
         assertEquals(123456000, readParams.getModificationTime());
         assertEquals(13, readParams.getOperatingSystem());
+        assertEquals("test3.xml", readParams.getFileName());
         assertEquals("test3.xml", readParams.getFilename());
         assertEquals("Umlaute möglich?", readParams.getComment());
     }
