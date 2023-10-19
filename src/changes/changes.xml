@@ -54,6 +54,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add BZip2Utils.getCompressedFileName(String) and deprecate getCompressedFilename(String).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add BZip2Utils.getUncompressedFileName(String) and deprecate getUncompressedFilename(String).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add BZip2Utils.isCompressedFileName(String) and deprecate isCompressedFilename(String).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add LZMAUtils.getCompressedFileName(String) and deprecate getCompressedFilename(String).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add LZMAUtils.getUncompressedFileName(String) and deprecate getUncompressedFilename(String).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add LZMAUtils.isCompressedFileName(String) and deprecate isCompressedFilename(String).</action>
       <!-- FIX -->
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot">Bump org.slf4j:slf4j-api from 2.0.8 to 2.0.9 #413.</action>

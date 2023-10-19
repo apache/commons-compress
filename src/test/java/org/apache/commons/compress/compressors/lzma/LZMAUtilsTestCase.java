@@ -43,44 +43,69 @@ public class LZMAUtilsTestCase {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testGetCompressedFilename() {
         assertEquals(".lzma", LZMAUtils.getCompressedFilename(""));
+        assertEquals(".lzma", LZMAUtils.getCompressedFileName(""));
         assertEquals("x.lzma", LZMAUtils.getCompressedFilename("x"));
+        assertEquals("x.lzma", LZMAUtils.getCompressedFileName("x"));
 
         assertEquals("x.wmf .lzma", LZMAUtils.getCompressedFilename("x.wmf "));
+        assertEquals("x.wmf .lzma", LZMAUtils.getCompressedFileName("x.wmf "));
         assertEquals("x.wmf\n.lzma", LZMAUtils.getCompressedFilename("x.wmf\n"));
+        assertEquals("x.wmf\n.lzma", LZMAUtils.getCompressedFileName("x.wmf\n"));
         assertEquals("x.wmf.y.lzma", LZMAUtils.getCompressedFilename("x.wmf.y"));
+        assertEquals("x.wmf.y.lzma", LZMAUtils.getCompressedFileName("x.wmf.y"));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testGetUncompressedFilename() {
         assertEquals("", LZMAUtils.getUncompressedFilename(""));
+        assertEquals("", LZMAUtils.getUncompressedFileName(""));
         assertEquals(".lzma", LZMAUtils.getUncompressedFilename(".lzma"));
+        assertEquals(".lzma", LZMAUtils.getUncompressedFileName(".lzma"));
 
         assertEquals("x", LZMAUtils.getUncompressedFilename("x.lzma"));
+        assertEquals("x", LZMAUtils.getUncompressedFileName("x.lzma"));
         assertEquals("x", LZMAUtils.getUncompressedFilename("x-lzma"));
+        assertEquals("x", LZMAUtils.getUncompressedFileName("x-lzma"));
 
         assertEquals("x.lzma ", LZMAUtils.getUncompressedFilename("x.lzma "));
+        assertEquals("x.lzma ", LZMAUtils.getUncompressedFileName("x.lzma "));
         assertEquals("x.lzma\n", LZMAUtils.getUncompressedFilename("x.lzma\n"));
+        assertEquals("x.lzma\n", LZMAUtils.getUncompressedFileName("x.lzma\n"));
         assertEquals("x.lzma.y", LZMAUtils.getUncompressedFilename("x.lzma.y"));
+        assertEquals("x.lzma.y", LZMAUtils.getUncompressedFileName("x.lzma.y"));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testIsCompressedFilename() {
         assertFalse(LZMAUtils.isCompressedFilename(""));
+        assertFalse(LZMAUtils.isCompressedFileName(""));
         assertFalse(LZMAUtils.isCompressedFilename(".lzma"));
+        assertFalse(LZMAUtils.isCompressedFileName(".lzma"));
 
         assertTrue(LZMAUtils.isCompressedFilename("x.lzma"));
+        assertTrue(LZMAUtils.isCompressedFileName("x.lzma"));
         assertTrue(LZMAUtils.isCompressedFilename("x-lzma"));
+        assertTrue(LZMAUtils.isCompressedFileName("x-lzma"));
 
         assertFalse(LZMAUtils.isCompressedFilename("xxgz"));
+        assertFalse(LZMAUtils.isCompressedFileName("xxgz"));
         assertFalse(LZMAUtils.isCompressedFilename("lzmaz"));
+        assertFalse(LZMAUtils.isCompressedFileName("lzmaz"));
         assertFalse(LZMAUtils.isCompressedFilename("xaz"));
+        assertFalse(LZMAUtils.isCompressedFileName("xaz"));
 
         assertFalse(LZMAUtils.isCompressedFilename("x.lzma "));
+        assertFalse(LZMAUtils.isCompressedFileName("x.lzma "));
         assertFalse(LZMAUtils.isCompressedFilename("x.lzma\n"));
+        assertFalse(LZMAUtils.isCompressedFileName("x.lzma\n"));
         assertFalse(LZMAUtils.isCompressedFilename("x.lzma.y"));
+        assertFalse(LZMAUtils.isCompressedFileName("x.lzma.y"));
     }
 
     @Test

@@ -74,8 +74,26 @@ public class XZUtils {
      *
      * @param fileName name of a file
      * @return name of the corresponding compressed file
+     * @deprecated Use {@link #getCompressedFileName(String)}.
      */
+    @Deprecated
     public static String getCompressedFilename(final String fileName) {
+        return fileNameUtil.getCompressedFileName(fileName);
+    }
+
+    /**
+     * Maps the given file name to the name that the file should have after
+     * compression with xz. Common file types with custom suffixes for
+     * compressed versions are automatically detected and correctly mapped.
+     * For example the name "package.tar" is mapped to "package.txz". If no
+     * custom mapping is applicable, then the default ".xz" suffix is appended
+     * to the file name.
+     *
+     * @param fileName name of a file
+     * @return name of the corresponding compressed file
+     * @since 1.25.0
+     */
+    public static String getCompressedFileName(final String fileName) {
         return fileNameUtil.getCompressedFileName(fileName);
     }
 

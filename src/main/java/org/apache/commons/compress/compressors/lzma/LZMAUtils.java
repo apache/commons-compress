@@ -25,7 +25,8 @@ import org.apache.commons.compress.compressors.FileNameUtil;
 import org.apache.commons.compress.utils.OsgiUtils;
 
 /**
- * Utility code for the lzma compression format.
+ * Utility code for the LZMA compression format.
+ *
  * @ThreadSafe
  * @since 1.10
  */
@@ -62,26 +63,57 @@ public class LZMAUtils {
 
     /**
      * Maps the given file name to the name that the file should have after
-     * compression with lzma.
+     * compression with LZMA.
      *
      * @param fileName name of a file
      * @return name of the corresponding compressed file
+     * @deprecated Use {@link #getCompressedFileName(String)}.
      */
+    @Deprecated
     public static String getCompressedFilename(final String fileName) {
         return fileNameUtil.getCompressedFileName(fileName);
     }
 
     /**
-     * Maps the given name of a lzma-compressed file to the name that
+     * Maps the given file name to the name that the file should have after
+     * compression with LZMA.
+     *
+     * @param fileName name of a file
+     * @return name of the corresponding compressed file
+     * @since 1.25.0
+     */
+    public static String getCompressedFileName(final String fileName) {
+        return fileNameUtil.getCompressedFileName(fileName);
+    }
+
+    /**
+     * Maps the given name of a LZMA-compressed file to the name that
      * the file should have after uncompression.  Any file names with
-     * the generic ".lzma" suffix (or any other generic lzma suffix)
-     * is mapped to a name without that suffix. If no lzma suffix is
+     * the generic ".lzma" suffix (or any other generic LZMA suffix)
+     * is mapped to a name without that suffix. If no LZMA suffix is
      * detected, then the file name is returned unmapped.
      *
      * @param fileName name of a file
      * @return name of the corresponding uncompressed file
+     * @deprecated Use {@link #getUncompressedFileName(String)}.
      */
+    @Deprecated
     public static String getUncompressedFilename(final String fileName) {
+        return fileNameUtil.getUncompressedFileName(fileName);
+    }
+
+    /**
+     * Maps the given name of a LZMA-compressed file to the name that
+     * the file should have after uncompression.  Any file names with
+     * the generic ".lzma" suffix (or any other generic LZMA suffix)
+     * is mapped to a name without that suffix. If no LZMA suffix is
+     * detected, then the file name is returned unmapped.
+     *
+     * @param fileName name of a file
+     * @return name of the corresponding uncompressed file
+     * @since 1.25.0
+     */
+    public static String getUncompressedFileName(final String fileName) {
         return fileNameUtil.getUncompressedFileName(fileName);
     }
 
@@ -95,13 +127,26 @@ public class LZMAUtils {
     }
 
     /**
-     * Detects common lzma suffixes in the given file name.
+     * Detects common LZMA suffixes in the given file name.
      *
      * @param fileName name of a file
-     * @return {@code true} if the file name has a common lzma suffix,
+     * @return {@code true} if the file name has a common LZMA suffix,
      *         {@code false} otherwise
+     * @deprecated Use {@link #isCompressedFileName(String)}.
      */
     public static boolean isCompressedFilename(final String fileName) {
+        return fileNameUtil.isCompressedFileName(fileName);
+    }
+
+    /**
+     * Detects common LZMA suffixes in the given file name.
+     *
+     * @param fileName name of a file
+     * @return {@code true} if the file name has a common LZMA suffix,
+     *         {@code false} otherwise
+     * @since 1.25.0
+     */
+    public static boolean isCompressedFileName(final String fileName) {
         return fileNameUtil.isCompressedFileName(fileName);
     }
 
