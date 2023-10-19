@@ -417,9 +417,9 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Get the next entry in this tar archive as longname data.
+     * Get the next entry in this tar archive as long name data.
      *
-     * @return The next entry in the archive as longname data, or null.
+     * @return The next entry in the archive as long name data, or null.
      * @throws IOException on error
      */
     private byte[] getLongNameData() throws IOException {
