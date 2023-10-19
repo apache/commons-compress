@@ -395,7 +395,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
 
     /**
      * Constructor taking only file name.
-     * @param name pathname
+     * @param name path name
      * @param simpleName actual file name.
      */
     public DumpArchiveEntry(final String name, final String simpleName) {
