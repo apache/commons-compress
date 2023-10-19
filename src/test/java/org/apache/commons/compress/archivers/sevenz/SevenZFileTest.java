@@ -89,8 +89,8 @@ public class SevenZFileTest extends AbstractTestCase {
             SevenZArchiveEntry::getCreationTime, SevenZArchiveEntry::getCreationDate);
     }
 
-    private void checkHelloWorld(final String filename) throws Exception {
-        try (SevenZFile sevenZFile = new SevenZFile(getFile(filename))) {
+    private void checkHelloWorld(final String fileName) throws Exception {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile(fileName))) {
             final SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             assertEquals("Hello world.txt", entry.getName());
             assertDates(entry, "2013-05-07T19:40:48Z", null, null);

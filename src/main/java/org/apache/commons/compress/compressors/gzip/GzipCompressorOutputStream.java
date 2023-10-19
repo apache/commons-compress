@@ -194,14 +194,14 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     }
 
     private void writeHeader(final GzipParameters parameters) throws IOException {
-        final String filename = parameters.getFilename();
+        final String fileName = parameters.getFilename();
         final String comment = parameters.getComment();
 
         final ByteBuffer buffer = ByteBuffer.allocate(10);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putShort((short) GZIPInputStream.GZIP_MAGIC);
         buffer.put((byte) Deflater.DEFLATED); // compression method (8: deflate)
-        buffer.put((byte) ((filename != null ? FNAME : 0) | (comment != null ? FCOMMENT : 0))); // flags
+        buffer.put((byte) ((fileName != null ? FNAME : 0) | (comment != null ? FCOMMENT : 0))); // flags
         buffer.putInt((int) (parameters.getModificationTime() / 1000));
 
         // extra flags
@@ -218,8 +218,8 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
 
         out.write(buffer.array());
 
-        if (filename != null) {
-            out.write(getBytes(filename));
+        if (fileName != null) {
+            out.write(getBytes(fileName));
             out.write(0);
         }
 

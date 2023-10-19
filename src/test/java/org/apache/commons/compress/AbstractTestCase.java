@@ -146,18 +146,18 @@ public abstract class AbstractTestCase {
      * Add an entry to the archive, and keep track of the names in archiveList.
      *
      * @param out
-     * @param filename
+     * @param fileName
      * @param infile
      * @throws IOException
      * @throws FileNotFoundException
      */
-    private void addArchiveEntry(final ArchiveOutputStream out, final String filename, final File infile)
+    private void addArchiveEntry(final ArchiveOutputStream out, final String fileName, final File infile)
             throws IOException, FileNotFoundException {
-        final ArchiveEntry entry = out.createArchiveEntry(infile, filename);
+        final ArchiveEntry entry = out.createArchiveEntry(infile, fileName);
         out.putArchiveEntry(entry);
         Files.copy(infile.toPath(), out);
         out.closeArchiveEntry();
-        archiveList.add(filename);
+        archiveList.add(fileName);
     }
 
     /**

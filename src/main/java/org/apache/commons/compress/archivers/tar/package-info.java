@@ -21,7 +21,7 @@
  * Provides stream classes for reading and writing archives using the TAR format.
  * <p>
  * There are many different format dialects that call themselves TAR. The classes of this package can read and write archives in the traditional pre-POSIX
- * <strong>ustar</strong> format and support GNU specific extensions for long filenames that GNU tar itself by now refers to as <strong>oldgnu</strong>.
+ * <strong>ustar</strong> format and support GNU specific extensions for long file names that GNU tar itself by now refers to as <strong>oldgnu</strong>.
  * </p>
  */
 package org.apache.commons.compress.archivers.tar;

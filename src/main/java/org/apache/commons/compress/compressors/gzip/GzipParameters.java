@@ -33,7 +33,7 @@ public class GzipParameters {
 
     private int compressionLevel = Deflater.DEFAULT_COMPRESSION;
     private long modificationTime;
-    private String filename;
+    private String fileName;
     private String comment;
     private int operatingSystem = 255; // Unknown OS by default
     private int bufferSize = 512;
@@ -70,7 +70,7 @@ public class GzipParameters {
     }
 
     public String getFilename() {
-        return filename;
+        return fileName;
     }
 
     public long getModificationTime() {
@@ -132,7 +132,7 @@ public class GzipParameters {
      * @param fileName the name of the file without the directory path
      */
     public void setFilename(final String fileName) {
-        this.filename = fileName;
+        this.fileName = fileName;
     }
 
     /**

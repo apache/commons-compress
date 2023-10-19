@@ -25,18 +25,18 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 
 public final class MemoryArchiveInputStream extends ArchiveInputStream {
 
-    private final String[] filenames;
+    private final String[] fileNames;
     private final String[] content;
     private int p;
 
     public MemoryArchiveInputStream( final String[][] pFiles ) {
         final int pFilesLength = pFiles.length;
-        filenames = new String[pFilesLength];
+        fileNames = new String[pFilesLength];
         content = new String[pFilesLength];
 
         for (int i = 0; i < pFilesLength; i++) {
             final String[] nameAndContent = pFiles[i];
-            filenames[i] = nameAndContent[0];
+            fileNames[i] = nameAndContent[0];
             content[i] = nameAndContent[1];
         }
         p = 0;
@@ -44,11 +44,11 @@ public final class MemoryArchiveInputStream extends ArchiveInputStream {
 
     @Override
     public ArchiveEntry getNextEntry() throws IOException {
-        if (p >= filenames.length) {
+        if (p >= fileNames.length) {
             return null;
         }
 
-        return new MemoryArchiveEntry(filenames[p]);
+        return new MemoryArchiveEntry(fileNames[p]);
     }
 
     @Override

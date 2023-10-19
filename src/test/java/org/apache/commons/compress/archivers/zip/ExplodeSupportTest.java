@@ -38,8 +38,8 @@ import org.junit.jupiter.api.Test;
 
 public class ExplodeSupportTest {
 
-    private void testArchiveWithImplodeCompression(final String filename, final String entryName) throws IOException {
-        try (ZipFile zip = new ZipFile(new File(filename))) {
+    private void testArchiveWithImplodeCompression(final String fileName, final String entryName) throws IOException {
+        try (ZipFile zip = new ZipFile(new File(fileName))) {
             final ZipArchiveEntry entry = zip.getEntries().nextElement();
             assertEquals(entryName, entry.getName(), "entry name");
             assertTrue(zip.canReadEntryData(entry), "entry can't be read");
@@ -84,8 +84,8 @@ public class ExplodeSupportTest {
         testZipStreamWithImplodeCompression("target/test-classes/moby-imploded.zip", "README");
     }
 
-    private void testZipStreamWithImplodeCompression(final String filename, final String entryName) throws IOException {
-        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(new File(filename).toPath()))) {
+    private void testZipStreamWithImplodeCompression(final String fileName, final String entryName) throws IOException {
+        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(new File(fileName).toPath()))) {
             final ZipArchiveEntry entry = zin.getNextZipEntry();
             assertEquals(entryName, entry.getName(), "entry name");
             assertTrue(zin.canReadEntryData(entry), "entry can't be read");

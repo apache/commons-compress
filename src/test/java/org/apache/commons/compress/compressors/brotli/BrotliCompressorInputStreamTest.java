@@ -76,7 +76,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     public void singleByteReadWorksAsExpected() throws IOException {
         try (InputStream is = newInputStream("brotli.testdata.compressed");
                 final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
-            // starts with filename "XXX"
+            // starts with file name "XXX"
             assertEquals('X', in.read());
         }
     }

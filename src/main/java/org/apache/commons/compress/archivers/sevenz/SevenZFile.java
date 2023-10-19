@@ -471,11 +471,11 @@ public class SevenZFile implements Closeable {
         this(channel, fileName, password, false, SevenZFileOptions.DEFAULT);
     }
 
-    private SevenZFile(final SeekableByteChannel channel, final String filename,
+    private SevenZFile(final SeekableByteChannel channel, final String fileName,
                        final byte[] password, final boolean closeOnError, final SevenZFileOptions options) throws IOException {
         boolean succeeded = false;
         this.channel = channel;
-        this.fileName = filename;
+        this.fileName = fileName;
         this.options = options;
         try {
             archive = readHeaders(password);

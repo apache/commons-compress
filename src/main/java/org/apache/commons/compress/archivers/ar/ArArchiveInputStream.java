@@ -226,7 +226,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      */
     private String getExtendedName(final int offset) throws IOException {
         if (namebuffer == null) {
-            throw new IOException("Cannot process GNU long filename as no // record was found");
+            throw new IOException("Cannot process GNU long file name as no // record was found");
         }
         for (int i = offset; i < namebuffer.length; i++) {
             if (namebuffer[i] == '\012' || namebuffer[i] == 0) {
@@ -301,11 +301,11 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 
         entryOffset = offset;
 
-//        GNU ar uses a '/' to mark the end of the filename; this allows for the use of spaces without the use of an extended filename.
+//        GNU ar uses a '/' to mark the end of the file name; this allows for the use of spaces without the use of an extended file name.
 
         // entry name is stored as ASCII string
         String temp = ArchiveUtils.toAsciiString(metaData, NAME_OFFSET, NAME_LEN).trim();
-        if (isGNUStringTable(temp)) { // GNU extended filenames entry
+        if (isGNUStringTable(temp)) { // GNU extended file names entry
             currentEntry = readGNUStringTable(metaData, LENGTH_OFFSET, LENGTH_LEN);
             return getNextArEntry();
         }
