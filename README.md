@@ -43,11 +43,11 @@
 Apache Commons Compress
 ===================
 
-[![GitHub Actions Status](https://github.com/apache/commons-compress/workflows/Java%20CI/badge.svg)](https://github.com/apache/commons-compress/actions)
+[![Java CI](https://github.com/apache/commons-compress/actions/workflows/maven.yml/badge.svg)](https://github.com/apache/commons-compress/actions/workflows/maven.yml)
 [![Coverage Status](https://codecov.io/gh/apache/commons-compress/branch/master/graph/badge.svg)](https://app.codecov.io/gh/apache/commons-compress)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/badge.svg?gav=true)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/?gav=true)
 [![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-compress/1.24.0.svg)](https://javadoc.io/doc/org.apache.commons/commons-compress/1.24.0)
-[![CodeQL](https://github.com/apache/commons-compress/workflows/CodeQL/badge.svg)](https://github.com/apache/commons-compress/actions/workflows/codeql-analysis.yml?query=workflow%3ACodeQL)
+[![CodeQL](https://github.com/apache/commons-compress/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/apache/commons-compress/actions/workflows/codeql-analysis.yml)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/apache/commons-compress/badge)](https://api.securityscorecards.dev/projects/github.com/apache/commons-compress)
 
 Apache Commons Compress defines an API for working with
