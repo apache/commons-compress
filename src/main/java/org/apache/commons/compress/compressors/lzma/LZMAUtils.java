@@ -134,6 +134,7 @@ public class LZMAUtils {
      *         {@code false} otherwise
      * @deprecated Use {@link #isCompressedFileName(String)}.
      */
+    @Deprecated
     public static boolean isCompressedFilename(final String fileName) {
         return fileNameUtil.isCompressedFileName(fileName);
     }
