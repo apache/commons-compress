@@ -24,7 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipException;
 
 /**
- * ZipExtraField related methods
+ * {@link ZipExtraField} related methods.
+ *
  * @NotThreadSafe because the HashMap is not synchronized.
  */
 // CheckStyle:HideUtilityClassConstructorCheck OFF (bc)
