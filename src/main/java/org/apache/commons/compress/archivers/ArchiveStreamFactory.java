@@ -40,6 +40,7 @@ import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -86,6 +87,8 @@ import org.apache.commons.compress.utils.Sets;
 public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     private static final int TAR_HEADER_SIZE = 512;
+
+    private static final int MAX_TAR_RECORDS = 10;
 
     private static final int DUMP_SIGNATURE_SIZE = 32;
 
@@ -192,7 +195,14 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     }
 
     /**
-     * Try to determine the type of Archiver
+     * Try to determine the type of Archiver.
+     * <p>
+     *     If no magic mimes are detected, this tries to parse the stream as a tar file.
+     *     If the first non-directory record with length > 1 is parseable, then
+     *     {@link ArchiveStreamFactory#TAR} is returned.  There are heuristic
+     *     limits set on the number of bytes read ({@link ArchiveStreamFactory#TAR_HEADER_SIZE})
+     *     and the maximum number of records to read ({@link ArchiveStreamFactory#MAX_TAR_RECORDS}).
+     *
      * @param in input stream
      * @return type of archiver if found
      * @throws ArchiveException if an archiver cannot be detected in the stream
@@ -266,7 +276,15 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         if (signatureLength >= TAR_HEADER_SIZE) {
             try (TarArchiveInputStream tais = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader))) {
                 // COMPRESS-191 - verify the header checksum
-                if (tais.getNextTarEntry().isCheckSumOK()) {
+                // COMPRESS-644 - do not allow zero byte file entries
+                TarArchiveEntry tae = tais.getNextTarEntry();
+                //try to find the first non-directory entry within the first 10 entries.
+                int count = 0;
+                while (tae != null && tae.isDirectory() && count++ < MAX_TAR_RECORDS) {
+                    tae = tais.getNextTarEntry();
+                }
+                if (tae != null && !tae.isDirectory()
+                        && tae.getSize() > 0 && tae.isCheckSumOK()) {
                     return TAR;
                 }
             } catch (final Exception e) { // NOPMD NOSONAR
