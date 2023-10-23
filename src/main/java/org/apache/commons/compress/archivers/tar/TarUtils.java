@@ -623,7 +623,7 @@ public class TarUtils {
 
     /**
      * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
-     * 
+     *
      * <p>
      * <em>GNU.sparse.map</em>:
      *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
