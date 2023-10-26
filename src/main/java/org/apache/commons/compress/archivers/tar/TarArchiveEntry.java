@@ -41,6 +41,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -226,7 +227,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * which is 19 digits.
      * </p>
      */
-    private static final String PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN = "-?\\d{1,19}(?:\\.\\d{1,19})?";
+    private static final Pattern PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN = Pattern.compile("-?\\d{1,19}(?:\\.\\d{1,19})?");
 
     private static FileTime fileTimeFromOptionalSeconds(final long seconds) {
         if (seconds <= 0) {
@@ -278,7 +279,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     private static Instant parseInstantFromDecimalSeconds(final String value) throws IOException {
         // Validate field values to prevent denial of service attacks with BigDecimal values (see JDK-6560193)
-        if (!value.matches(TarArchiveEntry.PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN)) {
+        if (!TarArchiveEntry.PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN.matcher(value).matches()) {
             throw new IOException("Corrupted PAX header. Time field value is invalid '" + value + "'");
         }
 

@@ -66,6 +66,7 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Precompile regualr expression in ArArchiveInputStream.isBSDLongName(String).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Precompile regular expression in ArArchiveInputStream.isGNULongName(String).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Precompile regular expression in TarArchiveEntry.parseInstantFromDecimalSeconds(String).</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot">Bump org.slf4j:slf4j-api from 2.0.8 to 2.0.9 #413.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump commons-io:commons-io from 2.13.0 to 2.15.0.</action>
