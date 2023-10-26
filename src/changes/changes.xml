@@ -64,7 +64,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipUtils.getUncompressedFileName(String) and deprecate getUncompressedFilename(String).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipUtils.isCompressedFileName(String) and deprecate isCompressedFilename(String).</action>
       <!-- FIX -->
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">Precompile regualr expression in ArArchiveInputStream.isBSDLongName(String).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Precompile regular expression in ArArchiveInputStream.isBSDLongName(String).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Precompile regular expression in ArArchiveInputStream.isGNULongName(String).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Precompile regular expression in TarArchiveEntry.parseInstantFromDecimalSeconds(String).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Precompile regular expression in ChangeSet.addDeletion(Change).</action>
