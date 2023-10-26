@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
@@ -71,16 +72,14 @@ public final class ChangeSet {
      *            the change which should result in an addition
      */
     private void addAddition(final Change pChange) {
-        if (Change.TYPE_ADD != pChange.type() ||
-            pChange.getInput() == null) {
+        if (Change.TYPE_ADD != pChange.type() || pChange.getInput() == null) {
             return;
         }
 
         if (!changes.isEmpty()) {
             for (final Iterator<Change> it = changes.iterator(); it.hasNext();) {
                 final Change change = it.next();
-                if (change.type() == Change.TYPE_ADD
-                        && change.getEntry() != null) {
+                if (change.type() == Change.TYPE_ADD && change.getEntry() != null) {
                     final ArchiveEntry entry = change.getEntry();
 
                     if (entry.equals(pChange.getEntry())) {
@@ -110,20 +109,18 @@ public final class ChangeSet {
             return;
         }
         final String source = pChange.targetFile();
-
+        final Pattern pattern = Pattern.compile(source + "/.*");
         if (source != null && !changes.isEmpty()) {
             for (final Iterator<Change> it = changes.iterator(); it.hasNext();) {
                 final Change change = it.next();
                 if (change.type() == Change.TYPE_ADD
                         && change.getEntry() != null) {
                     final String target = change.getEntry().getName();
-
                     if (target == null) {
                         continue;
                     }
-
                     if (Change.TYPE_DELETE == pChange.type() && source.equals(target) ||
-                            Change.TYPE_DELETE_DIR == pChange.type() && target.matches(source + "/.*")) {
+                            Change.TYPE_DELETE_DIR == pChange.type() && pattern.matcher(target).matches()) {
                         it.remove();
                     }
                 }
