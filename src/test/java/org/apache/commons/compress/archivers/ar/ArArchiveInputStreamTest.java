@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -133,5 +134,48 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void testReadLongNamesGNU() throws Exception {
         checkLongNameEntry("longfile_gnu.ar");
+    }
+
+    @Test
+    public void testInvalidEntryAttributes() throws Exception {
+        try (InputStream in = newInputStream("longfile_gnu.ar")) {
+            String content = new String(IOUtils.toByteArray(in));
+
+            // Test group ID parsing with a fractional number when int is expected
+            String value1 = content.replaceFirst("1000  1000", "1000  1.23");
+            try (ArArchiveInputStream archive = new ArArchiveInputStream(new ByteArrayInputStream(value1.getBytes()))) {
+                assertThrows(IOException.class, archive::getNextEntry);
+            }
+
+            // Test user ID parsing with scientific notation when int is expected
+            String value2 = content.replaceFirst("1000  1000", "9e99  1000");
+            try (ArArchiveInputStream archive = new ArArchiveInputStream(new ByteArrayInputStream(value2.getBytes()))) {
+                assertThrows(IOException.class, archive::getNextEntry);
+            }
+
+            // Test length parsing with a fractional number when int is expected
+            String value3 = content.replaceFirst("14  ", "1.23");
+            try (ArArchiveInputStream archive = new ArArchiveInputStream(new ByteArrayInputStream(value3.getBytes()))) {
+                assertThrows(IOException.class, archive::getNextEntry);
+            }
+
+            // Test last modified field parsing with scientific notation when long is expected
+            String value4 = content.replaceFirst("1454693980", "9e99999999");
+            try (ArArchiveInputStream archive = new ArArchiveInputStream(new ByteArrayInputStream(value4.getBytes()))) {
+                assertThrows(IOException.class, archive::getNextEntry);
+            }
+
+            // Test GNU string table length parsing with fractional number when long is expected
+            String value5 = content.replaceFirst("68  ", "1.23");
+            try (ArArchiveInputStream archive = new ArArchiveInputStream(new ByteArrayInputStream(value5.getBytes()))) {
+                assertThrows(IOException.class, archive::getNextEntry);
+            }
+
+            // Test GNU long name length parsing with a long number when int is expected
+            String value6 = content.replaceFirst("/0         ", "/9999999999");
+            try (ArArchiveInputStream archive = new ArArchiveInputStream(new ByteArrayInputStream(value6.getBytes()))) {
+                assertThrows(IOException.class, archive::getNextEntry);
+            }
+       }
     }
 }

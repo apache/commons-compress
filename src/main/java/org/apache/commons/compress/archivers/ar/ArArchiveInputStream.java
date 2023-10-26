@@ -310,12 +310,22 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             return getNextArEntry();
         }
 
-        long len = asLong(metaData, LENGTH_OFFSET, LENGTH_LEN);
+        long len;
+        try {
+            len = asLong(metaData, LENGTH_OFFSET, LENGTH_LEN);
+        } catch(final NumberFormatException exp) {
+            throw new IOException("broken archive, entry with invalid length");
+        }
+
         if (temp.endsWith("/")) { // GNU terminator
             temp = temp.substring(0, temp.length() - 1);
         } else if (isGNULongName(temp)) {
-            final int off = Integer.parseInt(temp.substring(1));// get the offset
-            temp = getExtendedName(off); // convert to the long name
+            try {
+                final int off = Integer.parseInt(temp.substring(1));// get the offset
+                temp = getExtendedName(off); // convert to the long name
+            } catch(final NumberFormatException exp) {
+                throw new IOException("broken archive, GNU long name length is invalid");
+            }
         } else if (isBSDLongName(temp)) {
             temp = getBSDLongName(temp);
             // entry length contained the length of the file name in
@@ -330,11 +340,15 @@ public class ArArchiveInputStream extends ArchiveInputStream {
             throw new IOException("broken archive, entry with negative size");
         }
 
-        currentEntry = new ArArchiveEntry(temp, len,
-                                          asInt(metaData, USER_ID_OFFSET, USER_ID_LEN, true),
-                                          asInt(metaData, GROUP_ID_OFFSET, GROUP_ID_LEN, true),
-                                          asInt(metaData, FILE_MODE_OFFSET, FILE_MODE_LEN, 8),
-                                          asLong(metaData, LAST_MODIFIED_OFFSET, LAST_MODIFIED_LEN));
+        try {
+            currentEntry = new ArArchiveEntry(temp, len,
+                    asInt(metaData, USER_ID_OFFSET, USER_ID_LEN, true),
+                    asInt(metaData, GROUP_ID_OFFSET, GROUP_ID_LEN, true),
+                    asInt(metaData, FILE_MODE_OFFSET, FILE_MODE_LEN, 8),
+                    asLong(metaData, LAST_MODIFIED_OFFSET, LAST_MODIFIED_LEN));
+        } catch(final NumberFormatException exp) {
+            throw new IOException("broken archive, entry with invalid metadata");
+        }
         return currentEntry;
     }
 
@@ -388,15 +402,19 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * @see #isGNUStringTable
      */
     private ArArchiveEntry readGNUStringTable(final byte[] length, final int offset, final int len) throws IOException {
-        final int bufflen = asInt(length, offset, len); // Assume length will fit in an int
-        namebuffer = IOUtils.readRange(input, bufflen);
-        final int read = namebuffer.length;
-        trackReadBytes(read);
-        if (read != bufflen){
-            throw new IOException("Failed to read complete // record: expected="
-                                  + bufflen + " read=" + read);
+        try {
+            final int bufflen = asInt(length, offset, len); // Assume length will fit in an int
+            namebuffer = IOUtils.readRange(input, bufflen);
+            final int read = namebuffer.length;
+            trackReadBytes(read);
+            if (read != bufflen){
+                throw new IOException("Failed to read complete // record: expected="
+                                      + bufflen + " read=" + read);
+            }
+            return new ArArchiveEntry(GNU_STRING_TABLE_NAME, bufflen);
+        } catch(NumberFormatException exp) {
+            throw new IOException("Invalid length value for // record");
         }
-        return new ArArchiveEntry(GNU_STRING_TABLE_NAME, bufflen);
     }
 
     private void trackReadBytes(final long read) {
