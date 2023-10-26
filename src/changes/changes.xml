@@ -64,6 +64,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipUtils.getUncompressedFileName(String) and deprecate getUncompressedFilename(String).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipUtils.isCompressedFileName(String) and deprecate isCompressedFilename(String).</action>
       <!-- FIX -->
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Precompile regualr expression in ArArchiveInputStream.isBSDLongName(String).</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot">Bump org.slf4j:slf4j-api from 2.0.8 to 2.0.9 #413.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump commons-io:commons-io from 2.13.0 to 2.15.0.</action>

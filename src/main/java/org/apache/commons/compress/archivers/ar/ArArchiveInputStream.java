@@ -22,6 +22,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -55,8 +56,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     static final String BSD_LONGNAME_PREFIX = "#1/";
     private static final int BSD_LONGNAME_PREFIX_LEN =
         BSD_LONGNAME_PREFIX.length();
-    private static final String BSD_LONGNAME_PATTERN =
-        "^" + BSD_LONGNAME_PREFIX + "\\d+";
+    private static final Pattern BSD_LONGNAME_PATTERN = Pattern.compile("^" + BSD_LONGNAME_PREFIX + "\\d+");
     private static final String GNU_STRING_TABLE_NAME = "//";
     private static final String GNU_LONGNAME_PATTERN = "^/\\d+";
     /**
@@ -82,7 +82,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * @since 1.3
      */
     private static boolean isBSDLongName(final String name) {
-        return name != null && name.matches(BSD_LONGNAME_PATTERN);
+        return name != null && BSD_LONGNAME_PATTERN.matcher(name).matches();
     }
 
     /**
