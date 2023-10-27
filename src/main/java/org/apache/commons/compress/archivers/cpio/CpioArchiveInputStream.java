@@ -310,18 +310,22 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
             readFully(sixBytesBuf, twoBytesBuf.length,
                       fourBytesBuf.length);
             final String magicString = ArchiveUtils.toAsciiString(sixBytesBuf);
-            switch (magicString) {
-                case MAGIC_NEW:
-                    this.entry = readNewEntry(false);
-                    break;
-                case MAGIC_NEW_CRC:
-                    this.entry = readNewEntry(true);
-                    break;
-                case MAGIC_OLD_ASCII:
-                    this.entry = readOldAsciiEntry();
-                    break;
-                default:
-                    throw new IOException("Unknown magic [" + magicString + "]. Occurred at byte: " + getBytesRead());
+            try {
+                switch (magicString) {
+                    case MAGIC_NEW:
+                        this.entry = readNewEntry(false);
+                        break;
+                    case MAGIC_NEW_CRC:
+                        this.entry = readNewEntry(true);
+                        break;
+                    case MAGIC_OLD_ASCII:
+                        this.entry = readOldAsciiEntry();
+                        break;
+                    default:
+                        throw new IOException("Unknown magic [" + magicString + "]. Occurred at byte: " + getBytesRead());
+                }
+            } catch (final NumberFormatException exp) {
+                throw new IOException("Unable to parse entry: ", exp);
             }
         }
 
