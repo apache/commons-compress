@@ -80,11 +80,11 @@ public class NewAttribute extends Attribute {
             return null;
         }
     }
-    private boolean contextClass = false;
+    private boolean contextClass;
 
-    private boolean contextMethod = false;
-    private boolean contextField = false;
-    private boolean contextCode = false;
+    private boolean contextMethod;
+    private boolean contextField;
+    private boolean contextCode;
     private final String layout;
     private byte[] contents;
     private int codeOff;

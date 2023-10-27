@@ -43,7 +43,7 @@ public class PackingUtils {
 
     private static final class PackingLogger extends Logger {
 
-        private boolean verbose = false;
+        private boolean verbose;
 
         protected PackingLogger(final String name, final String resourceBundleName) {
             super(name, resourceBundleName);

@@ -45,7 +45,7 @@ import org.junit.jupiter.api.Test;
 public class MultiReadOnlySeekableByteChannelTest {
 
     private static final class ThrowingSeekableByteChannel implements SeekableByteChannel {
-        private boolean closed = false;
+        private boolean closed;
         @Override
         public void close() throws IOException {
             closed = true;

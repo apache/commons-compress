@@ -290,7 +290,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
 
     private long diskNumberStart;
 
-    private boolean lastModifiedDateSet = false;
+    private boolean lastModifiedDateSet;
 
     private long time = -1;
 

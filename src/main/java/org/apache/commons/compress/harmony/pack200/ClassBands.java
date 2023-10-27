@@ -188,10 +188,10 @@ public class ClassBands extends BandSet {
 
 	private TempParamAnnotation tempMethodRVPA;
 	private TempParamAnnotation tempMethodRIPA;
-	private boolean anySyntheticClasses = false;
-	private boolean anySyntheticFields = false;
+	private boolean anySyntheticClasses;
+	private boolean anySyntheticFields;
 
-	private boolean anySyntheticMethods = false;
+	private boolean anySyntheticMethods;
 	private final Segment segment;
 
 	private final Map<CPClass, Set<CPClass>> classReferencesInnerClass = new HashMap<>();
