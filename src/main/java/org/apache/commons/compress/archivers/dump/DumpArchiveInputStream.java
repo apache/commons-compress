@@ -505,9 +505,6 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                     i += reclen) {
                 final int ino = DumpArchiveUtil.convert32(blockBuffer, i);
                 reclen = DumpArchiveUtil.convert16(blockBuffer, i + 4);
-                if (reclen == 0) {
-                    throw new DumpArchiveException("reclen cannot be 0");
-                }
 
                 final byte type = blockBuffer[i + 6];
 
