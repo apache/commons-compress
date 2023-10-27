@@ -294,51 +294,47 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      *             occurred
      */
     public CpioArchiveEntry getNextCPIOEntry() throws IOException {
-        try {
-            ensureOpen();
-            if (this.entry != null) {
-                closeEntry();
-            }
-            readFully(twoBytesBuf, 0, twoBytesBuf.length);
-            if (CpioUtil.byteArray2long(twoBytesBuf, false) == MAGIC_OLD_BINARY) {
-                this.entry = readOldBinaryEntry(false);
-            } else if (CpioUtil.byteArray2long(twoBytesBuf, true)
-                       == MAGIC_OLD_BINARY) {
-                this.entry = readOldBinaryEntry(true);
-            } else {
-                System.arraycopy(twoBytesBuf, 0, sixBytesBuf, 0,
-                                 twoBytesBuf.length);
-                readFully(sixBytesBuf, twoBytesBuf.length,
-                          fourBytesBuf.length);
-                final String magicString = ArchiveUtils.toAsciiString(sixBytesBuf);
-                switch (magicString) {
-                    case MAGIC_NEW:
-                        this.entry = readNewEntry(false);
-                        break;
-                    case MAGIC_NEW_CRC:
-                        this.entry = readNewEntry(true);
-                        break;
-                    case MAGIC_OLD_ASCII:
-                        this.entry = readOldAsciiEntry();
-                        break;
-                    default:
-                        throw new IOException("Unknown magic [" + magicString + "]. Occurred at byte: " + getBytesRead());
-                }
-            }
-
-            this.entryBytesRead = 0;
-            this.entryEOF = false;
-            this.crc = 0;
-
-            if (this.entry.getName().equals(CPIO_TRAILER)) {
-                this.entryEOF = true;
-                skipRemainderOfLastBlock();
-                return null;
-            }
-            return this.entry;
-        } catch (Exception exp) {
-            throw new IOException("Unable to parse entry: " + exp);
+        ensureOpen();
+        if (this.entry != null) {
+            closeEntry();
         }
+        readFully(twoBytesBuf, 0, twoBytesBuf.length);
+        if (CpioUtil.byteArray2long(twoBytesBuf, false) == MAGIC_OLD_BINARY) {
+            this.entry = readOldBinaryEntry(false);
+        } else if (CpioUtil.byteArray2long(twoBytesBuf, true)
+                   == MAGIC_OLD_BINARY) {
+            this.entry = readOldBinaryEntry(true);
+        } else {
+            System.arraycopy(twoBytesBuf, 0, sixBytesBuf, 0,
+                             twoBytesBuf.length);
+            readFully(sixBytesBuf, twoBytesBuf.length,
+                      fourBytesBuf.length);
+            final String magicString = ArchiveUtils.toAsciiString(sixBytesBuf);
+            switch (magicString) {
+                case MAGIC_NEW:
+                    this.entry = readNewEntry(false);
+                    break;
+                case MAGIC_NEW_CRC:
+                    this.entry = readNewEntry(true);
+                    break;
+                case MAGIC_OLD_ASCII:
+                    this.entry = readOldAsciiEntry();
+                    break;
+                default:
+                    throw new IOException("Unknown magic [" + magicString + "]. Occurred at byte: " + getBytesRead());
+            }
+        }
+
+        this.entryBytesRead = 0;
+        this.entryEOF = false;
+        this.crc = 0;
+
+        if (this.entry.getName().equals(CPIO_TRAILER)) {
+            this.entryEOF = true;
+            skipRemainderOfLastBlock();
+            return null;
+        }
+        return this.entry;
     }
 
     @Override
