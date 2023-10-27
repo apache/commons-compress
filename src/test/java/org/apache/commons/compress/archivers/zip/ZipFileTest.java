@@ -83,7 +83,7 @@ public class ZipFileTest extends AbstractTestCase {
         }
     }
 
-    private ZipFile zf = null;
+    private ZipFile zf;
 
     private void assertAllReadMethods(final byte[] expected, final ZipFile zipFile, final ZipArchiveEntry entry) throws IOException {
         // simple IOUtil read

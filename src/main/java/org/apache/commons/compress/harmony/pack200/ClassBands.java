@@ -197,8 +197,8 @@ public class ClassBands extends BandSet {
 	private final Map<CPClass, Set<CPClass>> classReferencesInnerClass = new HashMap<>();
 
 	private final boolean stripDebug;
-	private int index = 0;
-	private int numMethodArgs = 0;
+	private int index;
+	private int numMethodArgs;
 	private int[] class_InnerClasses_N;
 	private CPClass[] class_InnerClasses_RC;
 	private int[] class_InnerClasses_F;

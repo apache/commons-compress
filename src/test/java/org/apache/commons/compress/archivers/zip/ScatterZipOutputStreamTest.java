@@ -33,8 +33,8 @@ import org.junit.jupiter.api.Test;
 
 public class ScatterZipOutputStreamTest {
 
-    private File scatterFile = null;
-    private File target = null;
+    private File scatterFile;
+    private File target;
 
     @AfterEach
     public void cleanup() {

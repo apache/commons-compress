@@ -178,7 +178,7 @@ class AES256SHA256Decoder extends AbstractCoder {
             // manual implementation for padding possible thanks to the size of the file stored separately
             private final int cipherBlockSize = opts.getCipher().getBlockSize();
             private final byte[] cipherBlockBuffer = new byte[cipherBlockSize];
-            private int count = 0;
+            private int count;
 
             @Override
             public void close() throws IOException {

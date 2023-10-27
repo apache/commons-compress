@@ -46,7 +46,7 @@ import java.util.ResourceBundle;
 public class Messages {
 
     // ResourceBundle holding the system messages.
-    static private ResourceBundle bundle = null;
+    static private ResourceBundle bundle;
 
     static {
         // Attempt to load the messages.
