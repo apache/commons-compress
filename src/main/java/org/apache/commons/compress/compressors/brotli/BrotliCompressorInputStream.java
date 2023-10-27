@@ -61,8 +61,8 @@ public class BrotliCompressorInputStream extends CompressorInputStream
     }
 
     @Override
-    public synchronized void mark(final int readlimit) {
-        decIS.mark(readlimit);
+    public synchronized void mark(final int readLimit) {
+        decIS.mark(readLimit);
     }
 
     @Override
