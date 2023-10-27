@@ -294,23 +294,23 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      *             occurred
      */
     public CpioArchiveEntry getNextCPIOEntry() throws IOException {
-        ensureOpen();
-        if (this.entry != null) {
-            closeEntry();
-        }
-        readFully(twoBytesBuf, 0, twoBytesBuf.length);
-        if (CpioUtil.byteArray2long(twoBytesBuf, false) == MAGIC_OLD_BINARY) {
-            this.entry = readOldBinaryEntry(false);
-        } else if (CpioUtil.byteArray2long(twoBytesBuf, true)
-                   == MAGIC_OLD_BINARY) {
-            this.entry = readOldBinaryEntry(true);
-        } else {
-            System.arraycopy(twoBytesBuf, 0, sixBytesBuf, 0,
-                             twoBytesBuf.length);
-            readFully(sixBytesBuf, twoBytesBuf.length,
-                      fourBytesBuf.length);
-            final String magicString = ArchiveUtils.toAsciiString(sixBytesBuf);
-            try {
+        try {
+            ensureOpen();
+            if (this.entry != null) {
+                closeEntry();
+            }
+            readFully(twoBytesBuf, 0, twoBytesBuf.length);
+            if (CpioUtil.byteArray2long(twoBytesBuf, false) == MAGIC_OLD_BINARY) {
+                this.entry = readOldBinaryEntry(false);
+            } else if (CpioUtil.byteArray2long(twoBytesBuf, true)
+                       == MAGIC_OLD_BINARY) {
+                this.entry = readOldBinaryEntry(true);
+            } else {
+                System.arraycopy(twoBytesBuf, 0, sixBytesBuf, 0,
+                                 twoBytesBuf.length);
+                readFully(sixBytesBuf, twoBytesBuf.length,
+                          fourBytesBuf.length);
+                final String magicString = ArchiveUtils.toAsciiString(sixBytesBuf);
                 switch (magicString) {
                     case MAGIC_NEW:
                         this.entry = readNewEntry(false);
@@ -324,21 +324,21 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
                     default:
                         throw new IOException("Unknown magic [" + magicString + "]. Occurred at byte: " + getBytesRead());
                 }
-            } catch (final NumberFormatException exp) {
-                throw new IOException("Unable to parse entry: ", exp);
             }
-        }
 
-        this.entryBytesRead = 0;
-        this.entryEOF = false;
-        this.crc = 0;
+            this.entryBytesRead = 0;
+            this.entryEOF = false;
+            this.crc = 0;
 
-        if (this.entry.getName().equals(CPIO_TRAILER)) {
-            this.entryEOF = true;
-            skipRemainderOfLastBlock();
-            return null;
+            if (this.entry.getName().equals(CPIO_TRAILER)) {
+                this.entryEOF = true;
+                skipRemainderOfLastBlock();
+                return null;
+            }
+            return this.entry;
+        } catch (NegativeArraySizeException|NumberFormatException exp) {
+            throw new IOException("Unable to parse entry: " + exp);
         }
-        return this.entry;
     }
 
     @Override
