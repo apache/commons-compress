@@ -137,7 +137,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void testInvalidEntryAttributes() throws Exception {
+    public void testInvalidEntryAttributesGnu() throws Exception {
         try (InputStream in = newInputStream("longfile_gnu.ar")) {
             String content = new String(IOUtils.toByteArray(in));
 
@@ -172,7 +172,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
             }
 
             // Test GNU long name length parsing with a long number when int is expected
-            String value6 = content.replaceFirst("/0         ", "/9999999999");
+            String value6 = content.replaceFirst("/0 {9}", "/9999999999");
             try (ArArchiveInputStream archive = new ArArchiveInputStream(new ByteArrayInputStream(value6.getBytes()))) {
                 assertThrows(IOException.class, archive::getNextEntry);
             }
@@ -180,7 +180,20 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void testInvalidEntryAttributes1() throws Exception {
+    public void testInvalidEntryAttributesBsd() throws Exception {
+        try (InputStream in = newInputStream("longfile_bsd.ar")) {
+            String content = new String(IOUtils.toByteArray(in));
+
+            // Test length parsing with a large number
+            String value1 = content.replaceFirst("/28 {9}", "/21454694016");
+            try (ArArchiveInputStream archive = new ArArchiveInputStream(new ByteArrayInputStream(value1.getBytes()))) {
+                assertThrows(IOException.class, archive::getNextEntry);
+            }
+        }
+    }
+
+    @Test
+    public void testInvalidExtendedNames() throws Exception {
         try (InputStream in = newInputStream("longfile_gnu.ar")) {
             String content = new String(IOUtils.toByteArray(in));
 

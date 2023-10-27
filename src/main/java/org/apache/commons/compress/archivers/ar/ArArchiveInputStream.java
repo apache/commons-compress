@@ -206,15 +206,19 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * @since 1.3
      */
     private String getBSDLongName(final String bsdLongName) throws IOException {
-        final int nameLen =
-            Integer.parseInt(bsdLongName.substring(BSD_LONGNAME_PREFIX_LEN));
-        final byte[] name = IOUtils.readRange(input, nameLen);
-        final int read = name.length;
-        trackReadBytes(read);
-        if (read != nameLen) {
-            throw new EOFException();
+        try {
+            final int nameLen =
+                Integer.parseInt(bsdLongName.substring(BSD_LONGNAME_PREFIX_LEN));
+            final byte[] name = IOUtils.readRange(input, nameLen);
+            final int read = name.length;
+            trackReadBytes(read);
+            if (read != nameLen) {
+                throw new EOFException();
+            }
+            return ArchiveUtils.toAsciiString(name);
+        } catch (final NumberFormatException exp) {
+            throw new IOException("invalid value for BSD entry name length: " + bsdLongName);
         }
-        return ArchiveUtils.toAsciiString(name);
     }
 
     /**
