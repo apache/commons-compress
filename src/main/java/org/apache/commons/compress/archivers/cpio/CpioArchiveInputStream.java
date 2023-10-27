@@ -336,7 +336,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
                 return null;
             }
             return this.entry;
-        } catch (NegativeArraySizeException|NumberFormatException exp) {
+        } catch (Exception exp) {
             throw new IOException("Unable to parse entry: " + exp);
         }
     }
