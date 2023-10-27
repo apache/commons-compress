@@ -176,6 +176,32 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
             try (ArArchiveInputStream archive = new ArArchiveInputStream(new ByteArrayInputStream(value6.getBytes()))) {
                 assertThrows(IOException.class, archive::getNextEntry);
             }
+        }
+    }
+
+    @Test
+    public void testInvalidEntryAttributes1() throws Exception {
+        try (InputStream in = newInputStream("longfile_gnu.ar")) {
+            String content = new String(IOUtils.toByteArray(in));
+
+            // Test extended name parsing with smaller value
+            String value1 = content.replaceFirst("/30", "/29");
+            try (ArArchiveInputStream archive = new ArArchiveInputStream(new ByteArrayInputStream(value1.getBytes()))) {
+                archive.getNextArEntry();
+                assertThrows(IOException.class, archive::getNextEntry);
+            }
+
+            // Test GNU string table parsing with negative length
+            String value2 = content.replaceFirst("68", "-8");
+            try (ArArchiveInputStream archive = new ArArchiveInputStream(new ByteArrayInputStream(value2.getBytes()))) {
+                assertThrows(IOException.class, archive::getNextEntry);
+            }
+
+            // Test offset parsing with nulls in extended name field
+            String value3 = content.replaceFirst("this_is_a_long_file_name\\.", "\0his_is_a_long_file_name.");
+            try (ArArchiveInputStream archive = new ArArchiveInputStream(new ByteArrayInputStream(value3.getBytes()))) {
+                assertThrows(IOException.class, archive::getNextEntry);
+            }
        }
     }
 }

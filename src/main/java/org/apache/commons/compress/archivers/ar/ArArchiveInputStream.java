@@ -228,13 +228,17 @@ public class ArArchiveInputStream extends ArchiveInputStream {
         if (namebuffer == null) {
             throw new IOException("Cannot process GNU long file name as no // record was found");
         }
-        for (int i = offset; i < namebuffer.length; i++) {
-            if (namebuffer[i] == '\012' || namebuffer[i] == 0) {
-                if (namebuffer[i - 1] == '/') {
-                    i--; // drop trailing /
+        try {
+            for (int i = offset; i < namebuffer.length; i++) {
+                if (namebuffer[i] == '\012' || namebuffer[i] == 0) {
+                    if (namebuffer[i - 1] == '/') {
+                        i--; // drop trailing /
+                    }
+
+                    return ArchiveUtils.toAsciiString(namebuffer, offset, i - offset);
                 }
-                return ArchiveUtils.toAsciiString(namebuffer, offset, i - offset);
             }
+        } catch (final IndexOutOfBoundsException ignored) { // catch issues with invalid offset or bad namebuffer values
         }
         throw new IOException("Failed to read entry: " + offset);
     }
@@ -412,7 +416,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
                                       + bufflen + " read=" + read);
             }
             return new ArArchiveEntry(GNU_STRING_TABLE_NAME, bufflen);
-        } catch(NumberFormatException exp) {
+        } catch(NegativeArraySizeException|NumberFormatException exp) {
             throw new IOException("Invalid length value for // record");
         }
     }
