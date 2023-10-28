@@ -125,14 +125,6 @@
     <Method name="readString" />
     <Bug pattern="DM_DEFAULT_ENCODING" />
   </Match>
-  <Match>
-    <Class name="org.apache.commons.compress.archivers.zip.FallbackZipEncoding" />
-    <Or>
-      <Method name="decode" />
-      <Method name="encode" />
-    </Or>
-    <Bug pattern="DM_DEFAULT_ENCODING" />
-  </Match>
 
   <!-- Reason: unrolled loop, all possible cases are covered -->
   <Match>
