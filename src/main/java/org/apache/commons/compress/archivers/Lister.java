@@ -109,7 +109,7 @@ public final class Lister {
      * @throws IOException an I/O exception.
      */
     public static void main(final String[] args) throws ArchiveException, IOException {
-        if (args != null && args.length == 0) {
+        if (args == null || args.length == 0) {
             usage();
             return;
         }
