@@ -119,13 +119,6 @@
     <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
   </Match>
 
-  <!-- Reason: the contract is to use default encoding (unless told otherwise) -->
-  <Match>
-    <Class name="org.apache.commons.compress.archivers.arj.ArjArchiveInputStream" />
-    <Method name="readString" />
-    <Bug pattern="DM_DEFAULT_ENCODING" />
-  </Match>
-
   <!-- Reason: unrolled loop, all possible cases are covered -->
   <Match>
     <Class name="org.apache.commons.compress.compressors.snappy.PureJavaCrc32C" />
