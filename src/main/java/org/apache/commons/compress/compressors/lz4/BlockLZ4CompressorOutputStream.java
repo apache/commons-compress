@@ -53,7 +53,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
             out.write(length);
         }
         private final Deque<byte[]> literals = new LinkedList<>();
-        
+
         private int literalLength;
 
         private int brOffset, brLength;
