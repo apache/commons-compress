@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Enumeration;
+import java.util.Objects;
 
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.tar.TarFile;
@@ -112,6 +113,7 @@ public final class Lister {
             usage();
             return;
         }
+        Objects.requireNonNull(args[0], "args[0]");
         System.out.println("Analysing " + args[0]);
         final File f = new File(args[0]);
         if (!f.isFile()) {
