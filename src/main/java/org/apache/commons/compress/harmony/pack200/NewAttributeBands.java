@@ -293,7 +293,7 @@ public class NewAttributeBands extends BandSet {
 
         private final String tag;
 
-        private List<ConstantPoolEntry> band;
+        private List<ConstantPoolEntry> band = new ArrayList<>();
 
         private boolean nullsAllowed;
 
