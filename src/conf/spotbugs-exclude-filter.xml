@@ -134,13 +134,6 @@
     <Bug pattern="DM_DEFAULT_ENCODING" />
   </Match>
 
-  <!-- Reason: default encoding is good enough for exception message -->
-  <Match>
-    <Class name="org.apache.commons.compress.archivers.tar.TarUtils" />
-    <Method name="exceptionMessage" />
-    <Bug pattern="DM_DEFAULT_ENCODING" />
-  </Match>
-
   <!-- Reason: unrolled loop, all possible cases are covered -->
   <Match>
     <Class name="org.apache.commons.compress.compressors.snappy.PureJavaCrc32C" />
