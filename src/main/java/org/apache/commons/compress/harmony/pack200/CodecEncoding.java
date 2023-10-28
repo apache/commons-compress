@@ -66,6 +66,14 @@ public class CodecEncoding {
         new BHSDCodec(4, 240, 1, 1), new BHSDCodec(4, 248, 0, 1), new BHSDCodec(4, 248, 1, 1)};
 
     private static Map<BHSDCodec, Integer> canonicalCodecsToSpecifiers;
+    
+    static {
+        final HashMap<BHSDCodec, Integer> reverseMap = new HashMap<>(canonicalCodec.length);
+        for (int i = 0; i < canonicalCodec.length; i++) {
+            reverseMap.put(canonicalCodec[i], Integer.valueOf(i));
+        }
+        canonicalCodecsToSpecifiers = reverseMap;
+    }
 
     public static BHSDCodec getCanonicalCodec(final int i) {
         return canonicalCodec[i];
@@ -178,15 +186,6 @@ public class CodecEncoding {
     }
 
     public static int[] getSpecifier(final Codec codec, final Codec defaultForBand) {
-        // lazy initialization
-        if (canonicalCodecsToSpecifiers == null) {
-            final HashMap<BHSDCodec, Integer> reverseMap = new HashMap<>(canonicalCodec.length);
-            for (int i = 0; i < canonicalCodec.length; i++) {
-                reverseMap.put(canonicalCodec[i], Integer.valueOf(i));
-            }
-            canonicalCodecsToSpecifiers = reverseMap;
-        }
-
 		if (canonicalCodecsToSpecifiers.containsKey(codec)) {
 			return new int[] { canonicalCodecsToSpecifiers.get(codec).intValue() };
 		}
