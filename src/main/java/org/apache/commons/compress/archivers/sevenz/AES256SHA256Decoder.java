@@ -123,6 +123,69 @@ class AES256SHA256Decoder extends AbstractCoder {
         }
     }
 
+    private static final class AES256SHA256DecoderOutputStream extends OutputStream {
+        private final CipherOutputStream cipherOutputStream;
+        // Ensures that data are encrypt in respect of cipher block size and pad with '0' if smaller
+        // NOTE: As "AES/CBC/PKCS5Padding" is weak and should not be used, we use "AES/CBC/NoPadding" with this
+        // manual implementation for padding possible thanks to the size of the file stored separately
+        private final int cipherBlockSize;
+        private final byte[] cipherBlockBuffer;
+        private int count;
+
+        private AES256SHA256DecoderOutputStream(AES256Options opts, OutputStream out) {
+            cipherOutputStream = new CipherOutputStream(out, opts.getCipher());
+            cipherBlockSize = opts.getCipher().getBlockSize();
+            cipherBlockBuffer = new byte[cipherBlockSize];
+        }
+
+        @Override
+        public void close() throws IOException {
+            if (count > 0) {
+                cipherOutputStream.write(cipherBlockBuffer);
+            }
+            cipherOutputStream.close();
+        }
+
+        @Override
+        public void flush() throws IOException {
+            cipherOutputStream.flush();
+        }
+
+        private void flushBuffer() throws IOException {
+            cipherOutputStream.write(cipherBlockBuffer);
+            count = 0;
+            Arrays.fill(cipherBlockBuffer, (byte) 0);
+        }
+
+        @Override
+        public void write(final byte[] b, final int off, final int len) throws IOException {
+            int gap = len + count > cipherBlockSize ? cipherBlockSize - count : len;
+            System.arraycopy(b, off, cipherBlockBuffer, count, gap);
+            count += gap;
+
+            if (count == cipherBlockSize) {
+                flushBuffer();
+
+                if (len - gap >= cipherBlockSize) {
+                    // skip buffer to encrypt data chunks big enough to fit cipher block size
+                    final int multipleCipherBlockSizeLen = (len - gap) / cipherBlockSize * cipherBlockSize;
+                    cipherOutputStream.write(b, off + gap, multipleCipherBlockSizeLen);
+                    gap += multipleCipherBlockSizeLen;
+                }
+                System.arraycopy(b, off + gap, cipherBlockBuffer, 0, len - gap);
+                count = len - gap;
+            }
+        }
+
+        @Override
+        public void write(final int b) throws IOException {
+            cipherBlockBuffer[count++] = (byte) b;
+            if (count == cipherBlockSize) {
+                flushBuffer();
+            }
+        }
+    }
+
     static byte[] sha256Password(final byte[] password, final int numCyclesPower, final byte[] salt) {
         final MessageDigest digest;
         try {
@@ -181,65 +244,7 @@ class AES256SHA256Decoder extends AbstractCoder {
 
     @Override
     OutputStream encode(final OutputStream out, final Object options) throws IOException {
-        final AES256Options opts = (AES256Options) options;
-
-        return new OutputStream() {
-            private final CipherOutputStream cipherOutputStream = new CipherOutputStream(out, opts.getCipher());
-
-            // Ensures that data are encrypt in respect of cipher block size and pad with '0' if smaller
-            // NOTE: As "AES/CBC/PKCS5Padding" is weak and should not be used, we use "AES/CBC/NoPadding" with this
-            // manual implementation for padding possible thanks to the size of the file stored separately
-            private final int cipherBlockSize = opts.getCipher().getBlockSize();
-            private final byte[] cipherBlockBuffer = new byte[cipherBlockSize];
-            private int count;
-
-            @Override
-            public void close() throws IOException {
-                if (count > 0) {
-                    cipherOutputStream.write(cipherBlockBuffer);
-                }
-                cipherOutputStream.close();
-            }
-
-            @Override
-            public void flush() throws IOException {
-                cipherOutputStream.flush();
-            }
-
-            private void flushBuffer() throws IOException {
-                cipherOutputStream.write(cipherBlockBuffer);
-                count = 0;
-                Arrays.fill(cipherBlockBuffer, (byte) 0);
-            }
-
-            @Override
-            public void write(final byte[] b, final int off, final int len) throws IOException {
-                int gap = len + count > cipherBlockSize ? cipherBlockSize - count : len;
-                System.arraycopy(b, off, cipherBlockBuffer, count, gap);
-                count += gap;
-
-                if (count == cipherBlockSize) {
-                    flushBuffer();
-
-                    if (len - gap >= cipherBlockSize) {
-                        // skip buffer to encrypt data chunks big enough to fit cipher block size
-                        final int multipleCipherBlockSizeLen = (len - gap) / cipherBlockSize * cipherBlockSize;
-                        cipherOutputStream.write(b, off + gap, multipleCipherBlockSizeLen);
-                        gap += multipleCipherBlockSizeLen;
-                    }
-                    System.arraycopy(b, off + gap, cipherBlockBuffer, 0, len - gap);
-                    count = len - gap;
-                }
-            }
-
-            @Override
-            public void write(final int b) throws IOException {
-                cipherBlockBuffer[count++] = (byte) b;
-                if (count == cipherBlockSize) {
-                    flushBuffer();
-                }
-            }
-        };
+        return new AES256SHA256DecoderOutputStream((AES256Options) options, out);
     }
 
     @Override
