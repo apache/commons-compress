@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.objectweb.asm.Attribute;
 
@@ -74,8 +75,9 @@ public class PackingOptions {
     private void addOrUpdateAttributeActions(final List<Attribute> prototypes, final Map<String, String> attributeActions, final int tag) {
         if (attributeActions != null && attributeActions.size() > 0) {
             NewAttribute newAttribute;
-            for (final String name : attributeActions.keySet()) {
-                final String action = attributeActions.get(name);
+            for (final Entry<String, String> entry : attributeActions.entrySet()) {
+                final String name = entry.getKey();
+                final String action = entry.getValue();
                 boolean prototypeExists = false;
                 for (final Object prototype : prototypes) {
                     newAttribute = (NewAttribute) prototype;
