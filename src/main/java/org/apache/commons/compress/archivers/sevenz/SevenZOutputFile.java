@@ -377,8 +377,7 @@ public class SevenZOutputFile implements Closeable {
      * @param archiveEntry describes the entry
      */
     public void putArchiveEntry(final ArchiveEntry archiveEntry) {
-        final SevenZArchiveEntry entry = (SevenZArchiveEntry) archiveEntry;
-        files.add(entry);
+        files.add((SevenZArchiveEntry) archiveEntry);
     }
 
     /**
