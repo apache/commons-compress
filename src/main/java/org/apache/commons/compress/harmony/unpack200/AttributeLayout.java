@@ -210,7 +210,7 @@ public class AttributeLayout implements IMatcher {
     public static final int CONTEXT_METHOD = 2;
 
     /**
-     * {@value}
+     * Context names.
      */
     public static final String[] contextNames = {"Class", "Field", "Method", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         "Code",}; //$NON-NLS-1$

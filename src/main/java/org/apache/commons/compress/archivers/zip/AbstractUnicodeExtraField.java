@@ -32,6 +32,9 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     private byte[] unicodeName;
     private byte[] data;
 
+    /**
+     * Constructs a new instance.
+     */
     protected AbstractUnicodeExtraField() {
     }
 
@@ -110,14 +113,17 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     }
 
     /**
-     * @return The CRC32 checksum of the file name or comment as
-     *         encoded in the central directory of the ZIP file.
+     * Gets the CRC32 checksum of the file name or comment as encoded in the central directory of the ZIP file.
+     *
+     * @return The CRC32 checksum of the file name or comment as encoded in the central directory of the ZIP file.
      */
     public long getNameCRC32() {
         return nameCRC32;
     }
 
     /**
+     * Gets The UTF-8 encoded name.
+     *
      * @return The UTF-8 encoded name.
      */
     public byte[] getUnicodeName() {
@@ -157,8 +163,9 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     }
 
     /**
-     * @param nameCRC32 The CRC32 checksum of the file name as encoded
-     *         in the central directory of the ZIP file to set.
+     * Gets The CRC32 checksum of the file name as encoded in the central directory of the ZIP file to set.
+     *
+     * @param nameCRC32 The CRC32 checksum of the file name as encoded in the central directory of the ZIP file to set.
      */
     public void setNameCRC32(final long nameCRC32) {
         this.nameCRC32 = nameCRC32;
@@ -166,6 +173,8 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     }
 
     /**
+     * Gets the UTF-8 encoded name to set.
+     *
      * @param unicodeName The UTF-8 encoded name to set.
      */
     public void setUnicodeName(final byte[] unicodeName) {
