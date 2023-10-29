@@ -57,12 +57,16 @@ import org.apache.commons.compress.utils.TimeUtils;
 
 /**
  * Writes a 7z file.
+ *
  * @since 1.6
  */
 public class SevenZOutputFile implements Closeable {
+
     private class OutputStreamWrapper extends OutputStream {
+
         private static final int BUF_SIZE = 8192;
         private final ByteBuffer buffer = ByteBuffer.allocate(BUF_SIZE);
+
         @Override
         public void close() throws IOException {
             // the file will be closed by the containing class's close method
