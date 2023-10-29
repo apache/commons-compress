@@ -118,14 +118,12 @@ public class ArchiveTest {
 
     @Test
     public void testAlternativeConstructor() throws IOException, URISyntaxException, Pack200Exception {
-        final JarInputStream inStream = new JarInputStream(new FileInputStream(
-                new File(Archive.class.getResource(
-                        "/pack200/sqlUnpacked.jar").toURI())));
-        file = File.createTempFile("sql", ".pack.gz");
-        file.deleteOnExit();
-        out = new FileOutputStream(file);
-        new Archive(inStream, out, null).pack();
-        inStream.close();
+        try (JarInputStream inStream = new JarInputStream(new FileInputStream(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI())))) {
+            file = File.createTempFile("sql", ".pack.gz");
+            file.deleteOnExit();
+            out = new FileOutputStream(file);
+            new Archive(inStream, out, null).pack();
+        }
         out.close();
     }
 
