@@ -46,11 +46,27 @@ public class AttributeDefinitionBands extends BandSet {
         }
 
     }
+    
+    /**
+     * {@value}
+     */
     public static final int CONTEXT_CLASS = 0;
+    
+    /**
+     * {@value}
+     */
     public static final int CONTEXT_CODE = 3;
+    
+    /**
+     * {@value}
+     */
     public static final int CONTEXT_FIELD = 1;
 
+    /**
+     * {@value}
+     */
     public static final int CONTEXT_METHOD = 2;
+
     private final List<AttributeDefinition> classAttributeLayouts = new ArrayList<>();
     private final List<AttributeDefinition> methodAttributeLayouts = new ArrayList<>();
     private final List<AttributeDefinition> fieldAttributeLayouts = new ArrayList<>();
