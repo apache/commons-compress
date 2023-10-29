@@ -130,9 +130,7 @@ public class ArchiveTest {
     @Test
     public void testAnnotations() throws IOException, Pack200Exception,
             URISyntaxException {
-        in = new JarFile(new File(Archive.class.getResource(
-                "/pack200/annotationsUnpacked.jar")
-                .toURI()));
+        in = new JarFile(new File(Archive.class.getResource("/pack200/annotationsUnpacked.jar").toURI()));
         file = File.createTempFile("annotations", ".pack");
         file.deleteOnExit();
         out = new FileOutputStream(file);
@@ -147,14 +145,12 @@ public class ArchiveTest {
         final File file2 = File.createTempFile("annotationsout", ".jar");
         file2.deleteOnExit();
         final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
-        final org.apache.commons.compress.harmony.unpack200.Archive archive = new org.apache.commons.compress.harmony.unpack200.Archive(
-                in2, out2);
+        final org.apache.commons.compress.harmony.unpack200.Archive archive = new org.apache.commons.compress.harmony.unpack200.Archive(in2, out2);
         archive.unpack();
-        final JarFile jarFile = new JarFile(file2);
-        final JarFile jarFile2 = new JarFile(new File(Archive.class.getResource(
-                "/pack200/annotationsUnpacked.jar").toURI()));
-
-        compareFiles(jarFile, jarFile2);
+        try (JarFile jarFile = new JarFile(file2);
+                JarFile jarFile2 = new JarFile(new File(Archive.class.getResource("/pack200/annotationsUnpacked.jar").toURI()))) {
+            compareFiles(jarFile, jarFile2);
+        }
     }
 
     @Test
@@ -237,8 +233,7 @@ public class ArchiveTest {
 
     @Test
     public void testJNDI() throws IOException, Pack200Exception, URISyntaxException {
-        in = new JarFile(new File(Archive.class.getResource(
-                "/pack200/jndi.jar").toURI()));
+        in = new JarFile(new File(Archive.class.getResource("/pack200/jndi.jar").toURI()));
         file = File.createTempFile("jndi", ".pack");
         file.deleteOnExit();
         out = new FileOutputStream(file);
@@ -255,19 +250,16 @@ public class ArchiveTest {
         final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
         final org.apache.commons.compress.harmony.unpack200.Archive archive = new org.apache.commons.compress.harmony.unpack200.Archive(in2, out2);
         archive.unpack();
-        final JarFile jarFile = new JarFile(file2);
-        final JarFile jarFile2 = new JarFile(new File(Archive.class.getResource(
-                "/pack200/jndiUnpacked.jar").toURI()));
-
-        compareFiles(jarFile, jarFile2);
+        try (JarFile jarFile = new JarFile(file2);
+                JarFile jarFile2 = new JarFile(new File(Archive.class.getResource("/pack200/jndiUnpacked.jar").toURI()))) {
+            compareFiles(jarFile, jarFile2);
+        }
     }
 
     @Test
     public void testLargeClass() throws IOException, Pack200Exception,
             URISyntaxException {
-        in = new JarFile(new File(Archive.class.getResource(
-                "/pack200/largeClassUnpacked.jar")
-                .toURI()));
+        in = new JarFile(new File(Archive.class.getResource("/pack200/largeClassUnpacked.jar").toURI()));
         file = File.createTempFile("largeClass", ".pack");
         file.deleteOnExit();
         out = new FileOutputStream(file);
@@ -284,15 +276,12 @@ public class ArchiveTest {
         final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
         final org.apache.commons.compress.harmony.unpack200.Archive archive = new org.apache.commons.compress.harmony.unpack200.Archive(in2, out2);
         archive.unpack();
-        final JarFile jarFile = new JarFile(file2);
-
-        final File compareFile = new File(Archive.class.getResource(
-                "/pack200/largeClassUnpacked.jar").toURI());
-        final JarFile jarFile2 = new JarFile(compareFile);
-
-        assertEquals(jarFile2.size(), jarFile.size());
-
-        compareFiles(jarFile, jarFile2);
+        final File compareFile = new File(Archive.class.getResource("/pack200/largeClassUnpacked.jar").toURI());
+        try (JarFile jarFile = new JarFile(file2);
+                JarFile jarFile2 = new JarFile(compareFile)) {
+            assertEquals(jarFile2.size(), jarFile.size());
+            compareFiles(jarFile, jarFile2);
+        }
     }
 
     @ParameterizedTest
@@ -314,8 +303,7 @@ public class ArchiveTest {
 
     @Test
     public void testSQL() throws IOException, Pack200Exception, URISyntaxException {
-        in = new JarFile(new File(Archive.class.getResource(
-                "/pack200/sqlUnpacked.jar").toURI()));
+        in = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
         file = File.createTempFile("sql", ".pack");
         file.deleteOnExit();
         out = new FileOutputStream(file);
@@ -333,34 +321,27 @@ public class ArchiveTest {
         final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
         final org.apache.commons.compress.harmony.unpack200.Archive archive = new org.apache.commons.compress.harmony.unpack200.Archive(in2, out2);
         archive.unpack();
-        final JarFile jarFile = new JarFile(file2);
-
-        final File compareFile = new File(Archive.class.getResource(
-                "/pack200/sqlUnpacked.jar").toURI());
-        final JarFile jarFile2 = new JarFile(compareFile);
-
-        assertEquals(jarFile2.size(), jarFile.size());
-
-        compareFiles(jarFile, jarFile2);
+        final File compareFile = new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI());
+        try (JarFile jarFile = new JarFile(file2);
+                JarFile jarFile2 = new JarFile(compareFile)) {
+            assertEquals(jarFile2.size(), jarFile.size());
+            compareFiles(jarFile, jarFile2);
+        }
     }
 
     //     Test with an archive containing Annotations
     @Test
     public void testWithAnnotations2() throws Exception {
-        final InputStream i = Archive.class
-                .getResourceAsStream("/pack200/annotationsRI.pack.gz");
+        final InputStream i = Archive.class.getResourceAsStream("/pack200/annotationsRI.pack.gz");
         file = File.createTempFile("annotations", ".jar");
         file.deleteOnExit();
         final JarOutputStream jout = new JarOutputStream(new FileOutputStream(file));
-        final org.apache.commons.compress.harmony.unpack200.Archive archive = new org.apache.commons.compress.harmony.unpack200.Archive(
-                i, jout);
+        final org.apache.commons.compress.harmony.unpack200.Archive archive = new org.apache.commons.compress.harmony.unpack200.Archive(i, jout);
         archive.unpack();
-        final JarFile jarFile = new JarFile(file);
-        final JarFile jarFile2 = new JarFile(new File(Archive.class.getResource(
-                "/pack200/annotationsRI.jar")
-                .toURI()));
-
-        compareFiles(jarFile, jarFile2);
+        try (JarFile jarFile = new JarFile(file);
+                JarFile jarFile2 = new JarFile(new File(Archive.class.getResource("/pack200/annotationsRI.jar").toURI()))) {
+            compareFiles(jarFile, jarFile2);
+        }
     }
 
 }
