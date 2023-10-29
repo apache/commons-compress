@@ -82,18 +82,19 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  * </ul>
  */
 public class ZipFile implements Closeable {
+
     /**
      * Lock-free implementation of BoundedInputStream. The
      * implementation uses positioned reads on the underlying archive
      * file channel and therefore performs significantly faster in
      * concurrent environment.
      */
-    private class BoundedFileChannelInputStream extends BoundedArchiveInputStream {
+    private static class BoundedFileChannelInputStream extends BoundedArchiveInputStream {
         private final FileChannel archive;
 
-        BoundedFileChannelInputStream(final long start, final long remaining) {
+        BoundedFileChannelInputStream(final long start, final long remaining, final FileChannel archive) {
             super(start, remaining);
-            archive = (FileChannel) ZipFile.this.archive;
+            this.archive = archive;
         }
 
         @Override
@@ -786,7 +787,7 @@ public class ZipFile implements Closeable {
                 + " are out of range");
         }
         return archive instanceof FileChannel ?
-            new BoundedFileChannelInputStream(start, remaining) :
+            new BoundedFileChannelInputStream(start, remaining, (FileChannel) archive) :
             new BoundedSeekableByteChannelInputStream(start, remaining, archive);
     }
 
