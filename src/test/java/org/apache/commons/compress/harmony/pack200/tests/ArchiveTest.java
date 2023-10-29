@@ -193,8 +193,7 @@ public class ArchiveTest {
 
     @Test
     public void testHelloWorld() throws IOException, Pack200Exception, URISyntaxException {
-        in = new JarFile(new File(Archive.class.getResource(
-                "/pack200/hw.jar").toURI()));
+        in = new JarFile(new File(Archive.class.getResource("/pack200/hw.jar").toURI()));
         file = File.createTempFile("helloworld", ".pack.gz");
         file.deleteOnExit();
         out = new FileOutputStream(file);
@@ -203,25 +202,21 @@ public class ArchiveTest {
         out.close();
 
         // now unpack
-        final InputStream in2 = new FileInputStream(file);
         final File file2 = File.createTempFile("helloworld", ".jar");
         file2.deleteOnExit();
-        final JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
-        final org.apache.commons.compress.harmony.unpack200.Archive archive = new org.apache.commons.compress.harmony.unpack200.Archive(
-                in2, out2);
-        archive.unpack();
-        out2.close();
-        in2.close();
+        try (InputStream in2 = new FileInputStream(file);
+                JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2))) {
+            final org.apache.commons.compress.harmony.unpack200.Archive archive = new org.apache.commons.compress.harmony.unpack200.Archive(in2, out2);
+            archive.unpack();
+        }
 
         try (JarFile jarFile = new JarFile(file2)) {
-            final JarEntry entry = jarFile
-                    .getJarEntry("org/apache/harmony/archive/tests/internal/pack200/HelloWorld.class");
+            final JarEntry entry = jarFile.getJarEntry("org/apache/harmony/archive/tests/internal/pack200/HelloWorld.class");
             assertNotNull(entry);
             try (InputStream ours = jarFile.getInputStream(entry)) {
 
                 final JarFile jarFile2 = new JarFile(new File(Segment.class.getResource("/pack200/hw.jar").toURI()));
-                final JarEntry entry2 = jarFile2
-                        .getJarEntry("org/apache/harmony/archive/tests/internal/pack200/HelloWorld.class");
+                final JarEntry entry2 = jarFile2.getJarEntry("org/apache/harmony/archive/tests/internal/pack200/HelloWorld.class");
                 assertNotNull(entry2);
 
                 final InputStream expected = jarFile2.getInputStream(entry2);
