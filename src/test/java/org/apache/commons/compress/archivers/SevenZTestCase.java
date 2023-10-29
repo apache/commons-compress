@@ -64,9 +64,8 @@ public class SevenZTestCase extends AbstractTestCase {
     }
 
     private void createArchive(final SevenZMethod method) throws Exception {
-        final SevenZOutputFile outArchive = new SevenZOutputFile(output);
-        outArchive.setContentCompression(method);
-        try {
+        try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
+            outArchive.setContentCompression(method);
             SevenZArchiveEntry entry;
 
             entry = outArchive.createArchiveEntry(file1, file1.getName());
@@ -78,8 +77,6 @@ public class SevenZTestCase extends AbstractTestCase {
             outArchive.putArchiveEntry(entry);
             copy(file2, outArchive);
             outArchive.closeArchiveEntry();
-        } finally {
-            outArchive.close();
         }
     }
 
