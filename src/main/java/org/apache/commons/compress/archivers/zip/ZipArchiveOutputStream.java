@@ -59,7 +59,7 @@ import org.apache.commons.compress.utils.IOUtils;
  * calculate them yourself.  Unfortunately, this is not possible for
  * the {@link #STORED STORED} method, where setting the CRC and
  * uncompressed size information is required before {@link
- * #putArchiveEntry(ArchiveEntry)} can be called.</p>
+ * #putArchiveEntry(ZipArchiveEntry)} can be called.</p>
  *
  * <p>As of Apache Commons Compress 1.3, the class transparently supports Zip64
  * extensions and thus individual entries and archives larger than 4
@@ -70,7 +70,7 @@ import org.apache.commons.compress.utils.IOUtils;
  *
  * @NotThreadSafe
  */
-public class ZipArchiveOutputStream extends ArchiveOutputStream {
+public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry> {
 
     /**
      * Structure collecting information for the entry that is
@@ -713,7 +713,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * <p>Must not be used if the stream has already been closed.</p>
      */
     @Override
-    public ArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
+    public ZipArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
         throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
@@ -739,7 +739,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * @since 1.21
      */
     @Override
-    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options)
+    public ZipArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options)
         throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
@@ -1259,7 +1259,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      *
      * <p>For seekable streams, you don't need to calculate the CRC or
      * uncompressed size for {@link #STORED} entries before
-     * invoking {@link #putArchiveEntry(ArchiveEntry)}.
+     * invoking {@link #putArchiveEntry(ZipArchiveEntry)}.
      * @return true if seekable
      */
     public boolean isSeekable() {
@@ -1296,8 +1296,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      * is {@link Zip64Mode#Never}.
      */
     @Override
-    public void putArchiveEntry(final ArchiveEntry archiveEntry) throws IOException {
-        putArchiveEntry((ZipArchiveEntry) archiveEntry, false);
+    public void putArchiveEntry(final ZipArchiveEntry archiveEntry) throws IOException {
+        putArchiveEntry(archiveEntry, false);
     }
 
     /**

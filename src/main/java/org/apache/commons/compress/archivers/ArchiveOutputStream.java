@@ -45,8 +45,9 @@ import java.nio.file.Path;
  *   <li> optionally write additional data, provided format supports it,</li>
  *   <li>{@link #close()}.</li>
  * </ul>
+ * @param <E> The type of {@link ArchiveEntry} produced.
  */
-public abstract class ArchiveOutputStream extends OutputStream {
+public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends OutputStream {
 
     static final int BYTE_MASK = 0xFF;
     /** Temporary buffer used for the {@link #write(int)} method */
@@ -110,7 +111,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
      *
      * @throws IOException if an I/O error occurs
      */
-    public abstract ArchiveEntry createArchiveEntry(File inputFile, String entryName) throws IOException;
+    public abstract E createArchiveEntry(File inputFile, String entryName) throws IOException;
 
     // Generic implementations of OutputStream methods that may be useful to sub-classes
 
@@ -130,7 +131,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * @throws IOException if an I/O error occurs
      * @since 1.21
      */
-    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
+    public E createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
         return createArchiveEntry(inputPath.toFile(), entryName);
     }
 
@@ -170,7 +171,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * @param entry describes the entry
      * @throws IOException if an I/O error occurs
      */
-    public abstract void putArchiveEntry(ArchiveEntry entry) throws IOException;
+    public abstract void putArchiveEntry(E entry) throws IOException;
 
     /**
      * Writes a byte to the current archive entry.
