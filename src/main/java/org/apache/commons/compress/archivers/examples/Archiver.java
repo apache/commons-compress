@@ -39,6 +39,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
@@ -168,7 +169,7 @@ public class Archiver {
                 Objects.requireNonNull(attrs);
                 final String name = directory.relativize(path).toString().replace('\\', '/');
                 if (!name.isEmpty()) {
-                    final ArchiveEntry archiveEntry = target.createArchiveEntry(path,
+                    final SevenZArchiveEntry archiveEntry = target.createArchiveEntry(path,
                         isFile || name.endsWith("/") ? name : name + "/");
                     target.putArchiveEntry(archiveEntry);
                     if (isFile) {
