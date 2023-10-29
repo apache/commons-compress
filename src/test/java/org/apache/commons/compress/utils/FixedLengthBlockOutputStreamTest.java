@@ -246,7 +246,7 @@ public class FixedLengthBlockOutputStreamTest {
             }
         }
         final long expectedDataSize = reps * 4L;
-        final long expectedFileSize = (long)Math.ceil(expectedDataSize/(double)blockSize)*blockSize;
+        final long expectedFileSize = (long) Math.ceil(expectedDataSize/(double) blockSize)*blockSize;
         assertEquals(expectedFileSize, Files.size(tempFile), "file size");
         final DataInputStream din = new DataInputStream(Files.newInputStream(tempFile));
         for (int i = 0; i < reps; i++) {

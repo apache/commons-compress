@@ -57,7 +57,7 @@ public class JarArchiveOutputStream extends ZipArchiveOutputStream {
     @Override
     public void putArchiveEntry(final ArchiveEntry ze) throws IOException {
         if (!jarMarkerAdded) {
-            ((ZipArchiveEntry)ze).addAsFirstExtraField(JarMarker.getInstance());
+            ((ZipArchiveEntry) ze).addAsFirstExtraField(JarMarker.getInstance());
             jarMarkerAdded = true;
         }
         super.putArchiveEntry(ze);

@@ -326,7 +326,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         final int headerSize = 512;
         final int endOfArchiveSize = 1024;
         final int unpaddedSize = headerSize + fileRecordsSize + endOfArchiveSize;
-        final int paddedSize = (int) Math.ceil((double)unpaddedSize/blockSize)*blockSize;
+        final int paddedSize = (int) Math.ceil((double) unpaddedSize/blockSize)*blockSize;
         assertEquals(paddedSize, f.length());
     }
 

@@ -74,7 +74,7 @@ import org.apache.commons.compress.utils.Sets;
  * <pre>
  * final InputStream is = Files.newInputStream(input.toPath());
  * ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream(ArchiveStreamFactory.ZIP, is);
- * ZipArchiveEntry entry = (ZipArchiveEntry)in.getNextEntry();
+ * ZipArchiveEntry entry = (ZipArchiveEntry) in.getNextEntry();
  * OutputStream out = Files.newOutputStream(dir.toPath().resolve(entry.getName()));
  * IOUtils.copy(in, out);
  * out.close();

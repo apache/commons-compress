@@ -157,7 +157,7 @@ public class IOUtilsTest {
     public void readRangeMoreThanCopyBufferSize() throws Exception {
         final Field COPY_BUF_SIZE = IOUtils.class.getDeclaredField("COPY_BUF_SIZE");
         COPY_BUF_SIZE.setAccessible(true);
-        final int copyBufSize = (int)COPY_BUF_SIZE.get(null);
+        final int copyBufSize = (int) COPY_BUF_SIZE.get(null);
 
         // Make an input that requires two read loops to trigger COMPRESS-585
         final byte[] input = new byte[copyBufSize + 10];

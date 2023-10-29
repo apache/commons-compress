@@ -254,7 +254,7 @@ public final class BHSDCodec extends Codec {
         // in for now for readability
         // if (isSigned()) {
         // long u = z;
-        // long twoPowS = (long)Math.pow(2, s);
+        // long twoPowS = (long) Math.pow(2, s);
         // double twoPowSMinusOne = twoPowS-1;
         // if (u % twoPowS < twoPowSMinusOne) {
         // if (cardinality < Math.pow(2, 32)) {

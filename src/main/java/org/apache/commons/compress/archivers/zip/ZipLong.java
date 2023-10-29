@@ -185,7 +185,7 @@ public final class ZipLong implements Cloneable, Serializable {
      * @return value as int
      * @since 1.15
      */
-    public int getIntValue() { return (int)value;}
+    public int getIntValue() { return (int) value;}
 
     /**
      * Get value as Java long.

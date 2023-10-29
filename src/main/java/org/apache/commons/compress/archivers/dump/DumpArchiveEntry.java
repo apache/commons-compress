@@ -55,10 +55,10 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * #define LBLSIZE     16
  * #define NAMELEN     64
  *
- * #define OFS_MAGIC     (int)60011  // old format magic value
- * #define NFS_MAGIC     (int)60012  // new format magic value
- * #define FS_UFS2_MAGIC (int)0x19540119
- * #define CHECKSUM      (int)84446  // constant used in checksum algorithm
+ * #define OFS_MAGIC     (int) 60011  // old format magic value
+ * #define NFS_MAGIC     (int) 60012  // new format magic value
+ * #define FS_UFS2_MAGIC (int) 0x19540119
+ * #define CHECKSUM      (int) 84446  // constant used in checksum algorithm
  *
  * struct  s_spcl {
  *   int32_t c_type;             // record type (see below)

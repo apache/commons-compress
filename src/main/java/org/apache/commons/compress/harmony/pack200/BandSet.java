@@ -719,7 +719,7 @@ public abstract class BandSet {
         }
         return results.numCodecsTried >= effort;
         // May want to also check how much we've saved if performance needs improving, e.g. saved more than effort*2 %
-        // || (float)results.saved/(float)results.encodedBand.length > (float)effort * 2/100;
+        // || (float) results.saved/(float) results.encodedBand.length > (float) effort * 2/100;
     }
 
     private void tryCodecs(final String name, final int[] band, final BHSDCodec defaultCodec, final BandData bandData,

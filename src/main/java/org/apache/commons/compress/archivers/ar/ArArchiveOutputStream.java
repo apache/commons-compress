@@ -135,7 +135,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
             throw new IOException("Stream has already been finished");
         }
 
-        final ArArchiveEntry pArEntry = (ArArchiveEntry)pEntry;
+        final ArArchiveEntry pArEntry = (ArArchiveEntry) pEntry;
         if (prevEntry == null) {
             writeArchiveHeader();
         } else {

@@ -1012,7 +1012,7 @@ public class SevenZFile implements Closeable {
         int nid =  getUnsignedByte(input);
         while (nid != NID.kEnd) {
             final long propertySize = readUint64(input);
-            final byte[] property = new byte[(int)propertySize];
+            final byte[] property = new byte[(int) propertySize];
             get(input, property);
             nid = getUnsignedByte(input);
         }
@@ -1228,7 +1228,7 @@ public class SevenZFile implements Closeable {
         final Folder folder = new Folder();
 
         final long numCoders = readUint64(header);
-        final Coder[] coders = new Coder[(int)numCoders];
+        final Coder[] coders = new Coder[(int) numCoders];
         long totalInStreams = 0;
         long totalOutStreams = 0;
         for (int i = 0; i < coders.length; i++) {
@@ -1252,7 +1252,7 @@ public class SevenZFile implements Closeable {
             totalOutStreams += coders[i].numOutStreams;
             if (hasAttributes) {
                 final long propertiesSize = readUint64(header);
-                coders[i].properties = new byte[(int)propertiesSize];
+                coders[i].properties = new byte[(int) propertiesSize];
                 get(header, coders[i].properties);
             }
             // would need to keep looping as above:
@@ -1266,7 +1266,7 @@ public class SevenZFile implements Closeable {
         folder.totalOutputStreams = totalOutStreams;
 
         final long numBindPairs = totalOutStreams - 1;
-        final BindPair[] bindPairs = new BindPair[(int)numBindPairs];
+        final BindPair[] bindPairs = new BindPair[(int) numBindPairs];
         for (int i = 0; i < bindPairs.length; i++) {
             bindPairs[i] = new BindPair();
             bindPairs[i].inIndex = readUint64(header);
@@ -1275,17 +1275,17 @@ public class SevenZFile implements Closeable {
         folder.bindPairs = bindPairs;
 
         final long numPackedStreams = totalInStreams - numBindPairs;
-        final long[] packedStreams = new long[(int)numPackedStreams];
+        final long[] packedStreams = new long[(int) numPackedStreams];
         if (numPackedStreams == 1) {
             int i;
-            for (i = 0; i < (int)totalInStreams; i++) {
+            for (i = 0; i < (int) totalInStreams; i++) {
                 if (folder.findBindPairForInStream(i) < 0) {
                     break;
                 }
             }
             packedStreams[0] = i;
         } else {
-            for (int i = 0; i < (int)numPackedStreams; i++) {
+            for (int i = 0; i < (int) numPackedStreams; i++) {
                 packedStreams[i] = readUint64(header);
             }
         }
@@ -1460,7 +1460,7 @@ public class SevenZFile implements Closeable {
             unpackStreamsCount = 0;
             for (final Folder folder : archive.folders) {
                 final long numStreams = readUint64(header);
-                folder.numUnpackSubStreams = (int)numStreams;
+                folder.numUnpackSubStreams = (int) numStreams;
                 unpackStreamsCount += numStreams;
             }
             nid = getUnsignedByte(header);
@@ -1545,7 +1545,7 @@ public class SevenZFile implements Closeable {
         nid = getUnsignedByte(header);
         for (final Folder folder : folders) {
             assertFitsIntoNonNegativeInt("totalOutputStreams", folder.totalOutputStreams);
-            folder.unpackSizes = new long[(int)folder.totalOutputStreams];
+            folder.unpackSizes = new long[(int) folder.totalOutputStreams];
             for (int i = 0; i < folder.totalOutputStreams; i++) {
                 folder.unpackSizes[i] = readUint64(header);
             }

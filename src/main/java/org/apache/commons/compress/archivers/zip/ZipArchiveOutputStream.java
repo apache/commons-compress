@@ -1023,7 +1023,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (isSplitZip) {
             // when creating a split zip, the offset should be
             // the offset to the corresponding segment disk
-            final ZipSplitOutputStream zipSplitOutputStream = (ZipSplitOutputStream)this.outputStream;
+            final ZipSplitOutputStream zipSplitOutputStream = (ZipSplitOutputStream) this.outputStream;
             cdOffset = zipSplitOutputStream.getCurrentSplitSegmentBytesWritten();
             cdDiskNumberStart = zipSplitOutputStream.getCurrentSplitSegmentIndex();
         }
@@ -1632,7 +1632,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
 
         int numberOfThisDisk = 0;
         if (isSplitZip) {
-            numberOfThisDisk = ((ZipSplitOutputStream)this.outputStream).getCurrentSplitSegmentIndex();
+            numberOfThisDisk = ((ZipSplitOutputStream) this.outputStream).getCurrentSplitSegmentIndex();
         }
         if (numberOfThisDisk >= ZipConstants.ZIP64_MAGIC_SHORT) {
             throw new Zip64RequiredException(Zip64RequiredException
@@ -1739,7 +1739,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
      */
     protected void writeCentralDirectoryEnd() throws IOException {
         if (!hasUsedZip64 && isSplitZip) {
-            ((ZipSplitOutputStream)this.outputStream).prepareToWriteUnsplittableContent(eocdLength);
+            ((ZipSplitOutputStream) this.outputStream).prepareToWriteUnsplittableContent(eocdLength);
         }
 
         validateIfZip64IsNeededInEOCD();
@@ -1749,12 +1749,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // number of this disk
         int numberOfThisDisk = 0;
         if (isSplitZip) {
-            numberOfThisDisk = ((ZipSplitOutputStream)this.outputStream).getCurrentSplitSegmentIndex();
+            numberOfThisDisk = ((ZipSplitOutputStream) this.outputStream).getCurrentSplitSegmentIndex();
         }
         writeCounted(ZipShort.getBytes(numberOfThisDisk));
 
         // disk number of the start of central directory
-        writeCounted(ZipShort.getBytes((int)cdDiskNumberStart));
+        writeCounted(ZipShort.getBytes((int) cdDiskNumberStart));
 
         // number of entries
         final int numberOfEntries = entries.size();
@@ -1860,7 +1860,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (isSplitZip) {
             // when creating a split zip, the offset should be
             // the offset to the corresponding segment disk
-            final ZipSplitOutputStream splitOutputStream = (ZipSplitOutputStream)this.outputStream;
+            final ZipSplitOutputStream splitOutputStream = (ZipSplitOutputStream) this.outputStream;
             ze.setDiskNumberStart(splitOutputStream.getCurrentSplitSegmentIndex());
             localHeaderStart = splitOutputStream.getCurrentSplitSegmentBytesWritten();
         }
@@ -1947,7 +1947,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (isSplitZip) {
             // when creating a split zip, the offset of should be
             // the offset to the corresponding segment disk
-            final ZipSplitOutputStream zipSplitOutputStream = (ZipSplitOutputStream)this.outputStream;
+            final ZipSplitOutputStream zipSplitOutputStream = (ZipSplitOutputStream) this.outputStream;
             offset = zipSplitOutputStream.getCurrentSplitSegmentBytesWritten();
             diskNumberStart = zipSplitOutputStream.getCurrentSplitSegmentIndex();
         }
@@ -1974,7 +1974,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         // number of this disk
         int numberOfThisDisk = 0;
         if (isSplitZip) {
-            numberOfThisDisk = ((ZipSplitOutputStream)this.outputStream).getCurrentSplitSegmentIndex();
+            numberOfThisDisk = ((ZipSplitOutputStream) this.outputStream).getCurrentSplitSegmentIndex();
         }
         writeOut(ZipLong.getBytes(numberOfThisDisk));
 
@@ -2007,7 +2007,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
                     + ZipConstants.WORD  /* total number of disks */;
 
             final long unsplittableContentSize = zip64EOCDLOCLength + eocdLength;
-            ((ZipSplitOutputStream)this.outputStream).prepareToWriteUnsplittableContent(unsplittableContentSize);
+            ((ZipSplitOutputStream) this.outputStream).prepareToWriteUnsplittableContent(unsplittableContentSize);
         }
 
         // and now the "ZIP64 end of central directory locator"
@@ -2021,7 +2021,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream {
         if (isSplitZip) {
             // the Zip64 End Of Central Directory Locator and the End Of Central Directory must be
             // in the same split disk, it means they must be located in the last disk
-            final int totalNumberOfDisks = ((ZipSplitOutputStream)this.outputStream).getCurrentSplitSegmentIndex() + 1;
+            final int totalNumberOfDisks = ((ZipSplitOutputStream) this.outputStream).getCurrentSplitSegmentIndex() + 1;
             writeOut(ZipLong.getBytes(totalNumberOfDisks));
         } else {
             writeOut(ONE);

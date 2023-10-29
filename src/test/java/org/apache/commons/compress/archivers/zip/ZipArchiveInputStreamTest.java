@@ -67,7 +67,7 @@ public class ZipArchiveInputStreamTest extends AbstractTestCase {
     }
 
     private static byte[] readEntry(final ZipArchiveInputStream zip, final ZipArchiveEntry zae) throws IOException {
-        final int len = (int)zae.getSize();
+        final int len = (int) zae.getSize();
         final byte[] buff = new byte[len];
         zip.read(buff, 0, len);
 

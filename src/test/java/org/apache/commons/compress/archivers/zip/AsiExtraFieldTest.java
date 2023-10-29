@@ -59,8 +59,8 @@ public class AsiExtraFieldTest implements UnixStat {
         byte[] b = a.getLocalFileDataData();
 
         // CRC manually calculated, sorry
-        byte[] expect = {(byte)0xC6, 0x02, 0x78, (byte)0xB6, // CRC
-                         0123, (byte)0x80,                   // mode
+        byte[] expect = {(byte) 0xC6, 0x02, 0x78, (byte) 0xB6, // CRC
+                         0123, (byte) 0x80,                   // mode
                          0, 0, 0, 0,                         // link length
                          5, 0, 6, 0};                        // uid, gid
         assertEquals(expect.length, b.length, "no link");
@@ -69,8 +69,8 @@ public class AsiExtraFieldTest implements UnixStat {
         }
 
         a.setLinkedFile("test");
-        expect = new byte[] {0x75, (byte)0x8E, 0x41, (byte)0xFD, // CRC
-                             0123, (byte)0xA0,                   // mode
+        expect = new byte[] {0x75, (byte) 0x8E, 0x41, (byte) 0xFD, // CRC
+                             0123, (byte) 0xA0,                   // mode
                              4, 0, 0, 0,                         // link length
                              5, 0, 6, 0,                         // uid, gid
                              (byte)'t', (byte)'e', (byte)'s', (byte)'t'};
@@ -102,8 +102,8 @@ public class AsiExtraFieldTest implements UnixStat {
     @Test
     public void testReparse() throws Exception {
         // CRC manually calculated, sorry
-        final byte[] data1 = {(byte)0xC6, 0x02, 0x78, (byte)0xB6, // CRC
-                              0123, (byte)0x80,                   // mode
+        final byte[] data1 = {(byte) 0xC6, 0x02, 0x78, (byte) 0xB6, // CRC
+                              0123, (byte) 0x80,                   // mode
                               0, 0, 0, 0,                         // link length
                               5, 0, 6, 0};                        // uid, gid
         final AsiExtraField a1 = new AsiExtraField();
@@ -115,8 +115,8 @@ public class AsiExtraFieldTest implements UnixStat {
         assertEquals(5, a1.getUserId(), "uid plain file");
         assertEquals(6, a1.getGroupId(), "gid plain file");
 
-        final byte[] data2 = {0x75, (byte)0x8E, 0x41, (byte)0xFD,            // CRC
-                                         0123, (byte)0xA0,                   // mode
+        final byte[] data2 = {0x75, (byte) 0x8E, 0x41, (byte) 0xFD,            // CRC
+                                         0123, (byte) 0xA0,                   // mode
                                          4, 0, 0, 0,                         // link length
                                          5, 0, 6, 0,                         // uid, gid
                                          (byte)'t', (byte)'e', (byte)'s', (byte)'t'};
@@ -130,8 +130,8 @@ public class AsiExtraFieldTest implements UnixStat {
         assertEquals(6, a2.getGroupId(), "gid link");
         assertEquals("test", a2.getLinkedFile());
 
-        final byte[] data3 = {(byte)0x8E, 0x01, (byte)0xBF, (byte)0x0E,            // CRC
-                                         0123, (byte)0x40,                         // mode
+        final byte[] data3 = {(byte) 0x8E, 0x01, (byte) 0xBF, (byte) 0x0E,            // CRC
+                                         0123, (byte) 0x40,                         // mode
                                          0, 0, 0, 0,                               // link
                                          5, 0, 6, 0};                              // uid, gid
         final AsiExtraField a3 = new AsiExtraField();
@@ -144,7 +144,7 @@ public class AsiExtraFieldTest implements UnixStat {
         assertEquals(6, a3.getGroupId(), "gid dir");
 
         final byte[] data4 = {0, 0, 0, 0,                                      // bad CRC
-                                         0123, (byte)0x40,                     // mode
+                                         0123, (byte) 0x40,                     // mode
                                          0, 0, 0, 0,                           // link
                                          5, 0, 6, 0};                          // uid, gid
         final AsiExtraField a4 = new AsiExtraField();
