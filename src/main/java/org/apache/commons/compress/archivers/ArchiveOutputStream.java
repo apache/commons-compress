@@ -50,12 +50,12 @@ import java.nio.file.Path;
 public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends OutputStream {
 
     static final int BYTE_MASK = 0xFF;
-    /** Temporary buffer used for the {@link #write(int)} method */
+
+    /** Temporary buffer used for the {@link #write(int)} method. */
     private final byte[] oneByte = new byte[1];
 
-    /** holds the number of bytes written to this stream */
+    /** holds the number of bytes written to this stream. */
     private long bytesWritten;
-    // Methods specific to ArchiveOutputStream
 
     /**
      * Whether this stream is able to write the given entry.
@@ -103,7 +103,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Output
     }
 
     /**
-     * Create an archive entry using the inputFile and entryName provided.
+     * Creates an archive entry using the inputFile and entryName provided.
      *
      * @param inputFile the file to create the entry from
      * @param entryName name to use for the entry
@@ -113,15 +113,15 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Output
      */
     public abstract E createArchiveEntry(File inputFile, String entryName) throws IOException;
 
-    // Generic implementations of OutputStream methods that may be useful to sub-classes
-
     /**
-     * Create an archive entry using the inputPath and entryName provided.
-     *
+     * Creates an archive entry using the inputPath and entryName provided.
+     * <p>
      * The default implementation calls simply delegates as:
      * <pre>return createArchiveEntry(inputFile.toFile(), entryName);</pre>
-     *
+     * </p>
+     * <p>
      * Subclasses should override this method.
+     * </p>
      *
      * @param inputPath the file to create the entry from
      * @param entryName name to use for the entry
@@ -144,7 +144,8 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Output
     public abstract void finish() throws IOException;
 
     /**
-     * Returns the current number of bytes written to this stream.
+     * Gets the current number of bytes written to this stream.
+     *
      * @return the number of written bytes
      * @since 1.1
      */
@@ -153,7 +154,8 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Output
     }
 
     /**
-     * Returns the current number of bytes written to this stream.
+     * Gets the current number of bytes written to this stream.
+     *
      * @return the number of written bytes
      * @deprecated this method may yield wrong results for large
      * archives, use #getBytesWritten instead
