@@ -45,7 +45,7 @@ import java.nio.file.Path;
  *   <li> optionally write additional data, provided format supports it,</li>
  *   <li>{@link #close()}.</li>
  * </ul>
- * @param <E> The type of {@link ArchiveEntry} produced.
+ * @param <E> The type of {@link ArchiveEntry} consumed.
  */
 public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends OutputStream {
 
