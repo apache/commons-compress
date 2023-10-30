@@ -53,8 +53,8 @@ class Change {
         Objects.requireNonNull(inputStream, "inputStream");
         this.entry = archiveEntry;
         this.input = inputStream;
-        type = TYPE_ADD;
-        targetFile = null;
+        this.type = TYPE_ADD;
+        this.targetFile = null;
         this.replaceMode = replace;
     }
 
