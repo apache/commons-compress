@@ -50,8 +50,8 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
     /** indicates if this archive is finished */
     private boolean finished;
 
-    public ArArchiveOutputStream(final OutputStream pOut) {
-        this.out = pOut;
+    public ArArchiveOutputStream(final OutputStream out) {
+        this.out = out;
     }
 
     /**
