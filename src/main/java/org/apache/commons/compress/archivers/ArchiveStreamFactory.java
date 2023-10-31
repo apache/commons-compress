@@ -266,7 +266,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         if (signatureLength >= TAR_HEADER_SIZE) {
             try (TarArchiveInputStream tais = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader))) {
                 // COMPRESS-191 - verify the header checksum
-                if (tais.getNextTarEntry().isCheckSumOK()) {
+                if (tais.getNextEntry().isCheckSumOK()) {
                     return TAR;
                 }
             } catch (final Exception e) { // NOPMD NOSONAR

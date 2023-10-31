@@ -23,7 +23,7 @@ import java.io.IOException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
-public final class MemoryArchiveInputStream extends ArchiveInputStream {
+public final class MemoryArchiveInputStream extends ArchiveInputStream<MemoryArchiveEntry> {
 
     private final String[] fileNames;
     private final String[] content;
@@ -43,11 +43,10 @@ public final class MemoryArchiveInputStream extends ArchiveInputStream {
     }
 
     @Override
-    public ArchiveEntry getNextEntry() throws IOException {
+    public MemoryArchiveEntry getNextEntry() throws IOException {
         if (p >= fileNames.length) {
             return null;
         }
-
         return new MemoryArchiveEntry(fileNames[p]);
     }
 

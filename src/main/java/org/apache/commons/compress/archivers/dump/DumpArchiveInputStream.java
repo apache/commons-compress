@@ -47,7 +47,7 @@ import org.apache.commons.compress.utils.IOUtils;
  *
  * @NotThreadSafe
  */
-public class DumpArchiveInputStream extends ArchiveInputStream {
+public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry> {
     /**
      * Look at the first few bytes of the file to decide if it's a dump
      * archive. With 32 bytes we can look at the magic value, with a full
@@ -192,10 +192,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     }
 
     /**
-     * Read the next entry.
+     * Reads the next entry.
+     *
      * @return the next entry
      * @throws IOException on error
+     * @deprecated Use {@link #getNextEntry()}.
      */
+    @Deprecated
     public DumpArchiveEntry getNextDumpEntry() throws IOException {
         return getNextEntry();
     }

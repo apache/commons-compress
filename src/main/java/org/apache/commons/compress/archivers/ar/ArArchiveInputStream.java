@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
@@ -34,7 +33,7 @@ import org.apache.commons.compress.utils.IOUtils;
  *
  * @NotThreadSafe
  */
-public class ArArchiveInputStream extends ArchiveInputStream {
+public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
 
     // offsets and length of meta data parts
     private static final int NAME_OFFSET = 0;
@@ -245,7 +244,9 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * @return the next AR entry.
      * @throws IOException
      *             if the entry could not be read
+     * @deprecated Use {@link #getNextEntry()}.
      */
+    @Deprecated
     public ArArchiveEntry getNextArEntry() throws IOException {
         if (currentEntry != null) {
             final long entryEnd = entryOffset + currentEntry.getLength();
@@ -345,7 +346,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * org.apache.commons.compress.archivers.ArchiveInputStream#getNextEntry()
      */
     @Override
-    public ArchiveEntry getNextEntry() throws IOException {
+    public ArArchiveEntry getNextEntry() throws IOException {
         return getNextArEntry();
     }
 

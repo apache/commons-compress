@@ -80,7 +80,7 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  * @see ZipFile
  * @NotThreadSafe
  */
-public class ZipArchiveInputStream extends ArchiveInputStream implements InputStreamStatistics {
+public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> implements InputStreamStatistics {
 
     /**
      * Bounded input stream adapted from commons-io
@@ -720,10 +720,18 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     }
 
     @Override
-    public ArchiveEntry getNextEntry() throws IOException {
+    public ZipArchiveEntry getNextEntry() throws IOException {
         return getNextZipEntry();
     }
 
+    /**
+     * Gets the next entry.
+     *
+     * @return the next entry.
+     * @throws IOException
+     * @deprecated Use {@link #getNextEntry()}.
+     */
+    @Deprecated
     public ZipArchiveEntry getNextZipEntry() throws IOException {
         uncompressedCount = 0;
 

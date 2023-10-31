@@ -42,9 +42,11 @@ import org.apache.commons.compress.utils.IOUtils;
  * @NotThreadSafe
  * @since 1.6
  */
-public class ArjArchiveInputStream extends ArchiveInputStream {
+public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
+
     private static final int ARJ_MAGIC_1 = 0x60;
     private static final int ARJ_MAGIC_2 = 0xEA;
+
     /**
      * Checks if the signature matches what is expected for an arj file.
      *
@@ -59,11 +61,11 @@ public class ArjArchiveInputStream extends ArchiveInputStream {
                 (0xff & signature[0]) == ARJ_MAGIC_1 &&
                 (0xff & signature[1]) == ARJ_MAGIC_2;
     }
+
     private final DataInputStream in;
     private final String charsetName;
     private final MainHeader mainHeader;
     private LocalFileHeader currentLocalFileHeader;
-
     private InputStream currentInputStream;
 
     /**

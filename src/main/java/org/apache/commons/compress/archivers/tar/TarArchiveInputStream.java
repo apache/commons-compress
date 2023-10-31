@@ -47,7 +47,7 @@ import org.apache.commons.compress.utils.IOUtils;
  * using read().
  * @NotThreadSafe
  */
-public class TarArchiveInputStream extends ArchiveInputStream {
+public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
     private static final int SMALL_BUFFER_SIZE = 256;
 
@@ -422,12 +422,12 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      * @throws IOException if the next entry could not be read
      */
     @Override
-    public ArchiveEntry getNextEntry() throws IOException {
+    public TarArchiveEntry getNextEntry() throws IOException {
         return getNextTarEntry();
     }
 
     /**
-     * Get the next entry in this tar archive. This will skip
+     * Gets the next entry in this tar archive. This will skip
      * over any remaining data in the current entry, if there
      * is one, and place the input stream at the header of the
      * next entry, and read the header and instantiate a new
@@ -438,7 +438,9 @@ public class TarArchiveInputStream extends ArchiveInputStream {
      *
      * @return The next TarEntry in the archive, or null.
      * @throws IOException on error
+     * @deprecated Use {@link #getNextEntry()}.
      */
+    @Deprecated
     public TarArchiveEntry getNextTarEntry() throws IOException {
         if (isAtEOF()) {
             return null;

@@ -117,8 +117,8 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Output
      * Creates an archive entry using the inputPath and entryName provided.
      * <p>
      * The default implementation calls simply delegates as:
-     * <pre>return createArchiveEntry(inputFile.toFile(), entryName);</pre>
      * </p>
+     * <pre>return createArchiveEntry(inputFile.toFile(), entryName);</pre>
      * <p>
      * Subclasses should override this method.
      * </p>

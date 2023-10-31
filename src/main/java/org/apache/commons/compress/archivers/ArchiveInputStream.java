@@ -36,13 +36,15 @@ import java.io.InputStream;
  * </pre>
  * which is used by the {@link ArchiveStreamFactory} to autodetect
  * the archive type from the first few bytes of a stream.
+ *
+ * @param <E> The type of {@link ArchiveEntry} produced.
  */
-public abstract class ArchiveInputStream extends InputStream {
+public abstract class ArchiveInputStream<E extends ArchiveEntry> extends InputStream {
 
     private static final int BYTE_MASK = 0xFF;
     private final byte[] single = new byte[1];
 
-    /** holds the number of bytes read in this stream */
+    /** Holds the number of bytes read in this stream */
     private long bytesRead;
 
     /**
@@ -61,15 +63,6 @@ public abstract class ArchiveInputStream extends InputStream {
     public boolean canReadEntryData(final ArchiveEntry archiveEntry) {
         return true;
     }
-
-    /*
-     * Note that subclasses also implement specific get() methods which
-     * return the appropriate class without need for a cast.
-     * See SVN revision r743259
-     * @return
-     * @throws IOException
-     */
-    // public abstract XXXArchiveEntry getNextXXXEntry() throws IOException;
 
     /**
      * Increments the counter of already read bytes.
@@ -121,7 +114,7 @@ public abstract class ArchiveInputStream extends InputStream {
      *         or {@code null} if there are no more entries
      * @throws IOException if the next entry could not be read
      */
-    public abstract ArchiveEntry getNextEntry() throws IOException;
+    public abstract E getNextEntry() throws IOException;
 
     /**
      * Decrements the counter of already read bytes.

@@ -21,7 +21,6 @@ package org.apache.commons.compress.archivers.jar;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 
@@ -67,10 +66,18 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
     }
 
     @Override
-    public ArchiveEntry getNextEntry() throws IOException {
+    public JarArchiveEntry getNextEntry() throws IOException {
         return getNextJarEntry();
     }
 
+    /**
+     * Gets the next entry.
+     *
+     * @return the next entry.
+     * @throws IOException
+     * @deprecated Use {@link #getNextEntry()}.
+     */
+    @Deprecated
     public JarArchiveEntry getNextJarEntry() throws IOException {
         final ZipArchiveEntry entry = getNextZipEntry();
         return entry == null ? null : new JarArchiveEntry(entry);
