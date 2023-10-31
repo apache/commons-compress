@@ -972,7 +972,7 @@ public class ZipFile implements Closeable {
                 // byte following the data stream; this used to be zlib's requirement
                 // and has been fixed a long time ago, but the contract persists so
                 // we comply.
-                // https://docs.oracle.com/javase/7/docs/api/java/util/zip/Inflater.html#Inflater(boolean)
+                // https://docs.oracle.com/javase/8/docs/api/java/util/zip/Inflater.html#Inflater(boolean)
                 return new InflaterInputStreamWithStatistics(new SequenceInputStream(is, new ByteArrayInputStream(ONE_ZERO_BYTE)),
                     inflater) {
                     @Override
