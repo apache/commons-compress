@@ -859,12 +859,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             nSelectors = 0;
 
             for (int gs = 0; gs < this.nMTF;) {
-                /* Set group start & end marks. */
+                // Set group start & end marks.
 
-                /*
-                 * Calculate the cost of this group as coded by each of the
-                 * coding tables.
-                 */
+                // Calculate the cost of this group as coded by each of the
+                // coding tables.
 
                 final int ge = Math.min(gs + G_SIZE - 1, nMTFShadow - 1);
 
