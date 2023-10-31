@@ -31,7 +31,7 @@ import org.apache.commons.compress.harmony.pack200.AttributeDefinitionBands.Attr
 import org.objectweb.asm.Label;
 
 /**
- * Set of bands relating to a non-predefined attribute that has had a layout definition given to pack200 (e.g. via one
+ * Sets of bands relating to a non-predefined attribute that has had a layout definition given to pack200 (e.g. via one
  * of the -C, -M, -F or -D command line options)
  */
 public class NewAttributeBands extends BandSet {

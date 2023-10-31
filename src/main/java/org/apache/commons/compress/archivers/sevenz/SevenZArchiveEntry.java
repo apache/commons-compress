@@ -450,7 +450,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set this entry's compressed file size.
+     * Sets this entry's compressed file size.
      *
      * @param size This entry's new compressed file size.
      */
@@ -642,7 +642,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set this entry's name.
+     * Sets this entry's name.
      *
      * @param name This entry's new name.
      */
@@ -651,7 +651,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set this entry's file size.
+     * Sets this entry's file size.
      *
      * @param size This entry's new file size.
      */

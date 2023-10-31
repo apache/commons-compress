@@ -41,7 +41,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.harmony.unpack200.bytecode.NewAttribute;
 
 /**
- * Set of bands relating to a non-predefined attribute
+ * Sets of bands relating to a non-predefined attribute
  */
 public class NewAttributeBands extends BandSet {
 

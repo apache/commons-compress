@@ -1412,7 +1412,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
-     * Set the file comment.
+     * Sets the file comment.
      * @param comment the comment
      */
     public void setComment(final String comment) {

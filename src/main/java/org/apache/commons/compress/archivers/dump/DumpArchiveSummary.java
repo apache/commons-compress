@@ -221,7 +221,7 @@ public class DumpArchiveSummary {
     }
 
     /**
-     * Set the device name.
+     * Sets the device name.
      * @param devname the device name
      */
     public void setDevname(final String devname) {
@@ -229,7 +229,7 @@ public class DumpArchiveSummary {
     }
 
     /**
-     * Set dump date.
+     * Sets dump date.
      * @param dumpDate the dump date
      */
     public void setDumpDate(final Date dumpDate) {
@@ -237,7 +237,7 @@ public class DumpArchiveSummary {
     }
 
     /**
-     * Set the last mountpoint.
+     * Sets the last mountpoint.
      * @param fileSystem the last mountpoint
      */
     public void setFilesystem(final String fileSystem) {
@@ -245,7 +245,7 @@ public class DumpArchiveSummary {
     }
 
     /**
-     * Set the inode of the first record.
+     * Sets the inode of the first record.
      * @param firstrec the first record
      */
     public void setFirstRecord(final int firstrec) {
@@ -253,7 +253,7 @@ public class DumpArchiveSummary {
     }
 
     /**
-     * Set the miscellaneous flags.
+     * Sets the miscellaneous flags.
      * @param flags flags
      */
     public void setFlags(final int flags) {
@@ -261,7 +261,7 @@ public class DumpArchiveSummary {
     }
 
     /**
-     * Set the hostname.
+     * Sets the hostname.
      * @param hostname the host name
      */
     public void setHostname(final String hostname) {
@@ -269,7 +269,7 @@ public class DumpArchiveSummary {
     }
 
     /**
-     * Set dump label.
+     * Sets dump label.
      * @param label the label
      */
     public void setLabel(final String label) {
@@ -277,7 +277,7 @@ public class DumpArchiveSummary {
     }
 
     /**
-     * Set level.
+     * Sets level.
      * @param level the level
      */
     public void setLevel(final int level) {
@@ -285,7 +285,7 @@ public class DumpArchiveSummary {
     }
 
     /**
-     * Set the number of records per tape block.
+     * Sets the number of records per tape block.
      * @param ntrec the number of records per tape block
      */
     public void setNTRec(final int ntrec) {
@@ -293,7 +293,7 @@ public class DumpArchiveSummary {
     }
 
     /**
-     * Set previous dump date.
+     * Sets previous dump date.
      * @param previousDumpDate the previous dump dat
      */
     public void setPreviousDumpDate(final Date previousDumpDate) {
@@ -301,7 +301,7 @@ public class DumpArchiveSummary {
     }
 
     /**
-     * Set volume (tape) number.
+     * Sets volume (tape) number.
      * @param volume the volume number
      */
     public void setVolume(final int volume) {

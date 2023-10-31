@@ -689,7 +689,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set the time the file was last accessed.
+     * Sets the time the file was last accessed.
      * @param atime the access time
      */
     public void setAccessTime(final Date atime) {
@@ -697,7 +697,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set the file creation time.
+     * Sets the file creation time.
      * @param ctime the creation time
      */
     public void setCreationTime(final Date ctime) {
@@ -705,7 +705,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set whether this file has been deleted.
+     * Sets whether this file has been deleted.
      * @param isDeleted whether the file has been deleted
      */
     public void setDeleted(final boolean isDeleted) {
@@ -713,7 +713,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set the generation of the file.
+     * Sets the generation of the file.
      * @param generation the generation
      */
     public void setGeneration(final int generation) {
@@ -721,7 +721,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set the group id.
+     * Sets the group id.
      * @param gid the group id
      */
     public void setGroupId(final int gid) {
@@ -729,7 +729,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set the time the file was last modified.
+     * Sets the time the file was last modified.
      * @param mtime the last modified time
      */
     public void setLastModifiedDate(final Date mtime) {
@@ -737,7 +737,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set the access permissions on the entry.
+     * Sets the access permissions on the entry.
      * @param mode the access permissions
      */
     public void setMode(final int mode) {
@@ -763,7 +763,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set the number of hard links.
+     * Sets the number of hard links.
      * @param nlink the number of hard links
      */
     public void setNlink(final int nlink) {
@@ -771,7 +771,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set the offset within the archive.
+     * Sets the offset within the archive.
      * @param offset the offset
      */
     public void setOffset(final long offset) {
@@ -787,7 +787,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set the size of the entry.
+     * Sets the size of the entry.
      * @param size the size
      */
     public void setSize(final long size) {
@@ -795,7 +795,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set the type of the entry.
+     * Sets the type of the entry.
      * @param type the type
      */
     public void setType(final TYPE type) {
@@ -803,7 +803,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set the user id.
+     * Sets the user id.
      * @param uid the user id
      */
     public void setUserId(final int uid) {
@@ -811,7 +811,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set the tape volume.
+     * Sets the tape volume.
      * @param volume the volume
      */
     public void setVolume(final int volume) {

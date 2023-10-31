@@ -1800,7 +1800,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's creation time.
+     * Sets this entry's creation time.
      *
      * @param time This entry's new creation time.
      * @since 1.22
@@ -1810,7 +1810,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set the offset of the data for the tar entry.
+     * Sets the offset of the data for the tar entry.
      * @param dataOffset the position of the data in the tar.
      * @since 1.21
      */
@@ -1822,7 +1822,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's major device number.
+     * Sets this entry's major device number.
      *
      * @param devNo This entry's major device number.
      * @throws IllegalArgumentException if the devNo is &lt; 0.
@@ -1837,7 +1837,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's minor device number.
+     * Sets this entry's minor device number.
      *
      * @param devNo This entry's minor device number.
      * @throws IllegalArgumentException if the devNo is &lt; 0.
@@ -1852,7 +1852,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's group id.
+     * Sets this entry's group id.
      *
      * @param groupId This entry's new group id.
      */
@@ -1861,7 +1861,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's group id.
+     * Sets this entry's group id.
      *
      * @since 1.10
      * @param groupId This entry's new group id.
@@ -1871,7 +1871,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's group name.
+     * Sets this entry's group name.
      *
      * @param groupName This entry's new group name.
      */
@@ -1891,7 +1891,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's last access time.
+     * Sets this entry's last access time.
      *
      * @param time This entry's new last access time.
      * @since 1.22
@@ -1901,7 +1901,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's modification time.
+     * Sets this entry's modification time.
      *
      * @param time This entry's new modification time.
      * @since 1.22
@@ -1911,7 +1911,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's link name.
+     * Sets this entry's link name.
      *
      * @param link the link name to use.
      *
@@ -1922,7 +1922,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set the mode for this entry
+     * Sets the mode for this entry
      *
      * @param mode the mode for this entry
      */
@@ -1931,7 +1931,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's modification time.
+     * Sets this entry's modification time.
      *
      * @param time This entry's new modification time.
      * @see TarArchiveEntry#setLastModifiedTime(FileTime)
@@ -1941,7 +1941,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's modification time.
+     * Sets this entry's modification time.
      *
      * @param time This entry's new modification time.
      * @since 1.21
@@ -1952,7 +1952,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's modification time. The parameter passed
+     * Sets this entry's modification time. The parameter passed
      * to this method is in "Java time".
      *
      * @param time This entry's new modification time.
@@ -1963,7 +1963,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's name.
+     * Sets this entry's name.
      *
      * @param name This entry's new name.
      */
@@ -1983,7 +1983,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's file size.
+     * Sets this entry's file size.
      *
      * @param size This entry's new file size.
      * @throws IllegalArgumentException if the size is &lt; 0.
@@ -1996,7 +1996,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's sparse headers
+     * Sets this entry's sparse headers
      * @param sparseHeaders The new sparse headers
      * @since 1.20
      */
@@ -2005,7 +2005,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's status change time.
+     * Sets this entry's status change time.
      *
      * @param time This entry's new status change time.
      * @since 1.22
@@ -2015,7 +2015,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's user id.
+     * Sets this entry's user id.
      *
      * @param userId This entry's new user id.
      */
@@ -2024,7 +2024,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's user id.
+     * Sets this entry's user id.
      *
      * @param userId This entry's new user id.
      * @since 1.10
@@ -2034,7 +2034,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Set this entry's user name.
+     * Sets this entry's user name.
      *
      * @param userName This entry's new user name.
      */

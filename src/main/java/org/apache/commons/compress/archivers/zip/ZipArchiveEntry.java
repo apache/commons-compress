@@ -1289,7 +1289,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Set the name of the entry.
+     * Sets the name of the entry.
      * @param name the name to use
      */
     protected void setName(String name) {
@@ -1324,7 +1324,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Set the platform (UNIX or FAT).
+     * Sets the platform (UNIX or FAT).
      * @param platform an {@code int} value - 0 is FAT, 3 is UNIX
      */
     protected void setPlatform(final int platform) {

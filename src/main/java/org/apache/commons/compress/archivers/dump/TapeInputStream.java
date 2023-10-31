@@ -287,7 +287,7 @@ class TapeInputStream extends FilterInputStream {
     }
 
     /**
-     * Set the DumpArchive Buffer's block size. We need to sync the block size with the
+     * Sets the DumpArchive Buffer's block size. We need to sync the block size with the
      * dump archive's actual block size since compression is handled at the
      * block level.
      *

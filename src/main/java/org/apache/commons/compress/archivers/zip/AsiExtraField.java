@@ -313,7 +313,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     }
 
     /**
-     * Set the group id.
+     * Sets the group id.
      * @param gid the group id
      */
     public void setGroupId(final int gid) {
@@ -340,7 +340,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     }
 
     /**
-     * Set the user id.
+     * Sets the user id.
      * @param uid the user id
      */
     public void setUserId(final int uid) {

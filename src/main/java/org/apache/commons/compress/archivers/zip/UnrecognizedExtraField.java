@@ -127,7 +127,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     }
 
     /**
-     * Set the extra field data in central directory.
+     * Sets the extra field data in central directory.
      * @param data the data to use
      */
     public void setCentralDirectoryData(final byte[] data) {
@@ -135,7 +135,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     }
 
     /**
-     * Set the header id.
+     * Sets the header id.
      * @param headerId the header id to use
      */
     public void setHeaderId(final ZipShort headerId) {
@@ -143,7 +143,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     }
 
     /**
-     * Set the extra field data in the local file data -
+     * Sets the extra field data in the local file data -
      * without Header-ID or length specifier.
      * @param data the field data to use
      */

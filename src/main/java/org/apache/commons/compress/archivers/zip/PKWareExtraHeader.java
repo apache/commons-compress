@@ -296,7 +296,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     }
 
     /**
-     * Set the extra field data in central directory.
+     * Sets the extra field data in central directory.
      *
      * @param data
      *            the data to use
@@ -306,7 +306,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     }
 
     /**
-     * Set the extra field data in the local file data - without Header-ID or
+     * Sets the extra field data in the local file data - without Header-ID or
      * length specifier.
      *
      * @param data
