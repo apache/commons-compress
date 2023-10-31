@@ -533,7 +533,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
          * is about 2.0e-3 for 32 bits, 1.0e-5 for 40 bits and 4.0e-8 for 48
          * bits. For a compressed file of size 100Gb -- about 100000 blocks --
          * only a 48-bit marker will do. NB: normal compression/ decompression
-         * donot rely on these statistical properties. They are only important
+         * doesn't rely on these statistical properties. They are only important
          * when trying to recover blocks from damaged files.
          */
         bsPutUByte(0x31);
