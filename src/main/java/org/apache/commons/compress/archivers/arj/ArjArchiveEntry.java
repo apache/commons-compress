@@ -165,7 +165,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Get this entry's name.
+     * Gets this entry's name.
      *
      * <p>This method returns the raw name as it is stored inside of the archive.</p>
      *
@@ -181,7 +181,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Get this entry's file size.
+     * Gets this entry's file size.
      *
      * @return This entry's file size.
      */

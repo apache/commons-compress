@@ -71,7 +71,7 @@ public final class ZipLong implements Cloneable, Serializable {
     public static final ZipLong AED_SIG = new ZipLong(0X08064B50L);
 
     /**
-     * Get value as four bytes in big endian byte order.
+     * Gets value as four bytes in big endian byte order.
      * @param value the value to convert
      * @return value as four bytes in big endian byte order
      */
@@ -173,7 +173,7 @@ public final class ZipLong implements Cloneable, Serializable {
     }
 
     /**
-     * Get value as four bytes in big endian byte order.
+     * Gets value as four bytes in big endian byte order.
      * @return value as four bytes in big endian order
      */
     public byte[] getBytes() {
@@ -181,14 +181,14 @@ public final class ZipLong implements Cloneable, Serializable {
     }
 
     /**
-     * Get value as a (signed) java int
+     * Gets value as a (signed) java int
      * @return value as int
      * @since 1.15
      */
     public int getIntValue() { return (int) value;}
 
     /**
-     * Get value as Java long.
+     * Gets value as Java long.
      * @return value as a long
      */
     public long getValue() {

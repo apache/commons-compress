@@ -558,7 +558,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Get all extra fields, including unparseable ones.
+     * Gets all extra fields, including unparseable ones.
      * @return An array of all extra fields. Not necessarily a copy of internal data structures, hence private method
      */
     private ZipExtraField[] getAllExtraFieldsNoCopy() {
@@ -777,7 +777,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Get the name of the entry.
+     * Gets the name of the entry.
      *
      * <p>This method returns the raw name as it is stored inside of the archive.</p>
      *
@@ -923,7 +923,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Get the hash code of the entry.
+     * Gets the hash code of the entry.
      * This uses the name as the hash code.
      * @return a hash code.
      */

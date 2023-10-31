@@ -121,7 +121,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     }
 
     /**
-     * Get the group id.
+     * Gets the group id.
      * @return the group id
      */
     public int getGroupId() {
@@ -205,7 +205,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     }
 
     /**
-     * Get the file mode for given permissions with the correct file type.
+     * Gets the file mode for given permissions with the correct file type.
      * @param mode the mode
      * @return the type with the mode
      */
@@ -220,7 +220,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     }
 
     /**
-     * Get the user id.
+     * Gets the user id.
      * @return the user id
      */
     public int getUserId() {

@@ -453,7 +453,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Get file creation time.
+     * Gets file creation time.
      * @return the creation time
      */
     public Date getCreationTime() {
@@ -594,7 +594,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Get the type of the entry.
+     * Gets the type of the entry.
      * @return the type
      */
     public TYPE getType() {

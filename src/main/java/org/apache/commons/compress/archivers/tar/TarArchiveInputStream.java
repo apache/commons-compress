@@ -245,7 +245,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     /**
-     * Get the available data that can be read from the current
+     * Gets the available data that can be read from the current
      * entry in the archive. This does not indicate how much data
      * is left in the entire archive, only in the current entry.
      * This value is determined from the entry's size header field
@@ -375,7 +375,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     /**
-     * Get the current TAR Archive Entry that this input stream is processing
+     * Gets the current TAR Archive Entry that this input stream is processing
      *
      * @return The current Archive Entry
      */
@@ -384,7 +384,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     /**
-     * Get the next entry in this tar archive as long name data.
+     * Gets the next entry in this tar archive as long name data.
      *
      * @return The next entry in the archive as long name data, or null.
      * @throws IOException on error
@@ -527,7 +527,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     /**
-     * Get the next record in this tar archive. This will skip
+     * Gets the next record in this tar archive. This will skip
      * over any remaining data in the current entry, if there
      * is one, and place the input stream at the header of the
      * next entry.
@@ -552,7 +552,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     /**
-     * Get the record size being used by this stream's buffer.
+     * Gets the record size being used by this stream's buffer.
      *
      * @return The TarBuffer record size.
      */

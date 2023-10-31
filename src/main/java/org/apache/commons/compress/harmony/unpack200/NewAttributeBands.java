@@ -620,7 +620,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Get one attribute at the given index from the various bands. The correct bands must have already been read in.
+     * Gets one attribute at the given index from the various bands. The correct bands must have already been read in.
      *
      * @param index TODO
      * @param elements TODO

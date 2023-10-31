@@ -205,7 +205,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     }
 
     /**
-     * Get the central data.
+     * Gets the central data.
      *
      * @return the central data if present, else return the local file data
      */
@@ -218,7 +218,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     }
 
     /**
-     * Get the central data length. If there is no central data, get the local
+     * Gets the central data length. If there is no central data, get the local
      * file data length.
      *
      * @return the central data length
@@ -232,7 +232,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     }
 
     /**
-     * Get the header id.
+     * Gets the header id.
      *
      * @return the header id
      */
@@ -242,7 +242,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     }
 
     /**
-     * Get the local data.
+     * Gets the local data.
      *
      * @return the local data
      */
@@ -252,7 +252,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     }
 
     /**
-     * Get the length of the local data.
+     * Gets the length of the local data.
      *
      * @return the length of the local data
      */

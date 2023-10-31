@@ -673,7 +673,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Get the number of bytes Inflater has actually processed.
+     * Gets the number of bytes Inflater has actually processed.
      *
      * <p>for Java &lt; Java7 the getBytes* methods in
      * Inflater/Deflater seem to return unsigned ints rather than

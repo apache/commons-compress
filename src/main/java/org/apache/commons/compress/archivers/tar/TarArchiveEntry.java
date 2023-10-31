@@ -817,7 +817,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's creation time.
+     * Gets this entry's creation time.
      *
      * @since 1.22
      * @return This entry's computed creation time.
@@ -836,7 +836,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's major device number.
+     * Gets this entry's major device number.
      *
      * @return This entry's major device number.
      * @since 1.4
@@ -846,7 +846,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's minor device number.
+     * Gets this entry's minor device number.
      *
      * @return This entry's minor device number.
      * @since 1.4
@@ -900,7 +900,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's file.
+     * Gets this entry's file.
      *
      * <p>This method is only useful for entries created from a {@code
      * File} or {@code Path} but not for entries read from an archive.</p>
@@ -915,7 +915,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's group id.
+     * Gets this entry's group id.
      *
      * @return This entry's group id.
      * @deprecated use #getLongGroupId instead as group ids can be
@@ -927,7 +927,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's group name.
+     * Gets this entry's group name.
      *
      * @return This entry's group name.
      */
@@ -936,7 +936,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's last access time.
+     * Gets this entry's last access time.
      *
      * @since 1.22
      * @return This entry's last access time.
@@ -946,7 +946,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's modification time.
+     * Gets this entry's modification time.
      * This is equivalent to {@link TarArchiveEntry#getLastModifiedTime()}, but precision is truncated to milliseconds.
      *
      * @return This entry's modification time.
@@ -958,7 +958,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's modification time.
+     * Gets this entry's modification time.
      *
      * @since 1.22
      * @return This entry's modification time.
@@ -968,7 +968,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's link flag.
+     * Gets this entry's link flag.
      *
      * @return this entry's link flag.
      * @since 1.23
@@ -978,7 +978,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's link name.
+     * Gets this entry's link name.
      *
      * @return This entry's link name.
      */
@@ -987,7 +987,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's group id.
+     * Gets this entry's group id.
      *
      * @since 1.10
      * @return This entry's group id.
@@ -997,7 +997,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's user id.
+     * Gets this entry's user id.
      *
      * @return This entry's user id.
      * @since 1.10
@@ -1007,7 +1007,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's mode.
+     * Gets this entry's mode.
      *
      * @return This entry's mode.
      */
@@ -1016,7 +1016,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's modification time.
+     * Gets this entry's modification time.
      * This is equivalent to {@link TarArchiveEntry#getLastModifiedTime()}, but precision is truncated to milliseconds.
      *
      * @return This entry's modification time.
@@ -1027,7 +1027,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's name.
+     * Gets this entry's name.
      *
      * <p>This method returns the raw name as it is stored inside of the archive.</p>
      *
@@ -1039,7 +1039,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's sparse headers ordered by offset with all empty sparse sections at the start filtered out.
+     * Gets this entry's sparse headers ordered by offset with all empty sparse sections at the start filtered out.
      *
      * @return immutable list of this entry's sparse headers, never null
      * @since 1.21
@@ -1079,7 +1079,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's file.
+     * Gets this entry's file.
      *
      * <p>This method is only useful for entries created from a {@code
      * File} or {@code Path} but not for entries read from an archive.</p>
@@ -1092,7 +1092,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's real file size in case of a sparse file.
+     * Gets this entry's real file size in case of a sparse file.
      *
      * <p>This is the size a file would take on disk if the entry was expanded.</p>
      *
@@ -1108,7 +1108,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's file size.
+     * Gets this entry's file size.
      *
      * <p>This is the size the entry's data uses inside the archive. Usually this is the same as {@link
      * #getRealSize}, but it doesn't take the "holes" into account when the entry represents a sparse file.
@@ -1121,7 +1121,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's sparse headers
+     * Gets this entry's sparse headers
      *
      * @return This entry's sparse headers
      * @since 1.20
@@ -1131,7 +1131,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's status change time.
+     * Gets this entry's status change time.
      *
      * @since 1.22
      * @return This entry's status change time.
@@ -1141,7 +1141,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's user id.
+     * Gets this entry's user id.
      *
      * @return This entry's user id.
      * @deprecated use #getLongUserId instead as user ids can be
@@ -1153,7 +1153,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's user name.
+     * Gets this entry's user name.
      *
      * @return This entry's user name.
      */
@@ -1192,7 +1192,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get this entry's checksum status.
+     * Gets this entry's checksum status.
      *
      * @return if the header checksum is reasonably correct
      * @see TarUtils#verifyCheckSum(byte[])
@@ -1365,7 +1365,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Get if this entry is a sparse file with 1.X PAX Format or not
+     * Gets if this entry is a sparse file with 1.X PAX Format or not
      *
      * @return True if this entry is a sparse file with 1.X PAX Format
      * @since 1.20

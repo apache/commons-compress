@@ -217,7 +217,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     }
 
     /**
-     * Get an extended name from the GNU extended name buffer.
+     * Gets an extended name from the GNU extended name buffer.
      *
      * @param offset pointer to entry within the buffer
      * @return the extended file name; without trailing "/" if present.

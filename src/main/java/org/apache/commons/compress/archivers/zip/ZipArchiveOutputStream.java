@@ -1134,7 +1134,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
-     * Get the existing ZIP64 extended information extra field or
+     * Gets the existing ZIP64 extended information extra field or
      * create a new one and add it to the entry.
      *
      * @since 1.3

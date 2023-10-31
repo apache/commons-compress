@@ -297,7 +297,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     }
 
     /**
-     * Get full path for specified archive entry, or null if there's a gap.
+     * Gets full path for specified archive entry, or null if there's a gap.
      *
      * @param entry
      * @return  full path for specified archive entry, or null if there's a gap.
