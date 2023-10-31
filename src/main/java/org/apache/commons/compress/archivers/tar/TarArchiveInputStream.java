@@ -86,7 +86,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
                 ){
             return true;
         }
-        // COMPRESS-107 - recognise Ant tar files
+        // COMPRESS-107 - recognize Ant tar files
         return ArchiveUtils.matchAsciiBuffer(TarConstants.MAGIC_ANT,
                 signature, TarConstants.MAGIC_OFFSET, TarConstants.MAGICLEN)
                 &&

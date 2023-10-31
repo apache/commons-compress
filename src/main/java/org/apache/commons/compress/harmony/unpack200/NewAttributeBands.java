@@ -688,7 +688,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Tokenise the layout into AttributeElements
+     * Tokenize the layout into AttributeElements
      *
      * @throws IOException If an I/O error occurs.
      */

@@ -714,7 +714,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     /**
      * Writes magic bytes like BZ on the first position of the stream
      * and bytes indicating the file-format, which is
-     * huffmanised, followed by a digit indicating blockSize100k.
+     * huffmanized, followed by a digit indicating blockSize100k.
      * @throws IOException if the magic bytes could not been written
      */
     private void init() throws IOException {
@@ -724,7 +724,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         this.data = new Data(this.blockSize100k);
         this.blockSorter = new BlockSort(this.data);
 
-        // huffmanised magic bytes
+        // huffmanized magic bytes
         bsPutUByte('h');
         bsPutUByte('0' + this.blockSize100k);
 
