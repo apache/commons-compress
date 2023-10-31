@@ -529,7 +529,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
          * A 6-byte block header, the value chosen arbitrarily as 0x314159265359
          * :-). A 32 bit value does not really give a strong enough guarantee
          * that the value will not appear by chance in the compressed
-         * datastream. Worst-case probability of this event, for a 900k block,
+         * data stream. Worst-case probability of this event, for a 900k block,
          * is about 2.0e-3 for 32 bits, 1.0e-5 for 40 bits and 4.0e-8 for 48
          * bits. For a compressed file of size 100Gb -- about 100000 blocks --
          * only a 48-bit marker will do. NB: normal compression/ decompression
