@@ -32,7 +32,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,8 +42,6 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.lang3.ThreadUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -112,9 +109,11 @@ public abstract class AbstractTestCase {
 
     protected File resultDir;
 
-    private Path archive; // used to delete the archive in tearDown
+    /** Used to delete the archive in {@link #tearDown()}. */
+    private Path archive;
 
-    protected List<String> archiveList; // Lists the content of the archive as originally created
+    /** Lists the content of the archive as originally created. */
+    protected List<String> archiveList;
 
     protected final ArchiveStreamFactory factory = ArchiveStreamFactory.DEFAULT;
 
