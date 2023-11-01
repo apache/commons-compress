@@ -83,6 +83,7 @@ public abstract class AbstractTestCase {
     /**
      * Deletes a file or directory. For a directory, delete it and all subdirectories.
      *
+     * @param file a file or directory.
      * @return whether deletion was successful
      */
     public static boolean tryHardToDelete(final File file) {
@@ -93,6 +94,7 @@ public abstract class AbstractTestCase {
             return true;
         } catch (IOException e) {
             e.printStackTrace();
+            file.deleteOnExit();
             return false;
         }
     }
@@ -100,6 +102,7 @@ public abstract class AbstractTestCase {
     /**
      * Deletes a file or directory. For a directory, delete it and all subdirectories.
      *
+     * @param path a file or directory
      * @return whether deletion was successful
      */
     public static boolean tryHardToDelete(final Path path) {
@@ -203,15 +206,23 @@ public abstract class AbstractTestCase {
     /**
      * Checks if an archive contains all expected files.
      *
-     * @param archive
-     *            the archive to check
-     * @param expected
-     *            a list with expected string file names
+     * @param archive  the archive to check
+     * @param expected a list with expected string file names
      * @throws Exception
      */
-    protected void checkArchiveContent(final File archive, final List<String> expected)
-            throws Exception {
-        try (InputStream inputStream = Files.newInputStream(archive.toPath());
+    protected void checkArchiveContent(final File archive, final List<String> expected) throws Exception {
+        checkArchiveContent(archive.toPath(), expected);
+    }
+
+    /**
+     * Checks if an archive contains all expected files.
+     *
+     * @param archive  the archive to check
+     * @param expected a list with expected string file names
+     * @throws Exception
+     */
+    protected void checkArchiveContent(final Path archive, final List<String> expected) throws Exception {
+        try (InputStream inputStream = Files.newInputStream(archive);
                 ArchiveInputStream archiveInputStream = factory.createArchiveInputStream(new BufferedInputStream(inputStream))) {
             checkArchiveContent(archiveInputStream, expected);
         }
@@ -321,6 +332,9 @@ public abstract class AbstractTestCase {
      * Creates a temporary directory and a temporary file inside that
      * directory, returns both of them (the directory is the first
      * element of the two element array).
+     *
+     * @return temporary directory and file pair.
+     * @throws IOException Some I/O error.
      */
     protected File[] createTempDirAndFile() throws IOException {
         final File tmpDir = createTempDir();
