@@ -86,7 +86,7 @@ public abstract class AbstractTestCase {
      */
     public static boolean tryHardToDelete(final File file) {
         try {
-            if (file != null) {
+            if (file != null && file.exists()) {
                 FileUtils.forceDelete(file);
             }
             return true;
