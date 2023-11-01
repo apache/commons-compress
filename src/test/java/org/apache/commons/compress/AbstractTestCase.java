@@ -41,6 +41,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.ThreadUtils;
@@ -78,51 +79,28 @@ public abstract class AbstractTestCase {
     }
 
     public static void rmdir(final File directory) {
-        final String[] fileList = directory.list();
-        if (fileList != null) {
-            for (final String element : fileList) {
-                final File file = new File(directory, element);
-                if (file.isDirectory()) {
-                    rmdir(file);
-                }
-                final boolean deleted = tryHardToDelete(file);
-                if (!deleted && file.exists()) {
-                    System.err.println("Failed to delete " + element + " in " + directory.getPath());
-                }
-            }
-        }
-        tryHardToDelete(directory); // safer to delete and check
-        if (directory.exists()) {
-            fail("Failed to delete " + directory.getPath());
-        }
+        tryHardToDelete(directory);
     }
 
     /**
-     * Accommodate Windows bug encountered in both Sun and IBM JDKs.
-     * Others possible. If the delete does not work, call System.gc(),
-     * wait a little and try again.
-     *
-     * Copied from FileUtils in Ant 1.8.0.
+     * Deletes a file or directory. For a directory, delete it and all subdirectories.
      *
      * @return whether deletion was successful
      */
     public static boolean tryHardToDelete(final File file) {
-        if (file != null && file.exists() && !file.delete()) {
-            if (SystemUtils.IS_OS_WINDOWS) {
-                System.gc();
+        try {
+            if (file != null) {
+                FileUtils.forceDelete(file);
             }
-            ThreadUtils.sleepQuietly(Duration.ofSeconds(10));
-            return file.delete();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
         }
-        return true;
     }
 
     /**
-     * Accommodate Windows bug encountered in both Sun and IBM JDKs.
-     * Others possible. If the delete does not work, call System.gc(),
-     * wait a little and try again.
-     *
-     * Copied from FileUtils in Ant 1.8.0.
+     * Deletes a file or directory. For a directory, delete it and all subdirectories.
      *
      * @return whether deletion was successful
      */
