@@ -40,6 +40,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.ar.ArArchiveOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -249,7 +250,8 @@ public abstract class AbstractTestCase {
         archivePath.toFile().deleteOnExit();
         archiveList = new ArrayList<>();
         try (OutputStream outputStream = Files.newOutputStream(archivePath);
-                ArchiveOutputStream archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream);) {
+                ArchiveOutputStream archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream)) {
+            setLongFileMode(archiveOutputStream);
             final File file1 = getFile("test1.xml");
             final File file2 = getFile("test2.xml");
             final File file3 = getFile("test3.xml");
@@ -339,6 +341,12 @@ public abstract class AbstractTestCase {
      */
     protected String getExpectedString(final ArchiveEntry entry) {
         return entry.getName();
+    }
+
+    protected void setLongFileMode(final ArchiveOutputStream outputStream) {
+        if (outputStream instanceof ArArchiveOutputStream) {
+            ((ArArchiveOutputStream) outputStream).setLongFileMode(ArArchiveOutputStream.LONGFILE_BSD);
+        }
     }
 
     @BeforeEach
