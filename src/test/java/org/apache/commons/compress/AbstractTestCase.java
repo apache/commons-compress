@@ -110,7 +110,7 @@ public abstract class AbstractTestCase {
     protected File resultDir;
 
     /** Used to delete the archive in {@link #tearDown()}. */
-    private Path archive;
+    private Path archivePath;
 
     /** Lists the content of the archive as originally created. */
     protected List<String> archiveList;
@@ -245,10 +245,10 @@ public abstract class AbstractTestCase {
      *             in case something goes wrong
      */
     protected Path createArchive(final String archiveName) throws Exception {
-        archive = Files.createTempFile("test", "." + archiveName);
-        archive.toFile().deleteOnExit();
+        archivePath = Files.createTempFile("test", "." + archiveName);
+        archivePath.toFile().deleteOnExit();
         archiveList = new ArrayList<>();
-        try (OutputStream outputStream = Files.newOutputStream(archive);
+        try (OutputStream outputStream = Files.newOutputStream(archivePath);
                 ArchiveOutputStream archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream);) {
             final File file1 = getFile("test1.xml");
             final File file2 = getFile("test2.xml");
@@ -268,7 +268,7 @@ public abstract class AbstractTestCase {
             addArchiveEntry(archiveOutputStream, "test with spaces.txt", file6);
 
             archiveOutputStream.finish();
-            return archive;
+            return archivePath;
         }
     }
 
@@ -280,13 +280,13 @@ public abstract class AbstractTestCase {
      */
     protected Path createEmptyArchive(final String archiveName) throws Exception {
         archiveList = new ArrayList<>();
-        archive = Files.createTempFile("empty", "." + archiveName);
-        archive.toFile().deleteOnExit();
-        try (OutputStream outputStream = Files.newOutputStream(archive);
+        archivePath = Files.createTempFile("empty", "." + archiveName);
+        archivePath.toFile().deleteOnExit();
+        try (OutputStream outputStream = Files.newOutputStream(archivePath);
                 ArchiveOutputStream archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream)) {
             archiveOutputStream.finish();
         }
-        return archive;
+        return archivePath;
     }
 
     /**
@@ -298,15 +298,15 @@ public abstract class AbstractTestCase {
      */
     protected Path createSingleEntryArchive(final String archiveName) throws Exception {
         archiveList = new ArrayList<>();
-        archive = Files.createTempFile("empty", "." + archiveName);
-        archive.toFile().deleteOnExit();
-        try (OutputStream outputStream = Files.newOutputStream(archive);
+        archivePath = Files.createTempFile("empty", "." + archiveName);
+        archivePath.toFile().deleteOnExit();
+        try (OutputStream outputStream = Files.newOutputStream(archivePath);
                 ArchiveOutputStream archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream)) {
             // Use short file name so does not cause problems for ar
             addArchiveEntry(archiveOutputStream, "test1.xml", getFile("test1.xml"));
             archiveOutputStream.finish();
         }
-        return archive;
+        return archivePath;
     }
 
     protected File createTempDir() throws IOException {
@@ -345,7 +345,7 @@ public abstract class AbstractTestCase {
     public void setUp() throws Exception {
         dir = mkdir("dir");
         resultDir = mkdir("dir-result");
-        archive = null;
+        archivePath = null;
     }
 
     @AfterEach
@@ -353,9 +353,9 @@ public abstract class AbstractTestCase {
         rmdir(dir);
         rmdir(resultDir);
         dir = resultDir = null;
-        if (!tryHardToDelete(archive)) {
+        if (!tryHardToDelete(archivePath)) {
             // Note: this exception won't be shown if the test has already failed
-            throw new Exception("Could not delete " + archive);
+            throw new Exception("Could not delete " + archivePath);
         }
     }
 }
