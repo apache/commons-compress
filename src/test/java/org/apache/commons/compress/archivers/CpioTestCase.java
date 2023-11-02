@@ -112,18 +112,17 @@ public final class CpioTestCase extends AbstractTestCase {
         File archive = null;
         archive = File.createTempFile("test.", ".cpio", tmp[0]);
         archive.deleteOnExit();
-        CpioArchiveOutputStream tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()));
-        CpioArchiveInputStream tis = new CpioArchiveInputStream(Files.newInputStream(archive.toPath()));
+        final long beforeArchiveWrite = tmp[0].lastModified();
+        final CpioArchiveEntry entryIn = new CpioArchiveEntry(tmp[0], "foo");
         try {
-            final long beforeArchiveWrite = tmp[0].lastModified();
-            final CpioArchiveEntry entryIn = new CpioArchiveEntry(tmp[0], "foo");
-            tos.putArchiveEntry(entryIn);
-            tos.closeArchiveEntry();
-            tos.close();
-            tos = null;
-            final CpioArchiveEntry entryOut = tis.getNextCPIOEntry();
-            tis.close();
-            tis = null;
+            try (CpioArchiveOutputStream tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
+                tos.putArchiveEntry(entryIn);
+                tos.closeArchiveEntry();
+            }
+            final CpioArchiveEntry entryOut;
+            try (CpioArchiveInputStream tis = new CpioArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+                entryOut = tis.getNextCPIOEntry();
+            }
             assertNotNull(entryOut);
             assertEquals("foo", entryOut.getName());
             assertEquals(0, entryOut.getSize());
@@ -131,12 +130,6 @@ public final class CpioTestCase extends AbstractTestCase {
             assertEquals(beforeArchiveWrite / 1000, entryOut.getLastModifiedDate().getTime() / 1000);
             assertTrue(entryOut.isDirectory());
         } finally {
-            if (tis != null) {
-                tis.close();
-            }
-            if (tos != null) {
-                tos.close();
-            }
             tryHardToDelete(archive);
             tryHardToDelete(tmp[1]);
             rmdir(tmp[0]);
@@ -147,37 +140,28 @@ public final class CpioTestCase extends AbstractTestCase {
     public void testExplicitDirectoryEntry() throws Exception {
         final File[] tmp = createTempDirAndFile();
         File archive = null;
-        CpioArchiveOutputStream tos = null;
-        CpioArchiveInputStream tis = null;
+        archive = File.createTempFile("test.", ".cpio", tmp[0]);
+        archive.deleteOnExit();
         try {
-            archive = File.createTempFile("test.", ".cpio", tmp[0]);
-            archive.deleteOnExit();
-            tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()));
-            final long beforeArchiveWrite = tmp[0].lastModified();
-            final CpioArchiveEntry in = new CpioArchiveEntry("foo/");
-            in.setTime(beforeArchiveWrite / 1000);
-            in.setMode(CpioConstants.C_ISDIR);
-            tos.putArchiveEntry(in);
-            tos.closeArchiveEntry();
-            tos.close();
-            tos = null;
-            tis = new CpioArchiveInputStream(Files.newInputStream(archive.toPath()));
-            final CpioArchiveEntry out = tis.getNextCPIOEntry();
-            tis.close();
-            tis = null;
+            final long beforeArchiveWrite;
+            try (CpioArchiveOutputStream tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
+                beforeArchiveWrite = tmp[0].lastModified();
+                final CpioArchiveEntry in = new CpioArchiveEntry("foo/");
+                in.setTime(beforeArchiveWrite / 1000);
+                in.setMode(CpioConstants.C_ISDIR);
+                tos.putArchiveEntry(in);
+                tos.closeArchiveEntry();
+            }
+            final CpioArchiveEntry out;
+            try (CpioArchiveInputStream tis = new CpioArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+                out = tis.getNextCPIOEntry();
+            }
             assertNotNull(out);
             assertEquals("foo/", out.getName());
             assertEquals(0, out.getSize());
-            assertEquals(beforeArchiveWrite / 1000,
-                         out.getLastModifiedDate().getTime() / 1000);
+            assertEquals(beforeArchiveWrite / 1000, out.getLastModifiedDate().getTime() / 1000);
             assertTrue(out.isDirectory());
         } finally {
-            if (tis != null) {
-                tis.close();
-            }
-            if (tos != null) {
-                tos.close();
-            }
             tryHardToDelete(archive);
             tryHardToDelete(tmp[1]);
             rmdir(tmp[0]);
@@ -188,49 +172,34 @@ public final class CpioTestCase extends AbstractTestCase {
     public void testExplicitFileEntry() throws Exception {
         final File[] tmp = createTempDirAndFile();
         File archive = null;
-        CpioArchiveOutputStream tos = null;
-        CpioArchiveInputStream tis = null;
-        InputStream fis = null;
         try {
             archive = File.createTempFile("test.", ".cpio", tmp[0]);
             archive.deleteOnExit();
-            tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()));
-            final CpioArchiveEntry in = new CpioArchiveEntry("foo");
-            in.setTime(tmp[1].lastModified() / 1000);
-            in.setSize(tmp[1].length());
-            in.setMode(CpioConstants.C_ISREG);
-            tos.putArchiveEntry(in);
-            final byte[] b = new byte[(int) tmp[1].length()];
-            fis = Files.newInputStream(tmp[1].toPath());
-            while (fis.read(b) > 0) {
-                tos.write(b);
+            try (CpioArchiveOutputStream tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
+                final CpioArchiveEntry in = new CpioArchiveEntry("foo");
+                in.setTime(tmp[1].lastModified() / 1000);
+                in.setSize(tmp[1].length());
+                in.setMode(CpioConstants.C_ISREG);
+                tos.putArchiveEntry(in);
+                final byte[] b = new byte[(int) tmp[1].length()];
+                try (InputStream fis = Files.newInputStream(tmp[1].toPath())) {
+                    while (fis.read(b) > 0) {
+                        tos.write(b);
+                    }
+                }
+                tos.closeArchiveEntry();
             }
-            fis.close();
-            fis = null;
-            tos.closeArchiveEntry();
-            tos.close();
-            tos = null;
-            tis = new CpioArchiveInputStream(Files.newInputStream(archive.toPath()));
-            final CpioArchiveEntry out = tis.getNextCPIOEntry();
-            tis.close();
-            tis = null;
+            final CpioArchiveEntry out;
+            try (CpioArchiveInputStream tis = new CpioArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+                out = tis.getNextCPIOEntry();
+            }
             assertNotNull(out);
             assertEquals("foo", out.getName());
             assertEquals(tmp[1].length(), out.getSize());
-            assertEquals(tmp[1].lastModified() / 1000,
-                         out.getLastModifiedDate().getTime() / 1000);
+            assertEquals(tmp[1].lastModified() / 1000, out.getLastModifiedDate().getTime() / 1000);
             assertFalse(out.isDirectory());
         } finally {
-            if (tis != null) {
-                tis.close();
-            }
-            if (tos != null) {
-                tos.close();
-            }
             tryHardToDelete(archive);
-            if (fis != null) {
-                fis.close();
-            }
             tryHardToDelete(tmp[1]);
             rmdir(tmp[0]);
         }
@@ -240,46 +209,31 @@ public final class CpioTestCase extends AbstractTestCase {
     public void testFileEntryFromFile() throws Exception {
         final File[] tmp = createTempDirAndFile();
         File archive = null;
-        CpioArchiveOutputStream tos = null;
-        CpioArchiveInputStream tis = null;
-        InputStream fis = null;
         try {
             archive = File.createTempFile("test.", ".cpio", tmp[0]);
             archive.deleteOnExit();
-            tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()));
-            final CpioArchiveEntry in = new CpioArchiveEntry(tmp[1], "foo");
-            tos.putArchiveEntry(in);
-            final byte[] b = new byte[(int) tmp[1].length()];
-            fis = Files.newInputStream(tmp[1].toPath());
-            while (fis.read(b) > 0) {
-                tos.write(b);
+            try (CpioArchiveOutputStream tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
+                final CpioArchiveEntry in = new CpioArchiveEntry(tmp[1], "foo");
+                tos.putArchiveEntry(in);
+                final byte[] b = new byte[(int) tmp[1].length()];
+                try (InputStream fis = Files.newInputStream(tmp[1].toPath())) {
+                    while (fis.read(b) > 0) {
+                        tos.write(b);
+                    }
+                }
+                tos.closeArchiveEntry();
             }
-            fis.close();
-            fis = null;
-            tos.closeArchiveEntry();
-            tos.close();
-            tos = null;
-            tis = new CpioArchiveInputStream(Files.newInputStream(archive.toPath()));
-            final CpioArchiveEntry out = tis.getNextCPIOEntry();
-            tis.close();
-            tis = null;
+            final CpioArchiveEntry out;
+            try (CpioArchiveInputStream tis = new CpioArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+                out = tis.getNextCPIOEntry();
+            }
             assertNotNull(out);
             assertEquals("foo", out.getName());
             assertEquals(tmp[1].length(), out.getSize());
-            assertEquals(tmp[1].lastModified() / 1000,
-                         out.getLastModifiedDate().getTime() / 1000);
+            assertEquals(tmp[1].lastModified() / 1000, out.getLastModifiedDate().getTime() / 1000);
             assertFalse(out.isDirectory());
         } finally {
-            if (tis != null) {
-                tis.close();
-            }
-            if (tos != null) {
-                tos.close();
-            }
             tryHardToDelete(archive);
-            if (fis != null) {
-                fis.close();
-            }
             tryHardToDelete(tmp[1]);
             rmdir(tmp[0]);
         }
