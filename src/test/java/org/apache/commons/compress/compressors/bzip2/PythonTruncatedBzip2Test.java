@@ -110,7 +110,6 @@ public class PythonTruncatedBzip2Test {
     public void testTruncatedData() {
         // with BZ2File(self.filename) as f:
         // self.assertRaises(EOFError, f.read)
-        System.out.println("Attempt to read the whole thing in, should throw ...");
         final ByteBuffer buffer = ByteBuffer.allocate(8192);
         assertThrows(IOException.class, () -> bz2Channel.read(buffer));
     }
