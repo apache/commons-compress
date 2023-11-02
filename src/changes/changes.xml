@@ -732,7 +732,7 @@ you relied on the recovery attempt.">
       </action>
     </release>
     <release version="1.20" date="2020-02-08"
-             description="Release 1.20 (Java 7)">
+             description="Release 1.20 (Java 7 or above)">
       <action issue="COMPRESS-493" type="update" date="2019-08-27">
         Update optional library com.github.luben:zstd-jni from 1.4.0-1 to 1.4.4-7.
       </action>
