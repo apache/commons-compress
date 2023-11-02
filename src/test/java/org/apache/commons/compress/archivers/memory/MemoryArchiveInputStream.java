@@ -20,7 +20,6 @@ package org.apache.commons.compress.archivers.memory;
 
 import java.io.IOException;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
 public final class MemoryArchiveInputStream extends ArchiveInputStream<MemoryArchiveEntry> {
