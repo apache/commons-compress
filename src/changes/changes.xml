@@ -322,7 +322,7 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
     </release>
     <release version="1.21" date="2021-07-12"
-             description="Release 1.21 (Java 8)
+             description="Release 1.21 (Java 8 or above)
 ----------------------------------------
 
 SevenZFileOptions has a new setting that needs to be enabled explicity
