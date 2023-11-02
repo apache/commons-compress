@@ -93,23 +93,26 @@ public class ArchiveStreamFactoryTest extends AbstractTestCase {
 
     private static final String TAR_DEFAULT = getField(new TarArchiveInputStream(null),"encoding");
     private static final String JAR_DEFAULT = getField(new JarArchiveInputStream(null),"encoding");
+
     static {
         String dflt;
         dflt = UNKNOWN;
-        try {
-            dflt = getField(new ArjArchiveInputStream(newInputStream("bla.arj")), "charsetName");
+        try (ArjArchiveInputStream inputStream = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
+            dflt = getField(inputStream, "charsetName");
         } catch (final Exception e) {
             e.printStackTrace();
         }
         ARJ_DEFAULT = dflt;
         dflt = UNKNOWN;
-        try {
-            dflt = getField(new DumpArchiveInputStream(newInputStream("bla.dump")), "encoding");
+        try (DumpArchiveInputStream inputStream = new DumpArchiveInputStream(newInputStream("bla.dump"))) {
+
+            dflt = getField(inputStream, "encoding");
         } catch (final Exception e) {
             e.printStackTrace();
         }
         DUMP_DEFAULT = dflt;
     }
+
     static final TestData[] TESTS = {
         new TestData("bla.arj", ArchiveStreamFactory.ARJ, false, ARJ_DEFAULT, FACTORY, "charsetName"),
         new TestData("bla.arj", ArchiveStreamFactory.ARJ, false, "UTF-8", FACTORY_UTF8, "charsetName"),
