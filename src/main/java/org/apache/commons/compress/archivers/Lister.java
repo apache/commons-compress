@@ -42,16 +42,16 @@ public final class Lister {
 
     private static final ArchiveStreamFactory FACTORY = ArchiveStreamFactory.DEFAULT;
 
-    private static ArchiveInputStream createArchiveInputStream(final String[] args, final InputStream fis)
+    private static ArchiveInputStream createArchiveInputStream(final String[] args, final InputStream inputStream)
             throws ArchiveException {
         if (args.length > 1) {
-            return FACTORY.createArchiveInputStream(args[1], fis);
+            return FACTORY.createArchiveInputStream(args[1], inputStream);
         }
-        return FACTORY.createArchiveInputStream(fis);
+        return FACTORY.createArchiveInputStream(inputStream);
     }
 
-    private static String detectFormat(final File f) throws ArchiveException, IOException {
-        try (final InputStream fis = new BufferedInputStream(Files.newInputStream(f.toPath()))) {
+    private static String detectFormat(final File file) throws ArchiveException, IOException {
+        try (final InputStream fis = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
             return ArchiveStreamFactory.detect(fis);
         }
     }
@@ -68,8 +68,8 @@ public final class Lister {
         }
     }
 
-    private static void listStream(final File f, final String[] args) throws ArchiveException, IOException {
-        try (final InputStream fis = new BufferedInputStream(Files.newInputStream(f.toPath()));
+    private static void listStream(final File file, final String[] args) throws ArchiveException, IOException {
+        try (final InputStream fis = new BufferedInputStream(Files.newInputStream(file.toPath()));
                 final ArchiveInputStream ais = createArchiveInputStream(args, fis)) {
             System.out.println("Created " + ais.toString());
             ArchiveEntry ae;
@@ -79,15 +79,15 @@ public final class Lister {
         }
     }
 
-    private static void listZipUsingTarFile(final File f) throws IOException {
-        try (TarFile t = new TarFile(f)) {
+    private static void listZipUsingTarFile(final File file) throws IOException {
+        try (TarFile t = new TarFile(file)) {
             System.out.println("Created " + t);
             t.getEntries().forEach(en -> System.out.println(en.getName()));
         }
     }
 
-    private static void listZipUsingZipFile(final File f) throws IOException {
-        try (ZipFile z = new ZipFile(f)) {
+    private static void listZipUsingZipFile(final File file) throws IOException {
+        try (ZipFile z = new ZipFile(file)) {
             System.out.println("Created " + z);
             for (final Enumeration<ZipArchiveEntry> en = z.getEntries(); en.hasMoreElements(); ) {
                 System.out.println(en.nextElement().getName());
