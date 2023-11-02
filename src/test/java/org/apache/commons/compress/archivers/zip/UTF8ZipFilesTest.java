@@ -239,7 +239,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     @Test
     public void testRawNameReadFromStream() throws IOException {
         try (ZipArchiveInputStream zi = new ZipArchiveInputStream(newInputStream("utf8-7zip-test.zip"), CP437, false)) {
-            assertRawNameOfAcsiiTxt((ZipArchiveEntry) zi.getNextEntry());
+            assertRawNameOfAcsiiTxt(zi.getNextEntry());
         }
     }
 

@@ -866,7 +866,7 @@ public final class ZipTestCase extends AbstractTestCase {
         final File input = getFile("bla.zip");
         try (final InputStream is = Files.newInputStream(input.toPath());
                 final ArchiveInputStream<ZipArchiveEntry> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", is)) {
-            final ZipArchiveEntry entry = (ZipArchiveEntry) in.getNextEntry();
+            final ZipArchiveEntry entry = in.getNextEntry();
             Files.copy(in, new File(dir, entry.getName()).toPath());
         }
     }
