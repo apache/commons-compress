@@ -171,45 +171,32 @@ public final class ArTestCase extends AbstractTestCase {
     public void testExplicitFileEntry() throws Exception {
         final File[] tmp = createTempDirAndFile();
         File archive = null;
-        ArArchiveOutputStream aos = null;
-        ArArchiveInputStream ais = null;
-        InputStream fis = null;
+        archive = File.createTempFile("test.", ".ar", tmp[0]);
+        archive.deleteOnExit();
         try {
-            archive = File.createTempFile("test.", ".ar", tmp[0]);
-            archive.deleteOnExit();
-            aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()));
-            final ArArchiveEntry in = new ArArchiveEntry("foo", tmp[1].length(), 0, 0, 0, tmp[1].lastModified() / 1000);
-            aos.putArchiveEntry(in);
-            final byte[] b = new byte[(int) tmp[1].length()];
-            fis = Files.newInputStream(tmp[1].toPath());
-            while (fis.read(b) > 0) {
-                aos.write(b);
+            try (ArArchiveOutputStream aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
+                final ArArchiveEntry in = new ArArchiveEntry("foo", tmp[1].length(), 0, 0, 0, tmp[1].lastModified() / 1000);
+                aos.putArchiveEntry(in);
+                final byte[] b = new byte[(int) tmp[1].length()];
+                try (InputStream fis = Files.newInputStream(tmp[1].toPath())) {
+                    while (fis.read(b) > 0) {
+                        aos.write(b);
+                    }
+                }
+                aos.closeArchiveEntry();
             }
-            fis.close();
-            fis = null;
-            aos.closeArchiveEntry();
-            aos.close();
-            aos = null;
-            ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()));
-            final ArArchiveEntry out = ais.getNextArEntry();
-            ais.close();
-            ais = null;
+            //
+            final ArArchiveEntry out;
+            try (ArArchiveInputStream ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+                out = ais.getNextArEntry();
+            }
             assertNotNull(out);
             assertEquals("foo", out.getName());
             assertEquals(tmp[1].length(), out.getSize());
             assertEquals(tmp[1].lastModified() / 1000, out.getLastModifiedDate().getTime() / 1000);
             assertFalse(out.isDirectory());
         } finally {
-            if (ais != null) {
-                ais.close();
-            }
-            if (aos != null) {
-                aos.close();
-            }
             tryHardToDelete(archive);
-            if (fis != null) {
-                fis.close();
-            }
             tryHardToDelete(tmp[1]);
             rmdir(tmp[0]);
         }
@@ -219,31 +206,26 @@ public final class ArTestCase extends AbstractTestCase {
     public void testFileEntryFromFile() throws Exception {
         final File[] tmp = createTempDirAndFile();
         File archive = null;
-        ArArchiveOutputStream aos = null;
-        ArArchiveInputStream ais = null;
-        InputStream fis = null;
         final File directory = tmp[0];
         final File file = tmp[1];
+        archive = File.createTempFile("test.", ".ar", directory);
+        archive.deleteOnExit();
         try {
-            archive = File.createTempFile("test.", ".ar", directory);
-            archive.deleteOnExit();
-            aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()));
-            final ArArchiveEntry in = new ArArchiveEntry(file, "foo");
-            aos.putArchiveEntry(in);
-            final byte[] b = new byte[(int) file.length()];
-            fis = Files.newInputStream(file.toPath());
-            while (fis.read(b) > 0) {
-                aos.write(b);
+            try (ArArchiveOutputStream aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
+                final ArArchiveEntry in = new ArArchiveEntry(file, "foo");
+                aos.putArchiveEntry(in);
+                final byte[] b = new byte[(int) file.length()];
+                try (InputStream fis = Files.newInputStream(file.toPath())) {
+                    while (fis.read(b) > 0) {
+                        aos.write(b);
+                    }
+                }
+                aos.closeArchiveEntry();
             }
-            fis.close();
-            fis = null;
-            aos.closeArchiveEntry();
-            aos.close();
-            aos = null;
-            ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()));
-            final ArArchiveEntry out = ais.getNextArEntry();
-            ais.close();
-            ais = null;
+            final ArArchiveEntry out;
+            try (ArArchiveInputStream ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+                out = ais.getNextArEntry();
+            }
             assertNotNull(out);
             assertEquals("foo", out.getName());
             assertEquals(file.length(), out.getSize());
@@ -251,16 +233,7 @@ public final class ArTestCase extends AbstractTestCase {
             assertEquals(file.lastModified() / 1000, out.getLastModifiedDate().getTime() / 1000);
             assertFalse(out.isDirectory());
         } finally {
-            if (ais != null) {
-                ais.close();
-            }
-            if (aos != null) {
-                aos.close();
-            }
             tryHardToDelete(archive);
-            if (fis != null) {
-                fis.close();
-            }
             tryHardToDelete(file);
             rmdir(directory);
         }
@@ -270,31 +243,26 @@ public final class ArTestCase extends AbstractTestCase {
     public void testFileEntryFromPath() throws Exception {
         final File[] tmp = createTempDirAndFile();
         File archive = null;
-        ArArchiveOutputStream aos = null;
-        ArArchiveInputStream ais = null;
-        InputStream fis = null;
         final File directory = tmp[0];
         final File file = tmp[1];
+        archive = File.createTempFile("test.", ".ar", directory);
+        archive.deleteOnExit();
         try {
-            archive = File.createTempFile("test.", ".ar", directory);
-            archive.deleteOnExit();
-            aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()));
-            final ArArchiveEntry in = new ArArchiveEntry(file.toPath(), "foo");
-            aos.putArchiveEntry(in);
-            final byte[] b = new byte[(int) file.length()];
-            fis = Files.newInputStream(file.toPath());
-            while (fis.read(b) > 0) {
-                aos.write(b);
+            try (ArArchiveOutputStream aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
+                final ArArchiveEntry in = new ArArchiveEntry(file.toPath(), "foo");
+                aos.putArchiveEntry(in);
+                final byte[] b = new byte[(int) file.length()];
+                try (InputStream fis = Files.newInputStream(file.toPath())) {
+                    while (fis.read(b) > 0) {
+                        aos.write(b);
+                    }
+                }
+                aos.closeArchiveEntry();
             }
-            fis.close();
-            fis = null;
-            aos.closeArchiveEntry();
-            aos.close();
-            aos = null;
-            ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()));
-            final ArArchiveEntry out = ais.getNextArEntry();
-            ais.close();
-            ais = null;
+            final ArArchiveEntry out;
+            try (ArArchiveInputStream ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+                out = ais.getNextArEntry();
+            }
             assertNotNull(out);
             assertEquals("foo", out.getName());
             assertEquals(file.length(), out.getSize());
@@ -302,16 +270,7 @@ public final class ArTestCase extends AbstractTestCase {
             assertEquals(file.lastModified() / 1000, out.getLastModifiedDate().getTime() / 1000);
             assertFalse(out.isDirectory());
         } finally {
-            if (ais != null) {
-                ais.close();
-            }
-            if (aos != null) {
-                aos.close();
-            }
             tryHardToDelete(archive);
-            if (fis != null) {
-                fis.close();
-            }
             tryHardToDelete(file);
             rmdir(directory);
         }
@@ -323,36 +282,27 @@ public final class ArTestCase extends AbstractTestCase {
     public void XtestDirectoryEntryFromFile() throws Exception {
         final File[] tmp = createTempDirAndFile();
         File archive = null;
-        ArArchiveOutputStream aos = null;
-        ArArchiveInputStream ais = null;
+        archive = File.createTempFile("test.", ".ar", tmp[0]);
+        archive.deleteOnExit();
         try {
-            archive = File.createTempFile("test.", ".ar", tmp[0]);
-            archive.deleteOnExit();
-            aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()));
-            final long beforeArchiveWrite = tmp[0].lastModified();
-            final ArArchiveEntry in = new ArArchiveEntry(tmp[0], "foo");
-            aos.putArchiveEntry(in);
-            aos.closeArchiveEntry();
-            aos.close();
-            aos = null;
-            ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()));
-            final ArArchiveEntry out = ais.getNextArEntry();
-            ais.close();
-            ais = null;
+            final long beforeArchiveWrite;
+            try (ArArchiveOutputStream aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
+                beforeArchiveWrite = tmp[0].lastModified();
+                final ArArchiveEntry in = new ArArchiveEntry(tmp[0], "foo");
+                aos.putArchiveEntry(in);
+                aos.closeArchiveEntry();
+            }
+            final ArArchiveEntry out;
+            try (ArArchiveInputStream ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+                out = ais.getNextArEntry();
+            }
             assertNotNull(out);
             assertEquals("foo/", out.getName());
             assertEquals(0, out.getSize());
             // AR stores time with a granularity of 1 second
-            assertEquals(beforeArchiveWrite / 1000,
-                         out.getLastModifiedDate().getTime() / 1000);
+            assertEquals(beforeArchiveWrite / 1000, out.getLastModifiedDate().getTime() / 1000);
             assertTrue(out.isDirectory());
         } finally {
-            if (ais != null) {
-                ais.close();
-            }
-            if (aos != null) {
-                aos.close();
-            }
             tryHardToDelete(archive);
             tryHardToDelete(tmp[1]);
             rmdir(tmp[0]);
@@ -365,36 +315,26 @@ public final class ArTestCase extends AbstractTestCase {
     public void XtestExplicitDirectoryEntry() throws Exception {
         final File[] tmp = createTempDirAndFile();
         File archive = null;
-        ArArchiveOutputStream aos = null;
-        ArArchiveInputStream ais = null;
+        archive = File.createTempFile("test.", ".ar", tmp[0]);
+        archive.deleteOnExit();
         try {
-            archive = File.createTempFile("test.", ".ar", tmp[0]);
-            archive.deleteOnExit();
-            aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()));
-            final long beforeArchiveWrite = tmp[0].lastModified();
-            final ArArchiveEntry in = new ArArchiveEntry("foo", 0, 0, 0, 0,
-                                                   tmp[1].lastModified() / 1000);
-            aos.putArchiveEntry(in);
-            aos.closeArchiveEntry();
-            aos.close();
-            aos = null;
-            ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()));
-            final ArArchiveEntry out = ais.getNextArEntry();
-            ais.close();
-            ais = null;
+            final long beforeArchiveWrite;
+            try (ArArchiveOutputStream aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
+                beforeArchiveWrite = tmp[0].lastModified();
+                final ArArchiveEntry in = new ArArchiveEntry("foo", 0, 0, 0, 0, tmp[1].lastModified() / 1000);
+                aos.putArchiveEntry(in);
+                aos.closeArchiveEntry();
+            }
+            final ArArchiveEntry out;
+            try (ArArchiveInputStream ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+                out = ais.getNextArEntry();
+            }
             assertNotNull(out);
             assertEquals("foo/", out.getName());
             assertEquals(0, out.getSize());
-            assertEquals(beforeArchiveWrite / 1000,
-                         out.getLastModifiedDate().getTime() / 1000);
+            assertEquals(beforeArchiveWrite / 1000, out.getLastModifiedDate().getTime() / 1000);
             assertTrue(out.isDirectory());
         } finally {
-            if (ais != null) {
-                ais.close();
-            }
-            if (aos != null) {
-                aos.close();
-            }
             tryHardToDelete(archive);
             tryHardToDelete(tmp[1]);
             rmdir(tmp[0]);
