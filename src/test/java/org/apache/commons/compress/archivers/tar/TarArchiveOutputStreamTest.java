@@ -163,8 +163,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
         f.deleteOnExit();
         final OutputStream fos = Files.newOutputStream(f.toPath());
 
-        final ArchiveOutputStream tarOut = ArchiveStreamFactory.DEFAULT
-            .createArchiveOutputStream(ArchiveStreamFactory.TAR, fos);
+        final ArchiveOutputStream<ArchiveEntry> tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, fos);
 
         final File file1 = getFile("test1.xml");
         final TarArchiveEntry sEntry = new TarArchiveEntry(file1, file1.getName());

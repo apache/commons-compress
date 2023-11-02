@@ -33,6 +33,7 @@ public interface ArchiveStreamProvider {
     /**
      * Creates an archive input stream from an archiver name and an input stream.
      *
+     * @param <I>          The {@link ArchiveInputStream} type.
      * @param archiverName the archiver name, i.e. {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#AR},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#ARJ},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#ZIP},
@@ -48,11 +49,13 @@ public interface ArchiveStreamProvider {
      * @throws StreamingNotSupportedException if the format cannot be read from a stream
      * @throws IllegalArgumentException       if the archiver name or stream is null
      */
-    ArchiveInputStream createArchiveInputStream(final String archiverName, final InputStream inputStream, final String encoding) throws ArchiveException;
+    <I extends ArchiveInputStream<? extends ArchiveEntry>> I createArchiveInputStream(final String archiverName, final InputStream inputStream,
+            final String encoding) throws ArchiveException;
 
     /**
      * Creates an archive output stream from an archiver name and an output stream.
      *
+     * @param <O>          The {@link ArchiveInputStream} type.
      * @param archiverName the archiver name, i.e. {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#AR},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#ZIP},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#TAR},
@@ -65,7 +68,8 @@ public interface ArchiveStreamProvider {
      * @throws StreamingNotSupportedException if the format cannot be written to a stream
      * @throws IllegalArgumentException       if the archiver name or stream is null
      */
-    ArchiveOutputStream createArchiveOutputStream(final String archiverName, final OutputStream outputStream, final String encoding) throws ArchiveException;
+    <O extends ArchiveOutputStream<? extends ArchiveEntry>> O createArchiveOutputStream(final String archiverName, final OutputStream outputStream,
+            final String encoding) throws ArchiveException;
 
     /**
      * Gets all the input stream archive names for this provider

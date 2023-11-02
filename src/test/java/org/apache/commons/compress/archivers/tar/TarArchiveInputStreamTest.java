@@ -348,9 +348,9 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
             // untar these tars
             // -----------------------
             try (final InputStream is = Files.newInputStream(tarF.toPath());
-                final TarArchiveInputStream debInputStream = (TarArchiveInputStream) ArchiveStreamFactory.DEFAULT.createArchiveInputStream("tar", is)) {
+                final TarArchiveInputStream debInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("tar", is)) {
                 TarArchiveEntry outEntry;
-                while ((outEntry = (TarArchiveEntry) debInputStream.getNextEntry()) != null) {
+                while ((outEntry = debInputStream.getNextEntry()) != null) {
                     assertTrue(outEntry.getName().endsWith("/"), outEntry.getName());
                 }
             }

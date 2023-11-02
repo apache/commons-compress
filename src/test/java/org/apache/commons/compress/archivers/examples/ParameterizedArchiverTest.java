@@ -68,7 +68,7 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
         // TODO How to parameterize a BeforeEach method?
         setUp(format);
         try (OutputStream os = Files.newOutputStream(target.toPath());
-             ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, os)) {
+             ArchiveOutputStream<?> aos = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, os)) {
             new Archiver().create(aos, dir);
         }
         verifyContent(format);
@@ -138,7 +138,7 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
     private void verifyContent(final String format) throws IOException, ArchiveException {
         try (InputStream is = Files.newInputStream(target.toPath());
              BufferedInputStream bis = new BufferedInputStream(is);
-             ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, bis)) {
+             ArchiveInputStream<?> ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, bis)) {
             assertDir("a", ais.getNextEntry());
             assertDir("a/b", ais.getNextEntry());
             final ArchiveEntry n = ais.getNextEntry();

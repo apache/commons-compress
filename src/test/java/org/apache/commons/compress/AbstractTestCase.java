@@ -130,9 +130,9 @@ public abstract class AbstractTestCase {
      * @throws IOException
      * @throws FileNotFoundException
      */
-    private void addArchiveEntry(final ArchiveOutputStream outputStream, final String fileName, final File inputFile)
+    private <O extends ArchiveOutputStream<E>, E extends ArchiveEntry> void addArchiveEntry(final O outputStream, final String fileName, final File inputFile)
             throws IOException, FileNotFoundException {
-        final ArchiveEntry entry = outputStream.createArchiveEntry(inputFile, fileName);
+        final E entry = outputStream.createArchiveEntry(inputFile, fileName);
         outputStream.putArchiveEntry(entry);
         Files.copy(inputFile.toPath(), outputStream);
         outputStream.closeArchiveEntry();
@@ -146,7 +146,7 @@ public abstract class AbstractTestCase {
      * @param expected list of expected entries or {@code null} if no check of names desired
      * @throws Exception
      */
-    protected void checkArchiveContent(final ArchiveInputStream inputStream, final List<String> expected)
+    protected void checkArchiveContent(final ArchiveInputStream<?> inputStream, final List<String> expected)
             throws Exception {
         checkArchiveContent(inputStream, expected, true);
     }
@@ -160,7 +160,7 @@ public abstract class AbstractTestCase {
      * @return returns the created result file if cleanUp = false, or null otherwise
      * @throws Exception
      */
-    protected File checkArchiveContent(final ArchiveInputStream inputStream, final List<String> expected, final boolean cleanUp)
+    protected File checkArchiveContent(final ArchiveInputStream<?> inputStream, final List<String> expected, final boolean cleanUp)
             throws Exception {
         final File result = mkdir("dir-result");
         result.deleteOnExit();
@@ -223,7 +223,7 @@ public abstract class AbstractTestCase {
      */
     protected void checkArchiveContent(final Path archive, final List<String> expected) throws Exception {
         try (InputStream inputStream = Files.newInputStream(archive);
-                ArchiveInputStream archiveInputStream = factory.createArchiveInputStream(new BufferedInputStream(inputStream))) {
+                ArchiveInputStream<?> archiveInputStream = factory.createArchiveInputStream(new BufferedInputStream(inputStream))) {
             checkArchiveContent(archiveInputStream, expected);
         }
     }
@@ -261,7 +261,7 @@ public abstract class AbstractTestCase {
         archivePath.toFile().deleteOnExit();
         archiveList = new ArrayList<>();
         try (OutputStream outputStream = Files.newOutputStream(archivePath);
-                ArchiveOutputStream archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream)) {
+                ArchiveOutputStream<ArchiveEntry> archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream)) {
             setLongFileMode(archiveOutputStream);
             final File file1 = getFile("test1.xml");
             final File file2 = getFile("test2.xml");
@@ -296,7 +296,7 @@ public abstract class AbstractTestCase {
         archivePath = Files.createTempFile("empty", "." + archiveName);
         archivePath.toFile().deleteOnExit();
         try (OutputStream outputStream = Files.newOutputStream(archivePath);
-                ArchiveOutputStream archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream)) {
+                ArchiveOutputStream<?> archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream)) {
             archiveOutputStream.finish();
         }
         return archivePath;
@@ -314,7 +314,7 @@ public abstract class AbstractTestCase {
         archivePath = Files.createTempFile("empty", "." + archiveName);
         archivePath.toFile().deleteOnExit();
         try (OutputStream outputStream = Files.newOutputStream(archivePath);
-                ArchiveOutputStream archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream)) {
+                ArchiveOutputStream<?> archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream)) {
             // Use short file name so does not cause problems for ar
             addArchiveEntry(archiveOutputStream, "test1.xml", getFile("test1.xml"));
             archiveOutputStream.finish();
@@ -357,7 +357,7 @@ public abstract class AbstractTestCase {
         return entry.getName();
     }
 
-    protected void setLongFileMode(final ArchiveOutputStream outputStream) {
+    protected void setLongFileMode(final ArchiveOutputStream<?> outputStream) {
         if (outputStream instanceof ArArchiveOutputStream) {
             ((ArArchiveOutputStream) outputStream).setLongFileMode(ArArchiveOutputStream.LONGFILE_BSD);
         }

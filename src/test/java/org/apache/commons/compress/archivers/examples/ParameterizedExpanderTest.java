@@ -34,6 +34,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.stream.Stream;
 
 import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -63,7 +64,7 @@ public class ParameterizedExpanderTest extends AbstractTestCase {
         // TODO How to parameterize a BeforeEach method?
         setUp(format);
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()));
-             ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, i)) {
+             ArchiveInputStream<?> ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, i)) {
             new Expander().expand(ais, resultDir);
         }
         verifyTargetDir();
@@ -136,8 +137,7 @@ public class ParameterizedExpanderTest extends AbstractTestCase {
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }
-        try (ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT
-             .createArchiveOutputStream(format, Files.newOutputStream(archive.toPath()))) {
+        try (ArchiveOutputStream<ArchiveEntry> aos = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, Files.newOutputStream(archive.toPath()))) {
             aos.putArchiveEntry(aos.createArchiveEntry(dir.toPath(), "a"));
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dir, "a/b"));

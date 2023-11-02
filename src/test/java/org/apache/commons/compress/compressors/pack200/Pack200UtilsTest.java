@@ -39,7 +39,7 @@ public final class Pack200UtilsTest extends AbstractTestCase {
         try {
             Pack200Utils.normalize(input, output[1], new HashMap<>());
             try (InputStream is = Files.newInputStream(output[1].toPath());
-                    ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
+                    ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
 
                 ArchiveEntry entry = in.getNextEntry();
                 while (entry != null) {
@@ -73,7 +73,7 @@ public final class Pack200UtilsTest extends AbstractTestCase {
             Pack200Utils.normalize(output[1]);
 
             try (InputStream is = Files.newInputStream(output[1].toPath());
-                    ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
+                    ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
 
                 ArchiveEntry entry = in.getNextEntry();
                 while (entry != null) {

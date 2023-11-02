@@ -46,9 +46,9 @@ public class IOMethodsTest extends AbstractTestCase {
     private static final int bytesToTest = 50;
     private static final byte[] byteTest = new byte[bytesToTest];
     static {
-        for(int i=0; i < byteTest.length ;) {
-            byteTest[i]=(byte) i;
-            byteTest[i+1]=(byte) -i;
+        for (int i = 0; i < byteTest.length;) {
+            byteTest[i] = (byte) i;
+            byteTest[i + 1] = (byte) -i;
             i += 2;
         }
     }
@@ -61,41 +61,41 @@ public class IOMethodsTest extends AbstractTestCase {
         file.toFile().deleteOnExit();
 
         final InputStream is1 = Files.newInputStream(file);
-        final ArchiveInputStream ais1 = factory.createArchiveInputStream(archiverName, is1);
+        final ArchiveInputStream<?> ais1 = factory.createArchiveInputStream(archiverName, is1);
         final ArchiveEntry nextEntry = ais1.getNextEntry();
         assertNotNull(nextEntry);
 
-        final byte [] buff = new byte[10]; // small so multiple reads are needed;
+        final byte[] buff = new byte[10]; // small so multiple reads are needed;
         final long size = nextEntry.getSize();
         if (size != ArchiveEntry.SIZE_UNKNOWN) {
             assertTrue(size > 0, "Size should be > 0, found: " + size);
         }
 
         final InputStream is2 = Files.newInputStream(file);
-        final ArchiveInputStream ais2 = factory.createArchiveInputStream(archiverName, is2);
+        final ArchiveInputStream<?> ais2 = factory.createArchiveInputStream(archiverName, is2);
         final ArchiveEntry nextEntry2 = ais2.getNextEntry();
         assertNotNull(nextEntry2);
         assertEquals(size, nextEntry2.getSize(), "Expected same entry size");
 
         final InputStream is3 = Files.newInputStream(file);
-        final ArchiveInputStream ais3 = factory.createArchiveInputStream(archiverName, is3);
+        final ArchiveInputStream<?> ais3 = factory.createArchiveInputStream(archiverName, is3);
         final ArchiveEntry nextEntry3 = ais3.getNextEntry();
         assertNotNull(nextEntry3);
         assertEquals(size, nextEntry3.getSize(), "Expected same entry size");
 
         int b;
-        while((b=ais1.read()) != -1){
+        while ((b = ais1.read()) != -1) {
             out1.write(b);
         }
         ais1.close();
 
         int bytes;
-        while((bytes = ais2.read(buff)) > 0){
+        while ((bytes = ais2.read(buff)) > 0) {
             out2.write(buff, 0, bytes);
         }
         ais2.close();
 
-        while((bytes=ais3.read(buff, 0 , buff.length)) > 0){
+        while ((bytes = ais3.read(buff, 0, buff.length)) > 0) {
             out3.write(buff, 0, bytes);
         }
         ais3.close();
@@ -110,11 +110,11 @@ public class IOMethodsTest extends AbstractTestCase {
         final OutputStream out1 = new ByteArrayOutputStream();
         final OutputStream out2 = new ByteArrayOutputStream();
         final OutputStream out3 = new ByteArrayOutputStream();
-        final ArchiveOutputStream aos1 = factory.createArchiveOutputStream(archiverName, out1);
+        final ArchiveOutputStream<ArchiveEntry> aos1 = factory.createArchiveOutputStream(archiverName, out1);
         aos1.putArchiveEntry(entry);
-        final ArchiveOutputStream aos2 = factory.createArchiveOutputStream(archiverName, out2);
+        final ArchiveOutputStream<ArchiveEntry> aos2 = factory.createArchiveOutputStream(archiverName, out2);
         aos2.putArchiveEntry(entry);
-        final ArchiveOutputStream aos3 = factory.createArchiveOutputStream(archiverName, out3);
+        final ArchiveOutputStream<ArchiveEntry> aos3 = factory.createArchiveOutputStream(archiverName, out3);
         aos3.putArchiveEntry(entry);
         for (final byte element : byteTest) {
             aos1.write(element);

@@ -46,18 +46,17 @@ public final class CpioTestCase extends AbstractTestCase {
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
 
-        final OutputStream out = Files.newOutputStream(output.toPath());
-        final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("cpio", out);
-        os.putArchiveEntry(new CpioArchiveEntry("test1.xml", file1.length()));
-        Files.copy(file1.toPath(), os);
-        os.closeArchiveEntry();
+        try (OutputStream outputStream = Files.newOutputStream(output.toPath());
+                final ArchiveOutputStream<CpioArchiveEntry> archiveOutputStream = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("cpio",
+                        outputStream)) {
+            archiveOutputStream.putArchiveEntry(new CpioArchiveEntry("test1.xml", file1.length()));
+            Files.copy(file1.toPath(), archiveOutputStream);
+            archiveOutputStream.closeArchiveEntry();
 
-        os.putArchiveEntry(new CpioArchiveEntry("test2.xml", file2.length()));
-        Files.copy(file2.toPath(), os);
-        os.closeArchiveEntry();
-
-        os.close();
-        out.close();
+            archiveOutputStream.putArchiveEntry(new CpioArchiveEntry("test2.xml", file2.length()));
+            Files.copy(file2.toPath(), archiveOutputStream);
+            archiveOutputStream.closeArchiveEntry();
+        }
     }
 
     @Test
@@ -68,76 +67,69 @@ public final class CpioTestCase extends AbstractTestCase {
         final long file1Length = file1.length();
         final long file2Length = file2.length();
 
-        {
-            final OutputStream out = Files.newOutputStream(output.toPath());
-            final ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("cpio", out);
+        try (OutputStream outputStream = Files.newOutputStream(output.toPath());
+                ArchiveOutputStream<CpioArchiveEntry> archiveOutputStream = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("cpio", outputStream)) {
             CpioArchiveEntry entry = new CpioArchiveEntry("test1.xml", file1Length);
             entry.setMode(CpioConstants.C_ISREG);
-            os.putArchiveEntry(entry);
-            Files.copy(file1.toPath(), os);
-            os.closeArchiveEntry();
+            archiveOutputStream.putArchiveEntry(entry);
+            Files.copy(file1.toPath(), archiveOutputStream);
+            archiveOutputStream.closeArchiveEntry();
 
             entry = new CpioArchiveEntry("test2.xml", file2Length);
             entry.setMode(CpioConstants.C_ISREG);
-            os.putArchiveEntry(entry);
-            Files.copy(file2.toPath(), os);
-            os.closeArchiveEntry();
-            os.finish();
-            os.close();
-            out.close();
+            archiveOutputStream.putArchiveEntry(entry);
+            Files.copy(file2.toPath(), archiveOutputStream);
+            archiveOutputStream.closeArchiveEntry();
+            archiveOutputStream.finish();
+            archiveOutputStream.close();
+            outputStream.close();
         }
 
         // Unarchive Operation
-        final InputStream is = Files.newInputStream(output.toPath());
-        final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("cpio", is);
-
-
         final Map<String, File> result = new HashMap<>();
-        ArchiveEntry entry;
-        while ((entry = in.getNextEntry()) != null) {
-            final File cpioget = new File(dir, entry.getName());
-            Files.copy(in, cpioget.toPath());
-            result.put(entry.getName(), cpioget);
+        try (InputStream inputStream = Files.newInputStream(output.toPath());
+                ArchiveInputStream<?> archiveInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("cpio", inputStream)) {
+            ArchiveEntry entry;
+            while ((entry = archiveInputStream.getNextEntry()) != null) {
+                final File cpioget = new File(dir, entry.getName());
+                Files.copy(archiveInputStream, cpioget.toPath());
+                result.put(entry.getName(), cpioget);
+            }
         }
-        in.close();
-        is.close();
 
-        File t = result.get("test1.xml");
-        assertTrue(t.exists(), "Expected " + t.getAbsolutePath() + " to exist");
-        assertEquals(file1Length, t.length(), "length of " + t.getAbsolutePath());
+        File testFile = result.get("test1.xml");
+        assertTrue(testFile.exists(), "Expected " + testFile.getAbsolutePath() + " to exist");
+        assertEquals(file1Length, testFile.length(), "length of " + testFile.getAbsolutePath());
 
-        t = result.get("test2.xml");
-        assertTrue(t.exists(), "Expected " + t.getAbsolutePath() + " to exist");
-        assertEquals(file2Length, t.length(), "length of " + t.getAbsolutePath());
+        testFile = result.get("test2.xml");
+        assertTrue(testFile.exists(), "Expected " + testFile.getAbsolutePath() + " to exist");
+        assertEquals(file2Length, testFile.length(), "length of " + testFile.getAbsolutePath());
     }
 
     @Test
     public void testDirectoryEntryFromFile() throws Exception {
         final File[] tmp = createTempDirAndFile();
         File archive = null;
-        CpioArchiveOutputStream tos = null;
-        CpioArchiveInputStream tis = null;
+        archive = File.createTempFile("test.", ".cpio", tmp[0]);
+        archive.deleteOnExit();
+        CpioArchiveOutputStream tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()));
+        CpioArchiveInputStream tis = new CpioArchiveInputStream(Files.newInputStream(archive.toPath()));
         try {
-            archive = File.createTempFile("test.", ".cpio", tmp[0]);
-            archive.deleteOnExit();
-            tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()));
             final long beforeArchiveWrite = tmp[0].lastModified();
-            final CpioArchiveEntry in = new CpioArchiveEntry(tmp[0], "foo");
-            tos.putArchiveEntry(in);
+            final CpioArchiveEntry entryIn = new CpioArchiveEntry(tmp[0], "foo");
+            tos.putArchiveEntry(entryIn);
             tos.closeArchiveEntry();
             tos.close();
             tos = null;
-            tis = new CpioArchiveInputStream(Files.newInputStream(archive.toPath()));
-            final CpioArchiveEntry out = tis.getNextCPIOEntry();
+            final CpioArchiveEntry entryOut = tis.getNextCPIOEntry();
             tis.close();
             tis = null;
-            assertNotNull(out);
-            assertEquals("foo", out.getName());
-            assertEquals(0, out.getSize());
+            assertNotNull(entryOut);
+            assertEquals("foo", entryOut.getName());
+            assertEquals(0, entryOut.getSize());
             // CPIO stores time with a granularity of 1 second
-            assertEquals(beforeArchiveWrite / 1000,
-                         out.getLastModifiedDate().getTime() / 1000);
-            assertTrue(out.isDirectory());
+            assertEquals(beforeArchiveWrite / 1000, entryOut.getLastModifiedDate().getTime() / 1000);
+            assertTrue(entryOut.isDirectory());
         } finally {
             if (tis != null) {
                 tis.close();

@@ -46,7 +46,8 @@ public final class Lister {
 
     private static final ArchiveStreamFactory FACTORY = ArchiveStreamFactory.DEFAULT;
 
-    private static ArchiveInputStream createArchiveInputStream(final String[] args, final InputStream inputStream) throws ArchiveException {
+    private static <T extends ArchiveInputStream<? extends E>, E extends ArchiveEntry> T createArchiveInputStream(final String[] args,
+            final InputStream inputStream) throws ArchiveException {
         if (args.length > 1) {
             return FACTORY.createArchiveInputStream(args[1], inputStream);
         }
@@ -54,8 +55,8 @@ public final class Lister {
     }
 
     private static String detectFormat(final File file) throws ArchiveException, IOException {
-        try (final InputStream fis = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
-            return ArchiveStreamFactory.detect(fis);
+        try (final InputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
+            return ArchiveStreamFactory.detect(inputStream);
         }
     }
 
@@ -72,7 +73,7 @@ public final class Lister {
 
     private static void listStream(final File file, final String[] args) throws ArchiveException, IOException {
         try (final InputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()));
-                final ArchiveInputStream archiveInputStream = createArchiveInputStream(args, inputStream)) {
+                final ArchiveInputStream<?> archiveInputStream = createArchiveInputStream(args, inputStream)) {
             System.out.println("Created " + archiveInputStream.toString());
             ArchiveEntry entry;
             while ((entry = archiveInputStream.getNextEntry()) != null) {

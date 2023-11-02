@@ -62,7 +62,7 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
         try (final CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("bla.cpio"))) {
             CpioArchiveEntry entry;
 
-            while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
+            while ((entry = in.getNextEntry()) != null) {
                 result.append(entry.getName());
                 int tmp;
                 while ((tmp = in.read()) != -1) {
@@ -79,7 +79,7 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
         try (final CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("redline.cpio"))) {
             CpioArchiveEntry entry;
 
-            while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
+            while ((entry = in.getNextEntry()) != null) {
                 count++;
                 assertNotNull(entry);
             }
@@ -94,7 +94,7 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
         try (final CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("COMPRESS-459.cpio"), "UTF-8")) {
             CpioArchiveEntry entry;
 
-            while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
+            while ((entry = in.getNextEntry()) != null) {
                 count++;
                 assertNotNull(entry);
             }

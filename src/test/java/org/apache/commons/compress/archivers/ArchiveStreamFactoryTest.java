@@ -238,17 +238,19 @@ public class ArchiveStreamFactoryTest extends AbstractTestCase {
         }
     }
 
-    private ArchiveInputStream getInputStreamFor(final String resource, final ArchiveStreamFactory factory)
+    @SuppressWarnings("resource")
+    private <T extends ArchiveInputStream<? extends E>, E extends ArchiveEntry> T getInputStream(final String resource, final ArchiveStreamFactory factory)
             throws IOException, ArchiveException {
         return factory.createArchiveInputStream(new BufferedInputStream(newInputStream(resource)));
     }
 
-    private ArchiveInputStream getInputStreamFor(final String type, final String resource, final ArchiveStreamFactory factory)
-            throws IOException, ArchiveException {
+    @SuppressWarnings("resource")
+    private <T extends ArchiveInputStream<? extends E>, E extends ArchiveEntry> T getInputStream(final String type, final String resource,
+            final ArchiveStreamFactory factory) throws IOException, ArchiveException {
         return factory.createArchiveInputStream(type, new BufferedInputStream(newInputStream(resource)));
     }
 
-    private ArchiveOutputStream getOutputStreamFor(final String type, final ArchiveStreamFactory factory)
+    private <T extends ArchiveOutputStream<? extends E>, E extends ArchiveEntry> T getOutputStream(final String type, final ArchiveStreamFactory factory)
             throws ArchiveException {
         return factory.createArchiveOutputStream(type, new ByteArrayOutputStream());
     }
@@ -272,7 +274,7 @@ public class ArchiveStreamFactoryTest extends AbstractTestCase {
     public void skipsPK00Prefix() throws Exception {
         try (InputStream fis = newInputStream("COMPRESS-208.zip")) {
             try (InputStream bis = new BufferedInputStream(fis)) {
-                try (ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis)) {
+                try (ArchiveInputStream<?> ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis)) {
                     assertTrue(ais instanceof ZipArchiveInputStream);
                 }
             }
@@ -348,11 +350,10 @@ public class ArchiveStreamFactoryTest extends AbstractTestCase {
         int failed = 0;
         for (int i = 1; i <= TESTS.length; i++) {
             final TestData test = TESTS[i - 1];
-            try (final ArchiveInputStream ais = getInputStreamFor(test.type, test.testFile, test.fac)) {
+            try (final ArchiveInputStream<?> ais = getInputStream(test.type, test.testFile, test.fac)) {
                 final String field = getField(ais, test.fieldName);
                 if (!eq(test.expectedEncoding, field)) {
-                    System.out.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field
-                            + " type: " + test.type);
+                    System.err.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field + " type: " + test.type);
                     failed++;
                 }
             }
@@ -367,11 +368,10 @@ public class ArchiveStreamFactoryTest extends AbstractTestCase {
         int failed = 0;
         for (int i = 1; i <= TESTS.length; i++) {
             final TestData test = TESTS[i - 1];
-            try (final ArchiveInputStream ais = getInputStreamFor(test.testFile, test.fac)) {
+            try (final ArchiveInputStream<?> ais = getInputStream(test.testFile, test.fac)) {
                 final String field = getField(ais, test.fieldName);
                 if (!eq(test.expectedEncoding, field)) {
-                    System.out.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field
-                            + " type: " + test.type);
+                    System.err.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field + " type: " + test.type);
                     failed++;
                 }
             }
@@ -384,14 +384,13 @@ public class ArchiveStreamFactoryTest extends AbstractTestCase {
     @Test
     public void testEncodingOutputStream() throws Exception {
         int failed = 0;
-        for(int i = 1; i <= TESTS.length; i++) {
-            final TestData test = TESTS[i-1];
+        for (int i = 1; i <= TESTS.length; i++) {
+            final TestData test = TESTS[i - 1];
             if (test.hasOutputStream) {
-                try (final ArchiveOutputStream ais = getOutputStreamFor(test.type, test.fac)) {
+                try (final ArchiveOutputStream<?> ais = getOutputStream(test.type, test.fac)) {
                     final String field = getField(ais, test.fieldName);
                     if (!eq(test.expectedEncoding, field)) {
-                        System.out.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: "
-                                + field + " type: " + test.type);
+                        System.err.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field + " type: " + test.type);
                         failed++;
                     }
                 }

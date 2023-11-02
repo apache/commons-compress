@@ -52,14 +52,13 @@ import org.apache.commons.compress.utils.IOUtils;
  */
 public class Archiver {
 
-    private static class ArchiverFileVisitor extends SimpleFileVisitor<Path> {
+    private static class ArchiverFileVisitor<O extends ArchiveOutputStream<E>, E extends ArchiveEntry> extends SimpleFileVisitor<Path> {
 
-        private final ArchiveOutputStream target;
+        private final O target;
         private final Path directory;
         private final LinkOption[] linkOptions;
 
-        private ArchiverFileVisitor(final ArchiveOutputStream target, final Path directory,
-            final LinkOption... linkOptions) {
+        private ArchiverFileVisitor(final O target, final Path directory, final LinkOption... linkOptions) {
             this.target = target;
             this.directory = directory;
             this.linkOptions = linkOptions == null ? IOUtils.EMPTY_LINK_OPTIONS : linkOptions.clone();
@@ -70,14 +69,12 @@ public class Archiver {
             return visit(dir, attrs, false);
         }
 
-        protected FileVisitResult visit(final Path path, final BasicFileAttributes attrs, final boolean isFile)
-            throws IOException {
+        protected FileVisitResult visit(final Path path, final BasicFileAttributes attrs, final boolean isFile) throws IOException {
             Objects.requireNonNull(path);
             Objects.requireNonNull(attrs);
             final String name = directory.relativize(path).toString().replace('\\', '/');
             if (!name.isEmpty()) {
-                final ArchiveEntry archiveEntry = target.createArchiveEntry(path,
-                    isFile || name.endsWith("/") ? name : name + "/", linkOptions);
+                final E archiveEntry = target.createArchiveEntry(path, isFile || name.endsWith("/") ? name : name + "/", linkOptions);
                 target.putArchiveEntry(archiveEntry);
                 if (isFile) {
                     // Refactor this as a BiConsumer on Java 8
@@ -106,7 +103,7 @@ public class Archiver {
      * @param directory the directory that contains the files to archive.
      * @throws IOException if an I/O error occurs
      */
-    public void create(final ArchiveOutputStream target, final File directory) throws IOException {
+    public void create(final ArchiveOutputStream<?> target, final File directory) throws IOException {
         create(target, directory.toPath(), EMPTY_FileVisitOption);
     }
 
@@ -118,7 +115,7 @@ public class Archiver {
      * @throws IOException if an I/O error occurs or the archive cannot be created for other reasons.
      * @since 1.21
      */
-    public void create(final ArchiveOutputStream target, final Path directory) throws IOException {
+    public void create(final ArchiveOutputStream<?> target, final Path directory) throws IOException {
         create(target, directory, EMPTY_FileVisitOption);
     }
 
@@ -132,10 +129,9 @@ public class Archiver {
      * @throws IOException if an I/O error occurs or the archive cannot be created for other reasons.
      * @since 1.21
      */
-    public void create(final ArchiveOutputStream target, final Path directory,
-        final EnumSet<FileVisitOption> fileVisitOptions, final LinkOption... linkOptions) throws IOException {
-        Files.walkFileTree(directory, fileVisitOptions, Integer.MAX_VALUE,
-            new ArchiverFileVisitor(target, directory, linkOptions));
+    public void create(final ArchiveOutputStream<?> target, final Path directory,
+            final EnumSet<FileVisitOption> fileVisitOptions, final LinkOption... linkOptions) throws IOException {
+        Files.walkFileTree(directory, fileVisitOptions, Integer.MAX_VALUE, new ArchiverFileVisitor<>(target, directory, linkOptions));
         target.finish();
     }
 
@@ -244,7 +240,8 @@ public class Archiver {
     public void create(final String format, final OutputStream target, final File directory,
         final CloseableConsumer closeableConsumer) throws IOException, ArchiveException {
         try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
-            create(c.track(ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, target)), directory);
+            ArchiveOutputStream<? extends ArchiveEntry> archiveOutputStream = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, target);
+            create(c.track(archiveOutputStream), directory);
         }
     }
 
@@ -260,17 +257,16 @@ public class Archiver {
      * @since 1.21
      */
     public void create(final String format, final Path target, final Path directory)
-        throws IOException, ArchiveException {
+            throws IOException, ArchiveException {
         if (prefersSeekableByteChannel(format)) {
-            try (SeekableByteChannel channel = FileChannel.open(target, StandardOpenOption.WRITE,
-                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+            try (SeekableByteChannel channel = FileChannel.open(target, StandardOpenOption.WRITE, StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING)) {
                 create(format, channel, directory);
                 return;
             }
         }
         try (@SuppressWarnings("resource") // ArchiveOutputStream wraps newOutputStream result
-        ArchiveOutputStream outputStream = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format,
-            Files.newOutputStream(target))) {
+        ArchiveOutputStream<?> outputStream = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, Files.newOutputStream(target))) {
             create(outputStream, directory, EMPTY_FileVisitOption);
         }
     }
@@ -348,7 +344,7 @@ public class Archiver {
                 create(sevenZFile, directory);
             }
         } else if (ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)) {
-            try (ArchiveOutputStream archiveOutputStream = new ZipArchiveOutputStream(target)) {
+            try (ZipArchiveOutputStream archiveOutputStream = new ZipArchiveOutputStream(target)) {
                 create(archiveOutputStream, directory, EMPTY_FileVisitOption);
             }
         } else {

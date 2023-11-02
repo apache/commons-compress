@@ -31,6 +31,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.GroupPrincipal;
 import java.nio.file.attribute.UserPrincipal;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -52,7 +53,7 @@ public class TarMemoryFileSystemTest {
 
             final Path target = fileSystem.getPath("original-file.tar");
             try (final OutputStream out = Files.newOutputStream(target);
-                 final ArchiveOutputStream tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
+                    final ArchiveOutputStream<ArchiveEntry> tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
                 final TarArchiveEntry entry = new TarArchiveEntry(source);
                 tarOut.putArchiveEntry(entry);
 
@@ -61,7 +62,7 @@ public class TarMemoryFileSystemTest {
             }
 
             try (final InputStream input = Files.newInputStream(target);
-                 final TarArchiveInputStream tarIn = new TarArchiveInputStream(input)) {
+                    final TarArchiveInputStream tarIn = new TarArchiveInputStream(input)) {
                 final TarArchiveEntry nextTarEntry = tarIn.getNextTarEntry();
 
                 assertEquals(user, nextTarEntry.getUserName());
@@ -78,7 +79,7 @@ public class TarMemoryFileSystemTest {
 
             final File f = File.createTempFile("commons-compress-memoryfs", ".tar");
             try (final OutputStream out = Files.newOutputStream(f.toPath());
-                 final ArchiveOutputStream tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
+                    final ArchiveOutputStream<ArchiveEntry> tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
                 final TarArchiveEntry entry = new TarArchiveEntry(p);
                 tarOut.putArchiveEntry(entry);
 
@@ -95,7 +96,7 @@ public class TarMemoryFileSystemTest {
             final Path p = fileSystem.getPath("target.tar");
 
             try (final OutputStream out = Files.newOutputStream(p);
-                 final ArchiveOutputStream tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
+                    final ArchiveOutputStream<ArchiveEntry> tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
                 final String content = "Test";
                 final TarArchiveEntry entry = new TarArchiveEntry("test.txt");
                 entry.setSize(content.length());

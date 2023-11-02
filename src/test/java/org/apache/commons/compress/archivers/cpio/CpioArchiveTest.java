@@ -54,7 +54,7 @@ public class CpioArchiveTest {
             baos.close();
             try (ByteArrayInputStream bin = new ByteArrayInputStream(baos.toByteArray());
                 CpioArchiveInputStream in = new CpioArchiveInputStream(bin, "UTF-16LE")) {
-                final CpioArchiveEntry entry = (CpioArchiveEntry) in.getNextEntry();
+                final CpioArchiveEntry entry = in.getNextEntry();
                 assertNotNull(entry);
                 assertEquals("T\u00e4st.txt", entry.getName());
                 assertArrayEquals(new byte[] {1, 2, 3, 4}, IOUtils.toByteArray(in));

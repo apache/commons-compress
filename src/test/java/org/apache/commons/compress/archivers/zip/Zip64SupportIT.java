@@ -2207,8 +2207,7 @@ public class Zip64SupportIT {
 
         // with Zip64Mode.AlwaysWithCompatibility, the relative header offset and disk number
         // start will not be set in extra fields
-        final File zipUsingModeAlwaysWithCompatibility = buildZipWithZip64Mode(
-                "testZip64ModeAlwaysWithCompatibility-output-1",
+        final File zipUsingModeAlwaysWithCompatibility = buildZipWithZip64Mode("testZip64ModeAlwaysWithCompatibility-output-1",
                 Zip64Mode.AlwaysWithCompatibility, inputFile);
         final ZipFile zipFileWithAlwaysWithCompatibility = new ZipFile(zipUsingModeAlwaysWithCompatibility);
         ZipArchiveEntry entry = zipFileWithAlwaysWithCompatibility.getEntries().nextElement();
@@ -2223,9 +2222,7 @@ public class Zip64SupportIT {
 
         // with Zip64Mode.Always, the relative header offset and disk number start will be
         // set in extra fields
-        final File zipUsingModeAlways = buildZipWithZip64Mode(
-                "testZip64ModeAlwaysWithCompatibility-output-2",
-                Zip64Mode.Always, inputFile);
+        final File zipUsingModeAlways = buildZipWithZip64Mode("testZip64ModeAlwaysWithCompatibility-output-2", Zip64Mode.Always, inputFile);
         final ZipFile zipFileWithAlways = new ZipFile(zipUsingModeAlways);
         entry = zipFileWithAlways.getEntries().nextElement();
         for (final ZipExtraField extraField : entry.getExtraFields()) {

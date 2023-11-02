@@ -34,8 +34,8 @@ import java.util.Map;
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
-import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorOutputStream;
@@ -52,7 +52,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         final File file2 = getFile("test2.xml");
 
         try (OutputStream out = new Pack200CompressorOutputStream(Files.newOutputStream(output.toPath()), mode);
-             ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("jar", out)) {
+             JarArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("jar", out)) {
 
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
             Files.copy(file1.toPath(), os);
@@ -64,7 +64,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         }
 
         try (InputStream is = new Pack200CompressorInputStream(output);
-            final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
+            final ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
             final List<String> files = new ArrayList<>();
             files.add("testdata/test1.xml");
             files.add("testdata/test2.xml");
@@ -78,7 +78,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         try (
             InputStream is = useFile ? new Pack200CompressorInputStream(input, mode)
                 : new Pack200CompressorInputStream(Files.newInputStream(input.toPath()), mode);
-            ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
+            ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
 
             ArchiveEntry entry = in.getNextEntry();
             while (entry != null) {

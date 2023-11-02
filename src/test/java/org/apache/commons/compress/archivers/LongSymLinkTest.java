@@ -107,7 +107,7 @@ public class LongSymLinkTest extends AbstractTestCase {
             expected.add("META-INF/");
             expected.add("META-INF/MANIFEST.MF");
         }
-        final ArchiveInputStream ais = factory.createArchiveInputStream(new BufferedInputStream(Files.newInputStream(file.toPath())));
+        final ArchiveInputStream<?> ais = factory.createArchiveInputStream(new BufferedInputStream(Files.newInputStream(file.toPath())));
         // check if expected type recognized
         if (name.endsWith(".tar")){
             assertTrue(ais instanceof TarArchiveInputStream);

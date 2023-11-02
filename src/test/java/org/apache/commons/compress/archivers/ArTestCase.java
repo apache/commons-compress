@@ -48,7 +48,7 @@ public final class ArTestCase extends AbstractTestCase {
         final File file2 = getFile("test2.xml");
 
         try (final OutputStream out = Files.newOutputStream(output.toPath());
-                ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out)) {
+                ArArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out)) {
             os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
             Files.copy(file1.toPath(), os);
             os.closeArchiveEntry();
@@ -68,7 +68,7 @@ public final class ArTestCase extends AbstractTestCase {
         {
             // create
             try (OutputStream out = Files.newOutputStream(output.toPath());
-                    ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out)) {
+                    ArchiveOutputStream<ArArchiveEntry> os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out)) {
                 os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
                 Files.copy(file1.toPath(), os);
                 os.closeArchiveEntry();
@@ -90,10 +90,10 @@ public final class ArTestCase extends AbstractTestCase {
 
         try (OutputStream os = Files.newOutputStream(output2.toPath());
                 InputStream is = Files.newInputStream(output.toPath());
-                ArchiveOutputStream aos = new ArchiveStreamFactory().createArchiveOutputStream("ar", os);
-                ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is))) {
+                ArchiveOutputStream<ArArchiveEntry> aos = new ArchiveStreamFactory().createArchiveOutputStream("ar", os);
+                ArchiveInputStream<ArArchiveEntry> ais = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is))) {
             while (true) {
-                final ArArchiveEntry entry = (ArArchiveEntry) ais.getNextEntry();
+                final ArArchiveEntry entry = ais.getNextEntry();
                 if (entry == null) {
                     break;
                 }
@@ -107,7 +107,6 @@ public final class ArTestCase extends AbstractTestCase {
                     IOUtils.copy(ais, new ByteArrayOutputStream());
                     deleted++;
                 }
-
             }
         }
 
@@ -120,9 +119,9 @@ public final class ArTestCase extends AbstractTestCase {
 
         {
             try (InputStream is = Files.newInputStream(output2.toPath());
-                    ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is))) {
+                    ArchiveInputStream<ArArchiveEntry> ais = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is))) {
                 while (true) {
-                    final ArArchiveEntry entry = (ArArchiveEntry) ais.getNextEntry();
+                    final ArArchiveEntry entry = ais.getNextEntry();
                     if (entry == null) {
                         break;
                     }
@@ -147,7 +146,7 @@ public final class ArTestCase extends AbstractTestCase {
             final File file2 = getFile("test2.xml");
 
             try (OutputStream out = Files.newOutputStream(output.toPath());
-                    ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out)) {
+                    ArchiveOutputStream<ArArchiveEntry> os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out)) {
                 os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
                 Files.copy(file1.toPath(), os);
                 os.closeArchiveEntry();
@@ -160,9 +159,8 @@ public final class ArTestCase extends AbstractTestCase {
 
         // UnArArchive Operation
         try (final InputStream is = Files.newInputStream(output.toPath());
-             final ArchiveInputStream in = new ArchiveStreamFactory()
-                        .createArchiveInputStream(new BufferedInputStream(is))) {
-            final ArArchiveEntry entry = (ArArchiveEntry) in.getNextEntry();
+                final ArchiveInputStream<ArArchiveEntry> in = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is))) {
+            final ArArchiveEntry entry = in.getNextEntry();
 
             final File target = new File(dir, entry.getName());
             Files.copy(in, target.toPath());
@@ -180,9 +178,7 @@ public final class ArTestCase extends AbstractTestCase {
             archive = File.createTempFile("test.", ".ar", tmp[0]);
             archive.deleteOnExit();
             aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()));
-            final ArArchiveEntry in = new ArArchiveEntry("foo", tmp[1].length(),
-                                                   0, 0, 0,
-                                                   tmp[1].lastModified() / 1000);
+            final ArArchiveEntry in = new ArArchiveEntry("foo", tmp[1].length(), 0, 0, 0, tmp[1].lastModified() / 1000);
             aos.putArchiveEntry(in);
             final byte[] b = new byte[(int) tmp[1].length()];
             fis = Files.newInputStream(tmp[1].toPath());
@@ -201,8 +197,7 @@ public final class ArTestCase extends AbstractTestCase {
             assertNotNull(out);
             assertEquals("foo", out.getName());
             assertEquals(tmp[1].length(), out.getSize());
-            assertEquals(tmp[1].lastModified() / 1000,
-                         out.getLastModifiedDate().getTime() / 1000);
+            assertEquals(tmp[1].lastModified() / 1000, out.getLastModifiedDate().getTime() / 1000);
             assertFalse(out.isDirectory());
         } finally {
             if (ais != null) {

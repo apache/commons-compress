@@ -205,6 +205,7 @@ public final class ZipTestCase extends AbstractTestCase {
 
         return result;
     }
+
     private void createArchiveEntry(final String payload, final ZipArchiveOutputStream zos, final String name)
             throws IOException {
         final ZipArchiveEntry in = new ZipArchiveEntry(name);
@@ -213,6 +214,7 @@ public final class ZipTestCase extends AbstractTestCase {
         zos.write(payload.getBytes());
         zos.closeArchiveEntry();
     }
+
     private ZipArchiveOutputStream createFirstEntry(final ZipArchiveOutputStream zos) throws IOException {
         createArchiveEntry(first_payload, zos, "file1.txt");
         return zos;
@@ -570,7 +572,7 @@ public final class ZipTestCase extends AbstractTestCase {
 
         // stream access
         try (final InputStream fis = Files.newInputStream(input.toPath());
-            final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fis)) {
+            final ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fis)) {
             for (ArchiveEntry entry; (entry = in.getNextEntry()) != null; ) {
                 readStream(in, entry, actualStatistics);
             }
@@ -616,16 +618,16 @@ public final class ZipTestCase extends AbstractTestCase {
         final List<ZipException> expectedExceptions = new ArrayList<>();
 
         try (final InputStream fis = Files.newInputStream(input.toPath());
-            ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fis)) {
+                ZipArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fis)) {
 
             ZipArchiveEntry entry;
-            while ((entry = (ZipArchiveEntry) in.getNextEntry()) != null) {
+            while ((entry = in.getNextEntry()) != null) {
                 results.add(entry.getName());
 
-                final ArchiveInputStream nestedIn = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", in);
+                final ZipArchiveInputStream nestedIn = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", in);
                 try {
                     ZipArchiveEntry nestedEntry;
-                    while ((nestedEntry = (ZipArchiveEntry) nestedIn.getNextEntry()) != null) {
+                    while ((nestedEntry = nestedIn.getNextEntry()) != null) {
                         results.add(nestedEntry.getName());
                     }
                 } catch (final ZipException ex) {
@@ -729,7 +731,7 @@ public final class ZipTestCase extends AbstractTestCase {
         final File file2 = getFile("test2.xml");
 
         try (final OutputStream out = Files.newOutputStream(output.toPath())) {
-            try (ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("zip", out)) {
+            try (ArchiveOutputStream<ZipArchiveEntry> os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("zip", out)) {
                 os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
                 Files.copy(file1.toPath(), os);
                 os.closeArchiveEntry();
@@ -744,10 +746,10 @@ public final class ZipTestCase extends AbstractTestCase {
         final List<File> results = new ArrayList<>();
 
         try (final InputStream fileInputStream = Files.newInputStream(output.toPath())) {
-            try (ArchiveInputStream archiveInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip",
+            try (ArchiveInputStream<ZipArchiveEntry> archiveInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip",
                 fileInputStream)) {
                 ZipArchiveEntry entry;
-                while ((entry = (ZipArchiveEntry) archiveInputStream.getNextEntry()) != null) {
+                while ((entry = archiveInputStream.getNextEntry()) != null) {
                     final File outfile = new File(resultDir.getCanonicalPath() + "/result/" + entry.getName());
                     outfile.getParentFile().mkdirs();
                     Files.copy(archiveInputStream, outfile.toPath());
@@ -790,11 +792,11 @@ public final class ZipTestCase extends AbstractTestCase {
             }
 
             // Unarchive the same
-            try (ArchiveInputStream inputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip",
+            try (ZipArchiveInputStream inputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip",
                 new ByteArrayInputStream(channel.array()))) {
 
                 ZipArchiveEntry entry;
-                while ((entry = (ZipArchiveEntry) inputStream.getNextEntry()) != null) {
+                while ((entry = inputStream.getNextEntry()) != null) {
                     final byte[] result = new byte[(int) entry.getSize()];
                     IOUtils.readFully(inputStream, result);
                     results.add(result);
@@ -821,7 +823,7 @@ public final class ZipTestCase extends AbstractTestCase {
             archivePath = archiveFile.toPath();
             archiveFile.deleteOnExit();
             zos = new ZipArchiveOutputStream(archivePath);
-            final ZipArchiveEntry in = (ZipArchiveEntry) zos.createArchiveEntry(tmpFilePath, "foo");
+            final ZipArchiveEntry in = zos.createArchiveEntry(tmpFilePath, "foo");
             zos.putArchiveEntry(in);
             final byte[] b = new byte[(int) tmpFile.length()];
             fis = Files.newInputStream(tmpFile.toPath());
@@ -863,7 +865,7 @@ public final class ZipTestCase extends AbstractTestCase {
     public void testZipUnarchive() throws Exception {
         final File input = getFile("bla.zip");
         try (final InputStream is = Files.newInputStream(input.toPath());
-                final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", is)) {
+                final ArchiveInputStream<ZipArchiveEntry> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", is)) {
             final ZipArchiveEntry entry = (ZipArchiveEntry) in.getNextEntry();
             Files.copy(in, new File(dir, entry.getName()).toPath());
         }

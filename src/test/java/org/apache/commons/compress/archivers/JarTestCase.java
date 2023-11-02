@@ -25,6 +25,7 @@ import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.junit.jupiter.api.Test;
 
 public final class JarTestCase extends AbstractTestCase {
@@ -37,7 +38,7 @@ public final class JarTestCase extends AbstractTestCase {
         final File file2 = getFile("test2.xml");
 
         try (OutputStream out = Files.newOutputStream(output.toPath());
-                ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("jar", out)) {
+                ArchiveOutputStream<ZipArchiveEntry> os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("jar", out)) {
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
             Files.copy(file1.toPath(), os);
             os.closeArchiveEntry();
@@ -53,19 +54,19 @@ public final class JarTestCase extends AbstractTestCase {
     public void testJarUnarchive() throws Exception {
         final File input = getFile("bla.jar");
         try (InputStream is = Files.newInputStream(input.toPath());
-                ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
+                ZipArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
 
-            ZipArchiveEntry entry = (ZipArchiveEntry) in.getNextEntry();
+            ZipArchiveEntry entry = in.getNextEntry();
             File o = new File(dir, entry.getName());
             o.getParentFile().mkdirs();
             Files.copy(in, o.toPath());
 
-            entry = (ZipArchiveEntry) in.getNextEntry();
+            entry = in.getNextEntry();
             o = new File(dir, entry.getName());
             o.getParentFile().mkdirs();
             Files.copy(in, o.toPath());
 
-            entry = (ZipArchiveEntry) in.getNextEntry();
+            entry = in.getNextEntry();
             o = new File(dir, entry.getName());
             o.getParentFile().mkdirs();
             Files.copy(in, o.toPath());
@@ -76,7 +77,7 @@ public final class JarTestCase extends AbstractTestCase {
     public void testJarUnarchiveAll() throws Exception {
         final File input = getFile("bla.jar");
         try (InputStream is = Files.newInputStream(input.toPath());
-                final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
+                final ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
 
             ArchiveEntry entry = in.getNextEntry();
             while (entry != null) {
