@@ -105,37 +105,26 @@ public final class TarTestCase extends AbstractTestCase {
 
     @Test
     public void testDirectoryEntryFromFile() throws Exception {
-        TarArchiveOutputStream tos = null;
-        TarArchiveInputStream tis = null;
-        try {
-            final File archive = createTempFile("test.", ".tar");
-            tos = new TarArchiveOutputStream(Files.newOutputStream(archive.toPath()));
+        final File archive = createTempFile("test.", ".tar");
+        final long beforeArchiveWrite;
+        try (TarArchiveOutputStream tos = new TarArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
             final File dir = getTempDirFile();
-            final long beforeArchiveWrite = dir.lastModified();
+            beforeArchiveWrite = dir.lastModified();
             final TarArchiveEntry in = new TarArchiveEntry(dir, "foo");
             tos.putArchiveEntry(in);
             tos.closeArchiveEntry();
-            tos.close();
-            tos = null;
-            tis = new TarArchiveInputStream(Files.newInputStream(archive.toPath()));
-            final TarArchiveEntry out = tis.getNextTarEntry();
-            tis.close();
-            tis = null;
-            assertNotNull(out);
-            assertEquals("foo/", out.getName());
-            assertEquals(TarConstants.LF_DIR, out.getLinkFlag());
-            assertEquals(0, out.getSize());
-            // TAR stores time with a granularity of 1 second
-            assertEquals(beforeArchiveWrite / 1000, out.getLastModifiedDate().getTime() / 1000);
-            assertTrue(out.isDirectory());
-        } finally {
-            if (tis != null) {
-                tis.close();
-            }
-            if (tos != null) {
-                tos.close();
-            }
         }
+        final TarArchiveEntry out;
+        try (TarArchiveInputStream tis = new TarArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+            out = tis.getNextTarEntry();
+        }
+        assertNotNull(out);
+        assertEquals("foo/", out.getName());
+        assertEquals(TarConstants.LF_DIR, out.getLinkFlag());
+        assertEquals(0, out.getSize());
+        // TAR stores time with a granularity of 1 second
+        assertEquals(beforeArchiveWrite / 1000, out.getLastModifiedDate().getTime() / 1000);
+        assertTrue(out.isDirectory());
     }
 
     @Test
@@ -154,48 +143,33 @@ public final class TarTestCase extends AbstractTestCase {
 
     @Test
     public void testExplicitDirectoryEntry() throws Exception {
-        TarArchiveOutputStream tos = null;
-        TarArchiveInputStream tis = null;
-        try {
-            final File archive = createTempFile("test.", ".tar");
-            archive.deleteOnExit();
-            tos = new TarArchiveOutputStream(Files.newOutputStream(archive.toPath()));
-            final long beforeArchiveWrite = getTempDirFile().lastModified();
-            final TarArchiveEntry in = new TarArchiveEntry("foo/");
+        final File archive = createTempFile("test.", ".tar");
+        archive.deleteOnExit();
+        final long beforeArchiveWrite;
+        final TarArchiveEntry in = new TarArchiveEntry("foo/");
+        try (TarArchiveOutputStream tos = new TarArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
+            beforeArchiveWrite = getTempDirFile().lastModified();
             in.setModTime(beforeArchiveWrite);
             tos.putArchiveEntry(in);
             tos.closeArchiveEntry();
-            tos.close();
-            tos = null;
-            tis = new TarArchiveInputStream(Files.newInputStream(archive.toPath()));
-            final TarArchiveEntry out = tis.getNextTarEntry();
-            tis.close();
-            tis = null;
-            assertNotNull(out);
-            assertEquals("foo/", out.getName());
-            assertEquals(TarConstants.LF_DIR, in.getLinkFlag());
-            assertEquals(0, out.getSize());
-            assertEquals(beforeArchiveWrite / 1000, out.getLastModifiedDate().getTime() / 1000);
-            assertTrue(out.isDirectory());
-        } finally {
-            if (tis != null) {
-                tis.close();
-            }
-            if (tos != null) {
-                tos.close();
-            }
         }
+        final TarArchiveEntry out;
+        try (TarArchiveInputStream tis = new TarArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+            out = tis.getNextTarEntry();
+        }
+        assertNotNull(out);
+        assertEquals("foo/", out.getName());
+        assertEquals(TarConstants.LF_DIR, in.getLinkFlag());
+        assertEquals(0, out.getSize());
+        assertEquals(beforeArchiveWrite / 1000, out.getLastModifiedDate().getTime() / 1000);
+        assertTrue(out.isDirectory());
     }
 
     @Test
     public void testExplicitFileEntry() throws Exception {
         final File tmp = createTempFile();
-        TarArchiveOutputStream tos = null;
-        TarArchiveInputStream tis = null;
-        try {
-            final File archive = createTempFile("test.", ".tar");
-            archive.deleteOnExit();
-            tos = new TarArchiveOutputStream(Files.newOutputStream(archive.toPath()));
+        final File archive = createTempFile("test.", ".tar");
+        try (TarArchiveOutputStream tos = new TarArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
             final TarArchiveEntry entryIn = new TarArchiveEntry("foo");
             entryIn.setModTime(tmp.lastModified());
             entryIn.setSize(tmp.length());
@@ -207,26 +181,17 @@ public final class TarTestCase extends AbstractTestCase {
                 }
             }
             tos.closeArchiveEntry();
-            tos.close();
-            tos = null;
-            tis = new TarArchiveInputStream(Files.newInputStream(archive.toPath()));
-            final TarArchiveEntry entryOut = tis.getNextTarEntry();
-            tis.close();
-            tis = null;
-            assertNotNull(entryOut);
-            assertEquals("foo", entryOut.getName());
-            assertEquals(TarConstants.LF_NORMAL, entryOut.getLinkFlag());
-            assertEquals(tmp.length(), entryOut.getSize());
-            assertEquals(tmp.lastModified() / 1000, entryOut.getLastModifiedDate().getTime() / 1000);
-            assertFalse(entryOut.isDirectory());
-        } finally {
-            if (tis != null) {
-                tis.close();
-            }
-            if (tos != null) {
-                tos.close();
-            }
         }
+        final TarArchiveEntry entryOut;
+        try (TarArchiveInputStream tis = new TarArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+            entryOut = tis.getNextTarEntry();
+        }
+        assertNotNull(entryOut);
+        assertEquals("foo", entryOut.getName());
+        assertEquals(TarConstants.LF_NORMAL, entryOut.getLinkFlag());
+        assertEquals(tmp.length(), entryOut.getSize());
+        assertEquals(tmp.lastModified() / 1000, entryOut.getLastModifiedDate().getTime() / 1000);
+        assertFalse(entryOut.isDirectory());
     }
 
     @Test
@@ -504,7 +469,7 @@ public final class TarTestCase extends AbstractTestCase {
     public void testTarFileUnarchive() throws Exception {
         final File file = getFile("bla.tar");
         try (TarFile tarFile = new TarFile(file)) {
-            TarArchiveEntry entry = tarFile.getEntries().get(0);
+            final TarArchiveEntry entry = tarFile.getEntries().get(0);
             try (InputStream inputStream = tarFile.getInputStream(entry)) {
                 Files.copy(inputStream, new File(getTempDirFile(), entry.getName()).toPath());
             }
