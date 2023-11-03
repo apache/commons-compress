@@ -87,7 +87,7 @@ public final class DumpTestCase extends AbstractTestCase {
                 ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("dump", is)) {
             ArchiveEntry entry = in.getNextEntry();
             while (entry != null) {
-                final File archiveEntry = new File(dir, entry.getName());
+                final File archiveEntry = new File(getTempDirFile(), entry.getName());
                 archiveEntry.getParentFile().mkdirs();
                 if (entry.isDirectory()) {
                     archiveEntry.mkdir();

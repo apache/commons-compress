@@ -32,7 +32,7 @@ public class ZipSplitOutputStreamTest extends AbstractTestCase {
 
     @Test
     public void testCreateSplittedFiles() throws IOException {
-        final File testOutputFile = new File(dir, "testCreateSplittedFiles.zip");
+        final File testOutputFile = new File(getTempDirFile(), "testCreateSplittedFiles.zip");
         final int splitSize = 100 * 1024; /* 100 KB */
         final ZipSplitOutputStream zipSplitOutputStream = new ZipSplitOutputStream(testOutputFile, splitSize);
 
@@ -48,22 +48,22 @@ public class ZipSplitOutputStreamTest extends AbstractTestCase {
         }
         zipSplitOutputStream.close();
 
-        File zipFile = new File(dir.getPath(), "testCreateSplittedFiles.z01");
+        File zipFile = new File(getTempDirFile().getPath(), "testCreateSplittedFiles.z01");
         assertEquals(zipFile.length(), splitSize);
 
-        zipFile = new File(dir.getPath(), "testCreateSplittedFiles.z02");
+        zipFile = new File(getTempDirFile().getPath(), "testCreateSplittedFiles.z02");
         assertEquals(zipFile.length(), splitSize);
 
-        zipFile = new File(dir.getPath(), "testCreateSplittedFiles.z03");
+        zipFile = new File(getTempDirFile().getPath(), "testCreateSplittedFiles.z03");
         assertEquals(zipFile.length(), splitSize);
 
-        zipFile = new File(dir.getPath(), "testCreateSplittedFiles.z04");
+        zipFile = new File(getTempDirFile().getPath(), "testCreateSplittedFiles.z04");
         assertEquals(zipFile.length(), splitSize);
 
-        zipFile = new File(dir.getPath(), "testCreateSplittedFiles.z05");
+        zipFile = new File(getTempDirFile().getPath(), "testCreateSplittedFiles.z05");
         assertEquals(zipFile.length(), splitSize);
 
-        zipFile = new File(dir.getPath(), "testCreateSplittedFiles.zip");
+        zipFile = new File(getTempDirFile().getPath(), "testCreateSplittedFiles.zip");
         assertEquals(zipFile.length(), fileToTest.length() + 4 - splitSize * 5);
     }
 

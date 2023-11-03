@@ -67,7 +67,7 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
 
     private void roundTripTest(final File input, final Parameters params) throws IOException {
         long start = System.currentTimeMillis();
-        final File outputSz = new File(dir, input.getName() + ".raw.sz");
+        final File outputSz = new File(getTempDirFile(), input.getName() + ".raw.sz");
         try (OutputStream os = Files.newOutputStream(outputSz.toPath());
                 SnappyCompressorOutputStream sos = new SnappyCompressorOutputStream(os, input.length(), params)) {
             Files.copy(input.toPath(), sos);
@@ -139,7 +139,7 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
         // Start with the four byte sequence 0000 after that add > 64k
         // of random noise that doesn't contain any 0000 at all, then
         // add 0000.
-        final File f = new File(dir, "reallyBigOffsetTest");
+        final File f = new File(getTempDirFile(), "reallyBigOffsetTest");
         final ByteArrayOutputStream fs = new ByteArrayOutputStream((1<<16) + 1024);
             fs.write(0);
             fs.write(0);
@@ -173,7 +173,7 @@ public final class SnappyRoundtripTest extends AbstractTestCase {
         // The four byte methods would require even more luck and a
         // buffer (and a file written to disk) that was 2^5 bigger
         // than the buffer used here.
-        final File f = new File(dir, "reallyBigLiteralTest");
+        final File f = new File(getTempDirFile(), "reallyBigLiteralTest");
         try (OutputStream fs = Files.newOutputStream(f.toPath())) {
             final int cnt = 1 << 19;
             final Random r = new Random();

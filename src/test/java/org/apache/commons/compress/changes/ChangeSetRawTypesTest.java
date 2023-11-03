@@ -542,7 +542,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
         changeSet.delete("test2.xml");
         final File file1 = getFile("test.txt");
         final ArArchiveEntry entry = new ArArchiveEntry("test.txt", file1.length());
-        final Path result = dir.toPath().resolve("bla.ar");
+        final Path result = getTempDirFile().toPath().resolve("bla.ar");
         final String archiverName = "ar";
         try (InputStream inputStream = Files.newInputStream(getPath("bla.ar"));
                 ArchiveInputStream archiveInputStream = factory.createArchiveInputStream(archiverName, inputStream);
@@ -573,7 +573,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
         changeSet.delete(".classpath");
         changeSet.delete(".project");
         final File input = getFile("bla.jar");
-        final Path result = dir.toPath().resolve("bla.jar");
+        final Path result = getTempDirFile().toPath().resolve("bla.jar");
         final String archiverName = "jar";
         try (InputStream inputStream = Files.newInputStream(input.toPath());
                 ArchiveInputStream archiveInputStream = factory.createArchiveInputStream(archiverName, inputStream);
@@ -604,7 +604,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
         entry.setUserName("avalon");
         entry.setGroupName("excalibur");
         entry.setMode(0100000);
-        final File result = new File(dir, "bla.tar");
+        final File result = new File(getTempDirFile(), "bla.tar");
         final String archiverName = "tar";
         try (InputStream inputStream = Files.newInputStream(getPath("bla.tar"));
                 ArchiveInputStream archiveInputStream = factory.createArchiveInputStream(archiverName, inputStream);
@@ -695,7 +695,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
         final ChangeSet changeSet = new ChangeSet();
         changeSet.delete("test2.xml");
         final File input = getFile("bla.ar");
-        final File result = new File(dir, "bla.ar");
+        final File result = new File(getTempDirFile(), "bla.ar");
         final String archiverName = "ar";
         try (InputStream inputStream = Files.newInputStream(input.toPath());
                 ArchiveInputStream archiveInputStream = factory.createArchiveInputStream(archiverName, inputStream);
@@ -725,7 +725,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
         changeSet.delete(".classpath");
         changeSet.delete(".project");
         final File input = getFile("bla.jar");
-        final File result = new File(dir, "bla.jar");
+        final File result = new File(getTempDirFile(), "bla.jar");
         try (InputStream inputStream = Files.newInputStream(input.toPath());
                 ArchiveInputStream archiveInputStream = factory.createArchiveInputStream(archiverName, inputStream);
                 OutputStream newOutputStream = Files.newOutputStream(result.toPath());
@@ -748,7 +748,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
     public void testDeleteFromTar() throws Exception {
         final ChangeSet changeSet = new ChangeSet();
         changeSet.delete("test2.xml");
-        final File result = new File(dir, "bla.tar");
+        final File result = new File(getTempDirFile(), "bla.tar");
         final String archiverName = "tar";
         try (InputStream inputStream = Files.newInputStream(getFile("bla.tar").toPath());
                 ArchiveInputStream archiveInputStream = factory.createArchiveInputStream(archiverName, inputStream);

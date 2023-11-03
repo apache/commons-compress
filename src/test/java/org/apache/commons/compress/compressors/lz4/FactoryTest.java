@@ -35,7 +35,7 @@ public class FactoryTest extends AbstractTestCase {
     private void roundtripViaFactory(final String format) throws Exception {
         final Path input = getPath("bla.tar");
         long start = System.currentTimeMillis();
-        final Path outputSz = dir.toPath().resolve(input.getFileName() + "." + format + ".lz4");
+        final Path outputSz = getTempDirFile().toPath().resolve(input.getFileName() + "." + format + ".lz4");
         try (OutputStream os = Files.newOutputStream(outputSz);
                 OutputStream los = new CompressorStreamFactory().createCompressorOutputStream(format, os)) {
             Files.copy(input, los);

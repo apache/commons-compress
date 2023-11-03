@@ -568,7 +568,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
         final File file1 = getFile("test.txt");
         final ArArchiveEntry entry = new ArArchiveEntry("test.txt", file1.length());
         final File input = getFile("bla.ar");
-        final File result = new File(dir, "bla.ar");
+        final File result = new File(getTempDirFile(), "bla.ar");
         try (InputStream inputStream = Files.newInputStream(input.toPath());
                 ArchiveInputStream<ArArchiveEntry> ais = createArchiveInputStream(archiverName, inputStream);
                 OutputStream outputStream = Files.newOutputStream(result.toPath());
@@ -599,7 +599,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
         final File file1 = getFile("test.txt");
         final JarArchiveEntry entry = new JarArchiveEntry("testdata/test.txt");
         final File input = getFile("bla.jar");
-        final File result = new File(dir, "bla.jar");
+        final File result = new File(getTempDirFile(), "bla.jar");
         try (InputStream inputStream = Files.newInputStream(input.toPath());
                 ArchiveInputStream<JarArchiveEntry> ais = createArchiveInputStream(archiverName, inputStream);
                 OutputStream outputStream = Files.newOutputStream(result.toPath());
@@ -629,7 +629,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
         entry.setGroupName("excalibur");
         entry.setMode(0100000);
         final File input = getFile("bla.tar");
-        final File result = new File(dir, "bla.tar");
+        final File result = new File(getTempDirFile(), "bla.tar");
         try (InputStream inputStream = Files.newInputStream(input.toPath());
                 ArchiveInputStream<TarArchiveEntry> ais = createArchiveInputStream(archiverName, inputStream);
                 OutputStream outputStream = Files.newOutputStream(result.toPath());
@@ -716,7 +716,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
         final ChangeSet<E> changeSet = createChangeSet();
         changeSet.delete("test2.xml");
         final File input = getFile("bla.ar");
-        final File temp = new File(dir, "bla.ar");
+        final File temp = new File(getTempDirFile(), "bla.ar");
         try (InputStream inputStream = Files.newInputStream(input.toPath());
                 ArchiveInputStream<E> ais = createArchiveInputStream(archiverName, inputStream);
                 OutputStream outputStream = Files.newOutputStream(temp.toPath());
@@ -745,7 +745,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
         changeSet.delete(".project");
 
         final File input = getFile("bla.jar");
-        final File temp = new File(dir, "bla.jar");
+        final File temp = new File(getTempDirFile(), "bla.jar");
         try (InputStream inputStream = Files.newInputStream(input.toPath());
                 ArchiveInputStream<E> ais = createArchiveInputStream(archiverName, inputStream);
                 OutputStream outputStream = Files.newOutputStream(temp.toPath());
@@ -768,7 +768,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
         final ChangeSet<E> changeSet = createChangeSet();
         changeSet.delete("test2.xml");
         final File input = getFile("bla.tar");
-        final File temp = new File(dir, "bla.tar");
+        final File temp = new File(getTempDirFile(), "bla.tar");
         try (InputStream inputStream = Files.newInputStream(input.toPath());
                 ArchiveInputStream<E> ais = createArchiveInputStream(archiverName, inputStream);
                 OutputStream outputStream = Files.newOutputStream(temp.toPath());

@@ -129,7 +129,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testDirectoryWithLongNameEndsWithSlash() throws IOException, ArchiveException {
-        final String rootPath = dir.getAbsolutePath();
+        final String rootPath = getTempDirFile().getAbsolutePath();
         final String dirDirectory = "COMPRESS-509";
         final int count = 100;
         final File root = new File(rootPath + "/" + dirDirectory);
@@ -320,7 +320,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testShouldThrowAnExceptionOnTruncatedEntries() throws Exception {
-        final File dir = mkdir("COMPRESS-279");
+        final File dir = createTempDirectory("COMPRESS-279");
         try (TarArchiveInputStream is = getTestStream("/COMPRESS-279.tar")) {
             assertThrows(IOException.class, () -> {
                 TarArchiveEntry entry = is.getNextTarEntry();
@@ -331,8 +331,6 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
                     entry = is.getNextTarEntry();
                 }
             });
-        } finally {
-            forceDelete(dir);
         }
     }
 

@@ -67,7 +67,7 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
     private void roundTripTest(final String testFile, final String config, final Parameters params) throws IOException {
         final File input = getFile(testFile);
         long start = System.currentTimeMillis();
-        final File outputSz = new File(dir, input.getName() + ".block.lz4");
+        final File outputSz = new File(getTempDirFile(), input.getName() + ".block.lz4");
         try (OutputStream os = Files.newOutputStream(outputSz.toPath()); BlockLZ4CompressorOutputStream los = new BlockLZ4CompressorOutputStream(os, params)) {
             Files.copy(input.toPath(), los);
         }

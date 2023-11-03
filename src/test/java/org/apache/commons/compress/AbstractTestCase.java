@@ -98,19 +98,15 @@ public abstract class AbstractTestCase {
         return getFile(path).toPath();
     }
 
-    public static File mkdir(final String prefix) throws IOException {
-        return Files.createTempDirectory(prefix).toFile();
-    }
-
     public static InputStream newInputStream(final String path) throws IOException {
         return Files.newInputStream(getPath(path));
     }
 
     @TempDir
-    protected File dir;
+    protected File tempDirFile;
 
     @TempDir
-    protected File resultDir;
+    protected File tempResultDir;
 
     /** Used to delete the archive in {@link #tearDown()}. */
     private Path archivePath;
@@ -161,7 +157,7 @@ public abstract class AbstractTestCase {
      */
     protected File checkArchiveContent(final ArchiveInputStream<?> inputStream, final List<String> expected, final boolean cleanUp)
             throws Exception {
-        final File result = mkdir("dir-result");
+        final File result = createTempDirectory("dir-result");
         result.deleteOnExit();
 
         try {
@@ -321,28 +317,16 @@ public abstract class AbstractTestCase {
         return archivePath;
     }
 
-    protected File createTempDir() throws IOException {
-        final File tmpDir = mkdir("testdir");
-        tmpDir.deleteOnExit();
-        return tmpDir;
+    public File createTempDirectory(final String prefix) throws IOException {
+        return Files.createTempDirectory(getTempDirPath(), prefix).toFile();
     }
 
-    /**
-     * Creates a temporary directory and a temporary file inside that
-     * directory, returns both of them (the directory is the first
-     * element of the two element array).
-     *
-     * @return temporary directory and file pair.
-     * @throws IOException Some I/O error.
-     */
-    protected File[] createTempDirAndFile() throws IOException {
-        final File tmpDir = createTempDir();
-        final File tmpFile = File.createTempFile("testfile", "", tmpDir);
-        tmpFile.deleteOnExit();
-        try (OutputStream outputStream = Files.newOutputStream(tmpFile.toPath())) {
-            outputStream.write(new byte[] { 'f', 'o', 'o' });
-            return new File[] { tmpDir, tmpFile };
-        }
+    protected File createTempFile() throws IOException {
+        return File.createTempFile("testfile", "", getTempDirFile());
+    }
+
+    protected File createTempFile(final String prefix, final String suffix) throws IOException {
+        return File.createTempFile(prefix, suffix, getTempDirFile());
     }
 
     /**
@@ -354,6 +338,14 @@ public abstract class AbstractTestCase {
      */
     protected String getExpectedString(final ArchiveEntry entry) {
         return entry.getName();
+    }
+
+    protected File getTempDirFile() {
+        return tempDirFile;
+    }
+
+    protected Path getTempDirPath() {
+        return tempDirFile.toPath();
     }
 
     protected void setLongFileMode(final ArchiveOutputStream<?> outputStream) {
@@ -369,7 +361,6 @@ public abstract class AbstractTestCase {
 
     @AfterEach
     public void tearDown() throws Exception {
-        dir = resultDir = null;
         if (!forceDelete(archivePath)) {
             // Note: this exception won't be shown if the test has already failed
             throw new Exception("Could not delete " + archivePath);

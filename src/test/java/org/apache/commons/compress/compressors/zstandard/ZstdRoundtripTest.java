@@ -42,7 +42,7 @@ public class ZstdRoundtripTest extends AbstractTestCase {
     private void roundtrip(final OutputStreamCreator oc) throws IOException {
         final File input = getFile("bla.tar");
         long start = System.currentTimeMillis();
-        final File output = new File(dir, input.getName() + ".zstd");
+        final File output = new File(getTempDirFile(), input.getName() + ".zstd");
         try (FileOutputStream os = new FileOutputStream(output);
              ZstdCompressorOutputStream zos = oc.wrap(os)) {
             Files.copy(input.toPath(), zos);
@@ -68,7 +68,7 @@ public class ZstdRoundtripTest extends AbstractTestCase {
     public void testFactoryRoundtrip() throws Exception {
         final File input = getFile("bla.tar");
         long start = System.currentTimeMillis();
-        final File output = new File(dir, input.getName() + ".zstd");
+        final File output = new File(getTempDirFile(), input.getName() + ".zstd");
         try (OutputStream os = Files.newOutputStream(output.toPath());
                 CompressorOutputStream zos = new CompressorStreamFactory().createCompressorOutputStream("zstd", os)) {
             Files.copy(input.toPath(), zos);

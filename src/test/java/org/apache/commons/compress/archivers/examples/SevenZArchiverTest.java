@@ -67,36 +67,36 @@ public class SevenZArchiverTest extends AbstractTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        final File c = new File(dir, "a/b/c");
+        final File c = new File(getTempDirFile(), "a/b/c");
         c.mkdirs();
-        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/d.txt").toPath())) {
+        try (OutputStream os = Files.newOutputStream(new File(getTempDirFile(), "a/b/d.txt").toPath())) {
             os.write("Hello, world 1".getBytes(UTF_8));
         }
-        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/c/e.txt").toPath())) {
+        try (OutputStream os = Files.newOutputStream(new File(getTempDirFile(), "a/b/c/e.txt").toPath())) {
             os.write("Hello, world 2".getBytes(UTF_8));
         }
-        target = new File(resultDir, "test.7z");
+        target = new File(tempResultDir, "test.7z");
     }
 
     @Test
     public void testChannelVersion() throws IOException, ArchiveException {
         try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
             StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-            new Archiver().create("7z", c, dir);
+            new Archiver().create("7z", c, getTempDirFile());
         }
         verifyContent();
     }
 
     @Test
     public void testFileVersion() throws IOException, ArchiveException {
-        new Archiver().create("7z", target, dir);
+        new Archiver().create("7z", target, getTempDirFile());
         verifyContent();
     }
 
     @Test
     public void testOutputStreamVersion() throws IOException {
         try (OutputStream os = Files.newOutputStream(target.toPath())) {
-            assertThrows(StreamingNotSupportedException.class, () -> new Archiver().create("7z", os, dir));
+            assertThrows(StreamingNotSupportedException.class, () -> new Archiver().create("7z", os, getTempDirFile()));
         }
     }
 
@@ -105,7 +105,7 @@ public class SevenZArchiverTest extends AbstractTestCase {
     public void testUnknownFormat() throws IOException {
         try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE, StandardOpenOption.CREATE,
             StandardOpenOption.TRUNCATE_EXISTING)) {
-            assertThrows(ArchiveException.class, () -> new Archiver().create("unknown format", c, dir));
+            assertThrows(ArchiveException.class, () -> new Archiver().create("unknown format", c, getTempDirFile()));
         }
     }
 

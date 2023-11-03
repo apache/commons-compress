@@ -352,7 +352,7 @@ public class SevenZFileTest extends AbstractTestCase {
      */
     @Test
     public void testHandlesEmptyArchiveWithFilesInfo() throws Exception {
-        final File f = new File(dir, "empty.7z");
+        final File f = new File(getTempDirFile(), "empty.7z");
         try (SevenZOutputFile s = new SevenZOutputFile(f)) {
         }
         try (SevenZFile z = new SevenZFile(f)) {
@@ -754,7 +754,7 @@ public class SevenZFileTest extends AbstractTestCase {
 
     @Test
     public void testReadingBackDeltaDistance() throws Exception {
-        final File output = new File(dir, "delta-distance.7z");
+        final File output = new File(getTempDirFile(), "delta-distance.7z");
         try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
             outArchive.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER, 32),
                     new SevenZMethodConfiguration(SevenZMethod.LZMA2)));
@@ -775,7 +775,7 @@ public class SevenZFileTest extends AbstractTestCase {
 
     @Test
     public void testReadingBackLZMA2DictSize() throws Exception {
-        final File output = new File(dir, "lzma2-dictsize.7z");
+        final File output = new File(getTempDirFile(), "lzma2-dictsize.7z");
         try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
             outArchive.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 1 << 20)));
             final SevenZArchiveEntry entry = new SevenZArchiveEntry();
@@ -832,7 +832,7 @@ public class SevenZFileTest extends AbstractTestCase {
 
     @Test
     public void testRetrieveInputStreamForAllEntriesWithoutCRCMultipleTimes() throws IOException {
-        try (final SevenZOutputFile out = new SevenZOutputFile(new File(dir, "test.7z"))) {
+        try (final SevenZOutputFile out = new SevenZOutputFile(new File(getTempDirFile(), "test.7z"))) {
             final Path inputFile = Files.createTempFile("SevenZTestTemp", "");
 
             final SevenZArchiveEntry entry = out.createArchiveEntry(inputFile.toFile(), "test.txt");
@@ -843,7 +843,7 @@ public class SevenZFileTest extends AbstractTestCase {
             Files.deleteIfExists(inputFile);
         }
 
-        try (SevenZFile sevenZFile = new SevenZFile(new File(dir, "test.7z"))) {
+        try (SevenZFile sevenZFile = new SevenZFile(new File(getTempDirFile(), "test.7z"))) {
             for (final SevenZArchiveEntry entry : sevenZFile.getEntries()) {
                 final byte[] firstRead = IOUtils.toByteArray(sevenZFile.getInputStream(entry));
                 final byte[] secondRead = IOUtils.toByteArray(sevenZFile.getInputStream(entry));

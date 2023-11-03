@@ -61,7 +61,7 @@ public final class XZTestCase extends AbstractTestCase {
         final long max = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax();
         System.out.println("XZTestCase: HeapMax=" + max + " bytes " + (double) max / (1024 * 1024) + " MB");
         final File input = getFile("test1.xml");
-        final File output = new File(dir, "test1.xml.xz");
+        final File output = new File(getTempDirFile(), "test1.xml.xz");
         try (OutputStream out = Files.newOutputStream(output.toPath())) {
             try (CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("xz", out)) {
                 Files.copy(input.toPath(), cos);
@@ -72,7 +72,7 @@ public final class XZTestCase extends AbstractTestCase {
     @Test
     public void testXZUnarchive() throws Exception {
         final File input = getFile("bla.tar.xz");
-        final File output = new File(dir, "bla.tar");
+        final File output = new File(getTempDirFile(), "bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("xz", is)) {
                 Files.copy(in, output.toPath());

@@ -44,6 +44,7 @@ import org.apache.commons.compress.AbstractTestCase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class X5455_ExtendedTimestampTest {
     private final static ZipShort X5455 = new ZipShort(0x5455);
@@ -82,6 +83,7 @@ public class X5455_ExtendedTimestampTest {
      */
     private X5455_ExtendedTimestamp xf;
 
+    @TempDir
     private File tmpDir;
 
     @BeforeEach
@@ -581,7 +583,6 @@ public class X5455_ExtendedTimestampTest {
 
     @Test
     public void testWriteReadRoundtrip() throws IOException {
-        tmpDir = AbstractTestCase.mkdir("X5455");
         final File output = new File(tmpDir, "write_rewrite.zip");
         final Date d = new Date(97, 8, 24, 15, 10, 2);
         try (final OutputStream out = Files.newOutputStream(output.toPath());

@@ -108,7 +108,7 @@ public class SevenZTestCase extends AbstractTestCase {
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
-        output = new File(dir, "bla.7z");
+        output = new File(getTempDirFile(), "bla.7z");
     }
 
     private void singleByteReadConsistentlyReturnsMinusOneAtEof(final SevenZFile archive) throws Exception {

@@ -39,7 +39,7 @@ public final class DeflateTestCase extends AbstractTestCase {
     @Test
     public void testDeflateCreation() throws Exception {
         final File input = getFile("test1.xml");
-        final File output = new File(dir, "test1.xml.deflatez");
+        final File output = new File(getTempDirFile(), "test1.xml.deflatez");
         try (OutputStream out = Files.newOutputStream(output.toPath())) {
             try (CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("deflate", out)) {
                 Files.copy(input.toPath(), cos);
@@ -55,7 +55,7 @@ public final class DeflateTestCase extends AbstractTestCase {
     @Test
     public void testDeflateUnarchive() throws Exception {
         final File input = getFile("bla.tar.deflatez");
-        final File output = new File(dir, "bla.tar");
+        final File output = new File(getTempDirFile(), "bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             // zlib header is expected by default
             try (CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("deflate", is)) {
@@ -72,7 +72,7 @@ public final class DeflateTestCase extends AbstractTestCase {
     @Test
     public void testRawDeflateCreation()  throws Exception {
         final File input = getFile("test1.xml");
-        final File output = new File(dir, "test1.xml.deflate");
+        final File output = new File(getTempDirFile(), "test1.xml.deflate");
         try (OutputStream out = Files.newOutputStream(output.toPath())) {
             final DeflateParameters params = new DeflateParameters();
             params.setWithZlibHeader(false);
@@ -90,7 +90,7 @@ public final class DeflateTestCase extends AbstractTestCase {
     @Test
     public void testRawDeflateUnarchive() throws Exception {
         final File input = getFile("bla.tar.deflate");
-        final File output = new File(dir, "bla.tar");
+        final File output = new File(getTempDirFile(), "bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             final DeflateParameters params = new DeflateParameters();
             params.setWithZlibHeader(false);

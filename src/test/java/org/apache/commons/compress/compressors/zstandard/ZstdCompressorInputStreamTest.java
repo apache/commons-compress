@@ -122,7 +122,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
     @Test
     public void testZstandardUnarchive() throws Exception {
         final File input = getFile("bla.tar.zst");
-        final File output = new File(dir, "bla.tar");
+        final File output = new File(getTempDirFile(), "bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("zstd", is);) {
                 Files.copy(in, output.toPath());

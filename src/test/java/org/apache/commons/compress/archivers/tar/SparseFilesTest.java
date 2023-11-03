@@ -84,13 +84,13 @@ public class SparseFilesTest extends AbstractTestCase {
     }
 
     private InputStream extractTarAndGetInputStream(final File tarFile, final String sparseFileName) throws IOException, InterruptedException {
-        final ProcessBuilder pb = new ProcessBuilder("tar", "-xf", tarFile.getPath(), "-C", resultDir.getPath());
+        final ProcessBuilder pb = new ProcessBuilder("tar", "-xf", tarFile.getPath(), "-C", tempResultDir.getPath());
         pb.redirectErrorStream(true);
         final Process process = pb.start();
         // wait until the extract finishes
         assertEquals(0, process.waitFor(), new String(IOUtils.toByteArray(process.getInputStream())));
 
-        for (final File file : resultDir.listFiles()) {
+        for (final File file : tempResultDir.listFiles()) {
             if (file.getName().equals(sparseFileName)) {
                 return Files.newInputStream(file.toPath());
             }

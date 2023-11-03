@@ -73,7 +73,7 @@ public class ArchiveTest {
             final JarEntry entry2 = jarFile2.getJarEntry(name);
             assertNotNull(entry2, "Missing Entry: " + name);
 //            assertEquals(entry.getTime(), entry2.getTime());
-            if (!name.equals("META-INF/MANIFEST.MF")) { 
+            if (!name.equals("META-INF/MANIFEST.MF")) {
                 // Manifests aren't necessarily byte-for-byte identical
                 final InputStream ours = jarFile.getInputStream(entry);
                 final InputStream expected = jarFile2.getInputStream(entry2);
