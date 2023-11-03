@@ -47,11 +47,12 @@ public class ArchiveOutputStreamTest<O extends ArchiveOutputStream<E>, E extends
         final OutputStream out1 = new ByteArrayOutputStream();
         final File dummy = getFile("test1.xml"); // need a real file
 
-        final O aos1 = factory.createArchiveOutputStream(archiveType, out1);
-        aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
-        Files.copy(dummy.toPath(), aos1);
-        aos1.closeArchiveEntry();
-        aos1.close(); // omitted finish
+        try (O aos1 = factory.createArchiveOutputStream(archiveType, out1)) {
+            aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
+            Files.copy(dummy.toPath(), aos1);
+            aos1.closeArchiveEntry();
+            // omitted finish
+        }
 
         // TODO - check if archives ensure that data has been written to the stream?
 
