@@ -88,7 +88,8 @@ public final class ZipTestCase extends AbstractTestCase {
 
     private void assertSameFileContents(final File expectedFile, final File actualFile) throws IOException {
         final int size = (int) Math.max(expectedFile.length(), actualFile.length());
-        try (final ZipFile expected = new ZipFile(expectedFile); final ZipFile actual = new ZipFile(actualFile)) {
+        try (final ZipFile expected = new ZipFile(expectedFile);
+                final ZipFile actual = new ZipFile(actualFile)) {
             final byte[] expectedBuf = new byte[size];
             final byte[] actualBuf = new byte[size];
 
@@ -110,7 +111,7 @@ public final class ZipTestCase extends AbstractTestCase {
                 assertEquals(expectedElement.getInternalAttributes(), actualElement.getInternalAttributes());
 
                 try (final InputStream actualIs = actual.getInputStream(actualElement);
-                    final InputStream expectedIs = expected.getInputStream(expectedElement)) {
+                        final InputStream expectedIs = expected.getInputStream(expectedElement)) {
                     IOUtils.readFully(expectedIs, expectedBuf);
                     IOUtils.readFully(actualIs, actualBuf);
                 }
@@ -133,8 +134,7 @@ public final class ZipTestCase extends AbstractTestCase {
         return result;
     }
 
-    private void createArchiveEntry(final String payload, final ZipArchiveOutputStream zos, final String name)
-            throws IOException {
+    private void createArchiveEntry(final String payload, final ZipArchiveOutputStream zos, final String name) throws IOException {
         final ZipArchiveEntry in = new ZipArchiveEntry(name);
         zos.putArchiveEntry(in);
 
@@ -147,8 +147,7 @@ public final class ZipTestCase extends AbstractTestCase {
         return zos;
     }
 
-    private File createReferenceFile(final Zip64Mode zipMode, final String prefix)
-            throws IOException {
+    private File createReferenceFile(final Zip64Mode zipMode, final String prefix) throws IOException {
         final File reference = createTempFile(prefix, ".zip");
         try (final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(reference)) {
             zos.setUseZip64(zipMode);
@@ -167,8 +166,7 @@ public final class ZipTestCase extends AbstractTestCase {
         final File directoryToZip = getFilesToZip();
         final File outputZipFile = new File(getTempDirFile(), "splitZip.zip");
         final long splitSize = 100 * 1024L; /* 100 KB */
-        try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile,
-            splitSize)) {
+        try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
             addFilesToZip(zipArchiveOutputStream, directoryToZip);
         }
     }
@@ -195,7 +193,7 @@ public final class ZipTestCase extends AbstractTestCase {
                 outputFile = new File(getTempDirFile(), zipEntry.getName());
 
                 try (InputStream inputStream = zipFile.getInputStream(zipEntry);
-                    OutputStream outputStream = Files.newOutputStream(outputFile.toPath())) {
+                        OutputStream outputStream = Files.newOutputStream(outputFile.toPath())) {
                     buffer = new byte[(int) zipEntry.getSize()];
                     while ((readLen = inputStream.read(buffer)) > 0) {
                         outputStream.write(buffer, 0, readLen);
@@ -206,7 +204,7 @@ public final class ZipTestCase extends AbstractTestCase {
         return getTempDirFile().listFiles()[0];
     }
 
-    private void readStream(final InputStream in, final ArchiveEntry entry, final Map<String,List<List<Long>>> map) throws IOException {
+    private void readStream(final InputStream in, final ArchiveEntry entry, final Map<String, List<List<Long>>> map) throws IOException {
         final byte[] buf = new byte[4096];
         final InputStreamStatistics stats = (InputStreamStatistics) in;
         while (in.read(buf) != -1) {
@@ -228,9 +226,8 @@ public final class ZipTestCase extends AbstractTestCase {
 
         final File lastFile = new File(getTempDirFile(), "splitZip.zip");
         try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
-            InputStream inputStream = Channels.newInputStream(channel);
-            ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream,
-                UTF_8.toString(), true, false, true)) {
+                InputStream inputStream = Channels.newInputStream(channel);
+                ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, UTF_8.toString(), true, false, true)) {
 
             ArchiveEntry entry;
             final int filesNum = countNonDirectories(directoryToZip);
@@ -242,8 +239,7 @@ public final class ZipTestCase extends AbstractTestCase {
                 // compare all files one by one
                 final File fileToCompare = new File(entry.getName());
                 try (InputStream inputStreamToCompare = Files.newInputStream(fileToCompare.toPath())) {
-                    assertArrayEquals(IOUtils.toByteArray(splitInputStream),
-                        IOUtils.toByteArray(inputStreamToCompare));
+                    assertArrayEquals(IOUtils.toByteArray(splitInputStream), IOUtils.toByteArray(inputStreamToCompare));
                 }
                 filesCount++;
             }
@@ -257,8 +253,7 @@ public final class ZipTestCase extends AbstractTestCase {
         final File directoryToZip = getFilesToZip();
         final File outputZipFile = new File(getTempDirFile(), "splitZip.zip");
         final long splitSize = 100 * 1024L; /* 100 KB */
-        try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile,
-            splitSize)) {
+        try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
 
             // create a file that has the same name of one of the created split segments
             final File sameNameFile = new File(getTempDirFile(), "splitZip.z01");
@@ -268,9 +263,9 @@ public final class ZipTestCase extends AbstractTestCase {
         } catch (final Exception e) {
             // Ignore:
             // java.io.IOException: This archive contains unclosed entries.
-            //   at org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.finish(ZipArchiveOutputStream.java:563)
-            //   at org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.close(ZipArchiveOutputStream.java:1119)
-            //   at org.apache.commons.compress.archivers.ZipTestCase.buildSplitZipWithSegmentAlreadyExistThrowsException(ZipTestCase.java:715)
+            // at org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.finish(ZipArchiveOutputStream.java:563)
+            // at org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.close(ZipArchiveOutputStream.java:1119)
+            // at org.apache.commons.compress.archivers.ZipTestCase.buildSplitZipWithSegmentAlreadyExistThrowsException(ZipTestCase.java:715)
         }
     }
 
@@ -410,7 +405,6 @@ public final class ZipTestCase extends AbstractTestCase {
         final File tmp = createTempFile();
         ZipArchiveOutputStream zos = null;
         ZipFile zf = null;
-        InputStream fis = null;
         try {
             final File archive = createTempFile("test.", ".zip");
             zos = new ZipArchiveOutputStream(archive);
@@ -419,12 +413,11 @@ public final class ZipTestCase extends AbstractTestCase {
             in.setSize(tmp.length());
             zos.putArchiveEntry(in);
             final byte[] b = new byte[(int) tmp.length()];
-            fis = Files.newInputStream(tmp.toPath());
-            while (fis.read(b) > 0) {
-                zos.write(b);
+            try (InputStream fis = Files.newInputStream(tmp.toPath())) {
+                while (fis.read(b) > 0) {
+                    zos.write(b);
+                }
             }
-            fis.close();
-            fis = null;
             zos.closeArchiveEntry();
             zos.close();
             zos = null;
@@ -440,9 +433,6 @@ public final class ZipTestCase extends AbstractTestCase {
             if (zos != null) {
                 zos.close();
             }
-            if (fis != null) {
-                fis.close();
-            }
         }
     }
 
@@ -450,7 +440,6 @@ public final class ZipTestCase extends AbstractTestCase {
     public void testFileEntryFromFile() throws Exception {
         ZipArchiveOutputStream zos = null;
         ZipFile zf = null;
-        InputStream fis = null;
         final File tmpFile = createTempFile();
         try {
             final File archive = createTempFile("test.", ".zip");
@@ -458,12 +447,11 @@ public final class ZipTestCase extends AbstractTestCase {
             final ZipArchiveEntry in = new ZipArchiveEntry(tmpFile, "foo");
             zos.putArchiveEntry(in);
             final byte[] b = new byte[(int) tmpFile.length()];
-            fis = Files.newInputStream(tmpFile.toPath());
-            while (fis.read(b) > 0) {
-                zos.write(b);
+            try (InputStream fis = Files.newInputStream(tmpFile.toPath())) {
+                while (fis.read(b) > 0) {
+                    zos.write(b);
+                }
             }
-            fis.close();
-            fis = null;
             zos.closeArchiveEntry();
             zos.close();
             zos = null;
@@ -479,22 +467,18 @@ public final class ZipTestCase extends AbstractTestCase {
             if (zos != null) {
                 zos.close();
             }
-            if (fis != null) {
-                fis.close();
-            }
         }
     }
 
-    private void testInputStreamStatistics(final String fileName, final Map<String, List<Long>> expectedStatistics)
-        throws IOException, ArchiveException {
+    private void testInputStreamStatistics(final String fileName, final Map<String, List<Long>> expectedStatistics) throws IOException, ArchiveException {
         final File input = getFile(fileName);
 
-        final Map<String,List<List<Long>>> actualStatistics = new HashMap<>();
+        final Map<String, List<List<Long>>> actualStatistics = new HashMap<>();
 
         // stream access
         try (final InputStream fis = Files.newInputStream(input.toPath());
-            final ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fis)) {
-            for (ArchiveEntry entry; (entry = in.getNextEntry()) != null; ) {
+                final ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fis)) {
+            for (ArchiveEntry entry; (entry = in.getNextEntry()) != null;) {
                 readStream(in, entry, actualStatistics);
             }
         }
@@ -511,14 +495,12 @@ public final class ZipTestCase extends AbstractTestCase {
         }
 
         // compare statistics of stream / file access
-        for (final Map.Entry<String,List<List<Long>>> me : actualStatistics.entrySet()) {
-            assertEquals(me.getValue().get(0), me.getValue().get(1),
-                    "Mismatch of stats for: " + me.getKey());
+        for (final Map.Entry<String, List<List<Long>>> me : actualStatistics.entrySet()) {
+            assertEquals(me.getValue().get(0), me.getValue().get(1), "Mismatch of stats for: " + me.getKey());
         }
 
         for (final Map.Entry<String, List<Long>> me : expectedStatistics.entrySet()) {
-            assertEquals(me.getValue(), actualStatistics.get(me.getKey()).get(0),
-                    "Mismatch of stats with expected value for: " + me.getKey());
+            assertEquals(me.getValue(), actualStatistics.get(me.getKey()).get(0), "Mismatch of stats with expected value for: " + me.getKey());
         }
     }
 
@@ -567,11 +549,9 @@ public final class ZipTestCase extends AbstractTestCase {
     }
 
     /**
-     * Checks if all entries from a nested archive can be read.
-     * The archive: OSX_ArchiveWithNestedArchive.zip contains:
-     * NestedArchiv.zip and test.xml3.
+     * Checks if all entries from a nested archive can be read. The archive: OSX_ArchiveWithNestedArchive.zip contains: NestedArchiv.zip and test.xml3.
      *
-     * The nested archive:  NestedArchive.zip contains test1.xml and test2.xml
+     * The nested archive: NestedArchive.zip contains test1.xml and test2.xml
      *
      * @throws Exception
      */
@@ -611,30 +591,23 @@ public final class ZipTestCase extends AbstractTestCase {
     }
 
     /**
-     * Test case for being able to skip an entry in an
-     * {@link ZipArchiveInputStream} even if the compression method of that
-     * entry is unsupported.
+     * Test case for being able to skip an entry in an {@link ZipArchiveInputStream} even if the compression method of that entry is unsupported.
      *
-     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-93"
-     *        >COMPRESS-93</a>
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-93" >COMPRESS-93</a>
      */
     @Test
-    public void testSkipEntryWithUnsupportedCompressionMethod()
-            throws IOException {
+    public void testSkipEntryWithUnsupportedCompressionMethod() throws IOException {
         try (ZipArchiveInputStream zip = new ZipArchiveInputStream(newInputStream("moby.zip"))) {
             final ZipArchiveEntry entry = zip.getNextZipEntry();
             assertEquals(ZipMethod.TOKENIZATION.getCode(), entry.getMethod(), "method");
             assertEquals("README", entry.getName());
             assertFalse(zip.canReadEntryData(entry));
-            assertDoesNotThrow(() -> assertNull(zip.getNextZipEntry()),
-                    "COMPRESS-93: Unable to skip an unsupported ZIP entry");
+            assertDoesNotThrow(() -> assertNull(zip.getNextZipEntry()), "COMPRESS-93: Unable to skip an unsupported ZIP entry");
         }
     }
 
     /**
-     * Test case for
-     * <a href="https://issues.apache.org/jira/browse/COMPRESS-208"
-     * >COMPRESS-208</a>.
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-208" >COMPRESS-208</a>.
      */
     @Test
     public void testSkipsPK00Prefix() throws Exception {
@@ -648,9 +621,7 @@ public final class ZipTestCase extends AbstractTestCase {
     }
 
     /**
-     * Test case for
-     * <a href="https://issues.apache.org/jira/browse/COMPRESS-93"
-     * >COMPRESS-93</a>.
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-93" >COMPRESS-93</a>.
      */
     @Test
     public void testTokenizationCompressionMethod() throws IOException {
@@ -679,8 +650,8 @@ public final class ZipTestCase extends AbstractTestCase {
     }
 
     /**
-     * Archives 2 files and unarchives it again. If the file length of result
-     * and source is the same, it looks like the operations have worked
+     * Archives 2 files and unarchives it again. If the file length of result and source is the same, it looks like the operations have worked
+     * 
      * @throws Exception
      */
     @Test
@@ -706,8 +677,7 @@ public final class ZipTestCase extends AbstractTestCase {
         final List<File> results = new ArrayList<>();
 
         try (final InputStream fileInputStream = Files.newInputStream(output.toPath())) {
-            try (ArchiveInputStream<ZipArchiveEntry> archiveInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip",
-                fileInputStream)) {
+            try (ArchiveInputStream<ZipArchiveEntry> archiveInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fileInputStream)) {
                 ZipArchiveEntry entry;
                 while ((entry = archiveInputStream.getNextEntry()) != null) {
                     final File outfile = new File(tempResultDir.getCanonicalPath() + "/result/" + entry.getName());
@@ -726,8 +696,8 @@ public final class ZipTestCase extends AbstractTestCase {
     }
 
     /**
-     * Archives 2 files and unarchives it again. If the file contents of result
-     * and source is the same, it looks like the operations have worked
+     * Archives 2 files and unarchives it again. If the file contents of result and source is the same, it looks like the operations have worked
+     * 
      * @throws Exception
      */
     @Test
@@ -752,8 +722,7 @@ public final class ZipTestCase extends AbstractTestCase {
             }
 
             // Unarchive the same
-            try (ZipArchiveInputStream inputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip",
-                new ByteArrayInputStream(channel.array()))) {
+            try (ZipArchiveInputStream inputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", new ByteArrayInputStream(channel.array()))) {
 
                 ZipArchiveEntry entry;
                 while ((entry = inputStream.getNextEntry()) != null) {
@@ -772,9 +741,8 @@ public final class ZipTestCase extends AbstractTestCase {
         Path archivePath;
         ZipArchiveOutputStream zos = null;
         ZipFile zf = null;
-        InputStream fis = null;
         final File tmpFile = createTempFile();
-        
+
         final Path tmpFilePath = tmpFile.toPath();
         try {
             final File archiveFile = createTempFile("test.", ".zip");
@@ -784,12 +752,11 @@ public final class ZipTestCase extends AbstractTestCase {
             final ZipArchiveEntry in = zos.createArchiveEntry(tmpFilePath, "foo");
             zos.putArchiveEntry(in);
             final byte[] b = new byte[(int) tmpFile.length()];
-            fis = Files.newInputStream(tmpFile.toPath());
-            while (fis.read(b) > 0) {
-                zos.write(b);
+            try (InputStream fis = Files.newInputStream(tmpFile.toPath())) {
+                while (fis.read(b) > 0) {
+                    zos.write(b);
+                }
             }
-            fis.close();
-            fis = null;
             zos.closeArchiveEntry();
             zos.close();
             zos = null;
@@ -805,14 +772,12 @@ public final class ZipTestCase extends AbstractTestCase {
             if (zos != null) {
                 zos.close();
             }
-            if (fis != null) {
-                fis.close();
-            }
         }
     }
 
     /**
      * Simple unarchive test. Asserts nothing.
+     * 
      * @throws Exception
      */
     @Test
