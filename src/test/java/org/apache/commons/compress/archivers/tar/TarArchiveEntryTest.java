@@ -444,25 +444,24 @@ public class TarArchiveEntryTest implements TarConstants {
             t = new TarArchiveEntry(new File(new File(ROOT), "foo.txt"));
             t.setSize(6);
             tout.putArchiveEntry(t);
-            tout.write(new byte[] {'h', 'e', 'l', 'l', 'o', ' '});
+            tout.write(new byte[] { 'h', 'e', 'l', 'l', 'o', ' ' });
             tout.closeArchiveEntry();
-            t = new TarArchiveEntry(new File(new File(ROOT), "bar.txt")
-                                    .getAbsolutePath());
+            t = new TarArchiveEntry(new File(new File(ROOT), "bar.txt").getAbsolutePath());
             t.setSize(5);
             tout.putArchiveEntry(t);
-            tout.write(new byte[] {'w', 'o', 'r', 'l', 'd'});
+            tout.write(new byte[] { 'w', 'o', 'r', 'l', 'd' });
             tout.closeArchiveEntry();
             t = new TarArchiveEntry("dummy");
             t.setName(new File(new File(ROOT), "baz.txt").getAbsolutePath());
             t.setSize(1);
             tout.putArchiveEntry(t);
-            tout.write(new byte[] {'!'});
+            tout.write(new byte[] { '!' });
             tout.closeArchiveEntry();
             tout.close();
             tout = null;
 
             tin = new TarArchiveInputStream(Files.newInputStream(f.toPath()));
-            //tin.setDebug(true);
+            // tin.setDebug(true);
             t = tin.getNextTarEntry();
             assertNotNull(t);
             assertEquals("/", t.getName());

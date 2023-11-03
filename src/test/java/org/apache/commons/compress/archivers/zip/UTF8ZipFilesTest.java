@@ -176,20 +176,6 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
         }
     }
 
-    private static void testFileRoundtrip(final String encoding, final boolean withEFS,
-                                          final boolean withExplicitUnicodeExtra)
-        throws IOException {
-
-        final File file = File.createTempFile(encoding + "-test", ".zip");
-        file.deleteOnExit();
-        try {
-            createTestFile(file, encoding, withEFS, withExplicitUnicodeExtra);
-            testFile(file, encoding);
-        } finally {
-            forceDelete(file);
-        }
-    }
-
     private void assertCanRead(final ZipFile zf, final String fileName) throws IOException {
         final ZipArchiveEntry entry = zf.getEntry(fileName);
         assertNotNull(entry, "Entry doesn't exist");
@@ -221,6 +207,12 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     public void testCP437FileRoundtripImplicitUnicodeExtra()
         throws IOException {
         testFileRoundtrip(CP437, false, false);
+    }
+
+    private void testFileRoundtrip(final String encoding, final boolean withEFS, final boolean withExplicitUnicodeExtra) throws IOException {
+        final File file = createTempFile(encoding + "-test", ".zip");
+        createTestFile(file, encoding, withEFS, withExplicitUnicodeExtra);
+        testFile(file, encoding);
     }
 
     @Test
@@ -359,10 +351,8 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     }
 
     @Test
-    public void testZipArchiveInputStreamReadsUnicodeFields()
-        throws IOException {
-        final File file = File.createTempFile("unicode-test", ".zip");
-        file.deleteOnExit();
+    public void testZipArchiveInputStreamReadsUnicodeFields() throws IOException {
+        final File file = createTempFile("unicode-test", ".zip");
         ZipFile zf = null;
         try {
             createTestFile(file, CharsetNames.US_ASCII, false, true);
@@ -372,14 +362,12 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             assertNotNull(zf.getEntry(OIL_BARREL_TXT));
         } finally {
             ZipFile.closeQuietly(zf);
-            forceDelete(file);
         }
     }
 
     @Test
     public void testZipFileReadsUnicodeFields() throws IOException {
-        final File file = File.createTempFile("unicode-test", ".zip");
-        file.deleteOnExit();
+        final File file = createTempFile("unicode-test", ".zip");
         ZipArchiveInputStream zi = null;
         try {
             createTestFile(file, CharsetNames.US_ASCII, false, true);
@@ -391,7 +379,6 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             if (zi != null) {
                 zi.close();
             }
-            forceDelete(file);
         }
     }
 

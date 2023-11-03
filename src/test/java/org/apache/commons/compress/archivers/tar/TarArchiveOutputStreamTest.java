@@ -159,8 +159,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
 
     @Test
     public void testCount() throws Exception {
-        final File f = File.createTempFile("commons-compress-tarcount", ".tar");
-        f.deleteOnExit();
+        final File f = createTempFile("commons-compress-tarcount", ".tar");
         final OutputStream fos = Files.newOutputStream(f.toPath());
 
         final ArchiveOutputStream<ArchiveEntry> tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, fos);
@@ -304,8 +303,7 @@ public class TarArchiveOutputStreamTest extends AbstractTestCase {
     }
 
     private void testPadding(int blockSize, final String fileName, final byte[] contents) throws IOException {
-        final File f = File.createTempFile("commons-compress-padding", ".tar");
-        f.deleteOnExit();
+        final File f = createTempFile("commons-compress-padding", ".tar");
         final OutputStream fos = Files.newOutputStream(f.toPath());
         final TarArchiveOutputStream tos;
         if (blockSize != -2) {

@@ -144,14 +144,13 @@ public class ZipFileTest extends AbstractTestCase {
 
     private void assertFileEqualsToEntry(final File fileToCompare, final ZipArchiveEntry entry, final ZipFile zipFile) throws IOException {
         final byte[] buffer = new byte[10240];
-        final File tempFile = File.createTempFile("temp", "txt");
+        final File tempFile = createTempFile("temp", "txt");
         try (final OutputStream outputStream = Files.newOutputStream(tempFile.toPath()); final InputStream inputStream = zipFile.getInputStream(entry)) {
             int readLen;
             while ((readLen = inputStream.read(buffer)) > 0) {
                 outputStream.write(buffer, 0, readLen);
             }
         }
-
         assertFileEqualIgnoreEndOfLine(fileToCompare, tempFile);
     }
 
@@ -755,31 +754,27 @@ public class ZipFileTest extends AbstractTestCase {
 
     @Test
     public void testReadingOfStoredEntry() throws Exception {
-        final File f = File.createTempFile("commons-compress-zipfiletest", ".zip");
-        try {
-            f.deleteOnExit();
-            ZipArchiveEntry ze;
-            try (OutputStream o = Files.newOutputStream(f.toPath());
-                 ZipArchiveOutputStream zo = new ZipArchiveOutputStream(o)) {
-                ze = new ZipArchiveEntry("foo");
-                ze.setMethod(ZipEntry.STORED);
-                ze.setSize(4);
-                ze.setCrc(0xb63cfbcdL);
-                zo.putArchiveEntry(ze);
-                zo.write(new byte[] { 1, 2, 3, 4 });
-                zo.closeArchiveEntry();
-            }
+        final File f = createTempFile("commons-compress-zipfiletest", ".zip");
+        f.deleteOnExit();
+        ZipArchiveEntry ze;
+        try (OutputStream o = Files.newOutputStream(f.toPath());
+                ZipArchiveOutputStream zo = new ZipArchiveOutputStream(o)) {
+            ze = new ZipArchiveEntry("foo");
+            ze.setMethod(ZipEntry.STORED);
+            ze.setSize(4);
+            ze.setCrc(0xb63cfbcdL);
+            zo.putArchiveEntry(ze);
+            zo.write(new byte[] { 1, 2, 3, 4 });
+            zo.closeArchiveEntry();
+        }
 
-            zf = new ZipFile(f);
-            ze = zf.getEntry("foo");
-            assertNotNull(ze);
-            try (InputStream i = zf.getInputStream(ze)) {
-                final byte[] b = new byte[4];
-                assertEquals(4, i.read(b));
-                assertEquals(-1, i.read());
-            }
-        } finally {
-            f.delete();
+        zf = new ZipFile(f);
+        ze = zf.getEntry("foo");
+        assertNotNull(ze);
+        try (InputStream i = zf.getInputStream(ze)) {
+            final byte[] b = new byte[4];
+            assertEquals(4, i.read(b));
+            assertEquals(-1, i.read());
         }
     }
 
@@ -788,8 +783,7 @@ public class ZipFileTest extends AbstractTestCase {
         final File unzipsfx = new File("/usr/bin/unzipsfx");
         Assumptions.assumeTrue(unzipsfx.exists());
 
-        final File testZip = File.createTempFile("commons-compress-selfExtractZipTest", ".zip");
-        testZip.deleteOnExit();
+        final File testZip = createTempFile("commons-compress-selfExtractZipTest", ".zip");
 
         final String testEntryName = "test_self_extract_zip/foo";
         final File extractedFile = new File(testZip.getParentFile(), testEntryName);
@@ -843,7 +837,6 @@ public class ZipFileTest extends AbstractTestCase {
                 assertArrayEquals(testData, Arrays.copyOfRange(buffer, 0, bytesRead));
             }
         } finally {
-            testZip.delete();
             extractedFile.delete();
             extractedFile.getParentFile().delete();
         }

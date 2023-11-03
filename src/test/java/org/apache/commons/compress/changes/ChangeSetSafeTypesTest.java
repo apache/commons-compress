@@ -102,8 +102,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     public void testAddAlreadyExistingWithReplaceFalse() throws Exception {
         final String archiverName = "zip";
         final Path input = createArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         final File file1 = getFile("test.txt");
         try (InputStream inputStream = Files.newInputStream(input);
                 ZipArchiveInputStream ais = createArchiveInputStream(archiverName, inputStream);
@@ -130,8 +129,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     public void testAddAlreadyExistingWithReplaceTrue() throws Exception {
         final String archiverName = "zip";
         final Path input = createArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         final File file1 = getFile("test.txt");
         try (final InputStream inputStream = Files.newInputStream(input);
                 ZipArchiveInputStream ais = createArchiveInputStream(archiverName, inputStream);
@@ -201,8 +199,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     public void testAddDeleteAdd() throws Exception {
         final String archiverName = "cpio";
         final Path input = createArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         final File file1 = getFile("test.txt");
         try (InputStream inputStream = Files.newInputStream(input);
                 CpioArchiveInputStream ais = createArchiveInputStream(archiverName, inputStream);
@@ -228,8 +225,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     public void testAddDeleteToOneFileArchive() throws Exception {
         final String archiverName = "cpio";
         final Path input = createSingleEntryArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         final ChangeSet<CpioArchiveEntry> changeSet = createChangeSet();
         final File file = getFile("test.txt");
         try (InputStream inputStream = Files.newInputStream(input);
@@ -270,8 +266,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     public void testAddToEmptyArchive(final String archiverName) throws Exception {
         // final String archiverName = "zip";
         final Path input = createEmptyArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         final ChangeSet<E> changeSet = createChangeSet();
         final File file1 = getFile("test.txt");
         try (InputStream inputStream = Files.newInputStream(input);
@@ -292,8 +287,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     public void testAddToEmptyZipArchive(final String archiverName) throws Exception {
         // final String archiverName = "zip";
         final Path input = createEmptyArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         final ChangeSet<ZipArchiveEntry> changeSet = createChangeSet();
         final File file1 = getFile("test.txt");
         try (InputStream inputStream = Files.newInputStream(input);
@@ -314,8 +308,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getZipOutputArchiveNames")
     public void testAddToEmptyZipParamArchive(final String archiverName) throws Exception {
         final Path input = createEmptyArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         final ChangeSet<ZipArchiveEntry> changeSet = createChangeSet();
         final File file1 = getFile("test.txt");
         try (InputStream inputStream = Files.newInputStream(input);
@@ -342,8 +335,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     public void testChangeSetResults(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         final File file1 = getFile("test.txt");
         try (InputStream inputStream = Files.newInputStream(input);
                 ArchiveInputStream<E> ais = createArchiveInputStream(archiverName, inputStream);
@@ -386,8 +378,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     public void testDeleteAddDelete() throws Exception {
         final String archiverName = "cpio";
         final Path input = createArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         final File file1 = getFile("test.txt");
         try (InputStream inputStream = Files.newInputStream(input);
                 CpioArchiveInputStream ais = createArchiveInputStream(archiverName, inputStream);
@@ -414,8 +405,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     public void testDeleteAddToOneFileArchive() throws Exception {
         final String archiverName = "zip";
         final Path input = createSingleEntryArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         final ChangeSet<ZipArchiveEntry> changeSet = createChangeSet();
         final File file = getFile("test.txt");
         try (InputStream inputStream = Files.newInputStream(input);
@@ -444,8 +434,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     public void testDeleteDir(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         try (InputStream inputStream = Files.newInputStream(input);
                 ArchiveInputStream<E> ais = createArchiveInputStream(archiverName, inputStream);
                 OutputStream outputStream = Files.newOutputStream(result.toPath());
@@ -468,8 +457,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     public void testDeleteDir2(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         try (InputStream inputStream = Files.newInputStream(input);
                 ArchiveInputStream<E> ais = createArchiveInputStream(archiverName, inputStream);
                 OutputStream outputStream = Files.newOutputStream(result.toPath());
@@ -492,8 +480,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     public void testDeleteDir3(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         try (InputStream inputStream = Files.newInputStream(input);
                 ArchiveInputStream<E> ais = createArchiveInputStream(archiverName, inputStream);
                 OutputStream outputStream = Files.newOutputStream(result.toPath());
@@ -517,8 +504,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     public void testDeleteFileCpio(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         try (InputStream inputStream = Files.newInputStream(input);
                 ArchiveInputStream<E> ais = createArchiveInputStream(archiverName, inputStream);
                 OutputStream outputStream = Files.newOutputStream(result.toPath());
@@ -541,8 +527,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     public void testDeleteFileCpio2(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         try (final InputStream inputStream = Files.newInputStream(input);
                 ArchiveInputStream<E> ais = createArchiveInputStream(archiverName, inputStream);
                 OutputStream outputStream = Files.newOutputStream(result.toPath());
@@ -657,8 +642,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getZipOutputArchiveNames")
     public void testDeleteFromAndAddToZip(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         final File file1 = getFile("test.txt");
         try (InputStream inputStream = Files.newInputStream(input);
                 ArchiveInputStream<ZipArchiveEntry> ais = createArchiveInputStream(archiverName, inputStream);
@@ -687,8 +671,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getZipOutputArchiveNames")
     public void testDeleteFromAndAddToZipUsingZipFilePerform(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         final File file1 = getFile("test.txt");
         try (ZipFile ais = new ZipFile(input);
                 OutputStream outputStream = Files.newOutputStream(result.toPath());
@@ -792,8 +775,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
         final ChangeSet<E> changeSet = createChangeSet();
         changeSet.delete("test2.xml");
         final File input = getFile("bla.zip");
-        final File temp = File.createTempFile("test", ".zip");
-        temp.deleteOnExit();
+        final File temp = createTempFile("test", ".zip");
         try (InputStream inputStream = Files.newInputStream(input.toPath());
                 ArchiveInputStream<E> ais = createArchiveInputStream(archiverName, inputStream);
                 OutputStream outputStream = Files.newOutputStream(temp.toPath());
@@ -816,8 +798,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     public void testDeletePlusAdd(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         final File file1 = getFile("test.txt");
         try (InputStream inputStream = Files.newInputStream(input);
                 ArchiveInputStream<E> ais = createArchiveInputStream(archiverName, inputStream);
@@ -846,8 +827,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     public void testDeletePlusAddSame(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
-        final File result = File.createTempFile("test", "." + archiverName);
-        result.deleteOnExit();
+        final File result = createTempFile("test", "." + archiverName);
         final File testTxt = getFile("test.txt");
         try (InputStream inputStream = Files.newInputStream(input);
                 ArchiveInputStream<E> ais = createArchiveInputStream(archiverName, inputStream);
