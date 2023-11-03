@@ -344,18 +344,15 @@ public final class ZipTestCase extends AbstractTestCase {
     @Test
     public void testDirectoryEntryFromFile() throws Exception {
         final File tmp = getTempDirFile();
-        ZipArchiveOutputStream zos = null;
-        ZipFile zf = null;
-        try {
-            final File archive = createTempFile("test.", ".zip");
-            zos = new ZipArchiveOutputStream(archive);
-            final long beforeArchiveWrite = tmp.lastModified();
+        final File archive = createTempFile("test.", ".zip");
+        final long beforeArchiveWrite;
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(archive)) {
+            beforeArchiveWrite = tmp.lastModified();
             final ZipArchiveEntry in = new ZipArchiveEntry(tmp, "foo");
             zos.putArchiveEntry(in);
             zos.closeArchiveEntry();
-            zos.close();
-            zos = null;
-            zf = new ZipFile(archive);
+        }
+        try (ZipFile zf = new ZipFile(archive)) {
             final ZipArchiveEntry out = zf.getEntry("foo/");
             assertNotNull(out);
             assertEquals("foo/", out.getName());
@@ -363,51 +360,35 @@ public final class ZipTestCase extends AbstractTestCase {
             // ZIP stores time with a granularity of 2 seconds
             assertEquals(beforeArchiveWrite / 2000, out.getLastModifiedDate().getTime() / 2000);
             assertTrue(out.isDirectory());
-        } finally {
-            ZipFile.closeQuietly(zf);
-            if (zos != null) {
-                zos.close();
-            }
         }
     }
 
     @Test
     public void testExplicitDirectoryEntry() throws Exception {
-        ZipArchiveOutputStream zos = null;
-        ZipFile zf = null;
-        try {
-            final File archive = createTempFile("test.", ".zip");
-            zos = new ZipArchiveOutputStream(archive);
-            final long beforeArchiveWrite = getTempDirFile().lastModified();
+        final File archive = createTempFile("test.", ".zip");
+        final long beforeArchiveWrite;
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(archive)) {
+            beforeArchiveWrite = getTempDirFile().lastModified();
             final ZipArchiveEntry in = new ZipArchiveEntry("foo/");
             in.setTime(beforeArchiveWrite);
             zos.putArchiveEntry(in);
             zos.closeArchiveEntry();
-            zos.close();
-            zos = null;
-            zf = new ZipFile(archive);
+        }
+        try (ZipFile zf = new ZipFile(archive)) {
             final ZipArchiveEntry out = zf.getEntry("foo/");
             assertNotNull(out);
             assertEquals("foo/", out.getName());
             assertEquals(0, out.getSize());
             assertEquals(beforeArchiveWrite / 2000, out.getLastModifiedDate().getTime() / 2000);
             assertTrue(out.isDirectory());
-        } finally {
-            ZipFile.closeQuietly(zf);
-            if (zos != null) {
-                zos.close();
-            }
         }
     }
 
     @Test
     public void testExplicitFileEntry() throws Exception {
         final File tmp = createTempFile();
-        ZipArchiveOutputStream zos = null;
-        ZipFile zf = null;
-        try {
-            final File archive = createTempFile("test.", ".zip");
-            zos = new ZipArchiveOutputStream(archive);
+        final File archive = createTempFile("test.", ".zip");
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(archive)) {
             final ZipArchiveEntry in = new ZipArchiveEntry("foo");
             in.setTime(tmp.lastModified());
             in.setSize(tmp.length());
@@ -419,31 +400,22 @@ public final class ZipTestCase extends AbstractTestCase {
                 }
             }
             zos.closeArchiveEntry();
-            zos.close();
-            zos = null;
-            zf = new ZipFile(archive);
+        }
+        try (ZipFile zf = new ZipFile(archive)) {
             final ZipArchiveEntry out = zf.getEntry("foo");
             assertNotNull(out);
             assertEquals("foo", out.getName());
             assertEquals(tmp.length(), out.getSize());
             assertEquals(tmp.lastModified() / 2000, out.getLastModifiedDate().getTime() / 2000);
             assertFalse(out.isDirectory());
-        } finally {
-            ZipFile.closeQuietly(zf);
-            if (zos != null) {
-                zos.close();
-            }
         }
     }
 
     @Test
     public void testFileEntryFromFile() throws Exception {
-        ZipArchiveOutputStream zos = null;
-        ZipFile zf = null;
         final File tmpFile = createTempFile();
-        try {
-            final File archive = createTempFile("test.", ".zip");
-            zos = new ZipArchiveOutputStream(archive);
+        final File archive = createTempFile("test.", ".zip");
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(archive)) {
             final ZipArchiveEntry in = new ZipArchiveEntry(tmpFile, "foo");
             zos.putArchiveEntry(in);
             final byte[] b = new byte[(int) tmpFile.length()];
@@ -453,20 +425,14 @@ public final class ZipTestCase extends AbstractTestCase {
                 }
             }
             zos.closeArchiveEntry();
-            zos.close();
-            zos = null;
-            zf = new ZipFile(archive);
+        }
+        try (ZipFile zf = new ZipFile(archive)) {
             final ZipArchiveEntry out = zf.getEntry("foo");
             assertNotNull(out);
             assertEquals("foo", out.getName());
             assertEquals(tmpFile.length(), out.getSize());
             assertEquals(tmpFile.lastModified() / 2000, out.getLastModifiedDate().getTime() / 2000);
             assertFalse(out.isDirectory());
-        } finally {
-            ZipFile.closeQuietly(zf);
-            if (zos != null) {
-                zos.close();
-            }
         }
     }
 
@@ -615,8 +581,9 @@ public final class ZipTestCase extends AbstractTestCase {
         final ArrayList<String> al = new ArrayList<>();
         al.add("test1.xml");
         al.add("test2.xml");
-        try (InputStream fis = Files.newInputStream(input.toPath())) {
-            checkArchiveContent(new ZipArchiveInputStream(fis), al);
+        try (InputStream fis = Files.newInputStream(input.toPath());
+                final ZipArchiveInputStream inputStream = new ZipArchiveInputStream(fis)) {
+            checkArchiveContent(inputStream, al);
         }
     }
 
@@ -651,7 +618,7 @@ public final class ZipTestCase extends AbstractTestCase {
 
     /**
      * Archives 2 files and unarchives it again. If the file length of result and source is the same, it looks like the operations have worked
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -697,7 +664,7 @@ public final class ZipTestCase extends AbstractTestCase {
 
     /**
      * Archives 2 files and unarchives it again. If the file contents of result and source is the same, it looks like the operations have worked
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -739,16 +706,11 @@ public final class ZipTestCase extends AbstractTestCase {
     @Test
     public void testZipArchiveEntryNewFromPath() throws Exception {
         Path archivePath;
-        ZipArchiveOutputStream zos = null;
-        ZipFile zf = null;
         final File tmpFile = createTempFile();
-
         final Path tmpFilePath = tmpFile.toPath();
-        try {
-            final File archiveFile = createTempFile("test.", ".zip");
-            archivePath = archiveFile.toPath();
-            archiveFile.deleteOnExit();
-            zos = new ZipArchiveOutputStream(archivePath);
+        final File archiveFile = createTempFile("test.", ".zip");
+        archivePath = archiveFile.toPath();
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(archivePath)) {
             final ZipArchiveEntry in = zos.createArchiveEntry(tmpFilePath, "foo");
             zos.putArchiveEntry(in);
             final byte[] b = new byte[(int) tmpFile.length()];
@@ -758,26 +720,20 @@ public final class ZipTestCase extends AbstractTestCase {
                 }
             }
             zos.closeArchiveEntry();
-            zos.close();
-            zos = null;
-            zf = new ZipFile(archiveFile);
+        }
+        try (ZipFile zf = new ZipFile(archiveFile)) {
             final ZipArchiveEntry out = zf.getEntry("foo");
             assertNotNull(out);
             assertEquals("foo", out.getName());
             assertEquals(tmpFile.length(), out.getSize());
             assertEquals(tmpFile.lastModified() / 2000, out.getLastModifiedDate().getTime() / 2000);
             assertFalse(out.isDirectory());
-        } finally {
-            ZipFile.closeQuietly(zf);
-            if (zos != null) {
-                zos.close();
-            }
         }
     }
 
     /**
      * Simple unarchive test. Asserts nothing.
-     * 
+     *
      * @throws Exception
      */
     @Test
