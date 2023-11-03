@@ -88,7 +88,7 @@ public class ExtraFieldUtilsTest implements UnixStat {
     private byte[] aLocal;
 
     @Test
-    public void parseTurnsArrayIndexOutOfBoundsIntoZipException() {
+    public void testParseTurnsArrayIndexOutOfBoundsIntoZipException() {
         ExtraFieldUtils.register(AiobThrowingExtraField.class);
         final AiobThrowingExtraField f = new AiobThrowingExtraField();
         final byte[] d = new byte[4 + AiobThrowingExtraField.LENGTH];

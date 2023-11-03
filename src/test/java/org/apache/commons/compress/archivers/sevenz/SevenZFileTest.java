@@ -107,7 +107,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void extractNonExistSpecifiedFile() throws Exception {
+    public void testExtractNonExistSpecifiedFile() throws Exception {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z")); SevenZFile anotherSevenZFile = new SevenZFile(getFile("bla.7z"))) {
             for (final SevenZArchiveEntry nonExistEntry : anotherSevenZFile.getEntries()) {
                 assertThrows(IllegalArgumentException.class, () -> sevenZFile.getInputStream(nonExistEntry));
@@ -116,7 +116,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void extractSpecifiedFile() throws Exception {
+    public void testExtractSpecifiedFile() throws Exception {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"))) {
             final String testTxtContents = "111111111111111111111111111000101011\n" +
                     "111111111111111111111111111000101011\n" +
@@ -147,7 +147,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void getDefaultNameWorksAsExpected() throws Exception {
+    public void testGetDefaultNameWorksAsExpected() throws Exception {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.deflate64.7z"))) {
             assertEquals("bla.deflate64", sevenZFile.getDefaultName());
         }
@@ -163,7 +163,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void getEntriesOfUnarchiveInMemoryTest() throws IOException {
+    public void testGetEntriesOfUnarchiveInMemoryTest() throws IOException {
         final byte[] data = Files.readAllBytes(getFile("bla.7z").toPath());
         try (SevenZFile sevenZFile = new SevenZFile(new SeekableInMemoryByteChannel(data))) {
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
@@ -177,7 +177,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void getEntriesOfUnarchiveTest() throws IOException {
+    public void testGetEntriesOfUnarchiveTest() throws IOException {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"))) {
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
             final Iterator<SevenZArchiveEntry> iter = entries.iterator();
@@ -190,7 +190,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void givenNameWinsOverDefaultName() throws Exception {
+    public void testGivenNameWinsOverDefaultName() throws Exception {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"),
             SevenZFileOptions.builder().withUseDefaultNameForUnnamedEntries(true).build())) {
             SevenZArchiveEntry ae = sevenZFile.getNextEntry();
@@ -207,7 +207,7 @@ public class SevenZFileTest extends AbstractTestCase {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-492">COMPRESS-492</a>
      */
     @Test
-    public void handlesEmptyArchiveWithFilesInfo() throws Exception {
+    public void testHandlesEmptyArchiveWithFilesInfo() throws Exception {
         final File f = new File(dir, "empty.7z");
         try (SevenZOutputFile s = new SevenZOutputFile(f)) {
         }
@@ -221,7 +221,7 @@ public class SevenZFileTest extends AbstractTestCase {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-492">COMPRESS-492</a>
      */
     @Test
-    public void handlesEmptyArchiveWithoutFilesInfo() throws Exception {
+    public void testHandlesEmptyArchiveWithoutFilesInfo() throws Exception {
         try (SevenZFile z = new SevenZFile(getFile("COMPRESS-492.7z"))) {
             assertFalse(z.getEntries().iterator().hasNext());
             assertNull(z.getNextEntry());
@@ -229,7 +229,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void limitExtractionMemory() {
+    public void testLimitExtractionMemory() {
         assertThrows(MemoryLimitException.class, () -> {
             try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"), SevenZFileOptions.builder().withMaxMemoryLimitInKb(1).build())) {
                 // Do nothing. Exception should be thrown
@@ -238,7 +238,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void noNameCanBeReplacedByDefaultName() throws Exception {
+    public void testNoNameCanBeReplacedByDefaultName() throws Exception {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("bla-nonames.7z"),
             SevenZFileOptions.builder().withUseDefaultNameForUnnamedEntries(true).build())) {
             SevenZArchiveEntry ae = sevenZFile.getNextEntry();
@@ -252,7 +252,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void noNameMeansNoNameByDefault() throws Exception {
+    public void testNoNameMeansNoNameByDefault() throws Exception {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("bla-nonames.7z"))) {
             SevenZArchiveEntry ae = sevenZFile.getNextEntry();
             assertNotNull(ae);
@@ -265,7 +265,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void readBigSevenZipFile() throws IOException {
+    public void testReadBigSevenZipFile() throws IOException {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-592.7z"))) {
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             while (entry != null) {
@@ -282,7 +282,7 @@ public class SevenZFileTest extends AbstractTestCase {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-348"
      */
     @Test
-    public void readEntriesOfSize0() throws IOException {
+    public void testReadEntriesOfSize0() throws IOException {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-348.7z"))) {
             int entries = 0;
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
@@ -310,7 +310,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void readTimesFromFile() throws IOException {
+    public void testReadTimesFromFile() throws IOException {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("times.7z"))) {
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             assertNotNull(entry);
@@ -336,7 +336,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void retrieveInputStreamForAllEntriesMultipleTimes() throws IOException {
+    public void testRetrieveInputStreamForAllEntriesMultipleTimes() throws IOException {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"))) {
             for (final SevenZArchiveEntry entry : sevenZFile.getEntries()) {
                 final byte[] firstRead = IOUtils.toByteArray(sevenZFile.getInputStream(entry));
@@ -347,7 +347,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void retrieveInputStreamForAllEntriesWithoutCRCMultipleTimes() throws IOException {
+    public void testRetrieveInputStreamForAllEntriesWithoutCRCMultipleTimes() throws IOException {
         try (final SevenZOutputFile out = new SevenZOutputFile(new File(dir, "test.7z"))) {
             final Path inputFile = Files.createTempFile("SevenZTestTemp", "");
 
@@ -369,7 +369,7 @@ public class SevenZFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void retrieveInputStreamForShuffledEntries() throws IOException {
+    public void testRetrieveInputStreamForShuffledEntries() throws IOException {
         try (final SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-348.7z"))) {
             final List<SevenZArchiveEntry> entries = (List<SevenZArchiveEntry>) sevenZFile.getEntries();
             Collections.shuffle(entries);

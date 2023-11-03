@@ -44,7 +44,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTestCas
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.sz");
         final byte[] buf = new byte[2];
         try (InputStream is = Files.newInputStream(input.toPath());
@@ -56,7 +56,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTestCas
     }
 
     @Test
-    public void readIWAFile() throws Exception {
+    public void testReadIWAFile() throws Exception {
         try (ZipFile zip = new ZipFile(getFile("testNumbersNew.numbers"))) {
             try (InputStream is = zip.getInputStream(zip.getEntry("Index/Document.iwa"))) {
                 try (FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is, FramedSnappyDialect.IWORK_ARCHIVE)) {
@@ -70,7 +70,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTestCas
      * @see "https://issues.apache.org/jira/browse/COMPRESS-358"
      */
     @Test
-    public void readIWAFileWithBiggerOffset() throws Exception {
+    public void testReadIWAFileWithBiggerOffset() throws Exception {
         final File o = new File(dir, "COMPRESS-358.raw");
         try (InputStream is = newInputStream("COMPRESS-358.iwa");
                 FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is, 1 << 16, FramedSnappyDialect.IWORK_ARCHIVE);) {
@@ -85,7 +85,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTestCas
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.sz");
         try (InputStream is = Files.newInputStream(input.toPath());
                 FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is);) {

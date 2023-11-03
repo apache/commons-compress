@@ -33,12 +33,12 @@ import org.junit.jupiter.api.Test;
 public class FactoryTest extends AbstractTestCase {
 
     @Test
-    public void blockRoundtripViaFactory() throws Exception {
+    public void testBlockRoundtripViaFactory() throws Exception {
         roundtripViaFactory(CompressorStreamFactory.getLZ4Block());
     }
 
     @Test
-    public void frameRoundtripViaFactory() throws Exception {
+    public void testFrameRoundtripViaFactory() throws Exception {
         roundtripViaFactory(CompressorStreamFactory.getLZ4Framed());
     }
 

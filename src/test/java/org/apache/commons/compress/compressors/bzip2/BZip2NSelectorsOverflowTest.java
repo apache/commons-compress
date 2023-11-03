@@ -33,7 +33,7 @@ public class BZip2NSelectorsOverflowTest extends AbstractTestCase {
      * See https://sourceware.org/ml/bzip2-devel/2019-q3/msg00007.html
      */
     @Test
-    public void shouldDecompressBlockWithNSelectorOverflow() throws Exception {
+    public void testShouldDecompressBlockWithNSelectorOverflow() throws Exception {
         final File toDecompress = getFile("lbzip2_32767.bz2");
         try (final InputStream is = Files.newInputStream(toDecompress.toPath());
              final BZip2CompressorInputStream in = new BZip2CompressorInputStream(is)) {

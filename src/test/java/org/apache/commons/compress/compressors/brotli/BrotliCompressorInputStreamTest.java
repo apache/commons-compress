@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 public class BrotliCompressorInputStreamTest extends AbstractTestCase {
 
     @Test
-    public void availableShouldReturnZero() throws IOException {
+    public void testAvailableShouldReturnZero() throws IOException {
         try (InputStream is = newInputStream("brotli.testdata.compressed");
                 final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
             assertEquals(0, in.available());
@@ -44,7 +44,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final byte[] buf = new byte[2];
         try (InputStream is = newInputStream("brotli.testdata.compressed");
                 final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
@@ -55,7 +55,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void shouldBeAbleToSkipAByte() throws IOException {
+    public void testShouldBeAbleToSkipAByte() throws IOException {
         try (InputStream is = newInputStream("brotli.testdata.compressed");
                 final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
             assertEquals(1, in.skip(1));
@@ -63,7 +63,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         try (InputStream is = newInputStream("brotli.testdata.compressed");
                 final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
             IOUtils.toByteArray(in);
@@ -73,7 +73,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void singleByteReadWorksAsExpected() throws IOException {
+    public void testSingleByteReadWorksAsExpected() throws IOException {
         try (InputStream is = newInputStream("brotli.testdata.compressed");
                 final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
             // starts with file name "XXX"

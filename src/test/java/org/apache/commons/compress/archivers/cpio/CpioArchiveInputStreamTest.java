@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 public class CpioArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.cpio"); CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
@@ -42,7 +42,7 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (InputStream in = newInputStream("bla.cpio"); CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);

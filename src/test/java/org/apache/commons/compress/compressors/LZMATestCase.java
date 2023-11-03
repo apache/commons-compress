@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 public final class LZMATestCase extends AbstractTestCase {
 
     @Test
-    public void lzmaRoundtrip() throws Exception {
+    public void testLzmaRoundtrip() throws Exception {
         final File input = getFile("test1.xml");
         final File compressed = new File(dir, "test1.xml.xz");
         try (OutputStream out = Files.newOutputStream(compressed.toPath())) {
@@ -53,7 +53,7 @@ public final class LZMATestCase extends AbstractTestCase {
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.lzma");
         final byte[] buf = new byte[2];
         try (InputStream is = Files.newInputStream(input.toPath())) {
@@ -66,7 +66,7 @@ public final class LZMATestCase extends AbstractTestCase {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.lzma");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (LZMACompressorInputStream in = new LZMACompressorInputStream(is)) {

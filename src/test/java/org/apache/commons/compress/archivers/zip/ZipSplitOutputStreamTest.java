@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 public class ZipSplitOutputStreamTest extends AbstractTestCase {
 
     @Test
-    public void splitZipBeginsWithZipSplitSignature() throws IOException {
+    public void testSplitZipBeginsWithZipSplitSignature() throws IOException {
         final File tempFile = File.createTempFile("temp", "zip");
         new ZipSplitOutputStream(tempFile, 100 * 1024L);
 

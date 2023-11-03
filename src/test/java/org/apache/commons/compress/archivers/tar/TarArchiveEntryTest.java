@@ -73,14 +73,14 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void getFileFromNonFileEntry() {
+    public void testGetFileFromNonFileEntry() {
         final TarArchiveEntry entry = new TarArchiveEntry("test.txt");
         assertNull(entry.getFile());
         assertNull(entry.getPath());
     }
 
     @Test
-    public void getOrderedSparseHeadersRejectsOverlappingStructs() throws Exception {
+    public void testGetOrderedSparseHeadersRejectsOverlappingStructs() throws Exception {
         final TarArchiveEntry te = new TarArchiveEntry("test");
         te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
         te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(10, 5), new TarArchiveStructSparse(12, 1)));
@@ -88,7 +88,7 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void getOrderedSparseHeadersRejectsStructsPointingBeyondOutputEntry() throws Exception {
+    public void testGetOrderedSparseHeadersRejectsStructsPointingBeyondOutputEntry() throws Exception {
         final TarArchiveEntry te = new TarArchiveEntry("test");
         te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(200, 2)));
         te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
@@ -96,7 +96,7 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void getOrderedSparseHeadersRejectsStructsWithReallyBigNumbers() throws Exception {
+    public void testGetOrderedSparseHeadersRejectsStructsWithReallyBigNumbers() throws Exception {
         final TarArchiveEntry te = new TarArchiveEntry("test");
         te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", String.valueOf(Long.MAX_VALUE)));
         te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(Long.MAX_VALUE, 2)));
@@ -104,7 +104,7 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void getOrderedSparseHeadersSortsAndFiltersSparseStructs() throws Exception {
+    public void testGetOrderedSparseHeadersSortsAndFiltersSparseStructs() throws Exception {
         final TarArchiveEntry te = new TarArchiveEntry("test");
         // hacky way to set realSize
         te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
@@ -118,7 +118,7 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void negativeOffsetInConstructorNotAllowed() {
+    public void testNegativeOffsetInConstructorNotAllowed() {
         // @formatter:off
         final byte[] entryContent = ("test1.xml\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
                 "\u0000" +
@@ -145,12 +145,12 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void negativeOffsetInSetterNotAllowed() {
+    public void testNegativeOffsetInSetterNotAllowed() {
         assertThrows(IllegalArgumentException.class, () -> new TarArchiveEntry("test").setDataOffset(-1));
     }
 
     @Test
-    public void preservesDriveSpecOnWindowsAndNetwareIfAskedTo() {
+    public void testPreservesDriveSpecOnWindowsAndNetwareIfAskedTo() {
         assumeTrue("C:\\".equals(ROOT));
         TarArchiveEntry t = new TarArchiveEntry(ROOT + "foo.txt", true);
         assertEquals("C:/foo.txt", t.getName());
@@ -167,7 +167,7 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void shouldNotWriteTimePaxHeadersByDefault() throws IOException {
+    public void testShouldNotWriteTimePaxHeadersByDefault() throws IOException {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
             final TarArchiveEntry entry = createEntryForTimeTests();
@@ -197,7 +197,7 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void shouldParseTimePaxHeadersAndNotCountAsExtraPaxHeaders() {
+    public void testShouldParseTimePaxHeadersAndNotCountAsExtraPaxHeaders() {
         final TarArchiveEntry entry = createEntryForTimeTests();
         assertEquals(0, entry.getExtraPaxHeaders().size(), "extra header count");
         assertNull(entry.getExtraPaxHeader("size"), "size");
@@ -213,7 +213,7 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void shouldWriteTimesAsPaxHeadersForPosixMode() throws IOException {
+    public void testShouldWriteTimesAsPaxHeadersForPosixMode() throws IOException {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
             final TarArchiveEntry entry = createEntryForTimeTests();
@@ -244,7 +244,7 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void shouldWriteTimesAsPaxHeadersForPosixModeAndCreationTimeShouldBeUsedAsCtime() throws IOException {
+    public void testShouldWriteTimesAsPaxHeadersForPosixModeAndCreationTimeShouldBeUsedAsCtime() throws IOException {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
             final TarArchiveEntry entry = createEntryForTimeTests();
@@ -276,7 +276,7 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void shouldWriteTimesForStarMode() throws IOException {
+    public void testShouldWriteTimesForStarMode() throws IOException {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
             final TarArchiveEntry entry = createEntryForTimeTests();

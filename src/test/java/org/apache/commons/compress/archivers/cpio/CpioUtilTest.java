@@ -27,22 +27,22 @@ import org.junit.jupiter.api.Test;
 public class CpioUtilTest {
 
     @Test
-    public void oldBinMagic2ByteArrayNotSwapped() {
+    public void testOldBinMagic2ByteArrayNotSwapped() {
         assertArrayEquals(new byte[] {(byte) 0xc7, 0x71}, CpioUtil.long2byteArray(CpioConstants.MAGIC_OLD_BINARY, 2, false));
     }
 
     @Test
-    public void oldBinMagic2ByteArraySwapped() {
+    public void testOldBinMagic2ByteArraySwapped() {
         assertArrayEquals(new byte[] {0x71, (byte) 0xc7,}, CpioUtil.long2byteArray(CpioConstants.MAGIC_OLD_BINARY, 2, true));
     }
 
     @Test
-    public void oldBinMagicFromByteArrayNotSwapped() {
+    public void testOldBinMagicFromByteArrayNotSwapped() {
         assertEquals(CpioConstants.MAGIC_OLD_BINARY, CpioUtil.byteArray2long(new byte[] {(byte) 0xc7, 0x71}, false));
     }
 
     @Test
-    public void oldBinMagicFromByteArraySwapped() {
+    public void testOldBinMagicFromByteArraySwapped() {
         assertEquals(CpioConstants.MAGIC_OLD_BINARY, CpioUtil.byteArray2long(new byte[] {0x71, (byte) 0xc7}, true));
     }
 

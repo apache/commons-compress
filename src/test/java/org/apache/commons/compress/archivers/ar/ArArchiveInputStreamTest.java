@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 public class ArArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
-    public void cantReadAfterClose() throws Exception {
+    public void testCantReadAfterClose() throws Exception {
         try (InputStream in = newInputStream("bla.ar");
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             archive.close();
@@ -47,7 +47,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void cantReadWithoutOpeningAnEntry() throws Exception {
+    public void testCantReadWithoutOpeningAnEntry() throws Exception {
         try (InputStream in = newInputStream("bla.ar");
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             assertThrows(IllegalStateException.class, () -> archive.read());
@@ -74,7 +74,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.ar");
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
@@ -86,7 +86,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void simpleInputStream() throws IOException {
+    public void testSimpleInputStream() throws IOException {
         try (final InputStream fileInputStream = newInputStream("bla.ar")) {
 
             // This default implementation of InputStream.available() always returns zero,
@@ -115,7 +115,7 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (InputStream in = newInputStream("bla.ar");
              ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();

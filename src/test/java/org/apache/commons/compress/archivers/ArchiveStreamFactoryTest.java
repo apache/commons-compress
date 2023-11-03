@@ -201,7 +201,7 @@ public class ArchiveStreamFactoryTest extends AbstractTestCase {
      * see https://issues.apache.org/jira/browse/COMPRESS-191
      */
     @Test
-    public void aiffFilesAreNoTARs() throws Exception {
+    public void testAiffFilesAreNoTARs() throws Exception {
         try (final InputStream fis = newInputStream("testAIFF.aif");
              final InputStream is = new BufferedInputStream(fis)) {
             final ArchiveException ae = assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(is),
@@ -211,12 +211,12 @@ public class ArchiveStreamFactoryTest extends AbstractTestCase {
     }
 
     @Test
-    public void cantRead7zFromStream() throws Exception {
+    public void testCantRead7zFromStream() throws Exception {
         assertThrows(StreamingNotSupportedException.class,
             () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(ArchiveStreamFactory.SEVEN_Z, new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)));
     }
     @Test
-    public void cantWrite7zToStream() throws Exception {
+    public void testCantWrite7zToStream() throws Exception {
         assertThrows(StreamingNotSupportedException.class,
             () -> ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.SEVEN_Z, new ByteArrayOutputStream()));
     }
@@ -232,7 +232,7 @@ public class ArchiveStreamFactoryTest extends AbstractTestCase {
      * >COMPRESS-267</a>.
      */
     @Test
-    public void detectsAndThrowsFor7z() throws Exception {
+    public void testDetectsAndThrowsFor7z() throws Exception {
         try (final InputStream fis = newInputStream("bla.7z");
              final InputStream bis = new BufferedInputStream(fis)) {
             final StreamingNotSupportedException ex = assertThrows(StreamingNotSupportedException.class, () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis),
@@ -262,7 +262,7 @@ public class ArchiveStreamFactoryTest extends AbstractTestCase {
      * see https://issues.apache.org/jira/browse/COMPRESS-171
      */
     @Test
-    public void shortTextFilesAreNoTARs() {
+    public void testShortTextFilesAreNoTARs() {
         final ArchiveException ae = assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(
                 new ByteArrayInputStream("This certainly is not a tar archive, really, no kidding".getBytes())), "created an input stream for a non-archive");
         assertTrue(ae.getMessage().startsWith("No Archiver found"));
@@ -274,7 +274,7 @@ public class ArchiveStreamFactoryTest extends AbstractTestCase {
      * >COMPRESS-208</a>.
      */
     @Test
-    public void skipsPK00Prefix() throws Exception {
+    public void testSkipsPK00Prefix() throws Exception {
         try (InputStream fis = newInputStream("COMPRESS-208.zip")) {
             try (InputStream bis = new BufferedInputStream(fis)) {
                 try (ArchiveInputStream<?> ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis)) {

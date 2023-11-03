@@ -41,7 +41,7 @@ public class SeekableInMemoryByteChannelTest {
      * <q>If the stream is already closed then invoking this method has no effect.</q>
      */
     @Test
-    public void closeIsIdempotent() throws Exception {
+    public void testCloseIsIdempotent() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
             assertFalse(c.isOpen());
@@ -55,7 +55,7 @@ public class SeekableInMemoryByteChannelTest {
      * bytes at such a position will immediately return an end-of-file indication</q>
      */
     @Test
-    public void readingFromAPositionAfterEndReturnsEOF() throws Exception {
+    public void testReadingFromAPositionAfterEndReturnsEOF() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.position(2);
             assertEquals(2, c.position());
@@ -65,7 +65,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    public void shouldReadContentsProperly() throws IOException {
+    public void testShouldReadContentsProperly() throws IOException {
         // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             final ByteBuffer readBuffer = ByteBuffer.allocate(testData.length);
@@ -79,7 +79,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    public void shouldReadContentsWhenBiggerBufferSupplied() throws IOException {
+    public void testShouldReadContentsWhenBiggerBufferSupplied() throws IOException {
         // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             final ByteBuffer readBuffer = ByteBuffer.allocate(testData.length + 1);
@@ -93,7 +93,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    public void shouldReadDataFromSetPosition() throws IOException {
+    public void testShouldReadDataFromSetPosition() throws IOException {
         // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             final ByteBuffer readBuffer = ByteBuffer.allocate(4);
@@ -108,7 +108,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    public void shouldSetProperPosition() throws IOException {
+    public void testShouldSetProperPosition() throws IOException {
         // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             // when
@@ -123,7 +123,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    public void shouldSetProperPositionOnTruncate() throws IOException {
+    public void testShouldSetProperPositionOnTruncate() throws IOException {
         // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             // when
@@ -136,7 +136,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    public void shouldSignalEOFWhenPositionAtTheEnd() throws IOException {
+    public void testShouldSignalEOFWhenPositionAtTheEnd() throws IOException {
         // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             final ByteBuffer readBuffer = ByteBuffer.allocate(testData.length);
@@ -151,7 +151,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    public void shouldThrowExceptionOnReadingClosedChannel() {
+    public void testShouldThrowExceptionOnReadingClosedChannel() {
         // given
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
         // when
@@ -160,7 +160,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    public void shouldThrowExceptionOnWritingToClosedChannel() {
+    public void testShouldThrowExceptionOnWritingToClosedChannel() {
         // given
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
         // when
@@ -169,7 +169,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenSettingIncorrectPosition() {
+    public void testShouldThrowExceptionWhenSettingIncorrectPosition() {
         // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
             // when
@@ -178,7 +178,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenTruncatingToIncorrectSize() {
+    public void testShouldThrowExceptionWhenTruncatingToIncorrectSize() {
         // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
             // when
@@ -187,7 +187,7 @@ public class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    public void shouldTruncateContentsProperly() {
+    public void testShouldTruncateContentsProperly() {
         // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             // when
@@ -203,7 +203,7 @@ public class SeekableInMemoryByteChannelTest {
     // https://docs.oracle.com/javase/7/docs/api/java/io/Closeable.html#close()
 
     @Test
-    public void shouldWriteDataProperly() throws IOException {
+    public void testShouldWriteDataProperly() throws IOException {
         // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
             final ByteBuffer inData = ByteBuffer.wrap(testData);
@@ -219,7 +219,7 @@ public class SeekableInMemoryByteChannelTest {
     // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#position()
 
     @Test
-    public void shouldWriteDataProperlyAfterPositionSet() throws IOException {
+    public void testShouldWriteDataProperlyAfterPositionSet() throws IOException {
         // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             final ByteBuffer inData = ByteBuffer.wrap(testData);

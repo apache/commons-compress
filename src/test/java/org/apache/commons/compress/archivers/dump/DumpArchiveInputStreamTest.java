@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 public class DumpArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.dump");
              DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
@@ -47,7 +47,7 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (InputStream in = newInputStream("bla.dump");
              DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();

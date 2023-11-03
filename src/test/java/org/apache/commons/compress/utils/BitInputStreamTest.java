@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 public class BitInputStreamTest {
 
     @Test
-    public void alignWithByteBoundaryWhenAtBoundary() throws Exception {
+    public void testAlignWithByteBoundaryWhenAtBoundary() throws Exception {
         try (final BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
             assertEquals(0xF8, bis.readBits(8));
             bis.alignWithByteBoundary();
@@ -39,7 +39,7 @@ public class BitInputStreamTest {
     }
 
     @Test
-    public void alignWithByteBoundaryWhenNotAtBoundary() throws Exception {
+    public void testAlignWithByteBoundaryWhenNotAtBoundary() throws Exception {
         try (final BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
             assertEquals(0x08, bis.readBits(4));
             assertEquals(4, bis.bitsCached());
@@ -50,7 +50,7 @@ public class BitInputStreamTest {
     }
 
     @Test
-    public void availableWithCache() throws Exception {
+    public void testAvailableWithCache() throws Exception {
         try (final BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
             assertEquals(0x08, bis.readBits(4));
             assertEquals(28, bis.bitsAvailable());
@@ -58,14 +58,14 @@ public class BitInputStreamTest {
     }
 
     @Test
-    public void availableWithoutCache() throws Exception {
+    public void testAvailableWithoutCache() throws Exception {
         try (final BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
             assertEquals(32, bis.bitsAvailable());
         }
     }
 
     @Test
-    public void bigEndianWithOverflow() throws Exception {
+    public void testBigEndianWithOverflow() throws Exception {
         final ByteArrayInputStream in = new ByteArrayInputStream(new byte[] {
                 87, // 01010111
                 45, // 00101101
@@ -101,7 +101,7 @@ public class BitInputStreamTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-363"
      */
     @Test
-    public void littleEndianWithOverflow() throws Exception {
+    public void testLittleEndianWithOverflow() throws Exception {
         final ByteArrayInputStream in = new ByteArrayInputStream(new byte[] {
                 87, // 01010111
                 45, // 00101101
@@ -126,14 +126,14 @@ public class BitInputStreamTest {
     }
 
     @Test
-    public void shouldNotAllowReadingOfANegativeAmountOfBits() throws IOException {
+    public void testShouldNotAllowReadingOfANegativeAmountOfBits() throws IOException {
         try (final BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
             assertThrows(IOException.class, () -> bis.readBits(-1));
         }
     }
 
     @Test
-    public void shouldNotAllowReadingOfMoreThan63BitsAtATime() throws IOException {
+    public void testShouldNotAllowReadingOfMoreThan63BitsAtATime() throws IOException {
         try (final BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
             assertThrows(IOException.class, () -> bis.readBits(64));
         }

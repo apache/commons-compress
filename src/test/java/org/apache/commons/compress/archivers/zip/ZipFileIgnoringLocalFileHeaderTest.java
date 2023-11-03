@@ -40,7 +40,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     private File dir;
 
     @Test
-    public void getEntryWorks() throws IOException {
+    public void testGetEntryWorks() throws IOException {
         try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
             final ZipArchiveEntry ze = zf.getEntry("test1.xml");
             assertEquals(610, ze.getSize());

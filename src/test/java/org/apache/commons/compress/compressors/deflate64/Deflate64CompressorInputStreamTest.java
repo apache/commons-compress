@@ -47,7 +47,7 @@ public class Deflate64CompressorInputStreamTest {
     private HuffmanDecoder decoder;
 
     @Test
-    public void closeCallsDecoder() throws Exception {
+    public void testCloseCallsDecoder() throws Exception {
 
         try (final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder)) {
             // empty
@@ -57,7 +57,7 @@ public class Deflate64CompressorInputStreamTest {
     }
 
     @Test
-    public void closeIsDelegatedJustOnce() throws Exception {
+    public void testCloseIsDelegatedJustOnce() throws Exception {
 
         try (final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder)) {
             input.close();
@@ -67,7 +67,7 @@ public class Deflate64CompressorInputStreamTest {
     }
 
     @Test
-    public void delegatesAvailable() throws Exception {
+    public void testDelegatesAvailable() throws Exception {
         Mockito.when(decoder.available()).thenReturn(1024);
 
         try (final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder)) {
@@ -88,7 +88,7 @@ public class Deflate64CompressorInputStreamTest {
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
         try (final Deflate64CompressorInputStream in =
                     new Deflate64CompressorInputStream(nullDecoder)) {
@@ -99,14 +99,14 @@ public class Deflate64CompressorInputStreamTest {
     }
 
     @Test
-    public void properSizeWhenClosed() throws Exception {
+    public void testProperSizeWhenClosed() throws Exception {
         try (final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder)) {
             assertEquals(0, input.available());
         }
     }
 
     @Test
-    public void readWhenClosed() throws Exception {
+    public void testReadWhenClosed() throws Exception {
         try (final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(nullDecoder)) {
             assertEquals(-1, input.read());
             assertEquals(-1, input.read(new byte[1]));
@@ -118,7 +118,7 @@ public class Deflate64CompressorInputStreamTest {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-521">COMPRESS-521</a>
      */
     @Test
-    public void shouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS521() {
+    public void testShouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS521() {
         assertThrows(IOException.class, () -> fuzzingTest(new int[] {
             0x50, 0x4b, 0x03, 0x04, 0x2e, 0x00, 0xb6, 0x00, 0x09, 0x00,
             0x84, 0xb6, 0xba, 0x46, 0x72, 0x00, 0xfe, 0x77, 0x63, 0x00,
@@ -134,7 +134,7 @@ public class Deflate64CompressorInputStreamTest {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-522">COMPRESS-522</a>
      */
     @Test
-    public void shouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS522() {
+    public void testShouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS522() {
         assertThrows(IOException.class, () -> fuzzingTest(new int[] {
             0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x08, 0x00, 0x09, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -147,7 +147,7 @@ public class Deflate64CompressorInputStreamTest {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-525">COMPRESS-525</a>
      */
     @Test
-    public void shouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS525() {
+    public void testShouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS525() {
         assertThrows(IOException.class, () -> fuzzingTest(new int[] {
             0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x08, 0x00, 0x09, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -172,7 +172,7 @@ public class Deflate64CompressorInputStreamTest {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-526">COMPRESS-526</a>
      */
     @Test
-    public void shouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS526() {
+    public void testShouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS526() {
         assertThrows(IOException.class, () -> fuzzingTest(new int[] {
             0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x08, 0x00, 0x09, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -199,7 +199,7 @@ public class Deflate64CompressorInputStreamTest {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-527">COMPRESS-527</a>
      */
     @Test
-    public void shouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS527() {
+    public void testShouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS527() {
         assertThrows(IOException.class, () -> fuzzingTest(new int[] {
             0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x00, 0x00, 0x09, 0x00,
             0x84, 0xb6, 0xba, 0x46, 0x72, 0xb6, 0xfe, 0x77, 0x4a, 0x00,
@@ -214,7 +214,7 @@ public class Deflate64CompressorInputStreamTest {
     }
 
     @Test
-    public void shouldThrowsEOFExceptionOnTruncatedStreams() throws IOException {
+    public void testShouldThrowsEOFExceptionOnTruncatedStreams() throws IOException {
         final byte[] data = {
             1, 11, 0, -12, -1,
             'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l',
@@ -227,7 +227,7 @@ public class Deflate64CompressorInputStreamTest {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (final Deflate64CompressorInputStream in =
                     new Deflate64CompressorInputStream(nullDecoder)) {
             IOUtils.toByteArray(in);
@@ -237,7 +237,7 @@ public class Deflate64CompressorInputStreamTest {
     }
 
     @Test
-    public void streamIgnoresExtraBytesAfterDeflatedInput() throws Exception {
+    public void testStreamIgnoresExtraBytesAfterDeflatedInput() throws Exception {
         final byte[] data = {
             1, 11, 0, -12, -1,
             'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', 'X'
@@ -251,7 +251,7 @@ public class Deflate64CompressorInputStreamTest {
     }
 
     @Test
-    public void uncompressedBlock() throws Exception {
+    public void testUncompressedBlock() throws Exception {
         final byte[] data = {
             1, 11, 0, -12, -1,
             'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'
@@ -265,7 +265,7 @@ public class Deflate64CompressorInputStreamTest {
     }
 
     @Test
-    public void uncompressedBlockAvailable() throws Exception {
+    public void testUncompressedBlockAvailable() throws Exception {
         final byte[] data = {
             1, 11, 0, -12, -1,
             'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'
@@ -278,7 +278,7 @@ public class Deflate64CompressorInputStreamTest {
     }
 
     @Test
-    public void uncompressedBlockViaFactory() throws Exception {
+    public void testUncompressedBlockViaFactory() throws Exception {
         final byte[] data = {
             1, 11, 0, -12, -1,
             'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'

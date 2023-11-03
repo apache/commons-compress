@@ -40,12 +40,12 @@ public class ZstdRoundtripTest extends AbstractTestCase {
     }
 
     @Test
-    public void directRoundtrip() throws Exception {
+    public void testDirectRoundtrip() throws Exception {
         roundtrip(ZstdCompressorOutputStream::new);
     }
 
     @Test
-    public void factoryRoundtrip() throws Exception {
+    public void testFactoryRoundtrip() throws Exception {
         final File input = getFile("bla.tar");
         long start = System.currentTimeMillis();
         final File output = new File(dir, input.getName() + ".zstd");
@@ -83,17 +83,17 @@ public class ZstdRoundtripTest extends AbstractTestCase {
     }
 
     @Test
-    public void roundtripWithChecksum() throws Exception {
+    public void testRoundtripWithChecksum() throws Exception {
         roundtrip(os -> new ZstdCompressorOutputStream(os, 3, false, true));
     }
 
     @Test
-    public void roundtripWithCloseFrameOnFlush() throws Exception {
+    public void testRoundtripWithCloseFrameOnFlush() throws Exception {
         roundtrip(os -> new ZstdCompressorOutputStream(os, 3, true));
     }
 
     @Test
-    public void roundtripWithCustomLevel() throws Exception {
+    public void testRoundtripWithCustomLevel() throws Exception {
         roundtrip(os -> new ZstdCompressorOutputStream(os, 1));
     }
 

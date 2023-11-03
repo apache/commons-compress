@@ -44,17 +44,17 @@ public class XZCompressorInputStreamTest {
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofDecompressConcatenated() throws IOException {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofDecompressConcatenated() throws IOException {
         multiByteReadConsistentlyReturnsMinusOneAtEof(true);
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofNoDecompressConcatenated() throws IOException {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofNoDecompressConcatenated() throws IOException {
         multiByteReadConsistentlyReturnsMinusOneAtEof(false);
     }
 
     @Test
-    public void redundantTestOfAlmostDeprecatedMatchesMethod() {
+    public void testRedundantTestOfAlmostDeprecatedMatchesMethod() {
         final byte[] data = { (byte) 0xFD, '7', 'z', 'X', 'Z', '\0' };
         assertFalse(XZCompressorInputStream.matches(data, 5));
         assertTrue(XZCompressorInputStream.matches(data, 6));
@@ -74,12 +74,12 @@ public class XZCompressorInputStreamTest {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofDecompressConcatenated() throws IOException {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofDecompressConcatenated() throws IOException {
         singleByteReadConsistentlyReturnsMinusOneAtEof(true);
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofNoDecompressConcatenated() throws IOException {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofNoDecompressConcatenated() throws IOException {
         singleByteReadConsistentlyReturnsMinusOneAtEof(false);
     }
 

@@ -160,7 +160,7 @@ public class X5455_ExtendedTimestampTest {
     }
 
     @Test
-    public void resetsFlagsWhenLocalFileArrayIsTooShort() throws Exception {
+    public void testResetsFlagsWhenLocalFileArrayIsTooShort() throws Exception {
         final byte[] local = {
             7
         }; // claims all three time values would be present, but they are not

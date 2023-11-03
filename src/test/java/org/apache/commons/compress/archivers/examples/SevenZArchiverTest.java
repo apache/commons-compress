@@ -64,7 +64,7 @@ public class SevenZArchiverTest extends AbstractTestCase {
     }
 
     @Test
-    public void channelVersion() throws IOException, ArchiveException {
+    public void testChannelVersion() throws IOException, ArchiveException {
         try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
             StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             new Archiver().create("7z", c, dir);
@@ -73,13 +73,13 @@ public class SevenZArchiverTest extends AbstractTestCase {
     }
 
     @Test
-    public void fileVersion() throws IOException, ArchiveException {
+    public void testFileVersion() throws IOException, ArchiveException {
         new Archiver().create("7z", target, dir);
         verifyContent();
     }
 
     @Test
-    public void outputStreamVersion() throws IOException {
+    public void testOutputStreamVersion() throws IOException {
         try (OutputStream os = Files.newOutputStream(target.toPath())) {
             assertThrows(StreamingNotSupportedException.class, () -> new Archiver().create("7z", os, dir));
         }
@@ -102,7 +102,7 @@ public class SevenZArchiverTest extends AbstractTestCase {
 
     // not really a 7z test, but I didn't feel like adding a new test just for this
     @Test
-    public void unknownFormat() throws IOException {
+    public void testUnknownFormat() throws IOException {
         try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE, StandardOpenOption.CREATE,
             StandardOpenOption.TRUNCATE_EXISTING)) {
             assertThrows(ArchiveException.class, () -> new Archiver().create("unknown format", c, dir));

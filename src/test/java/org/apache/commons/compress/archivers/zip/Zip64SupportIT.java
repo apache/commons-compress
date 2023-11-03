@@ -2047,65 +2047,65 @@ public class Zip64SupportIT {
         return outputFile;
     }
 
-    @Test public void read100KFilesGeneratedBy7ZIPUsingInputStream()
+    @Test public void testRead100KFilesGeneratedBy7ZIPUsingInputStream()
         throws Throwable {
         read100KFilesImpl(get100KFileFileGeneratedBy7ZIP());
     }
 
-    @Test public void read100KFilesGeneratedBy7ZIPUsingZipFile()
+    @Test public void testRead100KFilesGeneratedBy7ZIPUsingZipFile()
         throws Throwable {
         read100KFilesUsingZipFileImpl(get100KFileFileGeneratedBy7ZIP());
     }
 
-    @Test public void read100KFilesGeneratedByJava7JarUsingInputStream()
+    @Test public void testRead100KFilesGeneratedByJava7JarUsingInputStream()
         throws Throwable {
         read100KFilesImpl(get100KFileFileGeneratedByJava7Jar());
     }
 
-    @Test public void read100KFilesGeneratedByJava7JarUsingZipFile()
+    @Test public void testRead100KFilesGeneratedByJava7JarUsingZipFile()
         throws Throwable {
         read100KFilesUsingZipFileImpl(get100KFileFileGeneratedByJava7Jar());
     }
 
-    @Test public void read100KFilesGeneratedByPKZipUsingInputStream()
+    @Test public void testRead100KFilesGeneratedByPKZipUsingInputStream()
         throws Throwable {
         read100KFilesImpl(get100KFileFileGeneratedByPKZip());
     }
 
-    @Test public void read100KFilesGeneratedByPKZipUsingZipFile()
+    @Test public void testRead100KFilesGeneratedByPKZipUsingZipFile()
         throws Throwable {
         read100KFilesUsingZipFileImpl(get100KFileFileGeneratedByPKZip());
     }
 
-    @Test public void read100KFilesGeneratedByWinCFUsingInputStream()
+    @Test public void testRead100KFilesGeneratedByWinCFUsingInputStream()
         throws Throwable {
         read100KFilesImpl(get100KFileFileGeneratedByWinCF());
     }
 
-    @Test public void read100KFilesGeneratedByWinCFUsingZipFile()
+    @Test public void testRead100KFilesGeneratedByWinCFUsingZipFile()
         throws Throwable {
         read100KFilesUsingZipFileImpl(get100KFileFileGeneratedByWinCF());
     }
 
-    @Test public void read100KFilesGeneratedByWinZIPUsingInputStream()
+    @Test public void testRead100KFilesGeneratedByWinZIPUsingInputStream()
         throws Throwable {
         read100KFilesImpl(get100KFileFileGeneratedByWinZIP());
     }
 
-    @Test public void read100KFilesGeneratedByWinZIPUsingZipFile()
+    @Test public void testRead100KFilesGeneratedByWinZIPUsingZipFile()
         throws Throwable {
         read100KFilesUsingZipFileImpl(get100KFileFileGeneratedByWinZIP());
     }
 
-    @Test public void read100KFilesUsingInputStream() throws Throwable {
+    @Test public void testRead100KFilesUsingInputStream() throws Throwable {
         read100KFilesImpl(get100KFileFile());
     }
 
-    @Test public void read100KFilesUsingZipFile() throws Throwable {
+    @Test public void testRead100KFilesUsingZipFile() throws Throwable {
         read100KFilesUsingZipFileImpl(get100KFileFile());
     }
 
-    @Test public void read3EntriesCreatingBigArchiveFileUsingZipFile()
+    @Test public void testRead3EntriesCreatingBigArchiveFileUsingZipFile()
         throws Throwable {
         withTemporaryArchive("read3EntriesCreatingBigArchiveFileUsingZipFile",
                              (f, zos) -> {
@@ -2139,60 +2139,60 @@ public class Zip64SupportIT {
                              true);
     }
 
-    @Test public void read5GBOfZerosGeneratedBy7ZIPUsingInputStream()
+    @Test public void testRead5GBOfZerosGeneratedBy7ZIPUsingInputStream()
         throws Throwable {
         read5GBOfZerosImpl(get5GBZerosFileGeneratedBy7ZIP(), "5GB_of_Zeros");
     }
 
-    @Test public void read5GBOfZerosGeneratedBy7ZIPUsingZipFile()
+    @Test public void testRead5GBOfZerosGeneratedBy7ZIPUsingZipFile()
         throws Throwable {
         read5GBOfZerosUsingZipFileImpl(get5GBZerosFileGeneratedBy7ZIP(),
                                        "5GB_of_Zeros");
     }
 
-    @Test public void read5GBOfZerosGeneratedByJava7JarUsingInputStream()
+    @Test public void testRead5GBOfZerosGeneratedByJava7JarUsingInputStream()
         throws Throwable {
         read5GBOfZerosImpl(get5GBZerosFileGeneratedByJava7Jar(), "5GB_of_Zeros");
     }
 
-    @Test public void read5GBOfZerosGeneratedByJava7JarUsingZipFile()
+    @Test public void testRead5GBOfZerosGeneratedByJava7JarUsingZipFile()
         throws Throwable {
         read5GBOfZerosUsingZipFileImpl(get5GBZerosFileGeneratedByJava7Jar(),
                                        "5GB_of_Zeros");
     }
 
-    @Test public void read5GBOfZerosGeneratedByPKZipUsingInputStream()
+    @Test public void testRead5GBOfZerosGeneratedByPKZipUsingInputStream()
         throws Throwable {
         read5GBOfZerosImpl(get5GBZerosFileGeneratedByPKZip(),
                            "zip6/5GB_of_Zeros");
     }
 
-    @Test public void read5GBOfZerosGeneratedByPKZipUsingZipFile()
+    @Test public void testRead5GBOfZerosGeneratedByPKZipUsingZipFile()
         throws Throwable {
         read5GBOfZerosUsingZipFileImpl(get5GBZerosFileGeneratedByPKZip(),
                                        "zip6/5GB_of_Zeros");
     }
 
-    @Test public void read5GBOfZerosGeneratedByWinZIPUsingInputStream()
+    @Test public void testRead5GBOfZerosGeneratedByWinZIPUsingInputStream()
         throws Throwable {
         read5GBOfZerosImpl(get5GBZerosFileGeneratedByWinZIP(), "5GB_of_Zeros");
     }
 
-    @Test public void read5GBOfZerosGeneratedByWinZIPUsingZipFile()
+    @Test public void testRead5GBOfZerosGeneratedByWinZIPUsingZipFile()
         throws Throwable {
         read5GBOfZerosUsingZipFileImpl(get5GBZerosFileGeneratedByWinZIP(),
                                        "5GB_of_Zeros");
     }
 
-    @Test public void read5GBOfZerosUsingInputStream() throws Throwable {
+    @Test public void testRead5GBOfZerosUsingInputStream() throws Throwable {
         read5GBOfZerosImpl(get5GBZerosFile(), "5GB_of_Zeros");
     }
 
-    @Test public void read5GBOfZerosUsingZipFile() throws Throwable {
+    @Test public void testRead5GBOfZerosUsingZipFile() throws Throwable {
         read5GBOfZerosUsingZipFileImpl(get5GBZerosFile(), "5GB_of_Zeros");
     }
 
-    @Test public void readSelfGenerated100KFilesUsingZipFile()
+    @Test public void testReadSelfGenerated100KFilesUsingZipFile()
         throws Throwable {
         withTemporaryArchive("readSelfGenerated100KFilesUsingZipFile()",
                              (f, zos) -> {
@@ -2236,68 +2236,68 @@ public class Zip64SupportIT {
         }
     }
 
-    @Test public void write100KFilesFile() throws Throwable {
+    @Test public void testWrite100KFilesFile() throws Throwable {
         withTemporaryArchive("write100KFilesFile", write100KFiles(), true);
     }
 
-    @Test public void write100KFilesFileModeAlways() throws Throwable {
+    @Test public void testWrite100KFilesFileModeAlways() throws Throwable {
         withTemporaryArchive("write100KFilesFileModeAlways",
                              write100KFiles(Zip64Mode.Always), true);
     }
 
-    @Test public void write100KFilesFileModeNever() throws Throwable {
+    @Test public void testWrite100KFilesFileModeNever() throws Throwable {
         withTemporaryArchive("write100KFilesFileModeNever",
                              write100KFilesModeNever, true);
     }
 
-    @Test public void write100KFilesStream() throws Throwable {
+    @Test public void testWrite100KFilesStream() throws Throwable {
         withTemporaryArchive("write100KFilesStream", write100KFiles(), false);
     }
 
-    @Test public void write100KFilesStreamModeAlways() throws Throwable {
+    @Test public void testWrite100KFilesStreamModeAlways() throws Throwable {
         withTemporaryArchive("write100KFilesStreamModeAlways",
                              write100KFiles(Zip64Mode.Always), false);
     }
 
-    @Test public void write100KFilesStreamModeNever() throws Throwable {
+    @Test public void testWrite100KFilesStreamModeNever() throws Throwable {
         withTemporaryArchive("write100KFilesStreamModeNever",
                              write100KFilesModeNever, false);
     }
 
-    @Test public void write3EntriesCreatingBigArchiveFile() throws Throwable {
+    @Test public void testWrite3EntriesCreatingBigArchiveFile() throws Throwable {
         withTemporaryArchive("write3EntriesCreatingBigArchiveFile",
                              write3EntriesCreatingBigArchive(),
                              true);
     }
 
-    @Test public void write3EntriesCreatingBigArchiveFileModeAlways()
+    @Test public void testWrite3EntriesCreatingBigArchiveFileModeAlways()
         throws Throwable {
         withTemporaryArchive("write3EntriesCreatingBigArchiveFileModeAlways",
                              write3EntriesCreatingBigArchive(Zip64Mode.Always),
                              true);
     }
 
-    @Test public void write3EntriesCreatingBigArchiveFileModeNever()
+    @Test public void testWrite3EntriesCreatingBigArchiveFileModeNever()
         throws Throwable {
         withTemporaryArchive("write3EntriesCreatingBigArchiveFileModeNever",
                              write3EntriesCreatingBigArchiveModeNever,
                              true);
     }
 
-    @Test public void write3EntriesCreatingBigArchiveStream() throws Throwable {
+    @Test public void testWrite3EntriesCreatingBigArchiveStream() throws Throwable {
         withTemporaryArchive("write3EntriesCreatingBigArchiveStream",
                              write3EntriesCreatingBigArchive(),
                              false);
     }
 
-    @Test public void write3EntriesCreatingBigArchiveStreamModeAlways()
+    @Test public void testWrite3EntriesCreatingBigArchiveStreamModeAlways()
         throws Throwable {
         withTemporaryArchive("write3EntriesCreatingBigArchiveStreamModeAlways",
                              write3EntriesCreatingBigArchive(Zip64Mode.Always),
                              false);
     }
 
-    @Test public void write3EntriesCreatingBigArchiveStreamModeNever()
+    @Test public void testWrite3EntriesCreatingBigArchiveStreamModeNever()
         throws Throwable {
         withTemporaryArchive("write3EntriesCreatingBigArchiveStreamModeNever",
                              write3EntriesCreatingBigArchiveModeNever,
@@ -2305,7 +2305,7 @@ public class Zip64SupportIT {
     }
 
     @Test
-    public void write3EntriesCreatingManySplitArchiveFileModeAlways()
+    public void testWrite3EntriesCreatingManySplitArchiveFileModeAlways()
             throws Throwable {
         // about 76,293 ZIP split segments will be created
         withTemporaryArchive("write3EntriesCreatingManySplitArchiveFileModeAlways",
@@ -2314,14 +2314,14 @@ public class Zip64SupportIT {
     }
 
     @Test
-    public void write3EntriesCreatingManySplitArchiveFileModeNever()
+    public void testWrite3EntriesCreatingManySplitArchiveFileModeNever()
             throws Throwable {
         withTemporaryArchive("write3EntriesCreatingManySplitArchiveFileModeNever",
                 write3EntriesCreatingBigArchiveModeNever,
                 true, 65536L);
     }
 
-    @Test public void writeAndRead5GBOfZerosUsingZipFile() throws Throwable {
+    @Test public void testWriteAndRead5GBOfZerosUsingZipFile() throws Throwable {
         File f = null;
         try {
             f = write5GBZerosFile("writeAndRead5GBOfZerosUsingZipFile");
@@ -2333,28 +2333,28 @@ public class Zip64SupportIT {
         }
     }
 
-    @Test public void writeBigDeflatedEntryKnownSizeToFile()
+    @Test public void testWriteBigDeflatedEntryKnownSizeToFile()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToFile",
                              writeBigDeflatedEntryToFile(true),
                              true);
     }
 
-    @Test public void writeBigDeflatedEntryKnownSizeToFileModeAlways()
+    @Test public void testWriteBigDeflatedEntryKnownSizeToFileModeAlways()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToFileModeAlways",
                              writeBigDeflatedEntryToFile(true, Zip64Mode.Always),
                              true);
     }
 
-    @Test public void writeBigDeflatedEntryKnownSizeToFileModeNever()
+    @Test public void testWriteBigDeflatedEntryKnownSizeToFileModeNever()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToFileModeNever",
                              writeBigDeflatedEntryToFileModeNever(true),
                              true);
     }
 
-    @Test public void writeBigDeflatedEntryKnownSizeToStream()
+    @Test public void testWriteBigDeflatedEntryKnownSizeToStream()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToStream",
                              writeBigDeflatedEntryToStream(true,
@@ -2362,7 +2362,7 @@ public class Zip64SupportIT {
                              false);
     }
 
-    @Test public void writeBigDeflatedEntryKnownSizeToStreamModeAlways()
+    @Test public void testWriteBigDeflatedEntryKnownSizeToStreamModeAlways()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToStreamModeAlways",
                              writeBigDeflatedEntryToStream(true,
@@ -2370,7 +2370,7 @@ public class Zip64SupportIT {
                              false);
     }
 
-    @Test public void writeBigDeflatedEntryKnownSizeToStreamModeNever()
+    @Test public void testWriteBigDeflatedEntryKnownSizeToStreamModeNever()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryKnownSizeToStreamModeNever",
                 (f, zos) -> {
@@ -2386,14 +2386,14 @@ public class Zip64SupportIT {
                 }, false);
     }
 
-    @Test public void writeBigDeflatedEntryUnknownSizeToFile()
+    @Test public void testWriteBigDeflatedEntryUnknownSizeToFile()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryUnknownSizeToFile",
                              writeBigDeflatedEntryToFile(false),
                              true);
     }
 
-    @Test public void writeBigDeflatedEntryUnknownSizeToFileModeAlways()
+    @Test public void testWriteBigDeflatedEntryUnknownSizeToFileModeAlways()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryUnknownSizeToFileModeAlways",
                              writeBigDeflatedEntryToFile(false,
@@ -2401,14 +2401,14 @@ public class Zip64SupportIT {
                              true);
     }
 
-    @Test public void writeBigDeflatedEntryUnknownSizeToFileModeNever()
+    @Test public void testWriteBigDeflatedEntryUnknownSizeToFileModeNever()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryUnknownSizeToFileModeNever",
                              writeBigDeflatedEntryToFileModeNever(false),
                              true);
     }
 
-    @Test public void writeBigDeflatedEntryUnknownSizeToStream()
+    @Test public void testWriteBigDeflatedEntryUnknownSizeToStream()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryUnknownSizeToStream",
                              writeBigDeflatedEntryUnknownSizeToStream(Zip64Mode
@@ -2416,7 +2416,7 @@ public class Zip64SupportIT {
                              false);
     }
 
-    @Test public void writeBigDeflatedEntryUnknownSizeToStreamModeAlways()
+    @Test public void testWriteBigDeflatedEntryUnknownSizeToStreamModeAlways()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryUnknownSizeToStreamModeAlways",
                              writeBigDeflatedEntryToStream(false,
@@ -2424,7 +2424,7 @@ public class Zip64SupportIT {
                              false);
     }
 
-    @Test public void writeBigDeflatedEntryUnknownSizeToStreamModeNever()
+    @Test public void testWriteBigDeflatedEntryUnknownSizeToStreamModeNever()
         throws Throwable {
         withTemporaryArchive("writeBigDeflatedEntryUnknownSizeToStreamModeNever",
                              writeBigDeflatedEntryUnknownSizeToStream(Zip64Mode
@@ -2432,20 +2432,20 @@ public class Zip64SupportIT {
                              false);
     }
 
-    @Test public void writeBigStoredEntryKnownSizeToFile() throws Throwable {
+    @Test public void testWriteBigStoredEntryKnownSizeToFile() throws Throwable {
         withTemporaryArchive("writeBigStoredEntryKnownSizeToFile",
                              writeBigStoredEntry(true),
                              true);
     }
 
-    @Test public void writeBigStoredEntryKnownSizeToFileModeAlways()
+    @Test public void testWriteBigStoredEntryKnownSizeToFileModeAlways()
         throws Throwable {
         withTemporaryArchive("writeBigStoredEntryKnownSizeToFileModeAlways",
                              writeBigStoredEntry(true, Zip64Mode.Always),
                              true);
     }
 
-    @Test public void writeBigStoredEntryKnownSizeToFileModeNever()
+    @Test public void testWriteBigStoredEntryKnownSizeToFileModeNever()
         throws Throwable {
         withTemporaryArchive("writeBigStoredEntryKnownSizeToFileModeNever",
                              writeBigStoredEntryModeNever(true),
@@ -2456,59 +2456,59 @@ public class Zip64SupportIT {
      * No Compression + Stream => sizes must be known before data is
      * written.
      */
-    @Test public void writeBigStoredEntryToStream() throws Throwable {
+    @Test public void testWriteBigStoredEntryToStream() throws Throwable {
         withTemporaryArchive("writeBigStoredEntryToStream",
                              writeBigStoredEntry(true),
                              false);
     }
 
-    @Test public void writeBigStoredEntryToStreamModeAlways() throws Throwable {
+    @Test public void testWriteBigStoredEntryToStreamModeAlways() throws Throwable {
         withTemporaryArchive("writeBigStoredEntryToStreamModeAlways",
                              writeBigStoredEntry(true, Zip64Mode.Always),
                              false);
     }
 
-    @Test public void writeBigStoredEntryToStreamModeNever() throws Throwable {
+    @Test public void testWriteBigStoredEntryToStreamModeNever() throws Throwable {
         withTemporaryArchive("writeBigStoredEntryToStreamModeNever",
                              writeBigStoredEntryModeNever(true),
                              false);
     }
 
-    @Test public void writeBigStoredEntryUnknownSizeToFile() throws Throwable {
+    @Test public void testWriteBigStoredEntryUnknownSizeToFile() throws Throwable {
         withTemporaryArchive("writeBigStoredEntryUnknownSizeToFile",
                              writeBigStoredEntry(false),
                              true);
     }
 
-    @Test public void writeBigStoredEntryUnknownSizeToFileModeAlways()
+    @Test public void testWriteBigStoredEntryUnknownSizeToFileModeAlways()
         throws Throwable {
         withTemporaryArchive("writeBigStoredEntryUnknownSizeToFileModeAlways",
                              writeBigStoredEntry(false, Zip64Mode.Always),
                              true);
     }
 
-    @Test public void writeBigStoredEntryUnknownSizeToFileModeNever()
+    @Test public void testWriteBigStoredEntryUnknownSizeToFileModeNever()
         throws Throwable {
         withTemporaryArchive("writeBigStoredEntryUnknownSizeToFileModeNever",
                              writeBigStoredEntryModeNever(false),
                              true);
     }
 
-    @Test public void writeSmallDeflatedEntryKnownSizeToFile()
+    @Test public void testWriteSmallDeflatedEntryKnownSizeToFile()
         throws Throwable {
         withTemporaryArchive("writeSmallDeflatedEntryKnownSizeToFile",
                              writeSmallDeflatedEntryToFile(true),
                              true);
     }
 
-    @Test public void writeSmallDeflatedEntryKnownSizeToFileModeAlways()
+    @Test public void testWriteSmallDeflatedEntryKnownSizeToFileModeAlways()
         throws Throwable {
         withTemporaryArchive("writeSmallDeflatedEntryKnownSizeToFileModeAlways",
                              writeSmallDeflatedEntryToFileModeAlways(true),
                              true);
     }
 
-    @Test public void writeSmallDeflatedEntryKnownSizeToFileModeNever()
+    @Test public void testWriteSmallDeflatedEntryKnownSizeToFileModeNever()
         throws Throwable {
         withTemporaryArchive("writeSmallDeflatedEntryKnownSizeToFileModeNever",
                              writeSmallDeflatedEntryToFile(true,
@@ -2516,7 +2516,7 @@ public class Zip64SupportIT {
                              true);
     }
 
-    @Test public void writeSmallDeflatedEntryKnownSizeToStream()
+    @Test public void testWriteSmallDeflatedEntryKnownSizeToStream()
         throws Throwable {
         withTemporaryArchive("writeSmallDeflatedEntryKnownSizeToStream",
                              writeSmallDeflatedEntryToStream(true,
@@ -2524,14 +2524,14 @@ public class Zip64SupportIT {
                              false);
     }
 
-    @Test public void writeSmallDeflatedEntryKnownSizeToStreamModeAlways()
+    @Test public void testWriteSmallDeflatedEntryKnownSizeToStreamModeAlways()
         throws Throwable {
         withTemporaryArchive("writeSmallDeflatedEntryKnownSizeToStreamModeAlways",
                              writeSmallDeflatedEntryToStreamModeAlways(true),
                              false);
     }
 
-    @Test public void writeSmallDeflatedEntryKnownSizeToStreamModeNever()
+    @Test public void testWriteSmallDeflatedEntryKnownSizeToStreamModeNever()
         throws Throwable {
         withTemporaryArchive("writeSmallDeflatedEntryKnownSizeToStreamModeNever",
                              writeSmallDeflatedEntryToStream(true,
@@ -2539,21 +2539,21 @@ public class Zip64SupportIT {
                              false);
     }
 
-    @Test public void writeSmallDeflatedEntryUnknownSizeToFile()
+    @Test public void testWriteSmallDeflatedEntryUnknownSizeToFile()
         throws Throwable {
         withTemporaryArchive("writeSmallDeflatedEntryUnknownSizeToFile",
                              writeSmallDeflatedEntryToFile(false),
                              true);
     }
 
-    @Test public void writeSmallDeflatedEntryUnknownSizeToFileModeAlways()
+    @Test public void testWriteSmallDeflatedEntryUnknownSizeToFileModeAlways()
         throws Throwable {
         withTemporaryArchive("writeSmallDeflatedEntryUnknownSizeToFileModeAlways",
                              writeSmallDeflatedEntryToFileModeAlways(false),
                              true);
     }
 
-    @Test public void writeSmallDeflatedEntryUnknownSizeToFileModeNever()
+    @Test public void testWriteSmallDeflatedEntryUnknownSizeToFileModeNever()
         throws Throwable {
         withTemporaryArchive("writeSmallDeflatedEntryUnknownSizeToFileModeNever",
                              writeSmallDeflatedEntryToFile(false,
@@ -2561,7 +2561,7 @@ public class Zip64SupportIT {
                              true);
     }
 
-    @Test public void writeSmallDeflatedEntryUnknownSizeToStream()
+    @Test public void testWriteSmallDeflatedEntryUnknownSizeToStream()
         throws Throwable {
         withTemporaryArchive("writeSmallDeflatedEntryUnknownSizeToStream",
                              writeSmallDeflatedEntryToStream(false,
@@ -2569,14 +2569,14 @@ public class Zip64SupportIT {
                              false);
     }
 
-    @Test public void writeSmallDeflatedEntryUnknownSizeToStreamModeAlways()
+    @Test public void testWriteSmallDeflatedEntryUnknownSizeToStreamModeAlways()
         throws Throwable {
         withTemporaryArchive("writeSmallDeflatedEntryUnknownSizeToStreamModeAlways",
                              writeSmallDeflatedEntryToStreamModeAlways(false),
                              false);
     }
 
-    @Test public void writeSmallDeflatedEntryUnknownSizeToStreamModeNever()
+    @Test public void testWriteSmallDeflatedEntryUnknownSizeToStreamModeNever()
         throws Throwable {
         withTemporaryArchive("writeSmallDeflatedEntryUnknownSizeToStreamModeNever",
                              writeSmallDeflatedEntryToStream(false,
@@ -2584,59 +2584,59 @@ public class Zip64SupportIT {
                              false);
     }
 
-    @Test public void writeSmallStoredEntryKnownSizeToFile() throws Throwable {
+    @Test public void testWriteSmallStoredEntryKnownSizeToFile() throws Throwable {
         withTemporaryArchive("writeSmallStoredEntryKnownSizeToFile",
                              writeSmallStoredEntry(true),
                              true);
     }
 
-    @Test public void writeSmallStoredEntryKnownSizeToFileModeAlways()
+    @Test public void testWriteSmallStoredEntryKnownSizeToFileModeAlways()
         throws Throwable {
         withTemporaryArchive("writeSmallStoredEntryKnownSizeToFileModeAlways",
                              writeSmallStoredEntryModeAlways(true),
                              true);
     }
 
-    @Test public void writeSmallStoredEntryKnownSizeToFileModeNever()
+    @Test public void testWriteSmallStoredEntryKnownSizeToFileModeNever()
         throws Throwable {
         withTemporaryArchive("writeSmallStoredEntryKnownSizeToFileModeNever",
                              writeSmallStoredEntry(true, Zip64Mode.Never),
                              true);
     }
 
-    @Test public void writeSmallStoredEntryToStream() throws Throwable {
+    @Test public void testWriteSmallStoredEntryToStream() throws Throwable {
         withTemporaryArchive("writeSmallStoredEntryToStream",
                              writeSmallStoredEntry(true),
                              false);
     }
 
-    @Test public void writeSmallStoredEntryToStreamModeAlways()
+    @Test public void testWriteSmallStoredEntryToStreamModeAlways()
         throws Throwable {
         withTemporaryArchive("writeSmallStoredEntryToStreamModeAlways",
                              writeSmallStoredEntryModeAlways(true),
                              false);
     }
 
-    @Test public void writeSmallStoredEntryToStreamModeNever() throws Throwable {
+    @Test public void testWriteSmallStoredEntryToStreamModeNever() throws Throwable {
         withTemporaryArchive("writeSmallStoredEntryToStreamModeNever",
                              writeSmallStoredEntry(true, Zip64Mode.Never),
                              false);
     }
 
-    @Test public void writeSmallStoredEntryUnknownSizeToFile() throws Throwable {
+    @Test public void testWriteSmallStoredEntryUnknownSizeToFile() throws Throwable {
         withTemporaryArchive("writeSmallStoredEntryUnknownSizeToFile",
                              writeSmallStoredEntry(false),
                              true);
     }
 
-    @Test public void writeSmallStoredEntryUnknownSizeToFileModeAlways()
+    @Test public void testWriteSmallStoredEntryUnknownSizeToFileModeAlways()
         throws Throwable {
         withTemporaryArchive("writeSmallStoredEntryUnknownSizeToFileModeAlways",
                              writeSmallStoredEntryModeAlways(false),
                              true);
     }
 
-    @Test public void writeSmallStoredEntryUnknownSizeToFileModeNever()
+    @Test public void testWriteSmallStoredEntryUnknownSizeToFileModeNever()
         throws Throwable {
         withTemporaryArchive("writeSmallStoredEntryUnknownSizeToFileModeNever",
                              writeSmallStoredEntry(false, Zip64Mode.Never),

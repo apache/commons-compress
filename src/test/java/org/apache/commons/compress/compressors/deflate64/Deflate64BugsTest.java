@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 public class Deflate64BugsTest {
 
     @Test
-    public void readBeyondMemoryException() throws Exception {
+    public void testReadBeyondMemoryException() throws Exception {
         try (ZipFile zfile = new ZipFile(getFile("COMPRESS-380/COMPRESS-380-readbeyondmemory.zip"))) {
             final Enumeration<ZipArchiveEntry> entries = zfile.getEntries();
             while (entries.hasMoreElements()) {

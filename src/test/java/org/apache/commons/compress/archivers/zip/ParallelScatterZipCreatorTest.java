@@ -96,20 +96,20 @@ public class ParallelScatterZipCreatorTest {
     }
 
     @Test
-    public void callableApiUsingSubmit() throws Exception {
+    public void testCallableApiUsingSubmit() throws Exception {
         result = File.createTempFile("parallelScatterGather2", "");
         callableApi(zipCreator -> zipCreator::submit);
     }
 
     @Test
-    public void callableApiUsingSubmitStreamAwareCallable() throws Exception {
+    public void testCallableApiUsingSubmitStreamAwareCallable() throws Exception {
         result = File.createTempFile("parallelScatterGather3", "");
         callableApi(zipCreator -> zipCreator::submitStreamAwareCallable);
     }
 
 
     @Test
-    public void callableApiWithHighestLevelUsingSubmitStreamAwareCallable() throws Exception {
+    public void testCallableApiWithHighestLevelUsingSubmitStreamAwareCallable() throws Exception {
         result = File.createTempFile("parallelScatterGather5", "");
         callableApiWithTestFiles(zipCreator -> zipCreator::submitStreamAwareCallable, Deflater.BEST_COMPRESSION);
     }
@@ -144,7 +144,7 @@ public class ParallelScatterZipCreatorTest {
     }
 
     @Test
-    public void callableWithLowestLevelApiUsingSubmit() throws Exception {
+    public void testCallableWithLowestLevelApiUsingSubmit() throws Exception {
         result = File.createTempFile("parallelScatterGather4", "");
         callableApiWithTestFiles(zipCreator -> zipCreator::submit, Deflater.NO_COMPRESSION);
     }
@@ -156,7 +156,7 @@ public class ParallelScatterZipCreatorTest {
     }
 
     @Test
-    public void concurrentCustomTempFolder()
+    public void testConcurrentCustomTempFolder()
             throws Exception {
         result = File.createTempFile("parallelScatterGather1", "");
         final ParallelScatterZipCreator zipCreator;
@@ -180,7 +180,7 @@ public class ParallelScatterZipCreatorTest {
     }
 
     @Test
-    public void concurrentDefaultTempFolder() throws Exception {
+    public void testConcurrentDefaultTempFolder() throws Exception {
         result = File.createTempFile("parallelScatterGather1", "");
         final ParallelScatterZipCreator zipCreator;
         final Map<String, byte[]> entries;

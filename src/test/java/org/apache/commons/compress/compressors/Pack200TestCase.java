@@ -106,12 +106,12 @@ public final class Pack200TestCase extends AbstractTestCase {
     }
 
     @Test
-    public void multiByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
+    public void testMultiByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
         multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
     }
 
     @Test
-    public void multiByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
+    public void testMultiByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
         multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
     }
 
@@ -125,12 +125,12 @@ public final class Pack200TestCase extends AbstractTestCase {
     }
 
     @Test
-    public void singleByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
+    public void testSingleByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
         singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
     }
 
     @Test
-    public void singleByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
+    public void testSingleByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
         singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
     }
 

@@ -42,7 +42,7 @@ import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
 public class TarMemoryFileSystemTest {
 
     @Test
-    public void checkUserInformationInTarEntry() throws IOException, ArchiveException {
+    public void testCheckUserInformationInTarEntry() throws IOException, ArchiveException {
         final String user = "commons";
         final String group = "compress";
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().addUser(user).addGroup(group).build()) {

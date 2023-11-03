@@ -46,7 +46,7 @@ public class OsgiITest {
     private BundleContext ctx;
 
     @Test
-    public void canLoadBundle() {
+    public void testCanLoadBundle() {
         assertNotNull("Expected to find bundle " + EXPECTED_BUNDLE_NAME, loadBundle());
     }
 
@@ -79,7 +79,7 @@ public class OsgiITest {
     }
 
     @Test
-    public void properlyDetectsRunningInsideOsgiEnv() throws Exception {
+    public void testProperlyDetectsRunningInsideOsgiEnv() throws Exception {
         final Class<?> osgiUtils = loadBundle().loadClass("org.apache.commons.compress.utils.OsgiUtils");
         assertNotNull("Can load OsgiUtils via bundle", osgiUtils);
 

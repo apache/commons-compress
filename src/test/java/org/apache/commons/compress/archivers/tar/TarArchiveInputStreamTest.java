@@ -63,13 +63,13 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void datePriorToEpochInGNUFormat() throws Exception {
+    public void testDatePriorToEpochInGNUFormat() throws Exception {
         datePriorToEpoch("preepoch-star.tar");
     }
 
 
     @Test
-    public void datePriorToEpochInPAXFormat() throws Exception {
+    public void testDatePriorToEpochInPAXFormat() throws Exception {
         datePriorToEpoch("preepoch-posix.tar");
     }
 
@@ -87,7 +87,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.tar");
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
@@ -99,7 +99,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void readsArchiveCompletely_COMPRESS245() {
+    public void testReadsArchiveCompletely_COMPRESS245() {
         try (InputStream is = TarArchiveInputStreamTest.class.getResourceAsStream("/COMPRESS-245.tar.gz")) {
             final InputStream gin = new GZIPInputStream(is);
             try (TarArchiveInputStream tar = new TarArchiveInputStream(gin)) {
@@ -117,7 +117,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsArchivesWithNegativeSizes() throws Exception {
+    public void testRejectsArchivesWithNegativeSizes() throws Exception {
         try (InputStream in = newInputStream("COMPRESS-569.tar"); TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             getNextEntryUntilIOException(archive);
         }
@@ -127,7 +127,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
      * This test ensures the implementation is reading the padded last block if a tool has added one to an archive
      */
     @Test
-    public void shouldConsumeArchiveCompletely() throws Exception {
+    public void testShouldConsumeArchiveCompletely() throws Exception {
         try (InputStream is = TarArchiveInputStreamTest.class.getResourceAsStream("/archive_with_trailer.tar");
              TarArchiveInputStream tar = new TarArchiveInputStream(is)) {
             while (tar.getNextTarEntry() != null) {
@@ -141,7 +141,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void shouldReadBigGid() throws Exception {
+    public void testShouldReadBigGid() throws Exception {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
             tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
@@ -164,7 +164,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-324">COMPRESS-324</a>
      */
     @Test
-    public void shouldReadGNULongNameEntryWithWrongName() throws Exception {
+    public void testShouldReadGNULongNameEntryWithWrongName() throws Exception {
         try (TarArchiveInputStream is = getTestStream("/COMPRESS-324.tar")) {
             final TarArchiveEntry entry = is.getNextTarEntry();
             assertEquals("1234567890123456789012345678901234567890123456789012345678901234567890"
@@ -176,7 +176,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void shouldThrowAnExceptionOnTruncatedEntries() throws Exception {
+    public void testShouldThrowAnExceptionOnTruncatedEntries() throws Exception {
         final File dir = mkdir("COMPRESS-279");
         try (TarArchiveInputStream is = getTestStream("/COMPRESS-279.tar")) {
             assertThrows(IOException.class, () -> {
@@ -194,7 +194,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void shouldUseSpecifiedEncodingWhenReadingGNULongNames()
+    public void testShouldUseSpecifiedEncodingWhenReadingGNULongNames()
         throws Exception {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         final String encoding = CharsetNames.UTF_16;
@@ -217,7 +217,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
         }
     }
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (InputStream in = newInputStream("bla.tar");
              TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
@@ -231,7 +231,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-417">COMPRESS-417</a>
      */
     @Test
-    public void skipsDevNumbersWhenEntryIsNoDevice() throws Exception {
+    public void testSkipsDevNumbersWhenEntryIsNoDevice() throws Exception {
         try (TarArchiveInputStream is = getTestStream("/COMPRESS-417.tar")) {
             assertEquals("test1.xml", is.getNextTarEntry().getName());
             assertEquals(TarConstants.LF_NORMAL, is.getCurrentEntry().getLinkFlag());
@@ -245,7 +245,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-355">COMPRESS-355</a>
      */
     @Test
-    public void survivesBlankLinesInPaxHeader() throws Exception {
+    public void testSurvivesBlankLinesInPaxHeader() throws Exception {
         try (TarArchiveInputStream is = getTestStream("/COMPRESS-355.tar")) {
             final TarArchiveEntry entry = is.getNextTarEntry();
             assertEquals("package/package.json", entry.getName());
@@ -258,7 +258,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-356">COMPRESS-356</a>
      */
     @Test
-    public void survivesPaxHeaderWithNameEndingInSlash() throws Exception {
+    public void testSurvivesPaxHeaderWithNameEndingInSlash() throws Exception {
         try (TarArchiveInputStream is = getTestStream("/COMPRESS-356.tar")) {
             final TarArchiveEntry entry = is.getNextTarEntry();
             assertEquals("package/package.json", entry.getName());
@@ -428,7 +428,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void workaroundForBrokenTimeHeader() throws Exception {
+    public void testWorkaroundForBrokenTimeHeader() throws Exception {
         try (TarArchiveInputStream in = new TarArchiveInputStream(newInputStream("simple-aix-native-tar.tar"))) {
             TarArchiveEntry tae = in.getNextTarEntry();
             tae = in.getNextTarEntry();

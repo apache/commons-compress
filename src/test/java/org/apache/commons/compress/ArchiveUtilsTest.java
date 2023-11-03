@@ -50,20 +50,20 @@ public class ArchiveUtilsTest extends AbstractTestCase {
     }
 
     @Test
-    public void sanitizeLeavesShortStringsAlone() {
+    public void testSanitizeLeavesShortStringsAlone() {
         final String input = "012345678901234567890123456789012345678901234567890123456789";
         assertEquals(input, ArchiveUtils.sanitize(input));
     }
 
     @Test
-    public void sanitizeRemovesUnprintableCharacters() {
+    public void testSanitizeRemovesUnprintableCharacters() {
         final String input = "\b12345678901234567890123456789012345678901234567890123456789";
         final String expected = "?12345678901234567890123456789012345678901234567890123456789";
         assertEquals(expected, ArchiveUtils.sanitize(input));
     }
 
     @Test
-    public void sanitizeShortensString() {
+    public void testSanitizeShortensString() {
         // @formatter:off
         final String input = "012345678901234567890123456789012345678901234567890123456789"
             + "012345678901234567890123456789012345678901234567890123456789"

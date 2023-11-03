@@ -63,7 +63,7 @@ public class ExpanderTest extends AbstractTestCase {
     }
 
     @Test
-    public void fileCantEscapeDoubleDotPath() throws IOException, ArchiveException {
+    public void testFileCantEscapeDoubleDotPath() throws IOException, ArchiveException {
         setupZip("../foo");
         try (ZipFile f = new ZipFile(archive)) {
             assertThrows(IOException.class, () -> new Expander().expand(f, resultDir));
@@ -71,7 +71,7 @@ public class ExpanderTest extends AbstractTestCase {
     }
 
     @Test
-    public void fileCantEscapeDoubleDotPathWithSimilarSibling() throws IOException, ArchiveException {
+    public void testFileCantEscapeDoubleDotPathWithSimilarSibling() throws IOException, ArchiveException {
         final String sibling = resultDir.getName() + "x";
         final File s = new File(resultDir.getParentFile(), sibling);
         assumeFalse(s.exists());
@@ -89,7 +89,7 @@ public class ExpanderTest extends AbstractTestCase {
     }
 
     @Test
-    public void fileCantEscapeViaAbsolutePath() throws IOException, ArchiveException {
+    public void testFileCantEscapeViaAbsolutePath() throws IOException, ArchiveException {
         setupZip("/tmp/foo");
         try (ZipFile f = new ZipFile(archive)) {
             assertThrows(IOException.class, () -> new Expander().expand(f, resultDir));
@@ -210,7 +210,7 @@ public class ExpanderTest extends AbstractTestCase {
     }
 
     @Test
-    public void sevenZChannelVersion() throws IOException, ArchiveException {
+    public void testSevenZChannelVersion() throws IOException, ArchiveException {
         setup7z();
         try (SeekableByteChannel c = FileChannel.open(archive.toPath(), StandardOpenOption.READ)) {
             new Expander().expand("7z", c, resultDir);
@@ -219,7 +219,7 @@ public class ExpanderTest extends AbstractTestCase {
     }
 
     @Test
-    public void sevenZFileVersion() throws IOException {
+    public void testSevenZFileVersion() throws IOException {
         setup7z();
         try (SevenZFile f = new SevenZFile(archive)) {
             new Expander().expand(f, resultDir);
@@ -228,7 +228,7 @@ public class ExpanderTest extends AbstractTestCase {
     }
 
     @Test
-    public void sevenZInputStreamVersion() throws IOException {
+    public void testSevenZInputStreamVersion() throws IOException {
         setup7z();
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
             assertThrows(StreamingNotSupportedException.class, () -> new Expander().expand("7z", i, resultDir));
@@ -236,7 +236,7 @@ public class ExpanderTest extends AbstractTestCase {
     }
 
     @Test
-    public void sevenZInputStreamVersionWithAutoDetection() throws IOException {
+    public void testSevenZInputStreamVersionWithAutoDetection() throws IOException {
         setup7z();
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
             assertThrows(StreamingNotSupportedException.class, () -> new Expander().expand(i, resultDir));
@@ -244,14 +244,14 @@ public class ExpanderTest extends AbstractTestCase {
     }
 
     @Test
-    public void sevenZTwoFileVersion() throws IOException, ArchiveException {
+    public void testSevenZTwoFileVersion() throws IOException, ArchiveException {
         setup7z();
         new Expander().expand("7z", archive, resultDir);
         verifyTargetDir();
     }
 
     @Test
-    public void sevenZTwoFileVersionWithAutoDetection() throws IOException, ArchiveException {
+    public void testSevenZTwoFileVersionWithAutoDetection() throws IOException, ArchiveException {
         setup7z();
         new Expander().expand(archive, resultDir);
         verifyTargetDir();
@@ -284,7 +284,7 @@ public class ExpanderTest extends AbstractTestCase {
     }
 
     @Test
-    public void zipFileVersion() throws IOException, ArchiveException {
+    public void testZipFileVersion() throws IOException, ArchiveException {
         setupZip();
         try (ZipFile f = new ZipFile(archive)) {
             new Expander().expand(f, resultDir);

@@ -47,7 +47,7 @@ public class ScatterZipOutputStreamTest {
     }
 
     @Test
-    public void putArchiveEntry() throws Exception {
+    public void testPutArchiveEntry() throws Exception {
         scatterFile = File.createTempFile("scattertest", ".notzip");
         final byte[] B_PAYLOAD = "RBBBBBBS".getBytes();
         final byte[] A_PAYLOAD = "XAAY".getBytes();

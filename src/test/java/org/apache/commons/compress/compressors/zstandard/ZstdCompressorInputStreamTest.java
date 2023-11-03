@@ -39,7 +39,7 @@ import com.github.luben.zstd.RecyclingBufferPool;
 public class ZstdCompressorInputStreamTest extends AbstractTestCase {
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("zstandard.testdata.zst");
         final byte[] buf = new byte[2];
         try (InputStream is = Files.newInputStream(input.toPath());
@@ -51,7 +51,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void shouldBeAbleToSkipAByte() throws IOException {
+    public void testShouldBeAbleToSkipAByte() throws IOException {
         final File input = getFile("zstandard.testdata.zst");
         try (InputStream is = Files.newInputStream(input.toPath());
                 ZstdCompressorInputStream in = new ZstdCompressorInputStream(is)) {
@@ -60,7 +60,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("zstandard.testdata.zst");
         try (InputStream is = Files.newInputStream(input.toPath());
                 ZstdCompressorInputStream in = new ZstdCompressorInputStream(is)) {
@@ -71,7 +71,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void singleByteReadWorksAsExpected() throws IOException {
+    public void testSingleByteReadWorksAsExpected() throws IOException {
 
         final File input = getFile("zstandard.testdata.zst");
 

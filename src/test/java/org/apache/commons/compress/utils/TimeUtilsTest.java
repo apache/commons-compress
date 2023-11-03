@@ -125,7 +125,7 @@ public class TimeUtilsTest {
     }
 
     @Test
-    public void shouldCheckWhetherTimeCanBeRepresentedAsUnixTime() {
+    public void testShouldCheckWhetherTimeCanBeRepresentedAsUnixTime() {
         assertTrue(TimeUtils.isUnixTime(null));
         assertTrue(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2022-12-27T12:45:22Z"))));
         assertTrue(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2038-01-19T03:14:07Z"))));
@@ -194,12 +194,12 @@ public class TimeUtilsTest {
     }
 
     @Test
-    public void shouldConvertNullDateToNullFileTime() {
+    public void testShouldConvertNullDateToNullFileTime() {
         assertNull(toFileTime(null));
     }
 
     @Test
-    public void shouldConvertNullFileTimeToNullDate() {
+    public void testShouldConvertNullFileTimeToNullDate() {
         assertNull(toDate(null));
     }
 

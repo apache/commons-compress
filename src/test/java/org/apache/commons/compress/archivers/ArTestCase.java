@@ -279,7 +279,7 @@ public final class ArTestCase extends AbstractTestCase {
     // TODO: revisit - does AR not support storing directories?
     @Disabled
     @Test
-    public void XtestDirectoryEntryFromFile() throws Exception {
+    public void testXtestDirectoryEntryFromFile() throws Exception {
         final File[] tmp = createTempDirAndFile();
         File archive = null;
         archive = File.createTempFile("test.", ".ar", tmp[0]);
@@ -312,7 +312,7 @@ public final class ArTestCase extends AbstractTestCase {
     // TODO: revisit - does AR not support storing directories?
     @Disabled
     @Test
-    public void XtestExplicitDirectoryEntry() throws Exception {
+    public void testXtestExplicitDirectoryEntry() throws Exception {
         final File[] tmp = createTempDirAndFile();
         File archive = null;
         archive = File.createTempFile("test.", ".ar", tmp[0]);

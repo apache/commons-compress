@@ -44,7 +44,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 public final class GZipTestCase extends AbstractTestCase {
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tgz");
         final byte[] buf = new byte[2];
         try (InputStream is = Files.newInputStream(input.toPath());
@@ -56,7 +56,7 @@ public final class GZipTestCase extends AbstractTestCase {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tgz");
         try (InputStream is = Files.newInputStream(input.toPath());
                 final GzipCompressorInputStream in = new GzipCompressorInputStream(is)) {

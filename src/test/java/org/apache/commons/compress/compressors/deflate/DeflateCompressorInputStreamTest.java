@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 public class DeflateCompressorInputStreamTest {
 
     @Test
-    public void availableShouldReturnNonZero() throws IOException {
+    public void testAvailableShouldReturnNonZero() throws IOException {
         try (InputStream is = Files.newInputStream(AbstractTestCase.getPath("bla.tar.deflatez"));
                 DeflateCompressorInputStream in = new DeflateCompressorInputStream(is)) {
             assertTrue(in.available() > 0);
@@ -40,7 +40,7 @@ public class DeflateCompressorInputStreamTest {
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final byte[] buf = new byte[2];
         try (InputStream is = Files.newInputStream(AbstractTestCase.getPath("bla.tar.deflatez"));
                 DeflateCompressorInputStream in = new DeflateCompressorInputStream(is)) {
@@ -51,7 +51,7 @@ public class DeflateCompressorInputStreamTest {
     }
 
     @Test
-    public void shouldBeAbleToSkipAByte() throws IOException {
+    public void testShouldBeAbleToSkipAByte() throws IOException {
         try (InputStream is = Files.newInputStream(AbstractTestCase.getPath("bla.tar.deflatez"));
                 DeflateCompressorInputStream in = new DeflateCompressorInputStream(is)) {
             assertEquals(1, in.skip(1));
@@ -59,7 +59,7 @@ public class DeflateCompressorInputStreamTest {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         try (InputStream is = Files.newInputStream(AbstractTestCase.getPath("bla.tar.deflatez"));
                 DeflateCompressorInputStream in = new DeflateCompressorInputStream(is)) {
             IOUtils.toByteArray(in);
@@ -69,7 +69,7 @@ public class DeflateCompressorInputStreamTest {
     }
 
     @Test
-    public void singleByteReadWorksAsExpected() throws IOException {
+    public void testSingleByteReadWorksAsExpected() throws IOException {
         try (InputStream is = Files.newInputStream(AbstractTestCase.getPath("bla.tar.deflatez"));
                 DeflateCompressorInputStream in = new DeflateCompressorInputStream(is)) {
             // tar header starts with file name "test1.xml"

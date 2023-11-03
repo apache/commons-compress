@@ -62,17 +62,17 @@ public class BigFilesIT extends AbstractTestCase {
     }
 
     @Test
-    public void readFileBiggerThan8GBytePosix() throws Exception {
+    public void testReadFileBiggerThan8GBytePosix() throws Exception {
         readFileBiggerThan8GByte("8.posix.tar.gz");
     }
 
     @Test
-    public void readFileBiggerThan8GByteStar() throws Exception {
+    public void testReadFileBiggerThan8GByteStar() throws Exception {
         readFileBiggerThan8GByte("8.star.tar.gz");
     }
 
     @Test
-    public void readFileHeadersOfArchiveBiggerThan8GByte() throws Exception {
+    public void testReadFileHeadersOfArchiveBiggerThan8GByte() throws Exception {
         try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath("8.posix.tar.gz")));
              GzipCompressorInputStream gzin = new GzipCompressorInputStream(in);
              TarArchiveInputStream tin = new TarArchiveInputStream(gzin)) {

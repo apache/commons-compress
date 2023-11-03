@@ -53,7 +53,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void draconicThrowsOnUnparseableExtraData() throws Exception {
+    public void testDraconicThrowsOnUnparseableExtraData() throws Exception {
         final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
         final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
         ze.setExtraFields(extraFields);
@@ -64,7 +64,7 @@ public class ZipArchiveEntryTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-379"
      */
     @Test
-    public void isUnixSymlinkIsFalseIfMoreThanOneFlagIsSet() throws Exception {
+    public void testIsUnixSymlinkIsFalseIfMoreThanOneFlagIsSet() throws Exception {
         try (ZipFile zf = new ZipFile(getFile("COMPRESS-379.jar"))) {
             final ZipArchiveEntry ze = zf.getEntry("META-INF/maven/");
             assertFalse(ze.isUnixSymlink());
@@ -72,7 +72,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void onlyParseableLenientExcludesUnparseableExtraData() throws Exception {
+    public void testOnlyParseableLenientExcludesUnparseableExtraData() throws Exception {
         final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
         final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
         ze.setExtraFields(extraFields);
@@ -81,7 +81,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void onlyParseableStrictExcludesUnparseableExtraData() throws Exception {
+    public void testOnlyParseableStrictExcludesUnparseableExtraData() throws Exception {
         final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
         final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
         ze.setExtraFields(extraFields);
@@ -105,7 +105,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void reparsingUnicodeExtraWithUnsupportedversionThrowsInStrictMode()
+    public void testReparsingUnicodeExtraWithUnsupportedversionThrowsInStrictMode()
         throws Exception {
         try (ZipFile zf = new ZipFile(getFile("COMPRESS-479.zip"))) {
             final ZipArchiveEntry ze = zf.getEntry("%U20AC_for_Dollar.txt");
@@ -114,7 +114,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void strictForKnowExtraFieldsIncludesUnparseableExtraData() throws Exception {
+    public void testStrictForKnowExtraFieldsIncludesUnparseableExtraData() throws Exception {
         final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
         final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
         ze.setExtraFields(extraFields);

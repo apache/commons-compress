@@ -97,7 +97,7 @@ public class SevenZTestCase extends AbstractTestCase {
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingAES() throws Exception {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingAES() throws Exception {
         assumeStrongCryptoIsAvailable();
         try (SevenZFile archive = new SevenZFile(getFile("bla.encrypted.7z"), "foo".toCharArray())) {
             multiByteReadConsistentlyReturnsMinusOneAtEof(archive);
@@ -105,22 +105,22 @@ public class SevenZTestCase extends AbstractTestCase {
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingBZIP2() throws Exception {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingBZIP2() throws Exception {
         multiByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.BZIP2);
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
         multiByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.DEFLATE);
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingLZMA() throws Exception {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingLZMA() throws Exception {
         multiByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.LZMA);
     }
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEofUsingLZMA2() throws Exception {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingLZMA2() throws Exception {
         multiByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.LZMA2);
     }
 
@@ -155,7 +155,7 @@ public class SevenZTestCase extends AbstractTestCase {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingAES() throws Exception {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingAES() throws Exception {
         assumeStrongCryptoIsAvailable();
         try (SevenZFile archive = new SevenZFile(getFile("bla.encrypted.7z"), "foo".toCharArray())) {
             singleByteReadConsistentlyReturnsMinusOneAtEof(archive);
@@ -163,27 +163,27 @@ public class SevenZTestCase extends AbstractTestCase {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingBZIP2() throws Exception {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingBZIP2() throws Exception {
         singleByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.BZIP2);
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingCopy() throws Exception {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingCopy() throws Exception {
         singleByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.COPY);
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
         singleByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.DEFLATE);
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingLZMA() throws Exception {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingLZMA() throws Exception {
         singleByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.LZMA);
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEofUsingLZMA2() throws Exception {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingLZMA2() throws Exception {
         singleByteReadConsistentlyReturnsMinusOneAtEof(SevenZMethod.LZMA2);
     }
 
