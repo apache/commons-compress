@@ -16,8 +16,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.apache.commons.compress.AbstractTestCase.forceDelete;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -46,6 +44,7 @@ import java.util.function.Function;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.compress.AbstractTestCase;
 import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
 import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
@@ -152,8 +151,8 @@ public class ParallelScatterZipCreatorTest {
 
     @AfterEach
     public void cleanup() {
-        forceDelete(result);
-        forceDelete(tmp);
+        AbstractTestCase.forceDelete(result);
+        AbstractTestCase.forceDelete(tmp);
     }
 
     @Test
@@ -315,7 +314,7 @@ public class ParallelScatterZipCreatorTest {
     private Map<String, byte[]> writeTestFilesAsCallable(final ParallelScatterZipCreator zipCreator,
                                                          final CallableConsumer consumer) throws IOException {
         final Map<String, byte[]> entries = new HashMap<>();
-        final File baseDir = getFile("");
+        final File baseDir = AbstractTestCase.getFile("");
         int filesCount = 0;
         for (final File file : baseDir.listFiles()) {
             // do not compress too many files
