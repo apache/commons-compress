@@ -44,58 +44,6 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTestCas
     }
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.tar.sz");
-        final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath());
-                FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is);) {
-            IOUtils.toByteArray(in);
-            assertEquals(-1, in.read(buf));
-            assertEquals(-1, in.read(buf));
-        }
-    }
-
-    @Test
-    public void testReadIWAFile() throws Exception {
-        try (ZipFile zip = new ZipFile(getFile("testNumbersNew.numbers"))) {
-            try (InputStream is = zip.getInputStream(zip.getEntry("Index/Document.iwa"))) {
-                try (FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is, FramedSnappyDialect.IWORK_ARCHIVE)) {
-                    Files.copy(in, new File(dir, "snappyIWATest.raw").toPath());
-                }
-            }
-        }
-    }
-
-    /**
-     * @see "https://issues.apache.org/jira/browse/COMPRESS-358"
-     */
-    @Test
-    public void testReadIWAFileWithBiggerOffset() throws Exception {
-        final File o = new File(dir, "COMPRESS-358.raw");
-        try (InputStream is = newInputStream("COMPRESS-358.iwa");
-                FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is, 1 << 16, FramedSnappyDialect.IWORK_ARCHIVE);) {
-            Files.copy(in, o.toPath());
-        }
-        try (InputStream a = Files.newInputStream(o.toPath());
-                InputStream e = newInputStream("COMPRESS-358.uncompressed")) {
-            final byte[] expected = IOUtils.toByteArray(e);
-            final byte[] actual = IOUtils.toByteArray(a);
-            assertArrayEquals(expected, actual);
-        }
-    }
-
-    @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.tar.sz");
-        try (InputStream is = Files.newInputStream(input.toPath());
-                FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is);) {
-            IOUtils.toByteArray(in);
-            assertEquals(-1, in.read());
-            assertEquals(-1, in.read());
-        }
-    }
-
-    @Test
     public void testAvailable() throws Exception {
         try (InputStream isSz = newInputStream("mixed.txt.sz");
                 FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(isSz)) {
@@ -151,6 +99,47 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTestCas
     }
 
     @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tar.sz");
+        final byte[] buf = new byte[2];
+        try (InputStream is = Files.newInputStream(input.toPath());
+                FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is);) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+        }
+    }
+
+    @Test
+    public void testReadIWAFile() throws Exception {
+        try (ZipFile zip = new ZipFile(getFile("testNumbersNew.numbers"))) {
+            try (InputStream is = zip.getInputStream(zip.getEntry("Index/Document.iwa"))) {
+                try (FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is, FramedSnappyDialect.IWORK_ARCHIVE)) {
+                    Files.copy(in, new File(dir, "snappyIWATest.raw").toPath());
+                }
+            }
+        }
+    }
+
+    /**
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-358"
+     */
+    @Test
+    public void testReadIWAFileWithBiggerOffset() throws Exception {
+        final File o = new File(dir, "COMPRESS-358.raw");
+        try (InputStream is = newInputStream("COMPRESS-358.iwa");
+                FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is, 1 << 16, FramedSnappyDialect.IWORK_ARCHIVE);) {
+            Files.copy(in, o.toPath());
+        }
+        try (InputStream a = Files.newInputStream(o.toPath());
+                InputStream e = newInputStream("COMPRESS-358.uncompressed")) {
+            final byte[] expected = IOUtils.toByteArray(e);
+            final byte[] actual = IOUtils.toByteArray(a);
+            assertArrayEquals(expected, actual);
+        }
+    }
+
+    @Test
     public void testRemainingChunkTypes() throws Exception {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         try (InputStream isSz = newInputStream("mixed.txt.sz")) {
@@ -161,6 +150,17 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTestCas
 
         assertArrayEquals(new byte[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', '5', '6', '7', '8', '9', '5', '6', '7', '8', '9', '5', '6', '7', '8', '9',
                 '5', '6', '7', '8', '9', 10, '1', '2', '3', '4', '1', '2', '3', '4', }, out.toByteArray());
+    }
+
+    @Test
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tar.sz");
+        try (InputStream is = Files.newInputStream(input.toPath());
+                FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is);) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+        }
     }
 
     @Test

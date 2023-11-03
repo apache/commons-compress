@@ -70,6 +70,23 @@ public class ZipMemoryFileSystemTest {
         return () -> payload;
     }
 
+    @BeforeEach
+    public void setup() throws IOException {
+        dir = Files.createTempDirectory(UUID.randomUUID().toString());
+    }
+
+    @AfterEach
+    public void tearDown() throws IOException {
+        try (Stream<Path> walk = Files.walk(dir)) {
+            walk.sorted(Comparator.reverseOrder()).peek(path -> println("Deleting: " + path.toAbsolutePath())).forEach(path -> {
+                try {
+                    Files.deleteIfExists(path);
+                } catch (final IOException ignore) {
+                }
+            });
+        }
+    }
+
     @Test
     public void testForPathsReturnCorrectClassInMemory() throws IOException {
         final Path firstFile = getPath("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
@@ -253,23 +270,6 @@ public class ZipMemoryFileSystemTest {
             }
         }
 
-    }
-
-    @BeforeEach
-    public void setup() throws IOException {
-        dir = Files.createTempDirectory(UUID.randomUUID().toString());
-    }
-
-    @AfterEach
-    public void tearDown() throws IOException {
-        try (Stream<Path> walk = Files.walk(dir)) {
-            walk.sorted(Comparator.reverseOrder()).peek(path -> println("Deleting: " + path.toAbsolutePath())).forEach(path -> {
-                try {
-                    Files.deleteIfExists(path);
-                } catch (final IOException ignore) {
-                }
-            });
-        }
     }
 
     @Test

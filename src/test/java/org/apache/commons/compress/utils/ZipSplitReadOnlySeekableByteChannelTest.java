@@ -39,6 +39,20 @@ import org.junit.jupiter.api.Test;
 
 public class ZipSplitReadOnlySeekableByteChannelTest {
 
+    private List<SeekableByteChannel> getSplitZipChannels() throws IOException {
+        final List<SeekableByteChannel> channels = new ArrayList<>();
+        final File file1 = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
+        channels.add(Files.newByteChannel(file1.toPath(), StandardOpenOption.READ));
+
+        final File file2 = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
+        channels.add(Files.newByteChannel(file2.toPath(), StandardOpenOption.READ));
+
+        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
+        channels.add(Files.newByteChannel(lastFile.toPath(), StandardOpenOption.READ));
+
+        return channels;
+    }
+
     @Test
     public void testBuildFromLastSplitSegmentThrowsOnNotZipFile() throws IOException {
         final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
@@ -163,20 +177,6 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
     @Test
     public void testForPathsThrowsOnNullArg() {
         assertThrows(NullPointerException.class, () -> ZipSplitReadOnlySeekableByteChannel.forPaths(null));
-    }
-
-    private List<SeekableByteChannel> getSplitZipChannels() throws IOException {
-        final List<SeekableByteChannel> channels = new ArrayList<>();
-        final File file1 = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
-        channels.add(Files.newByteChannel(file1.toPath(), StandardOpenOption.READ));
-
-        final File file2 = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
-        channels.add(Files.newByteChannel(file2.toPath(), StandardOpenOption.READ));
-
-        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
-        channels.add(Files.newByteChannel(lastFile.toPath(), StandardOpenOption.READ));
-
-        return channels;
     }
 
     @Test

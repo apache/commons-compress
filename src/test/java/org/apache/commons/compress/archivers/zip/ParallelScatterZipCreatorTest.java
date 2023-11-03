@@ -95,25 +95,6 @@ public class ParallelScatterZipCreatorTest {
         assertNotNull(zipCreator.getStatisticsMessage());
     }
 
-    @Test
-    public void testCallableApiUsingSubmit() throws Exception {
-        result = File.createTempFile("parallelScatterGather2", "");
-        callableApi(zipCreator -> zipCreator::submit);
-    }
-
-    @Test
-    public void testCallableApiUsingSubmitStreamAwareCallable() throws Exception {
-        result = File.createTempFile("parallelScatterGather3", "");
-        callableApi(zipCreator -> zipCreator::submitStreamAwareCallable);
-    }
-
-
-    @Test
-    public void testCallableApiWithHighestLevelUsingSubmitStreamAwareCallable() throws Exception {
-        result = File.createTempFile("parallelScatterGather5", "");
-        callableApiWithTestFiles(zipCreator -> zipCreator::submitStreamAwareCallable, Deflater.BEST_COMPRESSION);
-    }
-
     private void callableApiWithTestFiles(final CallableConsumerSupplier consumerSupplier, final int compressionLevel) throws Exception {
         final ParallelScatterZipCreator zipCreator;
         final Map<String, byte[]> entries;
@@ -143,58 +124,12 @@ public class ParallelScatterZipCreatorTest {
         assertNotNull(zipCreator.getStatisticsMessage());
     }
 
-    @Test
-    public void testCallableWithLowestLevelApiUsingSubmit() throws Exception {
-        result = File.createTempFile("parallelScatterGather4", "");
-        callableApiWithTestFiles(zipCreator -> zipCreator::submit, Deflater.NO_COMPRESSION);
-    }
-
     @AfterEach
     public void cleanup() {
         AbstractTestCase.forceDelete(result);
         AbstractTestCase.forceDelete(tmp);
     }
 
-    @Test
-    public void testConcurrentCustomTempFolder()
-            throws Exception {
-        result = File.createTempFile("parallelScatterGather1", "");
-        final ParallelScatterZipCreator zipCreator;
-        final Map<String, byte[]> entries;
-        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result)) {
-            zos.setEncoding("UTF-8");
-
-            // Formatter:off
-            final Path dir = Paths.get("target/custom-temp-dir");
-            Files.createDirectories(dir);
-            zipCreator = new ParallelScatterZipCreator(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()),
-                    new DefaultBackingStoreSupplier(dir));
-            // Formatter:on
-
-            entries = writeEntries(zipCreator);
-            zipCreator.writeTo(zos);
-        }
-        removeEntriesFoundInZipFile(result, entries);
-        assertTrue(entries.isEmpty());
-        assertNotNull(zipCreator.getStatisticsMessage());
-    }
-
-    @Test
-    public void testConcurrentDefaultTempFolder() throws Exception {
-        result = File.createTempFile("parallelScatterGather1", "");
-        final ParallelScatterZipCreator zipCreator;
-        final Map<String, byte[]> entries;
-        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result)) {
-            zos.setEncoding("UTF-8");
-            zipCreator = new ParallelScatterZipCreator();
-
-            entries = writeEntries(zipCreator);
-            zipCreator.writeTo(zos);
-        }
-        removeEntriesFoundInZipFile(result, entries);
-        assertTrue(entries.isEmpty());
-        assertNotNull(zipCreator.getStatisticsMessage());
-    }
 
     private ZipArchiveEntry createZipArchiveEntry(final Map<String, byte[]> entries, final int i, final byte[] payloadBytes) {
         final ZipArchiveEntry za = new ZipArchiveEntry( "file" + i);
@@ -246,6 +181,71 @@ public class ParallelScatterZipCreatorTest {
 
             zipCreator.writeTo(zipArchiveOutputStream);
         } // Throws NullPointerException on close()
+    }
+
+    @Test
+    public void testCallableApiUsingSubmit() throws Exception {
+        result = File.createTempFile("parallelScatterGather2", "");
+        callableApi(zipCreator -> zipCreator::submit);
+    }
+
+    @Test
+    public void testCallableApiUsingSubmitStreamAwareCallable() throws Exception {
+        result = File.createTempFile("parallelScatterGather3", "");
+        callableApi(zipCreator -> zipCreator::submitStreamAwareCallable);
+    }
+
+    @Test
+    public void testCallableApiWithHighestLevelUsingSubmitStreamAwareCallable() throws Exception {
+        result = File.createTempFile("parallelScatterGather5", "");
+        callableApiWithTestFiles(zipCreator -> zipCreator::submitStreamAwareCallable, Deflater.BEST_COMPRESSION);
+    }
+
+    @Test
+    public void testCallableWithLowestLevelApiUsingSubmit() throws Exception {
+        result = File.createTempFile("parallelScatterGather4", "");
+        callableApiWithTestFiles(zipCreator -> zipCreator::submit, Deflater.NO_COMPRESSION);
+    }
+
+    @Test
+    public void testConcurrentCustomTempFolder()
+            throws Exception {
+        result = File.createTempFile("parallelScatterGather1", "");
+        final ParallelScatterZipCreator zipCreator;
+        final Map<String, byte[]> entries;
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result)) {
+            zos.setEncoding("UTF-8");
+
+            // Formatter:off
+            final Path dir = Paths.get("target/custom-temp-dir");
+            Files.createDirectories(dir);
+            zipCreator = new ParallelScatterZipCreator(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()),
+                    new DefaultBackingStoreSupplier(dir));
+            // Formatter:on
+
+            entries = writeEntries(zipCreator);
+            zipCreator.writeTo(zos);
+        }
+        removeEntriesFoundInZipFile(result, entries);
+        assertTrue(entries.isEmpty());
+        assertNotNull(zipCreator.getStatisticsMessage());
+    }
+
+    @Test
+    public void testConcurrentDefaultTempFolder() throws Exception {
+        result = File.createTempFile("parallelScatterGather1", "");
+        final ParallelScatterZipCreator zipCreator;
+        final Map<String, byte[]> entries;
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result)) {
+            zos.setEncoding("UTF-8");
+            zipCreator = new ParallelScatterZipCreator();
+
+            entries = writeEntries(zipCreator);
+            zipCreator.writeTo(zos);
+        }
+        removeEntriesFoundInZipFile(result, entries);
+        assertTrue(entries.isEmpty());
+        assertNotNull(zipCreator.getStatisticsMessage());
     }
 
     @Test

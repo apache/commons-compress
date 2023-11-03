@@ -154,6 +154,35 @@ public class ZipArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
+    private void singleByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
+        try (InputStream in = Files.newInputStream(file.toPath());
+             ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
+            final ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read());
+            assertEquals(-1, archive.read());
+        }
+    }
+
+    /**
+     * Test case for
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-351"
+     * >COMPRESS-351</a>.
+     */
+    @Test
+    public void testMessageWithCorruptFileName() throws Exception {
+        try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("COMPRESS-351.zip"))) {
+            final EOFException ex = assertThrows(EOFException.class, () -> {
+                ZipArchiveEntry ze = in.getNextZipEntry();
+                while (ze != null) {
+                    ze = in.getNextZipEntry();
+                }
+            }, "expected EOFException");
+            final String m = ex.getMessage();
+            assertTrue(m.startsWith("Truncated ZIP entry: ?2016")); // the first character is not printable
+        }
+    }
+
     @Test
     public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingBzip2() throws Exception {
         multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("bzip2-zip.zip"));
@@ -219,6 +248,27 @@ public class ZipArchiveInputStreamTest extends AbstractTestCase {
     public void testNameSourceIsSetToUnicodeExtraField() throws Exception {
         nameSource("utf8-winzip-test.zip", "\u20AC_for_Dollar.txt",
                    ZipArchiveEntry.NameSource.UNICODE_EXTRA_FIELD);
+    }
+
+    /**
+     * Test correct population of header and data offsets.
+     */
+    @Test
+    public void testOffsets() throws Exception {
+        // mixed.zip contains both inflated and stored files
+        try (InputStream archiveStream = ZipArchiveInputStream.class.getResourceAsStream("/mixed.zip");
+             ZipArchiveInputStream zipStream =  new ZipArchiveInputStream(archiveStream)
+        ) {
+            final ZipArchiveEntry inflatedEntry = zipStream.getNextZipEntry();
+            assertEquals("inflated.txt", inflatedEntry.getName());
+            assertEquals(0x0000, inflatedEntry.getLocalHeaderOffset());
+            assertEquals(0x0046, inflatedEntry.getDataOffset());
+            final ZipArchiveEntry storedEntry = zipStream.getNextZipEntry();
+            assertEquals("stored.txt", storedEntry.getName());
+            assertEquals(0x5892, storedEntry.getLocalHeaderOffset());
+            assertEquals(0x58d6, storedEntry.getDataOffset());
+            assertNull(zipStream.getNextZipEntry());
+        }
     }
 
     @Test
@@ -351,6 +401,22 @@ public class ZipArchiveInputStreamTest extends AbstractTestCase {
         }
     }
 
+    /**
+     * Test case for
+     * <a href="https://issues.apache.org/jira/browse/COMPRESS-264"
+     * >COMPRESS-264</a>.
+     */
+    @Test
+    public void testReadingOfFirstStoredEntry() throws Exception {
+
+        try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("COMPRESS-264.zip"))) {
+            final ZipArchiveEntry ze = in.getNextZipEntry();
+            assertEquals(5, ze.getSize());
+            assertArrayEquals(new byte[] { 'd', 'a', 't', 'a', '\n' },
+                    IOUtils.toByteArray(in));
+        }
+    }
+
     @Test
     public void testRejectsStoredEntriesWithDataDescriptorByDefault() throws IOException {
         try (InputStream fs = newInputStream("bla-stored-dd.zip"); ZipArchiveInputStream archive = new ZipArchiveInputStream(fs)) {
@@ -382,16 +448,6 @@ public class ZipArchiveInputStreamTest extends AbstractTestCase {
     public void testShouldReadNestedZip() throws IOException {
         try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("COMPRESS-219.zip"))) {
             extractZipInputStream(in);
-        }
-    }
-
-    private void singleByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
-        try (InputStream in = Files.newInputStream(file.toPath());
-             ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
-            IOUtils.toByteArray(archive);
-            assertEquals(-1, archive.read());
-            assertEquals(-1, archive.read());
         }
     }
 
@@ -441,62 +497,6 @@ public class ZipArchiveInputStreamTest extends AbstractTestCase {
             assertEquals("Truncated ZIP file", ex2.getMessage());
             final IOException ex3 = assertThrows(IOException.class, archive::read, "expected exception");
             assertEquals("Truncated ZIP file", ex3.getMessage());
-        }
-    }
-
-    /**
-     * Test case for
-     * <a href="https://issues.apache.org/jira/browse/COMPRESS-351"
-     * >COMPRESS-351</a>.
-     */
-    @Test
-    public void testMessageWithCorruptFileName() throws Exception {
-        try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("COMPRESS-351.zip"))) {
-            final EOFException ex = assertThrows(EOFException.class, () -> {
-                ZipArchiveEntry ze = in.getNextZipEntry();
-                while (ze != null) {
-                    ze = in.getNextZipEntry();
-                }
-            }, "expected EOFException");
-            final String m = ex.getMessage();
-            assertTrue(m.startsWith("Truncated ZIP entry: ?2016")); // the first character is not printable
-        }
-    }
-
-    /**
-     * Test correct population of header and data offsets.
-     */
-    @Test
-    public void testOffsets() throws Exception {
-        // mixed.zip contains both inflated and stored files
-        try (InputStream archiveStream = ZipArchiveInputStream.class.getResourceAsStream("/mixed.zip");
-             ZipArchiveInputStream zipStream =  new ZipArchiveInputStream(archiveStream)
-        ) {
-            final ZipArchiveEntry inflatedEntry = zipStream.getNextZipEntry();
-            assertEquals("inflated.txt", inflatedEntry.getName());
-            assertEquals(0x0000, inflatedEntry.getLocalHeaderOffset());
-            assertEquals(0x0046, inflatedEntry.getDataOffset());
-            final ZipArchiveEntry storedEntry = zipStream.getNextZipEntry();
-            assertEquals("stored.txt", storedEntry.getName());
-            assertEquals(0x5892, storedEntry.getLocalHeaderOffset());
-            assertEquals(0x58d6, storedEntry.getDataOffset());
-            assertNull(zipStream.getNextZipEntry());
-        }
-    }
-
-    /**
-     * Test case for
-     * <a href="https://issues.apache.org/jira/browse/COMPRESS-264"
-     * >COMPRESS-264</a>.
-     */
-    @Test
-    public void testReadingOfFirstStoredEntry() throws Exception {
-
-        try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("COMPRESS-264.zip"))) {
-            final ZipArchiveEntry ze = in.getNextZipEntry();
-            assertEquals(5, ze.getSize());
-            assertArrayEquals(new byte[] { 'd', 'a', 't', 'a', '\n' },
-                    IOUtils.toByteArray(in));
         }
     }
 
@@ -631,6 +631,19 @@ public class ZipArchiveInputStreamTest extends AbstractTestCase {
     }
 
     /**
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-176"
+     */
+    @Test
+    public void testWinzipBackSlashWorkaround() throws Exception {
+        try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("test-winzip.zip"))) {
+            ZipArchiveEntry zae = in.getNextZipEntry();
+            zae = in.getNextZipEntry();
+            zae = in.getNextZipEntry();
+            assertEquals("\u00e4/", zae.getName());
+        }
+    }
+
+    /**
      * Test case for
      * <a href="https://issues.apache.org/jira/browse/COMPRESS-364"
      * >COMPRESS-364</a>.
@@ -729,19 +742,6 @@ public class ZipArchiveInputStreamTest extends AbstractTestCase {
         try (InputStream fis = newInputStream("COMPRESS-546.zip");
              ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis)) {
             assertThrows(IOException.class, () -> getAllZipEntries(zipInputStream));
-        }
-    }
-
-    /**
-     * @see "https://issues.apache.org/jira/browse/COMPRESS-176"
-     */
-    @Test
-    public void testWinzipBackSlashWorkaround() throws Exception {
-        try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("test-winzip.zip"))) {
-            ZipArchiveEntry zae = in.getNextZipEntry();
-            zae = in.getNextZipEntry();
-            zae = in.getNextZipEntry();
-            assertEquals("\u00e4/", zae.getName());
         }
     }
 }

@@ -27,6 +27,22 @@ import org.junit.jupiter.api.Test;
 public class CpioUtilTest {
 
     @Test
+    public void testByteArray2longThrowsUnsupportedOperationException() {
+        assertThrows(UnsupportedOperationException.class, () -> CpioUtil.byteArray2long(new byte[1], true));
+
+    }
+
+    @Test
+    public void testLong2byteArrayWithPositiveThrowsUnsupportedOperationException() {
+        assertThrows(UnsupportedOperationException.class, () -> CpioUtil.long2byteArray(0L, 1021, false));
+    }
+
+    @Test
+    public void testLong2byteArrayWithZeroThrowsUnsupportedOperationException() {
+        assertThrows(UnsupportedOperationException.class, () -> CpioUtil.long2byteArray(0L, 0, false));
+    }
+
+    @Test
     public void testOldBinMagic2ByteArrayNotSwapped() {
         assertArrayEquals(new byte[] {(byte) 0xc7, 0x71}, CpioUtil.long2byteArray(CpioConstants.MAGIC_OLD_BINARY, 2, false));
     }
@@ -44,22 +60,6 @@ public class CpioUtilTest {
     @Test
     public void testOldBinMagicFromByteArraySwapped() {
         assertEquals(CpioConstants.MAGIC_OLD_BINARY, CpioUtil.byteArray2long(new byte[] {0x71, (byte) 0xc7}, true));
-    }
-
-    @Test
-    public void testByteArray2longThrowsUnsupportedOperationException() {
-        assertThrows(UnsupportedOperationException.class, () -> CpioUtil.byteArray2long(new byte[1], true));
-
-    }
-
-    @Test
-    public void testLong2byteArrayWithPositiveThrowsUnsupportedOperationException() {
-        assertThrows(UnsupportedOperationException.class, () -> CpioUtil.long2byteArray(0L, 1021, false));
-    }
-
-    @Test
-    public void testLong2byteArrayWithZeroThrowsUnsupportedOperationException() {
-        assertThrows(UnsupportedOperationException.class, () -> CpioUtil.long2byteArray(0L, 0, false));
     }
 
 }

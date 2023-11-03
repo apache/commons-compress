@@ -105,16 +105,6 @@ public final class Pack200TestCase extends AbstractTestCase {
         }
     }
 
-    @Test
-    public void testMultiByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
-    }
-
-    @Test
-    public void testMultiByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
-    }
-
     private void singleByteReadConsistentlyReturnsMinusOneAtEof(final Pack200Strategy s) throws Exception {
         final File input = getFile("bla.pack");
         try (final Pack200CompressorInputStream in = new Pack200CompressorInputStream(input, s)) {
@@ -122,16 +112,6 @@ public final class Pack200TestCase extends AbstractTestCase {
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
         }
-    }
-
-    @Test
-    public void testSingleByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
-    }
-
-    @Test
-    public void testSingleByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
     }
 
     @Test
@@ -206,6 +186,16 @@ public final class Pack200TestCase extends AbstractTestCase {
     }
 
     @Test
+    public void testMultiByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
+    }
+
+    @Test
+    public void testMultiByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
+    }
+
+    @Test
     public void testOutputStreamMethods() throws Exception {
         final File output = new File(dir, "bla.pack");
         final Map<String, String> m = new HashMap<>();
@@ -224,6 +214,16 @@ public final class Pack200TestCase extends AbstractTestCase {
             is.read(sig);
             assertFalse(Pack200CompressorInputStream.matches(sig, 2));
         }
+    }
+
+    @Test
+    public void testSingleByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
+    }
+
+    @Test
+    public void testSingleByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
     }
 
 }

@@ -40,6 +40,12 @@ import org.junit.jupiter.api.Test;
 public class ZCompressorInputStreamTest {
 
     @Test
+    public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() {
+        final SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration());
+        assertThrows(IOException.class, () -> new ZCompressorInputStream(sequenceInputStream));
+    }
+
+    @Test
     public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.Z");
         final byte[] buf = new byte[2];
@@ -60,12 +66,6 @@ public class ZCompressorInputStreamTest {
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
         }
-    }
-
-    @Test
-    public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() {
-        final SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration());
-        assertThrows(IOException.class, () -> new ZCompressorInputStream(sequenceInputStream));
     }
 
 }

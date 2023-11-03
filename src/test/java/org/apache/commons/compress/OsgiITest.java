@@ -45,11 +45,6 @@ public class OsgiITest {
     @Inject
     private BundleContext ctx;
 
-    @Test
-    public void testCanLoadBundle() {
-        assertNotNull("Expected to find bundle " + EXPECTED_BUNDLE_NAME, loadBundle());
-    }
-
     @Configuration
     public Option[] config() {
         return new Option[] {
@@ -76,6 +71,11 @@ public class OsgiITest {
             }
         }
         return null;
+    }
+
+    @Test
+    public void testCanLoadBundle() {
+        assertNotNull("Expected to find bundle " + EXPECTED_BUNDLE_NAME, loadBundle());
     }
 
     @Test

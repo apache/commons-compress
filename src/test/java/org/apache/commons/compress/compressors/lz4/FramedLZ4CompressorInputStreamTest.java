@@ -52,6 +52,29 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
         return to;
     }
 
+    private void expectIOException(final String fileName) {
+        assertThrows(IOException.class, () -> {
+            try (InputStream is = Files.newInputStream(getFile(fileName).toPath());
+                    final FramedLZ4CompressorInputStream in = new FramedLZ4CompressorInputStream(is)) {
+                IOUtils.toByteArray(in);
+            }
+        });
+    }
+
+    private void readDoubledBlaLz4(final StreamWrapper wrapper, final boolean expectDuplicateOutput) throws Exception {
+        byte[] singleInput;
+        try (InputStream i = newInputStream("bla.tar.lz4")) {
+            singleInput = IOUtils.toByteArray(i);
+        }
+        final byte[] input = duplicate(singleInput);
+        try (InputStream a = wrapper.wrap(new ByteArrayInputStream(input));
+            InputStream e = newInputStream("bla.tar")) {
+            final byte[] expected = IOUtils.toByteArray(e);
+            final byte[] actual = IOUtils.toByteArray(a);
+            assertArrayEquals(expectDuplicateOutput ? duplicate(expected) : expected, actual);
+        }
+    }
+
     @Test
     public void testBackreferenceAtStartCausesIOException() {
         expectIOException("COMPRESS-490/ArrayIndexOutOfBoundsException1.lz4");
@@ -67,13 +90,14 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
         expectIOException("COMPRESS-490/ArrayIndexOutOfBoundsException2.lz4");
     }
 
-    private void expectIOException(final String fileName) {
-        assertThrows(IOException.class, () -> {
-            try (InputStream is = Files.newInputStream(getFile(fileName).toPath());
-                    final FramedLZ4CompressorInputStream in = new FramedLZ4CompressorInputStream(is)) {
-                IOUtils.toByteArray(in);
-            }
-        });
+    @Test
+    public void testMatches() throws IOException {
+        assertFalse(FramedLZ4CompressorInputStream.matches(new byte[10], 4));
+        final byte[] b = new byte[12];
+        IOUtils.read(getFile("bla.tar.lz4"), b);
+        assertFalse(FramedLZ4CompressorInputStream.matches(b, 3));
+        assertTrue(FramedLZ4CompressorInputStream.matches(b, 4));
+        assertTrue(FramedLZ4CompressorInputStream.matches(b, 5));
     }
 
     @Test
@@ -151,20 +175,6 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
             final byte[] expected = IOUtils.toByteArray(e);
             final byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(expected, actual);
-        }
-    }
-
-    private void readDoubledBlaLz4(final StreamWrapper wrapper, final boolean expectDuplicateOutput) throws Exception {
-        byte[] singleInput;
-        try (InputStream i = newInputStream("bla.tar.lz4")) {
-            singleInput = IOUtils.toByteArray(i);
-        }
-        final byte[] input = duplicate(singleInput);
-        try (InputStream a = wrapper.wrap(new ByteArrayInputStream(input));
-            InputStream e = newInputStream("bla.tar")) {
-            final byte[] expected = IOUtils.toByteArray(e);
-            final byte[] actual = IOUtils.toByteArray(a);
-            assertArrayEquals(expectDuplicateOutput ? duplicate(expected) : expected, actual);
         }
     }
 
@@ -590,16 +600,6 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
                     'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!'
                 }, actual);
         }
-    }
-
-    @Test
-    public void testMatches() throws IOException {
-        assertFalse(FramedLZ4CompressorInputStream.matches(new byte[10], 4));
-        final byte[] b = new byte[12];
-        IOUtils.read(getFile("bla.tar.lz4"), b);
-        assertFalse(FramedLZ4CompressorInputStream.matches(b, 3));
-        assertTrue(FramedLZ4CompressorInputStream.matches(b, 4));
-        assertTrue(FramedLZ4CompressorInputStream.matches(b, 5));
     }
 
 }

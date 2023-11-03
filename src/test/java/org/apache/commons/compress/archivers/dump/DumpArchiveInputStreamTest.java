@@ -35,29 +35,6 @@ import org.junit.jupiter.api.Test;
 public class DumpArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        final byte[] buf = new byte[2];
-        try (InputStream in = newInputStream("bla.dump");
-             DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
-            IOUtils.toByteArray(archive);
-            assertEquals(-1, archive.read(buf));
-            assertEquals(-1, archive.read(buf));
-        }
-    }
-
-    @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (InputStream in = newInputStream("bla.dump");
-             DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
-            IOUtils.toByteArray(archive);
-            assertEquals(-1, archive.read());
-            assertEquals(-1, archive.read());
-        }
-    }
-
-    @Test
     public void testConsumesArchiveCompletely() throws Exception {
         try (final InputStream is = DumpArchiveInputStreamTest.class.getResourceAsStream("/archive_with_trailer.dump");
                 DumpArchiveInputStream dump = new DumpArchiveInputStream(is)) {
@@ -68,6 +45,18 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
             final byte[] actual = new byte[expected.length];
             is.read(actual);
             assertArrayEquals(expected, actual);
+        }
+    }
+
+    @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        final byte[] buf = new byte[2];
+        try (InputStream in = newInputStream("bla.dump");
+             DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
+            final ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read(buf));
+            assertEquals(-1, archive.read(buf));
         }
     }
 
@@ -86,6 +75,17 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
             final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(),
                     "expected an exception");
             assertInstanceOf(UnrecognizedFormatException.class, ex.getCause());
+        }
+    }
+
+    @Test
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        try (InputStream in = newInputStream("bla.dump");
+             DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
+            final ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read());
+            assertEquals(-1, archive.read());
         }
     }
 

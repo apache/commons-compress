@@ -83,16 +83,6 @@ public class SparseFilesTest extends AbstractTestCase {
         assertEquals(0, sparseHeaders.get(2).getNumbytes());
     }
 
-    @Test
-    public void testCompareTarArchiveInputStreamWithTarFile() throws IOException {
-        final Path file = getPath("oldgnu_sparse.tar");
-        try (TarArchiveInputStream tarIn = new TarArchiveInputStream(new BufferedInputStream(Files.newInputStream(file)));
-             TarFile tarFile = new TarFile(file)) {
-            final TarArchiveEntry tarInEntry = tarIn.getNextTarEntry();
-            assertArrayEquals(IOUtils.toByteArray(tarIn), IOUtils.toByteArray(tarFile.getInputStream(tarFile.getEntries().get(0))));
-        }
-    }
-
     private InputStream extractTarAndGetInputStream(final File tarFile, final String sparseFileName) throws IOException, InterruptedException {
         final ProcessBuilder pb = new ProcessBuilder("tar", "-xf", tarFile.getPath(), "-C", resultDir.getPath());
         pb.redirectErrorStream(true);
@@ -115,6 +105,16 @@ public class SparseFilesTest extends AbstractTestCase {
         final Process process = pb.start();
         // wait until the help is shown
         return new String(IOUtils.toByteArray(process.getInputStream()));
+    }
+
+    @Test
+    public void testCompareTarArchiveInputStreamWithTarFile() throws IOException {
+        final Path file = getPath("oldgnu_sparse.tar");
+        try (TarArchiveInputStream tarIn = new TarArchiveInputStream(new BufferedInputStream(Files.newInputStream(file)));
+             TarFile tarFile = new TarFile(file)) {
+            final TarArchiveEntry tarInEntry = tarIn.getNextTarEntry();
+            assertArrayEquals(IOUtils.toByteArray(tarIn), IOUtils.toByteArray(tarFile.getInputStream(tarFile.getEntries().get(0))));
+        }
     }
 
     @Test

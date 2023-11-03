@@ -2202,40 +2202,6 @@ public class Zip64SupportIT {
                              true);
     }
 
-    @Test
-    public void testZip64ModeAlwaysWithCompatibility() throws Throwable {
-        final File inputFile = getFile("test3.xml");
-
-        // with Zip64Mode.AlwaysWithCompatibility, the relative header offset and disk number
-        // start will not be set in extra fields
-        final File zipUsingModeAlwaysWithCompatibility = buildZipWithZip64Mode("testZip64ModeAlwaysWithCompatibility-output-1",
-                Zip64Mode.AlwaysWithCompatibility, inputFile);
-        final ZipFile zipFileWithAlwaysWithCompatibility = new ZipFile(zipUsingModeAlwaysWithCompatibility);
-        ZipArchiveEntry entry = zipFileWithAlwaysWithCompatibility.getEntries().nextElement();
-        for (final ZipExtraField extraField : entry.getExtraFields()) {
-            if (!(extraField instanceof Zip64ExtendedInformationExtraField)) {
-                continue;
-            }
-
-            assertNull(((Zip64ExtendedInformationExtraField) extraField).getRelativeHeaderOffset());
-            assertNull(((Zip64ExtendedInformationExtraField) extraField).getDiskStartNumber());
-        }
-
-        // with Zip64Mode.Always, the relative header offset and disk number start will be
-        // set in extra fields
-        final File zipUsingModeAlways = buildZipWithZip64Mode("testZip64ModeAlwaysWithCompatibility-output-2", Zip64Mode.Always, inputFile);
-        final ZipFile zipFileWithAlways = new ZipFile(zipUsingModeAlways);
-        entry = zipFileWithAlways.getEntries().nextElement();
-        for (final ZipExtraField extraField : entry.getExtraFields()) {
-            if (!(extraField instanceof Zip64ExtendedInformationExtraField)) {
-                continue;
-            }
-
-            assertNotNull(((Zip64ExtendedInformationExtraField) extraField).getRelativeHeaderOffset());
-            assertNotNull(((Zip64ExtendedInformationExtraField) extraField).getDiskStartNumber());
-        }
-    }
-
     @Test public void testWrite100KFilesFile() throws Throwable {
         withTemporaryArchive("write100KFilesFile", write100KFiles(), true);
     }
@@ -2641,5 +2607,39 @@ public class Zip64SupportIT {
         withTemporaryArchive("writeSmallStoredEntryUnknownSizeToFileModeNever",
                              writeSmallStoredEntry(false, Zip64Mode.Never),
                              true);
+    }
+
+    @Test
+    public void testZip64ModeAlwaysWithCompatibility() throws Throwable {
+        final File inputFile = getFile("test3.xml");
+
+        // with Zip64Mode.AlwaysWithCompatibility, the relative header offset and disk number
+        // start will not be set in extra fields
+        final File zipUsingModeAlwaysWithCompatibility = buildZipWithZip64Mode("testZip64ModeAlwaysWithCompatibility-output-1",
+                Zip64Mode.AlwaysWithCompatibility, inputFile);
+        final ZipFile zipFileWithAlwaysWithCompatibility = new ZipFile(zipUsingModeAlwaysWithCompatibility);
+        ZipArchiveEntry entry = zipFileWithAlwaysWithCompatibility.getEntries().nextElement();
+        for (final ZipExtraField extraField : entry.getExtraFields()) {
+            if (!(extraField instanceof Zip64ExtendedInformationExtraField)) {
+                continue;
+            }
+
+            assertNull(((Zip64ExtendedInformationExtraField) extraField).getRelativeHeaderOffset());
+            assertNull(((Zip64ExtendedInformationExtraField) extraField).getDiskStartNumber());
+        }
+
+        // with Zip64Mode.Always, the relative header offset and disk number start will be
+        // set in extra fields
+        final File zipUsingModeAlways = buildZipWithZip64Mode("testZip64ModeAlwaysWithCompatibility-output-2", Zip64Mode.Always, inputFile);
+        final ZipFile zipFileWithAlways = new ZipFile(zipUsingModeAlways);
+        entry = zipFileWithAlways.getEntries().nextElement();
+        for (final ZipExtraField extraField : entry.getExtraFields()) {
+            if (!(extraField instanceof Zip64ExtendedInformationExtraField)) {
+                continue;
+            }
+
+            assertNotNull(((Zip64ExtendedInformationExtraField) extraField).getRelativeHeaderOffset());
+            assertNotNull(((Zip64ExtendedInformationExtraField) extraField).getDiskStartNumber());
+        }
     }
 }

@@ -62,41 +62,6 @@ public class ExpanderTest extends AbstractTestCase {
         }
     }
 
-    @Test
-    public void testFileCantEscapeDoubleDotPath() throws IOException, ArchiveException {
-        setupZip("../foo");
-        try (ZipFile f = new ZipFile(archive)) {
-            assertThrows(IOException.class, () -> new Expander().expand(f, resultDir));
-        }
-    }
-
-    @Test
-    public void testFileCantEscapeDoubleDotPathWithSimilarSibling() throws IOException, ArchiveException {
-        final String sibling = resultDir.getName() + "x";
-        final File s = new File(resultDir.getParentFile(), sibling);
-        assumeFalse(s.exists());
-        s.mkdirs();
-        assumeTrue(s.exists());
-        s.deleteOnExit();
-        try {
-            setupZip("../" + sibling + "/a");
-            try (ZipFile f = new ZipFile(archive)) {
-                assertThrows(IOException.class, () -> new Expander().expand(f, resultDir));
-            }
-        } finally {
-            forceDelete(s);
-        }
-    }
-
-    @Test
-    public void testFileCantEscapeViaAbsolutePath() throws IOException, ArchiveException {
-        setupZip("/tmp/foo");
-        try (ZipFile f = new ZipFile(archive)) {
-            assertThrows(IOException.class, () -> new Expander().expand(f, resultDir));
-        }
-        assertFalse(new File(resultDir, "tmp/foo").isFile());
-    }
-
     private void setup7z() throws IOException {
         archive = new File(dir, "test.7z");
         final File dummy = new File(dir, "x");
@@ -210,6 +175,59 @@ public class ExpanderTest extends AbstractTestCase {
     }
 
     @Test
+    public void tarFileVersion() throws IOException, ArchiveException {
+        setupTar();
+        try (TarFile f = new TarFile(archive)) {
+            new Expander().expand(f, resultDir);
+        }
+        verifyTargetDir();
+    }
+
+    @Test
+    public void testCompress603Tar() throws IOException, ArchiveException {
+        setupTarForCompress603();
+        try (TarFile f = new TarFile(archive)) {
+            new Expander().expand(f, resultDir);
+        }
+        verifyTargetDir();
+    }
+
+    @Test
+    public void testFileCantEscapeDoubleDotPath() throws IOException, ArchiveException {
+        setupZip("../foo");
+        try (ZipFile f = new ZipFile(archive)) {
+            assertThrows(IOException.class, () -> new Expander().expand(f, resultDir));
+        }
+    }
+
+    @Test
+    public void testFileCantEscapeDoubleDotPathWithSimilarSibling() throws IOException, ArchiveException {
+        final String sibling = resultDir.getName() + "x";
+        final File s = new File(resultDir.getParentFile(), sibling);
+        assumeFalse(s.exists());
+        s.mkdirs();
+        assumeTrue(s.exists());
+        s.deleteOnExit();
+        try {
+            setupZip("../" + sibling + "/a");
+            try (ZipFile f = new ZipFile(archive)) {
+                assertThrows(IOException.class, () -> new Expander().expand(f, resultDir));
+            }
+        } finally {
+            forceDelete(s);
+        }
+    }
+
+    @Test
+    public void testFileCantEscapeViaAbsolutePath() throws IOException, ArchiveException {
+        setupZip("/tmp/foo");
+        try (ZipFile f = new ZipFile(archive)) {
+            assertThrows(IOException.class, () -> new Expander().expand(f, resultDir));
+        }
+        assertFalse(new File(resultDir, "tmp/foo").isFile());
+    }
+
+    @Test
     public void testSevenZChannelVersion() throws IOException, ArchiveException {
         setup7z();
         try (SeekableByteChannel c = FileChannel.open(archive.toPath(), StandardOpenOption.READ)) {
@@ -258,18 +276,9 @@ public class ExpanderTest extends AbstractTestCase {
     }
 
     @Test
-    public void tarFileVersion() throws IOException, ArchiveException {
-        setupTar();
-        try (TarFile f = new TarFile(archive)) {
-            new Expander().expand(f, resultDir);
-        }
-        verifyTargetDir();
-    }
-
-    @Test
-    public void testCompress603Tar() throws IOException, ArchiveException {
-        setupTarForCompress603();
-        try (TarFile f = new TarFile(archive)) {
+    public void testZipFileVersion() throws IOException, ArchiveException {
+        setupZip();
+        try (ZipFile f = new ZipFile(archive)) {
             new Expander().expand(f, resultDir);
         }
         verifyTargetDir();
@@ -281,15 +290,6 @@ public class ExpanderTest extends AbstractTestCase {
         assertTrue(new File(resultDir, "a/b/c").isDirectory(), "a/b/c has not been created");
         assertHelloWorld("a/b/d.txt", "1");
         assertHelloWorld("a/b/c/e.txt", "2");
-    }
-
-    @Test
-    public void testZipFileVersion() throws IOException, ArchiveException {
-        setupZip();
-        try (ZipFile f = new ZipFile(archive)) {
-            new Expander().expand(f, resultDir);
-        }
-        verifyTargetDir();
     }
 
 }

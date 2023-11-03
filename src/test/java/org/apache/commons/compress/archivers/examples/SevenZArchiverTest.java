@@ -63,6 +63,21 @@ public class SevenZArchiverTest extends AbstractTestCase {
         assertArrayEquals(expected, actual);
     }
 
+    @BeforeEach
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        final File c = new File(dir, "a/b/c");
+        c.mkdirs();
+        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/d.txt").toPath())) {
+            os.write("Hello, world 1".getBytes(UTF_8));
+        }
+        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/c/e.txt").toPath())) {
+            os.write("Hello, world 2".getBytes(UTF_8));
+        }
+        target = new File(resultDir, "test.7z");
+    }
+
     @Test
     public void testChannelVersion() throws IOException, ArchiveException {
         try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
@@ -83,21 +98,6 @@ public class SevenZArchiverTest extends AbstractTestCase {
         try (OutputStream os = Files.newOutputStream(target.toPath())) {
             assertThrows(StreamingNotSupportedException.class, () -> new Archiver().create("7z", os, dir));
         }
-    }
-
-    @BeforeEach
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        final File c = new File(dir, "a/b/c");
-        c.mkdirs();
-        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/d.txt").toPath())) {
-            os.write("Hello, world 1".getBytes(UTF_8));
-        }
-        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/c/e.txt").toPath())) {
-            os.write("Hello, world 2".getBytes(UTF_8));
-        }
-        target = new File(resultDir, "test.7z");
     }
 
     // not really a 7z test, but I didn't feel like adding a new test just for this

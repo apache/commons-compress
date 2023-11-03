@@ -40,14 +40,6 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     private File dir;
 
     @Test
-    public void testGetEntryWorks() throws IOException {
-        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
-            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
-            assertEquals(610, ze.getSize());
-        }
-    }
-
-    @Test
     public void testDuplicateEntry() throws Exception {
         try (final ZipFile zf = openZipWithoutLFH("COMPRESS-227.zip")) {
             int numberOfEntries = 0;
@@ -58,6 +50,14 @@ public class ZipFileIgnoringLocalFileHeaderTest {
                 }
             }
             assertEquals(2, numberOfEntries);
+        }
+    }
+
+    @Test
+    public void testGetEntryWorks() throws IOException {
+        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
+            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
+            assertEquals(610, ze.getSize());
         }
     }
 

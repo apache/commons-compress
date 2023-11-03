@@ -37,23 +37,6 @@ import org.junit.jupiter.api.Test;
 
 public class ArArchiveInputStreamTest extends AbstractTestCase {
 
-    @Test
-    public void testCantReadAfterClose() throws Exception {
-        try (InputStream in = newInputStream("bla.ar");
-             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            archive.close();
-            assertThrows(IllegalStateException.class, () -> archive.read());
-        }
-    }
-
-    @Test
-    public void testCantReadWithoutOpeningAnEntry() throws Exception {
-        try (InputStream in = newInputStream("bla.ar");
-             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            assertThrows(IllegalStateException.class, () -> archive.read());
-        }
-    }
-
     private void checkLongNameEntry(final String archive) throws Exception {
         try (final InputStream fis = newInputStream(archive);
              final ArArchiveInputStream s = new ArArchiveInputStream(new BufferedInputStream(fis))) {
@@ -74,6 +57,23 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
+    public void testCantReadAfterClose() throws Exception {
+        try (InputStream in = newInputStream("bla.ar");
+             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+            archive.close();
+            assertThrows(IllegalStateException.class, () -> archive.read());
+        }
+    }
+
+    @Test
+    public void testCantReadWithoutOpeningAnEntry() throws Exception {
+        try (InputStream in = newInputStream("bla.ar");
+             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+            assertThrows(IllegalStateException.class, () -> archive.read());
+        }
+    }
+
+    @Test
     public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.ar");
@@ -83,6 +83,16 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
             assertEquals(-1, archive.read(buf));
             assertEquals(-1, archive.read(buf));
         }
+    }
+
+    @Test
+    public void testReadLongNamesBSD() throws Exception {
+        checkLongNameEntry("longfile_bsd.ar");
+    }
+
+    @Test
+    public void testReadLongNamesGNU() throws Exception {
+        checkLongNameEntry("longfile_gnu.ar");
     }
 
     @Test
@@ -123,15 +133,5 @@ public class ArArchiveInputStreamTest extends AbstractTestCase {
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
         }
-    }
-
-    @Test
-    public void testReadLongNamesBSD() throws Exception {
-        checkLongNameEntry("longfile_bsd.ar");
-    }
-
-    @Test
-    public void testReadLongNamesGNU() throws Exception {
-        checkLongNameEntry("longfile_gnu.ar");
     }
 }

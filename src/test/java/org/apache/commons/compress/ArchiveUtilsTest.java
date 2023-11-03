@@ -50,36 +50,6 @@ public class ArchiveUtilsTest extends AbstractTestCase {
     }
 
     @Test
-    public void testSanitizeLeavesShortStringsAlone() {
-        final String input = "012345678901234567890123456789012345678901234567890123456789";
-        assertEquals(input, ArchiveUtils.sanitize(input));
-    }
-
-    @Test
-    public void testSanitizeRemovesUnprintableCharacters() {
-        final String input = "\b12345678901234567890123456789012345678901234567890123456789";
-        final String expected = "?12345678901234567890123456789012345678901234567890123456789";
-        assertEquals(expected, ArchiveUtils.sanitize(input));
-    }
-
-    @Test
-    public void testSanitizeShortensString() {
-        // @formatter:off
-        final String input = "012345678901234567890123456789012345678901234567890123456789"
-            + "012345678901234567890123456789012345678901234567890123456789"
-            + "012345678901234567890123456789012345678901234567890123456789"
-            + "012345678901234567890123456789012345678901234567890123456789"
-            + "012345678901234567890123456789012345678901234567890123456789";
-        final String expected = "012345678901234567890123456789012345678901234567890123456789"
-            + "012345678901234567890123456789012345678901234567890123456789"
-            + "012345678901234567890123456789012345678901234567890123456789"
-            + "012345678901234567890123456789012345678901234567890123456789"
-            + "012345678901...";
-        // @formatter:on
-        assertEquals(expected, ArchiveUtils.sanitize(input));
-    }
-
-    @Test
     public void testAsciiConversions() {
         asciiToByteAndBackOK("");
         asciiToByteAndBackOK("abcd");
@@ -121,6 +91,36 @@ public class ArchiveUtilsTest extends AbstractTestCase {
         final byte[] byteArray = new byte[8];
         byteArray[1] = (byte) -77;
         assertFalse(ArchiveUtils.isEqualWithNull(byteArray, 0, (byte) 0, byteArray, (byte) 0, (byte) 80));
+    }
+
+    @Test
+    public void testSanitizeLeavesShortStringsAlone() {
+        final String input = "012345678901234567890123456789012345678901234567890123456789";
+        assertEquals(input, ArchiveUtils.sanitize(input));
+    }
+
+    @Test
+    public void testSanitizeRemovesUnprintableCharacters() {
+        final String input = "\b12345678901234567890123456789012345678901234567890123456789";
+        final String expected = "?12345678901234567890123456789012345678901234567890123456789";
+        assertEquals(expected, ArchiveUtils.sanitize(input));
+    }
+
+    @Test
+    public void testSanitizeShortensString() {
+        // @formatter:off
+        final String input = "012345678901234567890123456789012345678901234567890123456789"
+            + "012345678901234567890123456789012345678901234567890123456789"
+            + "012345678901234567890123456789012345678901234567890123456789"
+            + "012345678901234567890123456789012345678901234567890123456789"
+            + "012345678901234567890123456789012345678901234567890123456789";
+        final String expected = "012345678901234567890123456789012345678901234567890123456789"
+            + "012345678901234567890123456789012345678901234567890123456789"
+            + "012345678901234567890123456789012345678901234567890123456789"
+            + "012345678901234567890123456789012345678901234567890123456789"
+            + "012345678901...";
+        // @formatter:on
+        assertEquals(expected, ArchiveUtils.sanitize(input));
     }
 
     @Test

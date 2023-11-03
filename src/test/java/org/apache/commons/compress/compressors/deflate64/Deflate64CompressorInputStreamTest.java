@@ -46,6 +46,18 @@ public class Deflate64CompressorInputStreamTest {
     @Mock
     private HuffmanDecoder decoder;
 
+    private void fuzzingTest(final int[] bytes) throws IOException, ArchiveException {
+        final int len = bytes.length;
+        final byte[] input = new byte[len];
+        for (int i = 0; i < len; i++) {
+            input[i] = (byte) bytes[i];
+        }
+        try (ArchiveInputStream<?> ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", new ByteArrayInputStream(input))) {
+            ais.getNextEntry();
+            IOUtils.toByteArray(ais);
+        }
+    }
+
     @Test
     public void testCloseCallsDecoder() throws Exception {
 
@@ -72,18 +84,6 @@ public class Deflate64CompressorInputStreamTest {
 
         try (final Deflate64CompressorInputStream input = new Deflate64CompressorInputStream(decoder)) {
             assertEquals(1024, input.available());
-        }
-    }
-
-    private void fuzzingTest(final int[] bytes) throws IOException, ArchiveException {
-        final int len = bytes.length;
-        final byte[] input = new byte[len];
-        for (int i = 0; i < len; i++) {
-            input[i] = (byte) bytes[i];
-        }
-        try (ArchiveInputStream<?> ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", new ByteArrayInputStream(input))) {
-            ais.getNextEntry();
-            IOUtils.toByteArray(ais);
         }
     }
 

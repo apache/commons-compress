@@ -69,6 +69,42 @@ public class TarUtilsTest extends AbstractTestCase {
     }
 
     @Test
+    public void testName() {
+        byte[] buff = new byte[20];
+        final String sb1 = "abcdefghijklmnopqrstuvwxyz";
+        int off = TarUtils.formatNameBytes(sb1, buff, 1, buff.length - 1);
+        assertEquals(off, 20);
+        String sb2 = TarUtils.parseName(buff, 1, 10);
+        assertEquals(sb2, sb1.substring(0, 10));
+        sb2 = TarUtils.parseName(buff, 1, 19);
+        assertEquals(sb2, sb1.substring(0, 19));
+        buff = new byte[30];
+        off = TarUtils.formatNameBytes(sb1, buff, 1, buff.length - 1);
+        assertEquals(off, 30);
+        sb2 = TarUtils.parseName(buff, 1, buff.length - 1);
+        assertEquals(sb1, sb2);
+        buff = new byte[] { 0, 1, 0 };
+        sb2 = TarUtils.parseName(buff, 0, 3);
+        assertEquals("", sb2);
+    }
+
+    @Test
+    public void testNegative() {
+        final byte [] buffer = new byte[22];
+        TarUtils.formatUnsignedOctalString(-1, buffer, 0, buffer.length);
+        assertEquals("1777777777777777777777", new String(buffer, UTF_8));
+    }
+
+    @Test
+    public void testOverflow() {
+        final byte [] buffer = new byte[8-1]; // a lot of the numbers have 8-byte buffers (nul term)
+        TarUtils.formatUnsignedOctalString(07777777L, buffer, 0, buffer.length);
+        assertEquals("7777777", new String(buffer, UTF_8));
+        assertThrows(IllegalArgumentException.class, () -> TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length),
+                "Should have cause IllegalArgumentException");
+    }
+
+    @Test
     public void testParseFromPAX01SparseHeaders() throws Exception {
         final String map = "0,10,20,0,20,5";
         final List<TarArchiveStructSparse> sparse = TarUtils.parseFromPAX01SparseHeaders(map);
@@ -108,6 +144,65 @@ public class TarUtilsTest extends AbstractTestCase {
     }
 
     @Test
+    public void testParseOctal() {
+        long value;
+        byte [] buffer;
+        final long MAX_OCTAL  = 077777777777L; // Allowed 11 digits
+        final long MAX_OCTAL_OVERFLOW  = 0777777777777L; // in fact 12 for some implementations
+        final String maxOctal = "777777777777"; // Maximum valid octal
+        buffer = maxOctal.getBytes(UTF_8);
+        value = TarUtils.parseOctal(buffer,0, buffer.length);
+        assertEquals(MAX_OCTAL_OVERFLOW, value);
+        buffer[buffer.length - 1] = ' ';
+        value = TarUtils.parseOctal(buffer,0, buffer.length);
+        assertEquals(MAX_OCTAL, value);
+        buffer[buffer.length-1]=0;
+        value = TarUtils.parseOctal(buffer,0, buffer.length);
+        assertEquals(MAX_OCTAL, value);
+        buffer=new byte[]{0,0};
+        value = TarUtils.parseOctal(buffer,0, buffer.length);
+        assertEquals(0, value);
+        buffer=new byte[]{0,' '};
+        value = TarUtils.parseOctal(buffer,0, buffer.length);
+        assertEquals(0, value);
+        buffer=new byte[]{' ',0};
+        value = TarUtils.parseOctal(buffer,0, buffer.length);
+        assertEquals(0, value);
+    }
+
+    @Test
+    public void testParseOctalCompress330() {
+        final long expected = 0100000;
+        final byte [] buffer = {
+            32, 32, 32, 32, 32, 49, 48, 48, 48, 48, 48, 32
+        };
+        assertEquals(expected, TarUtils.parseOctalOrBinary(buffer, 0, buffer.length));
+    }
+
+    @Test
+    public void testParseOctalInvalid() {
+        final byte[] buffer1 = ByteUtils.EMPTY_BYTE_ARRAY;
+        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer1, 0, buffer1.length),
+                "Expected IllegalArgumentException - should be at least 2 bytes long");
+
+        final byte[] buffer2 = {0}; // 1-byte array
+        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer2, 0, buffer2.length),
+                "Expected IllegalArgumentException - should be at least 2 bytes long");
+
+        final byte[] buffer3 = "abcdef ".getBytes(UTF_8); // Invalid input
+        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer3, 0, buffer3.length),
+                "Expected IllegalArgumentException");
+
+        final byte[] buffer4 = " 0 07 ".getBytes(UTF_8); // Invalid - embedded space
+        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer3, 0, buffer3.length),
+                "Expected IllegalArgumentException - embedded space");
+
+        final byte[] buffer5 = " 0\00007 ".getBytes(UTF_8); // Invalid - embedded NUL
+        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer5, 0, buffer5.length),
+                "Expected IllegalArgumentException - embedded NUL");
+    }
+
+    @Test
     public void testParsePAX01SparseHeadersRejectsOddNumberOfEntries() {
         final String map = "0,10,20,0,20";
         assertThrows(UncheckedIOException.class, () -> TarUtils.parsePAX01SparseHeaders(map));
@@ -129,6 +224,7 @@ public class TarUtilsTest extends AbstractTestCase {
             assertEquals(-1, in.read());
         }
     }
+
 
     @Test
     public void testParsePAX1XSparseHeadersRejectsIncompleteLastLine() throws Exception {
@@ -206,7 +302,6 @@ public class TarUtilsTest extends AbstractTestCase {
         }
     }
 
-
     @Test
     public void testParsePAX1XSparseHeadersRejectsNonNumericOffset() throws Exception {
         final byte[] header = ("1\n"
@@ -221,11 +316,51 @@ public class TarUtilsTest extends AbstractTestCase {
     }
 
     @Test
+    public void testParseSparse() {
+        final long expectedOffset = 0100000;
+        final long expectedNumbytes = 0111000;
+        final byte [] buffer = {
+                ' ', ' ', ' ', ' ', ' ', '0', '1', '0', '0', '0', '0', '0', // sparseOffset
+                ' ', ' ', ' ', ' ', ' ', '0', '1', '1', '1', '0', '0', '0'};
+        final TarArchiveStructSparse sparse = TarUtils.parseSparse(buffer, 0);
+        assertEquals(sparse.getOffset(), expectedOffset);
+        assertEquals(sparse.getNumbytes(), expectedNumbytes);
+    }
+
+    @Test
+    public void testParseTarWithSpecialPaxHeaders() throws IOException {
+        try (InputStream in = newInputStream("COMPRESS-530.tar");
+             TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
+            assertThrows(IOException.class, () -> archive.getNextEntry());
+            // IOUtils.toByteArray(archive);
+        }
+    }
+
+    @Test
     public void testPaxHeaderEntryWithEmptyValueRemovesKey() throws Exception {
         final Map<String, String> headers = TarUtils
                 .parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n7 foo=\n"
                         .getBytes(UTF_8)), null, new HashMap<>());
         assertEquals(0, headers.size());
+    }
+
+    @Test
+    public void testReadNegativeBinary12Byte() {
+        final byte[] b = {
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
+        };
+        assertEquals(-3601L, TarUtils.parseOctalOrBinary(b, 0, 12));
+    }
+
+    @Test
+    public void testReadNegativeBinary8Byte() {
+        final byte[] b = {
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
+        };
+        assertEquals(-3601L, TarUtils.parseOctalOrBinary(b, 0, 8));
     }
 
     @Test
@@ -378,149 +513,6 @@ public class TarUtilsTest extends AbstractTestCase {
     }
 
     @Test
-    public void testSecondEntryWinsWhenPaxHeaderContainsDuplicateKey() throws Exception {
-        final Map<String, String> headers = TarUtils.parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n11 foo=baz\n"
-                        .getBytes(UTF_8)), null, new HashMap<>());
-        assertEquals(1, headers.size());
-        assertEquals("baz", headers.get("foo"));
-    }
-
-    @Test
-    public void testName() {
-        byte[] buff = new byte[20];
-        final String sb1 = "abcdefghijklmnopqrstuvwxyz";
-        int off = TarUtils.formatNameBytes(sb1, buff, 1, buff.length - 1);
-        assertEquals(off, 20);
-        String sb2 = TarUtils.parseName(buff, 1, 10);
-        assertEquals(sb2, sb1.substring(0, 10));
-        sb2 = TarUtils.parseName(buff, 1, 19);
-        assertEquals(sb2, sb1.substring(0, 19));
-        buff = new byte[30];
-        off = TarUtils.formatNameBytes(sb1, buff, 1, buff.length - 1);
-        assertEquals(off, 30);
-        sb2 = TarUtils.parseName(buff, 1, buff.length - 1);
-        assertEquals(sb1, sb2);
-        buff = new byte[] { 0, 1, 0 };
-        sb2 = TarUtils.parseName(buff, 0, 3);
-        assertEquals("", sb2);
-    }
-
-    @Test
-    public void testNegative() {
-        final byte [] buffer = new byte[22];
-        TarUtils.formatUnsignedOctalString(-1, buffer, 0, buffer.length);
-        assertEquals("1777777777777777777777", new String(buffer, UTF_8));
-    }
-
-    @Test
-    public void testOverflow() {
-        final byte [] buffer = new byte[8-1]; // a lot of the numbers have 8-byte buffers (nul term)
-        TarUtils.formatUnsignedOctalString(07777777L, buffer, 0, buffer.length);
-        assertEquals("7777777", new String(buffer, UTF_8));
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length),
-                "Should have cause IllegalArgumentException");
-    }
-
-    @Test
-    public void testParseOctal() {
-        long value;
-        byte [] buffer;
-        final long MAX_OCTAL  = 077777777777L; // Allowed 11 digits
-        final long MAX_OCTAL_OVERFLOW  = 0777777777777L; // in fact 12 for some implementations
-        final String maxOctal = "777777777777"; // Maximum valid octal
-        buffer = maxOctal.getBytes(UTF_8);
-        value = TarUtils.parseOctal(buffer,0, buffer.length);
-        assertEquals(MAX_OCTAL_OVERFLOW, value);
-        buffer[buffer.length - 1] = ' ';
-        value = TarUtils.parseOctal(buffer,0, buffer.length);
-        assertEquals(MAX_OCTAL, value);
-        buffer[buffer.length-1]=0;
-        value = TarUtils.parseOctal(buffer,0, buffer.length);
-        assertEquals(MAX_OCTAL, value);
-        buffer=new byte[]{0,0};
-        value = TarUtils.parseOctal(buffer,0, buffer.length);
-        assertEquals(0, value);
-        buffer=new byte[]{0,' '};
-        value = TarUtils.parseOctal(buffer,0, buffer.length);
-        assertEquals(0, value);
-        buffer=new byte[]{' ',0};
-        value = TarUtils.parseOctal(buffer,0, buffer.length);
-        assertEquals(0, value);
-    }
-
-    @Test
-    public void testParseOctalCompress330() {
-        final long expected = 0100000;
-        final byte [] buffer = {
-            32, 32, 32, 32, 32, 49, 48, 48, 48, 48, 48, 32
-        };
-        assertEquals(expected, TarUtils.parseOctalOrBinary(buffer, 0, buffer.length));
-    }
-
-    @Test
-    public void testParseOctalInvalid() {
-        final byte[] buffer1 = ByteUtils.EMPTY_BYTE_ARRAY;
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer1, 0, buffer1.length),
-                "Expected IllegalArgumentException - should be at least 2 bytes long");
-
-        final byte[] buffer2 = {0}; // 1-byte array
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer2, 0, buffer2.length),
-                "Expected IllegalArgumentException - should be at least 2 bytes long");
-
-        final byte[] buffer3 = "abcdef ".getBytes(UTF_8); // Invalid input
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer3, 0, buffer3.length),
-                "Expected IllegalArgumentException");
-
-        final byte[] buffer4 = " 0 07 ".getBytes(UTF_8); // Invalid - embedded space
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer3, 0, buffer3.length),
-                "Expected IllegalArgumentException - embedded space");
-
-        final byte[] buffer5 = " 0\00007 ".getBytes(UTF_8); // Invalid - embedded NUL
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer5, 0, buffer5.length),
-                "Expected IllegalArgumentException - embedded NUL");
-    }
-
-    @Test
-    public void testParseSparse() {
-        final long expectedOffset = 0100000;
-        final long expectedNumbytes = 0111000;
-        final byte [] buffer = {
-                ' ', ' ', ' ', ' ', ' ', '0', '1', '0', '0', '0', '0', '0', // sparseOffset
-                ' ', ' ', ' ', ' ', ' ', '0', '1', '1', '1', '0', '0', '0'};
-        final TarArchiveStructSparse sparse = TarUtils.parseSparse(buffer, 0);
-        assertEquals(sparse.getOffset(), expectedOffset);
-        assertEquals(sparse.getNumbytes(), expectedNumbytes);
-    }
-
-    @Test
-    public void testParseTarWithSpecialPaxHeaders() throws IOException {
-        try (InputStream in = newInputStream("COMPRESS-530.tar");
-             TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
-            assertThrows(IOException.class, () -> archive.getNextEntry());
-            // IOUtils.toByteArray(archive);
-        }
-    }
-
-    @Test
-    public void testReadNegativeBinary12Byte() {
-        final byte[] b = {
-            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-            (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
-        };
-        assertEquals(-3601L, TarUtils.parseOctalOrBinary(b, 0, 12));
-    }
-
-    @Test
-    public void testReadNegativeBinary8Byte() {
-        final byte[] b = {
-            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-            (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
-        };
-        assertEquals(-3601L, TarUtils.parseOctalOrBinary(b, 0, 8));
-    }
-
-    @Test
     public void testRoundEncoding() throws Exception {
         // COMPRESS-114
         final ZipEncoding enc = ZipEncodingHelper.getZipEncoding(CharsetNames.ISO_8859_1);
@@ -577,6 +569,14 @@ public class TarUtilsTest extends AbstractTestCase {
         final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> checkRoundTripOctalOrBinary(Long.MAX_VALUE, 8),
                 "Should throw exception - value is too long to fit buffer of this len");
         assertEquals("Value 9223372036854775807 is too large for 8 byte field.", e.getMessage());
+    }
+
+    @Test
+    public void testSecondEntryWinsWhenPaxHeaderContainsDuplicateKey() throws Exception {
+        final Map<String, String> headers = TarUtils.parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n11 foo=baz\n"
+                        .getBytes(UTF_8)), null, new HashMap<>());
+        assertEquals(1, headers.size());
+        assertEquals("baz", headers.get("foo"));
     }
     // Check correct trailing bytes are generated
     @Test

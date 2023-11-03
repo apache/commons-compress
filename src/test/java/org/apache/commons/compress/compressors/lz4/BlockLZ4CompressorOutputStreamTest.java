@@ -34,30 +34,6 @@ import org.junit.jupiter.api.Test;
 public class BlockLZ4CompressorOutputStreamTest {
 
     @Test
-    public void testCantWriteBackReferenceFollowedByLiteralThatIsTooShort() {
-        final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
-        p.setBackReference(new LZ77Compressor.BackReference(10, 14));
-        assertFalse(p.canBeWritten(4));
-    }
-
-    @Test
-    public void testCantWriteBackReferenceIfAccumulatedOffsetIsTooShort() {
-        final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
-        p.setBackReference(new LZ77Compressor.BackReference(1, 4));
-        assertFalse(p.canBeWritten(5));
-    }
-
-    @Test
-    public void testCanWriteBackReferenceFollowedByLongLiteral() {
-        final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
-        p.setBackReference(new LZ77Compressor.BackReference(1, 4));
-        // a length of 11 would be enough according to the spec, but
-        // the algorithm we use for rewriting the last block requires
-        // 16 bytes
-        assertTrue(p.canBeWritten(16));
-    }
-
-    @Test
     @Disabled("would pass if the algorithm used for rewriting the final pairs was smarter")
     public void canWriteBackReferenceFollowedByShortLiteralIfLengthIsBigEnough() {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
@@ -71,25 +47,6 @@ public class BlockLZ4CompressorOutputStreamTest {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
         p.setBackReference(new LZ77Compressor.BackReference(10, 4));
         assertTrue(p.canBeWritten(5));
-    }
-
-    @Test
-    public void testCanWritePairWithoutBackReference() throws IOException {
-        final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
-        final byte[] b = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-        p.addLiteral(new LZ77Compressor.LiteralBlock(b, 1, 4));
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        p.writeTo(bos);
-        assertArrayEquals(new byte[] { 4<<4, 2, 3, 4, 5 }, bos.toByteArray());
-    }
-
-    @Test
-    public void testCanWritePairWithoutLiterals() throws IOException {
-        final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
-        p.setBackReference(new LZ77Compressor.BackReference(1, 4));
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        p.writeTo(bos);
-        assertArrayEquals(new byte[] { 0, 1, 0 }, bos.toByteArray());
     }
 
     private byte[] compress(final byte[] input, final int... lengthOfTrailers) throws IOException {
@@ -116,6 +73,55 @@ public class BlockLZ4CompressorOutputStreamTest {
         return compress(b, lengthOfTrailers);
     }
 
+    private byte[] prepareExpected(final int length) {
+        final byte[] b = new byte[length];
+        Arrays.fill(b, (byte) -1);
+        return b;
+    }
+
+    @Test
+    public void testCantWriteBackReferenceFollowedByLiteralThatIsTooShort() {
+        final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
+        p.setBackReference(new LZ77Compressor.BackReference(10, 14));
+        assertFalse(p.canBeWritten(4));
+    }
+
+    @Test
+    public void testCantWriteBackReferenceIfAccumulatedOffsetIsTooShort() {
+        final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
+        p.setBackReference(new LZ77Compressor.BackReference(1, 4));
+        assertFalse(p.canBeWritten(5));
+    }
+
+    @Test
+    public void testCanWriteBackReferenceFollowedByLongLiteral() {
+        final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
+        p.setBackReference(new LZ77Compressor.BackReference(1, 4));
+        // a length of 11 would be enough according to the spec, but
+        // the algorithm we use for rewriting the last block requires
+        // 16 bytes
+        assertTrue(p.canBeWritten(16));
+    }
+
+    @Test
+    public void testCanWritePairWithoutBackReference() throws IOException {
+        final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
+        final byte[] b = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        p.addLiteral(new LZ77Compressor.LiteralBlock(b, 1, 4));
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        p.writeTo(bos);
+        assertArrayEquals(new byte[] { 4<<4, 2, 3, 4, 5 }, bos.toByteArray());
+    }
+
+    @Test
+    public void testCanWritePairWithoutLiterals() throws IOException {
+        final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
+        p.setBackReference(new LZ77Compressor.BackReference(1, 4));
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        p.writeTo(bos);
+        assertArrayEquals(new byte[] { 0, 1, 0 }, bos.toByteArray());
+    }
+
     @Test
     public void testPairAccumulatesLengths() {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
@@ -132,12 +138,6 @@ public class BlockLZ4CompressorOutputStreamTest {
         assertFalse(p.hasBackReference());
         p.setBackReference(new LZ77Compressor.BackReference(1, 4));
         assertTrue(p.hasBackReference());
-    }
-
-    private byte[] prepareExpected(final int length) {
-        final byte[] b = new byte[length];
-        Arrays.fill(b, (byte) -1);
-        return b;
     }
 
     @Test

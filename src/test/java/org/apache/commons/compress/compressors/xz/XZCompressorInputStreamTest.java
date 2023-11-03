@@ -43,6 +43,16 @@ public class XZCompressorInputStreamTest {
         }
     }
 
+    private void singleByteReadConsistentlyReturnsMinusOneAtEof(final boolean decompressConcatenated) throws IOException {
+        final File input = getFile("bla.tar.xz");
+        try (InputStream is = Files.newInputStream(input.toPath());
+                XZCompressorInputStream in = new XZCompressorInputStream(is, decompressConcatenated)) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+        }
+    }
+
     @Test
     public void testMultiByteReadConsistentlyReturnsMinusOneAtEofDecompressConcatenated() throws IOException {
         multiByteReadConsistentlyReturnsMinusOneAtEof(true);
@@ -61,16 +71,6 @@ public class XZCompressorInputStreamTest {
         assertTrue(XZCompressorInputStream.matches(data, 7));
         data[5] = '0';
         assertFalse(XZCompressorInputStream.matches(data, 6));
-    }
-
-    private void singleByteReadConsistentlyReturnsMinusOneAtEof(final boolean decompressConcatenated) throws IOException {
-        final File input = getFile("bla.tar.xz");
-        try (InputStream is = Files.newInputStream(input.toPath());
-                XZCompressorInputStream in = new XZCompressorInputStream(is, decompressConcatenated)) {
-            IOUtils.toByteArray(in);
-            assertEquals(-1, in.read());
-            assertEquals(-1, in.read());
-        }
     }
 
     @Test

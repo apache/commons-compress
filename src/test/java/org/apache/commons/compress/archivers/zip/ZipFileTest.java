@@ -161,57 +161,6 @@ public class ZipFileTest extends AbstractTestCase {
         return crc.getValue();
     }
 
-    @Test
-    public void testExtractFileLiesAcrossSplitZipSegmentsCreatedByWinrar() throws Exception {
-        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_winrar/split_zip_created_by_winrar.zip");
-        try (final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile)) {
-            zf = new ZipFile(channel);
-
-            // the compressed content of ZipArchiveInputStream.java lies between .z01 and .z02
-            final ZipArchiveEntry zipEntry = zf.getEntry("commons-compress/src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveInputStream.java");
-            final File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_winrar/file_to_compare_1");
-            assertFileEqualsToEntry(fileToCompare, zipEntry, zf);
-        }
-    }
-
-    @Test
-    public void testExtractFileLiesAcrossSplitZipSegmentsCreatedByZip() throws Exception {
-        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
-        try (final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile)) {
-            zf = new ZipFile(channel);
-
-            // the compressed content of UnsupportedCompressionAlgorithmException.java lies between .z01 and .z02
-            ZipArchiveEntry zipEntry = zf
-                    .getEntry("commons-compress/src/main/java/org/apache/commons/compress/archivers/dump/UnsupportedCompressionAlgorithmException.java");
-            File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_zip/file_to_compare_1");
-            assertFileEqualsToEntry(fileToCompare, zipEntry, zf);
-
-            // the compressed content of DeflateParameters.java lies between .z02 and .zip
-            zipEntry = zf.getEntry("commons-compress/src/main/java/org/apache/commons/compress/compressors/deflate/DeflateParameters.java");
-            fileToCompare = getFile("COMPRESS-477/split_zip_created_by_zip/file_to_compare_2");
-            assertFileEqualsToEntry(fileToCompare, zipEntry, zf);
-        }
-    }
-
-    @Test
-    public void testExtractFileLiesAcrossSplitZipSegmentsCreatedByZipOfZip64() throws Exception {
-        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip_zip64.zip");
-        try (final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile)) {
-            zf = new ZipFile(channel);
-
-            // the compressed content of UnsupportedCompressionAlgorithmException.java lies between .z01 and .z02
-            ZipArchiveEntry zipEntry = zf
-                    .getEntry("commons-compress/src/main/java/org/apache/commons/compress/archivers/dump/UnsupportedCompressionAlgorithmException.java");
-            File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_zip/file_to_compare_1");
-            assertFileEqualsToEntry(fileToCompare, zipEntry, zf);
-
-            // the compressed content of DeflateParameters.java lies between .z02 and .zip
-            zipEntry = zf.getEntry("commons-compress/src/main/java/org/apache/commons/compress/compressors/deflate/DeflateParameters.java");
-            fileToCompare = getFile("COMPRESS-477/split_zip_created_by_zip/file_to_compare_2");
-            assertFileEqualsToEntry(fileToCompare, zipEntry, zf);
-        }
-    }
-
     private void multiByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
         final byte[] buf = new byte[2];
         try (ZipFile archive = new ZipFile(file)) {
@@ -220,71 +169,6 @@ public class ZipFileTest extends AbstractTestCase {
                 IOUtils.toByteArray(is);
                 assertEquals(-1, is.read(buf));
                 assertEquals(-1, is.read(buf));
-            }
-        }
-    }
-
-    @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingBzip2() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("bzip2-zip.zip"));
-    }
-
-    @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("bla.zip"));
-    }
-
-    @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate64() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-380/COMPRESS-380.zip"));
-    }
-
-    @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingExplode() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("imploding-8Kdict-3trees.zip"));
-    }
-
-    @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingStore() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-264.zip"));
-    }
-
-    @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingUnshrink() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("SHRUNK.ZIP"));
-    }
-
-    @Test
-    public void testNameSourceDefaultsToName() throws Exception {
-        nameSource("bla.zip", "test1.xml", ZipArchiveEntry.NameSource.NAME);
-    }
-
-    @Test
-    public void testNameSourceIsSetToEFS() throws Exception {
-        nameSource("utf8-7zip-test.zip", "\u20AC_for_Dollar.txt",
-                   ZipArchiveEntry.NameSource.NAME_WITH_EFS_FLAG);
-    }
-
-    @Test
-    public void testNameSourceIsSetToUnicodeExtraField() throws Exception {
-        nameSource("utf8-winzip-test.zip", "\u20AC_for_Dollar.txt",
-                   ZipArchiveEntry.NameSource.UNICODE_EXTRA_FIELD);
-    }
-
-    /**
-     * @see "https://issues.apache.org/jira/browse/COMPRESS-380"
-     */
-    @Test
-    public void testReadDeflate64CompressedStream() throws Exception {
-        final File input = getFile("COMPRESS-380/COMPRESS-380-input");
-        final File archive = getFile("COMPRESS-380/COMPRESS-380.zip");
-        try (InputStream in = Files.newInputStream(input.toPath());
-             ZipFile zf = new ZipFile(archive)) {
-            final byte[] orig = IOUtils.toByteArray(in);
-            final ZipArchiveEntry e = zf.getEntry("input2");
-            try (InputStream s = zf.getInputStream(e)) {
-                final byte[] fromZip = IOUtils.toByteArray(s);
-                assertArrayEquals(orig, fromZip);
             }
         }
     }
@@ -324,36 +208,6 @@ public class ZipFileTest extends AbstractTestCase {
                 assertEquals(-1, is.read());
             }
         }
-    }
-
-    @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingBzip2() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("bzip2-zip.zip"));
-    }
-
-    @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("bla.zip"));
-    }
-
-    @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate64() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-380/COMPRESS-380.zip"));
-    }
-
-    @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingExplode() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("imploding-8Kdict-3trees.zip"));
-    }
-
-    @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingStore() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-264.zip"));
-    }
-
-    @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingUnshrink() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("SHRUNK.ZIP"));
     }
 
     @AfterEach
@@ -675,12 +529,110 @@ public class ZipFileTest extends AbstractTestCase {
         assertEquals(26101, ze.getSize());
     }
 
+    @Test
+    public void testExtractFileLiesAcrossSplitZipSegmentsCreatedByWinrar() throws Exception {
+        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_winrar/split_zip_created_by_winrar.zip");
+        try (final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile)) {
+            zf = new ZipFile(channel);
+
+            // the compressed content of ZipArchiveInputStream.java lies between .z01 and .z02
+            final ZipArchiveEntry zipEntry = zf.getEntry("commons-compress/src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveInputStream.java");
+            final File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_winrar/file_to_compare_1");
+            assertFileEqualsToEntry(fileToCompare, zipEntry, zf);
+        }
+    }
+
+    @Test
+    public void testExtractFileLiesAcrossSplitZipSegmentsCreatedByZip() throws Exception {
+        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
+        try (final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile)) {
+            zf = new ZipFile(channel);
+
+            // the compressed content of UnsupportedCompressionAlgorithmException.java lies between .z01 and .z02
+            ZipArchiveEntry zipEntry = zf
+                    .getEntry("commons-compress/src/main/java/org/apache/commons/compress/archivers/dump/UnsupportedCompressionAlgorithmException.java");
+            File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_zip/file_to_compare_1");
+            assertFileEqualsToEntry(fileToCompare, zipEntry, zf);
+
+            // the compressed content of DeflateParameters.java lies between .z02 and .zip
+            zipEntry = zf.getEntry("commons-compress/src/main/java/org/apache/commons/compress/compressors/deflate/DeflateParameters.java");
+            fileToCompare = getFile("COMPRESS-477/split_zip_created_by_zip/file_to_compare_2");
+            assertFileEqualsToEntry(fileToCompare, zipEntry, zf);
+        }
+    }
+
+    @Test
+    public void testExtractFileLiesAcrossSplitZipSegmentsCreatedByZipOfZip64() throws Exception {
+        final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip_zip64.zip");
+        try (final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile)) {
+            zf = new ZipFile(channel);
+
+            // the compressed content of UnsupportedCompressionAlgorithmException.java lies between .z01 and .z02
+            ZipArchiveEntry zipEntry = zf
+                    .getEntry("commons-compress/src/main/java/org/apache/commons/compress/archivers/dump/UnsupportedCompressionAlgorithmException.java");
+            File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_zip/file_to_compare_1");
+            assertFileEqualsToEntry(fileToCompare, zipEntry, zf);
+
+            // the compressed content of DeflateParameters.java lies between .z02 and .zip
+            zipEntry = zf.getEntry("commons-compress/src/main/java/org/apache/commons/compress/compressors/deflate/DeflateParameters.java");
+            fileToCompare = getFile("COMPRESS-477/split_zip_created_by_zip/file_to_compare_2");
+            assertFileEqualsToEntry(fileToCompare, zipEntry, zf);
+        }
+    }
+
     /**
      * Test non power of 2 alignment.
      */
     @Test
     public void testInvalidAlignment() {
         assertThrows(IllegalArgumentException.class, () -> new ZipArchiveEntry("dummy").setAlignment(3));
+    }
+
+    @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingBzip2() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("bzip2-zip.zip"));
+    }
+
+    @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("bla.zip"));
+    }
+
+    @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate64() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-380/COMPRESS-380.zip"));
+    }
+
+    @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingExplode() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("imploding-8Kdict-3trees.zip"));
+    }
+
+    @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingStore() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-264.zip"));
+    }
+
+    @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingUnshrink() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("SHRUNK.ZIP"));
+    }
+
+    @Test
+    public void testNameSourceDefaultsToName() throws Exception {
+        nameSource("bla.zip", "test1.xml", ZipArchiveEntry.NameSource.NAME);
+    }
+
+    @Test
+    public void testNameSourceIsSetToEFS() throws Exception {
+        nameSource("utf8-7zip-test.zip", "\u20AC_for_Dollar.txt",
+                   ZipArchiveEntry.NameSource.NAME_WITH_EFS_FLAG);
+    }
+
+    @Test
+    public void testNameSourceIsSetToUnicodeExtraField() throws Exception {
+        nameSource("utf8-winzip-test.zip", "\u20AC_for_Dollar.txt",
+                   ZipArchiveEntry.NameSource.UNICODE_EXTRA_FIELD);
     }
 
     /**
@@ -741,6 +693,24 @@ public class ZipFileTest extends AbstractTestCase {
 
         assertEquals(entryName, entry.getName());
         assertFalse(iter.hasNext());
+    }
+
+    /**
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-380"
+     */
+    @Test
+    public void testReadDeflate64CompressedStream() throws Exception {
+        final File input = getFile("COMPRESS-380/COMPRESS-380-input");
+        final File archive = getFile("COMPRESS-380/COMPRESS-380.zip");
+        try (InputStream in = Files.newInputStream(input.toPath());
+             ZipFile zf = new ZipFile(archive)) {
+            final byte[] orig = IOUtils.toByteArray(in);
+            final ZipArchiveEntry e = zf.getEntry("input2");
+            try (InputStream s = zf.getInputStream(e)) {
+                final byte[] fromZip = IOUtils.toByteArray(s);
+                assertArrayEquals(orig, fromZip);
+            }
+        }
     }
 
     /**
@@ -889,6 +859,36 @@ public class ZipFileTest extends AbstractTestCase {
     public void testSetLevelTooSmallForZipArchiveOutputStream() {
         final ZipArchiveOutputStream fixture = new ZipArchiveOutputStream(new ByteArrayOutputStream());
         assertThrows(IllegalArgumentException.class, () -> fixture.setLevel(Deflater.DEFAULT_COMPRESSION - 1));
+    }
+
+    @Test
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingBzip2() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("bzip2-zip.zip"));
+    }
+
+    @Test
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("bla.zip"));
+    }
+
+    @Test
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate64() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-380/COMPRESS-380.zip"));
+    }
+
+    @Test
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingExplode() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("imploding-8Kdict-3trees.zip"));
+    }
+
+    @Test
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingStore() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-264.zip"));
+    }
+
+    @Test
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingUnshrink() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("SHRUNK.ZIP"));
     }
 
     /**

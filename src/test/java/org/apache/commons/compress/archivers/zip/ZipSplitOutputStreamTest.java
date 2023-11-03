@@ -31,18 +31,6 @@ import org.junit.jupiter.api.Test;
 public class ZipSplitOutputStreamTest extends AbstractTestCase {
 
     @Test
-    public void testSplitZipBeginsWithZipSplitSignature() throws IOException {
-        final File tempFile = File.createTempFile("temp", "zip");
-        new ZipSplitOutputStream(tempFile, 100 * 1024L);
-
-        final InputStream inputStream = Files.newInputStream(tempFile.toPath());
-        final byte[] buffer = new byte[4];
-        inputStream.read(buffer);
-
-        assertEquals(ByteBuffer.wrap(ZipArchiveOutputStream.DD_SIG).getInt(), ByteBuffer.wrap(buffer).getInt());
-    }
-
-    @Test
     public void testCreateSplittedFiles() throws IOException {
         final File testOutputFile = new File(dir, "testCreateSplittedFiles.zip");
         final int splitSize = 100 * 1024; /* 100 KB */
@@ -77,6 +65,18 @@ public class ZipSplitOutputStreamTest extends AbstractTestCase {
 
         zipFile = new File(dir.getPath(), "testCreateSplittedFiles.zip");
         assertEquals(zipFile.length(), fileToTest.length() + 4 - splitSize * 5);
+    }
+
+    @Test
+    public void testSplitZipBeginsWithZipSplitSignature() throws IOException {
+        final File tempFile = File.createTempFile("temp", "zip");
+        new ZipSplitOutputStream(tempFile, 100 * 1024L);
+
+        final InputStream inputStream = Files.newInputStream(tempFile.toPath());
+        final byte[] buffer = new byte[4];
+        inputStream.read(buffer);
+
+        assertEquals(ByteBuffer.wrap(ZipArchiveOutputStream.DD_SIG).getInt(), ByteBuffer.wrap(buffer).getInt());
     }
 
     @Test

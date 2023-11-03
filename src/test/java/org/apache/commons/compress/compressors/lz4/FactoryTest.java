@@ -32,16 +32,6 @@ import org.junit.jupiter.api.Test;
 
 public class FactoryTest extends AbstractTestCase {
 
-    @Test
-    public void testBlockRoundtripViaFactory() throws Exception {
-        roundtripViaFactory(CompressorStreamFactory.getLZ4Block());
-    }
-
-    @Test
-    public void testFrameRoundtripViaFactory() throws Exception {
-        roundtripViaFactory(CompressorStreamFactory.getLZ4Framed());
-    }
-
     private void roundtripViaFactory(final String format) throws Exception {
         final Path input = getPath("bla.tar");
         long start = System.currentTimeMillis();
@@ -60,5 +50,15 @@ public class FactoryTest extends AbstractTestCase {
             assertArrayEquals(expected, actual);
         }
         // System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
+    }
+
+    @Test
+    public void testBlockRoundtripViaFactory() throws Exception {
+        roundtripViaFactory(CompressorStreamFactory.getLZ4Block());
+    }
+
+    @Test
+    public void testFrameRoundtripViaFactory() throws Exception {
+        roundtripViaFactory(CompressorStreamFactory.getLZ4Framed());
     }
 }

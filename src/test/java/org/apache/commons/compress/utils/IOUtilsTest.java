@@ -43,6 +43,15 @@ public class IOUtilsTest {
         IOUtils.readFully(new SeekableInMemoryByteChannel(source), b);
     }
 
+    private void skip(final StreamWrapper wrapper) throws Exception {
+        final ByteArrayInputStream in = new ByteArrayInputStream(new byte[] {
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+            });
+        final InputStream sut = wrapper.wrap(in);
+        assertEquals(10, IOUtils.skip(sut, 10));
+        assertEquals(11, sut.read());
+    }
+
     @Test
     public void testCopyRangeDoesntCopyMoreThanAskedFor() throws IOException {
         try (ByteArrayInputStream in = new ByteArrayInputStream(new byte[] { 1, 2, 3, 4, 5 });
@@ -169,15 +178,6 @@ public class IOUtilsTest {
             assertEquals(toRead, read.length);
             assertEquals(toRead, in.position());
         }
-    }
-
-    private void skip(final StreamWrapper wrapper) throws Exception {
-        final ByteArrayInputStream in = new ByteArrayInputStream(new byte[] {
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
-            });
-        final InputStream sut = wrapper.wrap(in);
-        assertEquals(10, IOUtils.skip(sut, 10));
-        assertEquals(11, sut.read());
     }
 
     @Test

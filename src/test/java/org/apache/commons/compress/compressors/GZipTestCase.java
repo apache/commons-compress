@@ -44,29 +44,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 public final class GZipTestCase extends AbstractTestCase {
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.tgz");
-        final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath());
-                final GzipCompressorInputStream in = new GzipCompressorInputStream(is)) {
-            IOUtils.toByteArray(in);
-            assertEquals(-1, in.read(buf));
-            assertEquals(-1, in.read(buf));
-        }
-    }
-
-    @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.tgz");
-        try (InputStream is = Files.newInputStream(input.toPath());
-                final GzipCompressorInputStream in = new GzipCompressorInputStream(is)) {
-            IOUtils.toByteArray(in);
-            assertEquals(-1, in.read());
-            assertEquals(-1, in.read());
-        }
-    }
-
-    @Test
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {
         final File input = getFile("multiple.gz");
         try (InputStream is = Files.newInputStream(input.toPath())) {
@@ -260,9 +237,32 @@ public final class GZipTestCase extends AbstractTestCase {
     }
 
     @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tgz");
+        final byte[] buf = new byte[2];
+        try (InputStream is = Files.newInputStream(input.toPath());
+                final GzipCompressorInputStream in = new GzipCompressorInputStream(is)) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+        }
+    }
+
+    @Test
     public void testOverWrite() throws Exception {
         final GzipCompressorOutputStream out = new GzipCompressorOutputStream(new ByteArrayOutputStream());
         out.close();
         assertThrows(IOException.class, () -> out.write(0), "IOException expected");
+    }
+
+    @Test
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tgz");
+        try (InputStream is = Files.newInputStream(input.toPath());
+                final GzipCompressorInputStream in = new GzipCompressorInputStream(is)) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+        }
     }
 }

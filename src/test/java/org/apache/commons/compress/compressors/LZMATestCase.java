@@ -53,6 +53,28 @@ public final class LZMATestCase extends AbstractTestCase {
     }
 
     @Test
+    public void testLZMAUnarchive() throws Exception {
+        final File input = getFile("bla.tar.lzma");
+        final File output = new File(dir, "bla.tar");
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            try (final CompressorInputStream in = new LZMACompressorInputStream(is)) {
+                Files.copy(in, output.toPath());
+            }
+        }
+    }
+
+    @Test
+    public void testLZMAUnarchiveWithAutodetection() throws Exception {
+        final File input = getFile("bla.tar.lzma");
+        final File output = new File(dir, "bla.tar");
+        try (InputStream is = new BufferedInputStream(Files.newInputStream(input.toPath()))) {
+            try (final CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream(is)) {
+                Files.copy(in, output.toPath());
+            }
+        }
+    }
+
+    @Test
     public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.lzma");
         final byte[] buf = new byte[2];
@@ -73,28 +95,6 @@ public final class LZMATestCase extends AbstractTestCase {
                 IOUtils.toByteArray(in);
                 assertEquals(-1, in.read());
                 assertEquals(-1, in.read());
-            }
-        }
-    }
-
-    @Test
-    public void testLZMAUnarchive() throws Exception {
-        final File input = getFile("bla.tar.lzma");
-        final File output = new File(dir, "bla.tar");
-        try (InputStream is = Files.newInputStream(input.toPath())) {
-            try (final CompressorInputStream in = new LZMACompressorInputStream(is)) {
-                Files.copy(in, output.toPath());
-            }
-        }
-    }
-
-    @Test
-    public void testLZMAUnarchiveWithAutodetection() throws Exception {
-        final File input = getFile("bla.tar.lzma");
-        final File output = new File(dir, "bla.tar");
-        try (InputStream is = new BufferedInputStream(Files.newInputStream(input.toPath()))) {
-            try (final CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream(is)) {
-                Files.copy(in, output.toPath());
             }
         }
     }

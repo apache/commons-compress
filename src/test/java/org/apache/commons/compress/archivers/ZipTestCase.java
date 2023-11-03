@@ -120,79 +120,6 @@ public final class ZipTestCase extends AbstractTestCase {
         }
     }
 
-    @Test
-    public void testBuildSplitZipTest() throws IOException {
-        final File directoryToZip = getFilesToZip();
-        createTestSplitZipSegments();
-
-        final File lastFile = new File(dir, "splitZip.zip");
-        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
-            InputStream inputStream = Channels.newInputStream(channel);
-            ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream,
-                UTF_8.toString(), true, false, true)) {
-
-            ArchiveEntry entry;
-            final int filesNum = countNonDirectories(directoryToZip);
-            int filesCount = 0;
-            while ((entry = splitInputStream.getNextEntry()) != null) {
-                if (entry.isDirectory()) {
-                    continue;
-                }
-                // compare all files one by one
-                final File fileToCompare = new File(entry.getName());
-                try (InputStream inputStreamToCompare = Files.newInputStream(fileToCompare.toPath())) {
-                    assertArrayEquals(IOUtils.toByteArray(splitInputStream),
-                        IOUtils.toByteArray(inputStreamToCompare));
-                }
-                filesCount++;
-            }
-            // and the number of files should equal
-            assertEquals(filesCount, filesNum);
-        }
-    }
-
-    @Test
-    public void testBuildSplitZipWithSegmentAlreadyExistThrowsException() throws IOException {
-        final File directoryToZip = getFilesToZip();
-        final File outputZipFile = new File(dir, "splitZip.zip");
-        final long splitSize = 100 * 1024L; /* 100 KB */
-        try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile,
-            splitSize)) {
-
-            // create a file that has the same name of one of the created split segments
-            final File sameNameFile = new File(dir, "splitZip.z01");
-            sameNameFile.createNewFile();
-
-            assertThrows(IOException.class, () -> addFilesToZip(zipArchiveOutputStream, directoryToZip));
-        } catch (final Exception e) {
-            // Ignore:
-            // java.io.IOException: This archive contains unclosed entries.
-            //   at org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.finish(ZipArchiveOutputStream.java:563)
-            //   at org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.close(ZipArchiveOutputStream.java:1119)
-            //   at org.apache.commons.compress.archivers.ZipTestCase.buildSplitZipWithSegmentAlreadyExistThrowsException(ZipTestCase.java:715)
-        }
-    }
-
-    @Test
-    public void testBuildSplitZipWithTooLargeSizeThrowsException() throws IOException {
-        final Path file = Files.createTempFile("temp", "zip");
-        try {
-            assertThrows(IllegalArgumentException.class, () -> new ZipArchiveOutputStream(file, 4294967295L + 1));
-        } finally {
-            Files.delete(file);
-        }
-    }
-
-    @Test
-    public void testBuildSplitZipWithTooSmallSizeThrowsException() throws IOException {
-        final Path file = Files.createTempFile("temp", "zip");
-        try {
-            assertThrows(IllegalArgumentException.class, () -> new ZipArchiveOutputStream(File.createTempFile("temp", "zip"), 64 * 1024 - 1));
-        } finally {
-            Files.delete(file);
-        }
-    }
-
     private int countNonDirectories(final File file) {
         if (!file.isDirectory()) {
             return 1;
@@ -279,51 +206,6 @@ public final class ZipTestCase extends AbstractTestCase {
         return dir.listFiles()[0];
     }
 
-    @Test
-    public void testInputStreamStatisticsForBzip2Entry() throws IOException, ArchiveException {
-        final Map<String, List<Long>> expected = new HashMap<>();
-        expected.put("lots-of-as", Arrays.asList(42L, 39L));
-        testInputStreamStatistics("bzip2-zip.zip", expected);
-    }
-
-    @Test
-    public void testInputStreamStatisticsForDeflate64Entry() throws IOException, ArchiveException {
-        final Map<String, List<Long>> expected = new HashMap<>();
-        expected.put("input2", Arrays.asList(3072L, 2111L));
-        testInputStreamStatistics("COMPRESS-380/COMPRESS-380.zip", expected);
-    }
-
-
-    @Test
-    public void testInputStreamStatisticsForImplodedEntry() throws IOException, ArchiveException {
-        final Map<String, List<Long>> expected = new HashMap<>();
-        expected.put("LICENSE.TXT", Arrays.asList(11560L, 4131L));
-        testInputStreamStatistics("imploding-8Kdict-3trees.zip", expected);
-    }
-
-    @Test
-    public void testInputStreamStatisticsForShrunkEntry() throws IOException, ArchiveException {
-        final Map<String, List<Long>> expected = new HashMap<>();
-        expected.put("TEST1.XML", Arrays.asList(76L, 66L));
-        expected.put("TEST2.XML", Arrays.asList(81L, 76L));
-        testInputStreamStatistics("SHRUNK.ZIP", expected);
-    }
-
-    @Test
-    public void testInputStreamStatisticsForStoredEntry() throws IOException, ArchiveException {
-        final Map<String, List<Long>> expected = new HashMap<>();
-        expected.put("test.txt", Arrays.asList(5L, 5L));
-        testInputStreamStatistics("COMPRESS-264.zip", expected);
-    }
-
-    @Test
-    public void testInputStreamStatisticsOfZipBombExcel() throws IOException, ArchiveException {
-        final Map<String, List<Long>> expected = new HashMap<>();
-        expected.put("[Content_Types].xml", Arrays.asList(8390036L, 8600L));
-        expected.put("xl/worksheets/sheet1.xml", Arrays.asList(1348L, 508L));
-        testInputStreamStatistics("zipbomb.xlsx", expected);
-    }
-
     private void readStream(final InputStream in, final ArchiveEntry entry, final Map<String,List<List<Long>>> map) throws IOException {
         final byte[] buf = new byte[4096];
         final InputStreamStatistics stats = (InputStreamStatistics) in;
@@ -337,6 +219,79 @@ public final class ZipTestCase extends AbstractTestCase {
         final long t = stats.getUncompressedCount();
         final long b = stats.getCompressedCount();
         list.add(Arrays.asList(t, b));
+    }
+
+    @Test
+    public void testBuildSplitZipTest() throws IOException {
+        final File directoryToZip = getFilesToZip();
+        createTestSplitZipSegments();
+
+        final File lastFile = new File(dir, "splitZip.zip");
+        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+            InputStream inputStream = Channels.newInputStream(channel);
+            ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream,
+                UTF_8.toString(), true, false, true)) {
+
+            ArchiveEntry entry;
+            final int filesNum = countNonDirectories(directoryToZip);
+            int filesCount = 0;
+            while ((entry = splitInputStream.getNextEntry()) != null) {
+                if (entry.isDirectory()) {
+                    continue;
+                }
+                // compare all files one by one
+                final File fileToCompare = new File(entry.getName());
+                try (InputStream inputStreamToCompare = Files.newInputStream(fileToCompare.toPath())) {
+                    assertArrayEquals(IOUtils.toByteArray(splitInputStream),
+                        IOUtils.toByteArray(inputStreamToCompare));
+                }
+                filesCount++;
+            }
+            // and the number of files should equal
+            assertEquals(filesCount, filesNum);
+        }
+    }
+
+    @Test
+    public void testBuildSplitZipWithSegmentAlreadyExistThrowsException() throws IOException {
+        final File directoryToZip = getFilesToZip();
+        final File outputZipFile = new File(dir, "splitZip.zip");
+        final long splitSize = 100 * 1024L; /* 100 KB */
+        try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile,
+            splitSize)) {
+
+            // create a file that has the same name of one of the created split segments
+            final File sameNameFile = new File(dir, "splitZip.z01");
+            sameNameFile.createNewFile();
+
+            assertThrows(IOException.class, () -> addFilesToZip(zipArchiveOutputStream, directoryToZip));
+        } catch (final Exception e) {
+            // Ignore:
+            // java.io.IOException: This archive contains unclosed entries.
+            //   at org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.finish(ZipArchiveOutputStream.java:563)
+            //   at org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.close(ZipArchiveOutputStream.java:1119)
+            //   at org.apache.commons.compress.archivers.ZipTestCase.buildSplitZipWithSegmentAlreadyExistThrowsException(ZipTestCase.java:715)
+        }
+    }
+
+    @Test
+    public void testBuildSplitZipWithTooLargeSizeThrowsException() throws IOException {
+        final Path file = Files.createTempFile("temp", "zip");
+        try {
+            assertThrows(IllegalArgumentException.class, () -> new ZipArchiveOutputStream(file, 4294967295L + 1));
+        } finally {
+            Files.delete(file);
+        }
+    }
+
+    @Test
+    public void testBuildSplitZipWithTooSmallSizeThrowsException() throws IOException {
+        final Path file = Files.createTempFile("temp", "zip");
+        try {
+            assertThrows(IllegalArgumentException.class, () -> new ZipArchiveOutputStream(File.createTempFile("temp", "zip"), 64 * 1024 - 1));
+        } finally {
+            Files.delete(file);
+        }
     }
 
     @Test
@@ -370,6 +325,7 @@ public final class ZipTestCase extends AbstractTestCase {
             assertSameFileContents(reference, fileResult);
         }
     }
+
 
     @Test
     public void testCopyRawZip64EntryFromFile()
@@ -599,6 +555,50 @@ public final class ZipTestCase extends AbstractTestCase {
             assertEquals(me.getValue(), actualStatistics.get(me.getKey()).get(0),
                     "Mismatch of stats with expected value for: " + me.getKey());
         }
+    }
+
+    @Test
+    public void testInputStreamStatisticsForBzip2Entry() throws IOException, ArchiveException {
+        final Map<String, List<Long>> expected = new HashMap<>();
+        expected.put("lots-of-as", Arrays.asList(42L, 39L));
+        testInputStreamStatistics("bzip2-zip.zip", expected);
+    }
+
+    @Test
+    public void testInputStreamStatisticsForDeflate64Entry() throws IOException, ArchiveException {
+        final Map<String, List<Long>> expected = new HashMap<>();
+        expected.put("input2", Arrays.asList(3072L, 2111L));
+        testInputStreamStatistics("COMPRESS-380/COMPRESS-380.zip", expected);
+    }
+
+    @Test
+    public void testInputStreamStatisticsForImplodedEntry() throws IOException, ArchiveException {
+        final Map<String, List<Long>> expected = new HashMap<>();
+        expected.put("LICENSE.TXT", Arrays.asList(11560L, 4131L));
+        testInputStreamStatistics("imploding-8Kdict-3trees.zip", expected);
+    }
+
+    @Test
+    public void testInputStreamStatisticsForShrunkEntry() throws IOException, ArchiveException {
+        final Map<String, List<Long>> expected = new HashMap<>();
+        expected.put("TEST1.XML", Arrays.asList(76L, 66L));
+        expected.put("TEST2.XML", Arrays.asList(81L, 76L));
+        testInputStreamStatistics("SHRUNK.ZIP", expected);
+    }
+
+    @Test
+    public void testInputStreamStatisticsForStoredEntry() throws IOException, ArchiveException {
+        final Map<String, List<Long>> expected = new HashMap<>();
+        expected.put("test.txt", Arrays.asList(5L, 5L));
+        testInputStreamStatistics("COMPRESS-264.zip", expected);
+    }
+
+    @Test
+    public void testInputStreamStatisticsOfZipBombExcel() throws IOException, ArchiveException {
+        final Map<String, List<Long>> expected = new HashMap<>();
+        expected.put("[Content_Types].xml", Arrays.asList(8390036L, 8600L));
+        expected.put("xl/worksheets/sheet1.xml", Arrays.asList(1348L, 508L));
+        testInputStreamStatistics("zipbomb.xlsx", expected);
     }
 
     /**

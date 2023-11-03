@@ -160,15 +160,6 @@ public class X5455_ExtendedTimestampTest {
     }
 
     @Test
-    public void testResetsFlagsWhenLocalFileArrayIsTooShort() throws Exception {
-        final byte[] local = {
-            7
-        }; // claims all three time values would be present, but they are not
-        xf.parseFromLocalFileData(local, 0, 1);
-        assertArrayEquals(new byte[1], xf.getLocalFileDataData());
-    }
-
-    @Test
     public void testBitsAreSetWithTime() {
         xf.setModifyJavaTime(new Date(1111));
         assertTrue(xf.isBit0_modifyTimePresent());
@@ -465,6 +456,15 @@ public class X5455_ExtendedTimestampTest {
         parseReparse((byte) 71, MAX_TIME_SECONDS, (byte) 7, MOD_AC_CR_MAX, MOD_MAX);
         parseReparse((byte) 127, MAX_TIME_SECONDS, (byte) 7, MOD_AC_CR_MAX, MOD_MAX);
         parseReparse((byte) -1, MAX_TIME_SECONDS, (byte) 7, MOD_AC_CR_MAX, MOD_MAX);
+    }
+
+    @Test
+    public void testResetsFlagsWhenLocalFileArrayIsTooShort() throws Exception {
+        final byte[] local = {
+            7
+        }; // claims all three time values would be present, but they are not
+        xf.parseFromLocalFileData(local, 0, 1);
+        assertArrayEquals(new byte[1], xf.getLocalFileDataData());
     }
 
     @Test

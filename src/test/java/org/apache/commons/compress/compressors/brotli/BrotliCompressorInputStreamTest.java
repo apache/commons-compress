@@ -43,44 +43,6 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
         }
     }
 
-    @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final byte[] buf = new byte[2];
-        try (InputStream is = newInputStream("brotli.testdata.compressed");
-                final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
-            IOUtils.toByteArray(in);
-            assertEquals(-1, in.read(buf));
-            assertEquals(-1, in.read(buf));
-        }
-    }
-
-    @Test
-    public void testShouldBeAbleToSkipAByte() throws IOException {
-        try (InputStream is = newInputStream("brotli.testdata.compressed");
-                final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
-            assertEquals(1, in.skip(1));
-        }
-    }
-
-    @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        try (InputStream is = newInputStream("brotli.testdata.compressed");
-                final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
-            IOUtils.toByteArray(in);
-            assertEquals(-1, in.read());
-            assertEquals(-1, in.read());
-        }
-    }
-
-    @Test
-    public void testSingleByteReadWorksAsExpected() throws IOException {
-        try (InputStream is = newInputStream("brotli.testdata.compressed");
-                final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
-            // starts with file name "XXX"
-            assertEquals('X', in.read());
-        }
-    }
-
     /**
      * Test bridge works fine.
      *
@@ -126,6 +88,44 @@ public class BrotliCompressorInputStreamTest extends AbstractTestCase {
             assertTrue(BrotliUtils.isBrotliCompressionAvailable());
         } finally {
             BrotliUtils.setCacheBrotliAvailablity(true);
+        }
+    }
+
+    @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final byte[] buf = new byte[2];
+        try (InputStream is = newInputStream("brotli.testdata.compressed");
+                final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+        }
+    }
+
+    @Test
+    public void testShouldBeAbleToSkipAByte() throws IOException {
+        try (InputStream is = newInputStream("brotli.testdata.compressed");
+                final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
+            assertEquals(1, in.skip(1));
+        }
+    }
+
+    @Test
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        try (InputStream is = newInputStream("brotli.testdata.compressed");
+                final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+        }
+    }
+
+    @Test
+    public void testSingleByteReadWorksAsExpected() throws IOException {
+        try (InputStream is = newInputStream("brotli.testdata.compressed");
+                final BrotliCompressorInputStream in = new BrotliCompressorInputStream(is)) {
+            // starts with file name "XXX"
+            assertEquals('X', in.read());
         }
     }
 

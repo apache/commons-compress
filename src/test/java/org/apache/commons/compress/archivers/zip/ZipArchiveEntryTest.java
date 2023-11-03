@@ -52,43 +52,6 @@ public class ZipArchiveEntryTest {
         assertEquals(extraFields.length, read.length);
     }
 
-    @Test
-    public void testDraconicThrowsOnUnparseableExtraData() throws Exception {
-        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
-        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
-        ze.setExtraFields(extraFields);
-        assertThrows(ZipException.class, () -> ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.DRACONIC));
-    }
-
-    /**
-     * @see "https://issues.apache.org/jira/browse/COMPRESS-379"
-     */
-    @Test
-    public void testIsUnixSymlinkIsFalseIfMoreThanOneFlagIsSet() throws Exception {
-        try (ZipFile zf = new ZipFile(getFile("COMPRESS-379.jar"))) {
-            final ZipArchiveEntry ze = zf.getEntry("META-INF/maven/");
-            assertFalse(ze.isUnixSymlink());
-        }
-    }
-
-    @Test
-    public void testOnlyParseableLenientExcludesUnparseableExtraData() throws Exception {
-        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
-        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
-        ze.setExtraFields(extraFields);
-        final ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.ONLY_PARSEABLE_LENIENT);
-        assertEquals(extraFields.length, read.length + 1);
-    }
-
-    @Test
-    public void testOnlyParseableStrictExcludesUnparseableExtraData() throws Exception {
-        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
-        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
-        ze.setExtraFields(extraFields);
-        final ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.ONLY_PARSEABLE_STRICT);
-        assertEquals(extraFields.length, read.length + 1);
-    }
-
     private ZipExtraField[] parsingModeBehaviorTestData() {
         final AsiExtraField a = new AsiExtraField();
         a.setDirectory(true);
@@ -102,24 +65,6 @@ public class ZipArchiveEntryTest {
         };
         x.parseFromLocalFileData(unparseable, 0, unparseable.length);
         return new ZipExtraField[] { a, u, x };
-    }
-
-    @Test
-    public void testReparsingUnicodeExtraWithUnsupportedversionThrowsInStrictMode()
-        throws Exception {
-        try (ZipFile zf = new ZipFile(getFile("COMPRESS-479.zip"))) {
-            final ZipArchiveEntry ze = zf.getEntry("%U20AC_for_Dollar.txt");
-            assertThrows(ZipException.class, () -> ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.STRICT_FOR_KNOW_EXTRA_FIELDS));
-        }
-    }
-
-    @Test
-    public void testStrictForKnowExtraFieldsIncludesUnparseableExtraData() throws Exception {
-        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
-        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
-        ze.setExtraFields(extraFields);
-        final ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.STRICT_FOR_KNOW_EXTRA_FIELDS);
-        assertEquals(extraFields.length, read.length);
     }
 
     /**
@@ -196,6 +141,14 @@ public class ZipArchiveEntryTest {
         archiveEntry.getGeneralPurposeBit().useStrongEncryption(true);
         final ZipArchiveEntry copy = new ZipArchiveEntry(archiveEntry);
         assertEquals(archiveEntry, copy);
+    }
+
+    @Test
+    public void testDraconicThrowsOnUnparseableExtraData() throws Exception {
+        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
+        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        ze.setExtraFields(extraFields);
+        assertThrows(ZipException.class, () -> ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.DRACONIC));
     }
 
     /**
@@ -306,6 +259,17 @@ public class ZipArchiveEntryTest {
     }
 
     /**
+     * @see "https://issues.apache.org/jira/browse/COMPRESS-379"
+     */
+    @Test
+    public void testIsUnixSymlinkIsFalseIfMoreThanOneFlagIsSet() throws Exception {
+        try (ZipFile zf = new ZipFile(getFile("COMPRESS-379.jar"))) {
+            final ZipArchiveEntry ze = zf.getEntry("META-INF/maven/");
+            assertFalse(ze.isUnixSymlink());
+        }
+    }
+
+    /**
      * Test case for
      * <a href="https://issues.apache.org/jira/browse/COMPRESS-94"
      * >COMPRESS-94</a>.
@@ -332,6 +296,33 @@ public class ZipArchiveEntryTest {
         assertEquals(entry1, entry2);
         assertNotEquals(entry1, entry3);
         assertNotEquals(entry2, entry3);
+    }
+
+    @Test
+    public void testOnlyParseableLenientExcludesUnparseableExtraData() throws Exception {
+        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
+        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        ze.setExtraFields(extraFields);
+        final ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.ONLY_PARSEABLE_LENIENT);
+        assertEquals(extraFields.length, read.length + 1);
+    }
+
+    @Test
+    public void testOnlyParseableStrictExcludesUnparseableExtraData() throws Exception {
+        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
+        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        ze.setExtraFields(extraFields);
+        final ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.ONLY_PARSEABLE_STRICT);
+        assertEquals(extraFields.length, read.length + 1);
+    }
+
+    @Test
+    public void testReparsingUnicodeExtraWithUnsupportedversionThrowsInStrictMode()
+        throws Exception {
+        try (ZipFile zf = new ZipFile(getFile("COMPRESS-479.zip"))) {
+            final ZipArchiveEntry ze = zf.getEntry("%U20AC_for_Dollar.txt");
+            assertThrows(ZipException.class, () -> ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.STRICT_FOR_KNOW_EXTRA_FIELDS));
+        }
     }
 
     @Test
@@ -488,6 +479,15 @@ public class ZipArchiveEntryTest {
         assertEquals(TimeUtils.toNtfsTime(time), ntfs.getModifyTime().getLongValue());
         assertEquals(0L, ntfs.getAccessTime().getLongValue());
         assertEquals(0L, ntfs.getCreateTime().getLongValue());
+    }
+
+    @Test
+    public void testStrictForKnowExtraFieldsIncludesUnparseableExtraData() throws Exception {
+        final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
+        final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
+        ze.setExtraFields(extraFields);
+        final ZipExtraField[] read = ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.STRICT_FOR_KNOW_EXTRA_FIELDS);
+        assertEquals(extraFields.length, read.length);
     }
 
     @Test
