@@ -91,8 +91,8 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             assertTrue(results.getDeleted().isEmpty());
         } finally {
             checkArchiveContent(result, archiveList);
-            tryHardToDelete(inputPath);
-            tryHardToDelete(result);
+            forceDelete(inputPath);
+            forceDelete(result);
         }
     }
 
@@ -121,7 +121,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             assertTrue(results.getAddedFromChangeSet().contains("testdata/test1.xml"));
         } finally {
             checkArchiveContent(result, archiveList);
-            tryHardToDelete(result);
+            forceDelete(result);
         }
     }
 
@@ -200,7 +200,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             new ChangeSetPerformer(changeSet).perform(archiveInputStream, archiveOutputStream);
         } finally {
             checkArchiveContent(result, archiveList);
-            tryHardToDelete(result);
+            forceDelete(result);
         }
 
     }
@@ -233,7 +233,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             new ChangeSetPerformer(changeSet).perform(archiveInputStream, archiveOutputStream);
         } finally {
             checkArchiveContent(result, archiveList);
-            tryHardToDelete(result);
+            forceDelete(result);
         }
     }
 
@@ -275,7 +275,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             new ChangeSetPerformer(changeSet).perform(archiveInputStream, archiveOutputStream);
         } finally {
             checkArchiveContent(result, archiveList);
-            tryHardToDelete(result);
+            forceDelete(result);
         }
     }
 
@@ -324,7 +324,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             assertEquals(6, results.getAddedFromStream().size());
         } finally {
             checkArchiveContent(result, archiveList);
-            tryHardToDelete(result);
+            forceDelete(result);
         }
 
     }
@@ -356,7 +356,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             new ChangeSetPerformer(changeSet).perform(archiveInputStream, archiveOutputStream);
         } finally {
             checkArchiveContent(result, archiveList);
-            tryHardToDelete(result);
+            forceDelete(result);
         }
 
     }
@@ -389,7 +389,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             new ChangeSetPerformer(changeSet).perform(archiveInputStream, archiveOutputStream);
         } finally {
             checkArchiveContent(result, archiveList);
-            tryHardToDelete(result);
+            forceDelete(result);
         }
 
     }
@@ -418,7 +418,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             new ChangeSetPerformer(changeSet).perform(archiveInputStream, archiveOutputStream);
         } finally {
             checkArchiveContent(result, archiveList);
-            tryHardToDelete(result);
+            forceDelete(result);
         }
     }
 
@@ -445,7 +445,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             new ChangeSetPerformer(changeSet).perform(archiveInputStream, archiveOutputStream);
         } finally {
             checkArchiveContent(result, archiveList);
-            tryHardToDelete(result);
+            forceDelete(result);
         }
     }
 
@@ -472,7 +472,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             new ChangeSetPerformer(changeSet).perform(archiveInputStream, archiveOutputStream);
         } finally {
             checkArchiveContent(result, archiveList);
-            tryHardToDelete(result);
+            forceDelete(result);
         }
     }
 
@@ -499,7 +499,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             new ChangeSetPerformer(changeSet).perform(archiveInputStream, archiveOutputStream);
         } finally {
             checkArchiveContent(result, archiveList);
-            tryHardToDelete(result);
+            forceDelete(result);
         }
     }
 
@@ -526,7 +526,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             new ChangeSetPerformer(changeSet).perform(archiveInputStream, archiveOutputStream);
         } finally {
             checkArchiveContent(result, archiveList);
-            tryHardToDelete(result);
+            forceDelete(result);
         }
     }
 
@@ -651,7 +651,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             new ChangeSetPerformer(changeSet).perform(archiveInputStream, archiveOutputStream);
         } finally {
             checkArchiveContent(result, archiveList);
-            tryHardToDelete(result);
+            forceDelete(result);
         }
     }
 
@@ -680,7 +680,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             new ChangeSetPerformer(changeSet).perform(archiveInputStream, archiveOutputStream);
         } finally {
             checkArchiveContent(result, archiveList);
-            tryHardToDelete(result);
+            forceDelete(result);
         }
     }
 
@@ -786,7 +786,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             final List<String> expected = new ArrayList<>();
             expected.add("test1.xml");
             checkArchiveContent(result, expected);
-            tryHardToDelete(result);
+            forceDelete(result);
         }
     }
 
@@ -820,7 +820,7 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
             new ChangeSetPerformer(changeSet).perform(archiveInputStream, archiveOutputStream);
         } finally {
             checkArchiveContent(result, archiveList);
-            tryHardToDelete(result);
+            forceDelete(result);
         }
     }
 
@@ -867,10 +867,10 @@ public final class ChangeSetRawTypesTest extends AbstractTestCase {
                         "111111111111111111111111111000101011".equals(str);
                     }
                 }
-                rmdir(check);
+                forceDelete(check);
             }
         } finally {
-            tryHardToDelete(result);
+            forceDelete(result);
         }
     }
 

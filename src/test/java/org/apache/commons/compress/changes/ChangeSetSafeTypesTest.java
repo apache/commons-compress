@@ -878,7 +878,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
                     "111111111111111111111111111000101011".equals(str);
                 }
             }
-            rmdir(check);
+            forceDelete(check);
         }
     }
 

@@ -84,7 +84,7 @@ public class ExpanderTest extends AbstractTestCase {
                 assertThrows(IOException.class, () -> new Expander().expand(f, resultDir));
             }
         } finally {
-            tryHardToDelete(s);
+            forceDelete(s);
         }
     }
 

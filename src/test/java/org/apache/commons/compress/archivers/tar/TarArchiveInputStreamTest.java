@@ -189,7 +189,7 @@ public class TarArchiveInputStreamTest extends AbstractTestCase {
                 }
             });
         } finally {
-            rmdir(dir);
+            forceDelete(dir);
         }
     }
 

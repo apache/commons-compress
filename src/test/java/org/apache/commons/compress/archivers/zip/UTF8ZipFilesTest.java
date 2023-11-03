@@ -186,7 +186,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             createTestFile(file, encoding, withEFS, withExplicitUnicodeExtra);
             testFile(file, encoding);
         } finally {
-            tryHardToDelete(file);
+            forceDelete(file);
         }
     }
 
@@ -372,7 +372,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             assertNotNull(zf.getEntry(OIL_BARREL_TXT));
         } finally {
             ZipFile.closeQuietly(zf);
-            tryHardToDelete(file);
+            forceDelete(file);
         }
     }
 
@@ -391,7 +391,7 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
             if (zi != null) {
                 zi.close();
             }
-            tryHardToDelete(file);
+            forceDelete(file);
         }
     }
 

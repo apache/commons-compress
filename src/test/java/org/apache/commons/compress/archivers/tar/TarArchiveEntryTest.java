@@ -490,7 +490,7 @@ public class TarArchiveEntryTest implements TarConstants {
             if (tout != null) {
                 tout.close();
             }
-            AbstractTestCase.tryHardToDelete(f);
+            AbstractTestCase.forceDelete(f);
         }
     }
 

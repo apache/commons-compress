@@ -65,7 +65,7 @@ public class JarArchiveOutputStreamTest {
             fes = ze.getExtraFields();
             assertEquals(0, fes.length);
         } finally {
-            AbstractTestCase.tryHardToDelete(testArchive);
+            AbstractTestCase.forceDelete(testArchive);
         }
     }
 

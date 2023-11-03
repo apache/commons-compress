@@ -151,7 +151,7 @@ public class TarFileTest extends AbstractTestCase {
     public void shouldThrowAnExceptionOnTruncatedEntries() throws Exception {
         final File dir = mkdir("COMPRESS-279");
         assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-279.tar")));
-        rmdir(dir);
+        forceDelete(dir);
     }
 
     @Test

@@ -27,9 +27,8 @@ import java.nio.file.Files;
 import java.util.Enumeration;
 
 import org.apache.commons.compress.AbstractTestCase;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class ZipFileIgnoringLocalFileHeaderTest {
 
@@ -37,6 +36,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
         return new ZipFile(AbstractTestCase.getFile(fileName), ZipEncodingHelper.UTF8, true, true);
     }
 
+    @TempDir
     private File dir;
 
     @Test
@@ -45,26 +45,6 @@ public class ZipFileIgnoringLocalFileHeaderTest {
             final ZipArchiveEntry ze = zf.getEntry("test1.xml");
             assertEquals(610, ze.getSize());
         }
-    }
-
-    @Test
-    public void getRawInputStreamReturnsNotNull() throws IOException {
-        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
-            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
-            try (InputStream rawInputStream = zf.getRawInputStream(ze)) {
-                assertNotNull(rawInputStream);
-            }
-        }
-    }
-
-    @BeforeEach
-    public void setUp() throws Exception {
-        dir = AbstractTestCase.mkdir("dir");
-    }
-
-    @AfterEach
-    public void tearDown() {
-        AbstractTestCase.rmdir(dir);
     }
 
     @Test
@@ -78,6 +58,16 @@ public class ZipFileIgnoringLocalFileHeaderTest {
                 }
             }
             assertEquals(2, numberOfEntries);
+        }
+    }
+
+    @Test
+    public void testGetRawInputStreamReturnsNotNull() throws IOException {
+        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
+            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
+            try (InputStream rawInputStream = zf.getRawInputStream(ze)) {
+                assertNotNull(rawInputStream);
+            }
         }
     }
 

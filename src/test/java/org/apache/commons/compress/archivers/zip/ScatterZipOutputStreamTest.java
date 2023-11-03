@@ -16,7 +16,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.AbstractTestCase.tryHardToDelete;
+import static org.apache.commons.compress.AbstractTestCase.forceDelete;
 import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,8 +38,8 @@ public class ScatterZipOutputStreamTest {
 
     @AfterEach
     public void cleanup() {
-        tryHardToDelete(scatterFile);
-        tryHardToDelete(target);
+        forceDelete(scatterFile);
+        forceDelete(target);
     }
 
     private InputStreamSupplier createPayloadSupplier(final ByteArrayInputStream payload) {

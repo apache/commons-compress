@@ -289,10 +289,11 @@ public class Zip64SupportIT {
                     if (os != null) {
                         os.close();
                     }
-                    AbstractTestCase.tryHardToDelete(f);
+                    AbstractTestCase.forceDelete(f);
                 } finally {
                     if (dir != null) {
-                        AbstractTestCase.rmdir(dir);
+                        final File directory = dir;
+                        AbstractTestCase.forceDelete(directory);
                     }
                 }
             }
@@ -2327,7 +2328,7 @@ public class Zip64SupportIT {
             read5GBOfZerosUsingZipFileImpl(f, "5GB_of_Zeros");
         } finally {
             if (f != null) {
-                AbstractTestCase.tryHardToDelete(f);
+                AbstractTestCase.forceDelete(f);
             }
         }
     }

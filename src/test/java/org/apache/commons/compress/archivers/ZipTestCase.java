@@ -428,9 +428,9 @@ public final class ZipTestCase extends AbstractTestCase {
             if (zos != null) {
                 zos.close();
             }
-            tryHardToDelete(archive);
-            tryHardToDelete(tmp[1]);
-            rmdir(tmp[0]);
+            forceDelete(archive);
+            forceDelete(tmp[1]);
+            forceDelete(tmp[0]);
         }
     }
 
@@ -464,9 +464,9 @@ public final class ZipTestCase extends AbstractTestCase {
             if (zos != null) {
                 zos.close();
             }
-            tryHardToDelete(archive);
-            tryHardToDelete(tmp[1]);
-            rmdir(tmp[0]);
+            forceDelete(archive);
+            forceDelete(tmp[1]);
+            forceDelete(tmp[0]);
         }
     }
 
@@ -508,12 +508,12 @@ public final class ZipTestCase extends AbstractTestCase {
             if (zos != null) {
                 zos.close();
             }
-            tryHardToDelete(archive);
+            forceDelete(archive);
             if (fis != null) {
                 fis.close();
             }
-            tryHardToDelete(tmp[1]);
-            rmdir(tmp[0]);
+            forceDelete(tmp[1]);
+            forceDelete(tmp[0]);
         }
     }
 
@@ -555,12 +555,12 @@ public final class ZipTestCase extends AbstractTestCase {
             if (zos != null) {
                 zos.close();
             }
-            tryHardToDelete(archive);
+            forceDelete(archive);
             if (fis != null) {
                 fis.close();
             }
-            tryHardToDelete(tmpFile);
-            rmdir(tmpDir);
+            forceDelete(tmpFile);
+            forceDelete(tmpDir);
         }
     }
 
@@ -848,12 +848,12 @@ public final class ZipTestCase extends AbstractTestCase {
             if (zos != null) {
                 zos.close();
             }
-            tryHardToDelete(archiveFile);
+            forceDelete(archiveFile);
             if (fis != null) {
                 fis.close();
             }
-            tryHardToDelete(tmpFile);
-            rmdir(tmpDir);
+            forceDelete(tmpFile);
+            forceDelete(tmpDir);
         }
     }
 

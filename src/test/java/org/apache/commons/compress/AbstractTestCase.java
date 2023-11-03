@@ -45,11 +45,41 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.io.TempDir;
 
 public abstract class AbstractTestCase {
 
     protected interface StreamWrapper<I extends InputStream> {
         I wrap(InputStream inputStream) throws Exception;
+    }
+
+    /**
+     * Deletes a file or directory. For a directory, delete it and all subdirectories.
+     *
+     * @param file a file or directory.
+     * @return whether deletion was successful
+     */
+    public static boolean forceDelete(final File file) {
+        try {
+            if (file != null && file.exists()) {
+                FileUtils.forceDelete(file);
+            }
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            file.deleteOnExit();
+            return false;
+        }
+    }
+
+    /**
+     * Deletes a file or directory. For a directory, delete it and all subdirectories.
+     *
+     * @param path a file or directory
+     * @return whether deletion was successful
+     */
+    public static boolean forceDelete(final Path path) {
+        return forceDelete(path != null ? path.toFile() : null);
     }
 
     public static File getFile(final String path) throws IOException {
@@ -76,41 +106,10 @@ public abstract class AbstractTestCase {
         return Files.newInputStream(getPath(path));
     }
 
-    public static void rmdir(final File directory) {
-        tryHardToDelete(directory);
-    }
-
-    /**
-     * Deletes a file or directory. For a directory, delete it and all subdirectories.
-     *
-     * @param file a file or directory.
-     * @return whether deletion was successful
-     */
-    public static boolean tryHardToDelete(final File file) {
-        try {
-            if (file != null && file.exists()) {
-                FileUtils.forceDelete(file);
-            }
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            file.deleteOnExit();
-            return false;
-        }
-    }
-
-    /**
-     * Deletes a file or directory. For a directory, delete it and all subdirectories.
-     *
-     * @param path a file or directory
-     * @return whether deletion was successful
-     */
-    public static boolean tryHardToDelete(final Path path) {
-        return tryHardToDelete(path != null ? path.toFile() : null);
-    }
-
+    @TempDir
     protected File dir;
 
+    @TempDir
     protected File resultDir;
 
     /** Used to delete the archive in {@link #tearDown()}. */
@@ -197,7 +196,7 @@ public abstract class AbstractTestCase {
             }
         } finally {
             if (cleanUp) {
-                rmdir(result);
+                forceDelete(result);
             }
         }
         return result;
@@ -365,17 +364,13 @@ public abstract class AbstractTestCase {
 
     @BeforeEach
     public void setUp() throws Exception {
-        dir = mkdir("dir");
-        resultDir = mkdir("dir-result");
         archivePath = null;
     }
 
     @AfterEach
     public void tearDown() throws Exception {
-        rmdir(dir);
-        rmdir(resultDir);
         dir = resultDir = null;
-        if (!tryHardToDelete(archivePath)) {
+        if (!forceDelete(archivePath)) {
             // Note: this exception won't be shown if the test has already failed
             throw new Exception("Could not delete " + archivePath);
         }

@@ -34,6 +34,23 @@ import java.util.Base64;
  */
 public class CompressionDegradationTest {
 
+    private static String compress(final String value) throws IOException {
+        try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream(value.length());
+                FramedLZ4CompressorOutputStream compress = new FramedLZ4CompressorOutputStream(byteStream)) {
+            String compressedValue = null;
+            try {
+                compress.write(value.getBytes(StandardCharsets.UTF_8));
+                compress.finish();
+                compressedValue = Base64.getEncoder().encodeToString(byteStream.toByteArray());
+            } finally {
+                compress.close();
+                byteStream.close();
+            }
+
+            return compressedValue;
+        }
+    }
+
     public static void main(final String[] args) throws Exception {
         try (RandomAccessFile aFile = new RandomAccessFile("src/test/resources/org/apache/commons/compress/COMPRESS-649/some-900kb-text.txt", "r");
                 FileChannel inChannel = aFile.getChannel()) {
@@ -51,23 +68,6 @@ public class CompressionDegradationTest {
             final long end = System.currentTimeMillis();
             final float sec = (end - start) / 1000F;
             System.out.println(sec + " seconds");
-        }
-    }
-
-    private static String compress(final String value) throws IOException {
-        try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream(value.length());
-                FramedLZ4CompressorOutputStream compress = new FramedLZ4CompressorOutputStream(byteStream)) {
-            String compressedValue = null;
-            try {
-                compress.write(value.getBytes(StandardCharsets.UTF_8));
-                compress.finish();
-                compressedValue = Base64.getEncoder().encodeToString(byteStream.toByteArray());
-            } finally {
-                compress.close();
-                byteStream.close();
-            }
-
-            return compressedValue;
         }
     }
 }

@@ -17,7 +17,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.apache.commons.compress.AbstractTestCase.tryHardToDelete;
+import static org.apache.commons.compress.AbstractTestCase.forceDelete;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -152,8 +152,8 @@ public class ParallelScatterZipCreatorTest {
 
     @AfterEach
     public void cleanup() {
-        tryHardToDelete(result);
-        tryHardToDelete(tmp);
+        forceDelete(result);
+        forceDelete(tmp);
     }
 
     @Test

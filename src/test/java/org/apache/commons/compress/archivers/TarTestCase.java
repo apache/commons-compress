@@ -138,9 +138,9 @@ public final class TarTestCase extends AbstractTestCase {
             if (tos != null) {
                 tos.close();
             }
-            tryHardToDelete(archive);
-            tryHardToDelete(tmp[1]);
-            rmdir(tmp[0]);
+            forceDelete(archive);
+            forceDelete(tmp[1]);
+            forceDelete(tmp[0]);
         }
     }
 
@@ -193,9 +193,9 @@ public final class TarTestCase extends AbstractTestCase {
             if (tos != null) {
                 tos.close();
             }
-            tryHardToDelete(archive);
-            tryHardToDelete(tmp[1]);
-            rmdir(tmp[0]);
+            forceDelete(archive);
+            forceDelete(tmp[1]);
+            forceDelete(tmp[0]);
         }
     }
 
@@ -239,9 +239,9 @@ public final class TarTestCase extends AbstractTestCase {
             if (tos != null) {
                 tos.close();
             }
-            tryHardToDelete(archive);
-            tryHardToDelete(tmp[1]);
-            rmdir(tmp[0]);
+            forceDelete(archive);
+            forceDelete(tmp[1]);
+            forceDelete(tmp[0]);
         }
     }
 
@@ -274,9 +274,9 @@ public final class TarTestCase extends AbstractTestCase {
             assertEquals(tmp[1].lastModified() / 1000, out.getLastModifiedDate().getTime() / 1000);
             assertFalse(out.isDirectory());
         } finally {
-            tryHardToDelete(archive);
-            tryHardToDelete(tmp[1]);
-            rmdir(tmp[0]);
+            forceDelete(archive);
+            forceDelete(tmp[1]);
+            forceDelete(tmp[0]);
         }
     }
 
@@ -414,9 +414,9 @@ public final class TarTestCase extends AbstractTestCase {
                 assertEquals(beforeArchiveWrite / 1000, entry.getLastModifiedDate().getTime() / 1000);
                 assertTrue(entry.isDirectory());
             } finally {
-                tryHardToDelete(archive);
-                tryHardToDelete(tmp[1]);
-                rmdir(tmp[0]);
+                forceDelete(archive);
+                forceDelete(tmp[1]);
+                forceDelete(tmp[0]);
             }
         }
     }
@@ -462,9 +462,9 @@ public final class TarTestCase extends AbstractTestCase {
                 assertFalse(entry.isDirectory());
             }
         } finally {
-            tryHardToDelete(archive);
-            tryHardToDelete(tmp[1]);
-            rmdir(tmp[0]);
+            forceDelete(archive);
+            forceDelete(tmp[1]);
+            forceDelete(tmp[0]);
         }
     }
 
@@ -490,9 +490,9 @@ public final class TarTestCase extends AbstractTestCase {
                 assertTrue(entry.isDirectory());
             }
         } finally {
-            tryHardToDelete(archive);
-            tryHardToDelete(tmp[1]);
-            rmdir(tmp[0]);
+            forceDelete(archive);
+            forceDelete(tmp[1]);
+            forceDelete(tmp[0]);
         }
     }
 
@@ -524,9 +524,9 @@ public final class TarTestCase extends AbstractTestCase {
                 assertFalse(entry.isDirectory());
             }
         } finally {
-            tryHardToDelete(archive);
-            tryHardToDelete(tmp[1]);
-            rmdir(tmp[0]);
+            forceDelete(archive);
+            forceDelete(tmp[1]);
+            forceDelete(tmp[0]);
         }
     }
 

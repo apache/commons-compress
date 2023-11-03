@@ -58,7 +58,7 @@ public class ArArchiveOutputStreamTest extends AbstractTestCase {
             expected.add("this_is_a_long_name.txt");
             checkArchiveContent(df[1], expected);
         } finally {
-            rmdir(df[0]);
+            forceDelete(df[0]);
         }
     }
 }

@@ -196,9 +196,9 @@ public final class ArTestCase extends AbstractTestCase {
             assertEquals(tmp[1].lastModified() / 1000, out.getLastModifiedDate().getTime() / 1000);
             assertFalse(out.isDirectory());
         } finally {
-            tryHardToDelete(archive);
-            tryHardToDelete(tmp[1]);
-            rmdir(tmp[0]);
+            forceDelete(archive);
+            forceDelete(tmp[1]);
+            forceDelete(tmp[0]);
         }
     }
 
@@ -233,9 +233,9 @@ public final class ArTestCase extends AbstractTestCase {
             assertEquals(file.lastModified() / 1000, out.getLastModifiedDate().getTime() / 1000);
             assertFalse(out.isDirectory());
         } finally {
-            tryHardToDelete(archive);
-            tryHardToDelete(file);
-            rmdir(directory);
+            forceDelete(archive);
+            forceDelete(file);
+            forceDelete(directory);
         }
     }
 
@@ -270,9 +270,9 @@ public final class ArTestCase extends AbstractTestCase {
             assertEquals(file.lastModified() / 1000, out.getLastModifiedDate().getTime() / 1000);
             assertFalse(out.isDirectory());
         } finally {
-            tryHardToDelete(archive);
-            tryHardToDelete(file);
-            rmdir(directory);
+            forceDelete(archive);
+            forceDelete(file);
+            forceDelete(directory);
         }
     }
 
@@ -303,9 +303,9 @@ public final class ArTestCase extends AbstractTestCase {
             assertEquals(beforeArchiveWrite / 1000, out.getLastModifiedDate().getTime() / 1000);
             assertTrue(out.isDirectory());
         } finally {
-            tryHardToDelete(archive);
-            tryHardToDelete(tmp[1]);
-            rmdir(tmp[0]);
+            forceDelete(archive);
+            forceDelete(tmp[1]);
+            forceDelete(tmp[0]);
         }
     }
 
@@ -335,9 +335,9 @@ public final class ArTestCase extends AbstractTestCase {
             assertEquals(beforeArchiveWrite / 1000, out.getLastModifiedDate().getTime() / 1000);
             assertTrue(out.isDirectory());
         } finally {
-            tryHardToDelete(archive);
-            tryHardToDelete(tmp[1]);
-            rmdir(tmp[0]);
+            forceDelete(archive);
+            forceDelete(tmp[1]);
+            forceDelete(tmp[0]);
         }
     }
 }
