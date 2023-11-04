@@ -141,15 +141,13 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTestCas
 
     @Test
     public void testRemainingChunkTypes() throws Exception {
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try (InputStream isSz = newInputStream("mixed.txt.sz")) {
-            final FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(isSz);
+        try (final ByteArrayOutputStream out = new ByteArrayOutputStream();
+                InputStream isSz = newInputStream("mixed.txt.sz");
+                final FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(isSz);) {
             IOUtils.copy(in, out);
-            out.close();
+            assertArrayEquals(new byte[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', '5', '6', '7', '8', '9', '5', '6', '7', '8', '9', '5', '6', '7', '8',
+                    '9', '5', '6', '7', '8', '9', 10, '1', '2', '3', '4', '1', '2', '3', '4', }, out.toByteArray());
         }
-
-        assertArrayEquals(new byte[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', '5', '6', '7', '8', '9', '5', '6', '7', '8', '9', '5', '6', '7', '8', '9',
-                '5', '6', '7', '8', '9', 10, '1', '2', '3', '4', '1', '2', '3', '4', }, out.toByteArray());
     }
 
     @Test
