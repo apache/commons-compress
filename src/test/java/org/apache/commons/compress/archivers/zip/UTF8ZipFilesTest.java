@@ -188,12 +188,8 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     @Test
     public void testRawNameReadFromZipFile() throws IOException {
         final File archive = getFile("utf8-7zip-test.zip");
-        ZipFile zf = null;
-        try {
-            zf = new ZipFile(archive, CP437, false);
+        try (ZipFile zf = new ZipFile(archive, CP437, false)) {
             assertRawNameOfAcsiiTxt(zf.getEntry(ASCII_TXT));
-        } finally {
-            ZipFile.closeQuietly(zf);
         }
     }
 
@@ -205,14 +201,10 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     @Test
     public void testRead7ZipArchive() throws IOException {
         final File archive = getFile("utf8-7zip-test.zip");
-        ZipFile zf = null;
-        try {
-            zf = new ZipFile(archive, CP437, false);
+        try (ZipFile zf = new ZipFile(archive, CP437, false)) {
             assertNotNull(zf.getEntry(ASCII_TXT));
             assertNotNull(zf.getEntry(EURO_FOR_DOLLAR_TXT));
             assertNotNull(zf.getEntry(OIL_BARREL_TXT));
-        } finally {
-            ZipFile.closeQuietly(zf);
         }
     }
 
@@ -231,20 +223,15 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     @Test
     public void testReadWinZipArchive() throws IOException {
         final File archive = getFile("utf8-winzip-test.zip");
-        ZipFile zf = null;
-        try {
-            // fix for test fails on Windows with default charset that is not UTF-8
-            String encoding = null;
-            if (Charset.defaultCharset() != UTF_8) {
-                encoding = UTF_8.name();
-            }
-
-            zf = new ZipFile(archive, encoding, true);
+        // fix for test fails on Windows with default charset that is not UTF-8
+        String encoding = null;
+        if (Charset.defaultCharset() != UTF_8) {
+            encoding = UTF_8.name();
+        }
+        try (ZipFile zf = new ZipFile(archive, encoding, true)) {
             assertCanRead(zf, ASCII_TXT);
             assertCanRead(zf, EURO_FOR_DOLLAR_TXT);
             assertCanRead(zf, OIL_BARREL_TXT);
-        } finally {
-            ZipFile.closeQuietly(zf);
         }
     }
 
@@ -300,24 +287,18 @@ public class UTF8ZipFilesTest extends AbstractTestCase {
     public void testUtf8Interoperability() throws IOException {
         final File file1 = getFile("utf8-7zip-test.zip");
         final File file2 = getFile("utf8-winzip-test.zip");
-
         testFile(file1, CP437);
         testFile(file2, CP437);
-
     }
 
     @Test
     public void testZipArchiveInputStreamReadsUnicodeFields() throws IOException {
         final File file = createTempFile("unicode-test", ".zip");
-        ZipFile zf = null;
-        try {
-            createTestFile(file, CharsetNames.US_ASCII, false, true);
-            zf = new ZipFile(file, CharsetNames.US_ASCII, true);
+        createTestFile(file, CharsetNames.US_ASCII, false, true);
+        try (ZipFile zf = new ZipFile(file, CharsetNames.US_ASCII, true)) {
             assertNotNull(zf.getEntry(ASCII_TXT));
             assertNotNull(zf.getEntry(EURO_FOR_DOLLAR_TXT));
             assertNotNull(zf.getEntry(OIL_BARREL_TXT));
-        } finally {
-            ZipFile.closeQuietly(zf);
         }
     }
 
