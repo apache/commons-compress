@@ -167,8 +167,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Gets the compressed CRC.
      *
-     * @deprecated use getCompressedCrcValue instead.
      * @return the compressed CRC
+     * @deprecated Use {@link #getCompressedCrcValue()} instead.
      */
     @Deprecated
     int getCompressedCrc() {
