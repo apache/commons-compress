@@ -31,21 +31,21 @@ import org.junit.jupiter.api.io.TempDir;
 public class AbstractTempDirTest {
 
     @TempDir
-    protected File tempDirFile;
+    private File tempDirFile;
 
-    protected File createTempFile() throws IOException {
+    public File createTempFile() throws IOException {
         return File.createTempFile("testfile", "", getTempDirFile());
     }
 
-    protected File createTempFile(final String prefix, final String suffix) throws IOException {
+    public File createTempFile(final String prefix, final String suffix) throws IOException {
         return File.createTempFile(prefix, suffix, getTempDirFile());
     }
 
-    protected File getTempDirFile() {
+    public File getTempDirFile() {
         return tempDirFile;
     }
 
-    protected Path getTempDirPath() {
+    public Path getTempDirPath() {
         return tempDirFile.toPath();
     }
 

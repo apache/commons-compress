@@ -49,7 +49,7 @@ public class ScatterSampleTest extends AbstractTempDirTest {
     }
 
     private void createFile(final File result) throws IOException, ExecutionException, InterruptedException {
-        final ScatterSample scatterSample = new ScatterSample();
+        final ScatterSample scatterSample = new ScatterSample(this);
         final ZipArchiveEntry archiveEntry = new ZipArchiveEntry("test1.xml");
         archiveEntry.setMethod(ZipEntry.DEFLATED);
         final InputStreamSupplier supp = () -> new ByteArrayInputStream("Hello".getBytes());
