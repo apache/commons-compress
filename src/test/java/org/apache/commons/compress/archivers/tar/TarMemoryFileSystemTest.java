@@ -31,6 +31,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.GroupPrincipal;
 import java.nio.file.attribute.UserPrincipal;
 
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
@@ -56,6 +57,8 @@ public class TarMemoryFileSystemTest {
                 Files.copy(p, tarOut);
                 tarOut.closeArchiveEntry();
                 assertEquals(f.length(), tarOut.getBytesWritten());
+            } finally {
+                AbstractTest.forceDelete(f);
             }
         }
     }
