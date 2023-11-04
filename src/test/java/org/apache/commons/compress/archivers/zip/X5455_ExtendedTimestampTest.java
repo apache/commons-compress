@@ -584,11 +584,14 @@ public class X5455_ExtendedTimestampTest {
     @Test
     public void testWriteReadRoundtrip() throws IOException {
         final File output = new File(tmpDir, "write_rewrite.zip");
-        final Date d = new Date(97, 8, 24, 15, 10, 2);
+        final Calendar instance = Calendar.getInstance();
+        instance.clear();
+        instance.set(1997, 8, 24, 15, 10, 2);
+        final Date date = instance.getTime();
         try (final OutputStream out = Files.newOutputStream(output.toPath());
              ZipArchiveOutputStream os = new ZipArchiveOutputStream(out)) {
             final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
-            xf.setModifyJavaTime(d);
+            xf.setModifyJavaTime(date);
             xf.setFlags((byte) 1);
             ze.addExtraField(xf);
             os.putArchiveEntry(ze);
@@ -600,7 +603,7 @@ public class X5455_ExtendedTimestampTest {
             final X5455_ExtendedTimestamp ext = (X5455_ExtendedTimestamp) ze.getExtraField(X5455);
             assertNotNull(ext);
             assertTrue(ext.isBit0_modifyTimePresent());
-            assertEquals(d, ext.getModifyJavaTime());
+            assertEquals(date, ext.getModifyJavaTime());
         }
     }
 }
