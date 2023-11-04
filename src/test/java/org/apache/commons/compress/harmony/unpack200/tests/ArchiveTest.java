@@ -49,7 +49,6 @@ public class ArchiveTest extends AbstractTempDirTest {
 
     InputStream in;
     JarOutputStream out;
-    File file;
 
     @AfterEach
     public void tearDown() throws Exception {
@@ -67,15 +66,12 @@ public class ArchiveTest extends AbstractTempDirTest {
         } catch (final IOException e) {
             e.printStackTrace();
         }
-        if (file != null) {
-            file.delete();
-        }
     }
 
     @Test
     public void testAlternativeConstructor() throws Exception {
         final String inputFile = new File(Archive.class.getResource("/pack200/sql.pack.gz").toURI()).getPath();
-        File file = createTempFile("sql", ".jar");
+        final File file = createTempFile("sql", ".jar");
         final String outputFile = file.getPath();
         final Archive archive = new Archive(inputFile, outputFile);
         archive.unpack();
@@ -107,7 +103,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     @Test
     public void testJustResourcesGZip() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/JustResources.pack.gz");
-        File file = createTempFile("Just", "ResourcesGz.jar");
+        final File file = createTempFile("Just", "ResourcesGz.jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
@@ -194,7 +190,7 @@ public class ArchiveTest extends AbstractTempDirTest {
             }
         }
         final String inputFile = copy.getPath();
-        File file = createTempFile("sqlout", ".jar");
+        final File file = createTempFile("sqlout", ".jar");
         final String outputFile = file.getPath();
         final Archive archive = new Archive(inputFile, outputFile);
         archive.setRemovePackFile(true);
@@ -206,7 +202,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     @Test
     public void testWithAnnotations() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/annotations.pack.gz");
-        File file = createTempFile("annotations", ".jar");
+        final File file = createTempFile("annotations", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
@@ -216,7 +212,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     @Test
     public void testWithE0() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/simple-E0.pack.gz");
-        File file = createTempFile("simple-e0", ".jar");
+        final File file = createTempFile("simple-e0", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
@@ -226,7 +222,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     @Test
     public void testWithJNDIE1() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/jndi-e1.pack.gz");
-        File file = createTempFile("jndi-e1", ".jar");
+        final File file = createTempFile("jndi-e1", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
@@ -237,7 +233,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     @Test
     public void testWithLargeClass() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/LargeClass.pack.gz");
-        File file = createTempFile("largeClass", ".jar");
+        final File file = createTempFile("largeClass", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
@@ -247,7 +243,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     @Test
     public void testWithPack200() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/pack200.pack.gz");
-        File file = createTempFile("p200", ".jar");
+        final File file = createTempFile("p200", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
@@ -257,7 +253,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     @Test
     public void testWithPack200E1() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/pack200-e1.pack.gz");
-        File file = createTempFile("p200-e1", ".jar");
+        final File file = createTempFile("p200-e1", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
@@ -267,7 +263,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     @Test
     public void testWithSql() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/sql.pack.gz");
-        File file = createTempFile("sql", ".jar");
+        final File file = createTempFile("sql", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
@@ -315,7 +311,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     @Test
     public void testWithSqlE1() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/sql-e1.pack.gz");
-        File file = createTempFile("sql-e1", ".jar");
+        final File file = createTempFile("sql-e1", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
