@@ -16,7 +16,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.AbstractTest.forceDelete;
 import static org.apache.commons.compress.archivers.zip.ZipArchiveEntryRequest.createZipArchiveEntryRequest;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,21 +25,12 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.compress.AbstractTempDirTest;
 import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-public class ScatterZipOutputStreamTest {
-
-    private File scatterFile;
-    private File target;
-
-    @AfterEach
-    public void cleanup() {
-        forceDelete(scatterFile);
-        forceDelete(target);
-    }
+public class ScatterZipOutputStreamTest extends AbstractTempDirTest {
 
     private InputStreamSupplier createPayloadSupplier(final ByteArrayInputStream payload) {
         return () -> payload;
@@ -48,7 +38,8 @@ public class ScatterZipOutputStreamTest {
 
     @Test
     public void testPutArchiveEntry() throws Exception {
-        scatterFile = File.createTempFile("scattertest", ".notzip");
+        final File scatterFile = createTempFile("scattertest", ".notzip");
+        final File target = createTempFile("scattertest", ".zip");
         final byte[] B_PAYLOAD = "RBBBBBBS".getBytes();
         final byte[] A_PAYLOAD = "XAAY".getBytes();
         try (ScatterZipOutputStream scatterZipOutputStream = ScatterZipOutputStream.fileBased(scatterFile)) {
@@ -63,7 +54,6 @@ public class ScatterZipOutputStreamTest {
             final ByteArrayInputStream payload1 = new ByteArrayInputStream(A_PAYLOAD);
             scatterZipOutputStream.addArchiveEntry(createZipArchiveEntryRequest(zae, createPayloadSupplier(payload1)));
 
-            target = File.createTempFile("scattertest", ".zip");
             try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(target)) {
                 scatterZipOutputStream.writeTo(outputStream);
             }
