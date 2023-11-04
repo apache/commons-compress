@@ -45,7 +45,7 @@ import org.apache.commons.compress.harmony.pack200.PackingOptions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test different options for packing a Jar file
+ * Test different options for packing a Jar file.
  */
 public class PackingOptionsTest extends AbstractTempDirTest {
 
