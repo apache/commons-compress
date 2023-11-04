@@ -81,6 +81,9 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     private Iterable<? extends SevenZMethodConfiguration> contentMethods;
 
+    /**
+     * Constructs a new instance.
+     */
     public SevenZArchiveEntry() {
     }
 
