@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Testcase porting a test from Python's testsuite.
- * 
+ *
  * @see "https://issues.apache.org/jira/browse/COMPRESS-253"
  */
 public class PythonTruncatedBzip2Test {

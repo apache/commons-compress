@@ -169,8 +169,8 @@ public class PackingOptionsTest {
         try (JarFile jarFile = new JarFile(file2);
                 JarFile jarFile2 = new JarFile(compareFile)) {
             // Check that both jars have the same entries in the same order
-            Enumeration<JarEntry> entries = jarFile.entries();
-            Enumeration<JarEntry> entries2 = jarFile2.entries();
+            final Enumeration<JarEntry> entries = jarFile.entries();
+            final Enumeration<JarEntry> entries2 = jarFile2.entries();
             while (entries.hasMoreElements()) {
                 final JarEntry entry = entries.nextElement();
                 assertNotNull(entry);
@@ -292,8 +292,8 @@ public class PackingOptionsTest {
         try (JarFile jarFile = new JarFile(file2);
                 JarFile jarFile2 = new JarFile(compareFile)) {
             // Check that both jars have the same entries in the same order
-            Enumeration<JarEntry> entries = jarFile.entries();
-            Enumeration<JarEntry> entries2 = jarFile2.entries();
+            final Enumeration<JarEntry> entries = jarFile.entries();
+            final Enumeration<JarEntry> entries2 = jarFile2.entries();
             while (entries.hasMoreElements()) {
 
                 final JarEntry entry = entries.nextElement();
@@ -324,8 +324,8 @@ public class PackingOptionsTest {
         try (JarFile jarFile = new JarFile(file2);
                 JarFile jarFile2 = new JarFile(compareFile)) {
             // Check that all mod times are the same and some are not the same as the original
-            Enumeration<JarEntry> entries = jarFile.entries();
-            Enumeration<JarEntry> entries2 = jarFile2.entries();
+            final Enumeration<JarEntry> entries = jarFile.entries();
+            final Enumeration<JarEntry> entries2 = jarFile2.entries();
             long modtime = -1;
             boolean sameAsOriginal = true;
             while (entries.hasMoreElements()) {
@@ -440,7 +440,7 @@ public class PackingOptionsTest {
         file0.deleteOnExit();
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file0)) {
-            PackingOptions options = new PackingOptions();
+            final PackingOptions options = new PackingOptions();
             options.setGzip(false);
             new Archive(in, out, options).pack();
         }
@@ -450,7 +450,7 @@ public class PackingOptionsTest {
         file.deleteOnExit();
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
-            PackingOptions options = new PackingOptions();
+            final PackingOptions options = new PackingOptions();
             options.setGzip(false);
             options.addPassFile("bin/test/org/apache/harmony/sql/tests/java/sql/DatabaseMetaDataTest.class");
             assertTrue(options.isPassFile("bin/test/org/apache/harmony/sql/tests/java/sql/DatabaseMetaDataTest.class"));
@@ -462,7 +462,7 @@ public class PackingOptionsTest {
         file2.deleteOnExit();
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file2)) {
-            PackingOptions options = new PackingOptions();
+            final PackingOptions options = new PackingOptions();
             options.setGzip(false);
             options.addPassFile("bin/test/org/apache/harmony/sql/tests/java/sql");
             assertTrue(options.isPassFile("bin/test/org/apache/harmony/sql/tests/java/sql/DatabaseMetaDataTest.class"));
@@ -568,7 +568,7 @@ public class PackingOptionsTest {
         }
     }
 
-    private void unpack(InputStream inputStream, JarOutputStream outputStream) throws Pack200Exception, IOException {
+    private void unpack(final InputStream inputStream, final JarOutputStream outputStream) throws Pack200Exception, IOException {
         new org.apache.commons.compress.harmony.unpack200.Archive(inputStream, outputStream).unpack();
     }
 

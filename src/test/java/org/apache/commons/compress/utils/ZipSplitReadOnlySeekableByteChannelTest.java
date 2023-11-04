@@ -132,11 +132,11 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
             channels.add(secondChannel);
 
             @SuppressWarnings("resource") // try-with-resources closes
-            SeekableByteChannel channel1 = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(lastChannel, channels);
+            final SeekableByteChannel channel1 = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(lastChannel, channels);
             assertTrue(channel1 instanceof ZipSplitReadOnlySeekableByteChannel);
 
             @SuppressWarnings("resource") // try-with-resources closes
-            SeekableByteChannel channel2 = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(firstChannel, secondChannel, lastChannel);
+            final SeekableByteChannel channel2 = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(firstChannel, secondChannel, lastChannel);
             assertTrue(channel2 instanceof ZipSplitReadOnlySeekableByteChannel);
         }
     }
