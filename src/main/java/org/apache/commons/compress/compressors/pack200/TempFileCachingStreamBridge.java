@@ -43,7 +43,7 @@ class TempFileCachingStreamBridge extends AbstractStreamBridge {
 
     @SuppressWarnings("resource") // Caller closes
     @Override
-    InputStream getInputView() throws IOException {
+    InputStream createInputStream() throws IOException {
         out.close();
         return new FilterInputStream(Files.newInputStream(path)) {
             @Override
