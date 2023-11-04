@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -95,11 +96,12 @@ public class DataDescriptorTest {
         }
 
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final ZipArchiveEntry zae;
         try (ZipFile zf = new ZipFile(f);
-             ZipArchiveOutputStream zos = new ZipArchiveOutputStream(baos)) {
-            zae = zf.getEntry("test1.txt");
-            zos.addRawArchiveEntry(zae, zf.getRawInputStream(zae));
+                ZipArchiveOutputStream zos = new ZipArchiveOutputStream(baos)) {
+            final ZipArchiveEntry zae = zf.getEntry("test1.txt");
+            try (InputStream rawInputStream = zf.getRawInputStream(zae)) {
+                zos.addRawArchiveEntry(zae, rawInputStream);
+            }
         }
 
         final byte[] data = baos.toByteArray();
