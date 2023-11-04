@@ -25,11 +25,12 @@ import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.compress.AbstractTempDirTest;
 import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class ScatterSampleTest {
+public class ScatterSampleTest extends AbstractTempDirTest {
 
     private void checkFile(final File result) throws IOException {
         try (final ZipFile zipFile = new ZipFile(result)) {
@@ -60,8 +61,7 @@ public class ScatterSampleTest {
 
     @Test
     public void testSample() throws Exception {
-        final File result = File.createTempFile("testSample", "fe");
-
+        final File result = createTempFile("testSample", "fe");
         createFile(result);
         checkFile(result);
     }
