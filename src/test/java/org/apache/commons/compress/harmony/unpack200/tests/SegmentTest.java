@@ -29,6 +29,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 
+import org.apache.commons.compress.AbstractTempDirTest;
 import org.apache.commons.compress.harmony.unpack200.Segment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -36,11 +37,10 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for org.apache.commons.compress.harmony.unpack200.Segment.
  */
-public class SegmentTest {
+public class SegmentTest extends AbstractTempDirTest {
 
     InputStream in;
     JarOutputStream out;
-    File file;
 
     @AfterEach
     public void tearDown() throws Exception {
@@ -58,14 +58,12 @@ public class SegmentTest {
         } catch (final IOException e) {
             e.printStackTrace();
         }
-        file.delete();
     }
 
     @Test
     public void testHelloWorld() throws Exception {
         in = Segment.class.getResourceAsStream("/pack200/HelloWorld.pack");
-        file = File.createTempFile("hello", "world.jar");
-        file.deleteOnExit();
+        final File file = createTempFile("hello", "world.jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Segment segment = new Segment();
         segment.unpack(in, out);
@@ -99,9 +97,8 @@ public class SegmentTest {
 
     @Test
     public void testInterfaceOnly() throws Exception {
-        in = Segment.class
-                .getResourceAsStream("/pack200/InterfaceOnly.pack");
-        file = File.createTempFile("Interface", "Only.jar");
+        in = Segment.class.getResourceAsStream("/pack200/InterfaceOnly.pack");
+        final File file = createTempFile("Interface", "Only.jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Segment segment = new Segment();
         segment.unpack(in, out);
@@ -109,9 +106,8 @@ public class SegmentTest {
 
     @Test
     public void testJustResources() throws Exception {
-        in = Segment.class
-                .getResourceAsStream("/pack200/JustResources.pack");
-        file = File.createTempFile("just", "resources.jar");
+        in = Segment.class.getResourceAsStream("/pack200/JustResources.pack");
+        final File file = createTempFile("just", "resources.jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Segment segment = new Segment();
         segment.unpack(in, out);
