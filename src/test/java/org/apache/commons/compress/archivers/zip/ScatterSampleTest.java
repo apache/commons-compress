@@ -17,6 +17,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -44,7 +45,7 @@ public class ScatterSampleTest extends AbstractTempDirTest {
                 assertEquals('o', b[4]);
             }
         }
-        result.delete();
+        assertTrue(result.delete());
     }
 
     private void createFile(final File result) throws IOException, ExecutionException, InterruptedException {
