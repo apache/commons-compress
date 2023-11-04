@@ -64,9 +64,7 @@ public class SevenZArchiverTest extends AbstractTest {
     }
 
     @BeforeEach
-    @Override
     public void setUp() throws Exception {
-        super.setUp();
         final File c = newTempFile("a/b/c");
         c.mkdirs();
         try (OutputStream os = Files.newOutputStream(newTempFile("a/b/d.txt").toPath())) {

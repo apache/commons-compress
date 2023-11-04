@@ -44,6 +44,7 @@ public class SevenZTest extends AbstractTest {
     private static void assumeStrongCryptoIsAvailable() throws NoSuchAlgorithmException {
         assumeTrue(Cipher.getMaxAllowedKeyLength("AES/ECB/PKCS5Padding") >= 256, "test requires strong crypto");
     }
+
     private File output;
 
     private final File file1, file2;
@@ -55,7 +56,7 @@ public class SevenZTest extends AbstractTest {
 
     private void copy(final File src, final SevenZOutputFile dst) throws IOException {
         try (InputStream fis = Files.newInputStream(src.toPath())) {
-            final byte[] buffer = new byte[8*1024];
+            final byte[] buffer = new byte[8 * 1024];
             int bytesRead;
             while ((bytesRead = fis.read(buffer)) >= 0) {
                 dst.write(buffer, 0, bytesRead);
@@ -82,8 +83,8 @@ public class SevenZTest extends AbstractTest {
 
     private void multiByteReadConsistentlyReturnsMinusOneAtEof(final SevenZFile archive) throws Exception {
         final byte[] buf = new byte[2];
-        SevenZArchiveEntry entry = archive.getNextEntry();
-        entry = archive.getNextEntry();
+        assertNotNull(archive.getNextEntry());
+        assertNotNull(archive.getNextEntry());
         readFully(archive);
         assertEquals(-1, archive.read(buf));
         assertEquals(-1, archive.read(buf));
@@ -104,16 +105,14 @@ public class SevenZTest extends AbstractTest {
         }
     }
 
-    @Override
     @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
         output = newTempFile("bla.7z");
     }
 
     private void singleByteReadConsistentlyReturnsMinusOneAtEof(final SevenZFile archive) throws Exception {
-        SevenZArchiveEntry entry = archive.getNextEntry();
-        entry = archive.getNextEntry();
+        assertNotNull(archive.getNextEntry());
+        assertNotNull(archive.getNextEntry());
         readFully(archive);
         assertEquals(-1, archive.read());
         assertEquals(-1, archive.read());

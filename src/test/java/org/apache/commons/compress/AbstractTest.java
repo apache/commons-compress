@@ -43,8 +43,6 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.ar.ArArchiveOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
 
 public abstract class AbstractTest extends AbstractTempDirTest {
@@ -89,7 +87,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
         }
         try {
             return new File(url.toURI());
-        } catch (final URISyntaxException ex) {
+        } catch (URISyntaxException ex) {
             throw new IOException(ex);
         }
     }
@@ -104,9 +102,6 @@ public abstract class AbstractTest extends AbstractTempDirTest {
 
     @TempDir
     protected File tempResultDir;
-
-    /** Used to delete the archive in {@link #tearDown()}. */
-    private Path archivePath;
 
     /** Lists the content of the archive as originally created. */
     protected List<String> archiveList;
@@ -248,7 +243,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      *             in case something goes wrong
      */
     protected Path createArchive(final String archiveName) throws Exception {
-        archivePath = createTempPath("test", "." + archiveName);
+        final Path archivePath = createTempPath("test", "." + archiveName);
         archiveList = new ArrayList<>();
         try (OutputStream outputStream = Files.newOutputStream(archivePath);
                 ArchiveOutputStream<ArchiveEntry> archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream)) {
@@ -283,7 +278,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      */
     protected Path createEmptyArchive(final String archiveName) throws Exception {
         archiveList = new ArrayList<>();
-        archivePath = createTempPath("empty", "." + archiveName);
+        final Path archivePath = createTempPath("empty", "." + archiveName);
         try (OutputStream outputStream = Files.newOutputStream(archivePath);
                 ArchiveOutputStream<?> archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream)) {
             archiveOutputStream.finish();
@@ -300,7 +295,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      */
     protected Path createSingleEntryArchive(final String archiveName) throws Exception {
         archiveList = new ArrayList<>();
-        archivePath = createTempPath("empty", "." + archiveName);
+        final Path archivePath = createTempPath("empty", "." + archiveName);
         try (OutputStream outputStream = Files.newOutputStream(archivePath);
                 ArchiveOutputStream<?> archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream)) {
             // Use short file name so does not cause problems for ar
@@ -331,16 +326,4 @@ public abstract class AbstractTest extends AbstractTempDirTest {
         }
     }
 
-    @BeforeEach
-    public void setUp() throws Exception {
-        archivePath = null;
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
-        if (!forceDelete(archivePath)) {
-            // Note: this exception won't be shown if the test has already failed
-            throw new Exception("Could not delete " + archivePath);
-        }
-    }
 }
