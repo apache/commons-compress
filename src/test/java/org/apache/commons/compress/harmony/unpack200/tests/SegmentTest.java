@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.jar.JarEntry;
@@ -31,7 +30,6 @@ import java.util.jar.JarOutputStream;
 
 import org.apache.commons.compress.AbstractTempDirTest;
 import org.apache.commons.compress.harmony.unpack200.Segment;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -39,36 +37,13 @@ import org.junit.jupiter.api.Test;
  */
 public class SegmentTest extends AbstractTempDirTest {
 
-    InputStream in;
-    JarOutputStream out;
-
-    @AfterEach
-    public void tearDown() throws Exception {
-        if (in != null) {
-            try {
-                in.close();
-            } catch (final IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            if (out != null) {
-                out.close();
-            }
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Test
     public void testHelloWorld() throws Exception {
-        in = Segment.class.getResourceAsStream("/pack200/HelloWorld.pack");
         final File file = createTempFile("hello", "world.jar");
-        out = new JarOutputStream(new FileOutputStream(file));
-        final Segment segment = new Segment();
-        segment.unpack(in, out);
-        out.close();
-        out = null;
+        try (InputStream in = Segment.class.getResourceAsStream("/pack200/HelloWorld.pack");
+                JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
+            new Segment().unpack(in, out);
+        }
         try (JarFile jarFile = new JarFile(file)) {
             final JarEntry entry = jarFile.getJarEntry("org/apache/harmony/archive/tests/internal/pack200/HelloWorld.class");
             assertNotNull(entry);
@@ -97,20 +72,20 @@ public class SegmentTest extends AbstractTempDirTest {
 
     @Test
     public void testInterfaceOnly() throws Exception {
-        in = Segment.class.getResourceAsStream("/pack200/InterfaceOnly.pack");
         final File file = createTempFile("Interface", "Only.jar");
-        out = new JarOutputStream(new FileOutputStream(file));
-        final Segment segment = new Segment();
-        segment.unpack(in, out);
+        try (InputStream in = Segment.class.getResourceAsStream("/pack200/InterfaceOnly.pack");
+                JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
+            new Segment().unpack(in, out);
+        }
     }
 
     @Test
     public void testJustResources() throws Exception {
-        in = Segment.class.getResourceAsStream("/pack200/JustResources.pack");
         final File file = createTempFile("just", "resources.jar");
-        out = new JarOutputStream(new FileOutputStream(file));
-        final Segment segment = new Segment();
-        segment.unpack(in, out);
+        try (InputStream in = Segment.class.getResourceAsStream("/pack200/JustResources.pack");
+                JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
+            new Segment().unpack(in, out);
+        }
     }
 
 }
