@@ -62,7 +62,7 @@ public class BigFilesIT extends AbstractTest {
     }
 
     @Test
-    public void tarFileReadFileHeadersOfArchiveBiggerThan8GByte() throws Exception {
+    public void testTarFileReadFileHeadersOfArchiveBiggerThan8GByte() throws Exception {
         final Path file = getPath("8.posix.tar.gz");
         final Path output = tempResultDir.toPath().resolve("8.posix.tar");
         try (InputStream in = new BufferedInputStream(Files.newInputStream(file));

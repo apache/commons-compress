@@ -327,7 +327,7 @@ public class MultiReadOnlySeekableByteChannelTest {
      * <q>ClosedChannelException - If this channel is closed</q>
      */
     @Test
-    public void throwsClosedChannelExceptionWhenPositionIsSetOnClosedChannel() throws Exception {
+    public void testThrowsClosedChannelExceptionWhenPositionIsSetOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = testChannel()) {
             c.close();
             assertThrows(ClosedChannelException.class, () -> c.position(0));
@@ -340,7 +340,7 @@ public class MultiReadOnlySeekableByteChannelTest {
      * <q>ClosedChannelException - If this channel is closed</q>
      */
     @Test
-    public void throwsClosedChannelExceptionWhenSizeIsReadOnClosedChannel() throws Exception {
+    public void testThrowsClosedChannelExceptionWhenSizeIsReadOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = testChannel()) {
             c.close();
             assertThrows(ClosedChannelException.class, () -> c.size());
@@ -351,14 +351,14 @@ public class MultiReadOnlySeekableByteChannelTest {
      * <q>IOException - If the new position is negative</q>
      */
     @Test
-    public void throwsIOExceptionWhenPositionIsSetToANegativeValue() throws Exception {
+    public void testThrowsIOExceptionWhenPositionIsSetToANegativeValue() throws Exception {
         try (SeekableByteChannel c = testChannel()) {
             assertThrows(IllegalArgumentException.class, () -> c.position(-1));
         }
     }
 
     @Test
-    public void twoEmptyChannelsConcatenateAsEmptyChannel() throws IOException {
+    public void testTwoEmptyChannelsConcatenateAsEmptyChannel() throws IOException {
         try (SeekableByteChannel channel = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty())) {
             checkEmpty(channel);
         }

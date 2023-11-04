@@ -255,7 +255,7 @@ public class SeekableInMemoryByteChannelTest {
      * <q>ClosedChannelException - If this channel is closed</q>
      */
     @Test
-    public void throwsClosedChannelExceptionWhenPositionIsSetOnClosedChannel() throws Exception {
+    public void testThrowsClosedChannelExceptionWhenPositionIsSetOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
             assertThrows(ClosedChannelException.class, () -> c.position(0));
@@ -290,7 +290,7 @@ public class SeekableInMemoryByteChannelTest {
      * <q>IllegalArgumentException - If the new position is negative</q>
      */
     @Test
-    public void throwsIllegalArgumentExceptionWhenTruncatingToANegativeSize() throws Exception {
+    public void testThrowsIllegalArgumentExceptionWhenTruncatingToANegativeSize() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             assertThrows(IllegalArgumentException.class, () -> c.truncate(-1));
         }
@@ -302,7 +302,7 @@ public class SeekableInMemoryByteChannelTest {
      * <q>IOException - If the new position is negative</q>
      */
     @Test
-    public void throwsIOExceptionWhenPositionIsSetToANegativeValue() throws Exception {
+    public void testThrowsIOExceptionWhenPositionIsSetToANegativeValue() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             assertThrows(IOException.class, () -> c.position(-1));
         }
@@ -312,7 +312,7 @@ public class SeekableInMemoryByteChannelTest {
      * <q> In either case, if the current position is greater than the given size then it is set to that size.</q>
      */
     @Test
-    public void truncateDoesntChangeSmallPosition() throws Exception {
+    public void testTruncateDoesntChangeSmallPosition() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             c.position(1);
             c.truncate(testData.length - 1);
@@ -325,7 +325,7 @@ public class SeekableInMemoryByteChannelTest {
      * <q> In either case, if the current position is greater than the given size then it is set to that size.</q>
      */
     @Test
-    public void truncateMovesPositionWhenNewSizeIsBiggerThanSizeAndPositionIsEvenBigger() throws Exception {
+    public void testTruncateMovesPositionWhenNewSizeIsBiggerThanSizeAndPositionIsEvenBigger() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             c.position(2 * testData.length);
             c.truncate(testData.length + 1);
@@ -338,7 +338,7 @@ public class SeekableInMemoryByteChannelTest {
      * <q> In either case, if the current position is greater than the given size then it is set to that size.</q>
      */
     @Test
-    public void truncateMovesPositionWhenNotResizingButPositionBiggerThanSize() throws Exception {
+    public void testTruncateMovesPositionWhenNotResizingButPositionBiggerThanSize() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             c.position(2 * testData.length);
             c.truncate(testData.length);
@@ -351,7 +351,7 @@ public class SeekableInMemoryByteChannelTest {
      * <q> In either case, if the current position is greater than the given size then it is set to that size.</q>
      */
     @Test
-    public void truncateMovesPositionWhenShrinkingBeyondPosition() throws Exception {
+    public void testTruncateMovesPositionWhenShrinkingBeyondPosition() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             c.position(4);
             c.truncate(3);
@@ -364,7 +364,7 @@ public class SeekableInMemoryByteChannelTest {
      * <q>If the given size is greater than or equal to the current size then the entity is not modified.</q>
      */
     @Test
-    public void truncateToBiggerSizeDoesntChangeAnything() throws Exception {
+    public void testTruncateToBiggerSizeDoesntChangeAnything() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             assertEquals(testData.length, c.size());
             c.truncate(testData.length + 1);
@@ -379,7 +379,7 @@ public class SeekableInMemoryByteChannelTest {
      * <q>If the given size is greater than or equal to the current size then the entity is not modified.</q>
      */
     @Test
-    public void truncateToCurrentSizeDoesntChangeAnything() throws Exception {
+    public void testTruncateToCurrentSizeDoesntChangeAnything() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             assertEquals(testData.length, c.size());
             c.truncate(testData.length);

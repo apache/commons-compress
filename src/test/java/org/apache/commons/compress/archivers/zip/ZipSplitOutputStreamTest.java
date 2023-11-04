@@ -76,17 +76,17 @@ public class ZipSplitOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void throwsExceptionIfSplitSizeIsTooLarge() {
+    public void testThrowsExceptionIfSplitSizeIsTooLarge() {
         assertThrows(IllegalArgumentException.class, () -> new ZipSplitOutputStream(createTempFile("temp", "zip"), 4 * 1024 * 1024 * 1024L));
     }
 
     @Test
-    public void throwsExceptionIfSplitSizeIsTooSmall() {
+    public void testThrowsExceptionIfSplitSizeIsTooSmall() {
         assertThrows(IllegalArgumentException.class, () -> new ZipSplitOutputStream(createTempFile("temp", "zip"), 64 * 1024 - 1));
     }
 
     @Test
-    public void throwsIfUnsplittableSizeLargerThanSplitSize() throws IOException {
+    public void testThrowsIfUnsplittableSizeLargerThanSplitSize() throws IOException {
         final long splitSize = 100 * 1024;
         final ZipSplitOutputStream output = new ZipSplitOutputStream(createTempFile("temp", "zip"), splitSize);
         assertThrows(IllegalArgumentException.class, () -> output.prepareToWriteUnsplittableContent(splitSize + 1));

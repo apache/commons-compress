@@ -657,7 +657,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void throwsIfStoredDDIsDifferentFromLengthRead() throws IOException {
+    public void testThrowsIfStoredDDIsDifferentFromLengthRead() throws IOException {
         try (InputStream fs = newInputStream("bla-stored-dd-contradicts-actualsize.zip");
                 ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
             final ZipArchiveEntry e = archive.getNextZipEntry();
@@ -670,7 +670,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void throwsIfStoredDDIsInconsistent() throws IOException {
+    public void testThrowsIfStoredDDIsInconsistent() throws IOException {
         try (InputStream fs = newInputStream("bla-stored-dd-sizes-differ.zip");
                 ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
             final ZipArchiveEntry e = archive.getNextZipEntry();
@@ -686,7 +686,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-523">COMPRESS-523</a>
      */
     @Test
-    public void throwsIfThereIsNoEocd() {
+    public void testThrowsIfThereIsNoEocd() {
         assertThrows(IOException.class, () -> fuzzingTest(new int[] { 0x50, 0x4b, 0x01, 0x02, 0x14, 0x00, 0x14, 0x00, 0x08, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00,
                 0x00, 0x43, 0xbe, 0x00, 0x00, 0x00, 0xb7, 0xe8, 0x07, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00 }));
     }
@@ -695,7 +695,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-518">COMPRESS-518</a>
      */
     @Test
-    public void throwsIfZip64ExtraCouldNotBeUnderstood() {
+    public void testThrowsIfZip64ExtraCouldNotBeUnderstood() {
         assertThrows(IOException.class,
                 () -> fuzzingTest(new int[] { 0x50, 0x4b, 0x03, 0x04, 0x2e, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x84, 0xb6, 0xba, 0x46, 0x72, 0xb6, 0xfe, 0x77, 0x63,
                         0x00, 0x00, 0x00, 0x6b, 0x00, 0x00, 0x00, 0x03, 0x00, 0x1c, 0x00, 0x62, 0x62, 0x62, 0x01, 0x00, 0x09, 0x00, 0x03, 0xe7, 0xce, 0x64,
@@ -703,7 +703,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void throwsIOExceptionIfThereIsCorruptedZip64Extra() throws IOException {
+    public void testThrowsIOExceptionIfThereIsCorruptedZip64Extra() throws IOException {
         try (InputStream fis = newInputStream("COMPRESS-546.zip");
                 ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis)) {
             assertThrows(IOException.class, () -> getAllZipEntries(zipInputStream));

@@ -969,7 +969,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void throwsExceptionWhenWritingPreamble() throws IOException {
+    public void testThrowsExceptionWhenWritingPreamble() throws IOException {
         final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
         outputStream.putArchiveEntry(new ZipArchiveEntry());
         assertThrows(IllegalStateException.class, () -> outputStream.writePreamble(ByteUtils.EMPTY_BYTE_ARRAY));

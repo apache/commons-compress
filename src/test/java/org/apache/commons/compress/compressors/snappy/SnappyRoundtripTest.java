@@ -128,7 +128,7 @@ public final class SnappyRoundtripTest extends AbstractTest {
     }
 
     @Test
-    public void tryReallyBigOffset() throws IOException {
+    public void testTryReallyBigOffset() throws IOException {
         // "normal" Snappy files will never reach offsets beyond
         // 16bits (i.e. those using four bytes to encode the length)
         // as the block size is only 32k. This means we never execute
@@ -159,7 +159,7 @@ public final class SnappyRoundtripTest extends AbstractTest {
     }
 
     @Test
-    public void tryReallyLongLiterals() throws IOException {
+    public void testTryReallyLongLiterals() throws IOException {
         // "normal" Snappy files will never reach literal blocks with
         // length beyond 16bits (i.e. those using three or four bytes
         // to encode the length) as the block size is only 32k. This
