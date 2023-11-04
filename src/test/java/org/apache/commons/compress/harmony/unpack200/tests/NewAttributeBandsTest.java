@@ -41,7 +41,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 /**
  * Tests for unpack200 support for non-predefined attributes
  */
-public class NewAttributeBandsTest extends AbstractBandsTestCase {
+public class NewAttributeBandsTest extends AbstractBandsTest {
 
     private class MockNewAttributeBands extends NewAttributeBands {
 

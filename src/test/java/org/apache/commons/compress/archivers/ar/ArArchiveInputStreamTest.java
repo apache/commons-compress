@@ -29,13 +29,13 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class ArArchiveInputStreamTest extends AbstractTestCase {
+public class ArArchiveInputStreamTest extends AbstractTest {
 
     private void checkLongNameEntry(final String archive) throws Exception {
         try (final InputStream fis = newInputStream(archive);

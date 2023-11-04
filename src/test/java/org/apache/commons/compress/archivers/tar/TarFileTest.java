@@ -37,12 +37,12 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class TarFileTest extends AbstractTestCase {
+public class TarFileTest extends AbstractTest {
 
     private void datePriorToEpoch(final String archive) throws Exception {
         try (final TarFile tarFile = new TarFile(getPath(archive))) {

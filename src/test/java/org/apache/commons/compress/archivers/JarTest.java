@@ -23,12 +23,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.junit.jupiter.api.Test;
 
-public final class JarTestCase extends AbstractTestCase {
+public final class JarTest extends AbstractTest {
 
     @Test
     public void testJarArchiveCreation() throws Exception {

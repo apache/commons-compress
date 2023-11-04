@@ -33,11 +33,11 @@ import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.zip.CRC32;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.jupiter.api.Test;
 
-public class UTF8ZipFilesTest extends AbstractTestCase {
+public class UTF8ZipFilesTest extends AbstractTest {
 
     private static final String CP437 = "cp437";
     private static final String ASCII_TXT = "ascii.txt";

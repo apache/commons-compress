@@ -16,7 +16,7 @@
  */
 package org.apache.commons.compress.compressors.deflate64;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.apache.commons.compress.AbstractTest.getFile;
 
 import java.io.InputStream;
 import java.util.Enumeration;

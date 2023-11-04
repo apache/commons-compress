@@ -42,7 +42,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * Files must be in resources/archives, and there must be a file.txt containing
  * the list of files in the archives.
  */
-public class ArchiveReadTest extends AbstractTestCase {
+public class ArchiveReadTest extends AbstractTest {
 
     private static final ClassLoader CLASSLOADER = ArchiveReadTest.class.getClassLoader();
     private static final File ARCDIR;

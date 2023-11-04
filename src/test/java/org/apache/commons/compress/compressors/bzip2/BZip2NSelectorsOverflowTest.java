@@ -24,10 +24,10 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.junit.jupiter.api.Test;
 
-public class BZip2NSelectorsOverflowTest extends AbstractTestCase {
+public class BZip2NSelectorsOverflowTest extends AbstractTest {
 
     /**
      * See https://sourceware.org/ml/bzip2-devel/2019-q3/msg00007.html

@@ -31,13 +31,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public final class FramedSnappyCompressorInputStreamTest extends AbstractTestCase {
+public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
 
     private long mask(final long x) {
         return (x >>> 15 | x << 17) + FramedSnappyCompressorInputStream.MASK_OFFSET & 0xffffFFFFL;

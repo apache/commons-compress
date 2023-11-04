@@ -38,7 +38,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.junit.jupiter.api.Test;
 
-public final class DetectArchiverTestCase extends AbstractTestCase {
+public final class DetectArchiverTest extends AbstractTest {
 
     final ClassLoader classLoader = getClass().getClassLoader();
 

@@ -33,7 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
@@ -44,7 +44,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runners.Parameterized.Parameters;
 
-public class ParameterizedExpanderTest extends AbstractTestCase {
+public class ParameterizedExpanderTest extends AbstractTest {
 
     // 7z and ZIP using ZipFile is in ExpanderTest
     @Parameters(name = "format={0}")

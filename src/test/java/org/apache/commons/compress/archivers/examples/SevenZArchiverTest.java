@@ -34,7 +34,7 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.StreamingNotSupportedException;
@@ -42,7 +42,7 @@ import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class SevenZArchiverTest extends AbstractTestCase {
+public class SevenZArchiverTest extends AbstractTest {
     private File target;
 
     private void assertDir(final String expectedName, final ArchiveEntry entry) {

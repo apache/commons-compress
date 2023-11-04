@@ -38,7 +38,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.PasswordRequiredException;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -46,7 +46,7 @@ import org.apache.commons.compress.utils.TimeUtils;
 import org.junit.jupiter.api.Test;
 import org.tukaani.xz.LZMA2Options;
 
-public class SevenZOutputFileTest extends AbstractTestCase {
+public class SevenZOutputFileTest extends AbstractTest {
 
     private static final boolean XZ_BCJ_IS_BUGGY;
 

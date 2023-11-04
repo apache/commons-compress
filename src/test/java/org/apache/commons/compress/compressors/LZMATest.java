@@ -28,12 +28,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public final class LZMATestCase extends AbstractTestCase {
+public final class LZMATest extends AbstractTest {
 
     @Test
     public void testLzmaRoundtrip() throws Exception {

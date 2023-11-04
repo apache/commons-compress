@@ -30,14 +30,14 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveEntry;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveOutputStream;
 import org.apache.commons.compress.archivers.cpio.CpioConstants;
 import org.junit.jupiter.api.Test;
 
-public final class CpioTestCase extends AbstractTestCase {
+public final class CpioTest extends AbstractTest {
 
     @Test
     public void testCpioArchiveCreation() throws Exception {

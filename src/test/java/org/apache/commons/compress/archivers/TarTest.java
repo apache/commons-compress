@@ -37,7 +37,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
@@ -48,7 +48,7 @@ import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public final class TarTestCase extends AbstractTestCase {
+public final class TarTest extends AbstractTest {
 
     private String createLongName(final int nameLength) {
         final StringBuilder buffer = new StringBuilder();

@@ -35,12 +35,12 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
+public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
 
     interface StreamWrapper {
         InputStream wrap(InputStream in) throws Exception;

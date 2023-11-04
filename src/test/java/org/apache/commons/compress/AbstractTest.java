@@ -47,7 +47,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
 
-public abstract class AbstractTestCase {
+public abstract class AbstractTest {
 
     protected interface StreamWrapper<I extends InputStream> {
         I wrap(InputStream inputStream) throws Exception;
@@ -83,7 +83,7 @@ public abstract class AbstractTestCase {
     }
 
     public static File getFile(final String path) throws IOException {
-        final URL url = AbstractTestCase.class.getClassLoader().getResource(path);
+        final URL url = AbstractTest.class.getClassLoader().getResource(path);
         if (url == null) {
             throw new FileNotFoundException("couldn't find " + path);
         }

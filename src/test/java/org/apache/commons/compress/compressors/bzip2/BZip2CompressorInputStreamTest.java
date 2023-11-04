@@ -28,14 +28,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class BZip2CompressorInputStreamTest extends AbstractTestCase {
+public class BZip2CompressorInputStreamTest extends AbstractTest {
 
     private void fuzzingTest(final int[] bytes) throws IOException, ArchiveException {
         final int len = bytes.length;

@@ -28,10 +28,10 @@ import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.junit.jupiter.api.Test;
 
-public class FileTimesIT extends AbstractTestCase {
+public class FileTimesIT extends AbstractTest {
 
     private void assertGlobalHeaders(final TarArchiveEntry e) {
         assertEquals(5, e.getExtraPaxHeaders().size());

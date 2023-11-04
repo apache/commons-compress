@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -45,7 +45,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  *
  * Files must be in resources/longsymlink, and there must be a file.txt containing the list of files in the archives.
  */
-public class LongSymLinkTest extends AbstractTestCase {
+public class LongSymLinkTest extends AbstractTest {
 
     private static final ClassLoader CLASSLOADER = LongSymLinkTest.class.getClassLoader();
     private static final File ARCDIR;

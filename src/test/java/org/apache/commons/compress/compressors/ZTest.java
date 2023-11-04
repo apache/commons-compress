@@ -26,11 +26,11 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.z.ZCompressorInputStream;
 import org.junit.jupiter.api.Test;
 
-public final class ZTestCase extends AbstractTestCase {
+public final class ZTest extends AbstractTest {
 
     @Test
     public void testMatches() {

@@ -17,7 +17,7 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.apache.commons.compress.AbstractTest.getFile;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -38,7 +38,7 @@ import java.util.Enumeration;
 import java.util.Random;
 import java.util.zip.ZipEntry;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.io.RandomAccessFileMode;
 import org.junit.jupiter.api.Test;
 
@@ -289,11 +289,11 @@ public class Zip64SupportIT {
                     if (os != null) {
                         os.close();
                     }
-                    AbstractTestCase.forceDelete(f);
+                    AbstractTest.forceDelete(f);
                 } finally {
                     if (dir != null) {
                         final File directory = dir;
-                        AbstractTestCase.forceDelete(directory);
+                        AbstractTest.forceDelete(directory);
                     }
                 }
             }
@@ -2294,7 +2294,7 @@ public class Zip64SupportIT {
             read5GBOfZerosUsingZipFileImpl(f, "5GB_of_Zeros");
         } finally {
             if (f != null) {
-                AbstractTestCase.forceDelete(f);
+                AbstractTest.forceDelete(f);
             }
         }
     }

@@ -25,12 +25,12 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class FactoryTest extends AbstractTestCase {
+public class FactoryTest extends AbstractTest {
 
     private void roundtripViaFactory(final String format) throws Exception {
         final Path input = getPath("bla.tar");

@@ -26,14 +26,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class ZstdRoundtripTest extends AbstractTestCase {
+public class ZstdRoundtripTest extends AbstractTest {
 
     private interface OutputStreamCreator {
         ZstdCompressorOutputStream wrap(FileOutputStream os) throws IOException;

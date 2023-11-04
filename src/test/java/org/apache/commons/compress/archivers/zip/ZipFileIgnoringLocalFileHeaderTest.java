@@ -26,14 +26,14 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Enumeration;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 public class ZipFileIgnoringLocalFileHeaderTest {
 
     private static ZipFile openZipWithoutLFH(final String fileName) throws IOException {
-        return new ZipFile(AbstractTestCase.getFile(fileName), ZipEncodingHelper.UTF8, true, true);
+        return new ZipFile(AbstractTest.getFile(fileName), ZipEncodingHelper.UTF8, true, true);
     }
 
     @TempDir

@@ -26,12 +26,12 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class ArjArchiveInputStreamTest extends AbstractTestCase {
+public class ArjArchiveInputStreamTest extends AbstractTest {
 
     @Test
     public void testArjUnarchive() throws Exception {

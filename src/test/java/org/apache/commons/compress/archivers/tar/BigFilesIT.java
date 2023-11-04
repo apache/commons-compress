@@ -29,11 +29,11 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.junit.jupiter.api.Test;
 
-public class BigFilesIT extends AbstractTestCase {
+public class BigFilesIT extends AbstractTest {
 
     private void readFileBiggerThan8GByte(final String name) throws Exception {
         try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(name)));

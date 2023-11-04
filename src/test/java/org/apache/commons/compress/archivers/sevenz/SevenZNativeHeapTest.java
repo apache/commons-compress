@@ -25,14 +25,14 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.sevenz.Coders.DeflateDecoder;
 import org.apache.commons.compress.archivers.sevenz.Coders.DeflateDecoder.DeflateDecoderInputStream;
 import org.apache.commons.compress.archivers.sevenz.Coders.DeflateDecoder.DeflateDecoderOutputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.junit.jupiter.api.Test;
 
-public class SevenZNativeHeapTest extends AbstractTestCase {
+public class SevenZNativeHeapTest extends AbstractTest {
 
     private static final class DelegatingDeflater extends Deflater {
 

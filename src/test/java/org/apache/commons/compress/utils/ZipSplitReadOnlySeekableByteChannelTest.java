@@ -17,8 +17,8 @@
 
 package org.apache.commons.compress.utils;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.apache.commons.compress.AbstractTestCase.getPath;
+import static org.apache.commons.compress.AbstractTest.getFile;
+import static org.apache.commons.compress.AbstractTest.getPath;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;

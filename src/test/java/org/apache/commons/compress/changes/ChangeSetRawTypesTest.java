@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
@@ -51,7 +51,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  *
  * @see ChangeSetSafeTypesTest
  */
-public final class ChangeSetRawTypesTest extends AbstractTestCase {
+public final class ChangeSetRawTypesTest extends AbstractTest {
 
     // Delete a single file
     private void archiveListDelete(final String prefix) {

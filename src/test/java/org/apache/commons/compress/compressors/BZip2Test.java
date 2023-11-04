@@ -25,11 +25,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.junit.jupiter.api.Test;
 
-public final class BZip2TestCase extends AbstractTestCase {
+public final class BZip2Test extends AbstractTest {
 
     @Test
     public void testBzip2Unarchive() throws Exception {

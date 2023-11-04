@@ -23,12 +23,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.InputStream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class CpioArchiveInputStreamTest extends AbstractTestCase {
+public class CpioArchiveInputStreamTest extends AbstractTest {
 
     @Test
     public void testCpioUnarchive() throws Exception {

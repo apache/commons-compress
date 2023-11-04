@@ -33,14 +33,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.jupiter.api.Test;
 
-public class TarUtilsTest extends AbstractTestCase {
+public class TarUtilsTest extends AbstractTest {
 
     private void checkName(final String string) {
         final byte[] buff = new byte[100];

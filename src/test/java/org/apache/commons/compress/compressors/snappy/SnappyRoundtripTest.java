@@ -29,12 +29,12 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Random;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.lz77support.Parameters;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public final class SnappyRoundtripTest extends AbstractTestCase {
+public final class SnappyRoundtripTest extends AbstractTest {
 
     private static Parameters newParameters(final int windowSize, final int minBackReferenceLength, final int maxBackReferenceLength,
         final int maxOffset, final int maxLiteralLength) {

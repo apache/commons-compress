@@ -25,10 +25,10 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.junit.jupiter.api.Test;
 
-public class ZipSplitOutputStreamTest extends AbstractTestCase {
+public class ZipSplitOutputStreamTest extends AbstractTest {
 
     @Test
     public void testCreateSplittedFiles() throws IOException {

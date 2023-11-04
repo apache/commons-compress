@@ -27,13 +27,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class BrotliCompressorInputStreamTest extends AbstractTestCase {
+public class BrotliCompressorInputStreamTest extends AbstractTest {
 
     @Test
     public void testAvailableShouldReturnZero() throws IOException {

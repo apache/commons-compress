@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ar.ArArchiveEntry;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveEntry;
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
@@ -34,7 +34,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.junit.jupiter.api.Test;
 
-public class ArchiveOutputStreamTest<O extends ArchiveOutputStream<E>, E extends ArchiveEntry> extends AbstractTestCase {
+public class ArchiveOutputStreamTest<O extends ArchiveOutputStream<E>, E extends ArchiveEntry> extends AbstractTest {
 
     private O createArchiveWithDummyEntry(final String archiveType, final OutputStream out1, final File dummy) throws Exception {
         final O aos1 = factory.createArchiveOutputStream(archiveType, out1);

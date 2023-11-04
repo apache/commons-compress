@@ -31,7 +31,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -61,7 +61,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * @param <E> ArchiveEntry type must match between input and output.
  * @see ChangeSetRawTypesTest
  */
-public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O extends ArchiveOutputStream<E>, E extends ArchiveEntry> extends AbstractTestCase {
+public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O extends ArchiveOutputStream<E>, E extends ArchiveEntry> extends AbstractTest {
 
     /** Deletes a single file. */
     private void archiveListDelete(final String prefix) {

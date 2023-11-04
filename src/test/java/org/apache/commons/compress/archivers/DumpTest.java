@@ -26,11 +26,11 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
 import org.junit.jupiter.api.Test;
 
-public final class DumpTestCase extends AbstractTestCase {
+public final class DumpTest extends AbstractTest {
 
     private void archiveDetection(final File f) throws Exception {
         try (InputStream is = Files.newInputStream(f.toPath());

@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -43,7 +43,7 @@ import org.apache.commons.compress.compressors.pack200.Pack200Strategy;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public final class Pack200TestCase extends AbstractTestCase {
+public final class Pack200Test extends AbstractTest {
 
     private void jarArchiveCreation(final Pack200Strategy mode) throws Exception {
         final File output = new File(getTempDirFile(), "bla.pack");

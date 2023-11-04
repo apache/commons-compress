@@ -30,7 +30,7 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Cipher;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.sevenz.SevenZMethod;
@@ -39,7 +39,7 @@ import org.apache.commons.compress.utils.TimeUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class SevenZTestCase extends AbstractTestCase {
+public class SevenZTest extends AbstractTest {
 
     private static void assumeStrongCryptoIsAvailable() throws NoSuchAlgorithmException {
         assumeTrue(Cipher.getMaxAllowedKeyLength("AES/ECB/PKCS5Padding") >= 256, "test requires strong crypto");
@@ -48,7 +48,7 @@ public class SevenZTestCase extends AbstractTestCase {
 
     private final File file1, file2;
 
-    public SevenZTestCase() throws IOException {
+    public SevenZTest() throws IOException {
         file1 = getFile("test1.xml");
         file2 = getFile("test2.xml");
     }

@@ -39,7 +39,7 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -47,7 +47,7 @@ import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class TarArchiveInputStreamTest extends AbstractTestCase {
+public class TarArchiveInputStreamTest extends AbstractTest {
 
     private void datePriorToEpoch(final String archive) throws Exception {
         try (TarArchiveInputStream in = new TarArchiveInputStream(Files.newInputStream(getFile(archive).toPath()))) {

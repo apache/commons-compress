@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-public class XZUtilsTestCase {
+public class XZUtilsTest {
 
     @Test
     public void testCachingIsEnabledByDefaultAndXZIsPresent() {

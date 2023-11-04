@@ -28,13 +28,13 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
+public final class FramedLZ4CompressorRoundtripTest extends AbstractTest {
 
     public static Stream<Arguments> factory() {
         return Stream.of(

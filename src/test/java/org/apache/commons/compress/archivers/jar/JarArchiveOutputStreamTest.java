@@ -27,7 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.zip.JarMarker;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipExtraField;
@@ -65,7 +65,7 @@ public class JarArchiveOutputStreamTest {
             fes = ze.getExtraFields();
             assertEquals(0, fes.length);
         } finally {
-            AbstractTestCase.forceDelete(testArchive);
+            AbstractTest.forceDelete(testArchive);
         }
     }
 

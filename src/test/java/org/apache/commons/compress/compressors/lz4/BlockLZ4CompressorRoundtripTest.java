@@ -27,14 +27,14 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.lz77support.Parameters;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public final class BlockLZ4CompressorRoundtripTest extends AbstractTestCase {
+public final class BlockLZ4CompressorRoundtripTest extends AbstractTest {
 
     public static Stream<Arguments> factory() {
         return Stream.of(

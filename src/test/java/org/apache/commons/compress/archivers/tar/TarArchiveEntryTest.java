@@ -18,8 +18,8 @@
 package org.apache.commons.compress.archivers.tar;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.apache.commons.compress.AbstractTestCase.getPath;
+import static org.apache.commons.compress.AbstractTest.getFile;
+import static org.apache.commons.compress.AbstractTest.getPath;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.jupiter.api.Test;
@@ -477,7 +477,7 @@ public class TarArchiveEntryTest implements TarConstants {
                 assertTrue(t.isCheckSumOK());
             }
         } finally {
-            AbstractTestCase.forceDelete(f);
+            AbstractTest.forceDelete(f);
         }
     }
 

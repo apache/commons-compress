@@ -40,7 +40,7 @@ import java.util.Enumeration;
 import java.util.TimeZone;
 import java.util.zip.ZipException;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -157,7 +157,7 @@ public class X5455_ExtendedTimestampTest {
     @AfterEach
     public void removeTempFiles() {
         if (tmpDir != null) {
-            AbstractTestCase.forceDelete(tmpDir);
+            AbstractTest.forceDelete(tmpDir);
         }
     }
 
@@ -505,7 +505,7 @@ public class X5455_ExtendedTimestampTest {
         well.
          */
 
-        final File archive = AbstractTestCase.getFile("COMPRESS-210_unix_time_zip_test.zip");
+        final File archive = AbstractTest.getFile("COMPRESS-210_unix_time_zip_test.zip");
 
         try (ZipFile zf = new ZipFile(archive)) {
             final Enumeration<ZipArchiveEntry> en = zf.getEntries();

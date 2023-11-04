@@ -23,13 +23,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStream;
 import org.apache.commons.compress.compressors.deflate.DeflateCompressorOutputStream;
 import org.apache.commons.compress.compressors.deflate.DeflateParameters;
 import org.junit.jupiter.api.Test;
 
-public final class DeflateTestCase extends AbstractTestCase {
+public final class DeflateTest extends AbstractTest {
 
     /**
      * Tests the creation of a DEFLATE archive with zlib header

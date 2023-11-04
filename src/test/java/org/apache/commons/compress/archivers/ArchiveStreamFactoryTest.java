@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
@@ -42,7 +42,7 @@ import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.input.BrokenInputStream;
 import org.junit.jupiter.api.Test;
 
-public class ArchiveStreamFactoryTest extends AbstractTestCase {
+public class ArchiveStreamFactoryTest extends AbstractTest {
 
     static class TestData {
         final String testFile;

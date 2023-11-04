@@ -28,10 +28,10 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.junit.jupiter.api.Test;
 
-public class ArArchiveOutputStreamTest extends AbstractTestCase {
+public class ArArchiveOutputStreamTest extends AbstractTest {
 
     @Test
     public void testLongFileNamesCauseExceptionByDefault() throws IOException {

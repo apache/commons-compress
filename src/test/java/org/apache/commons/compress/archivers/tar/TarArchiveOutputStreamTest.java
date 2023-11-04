@@ -42,7 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -51,7 +51,7 @@ import org.apache.commons.io.output.NullOutputStream;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public class TarArchiveOutputStreamTest extends AbstractTestCase {
+public class TarArchiveOutputStreamTest extends AbstractTest {
 
     private static byte[] createTarArchiveContainingOneDirectory(final String fileName, final Date modificationDate) throws IOException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -24,13 +24,13 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.junit.jupiter.api.Test;
 
-public final class Pack200UtilsTest extends AbstractTestCase {
+public final class Pack200UtilsTest extends AbstractTest {
 
     @Test
     public void testNormalize() throws Throwable {

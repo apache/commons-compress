@@ -26,11 +26,11 @@ import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.junit.jupiter.api.Test;
 
-public final class XZTestCase extends AbstractTestCase {
+public final class XZTest extends AbstractTest {
 
     @Test
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {

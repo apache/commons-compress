@@ -25,10 +25,10 @@ import java.io.File;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.junit.jupiter.api.Test;
 
-public class CpioArchiveOutputStreamTest extends AbstractTestCase {
+public class CpioArchiveOutputStreamTest extends AbstractTest {
 
     @Test
     public void testWriteOldBinary() throws Exception {

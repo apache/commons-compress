@@ -27,7 +27,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.junit.jupiter.api.Test;
 
-public class ChainingTestCase extends AbstractTestCase {
+public class ChainingTest extends AbstractTest {
 
     @Test
     public void testTarBzip2() throws Exception {
