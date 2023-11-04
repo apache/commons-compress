@@ -72,8 +72,10 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
     public void testConstructorThrowsOnNonSplitZipFiles() throws IOException {
         final List<SeekableByteChannel> channels = new ArrayList<>();
         final File file = getFile("COMPRESS-189.zip");
-        channels.add(Files.newByteChannel(file.toPath(), StandardOpenOption.READ));
-        assertThrows(IOException.class, () -> new ZipSplitReadOnlySeekableByteChannel(channels));
+        try (final SeekableByteChannel byteChannel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
+            channels.add(byteChannel);
+            assertThrows(IOException.class, () -> new ZipSplitReadOnlySeekableByteChannel(channels));
+        }
     }
 
     @Test
@@ -118,23 +120,25 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
     @Test
     public void testForOrderedSeekableByteChannelsReturnCorrectClass() throws IOException {
         final File file1 = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
-        final SeekableByteChannel firstChannel = Files.newByteChannel(file1.toPath(), StandardOpenOption.READ);
-
         final File file2 = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
-        final SeekableByteChannel secondChannel = Files.newByteChannel(file2.toPath(), StandardOpenOption.READ);
-
         final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
-        final SeekableByteChannel lastChannel = Files.newByteChannel(lastFile.toPath(), StandardOpenOption.READ);
 
-        final List<SeekableByteChannel> channels = new ArrayList<>();
-        channels.add(firstChannel);
-        channels.add(secondChannel);
+        try (SeekableByteChannel firstChannel = Files.newByteChannel(file1.toPath(), StandardOpenOption.READ);
+                final SeekableByteChannel secondChannel = Files.newByteChannel(file2.toPath(), StandardOpenOption.READ);
+                final SeekableByteChannel lastChannel = Files.newByteChannel(lastFile.toPath(), StandardOpenOption.READ)) {
 
-        SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(lastChannel, channels);
-        assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
+            final List<SeekableByteChannel> channels = new ArrayList<>();
+            channels.add(firstChannel);
+            channels.add(secondChannel);
 
-        channel = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(firstChannel, secondChannel, lastChannel);
-        assertTrue(channel instanceof ZipSplitReadOnlySeekableByteChannel);
+            @SuppressWarnings("resource") // try-with-resources closes
+            SeekableByteChannel channel1 = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(lastChannel, channels);
+            assertTrue(channel1 instanceof ZipSplitReadOnlySeekableByteChannel);
+
+            @SuppressWarnings("resource") // try-with-resources closes
+            SeekableByteChannel channel2 = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(firstChannel, secondChannel, lastChannel);
+            assertTrue(channel2 instanceof ZipSplitReadOnlySeekableByteChannel);
+        }
     }
 
     @Test
