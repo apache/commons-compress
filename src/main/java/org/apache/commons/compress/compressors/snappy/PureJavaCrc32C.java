@@ -23,11 +23,13 @@ package org.apache.commons.compress.compressors.snappy;
 import java.util.zip.Checksum;
 
 /**
- * A pure-java implementation of the CRC32 checksum that uses
- * the CRC32-C polynomial, the same polynomial used by iSCSI
- * and implemented on many Intel chipsets supporting SSE4.2.
+ * A pure-java implementation of the CRC32 checksum that uses the CRC32-C polynomial, the same polynomial used by iSCSI and implemented on many Intel chipsets
+ * supporting SSE4.2.
  *
- * <p>This file is a copy of the implementation at the Apache Hadoop project.</p>
+ * <p>
+ * This file is a copy of the implementation at the Apache Hadoop project.
+ * </p>
+ *
  * @see "https://svn.apache.org/repos/asf/hadoop/common/trunk/hadoop-common-project/hadoop-common/src/main/java/org/apache/hadoop/util/PureJavaCrc32C.java"
  * @NotThreadSafe
  * @since 1.7
@@ -574,65 +576,75 @@ final class PureJavaCrc32C implements Checksum {
     0xE54C35A1, 0xAC704886, 0x7734CFEF, 0x3E08B2C8,
     0xC451B7CC, 0x8D6DCAEB, 0x56294D82, 0x1F1530A5
   };
+
   /** the current CRC value, bit-flipped */
   private int crc;
+
   /** Create a new PureJavaCrc32 object. */
   public PureJavaCrc32C() {
-    reset(); // non-private, but the class is now final
+      reset(); // non-private, but the class is now final
   }
+
   @Override
   public long getValue() {
-    final long ret = crc;
-    return ~ret & 0xffffffffL;
+      final long ret = crc;
+      return ~ret & 0xffffffffL;
   }
+
   @Override
   // called by ctor but the class is final so this is safe
   public void reset() {
-    crc = 0xffffffff;
+      crc = 0xffffffff;
   }
+
   @Override
   public void update(final byte[] b, int off, int len) {
-    int localCrc = crc;
+      int localCrc = crc;
 
-    while(len > 7) {
-      final int c0 =(b[off+0] ^ localCrc) & 0xff;
-      final int c1 =(b[off+1] ^ (localCrc >>>= 8)) & 0xff; //NOSONAR
-      final int c2 =(b[off+2] ^ (localCrc >>>= 8)) & 0xff; //NOSONAR
-      final int c3 =(b[off+3] ^ (localCrc >>>= 8)) & 0xff; //NOSONAR
-      localCrc = T[T8_7_START + c0] ^ T[T8_6_START + c1]
-          ^ T[T8_5_START + c2] ^ T[T8_4_START + c3];
+      while (len > 7) {
+          final int c0 = (b[off + 0] ^ localCrc) & 0xff;
+          final int c1 = (b[off + 1] ^ (localCrc >>>= 8)) & 0xff; // NOSONAR
+          final int c2 = (b[off + 2] ^ (localCrc >>>= 8)) & 0xff; // NOSONAR
+          final int c3 = (b[off + 3] ^ (localCrc >>>= 8)) & 0xff; // NOSONAR
+          localCrc = T[T8_7_START + c0] ^ T[T8_6_START + c1] ^ T[T8_5_START + c2] ^ T[T8_4_START + c3];
 
-      final int c4 = b[off+4] & 0xff;
-      final int c5 = b[off+5] & 0xff;
-      final int c6 = b[off+6] & 0xff;
-      final int c7 = b[off+7] & 0xff;
+          final int c4 = b[off + 4] & 0xff;
+          final int c5 = b[off + 5] & 0xff;
+          final int c6 = b[off + 6] & 0xff;
+          final int c7 = b[off + 7] & 0xff;
 
-      localCrc ^= T[T8_3_START + c4] ^ T[T8_2_START + c5]
-           ^ T[T8_1_START + c6] ^ T[T8_0_START + c7];
+          localCrc ^= T[T8_3_START + c4] ^ T[T8_2_START + c5] ^ T[T8_1_START + c6] ^ T[T8_0_START + c7];
 
-      off += 8;
-      len -= 8;
-    }
+          off += 8;
+          len -= 8;
+      }
 
-    /* loop unroll - duff's device style */
-    switch(len) {
-      case 7: localCrc = localCrc >>> 8 ^ T[T8_0_START + ((localCrc ^ b[off++]) & 0xff)];
-      case 6: localCrc = localCrc >>> 8 ^ T[T8_0_START + ((localCrc ^ b[off++]) & 0xff)];
-      case 5: localCrc = localCrc >>> 8 ^ T[T8_0_START + ((localCrc ^ b[off++]) & 0xff)];
-      case 4: localCrc = localCrc >>> 8 ^ T[T8_0_START + ((localCrc ^ b[off++]) & 0xff)];
-      case 3: localCrc = localCrc >>> 8 ^ T[T8_0_START + ((localCrc ^ b[off++]) & 0xff)];
-      case 2: localCrc = localCrc >>> 8 ^ T[T8_0_START + ((localCrc ^ b[off++]) & 0xff)];
-      case 1: localCrc = localCrc >>> 8 ^ T[T8_0_START + ((localCrc ^ b[off++]) & 0xff)];
+      /* loop unroll - duff's device style */
+      switch (len) {
+      case 7:
+          localCrc = localCrc >>> 8 ^ T[T8_0_START + ((localCrc ^ b[off++]) & 0xff)];
+      case 6:
+          localCrc = localCrc >>> 8 ^ T[T8_0_START + ((localCrc ^ b[off++]) & 0xff)];
+      case 5:
+          localCrc = localCrc >>> 8 ^ T[T8_0_START + ((localCrc ^ b[off++]) & 0xff)];
+      case 4:
+          localCrc = localCrc >>> 8 ^ T[T8_0_START + ((localCrc ^ b[off++]) & 0xff)];
+      case 3:
+          localCrc = localCrc >>> 8 ^ T[T8_0_START + ((localCrc ^ b[off++]) & 0xff)];
+      case 2:
+          localCrc = localCrc >>> 8 ^ T[T8_0_START + ((localCrc ^ b[off++]) & 0xff)];
+      case 1:
+          localCrc = localCrc >>> 8 ^ T[T8_0_START + ((localCrc ^ b[off++]) & 0xff)];
       default:
-        /* nothing */
-    }
+          /* nothing */
+      }
 
-    // Publish crc out to object
-    crc = localCrc;
+      // Publish crc out to object
+      crc = localCrc;
   }
 
   @Override
   public void update(final int b) {
-    crc = crc >>> 8 ^ T[T8_0_START + ((crc ^ b) & 0xff)];
+      crc = crc >>> 8 ^ T[T8_0_START + ((crc ^ b) & 0xff)];
   }
 }
