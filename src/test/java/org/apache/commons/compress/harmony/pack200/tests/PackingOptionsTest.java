@@ -42,6 +42,7 @@ import org.apache.commons.compress.AbstractTempDirTest;
 import org.apache.commons.compress.harmony.pack200.Archive;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PackingOptions;
+import org.apache.commons.compress.harmony.pack200.PackingUtils;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -250,6 +251,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
         try (FileReader reader = new FileReader(logFile)) {
             assertTrue(reader.ready());
         }
+        PackingUtils.config(null);
     }
 
     @Test
