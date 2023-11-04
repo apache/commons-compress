@@ -47,10 +47,10 @@ public class ExplodeSupportTest {
 
             final ByteArrayOutputStream bout = new ByteArrayOutputStream();
             final CheckedOutputStream out = new CheckedOutputStream(bout, new CRC32());
-            IOUtils.copy(zip.getInputStream(entry), out);
-
-            out.flush();
-
+            try (InputStream inputStream = zip.getInputStream(entry)) {
+                IOUtils.copy(inputStream, out);
+                out.flush();
+            }
             assertEquals(entry.getCrc(), out.getChecksum().getValue(), "CRC32");
         }
     }
@@ -67,10 +67,10 @@ public class ExplodeSupportTest {
 
     @Test
     public void testConstructorThrowsExceptions() {
-        assertThrows(IllegalArgumentException.class, () -> new ExplodingInputStream(4095, 2, new ByteArrayInputStream(new byte[]{})),
+        assertThrows(IllegalArgumentException.class, () -> new ExplodingInputStream(4095, 2, new ByteArrayInputStream(new byte[] {})),
                 "should have failed with illegal argument exception");
 
-        assertThrows(IllegalArgumentException.class, () -> new ExplodingInputStream(4096, 4, new ByteArrayInputStream(new byte[]{})),
+        assertThrows(IllegalArgumentException.class, () -> new ExplodingInputStream(4096, 4, new ByteArrayInputStream(new byte[] {})),
                 "should have failed with illegal argument exception");
     }
 
@@ -90,16 +90,13 @@ public class ExplodeSupportTest {
             assertEquals(entryName, entry.getName(), "entry name");
             assertTrue(zin.canReadEntryData(entry), "entry can't be read");
             assertEquals(ZipMethod.IMPLODING.getCode(), entry.getMethod(), "method");
-
-            final InputStream bio = new BoundedInputStream(zin, entry.getSize());
-
-            final ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            final CheckedOutputStream out = new CheckedOutputStream(bout, new CRC32());
-            IOUtils.copy(bio, out);
-
-            out.flush();
-
-            assertEquals(entry.getCrc(), out.getChecksum().getValue(), "CRC32");
+            try (InputStream bio = new BoundedInputStream(zin, entry.getSize())) {
+                final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                final CheckedOutputStream out = new CheckedOutputStream(bout, new CRC32());
+                IOUtils.copy(bio, out);
+                out.flush();
+                assertEquals(entry.getCrc(), out.getChecksum().getValue(), "CRC32");
+            }
         }
     }
 
