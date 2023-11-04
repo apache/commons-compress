@@ -26,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,9 +55,6 @@ public class ArchiveTest extends AbstractTempDirTest {
             return fileName.endsWith(".jar") && !fileName.endsWith("Unpacked.jar");
         }).map(Arguments::of);
     }
-
-    private JarFile in;
-    private OutputStream out;
 
     private void compareFiles(final JarFile jarFile, final JarFile jarFile2) throws IOException {
         final Enumeration<JarEntry> entries = jarFile.entries();
@@ -203,14 +199,14 @@ public class ArchiveTest extends AbstractTempDirTest {
 
     @Test
     public void testJNDI() throws IOException, Pack200Exception, URISyntaxException {
-        in = new JarFile(new File(Archive.class.getResource("/pack200/jndi.jar").toURI()));
         final File file = createTempFile("jndi", ".pack");
-        out = new FileOutputStream(file);
-        final PackingOptions options = new PackingOptions();
-        options.setGzip(false);
-        new Archive(in, out, options).pack();
-        in.close();
-        out.close();
+        try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/jndi.jar").toURI()))) {
+            FileOutputStream out = new FileOutputStream(file);
+            final PackingOptions options = new PackingOptions();
+            options.setGzip(false);
+            new Archive(in, out, options).pack();
+            out.close();
+        }
 
         // now unpack
         final File file2 = createTempFile("jndiout", ".jar");
@@ -227,14 +223,13 @@ public class ArchiveTest extends AbstractTempDirTest {
 
     @Test
     public void testLargeClass() throws IOException, Pack200Exception, URISyntaxException {
-        in = new JarFile(new File(Archive.class.getResource("/pack200/largeClassUnpacked.jar").toURI()));
         final File file = createTempFile("largeClass", ".pack");
-        out = new FileOutputStream(file);
-        final PackingOptions options = new PackingOptions();
-        options.setGzip(false);
-        new Archive(in, out, options).pack();
-        in.close();
-        out.close();
+        try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/largeClassUnpacked.jar").toURI()));
+                FileOutputStream out = new FileOutputStream(file)) {
+            final PackingOptions options = new PackingOptions();
+            options.setGzip(false);
+            new Archive(in, out, options).pack();
+        }
 
         // now unpack
         final File file2 = createTempFile("largeClassOut", ".jar");
@@ -254,30 +249,25 @@ public class ArchiveTest extends AbstractTempDirTest {
     @ParameterizedTest
     @MethodSource("loadMultipleJars")
     public void testMultipleJars(final Path path) throws IOException, Pack200Exception {
+        File file = createTempFile("temp", ".pack.gz");
         final File inputFile = path.toFile();
-        in = new JarFile(inputFile);
-        final File file = createTempFile("temp", ".pack.gz");
-        out = new FileOutputStream(file);
+        try (JarFile in = new JarFile(inputFile);
+                FileOutputStream out = new FileOutputStream(file)) {
 //		System.out.println("packing " + children[i]);
-        new Archive(in, out, null).pack();
-        in.close();
-        out.close();
-
+            new Archive(in, out, null).pack();
+        }
         // unpack and compare
-
     }
 
     @Test
     public void testSQL() throws IOException, Pack200Exception, URISyntaxException {
-        in = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
         final File file = createTempFile("sql", ".pack");
-        out = new FileOutputStream(file);
-        final PackingOptions options = new PackingOptions();
-        options.setGzip(false);
-        final Archive ar = new Archive(in, out, options);
-        ar.pack();
-        in.close();
-        out.close();
+        try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
+                FileOutputStream out = new FileOutputStream(file)) {
+            final PackingOptions options = new PackingOptions();
+            options.setGzip(false);
+            new Archive(in, out, options).pack();
+        }
 
         // now unpack
         final File file2 = createTempFile("sqlout", ".jar");
