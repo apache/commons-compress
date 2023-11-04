@@ -591,8 +591,8 @@ final class PureJavaCrc32C implements Checksum {
       return ~ret & 0xffffffffL;
   }
 
+  /** Called by ctor but the class is final so this is safe. */
   @Override
-  // called by ctor but the class is final so this is safe
   public void reset() {
       crc = 0xffffffff;
   }
