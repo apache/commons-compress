@@ -21,11 +21,11 @@ import java.util.BitSet;
 class Archive {
 
     private static String lengthOf(final long[] a) {
-        return a == null ? "(null)" : String.valueOf(a.length);
+        return a == null ? "(null)" : Integer.toString(a.length);
     }
 
     private static String lengthOf(final Object[] a) {
-        return a == null ? "(null)" : String.valueOf(a.length);
+        return a == null ? "(null)" : Integer.toString(a.length);
     }
 
     /** Offset from beginning of file + SIGNATURE_HEADER_SIZE to packed streams. */
