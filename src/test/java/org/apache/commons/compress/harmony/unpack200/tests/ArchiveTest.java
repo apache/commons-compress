@@ -37,6 +37,7 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.compress.AbstractTempDirTest;
 import org.apache.commons.compress.harmony.unpack200.Archive;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for org.apache.commons.compress.harmony.unpack200.Archive, which is the main class for unpack200.
  */
-public class ArchiveTest {
+public class ArchiveTest extends AbstractTempDirTest {
 
     InputStream in;
     JarOutputStream out;
@@ -66,14 +67,15 @@ public class ArchiveTest {
         } catch (final IOException e) {
             e.printStackTrace();
         }
-        file.delete();
+        if (file != null) {
+            file.delete();
+        }
     }
 
     @Test
     public void testAlternativeConstructor() throws Exception {
         final String inputFile = new File(Archive.class.getResource("/pack200/sql.pack.gz").toURI()).getPath();
-        file = File.createTempFile("sql", ".jar");
-        file.deleteOnExit();
+        File file = createTempFile("sql", ".jar");
         final String outputFile = file.getPath();
         final Archive archive = new Archive(inputFile, outputFile);
         archive.unpack();
@@ -82,8 +84,7 @@ public class ArchiveTest {
     @Test
     public void testDeflateHint() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/sql.pack.gz");
-        file = File.createTempFile("sql", ".jar");
-        file.deleteOnExit();
+        File file = createTempFile("sql", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         Archive archive = new Archive(in, out);
         archive.setDeflateHint(true);
@@ -92,8 +93,7 @@ public class ArchiveTest {
             assertEquals(ZipEntry.DEFLATED, jarFile.getEntry("bin/test/org/apache/harmony/sql/tests/internal/rowset/CachedRowSetImplTest.class").getMethod());
 
             in = Archive.class.getResourceAsStream("/pack200/sql.pack.gz");
-            file = File.createTempFile("sql", ".jar");
-            file.deleteOnExit();
+            file = createTempFile("sql", ".jar");
             out = new JarOutputStream(new FileOutputStream(file));
             archive = new Archive(in, out);
             archive.setDeflateHint(false);
@@ -107,7 +107,7 @@ public class ArchiveTest {
     @Test
     public void testJustResourcesGZip() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/JustResources.pack.gz");
-        file = File.createTempFile("Just", "ResourcesGz.jar");
+        File file = createTempFile("Just", "ResourcesGz.jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
@@ -118,12 +118,10 @@ public class ArchiveTest {
     public void testLoggingOptions() throws Exception {
         // test default option, which is quiet (no output at all)
         in = Archive.class.getResourceAsStream("/pack200/sql.pack.gz");
-        file = File.createTempFile("logtest", ".jar");
-        file.deleteOnExit();
+        File file = createTempFile("logtest", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         Archive archive = new Archive(in, out);
-        File logFile = File.createTempFile("logfile", ".txt");
-        logFile.deleteOnExit();
+        File logFile = createTempFile("logfile", ".txt");
         archive.setLogFile(logFile.getPath());
         archive.unpack();
 
@@ -134,12 +132,10 @@ public class ArchiveTest {
 
         // test verbose
         in = Archive.class.getResourceAsStream("/pack200/sql.pack.gz");
-        file = File.createTempFile("logtest", ".jar");
-        file.deleteOnExit();
+        file = createTempFile("logtest", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         archive = new Archive(in, out);
-        logFile = File.createTempFile("logfile", ".txt");
-        logFile.deleteOnExit();
+        logFile = createTempFile("logfile", ".txt");
         archive.setLogFile(logFile.getPath());
         archive.setVerbose(true);
         archive.unpack();
@@ -152,8 +148,7 @@ public class ArchiveTest {
         // test append option
         final long length = logFile.length();
         in = Archive.class.getResourceAsStream("/pack200/sql.pack.gz");
-        file = File.createTempFile("logtest", ".jar");
-        file.deleteOnExit();
+        file = createTempFile("logtest", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         archive = new Archive(in, out);
         archive.setLogFile(logFile.getPath(), true);
@@ -161,8 +156,7 @@ public class ArchiveTest {
         archive.unpack();
         assertTrue(logFile.length() > length);
         in = Archive.class.getResourceAsStream("/pack200/sql.pack.gz");
-        file = File.createTempFile("logtest", ".jar");
-        file.deleteOnExit();
+        file = createTempFile("logtest", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         archive = new Archive(in, out);
         archive.setLogFile(logFile.getPath(), false);
@@ -172,12 +166,10 @@ public class ArchiveTest {
 
         // test setting quiet explicitly
         in = Archive.class.getResourceAsStream("/pack200/sql.pack.gz");
-        file = File.createTempFile("logtest", ".jar");
-        file.deleteOnExit();
+        file = createTempFile("logtest", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         archive = new Archive(in, out);
-        logFile = File.createTempFile("logfile", ".txt");
-        logFile.deleteOnExit();
+        logFile = createTempFile("logfile", ".txt");
         archive.setLogFile(logFile.getPath());
         archive.setQuiet(true);
         archive.unpack();
@@ -191,7 +183,7 @@ public class ArchiveTest {
     @Test
     public void testRemovePackFile() throws Exception {
         final File original = new File(Archive.class.getResource("/pack200/sql.pack.gz").toURI());
-        final File copy = File.createTempFile("sqlcopy", ".pack.gz");
+        final File copy = createTempFile("sqlcopy", ".pack.gz");
         try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(original));
                 final BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(copy))) {
             final byte[] bytes = new byte[256];
@@ -202,8 +194,7 @@ public class ArchiveTest {
             }
         }
         final String inputFile = copy.getPath();
-        file = File.createTempFile("sqlout", ".jar");
-        file.deleteOnExit();
+        File file = createTempFile("sqlout", ".jar");
         final String outputFile = file.getPath();
         final Archive archive = new Archive(inputFile, outputFile);
         archive.setRemovePackFile(true);
@@ -215,7 +206,7 @@ public class ArchiveTest {
     @Test
     public void testWithAnnotations() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/annotations.pack.gz");
-        file = File.createTempFile("annotations", ".jar");
+        File file = createTempFile("annotations", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
@@ -225,7 +216,7 @@ public class ArchiveTest {
     @Test
     public void testWithE0() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/simple-E0.pack.gz");
-        file = File.createTempFile("simple-e0", ".jar");
+        File file = createTempFile("simple-e0", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
@@ -235,7 +226,7 @@ public class ArchiveTest {
     @Test
     public void testWithJNDIE1() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/jndi-e1.pack.gz");
-        file = File.createTempFile("jndi-e1", ".jar");
+        File file = createTempFile("jndi-e1", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
@@ -246,8 +237,7 @@ public class ArchiveTest {
     @Test
     public void testWithLargeClass() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/LargeClass.pack.gz");
-        file = File.createTempFile("largeClass", ".jar");
-        file.deleteOnExit();
+        File file = createTempFile("largeClass", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
@@ -257,7 +247,7 @@ public class ArchiveTest {
     @Test
     public void testWithPack200() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/pack200.pack.gz");
-        file = File.createTempFile("p200", ".jar");
+        File file = createTempFile("p200", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
@@ -267,7 +257,7 @@ public class ArchiveTest {
     @Test
     public void testWithPack200E1() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/pack200-e1.pack.gz");
-        file = File.createTempFile("p200-e1", ".jar");
+        File file = createTempFile("p200-e1", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
@@ -277,8 +267,7 @@ public class ArchiveTest {
     @Test
     public void testWithSql() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/sql.pack.gz");
-        file = File.createTempFile("sql", ".jar");
-        file.deleteOnExit();
+        File file = createTempFile("sql", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
@@ -326,7 +315,7 @@ public class ArchiveTest {
     @Test
     public void testWithSqlE1() throws Exception {
         in = Archive.class.getResourceAsStream("/pack200/sql-e1.pack.gz");
-        file = File.createTempFile("sql-e1", ".jar");
+        File file = createTempFile("sql-e1", ".jar");
         out = new JarOutputStream(new FileOutputStream(file));
         final Archive archive = new Archive(in, out);
         archive.unpack();
