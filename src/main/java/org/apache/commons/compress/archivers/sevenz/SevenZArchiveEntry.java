@@ -366,7 +366,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Whether there is any content associated with this entry.
+     * Tests whether there is any content associated with this entry.
+     *
      * @return whether there is any content associated with this entry.
      */
     public boolean hasStream() {
@@ -374,8 +375,9 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Indicates whether this is an "anti-item" used in differential backups,
+     * Tests whether this is an "anti-item" used in differential backups,
      * meaning it should delete the same file from a previous backup.
+     *
      * @return true if it is an anti-item, false otherwise
      */
     public boolean isAntiItem() {
@@ -383,7 +385,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Return whether or not this entry represents a directory.
+     * Tests whether or not this entry represents a directory.
      *
      * @return True if this entry is a directory.
      */
