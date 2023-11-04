@@ -770,7 +770,7 @@ public class SevenZFile implements Closeable {
     }
 
     /**
-     * Derives a default file name from the archive name - if known.
+     * Gets a default file name from the archive name - if known.
      *
      * <p>This implements the same heuristics the 7z tools use. In
      * 7z's case if an archive contains entries without a name -
@@ -800,7 +800,7 @@ public class SevenZFile implements Closeable {
     }
 
     /**
-     * Returns a copy of meta-data of all archive entries.
+     * Gets a copy of meta-data of all archive entries.
      *
      * <p>This method only provides meta-data, the entries can not be
      * used to read the contents, you still need to process all
@@ -817,7 +817,7 @@ public class SevenZFile implements Closeable {
     }
 
     /**
-     * Returns an InputStream for reading the contents of the given entry.
+     * Gets an InputStream for reading the contents of the given entry.
      *
      * <p>For archives using solid compression randomly accessing
      * entries will be significantly slower than reading the archive
@@ -848,7 +848,7 @@ public class SevenZFile implements Closeable {
     }
 
     /**
-     * Returns the next Archive Entry in this archive.
+     * Gets the next Archive Entry in this archive.
      *
      * @return the next entry,
      *         or {@code null} if there are no more entries
@@ -869,7 +869,7 @@ public class SevenZFile implements Closeable {
     }
 
     /**
-     * Provides statistics for bytes read from the current entry.
+     * Gets statistics for bytes read from the current entry.
      *
      * @return statistics for bytes read from the current entry
      * @since 1.17
@@ -888,7 +888,7 @@ public class SevenZFile implements Closeable {
     }
 
     /**
-     * Find out if any data of current entry has been read or not.
+     * Tests if any data of current entry has been read or not.
      * This is achieved by comparing the bytes remaining to read
      * and the size of the file.
      *
