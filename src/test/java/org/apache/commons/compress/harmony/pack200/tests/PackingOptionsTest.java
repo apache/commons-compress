@@ -38,6 +38,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 
+import org.apache.commons.compress.AbstractTempDirTest;
 import org.apache.commons.compress.harmony.pack200.Archive;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PackingOptions;
@@ -46,9 +47,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test different options for packing a Jar file
  */
-public class PackingOptionsTest {
-
-    private File file;
+public class PackingOptionsTest extends AbstractTempDirTest {
 
     private void compareFiles(final JarFile jarFile, final JarFile jarFile2) throws IOException {
         final Enumeration<JarEntry> entries = jarFile.entries();
@@ -110,8 +109,7 @@ public class PackingOptionsTest {
     @Test
     public void testPackEffort0() throws Pack200Exception, IOException, URISyntaxException {
         final File f1 = new File(Archive.class.getResource("/pack200/jndi.jar").toURI());
-        file = File.createTempFile("jndiE0", ".pack");
-        file.deleteOnExit();
+        File file = createTempFile("jndiE0", ".pack");
         try (JarFile in = new JarFile(f1);
                 FileOutputStream out = new FileOutputStream(file)) {
             final PackingOptions options = new PackingOptions();
@@ -127,8 +125,7 @@ public class PackingOptionsTest {
 
     @Test
     public void testErrorAttributes() throws Exception {
-        file = File.createTempFile("unknown", ".pack");
-        file.deleteOnExit();
+        File file = createTempFile("unknown", ".pack");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/jndiWithUnknownAttributes.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
             final PackingOptions options = new PackingOptions();
@@ -152,8 +149,7 @@ public class PackingOptionsTest {
         assertFalse(options.isKeepFileOrder());
 
         // Test option works correctly. Test 'True'.
-        file = File.createTempFile("sql", ".pack");
-        file.deleteOnExit();
+        File file = createTempFile("sql", ".pack");
         try (JarFile jarFile = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
                 FileOutputStream outputStream = new FileOutputStream(file)) {
             options = new PackingOptions();
@@ -236,8 +232,7 @@ public class PackingOptionsTest {
         options.setLogFile(logFile.getPath());
         assertEquals(logFile.getPath(), options.getLogFile());
 
-        file = File.createTempFile("helloworld", ".pack.gz");
-        file.deleteOnExit();
+        File file = createTempFile("helloworld", ".pack.gz");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/hw.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
             new Archive(in, out, options).pack();
@@ -275,8 +270,7 @@ public class PackingOptionsTest {
         }, "Should throw IllegalArgumentException for incorrect mod time");
 
         // Test option works correctly. Test 'keep'.
-        file = File.createTempFile("sql", ".pack");
-        file.deleteOnExit();
+        File file = createTempFile("sql", ".pack");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
             options = new PackingOptions();
@@ -350,10 +344,9 @@ public class PackingOptionsTest {
 
     @Test
     public void testNewAttributes() throws Exception {
-        file = File.createTempFile("unknown", ".pack");
+        File file = createTempFile("unknown", ".pack");
         try (FileOutputStream out = new FileOutputStream(file);
                 JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/jndiWithUnknownAttributes.jar").toURI()))) {
-            file.deleteOnExit();
             final PackingOptions options = new PackingOptions();
             options.addClassAttributeAction("Pack200", "I");
             new Archive(in, out, options).pack();
@@ -382,8 +375,7 @@ public class PackingOptionsTest {
 
     @Test
     public void testNewAttributes2() throws Exception {
-        file = File.createTempFile("unknown", ".pack");
-        file.deleteOnExit();
+        File file = createTempFile("unknown", ".pack");
         try (FileOutputStream out = new FileOutputStream(file);
                 JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/p200WithUnknownAttributes.jar").toURI()))) {
             final PackingOptions options = new PackingOptions();
@@ -409,8 +401,7 @@ public class PackingOptionsTest {
 
     @Test
     public void testPassAttributes() throws Exception {
-        file = File.createTempFile("unknown", ".pack");
-        file.deleteOnExit();
+        File file = createTempFile("unknown", ".pack");
         try (FileOutputStream out = new FileOutputStream(file);
                 JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/jndiWithUnknownAttributes.jar").toURI()))) {
             final PackingOptions options = new PackingOptions();
@@ -446,8 +437,7 @@ public class PackingOptionsTest {
         }
 
         // Pass one file
-        file = File.createTempFile("sql", ".pack");
-        file.deleteOnExit();
+        File file = createTempFile("sql", ".pack");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
             final PackingOptions options = new PackingOptions();
@@ -497,8 +487,7 @@ public class PackingOptionsTest {
 
     @Test
     public void testSegmentLimits() throws IOException, Pack200Exception, URISyntaxException {
-        file = File.createTempFile("helloworld", ".pack.gz");
-        file.deleteOnExit();
+        File file = createTempFile("helloworld", ".pack.gz");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/hw.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
             final PackingOptions options = new PackingOptions();
@@ -507,8 +496,7 @@ public class PackingOptionsTest {
             archive.pack();
         }
 
-        file = File.createTempFile("helloworld", ".pack.gz");
-        file.deleteOnExit();
+        file = createTempFile("helloworld", ".pack.gz");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/hw.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
             final PackingOptions options = new PackingOptions();
@@ -516,8 +504,7 @@ public class PackingOptionsTest {
             new Archive(in, out, options).pack();
         }
 
-        file = File.createTempFile("helloworld", ".pack.gz");
-        file.deleteOnExit();
+        file = createTempFile("helloworld", ".pack.gz");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/hw.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
             final PackingOptions options = new PackingOptions();
@@ -544,8 +531,7 @@ public class PackingOptionsTest {
 
     @Test
     public void testStripDebug() throws IOException, Pack200Exception, URISyntaxException {
-        file = File.createTempFile("sql", ".pack");
-        file.deleteOnExit();
+        File file = createTempFile("sql", ".pack");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
             final PackingOptions options = new PackingOptions();
@@ -556,8 +542,7 @@ public class PackingOptionsTest {
         }
 
         // now unpack
-        final File file2 = File.createTempFile("sqloutNoDebug", ".jar");
-        file2.deleteOnExit();
+        final File file2 = createTempFile("sqloutNoDebug", ".jar");
         unpackJar(file, file2);
 
         final File compareFile = new File(Archive.class.getResource("/pack200/sqlUnpackedNoDebug.jar").toURI());

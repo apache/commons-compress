@@ -47,7 +47,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
 
-public abstract class AbstractTest {
+public abstract class AbstractTest extends AbstractTempDirTest {
 
     protected interface StreamWrapper<I extends InputStream> {
         I wrap(InputStream inputStream) throws Exception;
@@ -101,9 +101,6 @@ public abstract class AbstractTest {
     public static InputStream newInputStream(final String path) throws IOException {
         return Files.newInputStream(getPath(path));
     }
-
-    @TempDir
-    protected File tempDirFile;
 
     @TempDir
     protected File tempResultDir;
@@ -321,14 +318,6 @@ public abstract class AbstractTest {
         return Files.createTempDirectory(getTempDirPath(), prefix).toFile();
     }
 
-    protected File createTempFile() throws IOException {
-        return File.createTempFile("testfile", "", getTempDirFile());
-    }
-
-    protected File createTempFile(final String prefix, final String suffix) throws IOException {
-        return File.createTempFile(prefix, suffix, getTempDirFile());
-    }
-
     /**
      * Override this method to change what is to be compared in the List.
      * For example, size + name instead of just name.
@@ -338,14 +327,6 @@ public abstract class AbstractTest {
      */
     protected String getExpectedString(final ArchiveEntry entry) {
         return entry.getName();
-    }
-
-    protected File getTempDirFile() {
-        return tempDirFile;
-    }
-
-    protected Path getTempDirPath() {
-        return tempDirFile.toPath();
     }
 
     protected void setLongFileMode(final ArchiveOutputStream<?> outputStream) {
