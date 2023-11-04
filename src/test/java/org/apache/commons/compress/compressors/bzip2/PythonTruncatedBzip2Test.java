@@ -59,10 +59,10 @@ public class PythonTruncatedBzip2Test {
         TRUNCATED_DATA = Arrays.copyOfRange(DATA, 0, DATA.length - 10);
     }
 
+    @SuppressWarnings("resource") // Caller closes
     private static ReadableByteChannel makeBZ2C(final InputStream source) throws IOException {
         final BufferedInputStream bin = new BufferedInputStream(source);
         final BZip2CompressorInputStream bZin = new BZip2CompressorInputStream(bin, true);
-
         return Channels.newChannel(bZin);
     }
 
