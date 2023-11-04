@@ -40,22 +40,23 @@ public class IOUtilsTest {
     }
 
     private static void readFully(final byte[] source, final ByteBuffer b) throws IOException {
-        IOUtils.readFully(new SeekableInMemoryByteChannel(source), b);
+        try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(source)) {
+            IOUtils.readFully(channel, b);
+        }
     }
 
     private void skip(final StreamWrapper wrapper) throws Exception {
-        final ByteArrayInputStream in = new ByteArrayInputStream(new byte[] {
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
-            });
-        final InputStream sut = wrapper.wrap(in);
-        assertEquals(10, IOUtils.skip(sut, 10));
-        assertEquals(11, sut.read());
+        final ByteArrayInputStream in = new ByteArrayInputStream(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 });
+        try (InputStream sut = wrapper.wrap(in)) {
+            assertEquals(10, IOUtils.skip(sut, 10));
+            assertEquals(11, sut.read());
+        }
     }
 
     @Test
     public void testCopyRangeDoesntCopyMoreThanAskedFor() throws IOException {
         try (ByteArrayInputStream in = new ByteArrayInputStream(new byte[] { 1, 2, 3, 4, 5 });
-             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             assertEquals(3, IOUtils.copyRange(in, 3, out));
             out.close();
             assertArrayEquals(new byte[] { 1, 2, 3 }, out.toByteArray());
@@ -65,7 +66,7 @@ public class IOUtilsTest {
     @Test
     public void testCopyRangeStopsIfThereIsNothingToCopyAnymore() throws IOException {
         try (ByteArrayInputStream in = new ByteArrayInputStream(new byte[] { 1, 2, 3, 4, 5 });
-             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             assertEquals(5, IOUtils.copyRange(in, 10, out));
             out.close();
             assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, out.toByteArray());
@@ -75,7 +76,7 @@ public class IOUtilsTest {
     @Test
     public void testCopyRangeThrowsOnZeroBufferSize() {
         assertThrows(IllegalArgumentException.class,
-            () -> IOUtils.copyRange(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 5, new ByteArrayOutputStream(), 0));
+                () -> IOUtils.copyRange(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 5, new ByteArrayOutputStream(), 0));
     }
 
     @Test
@@ -199,6 +200,7 @@ public class IOUtilsTest {
     public void testSkipUsingSkipAndRead() throws Exception {
         skip(toWrap -> new FilterInputStream(toWrap) {
             boolean skipped;
+
             @Override
             public long skip(final long s) throws IOException {
                 if (!skipped) {
