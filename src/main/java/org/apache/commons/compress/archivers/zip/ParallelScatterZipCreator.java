@@ -221,6 +221,7 @@ public class ParallelScatterZipCreator {
         };
     }
 
+    @SuppressWarnings("resource") // Caller closes
     private ScatterZipOutputStream createDeferred(final ScatterGatherBackingStoreSupplier scatterGatherBackingStoreSupplier)
             throws IOException {
         final ScatterGatherBackingStore bs = scatterGatherBackingStoreSupplier.get();
