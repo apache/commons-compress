@@ -744,10 +744,9 @@ public class ZipFileTest extends AbstractTest {
 
     @Test
     public void testReadingOfStoredEntry() throws Exception {
-        final File f = createTempFile("commons-compress-zipfiletest", ".zip");
-        f.deleteOnExit();
+        final File file = createTempFile("commons-compress-zipfiletest", ".zip");
         ZipArchiveEntry ze;
-        try (OutputStream o = Files.newOutputStream(f.toPath());
+        try (OutputStream o = Files.newOutputStream(file.toPath());
                 ZipArchiveOutputStream zo = new ZipArchiveOutputStream(o)) {
             ze = new ZipArchiveEntry("foo");
             ze.setMethod(ZipEntry.STORED);
@@ -758,7 +757,7 @@ public class ZipFileTest extends AbstractTest {
             zo.closeArchiveEntry();
         }
 
-        zf = new ZipFile(f);
+        zf = new ZipFile(file);
         ze = zf.getEntry("foo");
         assertNotNull(ze);
         try (InputStream i = zf.getInputStream(ze)) {
@@ -777,7 +776,6 @@ public class ZipFileTest extends AbstractTest {
 
         final String testEntryName = "test_self_extract_zip/foo";
         final File extractedFile = new File(testZip.getParentFile(), testEntryName);
-        extractedFile.deleteOnExit();
 
         final byte[] testData = { 1, 2, 3, 4 };
         final byte[] buffer = new byte[512];

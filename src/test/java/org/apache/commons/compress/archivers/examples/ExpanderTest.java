@@ -207,14 +207,9 @@ public class ExpanderTest extends AbstractTest {
         assumeFalse(s.exists());
         s.mkdirs();
         assumeTrue(s.exists());
-        s.deleteOnExit();
-        try {
-            setupZip("../" + sibling + "/a");
-            try (ZipFile f = new ZipFile(archive)) {
-                assertThrows(IOException.class, () -> new Expander().expand(f, tempResultDir));
-            }
-        } finally {
-            forceDelete(s);
+        setupZip("../" + sibling + "/a");
+        try (ZipFile f = new ZipFile(archive)) {
+            assertThrows(IOException.class, () -> new Expander().expand(f, tempResultDir));
         }
     }
 

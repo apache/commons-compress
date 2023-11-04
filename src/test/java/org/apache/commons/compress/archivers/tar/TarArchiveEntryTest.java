@@ -430,7 +430,6 @@ public class TarArchiveEntryTest implements TarConstants {
     @Test
     public void testTarFileWithFSRoot() throws IOException {
         final File f = File.createTempFile("taetest", ".tar");
-        f.deleteOnExit();
         TarArchiveEntry t = new TarArchiveEntry(new File(ROOT));
         try {
             try (TarArchiveOutputStream tout = new TarArchiveOutputStream(Files.newOutputStream(f.toPath()))) {
