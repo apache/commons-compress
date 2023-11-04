@@ -164,7 +164,7 @@ public final class ZipTest extends AbstractTest {
 
     private void createTestSplitZipSegments() throws IOException {
         final File directoryToZip = getFilesToZip();
-        final File outputZipFile = new File(getTempDirFile(), "splitZip.zip");
+        final File outputZipFile = newTempFile("splitZip.zip");
         final long splitSize = 100 * 1024L; /* 100 KB */
         try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
             addFilesToZip(zipArchiveOutputStream, directoryToZip);
@@ -186,11 +186,11 @@ public final class ZipTest extends AbstractTest {
                     continue;
                 }
 
-                outputFile = new File(getTempDirFile(), zipEntry.getName());
+                outputFile = newTempFile(zipEntry.getName());
                 if (!outputFile.getParentFile().exists()) {
                     outputFile.getParentFile().mkdirs();
                 }
-                outputFile = new File(getTempDirFile(), zipEntry.getName());
+                outputFile = newTempFile(zipEntry.getName());
 
                 try (InputStream inputStream = zipFile.getInputStream(zipEntry);
                         OutputStream outputStream = Files.newOutputStream(outputFile.toPath())) {
@@ -224,7 +224,7 @@ public final class ZipTest extends AbstractTest {
         final File directoryToZip = getFilesToZip();
         createTestSplitZipSegments();
 
-        final File lastFile = new File(getTempDirFile(), "splitZip.zip");
+        final File lastFile = newTempFile("splitZip.zip");
         try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
                 InputStream inputStream = Channels.newInputStream(channel);
                 ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, UTF_8.toString(), true, false, true)) {
@@ -251,12 +251,12 @@ public final class ZipTest extends AbstractTest {
     @Test
     public void testBuildSplitZipWithSegmentAlreadyExistThrowsException() throws IOException {
         final File directoryToZip = getFilesToZip();
-        final File outputZipFile = new File(getTempDirFile(), "splitZip.zip");
+        final File outputZipFile = newTempFile("splitZip.zip");
         final long splitSize = 100 * 1024L; /* 100 KB */
         try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
 
             // create a file that has the same name of one of the created split segments
-            final File sameNameFile = new File(getTempDirFile(), "splitZip.z01");
+            final File sameNameFile = newTempFile("splitZip.z01");
             sameNameFile.createNewFile();
 
             assertThrows(IOException.class, () -> addFilesToZip(zipArchiveOutputStream, directoryToZip));
@@ -624,7 +624,7 @@ public final class ZipTest extends AbstractTest {
     @Test
     public void testZipArchiveCreation() throws Exception {
         // Archive
-        final File output = new File(getTempDirFile(), "bla.zip");
+        final File output = newTempFile("bla.zip");
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
 
@@ -742,7 +742,7 @@ public final class ZipTest extends AbstractTest {
         try (final InputStream is = Files.newInputStream(input.toPath());
                 final ArchiveInputStream<ZipArchiveEntry> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", is)) {
             final ZipArchiveEntry entry = in.getNextEntry();
-            Files.copy(in, new File(getTempDirFile(), entry.getName()).toPath());
+            Files.copy(in, newTempFile(entry.getName()).toPath());
         }
     }
 }

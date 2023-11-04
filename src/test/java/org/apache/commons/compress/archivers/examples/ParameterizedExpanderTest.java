@@ -132,8 +132,8 @@ public class ParameterizedExpanderTest extends AbstractTest {
 
     public void setUp(final String format) throws Exception {
         super.setUp();
-        archive = new File(getTempDirFile(), "test." + format);
-        final File dummy = new File(getTempDirFile(), "x");
+        archive = newTempFile("test." + format);
+        final File dummy = newTempFile("x");
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }

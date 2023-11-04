@@ -63,8 +63,8 @@ public class ExpanderTest extends AbstractTest {
     }
 
     private void setup7z() throws IOException {
-        archive = new File(getTempDirFile(), "test.7z");
-        final File dummy = new File(getTempDirFile(), "x");
+        archive = newTempFile("test.7z");
+        final File dummy = newTempFile("x");
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }
@@ -86,8 +86,8 @@ public class ExpanderTest extends AbstractTest {
     }
 
     private void setupTar() throws IOException, ArchiveException {
-        archive = new File(getTempDirFile(), "test.tar");
-        final File dummy = new File(getTempDirFile(), "x");
+        archive = newTempFile("test.tar");
+        final File dummy = newTempFile("x");
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }
@@ -110,8 +110,8 @@ public class ExpanderTest extends AbstractTest {
     }
 
     private void setupTarForCompress603() throws IOException, ArchiveException {
-        archive = new File(getTempDirFile(), "test.tar");
-        final File dummy = new File(getTempDirFile(), "x");
+        archive = newTempFile("test.tar");
+        final File dummy = newTempFile("x");
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }
@@ -136,8 +136,8 @@ public class ExpanderTest extends AbstractTest {
     }
 
     private void setupZip() throws IOException, ArchiveException {
-        archive = new File(getTempDirFile(), "test.zip");
-        final File dummy = new File(getTempDirFile(), "x");
+        archive = newTempFile("test.zip");
+        final File dummy = newTempFile("x");
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }
@@ -160,8 +160,8 @@ public class ExpanderTest extends AbstractTest {
     }
 
     private void setupZip(final String entry) throws IOException, ArchiveException {
-        archive = new File(getTempDirFile(), "test.zip");
-        final File dummy = new File(getTempDirFile(), "x");
+        archive = newTempFile("test.zip");
+        final File dummy = newTempFile("x");
         try (OutputStream o = Files.newOutputStream(dummy.toPath())) {
             o.write(new byte[14]);
         }

@@ -67,12 +67,12 @@ public class SevenZArchiverTest extends AbstractTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        final File c = new File(getTempDirFile(), "a/b/c");
+        final File c = newTempFile("a/b/c");
         c.mkdirs();
-        try (OutputStream os = Files.newOutputStream(new File(getTempDirFile(), "a/b/d.txt").toPath())) {
+        try (OutputStream os = Files.newOutputStream(newTempFile("a/b/d.txt").toPath())) {
             os.write("Hello, world 1".getBytes(UTF_8));
         }
-        try (OutputStream os = Files.newOutputStream(new File(getTempDirFile(), "a/b/c/e.txt").toPath())) {
+        try (OutputStream os = Files.newOutputStream(newTempFile("a/b/c/e.txt").toPath())) {
             os.write("Hello, world 2".getBytes(UTF_8));
         }
         target = new File(tempResultDir, "test.7z");

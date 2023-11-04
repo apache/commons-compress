@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 
+import org.apache.commons.compress.AbstractTempDirTest;
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.zip.JarMarker;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -34,12 +35,11 @@ import org.apache.commons.compress.archivers.zip.ZipExtraField;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.junit.jupiter.api.Test;
 
-public class JarArchiveOutputStreamTest {
+public class JarArchiveOutputStreamTest extends AbstractTempDirTest {
 
     @Test
     public void testJarMarker() throws IOException {
-        final Path testArchive = Files.createTempFile("jar-aostest", ".jar");
-        testArchive.toFile().deleteOnExit();
+        final Path testArchive = createTempPath("jar-aostest", ".jar");
         try (JarArchiveOutputStream out = new JarArchiveOutputStream(Files.newOutputStream(testArchive))) {
             final ZipArchiveEntry ze1 = new ZipArchiveEntry("foo/");
             // Ensure we won't accidentally add an Extra field.

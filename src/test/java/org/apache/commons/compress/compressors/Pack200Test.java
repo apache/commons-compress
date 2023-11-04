@@ -46,7 +46,7 @@ import org.junit.jupiter.api.Test;
 public final class Pack200Test extends AbstractTest {
 
     private void jarArchiveCreation(final Pack200Strategy mode) throws Exception {
-        final File output = new File(getTempDirFile(), "bla.pack");
+        final File output = newTempFile("bla.pack");
 
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
@@ -82,7 +82,7 @@ public final class Pack200Test extends AbstractTest {
 
             ArchiveEntry entry = in.getNextEntry();
             while (entry != null) {
-                final File archiveEntry = new File(getTempDirFile(), entry.getName());
+                final File archiveEntry = newTempFile(entry.getName());
                 archiveEntry.getParentFile().mkdirs();
                 if (entry.isDirectory()) {
                     archiveEntry.mkdir();
@@ -197,7 +197,7 @@ public final class Pack200Test extends AbstractTest {
 
     @Test
     public void testOutputStreamMethods() throws Exception {
-        final File output = new File(getTempDirFile(), "bla.pack");
+        final File output = newTempFile("bla.pack");
         final Map<String, String> m = new HashMap<>();
         m.put("foo", "bar");
         try (OutputStream out = Files.newOutputStream(output.toPath());

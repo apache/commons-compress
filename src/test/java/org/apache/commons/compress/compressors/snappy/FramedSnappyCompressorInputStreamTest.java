@@ -73,8 +73,8 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
      */
     @Test
     public void testLoremIpsum() throws Exception {
-        final File outputSz = new File(getTempDirFile(), "lorem-ipsum.1");
-        final File outputGz = new File(getTempDirFile(), "lorem-ipsum.2");
+        final File outputSz = newTempFile("lorem-ipsum.1");
+        final File outputGz = newTempFile("lorem-ipsum.2");
         try (InputStream isSz = newInputStream("lorem-ipsum.txt.sz")) {
             try (InputStream in = new FramedSnappyCompressorInputStream(isSz)) {
                 Files.copy(in, outputSz.toPath());
@@ -115,7 +115,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
         try (ZipFile zip = new ZipFile(getFile("testNumbersNew.numbers"))) {
             try (InputStream is = zip.getInputStream(zip.getEntry("Index/Document.iwa"))) {
                 try (FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is, FramedSnappyDialect.IWORK_ARCHIVE)) {
-                    Files.copy(in, new File(getTempDirFile(), "snappyIWATest.raw").toPath());
+                    Files.copy(in, newTempFile("snappyIWATest.raw").toPath());
                 }
             }
         }
@@ -126,7 +126,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
      */
     @Test
     public void testReadIWAFileWithBiggerOffset() throws Exception {
-        final File o = new File(getTempDirFile(), "COMPRESS-358.raw");
+        final File o = newTempFile("COMPRESS-358.raw");
         try (InputStream is = newInputStream("COMPRESS-358.iwa");
                 FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is, 1 << 16, FramedSnappyDialect.IWORK_ARCHIVE);) {
             Files.copy(in, o.toPath());

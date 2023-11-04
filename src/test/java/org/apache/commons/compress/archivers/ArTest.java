@@ -42,7 +42,7 @@ public final class ArTest extends AbstractTest {
 
     @Test
     public void testArArchiveCreation() throws Exception {
-        final File output = new File(getTempDirFile(), "bla.ar");
+        final File output = newTempFile("bla.ar");
 
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
@@ -61,7 +61,7 @@ public final class ArTest extends AbstractTest {
 
     @Test
     public void testArDelete() throws Exception {
-        final File output = new File(getTempDirFile(), "bla.ar");
+        final File output = newTempFile("bla.ar");
 
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
@@ -81,7 +81,7 @@ public final class ArTest extends AbstractTest {
 
         assertEquals(8 + 60 + file1.length() + file1.length() % 2 + 60 + file2.length() + file2.length() % 2, output.length());
 
-        final File output2 = new File(getTempDirFile(), "bla2.ar");
+        final File output2 = newTempFile("bla2.ar");
 
         int copied = 0;
         int deleted = 0;
@@ -140,7 +140,7 @@ public final class ArTest extends AbstractTest {
 
     @Test
     public void testArUnarchive() throws Exception {
-        final File output = new File(getTempDirFile(), "bla.ar");
+        final File output = newTempFile("bla.ar");
         {
             final File file1 = getFile("test1.xml");
             final File file2 = getFile("test2.xml");
@@ -162,7 +162,7 @@ public final class ArTest extends AbstractTest {
                 final ArchiveInputStream<ArArchiveEntry> in = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is))) {
             final ArArchiveEntry entry = in.getNextEntry();
 
-            final File target = new File(getTempDirFile(), entry.getName());
+            final File target = newTempFile(entry.getName());
             Files.copy(in, target.toPath());
         }
     }

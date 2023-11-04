@@ -44,7 +44,6 @@ public final class DetectArchiverTest extends AbstractTest {
 
     private void checkEmptyArchive(final String type) throws Exception {
         final Path ar = createEmptyArchive(type); // will be deleted by tearDown()
-        ar.toFile().deleteOnExit(); // Just in case file cannot be deleted
         assertDoesNotThrow(() -> {
             try (BufferedInputStream inputStream = new BufferedInputStream(Files.newInputStream(ar));
                     ArchiveInputStream<?> ais = factory.createArchiveInputStream(inputStream)) {

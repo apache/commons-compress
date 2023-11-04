@@ -41,7 +41,7 @@ public final class CpioTest extends AbstractTest {
 
     @Test
     public void testCpioArchiveCreation() throws Exception {
-        final File output = new File(getTempDirFile(), "bla.cpio");
+        final File output = newTempFile("bla.cpio");
 
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
@@ -61,7 +61,7 @@ public final class CpioTest extends AbstractTest {
 
     @Test
     public void testCpioUnarchive() throws Exception {
-        final File output = new File(getTempDirFile(), "bla.cpio");
+        final File output = newTempFile("bla.cpio");
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
         final long file1Length = file1.length();
@@ -91,7 +91,7 @@ public final class CpioTest extends AbstractTest {
                 ArchiveInputStream<?> archiveInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("cpio", inputStream)) {
             ArchiveEntry entry;
             while ((entry = archiveInputStream.getNextEntry()) != null) {
-                final File cpioget = new File(getTempDirFile(), entry.getName());
+                final File cpioget = newTempFile(entry.getName());
                 Files.copy(archiveInputStream, cpioget.toPath());
                 result.put(entry.getName(), cpioget);
             }

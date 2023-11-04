@@ -41,7 +41,7 @@ public final class Pack200UtilsTest extends AbstractTest {
                 ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
             ArchiveEntry entry = in.getNextEntry();
             while (entry != null) {
-                final File archiveEntry = new File(getTempDirFile(), entry.getName());
+                final File archiveEntry = newTempFile(entry.getName());
                 archiveEntry.getParentFile().mkdirs();
                 if (entry.isDirectory()) {
                     archiveEntry.mkdir();
@@ -66,7 +66,7 @@ public final class Pack200UtilsTest extends AbstractTest {
                 ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
             ArchiveEntry entry = in.getNextEntry();
             while (entry != null) {
-                final File archiveEntry = new File(getTempDirFile(), entry.getName());
+                final File archiveEntry = newTempFile(entry.getName());
                 archiveEntry.getParentFile().mkdirs();
                 if (entry.isDirectory()) {
                     archiveEntry.mkdir();

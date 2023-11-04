@@ -604,7 +604,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
         entry.setUserName("avalon");
         entry.setGroupName("excalibur");
         entry.setMode(0100000);
-        final File result = new File(getTempDirFile(), "bla.tar");
+        final File result = newTempFile("bla.tar");
         final String archiverName = "tar";
         try (InputStream inputStream = Files.newInputStream(getPath("bla.tar"));
                 ArchiveInputStream archiveInputStream = factory.createArchiveInputStream(archiverName, inputStream);
@@ -695,7 +695,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
         final ChangeSet changeSet = new ChangeSet();
         changeSet.delete("test2.xml");
         final File input = getFile("bla.ar");
-        final File result = new File(getTempDirFile(), "bla.ar");
+        final File result = newTempFile("bla.ar");
         final String archiverName = "ar";
         try (InputStream inputStream = Files.newInputStream(input.toPath());
                 ArchiveInputStream archiveInputStream = factory.createArchiveInputStream(archiverName, inputStream);
@@ -725,7 +725,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
         changeSet.delete(".classpath");
         changeSet.delete(".project");
         final File input = getFile("bla.jar");
-        final File result = new File(getTempDirFile(), "bla.jar");
+        final File result = newTempFile("bla.jar");
         try (InputStream inputStream = Files.newInputStream(input.toPath());
                 ArchiveInputStream archiveInputStream = factory.createArchiveInputStream(archiverName, inputStream);
                 OutputStream newOutputStream = Files.newOutputStream(result.toPath());
@@ -748,7 +748,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     public void testDeleteFromTar() throws Exception {
         final ChangeSet changeSet = new ChangeSet();
         changeSet.delete("test2.xml");
-        final File result = new File(getTempDirFile(), "bla.tar");
+        final File result = newTempFile("bla.tar");
         final String archiverName = "tar";
         try (InputStream inputStream = Files.newInputStream(getFile("bla.tar").toPath());
                 ArchiveInputStream archiveInputStream = factory.createArchiveInputStream(archiverName, inputStream);

@@ -115,7 +115,7 @@ public final class GZipTest extends AbstractTest {
     @Test
     public void testGzipCreation() throws Exception {
         final File input = getFile("test1.xml");
-        final File output = new File(getTempDirFile(), "test1.xml.gz");
+        final File output = newTempFile("test1.xml.gz");
         try (OutputStream out = Files.newOutputStream(output.toPath())) {
             try (CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("gz", out)) {
                 Files.copy(input.toPath(), cos);
@@ -126,7 +126,7 @@ public final class GZipTest extends AbstractTest {
     @Test
     public void testGzipUnarchive() throws Exception {
         final File input = getFile("bla.tgz");
-        final File output = new File(getTempDirFile(), "bla.tar");
+        final File output = newTempFile("bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("gz", is);) {
                 Files.copy(in, output.toPath());

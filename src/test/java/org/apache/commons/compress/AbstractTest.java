@@ -155,7 +155,6 @@ public abstract class AbstractTest extends AbstractTempDirTest {
     protected File checkArchiveContent(final ArchiveInputStream<?> inputStream, final List<String> expected, final boolean cleanUp)
             throws Exception {
         final File result = createTempDirectory("dir-result");
-        result.deleteOnExit();
 
         try {
             ArchiveEntry entry;
@@ -249,8 +248,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      *             in case something goes wrong
      */
     protected Path createArchive(final String archiveName) throws Exception {
-        archivePath = Files.createTempFile("test", "." + archiveName);
-        archivePath.toFile().deleteOnExit();
+        archivePath = createTempPath("test", "." + archiveName);
         archiveList = new ArrayList<>();
         try (OutputStream outputStream = Files.newOutputStream(archivePath);
                 ArchiveOutputStream<ArchiveEntry> archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream)) {
@@ -285,8 +283,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      */
     protected Path createEmptyArchive(final String archiveName) throws Exception {
         archiveList = new ArrayList<>();
-        archivePath = Files.createTempFile("empty", "." + archiveName);
-        archivePath.toFile().deleteOnExit();
+        archivePath = createTempPath("empty", "." + archiveName);
         try (OutputStream outputStream = Files.newOutputStream(archivePath);
                 ArchiveOutputStream<?> archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream)) {
             archiveOutputStream.finish();
@@ -303,8 +300,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      */
     protected Path createSingleEntryArchive(final String archiveName) throws Exception {
         archiveList = new ArrayList<>();
-        archivePath = Files.createTempFile("empty", "." + archiveName);
-        archivePath.toFile().deleteOnExit();
+        archivePath = createTempPath("empty", "." + archiveName);
         try (OutputStream outputStream = Files.newOutputStream(archivePath);
                 ArchiveOutputStream<?> archiveOutputStream = factory.createArchiveOutputStream(archiveName, outputStream)) {
             // Use short file name so does not cause problems for ar

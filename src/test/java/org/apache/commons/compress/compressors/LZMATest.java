@@ -38,7 +38,7 @@ public final class LZMATest extends AbstractTest {
     @Test
     public void testLzmaRoundtrip() throws Exception {
         final File input = getFile("test1.xml");
-        final File compressed = new File(getTempDirFile(), "test1.xml.xz");
+        final File compressed = newTempFile("test1.xml.xz");
         try (OutputStream out = Files.newOutputStream(compressed.toPath())) {
             try (CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("lzma", out)) {
                 Files.copy(input.toPath(), cos);
@@ -55,7 +55,7 @@ public final class LZMATest extends AbstractTest {
     @Test
     public void testLZMAUnarchive() throws Exception {
         final File input = getFile("bla.tar.lzma");
-        final File output = new File(getTempDirFile(), "bla.tar");
+        final File output = newTempFile("bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (final CompressorInputStream in = new LZMACompressorInputStream(is)) {
                 Files.copy(in, output.toPath());
@@ -66,7 +66,7 @@ public final class LZMATest extends AbstractTest {
     @Test
     public void testLZMAUnarchiveWithAutodetection() throws Exception {
         final File input = getFile("bla.tar.lzma");
-        final File output = new File(getTempDirFile(), "bla.tar");
+        final File output = newTempFile("bla.tar");
         try (InputStream is = new BufferedInputStream(Files.newInputStream(input.toPath()))) {
             try (final CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream(is)) {
                 Files.copy(in, output.toPath());

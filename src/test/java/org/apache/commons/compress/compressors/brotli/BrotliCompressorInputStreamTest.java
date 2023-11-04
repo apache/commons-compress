@@ -66,7 +66,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTest {
 
     @Test
     public void testBrotliUnarchive() throws Exception {
-        final File output = new File(getTempDirFile(), "bla.tar");
+        final File output = newTempFile("bla.tar");
         try (InputStream is = newInputStream("bla.tar.br")) {
             try (CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("br", is)) {
                 Files.copy(in, output.toPath());

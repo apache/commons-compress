@@ -32,7 +32,7 @@ public final class JarTest extends AbstractTest {
 
     @Test
     public void testJarArchiveCreation() throws Exception {
-        final File output = new File(getTempDirFile(), "bla.jar");
+        final File output = newTempFile("bla.jar");
 
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
@@ -57,17 +57,17 @@ public final class JarTest extends AbstractTest {
                 ZipArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
 
             ZipArchiveEntry entry = in.getNextEntry();
-            File o = new File(getTempDirFile(), entry.getName());
+            File o = newTempFile(entry.getName());
             o.getParentFile().mkdirs();
             Files.copy(in, o.toPath());
 
             entry = in.getNextEntry();
-            o = new File(getTempDirFile(), entry.getName());
+            o = newTempFile(entry.getName());
             o.getParentFile().mkdirs();
             Files.copy(in, o.toPath());
 
             entry = in.getNextEntry();
-            o = new File(getTempDirFile(), entry.getName());
+            o = newTempFile(entry.getName());
             o.getParentFile().mkdirs();
             Files.copy(in, o.toPath());
         }
@@ -81,7 +81,7 @@ public final class JarTest extends AbstractTest {
 
             ArchiveEntry entry = in.getNextEntry();
             while (entry != null) {
-                final File archiveEntry = new File(getTempDirFile(), entry.getName());
+                final File archiveEntry = newTempFile(entry.getName());
                 archiveEntry.getParentFile().mkdirs();
                 if (entry.isDirectory()) {
                     archiveEntry.mkdir();

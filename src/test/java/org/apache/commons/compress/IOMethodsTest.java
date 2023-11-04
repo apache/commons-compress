@@ -58,7 +58,6 @@ public class IOMethodsTest extends AbstractTest {
         final OutputStream out2 = new ByteArrayOutputStream();
         final OutputStream out3 = new ByteArrayOutputStream();
         final Path file = createSingleEntryArchive(archiverName);
-        file.toFile().deleteOnExit();
 
         final InputStream is1 = Files.newInputStream(file);
         final ArchiveInputStream<?> ais1 = factory.createArchiveInputStream(archiverName, is1);
@@ -164,8 +163,7 @@ public class IOMethodsTest extends AbstractTest {
 
     @Test
     public void testWriteAr() throws Exception {
-        final ArchiveEntry entry = new ArArchiveEntry("dummy", bytesToTest);
-        compareWrites("ar", entry);
+        compareWrites("ar", new ArArchiveEntry("dummy", bytesToTest));
     }
 
     @Test

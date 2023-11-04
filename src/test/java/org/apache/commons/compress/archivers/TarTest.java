@@ -144,7 +144,6 @@ public final class TarTest extends AbstractTest {
     @Test
     public void testExplicitDirectoryEntry() throws Exception {
         final File archive = createTempFile("test.", ".tar");
-        archive.deleteOnExit();
         final long beforeArchiveWrite;
         final TarArchiveEntry in = new TarArchiveEntry("foo/");
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
@@ -238,7 +237,7 @@ public final class TarTest extends AbstractTest {
 
     @Test
     public void testTarArchiveCreation() throws Exception {
-        final File output = new File(getTempDirFile(), "bla.tar");
+        final File output = newTempFile("bla.tar");
         final File file1 = getFile("test1.xml");
         try (OutputStream out = Files.newOutputStream(output.toPath());
                 TarArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("tar", out)) {
@@ -262,7 +261,7 @@ public final class TarTest extends AbstractTest {
         final byte[] bytes = name.getBytes(UTF_8);
         assertEquals(bytes.length, 99);
 
-        final File output = new File(getTempDirFile(), "bla.tar");
+        final File output = newTempFile("bla.tar");
         final File file1 = getFile("test1.xml");
         final TarArchiveEntry entry = new TarArchiveEntry(name);
         try (OutputStream out = Files.newOutputStream(output.toPath());
@@ -280,7 +279,7 @@ public final class TarTest extends AbstractTest {
         }
 
         final String toLongName = "testdata/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567.xml";
-        final File output2 = new File(getTempDirFile(), "bla.tar");
+        final File output2 = newTempFile("bla.tar");
         try (OutputStream out2 = Files.newOutputStream(output2.toPath());
                 TarArchiveOutputStream os2 = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("tar", out2);) {
             final TarArchiveEntry entry2 = new TarArchiveEntry(toLongName);
@@ -471,7 +470,7 @@ public final class TarTest extends AbstractTest {
         try (TarFile tarFile = new TarFile(file)) {
             final TarArchiveEntry entry = tarFile.getEntries().get(0);
             try (InputStream inputStream = tarFile.getInputStream(entry)) {
-                Files.copy(inputStream, new File(getTempDirFile(), entry.getName()).toPath());
+                Files.copy(inputStream, newTempFile(entry.getName()).toPath());
             }
         }
     }
@@ -482,7 +481,7 @@ public final class TarTest extends AbstractTest {
         try (final InputStream is = Files.newInputStream(input.toPath());
                 final TarArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("tar", is)) {
             final TarArchiveEntry entry = in.getNextEntry();
-            Files.copy(in, new File(getTempDirFile(), entry.getName()).toPath());
+            Files.copy(in, newTempFile(entry.getName()).toPath());
         }
     }
 }
