@@ -202,8 +202,10 @@ public class ByteUtilsTest {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             final DataOutput dos = new DataOutputStream(bos);
             toLittleEndian(dos, 2 + 3 * 256 + 4 * 256 * 256 + 128L * 256 * 256 * 256, 4);
-            assertArrayEquals(new byte[] { 2, 3, 4, (byte) 128 }, bos.toByteArray());
+            byteArray = bos.toByteArray();
+            assertArrayEquals(expected, byteArray);
         }
+        assertArrayEquals(expected, byteArray);
     }
 
     @Test
