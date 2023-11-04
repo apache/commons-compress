@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Testcase porting a test from Python's testsuite.
+ * 
  * @see "https://issues.apache.org/jira/browse/COMPRESS-253"
  */
 public class PythonTruncatedBzip2Test {
@@ -76,27 +77,24 @@ public class PythonTruncatedBzip2Test {
 
     @BeforeEach
     public void initializeChannel() throws IOException {
-        final InputStream source = new ByteArrayInputStream(TRUNCATED_DATA);
-        this.bz2Channel = makeBZ2C(source);
+        this.bz2Channel = makeBZ2C(new ByteArrayInputStream(TRUNCATED_DATA));
     }
 
     @Test
     public void testPartialReadTruncatedData() throws IOException {
-        //with BZ2File(self.filename) as f:
-        //    self.assertEqual(f.read(len(self.TEXT)), self.TEXT)
-        //    self.assertRaises(EOFError, f.read, 1)
+        // with BZ2File(self.filename) as f:
+        // self.assertEqual(f.read(len(self.TEXT)), self.TEXT)
+        // self.assertRaises(EOFError, f.read, 1)
 
         final int length = TEXT.length();
         final ByteBuffer buffer1 = ByteBuffer.allocate(length);
         bz2Channel.read(buffer1);
 
-        assertArrayEquals(Arrays.copyOfRange(TEXT.getBytes(), 0, length),
-                buffer1.array());
+        assertArrayEquals(Arrays.copyOfRange(TEXT.getBytes(), 0, length), buffer1.array());
 
         // subsequent read should throw
         final ByteBuffer buffer2 = ByteBuffer.allocate(1);
-        assertThrows(IOException.class, () -> bz2Channel.read(buffer2),
-                "The read should have thrown.");
+        assertThrows(IOException.class, () -> bz2Channel.read(buffer2), "The read should have thrown.");
     }
 
     @Test
