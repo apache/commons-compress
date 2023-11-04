@@ -29,7 +29,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * @param <E> The ArchiveEntry type.
  * @Immutable
  */
-class Change<E extends ArchiveEntry> {
+final class Change<E extends ArchiveEntry> {
 
     /**
      * Enumerates types of changes.

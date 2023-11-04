@@ -34,7 +34,7 @@ import org.apache.commons.compress.utils.IOUtils;
  *
  * @NotThreadSafe
  */
-class TapeInputStream extends FilterInputStream {
+final class TapeInputStream extends FilterInputStream {
     private static final int RECORD_SIZE = DumpArchiveConstants.TP_SIZE;
     private byte[] blockBuffer = new byte[DumpArchiveConstants.TP_SIZE];
     private int currBlkIdx = -1;

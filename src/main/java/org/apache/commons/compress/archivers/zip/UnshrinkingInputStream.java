@@ -29,7 +29,7 @@ import org.apache.commons.compress.compressors.lzw.LZWInputStream;
  * @NotThreadSafe
  * @since 1.7
  */
-class UnshrinkingInputStream extends LZWInputStream {
+final class UnshrinkingInputStream extends LZWInputStream {
     private static final int MAX_CODE_SIZE = 13;
     private static final int MAX_TABLE_SIZE = 1 << MAX_CODE_SIZE;
     private final boolean[] isUsed;
