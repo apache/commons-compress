@@ -157,8 +157,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
             new Archive(jarFile, outputStream, options).pack();
         }
 
-        File file2 = File.createTempFile("sql", ".jar");
-        file2.deleteOnExit();
+        File file2 = createTempFile("sql", ".jar");
         unpackJar(file, file2);
 
         File compareFile = new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI());
@@ -177,8 +176,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
             }
         }
         // Test 'false'
-        file = File.createTempFile("sql", ".pack");
-        file.deleteOnExit();
+        file = createTempFile("sql", ".pack");
         try (JarFile jarFile = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
                 FileOutputStream outputStream = new FileOutputStream(file);) {
             options = new PackingOptions();
@@ -187,8 +185,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
             new Archive(jarFile, outputStream, options).pack();
         }
 
-        file2 = File.createTempFile("sql", ".jar");
-        file2.deleteOnExit();
+        file2 = createTempFile("sql", ".jar");
         unpackJar(file, file2);
 
         compareFile = new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI());
@@ -227,8 +224,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
         options.setQuiet(true);
         assertFalse(options.isVerbose());
 
-        final File logFile = File.createTempFile("logfile", ".txt");
-        logFile.deleteOnExit();
+        final File logFile = createTempFile("logfile", ".txt");
         options.setLogFile(logFile.getPath());
         assertEquals(logFile.getPath(), options.getLogFile());
 
@@ -244,8 +240,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
         }
 
         options.setVerbose(true);
-        file = File.createTempFile("helloworld", ".pack.gz");
-        file.deleteOnExit();
+        file = createTempFile("helloworld", ".pack.gz");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/hw.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
             new Archive(in, out, options).pack();
@@ -278,8 +273,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
             new Archive(in, out, options).pack();
         }
 
-        File file2 = File.createTempFile("sql", ".jar");
-        file2.deleteOnExit();
+        File file2 = createTempFile("sql", ".jar");
         unpackJar(file, file2);
 
         File compareFile = new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI());
@@ -300,8 +294,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
             }
         }
         // Test option works correctly. Test 'latest'.
-        file = File.createTempFile("sql", ".pack");
-        file.deleteOnExit();
+        file = createTempFile("sql", ".pack");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
             options = new PackingOptions();
@@ -310,8 +303,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
             new Archive(in, out, options).pack();
         }
 
-        file2 = File.createTempFile("sql", ".jar");
-        file2.deleteOnExit();
+        file2 = createTempFile("sql", ".jar");
         unpackJar(file, file2);
 
         compareFile = new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI());
@@ -353,8 +345,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
         }
 
         // unpack and check this was done right
-        final File file2 = File.createTempFile("unknown", ".jar");
-        file2.deleteOnExit();
+        final File file2 = createTempFile("unknown", ".jar");
         unpackJar(file, file2);
         // compare with original
         final File compareFile = new File(Archive.class.getResource("/pack200/jndiWithUnknownAttributes.jar").toURI());
@@ -386,8 +377,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
             ar.pack();
         }
         // unpack and check this was done right
-        final File file2 = File.createTempFile("unknown", ".jar");
-        file2.deleteOnExit();
+        final File file2 = createTempFile("unknown", ".jar");
         unpackJar(file, file2);
 
         // compare with original
@@ -406,13 +396,11 @@ public class PackingOptionsTest extends AbstractTempDirTest {
                 JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/jndiWithUnknownAttributes.jar").toURI()))) {
             final PackingOptions options = new PackingOptions();
             options.addClassAttributeAction("Pack200", "pass");
-            final Archive ar = new Archive(in, out, options);
-            ar.pack();
+            new Archive(in, out, options).pack();
         }
 
         // now unpack
-        final File file2 = File.createTempFile("unknown", ".jar");
-        file2.deleteOnExit();
+        final File file2 = createTempFile("unknown", ".jar");
         unpackJar(file, file2);
 
         // compare with original
@@ -427,8 +415,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
     @Test
     public void testPassFiles() throws IOException, URISyntaxException, Pack200Exception {
         // Don't pass any
-        final File file0 = File.createTempFile("sql", ".pack");
-        file0.deleteOnExit();
+        final File file0 = createTempFile("sql", ".pack");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file0)) {
             final PackingOptions options = new PackingOptions();
@@ -448,8 +435,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
         }
 
         // Pass a whole directory
-        final File file2 = File.createTempFile("sql", ".pack");
-        file2.deleteOnExit();
+        final File file2 = createTempFile("sql", ".pack");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file2)) {
             final PackingOptions options = new PackingOptions();
@@ -464,8 +450,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
         assertTrue(file2.length() > file.length(), "If more files are passed then the pack file should be larger");
 
         // now unpack
-        final File file3 = File.createTempFile("sql", ".jar");
-        file3.deleteOnExit();
+        final File file3 = createTempFile("sql", ".jar");
         unpackJar(file, file3);
 
         final File compareFile = new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI());
@@ -475,8 +460,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
             compareJarEntries(jarFile, jarFile2);
         }
         // now unpack the file with lots of passed files
-        final File file4 = File.createTempFile("sql", ".jar");
-        file4.deleteOnExit();
+        final File file4 = createTempFile("sql", ".jar");
         unpackJar(file2, file4);
 
         try (JarFile jarFile = new JarFile(file4);
