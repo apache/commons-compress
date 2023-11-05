@@ -127,7 +127,7 @@ class HuffmanDecoder implements Closeable {
         }
     }
 
-    private class HuffmanCodes extends DecoderState {
+    private final class HuffmanCodes extends DecoderState {
         private boolean endOfBlock;
         private final HuffmanState state;
         private final BinaryTreeNode lengthTree;
@@ -242,7 +242,7 @@ class HuffmanDecoder implements Closeable {
         }
     }
 
-    private class UncompressedState extends DecoderState {
+    private final class UncompressedState extends DecoderState {
         private final long blockLength;
         private long read;
 

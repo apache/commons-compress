@@ -85,7 +85,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * Bounded input stream adapted from commons-io
      */
-    private class BoundedInputStream extends FilterInputStream {
+    private final class BoundedInputStream extends FilterInputStream {
 
         /** the max length to provide */
         private final long max;

@@ -62,7 +62,7 @@ import org.apache.commons.compress.utils.TimeUtils;
  */
 public class SevenZOutputFile implements Closeable {
 
-    private class OutputStreamWrapper extends OutputStream {
+    private final class OutputStreamWrapper extends OutputStream {
 
         private static final int BUF_SIZE = 8192;
         private final ByteBuffer buffer = ByteBuffer.allocate(BUF_SIZE);
