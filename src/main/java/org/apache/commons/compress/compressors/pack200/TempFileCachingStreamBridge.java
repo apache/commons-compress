@@ -31,7 +31,7 @@ import java.nio.file.Path;
  *
  * @since 1.3
  */
-class TempFileCachingStreamBridge extends AbstractStreamBridge {
+final class TempFileCachingStreamBridge extends AbstractStreamBridge {
 
     private final Path path;
 

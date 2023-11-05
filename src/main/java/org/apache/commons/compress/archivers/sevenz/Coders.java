@@ -43,7 +43,7 @@ import org.tukaani.xz.PowerPCOptions;
 import org.tukaani.xz.SPARCOptions;
 import org.tukaani.xz.X86Options;
 
-class Coders {
+final class Coders {
     static class BCJDecoder extends AbstractCoder {
         private final FilterOptions opts;
         BCJDecoder(final FilterOptions opts) {

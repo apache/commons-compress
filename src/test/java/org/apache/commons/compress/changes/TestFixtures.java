@@ -25,7 +25,7 @@ import java.util.Set;
 
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 
-class TestFixtures {
+final class TestFixtures {
 
     static Set<String> getEmptyOutputArchiveNames() {
         final Set<String> outputStreamArchiveNames = getOutputArchiveNames();

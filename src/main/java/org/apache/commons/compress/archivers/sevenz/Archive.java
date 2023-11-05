@@ -18,7 +18,7 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import java.util.BitSet;
 
-class Archive {
+final class Archive {
 
     private static String lengthOf(final long[] a) {
         return a == null ? "(null)" : Integer.toString(a.length);

@@ -17,7 +17,7 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 /// Map between folders, files and streams.
-class StreamMap {
+final class StreamMap {
     /// The first Archive.packStream index of each folder.
     int[] folderFirstPackStreamIndex;
     /// Offset to beginning of this pack stream's data, relative to the beginning of the first pack stream.

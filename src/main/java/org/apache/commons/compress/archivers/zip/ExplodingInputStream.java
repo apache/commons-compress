@@ -38,7 +38,7 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  *
  * @since 1.7
  */
-class ExplodingInputStream extends InputStream implements InputStreamStatistics {
+final class ExplodingInputStream extends InputStream implements InputStreamStatistics {
 
     /** The underlying stream containing the compressed data */
     private final InputStream in;

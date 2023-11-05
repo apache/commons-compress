@@ -36,7 +36,7 @@ import javax.crypto.spec.IvParameterSpec;
 
 import org.apache.commons.compress.PasswordRequiredException;
 
-class AES256SHA256Decoder extends AbstractCoder {
+final class AES256SHA256Decoder extends AbstractCoder {
 
     private static final class AES256SHA256DecoderInputStream extends InputStream {
         private final InputStream in;

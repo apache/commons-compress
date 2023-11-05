@@ -21,7 +21,7 @@ package org.apache.commons.compress.archivers.dump;
 /**
  * Directory entry.
  */
-class Dirent {
+final class Dirent {
     private final int ino;
     private final int parentIno;
     private final int type;

@@ -16,7 +16,7 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-class Coder {
+final class Coder {
     byte[] decompressionMethodId;
     long numInStreams;
     long numOutStreams;

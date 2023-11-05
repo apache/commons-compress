@@ -32,6 +32,9 @@ import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.ExactMath;
 
+/**
+ * TODO This class can't be final because it is mocked by Mockito.
+ */
 class HuffmanDecoder implements Closeable {
 
     private static final class BinaryTreeNode {

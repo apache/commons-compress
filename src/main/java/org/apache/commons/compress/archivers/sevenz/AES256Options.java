@@ -31,7 +31,7 @@ import javax.crypto.spec.SecretKeySpec;
  * @since 1.23
  * @see AES256SHA256Decoder
  */
-class AES256Options {
+final class AES256Options {
 
     static final String ALGORITHM = "AES";
 
