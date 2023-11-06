@@ -20,8 +20,10 @@ package org.apache.commons.compress.compressors.z;
 
 import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,4 +70,23 @@ public class ZCompressorInputStreamTest {
         assertThrows(IOException.class, () -> new ZCompressorInputStream(sequenceInputStream));
     }
 
+    @Test
+    public void testInvalidMaxCodeSize() throws IOException {
+        final File input = getFile("bla.tar.Z");
+        try (InputStream contentStream = Files.newInputStream(input.toPath())) {
+            byte[] content = IOUtils.toByteArray(contentStream);
+
+            // Test all possible maxCodeSize values, it will either process correctly, or throw an IOException
+            for (int maxCodeSize = Byte.MIN_VALUE; maxCodeSize <= Byte.MAX_VALUE; maxCodeSize++) {
+                content[2] = (byte) maxCodeSize;
+                try {
+                    final ZCompressorInputStream in = new ZCompressorInputStream(new ByteArrayInputStream(content), 1024*1024);
+                    IOUtils.toByteArray(in);
+                    assertEquals(-1, in.read());
+                } catch(Exception e) {
+                    assertInstanceOf(IOException.class, e);
+                }
+            }
+        }
+    }
 }

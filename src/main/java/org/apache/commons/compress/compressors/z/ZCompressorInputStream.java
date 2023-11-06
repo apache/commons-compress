@@ -72,7 +72,11 @@ public class ZCompressorInputStream extends LZWInputStream {
         if (blockMode) {
             setClearCode(DEFAULT_CODE_SIZE);
         }
-        initializeTables(maxCodeSize, memoryLimitInKb);
+        try {
+            initializeTables(maxCodeSize, memoryLimitInKb);
+        } catch(IllegalArgumentException e) {
+            throw new IOException("Error while initializing tables: " + e);
+        }
         clearEntries();
     }
 

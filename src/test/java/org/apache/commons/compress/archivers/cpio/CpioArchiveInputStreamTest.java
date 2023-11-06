@@ -122,6 +122,5 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
                 });
             }
         }
-
     }
 }
