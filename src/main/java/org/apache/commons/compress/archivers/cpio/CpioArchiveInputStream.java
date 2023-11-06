@@ -405,7 +405,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     private long readAsciiLong(final int length, final int radix)
             throws IOException {
         final byte[] tmpBuffer = readRange(length);
-        return Long.parseLong(ArchiveUtils.toAsciiString(tmpBuffer), radix);
+        try {
+            return Long.parseLong(ArchiveUtils.toAsciiString(tmpBuffer), radix);
+        } catch (final NumberFormatException e) {
+            throw new IOException("Invalid long value");
+        }
     }
 
     private long readBinaryLong(final int length, final boolean swapHalfWord)

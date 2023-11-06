@@ -20,7 +20,10 @@ package org.apache.commons.compress.archivers.cpio;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.AbstractTestCase;
@@ -103,4 +106,22 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
         assertEquals(2, count);
     }
 
+    @Test
+    public void testInvalidLongValue() throws Exception {
+        try (InputStream contentStream = newInputStream("archives/SunOS_odc.cpio")) {
+            String content = new String(IOUtils.toByteArray(contentStream));
+
+            // Test invalid long value
+            String value1 = content.replaceFirst("1000007", "1_____7");
+            try (final CpioArchiveInputStream in = new CpioArchiveInputStream(new ByteArrayInputStream(value1.getBytes()))) {
+                assertThrows(IOException.class, () -> {
+                    CpioArchiveEntry entry;
+                    while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
+                        assertNotNull(entry);
+                    }
+                });
+            }
+        }
+
+    }
 }
