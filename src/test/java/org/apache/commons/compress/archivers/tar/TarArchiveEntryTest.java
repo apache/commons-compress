@@ -417,7 +417,9 @@ public class TarArchiveEntryTest implements TarConstants {
                         Collections.nCopies(15000, String.valueOf(Long.MAX_VALUE))),
                 // These two examples use the exponent notation
                 "9e9999999",
-                "9E9999999"
+                "9E9999999",
+                String.valueOf(Long.MAX_VALUE),
+                String.valueOf(Long.MIN_VALUE)
         };
         // @formatter:on
 
@@ -425,7 +427,7 @@ public class TarArchiveEntryTest implements TarConstants {
         for (String name : headerNames) {
             for (String value : testValues) {
                 final Exception exp = assertThrows(IllegalArgumentException.class, () -> entry.addPaxHeader(name, value));
-                assert exp.getCause().getMessage().startsWith("Corrupted PAX header. Time field value is invalid");
+                assert exp.getCause().getMessage().startsWith("Corrupted PAX header.");
             }
         }
     }

@@ -30,6 +30,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.DosFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFileAttributes;
+import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -286,7 +287,11 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         final BigDecimal epochSeconds = new BigDecimal(value);
         final long seconds = epochSeconds.longValue();
         final long nanos = epochSeconds.remainder(BigDecimal.ONE).movePointRight(9).longValue();
-        return Instant.ofEpochSecond(seconds, nanos);
+        try {
+            return Instant.ofEpochSecond(seconds, nanos);
+        } catch (DateTimeException e) {
+            throw new IOException("Corrupted PAX header. Time field value is too large or small: '" + value + "'", e);
+        }
     }
 
     /** The entry's name. */
