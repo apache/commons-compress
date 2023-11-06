@@ -455,9 +455,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         ret.setGID(readAsciiLong(8, 16));
         ret.setNumberOfLinks(readAsciiLong(8, 16));
         ret.setTime(readAsciiLong(8, 16));
-        ret.setSize(readAsciiLong(8, 16));
-        if (ret.getSize() < 0) {
-            throw new IOException("Found illegal entry with negative length");
+        try {
+            ret.setSize(readAsciiLong(8, 16));
+        } catch(IllegalArgumentException e) {
+            throw new IOException("Found illegal entry with invalid length" + e);
         }
         ret.setDeviceMaj(readAsciiLong(8, 16));
         ret.setDeviceMin(readAsciiLong(8, 16));
@@ -498,9 +499,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         if (namesize <= 0) {
             throw new IOException("Found illegal entry with zero or negative name length");
         }
-        ret.setSize(readAsciiLong(11, 8));
-        if (ret.getSize() < 0) {
-            throw new IOException("Found illegal entry with negative length");
+        try {
+            ret.setSize(readAsciiLong(11, 8));
+        } catch(IllegalArgumentException e) {
+            throw new IOException("Found illegal entry with invalid length" + e);
         }
         final String name = readCString((int) namesize);
         ret.setName(name);
@@ -532,9 +534,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         if (namesize <= 0) {
             throw new IOException("Found illegal entry with zero or negative name length");
         }
-        ret.setSize(readBinaryLong(4, swapHalfWord));
-        if (ret.getSize() < 0) {
-            throw new IOException("Found illegal entry with negative length");
+        try {
+            ret.setSize(readBinaryLong(4, swapHalfWord));
+        } catch(IllegalArgumentException e) {
+            throw new IOException("Found illegal entry with invalid length" + e);
         }
         final String name = readCString((int) namesize);
         ret.setName(name);

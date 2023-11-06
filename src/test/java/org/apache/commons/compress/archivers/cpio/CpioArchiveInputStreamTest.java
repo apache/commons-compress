@@ -113,9 +113,7 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
             String value1 = content.replaceFirst("1000007", "1_____7");
             try (final CpioArchiveInputStream in = new CpioArchiveInputStream(new ByteArrayInputStream(value1.getBytes()))) {
                 assertThrows(IOException.class, () -> {
-                    CpioArchiveEntry entry;
-                    while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
-                        assertNotNull(entry);
+                    while (in.getNextEntry() != null) {
                     }
                 });
             }
@@ -128,12 +126,18 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
             String content = new String(IOUtils.toByteArray(contentStream));
             String value1 = content.replaceFirst("000002", "000000");
             try (final CpioArchiveInputStream in = new CpioArchiveInputStream(new ByteArrayInputStream(value1.getBytes()))) {
-                assertThrows(IOException.class, () -> {
-                    CpioArchiveEntry entry;
-                    while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
-                        assertNotNull(entry);
-                    }
-                });
+                assertThrows(IOException.class, in::getNextEntry);
+            }
+        }
+    }
+
+    @Test
+    public void testInvalidEntrySize() throws Exception {
+        try (InputStream contentStream = newInputStream("archives/SunOS_odc.cpio")) {
+            String content = new String(IOUtils.toByteArray(contentStream));
+            String value1 = content.replaceFirst("00000000033", "77777777777");
+            try (final CpioArchiveInputStream in = new CpioArchiveInputStream(new ByteArrayInputStream(value1.getBytes()))) {
+                assertThrows(IOException.class, in::getNextEntry);
             }
         }
     }
