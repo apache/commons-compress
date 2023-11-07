@@ -452,7 +452,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
             try {
                 ret.setMode(mode);
             } catch(IllegalArgumentException e) {
-                throw new IOException("Found illegal entry with invalid mode" + e);
+                throw new IOException("Found illegal entry with invalid mode: " + mode);
             }
         }
         ret.setUID(readAsciiLong(8, 16));
@@ -462,7 +462,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         try {
             ret.setSize(readAsciiLong(8, 16));
         } catch(IllegalArgumentException e) {
-            throw new IOException("Found illegal entry with invalid length" + e);
+            throw new IOException("Found illegal entry with invalid length");
         }
         ret.setDeviceMaj(readAsciiLong(8, 16));
         ret.setDeviceMin(readAsciiLong(8, 16));
@@ -495,7 +495,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
             try {
                 ret.setMode(mode);
             } catch(IllegalArgumentException e) {
-                throw new IOException("Found illegal entry with invalid mode" + e);
+                throw new IOException("Found illegal entry with invalid mode: " + mode);
             }
         }
         ret.setUID(readAsciiLong(6, 8));
@@ -534,7 +534,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
             try {
                 ret.setMode(mode);
             } catch(IllegalArgumentException e) {
-                throw new IOException("Found illegal entry with invalid mode" + e);
+                throw new IOException("Found illegal entry with invalid mode: " + mode);
             }
         }
         ret.setUID(readBinaryLong(2, swapHalfWord));
@@ -549,7 +549,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         try {
             ret.setSize(readBinaryLong(4, swapHalfWord));
         } catch(IllegalArgumentException e) {
-            throw new IOException("Found illegal entry with invalid length" + e);
+            throw new IOException("Found illegal entry with invalid length");
         }
         final String name = readCString((int) namesize);
         ret.setName(name);

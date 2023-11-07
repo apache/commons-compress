@@ -176,7 +176,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
         final int max = 1 << 8;
         if (maxTableSize <= max) {
             throw new IllegalArgumentException("maxTableSize is " + maxTableSize
-                    + ", must be bigger or equal than " + max);
+                    + ", must be bigger than " + max);
         }
         prefixes = new int[maxTableSize];
         characters = new byte[maxTableSize];
