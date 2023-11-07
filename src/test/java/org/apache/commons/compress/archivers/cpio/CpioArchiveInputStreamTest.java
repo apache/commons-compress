@@ -110,6 +110,8 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
     public void testInvalidLongValues() throws Exception {
         try (InputStream contentStream = newInputStream("archives/SunOS_odc.cpio")) {
             String content = new String(IOUtils.toByteArray(contentStream));
+
+            // Test invalid long value parsing
             String value1 = content.replaceFirst("1000007", "1_____7");
             try (final CpioArchiveInputStream in = new CpioArchiveInputStream(new ByteArrayInputStream(value1.getBytes()))) {
                 assertThrows(IOException.class, () -> {
@@ -117,26 +119,16 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
                     }
                 });
             }
-        }
-    }
 
-    @Test
-    public void testZeroNameLength() throws Exception {
-        try (InputStream contentStream = newInputStream("archives/SunOS_odc.cpio")) {
-            String content = new String(IOUtils.toByteArray(contentStream));
-            String value1 = content.replaceFirst("000002", "000000");
-            try (final CpioArchiveInputStream in = new CpioArchiveInputStream(new ByteArrayInputStream(value1.getBytes()))) {
+            // Test zero length names parsing
+            String value2 = content.replaceFirst("000002", "000000");
+            try (final CpioArchiveInputStream in = new CpioArchiveInputStream(new ByteArrayInputStream(value2.getBytes()))) {
                 assertThrows(IOException.class, in::getNextEntry);
             }
-        }
-    }
 
-    @Test
-    public void testInvalidEntrySize() throws Exception {
-        try (InputStream contentStream = newInputStream("archives/SunOS_odc.cpio")) {
-            String content = new String(IOUtils.toByteArray(contentStream));
-            String value1 = content.replaceFirst("00000000033", "77777777777");
-            try (final CpioArchiveInputStream in = new CpioArchiveInputStream(new ByteArrayInputStream(value1.getBytes()))) {
+            // Test invalid entry size
+            String value3 = content.replaceFirst("00000000033", "77777777777");
+            try (final CpioArchiveInputStream in = new CpioArchiveInputStream(new ByteArrayInputStream(value3.getBytes()))) {
                 assertThrows(IOException.class, in::getNextEntry);
             }
         }

@@ -465,8 +465,8 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         ret.setRemoteDeviceMaj(readAsciiLong(8, 16));
         ret.setRemoteDeviceMin(readAsciiLong(8, 16));
         final long namesize = readAsciiLong(8, 16);
-        if (namesize <= 0) {
-            throw new IOException("Found illegal entry with zero or negative name length");
+        if (namesize <= 0 || namesize > Integer.MAX_VALUE) {
+            throw new IOException("Found illegal entry with invalid name length: " + namesize);
         }
         ret.setChksum(readAsciiLong(8, 16));
         final String name = readCString((int) namesize);
@@ -496,13 +496,13 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         ret.setRemoteDevice(readAsciiLong(6, 8));
         ret.setTime(readAsciiLong(11, 8));
         final long namesize = readAsciiLong(6, 8);
-        if (namesize <= 0) {
-            throw new IOException("Found illegal entry with zero or negative name length");
+        if (namesize <= 0 || namesize > Integer.MAX_VALUE) {
+            throw new IOException("Found illegal entry with invalid name length: " + namesize);
         }
         try {
             ret.setSize(readAsciiLong(11, 8));
         } catch(IllegalArgumentException e) {
-            throw new IOException("Found illegal entry with invalid length" + e);
+            throw new IOException("Found illegal entry with invalid length: " + namesize);
         }
         final String name = readCString((int) namesize);
         ret.setName(name);
@@ -531,8 +531,8 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         ret.setRemoteDevice(readBinaryLong(2, swapHalfWord));
         ret.setTime(readBinaryLong(4, swapHalfWord));
         final long namesize = readBinaryLong(2, swapHalfWord);
-        if (namesize <= 0) {
-            throw new IOException("Found illegal entry with zero or negative name length");
+        if (namesize <= 0 || namesize > Integer.MAX_VALUE) {
+            throw new IOException("Found illegal entry with invalid name length: " + namesize);
         }
         try {
             ret.setSize(readBinaryLong(4, swapHalfWord));
