@@ -131,6 +131,12 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
             try (final CpioArchiveInputStream in = new CpioArchiveInputStream(new ByteArrayInputStream(value3.getBytes()))) {
                 assertThrows(IOException.class, in::getNextEntry);
             }
+
+            // Test invalid entry mode
+            String value4 = content.replaceFirst("100644", "777777");
+            try (final CpioArchiveInputStream in = new CpioArchiveInputStream(new ByteArrayInputStream(value4.getBytes()))) {
+                assertThrows(IOException.class, in::getNextEntry);
+            }
         }
     }
 }

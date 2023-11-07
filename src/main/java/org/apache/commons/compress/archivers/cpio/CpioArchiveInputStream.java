@@ -449,7 +449,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         ret.setInode(readAsciiLong(8, 16));
         final long mode = readAsciiLong(8, 16);
         if (CpioUtil.fileType(mode) != 0){ // mode is initialized to 0
-            ret.setMode(mode);
+            try {
+                ret.setMode(mode);
+            } catch(IllegalArgumentException e) {
+                throw new IOException("Found illegal entry with invalid mode" + e);
+            }
         }
         ret.setUID(readAsciiLong(8, 16));
         ret.setGID(readAsciiLong(8, 16));
@@ -488,7 +492,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         ret.setInode(readAsciiLong(6, 8));
         final long mode = readAsciiLong(6, 8);
         if (CpioUtil.fileType(mode) != 0) {
-            ret.setMode(mode);
+            try {
+                ret.setMode(mode);
+            } catch(IllegalArgumentException e) {
+                throw new IOException("Found illegal entry with invalid mode" + e);
+            }
         }
         ret.setUID(readAsciiLong(6, 8));
         ret.setGID(readAsciiLong(6, 8));
@@ -523,7 +531,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
         ret.setInode(readBinaryLong(2, swapHalfWord));
         final long mode = readBinaryLong(2, swapHalfWord);
         if (CpioUtil.fileType(mode) != 0){
-            ret.setMode(mode);
+            try {
+                ret.setMode(mode);
+            } catch(IllegalArgumentException e) {
+                throw new IOException("Found illegal entry with invalid mode" + e);
+            }
         }
         ret.setUID(readBinaryLong(2, swapHalfWord));
         ret.setGID(readBinaryLong(2, swapHalfWord));
