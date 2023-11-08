@@ -57,6 +57,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
 
     private static final ZipShort HEADER_ID = new ZipShort(0x756E);
     private static final int      MIN_SIZE = WORD + SHORT + WORD + SHORT + SHORT;
+
     /**
      * Standard Unix stat(2) file mode.
      */
@@ -120,7 +121,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     }
 
     /**
-     * Get the group id.
+     * Gets the group id.
      * @return the group id
      */
     public int getGroupId() {
@@ -204,7 +205,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     }
 
     /**
-     * Get the file mode for given permissions with the correct file type.
+     * Gets the file mode for given permissions with the correct file type.
      * @param mode the mode
      * @return the type with the mode
      */
@@ -219,7 +220,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     }
 
     /**
-     * Get the user id.
+     * Gets the user id.
      * @return the user id
      */
     public int getUserId() {
@@ -312,7 +313,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     }
 
     /**
-     * Set the group id.
+     * Sets the group id.
      * @param gid the group id
      */
     public void setGroupId(final int gid) {
@@ -339,7 +340,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     }
 
     /**
-     * Set the user id.
+     * Sets the user id.
      * @param uid the user id
      */
     public void setUserId(final int uid) {

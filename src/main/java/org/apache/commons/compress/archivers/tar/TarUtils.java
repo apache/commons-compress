@@ -55,36 +55,38 @@ public class TarUtils {
      * ZipEncoding.
      */
     static final ZipEncoding FALLBACK_ENCODING = new ZipEncoding() {
-            @Override
-            public boolean canEncode(final String name) { return true; }
+        @Override
+        public boolean canEncode(final String name) {
+            return true;
+        }
 
-            @Override
-            public String decode(final byte[] buffer) {
-                final int length = buffer.length;
-                final StringBuilder result = new StringBuilder(length);
+        @Override
+        public String decode(final byte[] buffer) {
+            final int length = buffer.length;
+            final StringBuilder result = new StringBuilder(length);
 
-                for (final byte b : buffer) {
-                    if (b == 0) { // Trailing null
-                        break;
-                    }
-                    result.append((char) (b & 0xFF)); // Allow for sign-extension
+            for (final byte b : buffer) {
+                if (b == 0) { // Trailing null
+                    break;
                 }
-
-                return result.toString();
+                result.append((char) (b & 0xFF)); // Allow for sign-extension
             }
 
-            @Override
-            public ByteBuffer encode(final String name) {
-                final int length = name.length();
-                final byte[] buf = new byte[length];
+            return result.toString();
+        }
 
-                // copy until end of input or output is reached.
-                for (int i = 0; i < length; ++i) {
-                    buf[i] = (byte) name.charAt(i);
-                }
-                return ByteBuffer.wrap(buf);
+        @Override
+        public ByteBuffer encode(final String name) {
+            final int length = name.length();
+            final byte[] buf = new byte[length];
+
+            // copy until end of input or output is reached.
+            for (int i = 0; i < length; ++i) {
+                buf[i] = (byte) name.charAt(i);
             }
-        };
+            return ByteBuffer.wrap(buf);
+        }
+    };
 
     /**
      * Computes the checksum of a tar entry header.

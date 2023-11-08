@@ -57,12 +57,16 @@ import org.apache.commons.compress.utils.TimeUtils;
 
 /**
  * Writes a 7z file.
+ *
  * @since 1.6
  */
 public class SevenZOutputFile implements Closeable {
-    private class OutputStreamWrapper extends OutputStream {
+
+    private final class OutputStreamWrapper extends OutputStream {
+
         private static final int BUF_SIZE = 8192;
         private final ByteBuffer buffer = ByteBuffer.allocate(BUF_SIZE);
+
         @Override
         public void close() throws IOException {
             // the file will be closed by the containing class's close method
@@ -375,10 +379,24 @@ public class SevenZOutputFile implements Closeable {
      * {@link #closeArchiveEntry()} to complete the process.
      *
      * @param archiveEntry describes the entry
+     * @deprecated Use {@link #putArchiveEntry(SevenZArchiveEntry)}.
      */
+    @Deprecated
     public void putArchiveEntry(final ArchiveEntry archiveEntry) {
-        final SevenZArchiveEntry entry = (SevenZArchiveEntry) archiveEntry;
-        files.add(entry);
+        putArchiveEntry((SevenZArchiveEntry) archiveEntry);
+    }
+
+    /**
+     * Records an archive entry to add.
+     *
+     * The caller must then write the content to the archive and call
+     * {@link #closeArchiveEntry()} to complete the process.
+     *
+     * @param archiveEntry describes the entry
+     * @since 1.25.0
+     */
+    public void putArchiveEntry(final SevenZArchiveEntry archiveEntry) {
+        files.add(archiveEntry);
     }
 
     /**

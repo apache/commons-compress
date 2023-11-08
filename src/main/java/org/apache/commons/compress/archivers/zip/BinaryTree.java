@@ -31,7 +31,7 @@ import org.apache.commons.compress.utils.IOUtils;
  *
  * @since 1.7
  */
-class BinaryTree {
+final class BinaryTree {
 
     /** Value in the array indicating an undefined node */
     private static final int UNDEFINED = -1;

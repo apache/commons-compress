@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.apache.commons.compress.compressors.bzip2.BZip2Utils;
 import org.junit.jupiter.api.Test;
 
-public class BZip2UtilsTestCase {
+public class BZip2UtilsTest {
 
     @SuppressWarnings("deprecation")
     @Test

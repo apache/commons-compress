@@ -81,6 +81,9 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     private Iterable<? extends SevenZMethodConfiguration> contentMethods;
 
+    /**
+     * Constructs a new instance.
+     */
     public SevenZArchiveEntry() {
     }
 
@@ -164,8 +167,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Gets the compressed CRC.
      *
-     * @deprecated use getCompressedCrcValue instead.
      * @return the compressed CRC
+     * @deprecated Use {@link #getCompressedCrcValue()} instead.
      */
     @Deprecated
     int getCompressedCrc() {
@@ -363,7 +366,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Whether there is any content associated with this entry.
+     * Tests whether there is any content associated with this entry.
+     *
      * @return whether there is any content associated with this entry.
      */
     public boolean hasStream() {
@@ -371,8 +375,9 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Indicates whether this is an "anti-item" used in differential backups,
+     * Tests whether this is an "anti-item" used in differential backups,
      * meaning it should delete the same file from a previous backup.
+     *
      * @return true if it is an anti-item, false otherwise
      */
     public boolean isAntiItem() {
@@ -380,7 +385,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Return whether or not this entry represents a directory.
+     * Tests whether or not this entry represents a directory.
      *
      * @return True if this entry is a directory.
      */
@@ -450,7 +455,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set this entry's compressed file size.
+     * Sets this entry's compressed file size.
      *
      * @param size This entry's new compressed file size.
      */
@@ -642,7 +647,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set this entry's name.
+     * Sets this entry's name.
      *
      * @param name This entry's new name.
      */
@@ -651,7 +656,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Set this entry's file size.
+     * Sets this entry's file size.
      *
      * @param size This entry's new file size.
      */

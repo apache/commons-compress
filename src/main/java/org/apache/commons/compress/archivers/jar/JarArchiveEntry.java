@@ -28,6 +28,7 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 
 /**
+ * JAR archive entry.
  *
  * @NotThreadSafe (parent is not thread-safe)
  */
@@ -55,7 +56,7 @@ public class JarArchiveEntry extends ZipArchiveEntry {
     }
 
     /**
-     * Return a copy of the list of certificates or null if there are none.
+     * Gets a copy of the list of certificates or null if there are none.
      *
      * @return Always returns null in the current implementation
      *

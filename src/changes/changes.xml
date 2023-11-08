@@ -63,15 +63,32 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipUtils.getCompressedFileName(String) and deprecate getCompressedFilename(String).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipUtils.getUncompressedFileName(String) and deprecate getUncompressedFilename(String).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipUtils.isCompressedFileName(String) and deprecate isCompressedFilename(String).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add SevenZOutputFile.putArchiveEntry(SevenZArchiveEntry) and deprecate putArchiveEntry(ArchiveEntry).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add generics to ChangeSet and ChangeSetPerformer.</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add generics to ArchiveStreamProvider and friends.</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add a generic type parameter to ArchiveOutputStream and avoid unchecked/unconfirmed type casts in subclasses.</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add a generic type parameter to ArchiveInputStream and deprecate redundant get methods in subclasses.</action>
       <!-- FIX -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Precompile regular expression in ArArchiveInputStream.isBSDLongName(String).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Precompile regular expression in ArArchiveInputStream.isGNULongName(String).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Precompile regular expression in TarArchiveEntry.parseInstantFromDecimalSeconds(String).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Precompile regular expression in ChangeSet.addDeletion(Change).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory" issue="COMPRESS-649">Improve performance in BlockLZ4CompressorOutputStream.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Null-guard Lister.main(String[]) for programmatic invocation.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">NPE in pack200.NewAttributeBands.Reference.addAttributeToBand(NewAttribute, InputStream).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Incorrect lazy initialization and update of static field in pack200.CodecEncoding.getSpecifier(Codec, Codec).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Incorrect string comparison in unpack200.AttributeLayout.numBackwardsCallables().</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Inefficient use of keySet iterator instead of entrySet iterator in pack200.PackingOptions.addOrUpdateAttributeActions(List, Map, int).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Package private class pack200.IcBands.IcTuple should be a static inner class.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Private class ZipFile.BoundedFileChannelInputStream should be a static inner class.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Refactor internal SevenZ AES256SHA256Decoder InputStream into a named static inner class.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Refactor internal SevenZ AES256SHA256Decoder OutputStream into a named static inner class.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Use the root Locale for string conversion of command line options in org.apache.commons.compress.archivers.sevenz.CLI.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Calling PackingUtils.config(PackingOptions) with null now closes the internal FileHandler.</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot">Bump org.slf4j:slf4j-api from 2.0.8 to 2.0.9 #413.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump commons-io:commons-io from 2.13.0 to 2.15.0.</action>
-      <action type="update" dev="ggregory" due-to="Dependabot">Bump com.github.luben:zstd-jni from 1.5.5-5 to 1.5.5-6 #422.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot">Bump com.github.luben:zstd-jni from 1.5.5-5 to 1.5.5-10 #422, #431.</action>
       <action type="update" dev="ggregory" due-to="Dependabot">Bump org.ow2.asm:asm from 9.5 to 9.6 #421.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 62 to 64 #421.</action>
     </release>
@@ -308,7 +325,7 @@ The <action> type attribute can be add,update,fix,remove.
       </action>
     </release>
     <release version="1.21" date="2021-07-12"
-             description="Release 1.21 (Java 8)
+             description="Release 1.21 (Java 8 or above)
 ----------------------------------------
 
 SevenZFileOptions has a new setting that needs to be enabled explicity
@@ -718,7 +735,7 @@ you relied on the recovery attempt.">
       </action>
     </release>
     <release version="1.20" date="2020-02-08"
-             description="Release 1.20 (Java 7)">
+             description="Release 1.20 (Java 7 or above)">
       <action issue="COMPRESS-493" type="update" date="2019-08-27">
         Update optional library com.github.luben:zstd-jni from 1.4.0-1 to 1.4.4-7.
       </action>

@@ -24,7 +24,7 @@ import org.tukaani.xz.DeltaOptions;
 import org.tukaani.xz.FinishableWrapperOutputStream;
 import org.tukaani.xz.UnsupportedOptionsException;
 
-class DeltaDecoder extends AbstractCoder {
+final class DeltaDecoder extends AbstractCoder {
     DeltaDecoder() {
         super(Number.class);
     }

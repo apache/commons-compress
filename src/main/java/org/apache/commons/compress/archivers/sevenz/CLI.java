@@ -18,6 +18,7 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * Usage: archive-name [list]
@@ -80,7 +81,7 @@ public class CLI {
         if (args.length < 2) {
             return Mode.LIST;
         }
-        return Enum.valueOf(Mode.class, args[1].toUpperCase());
+        return Enum.valueOf(Mode.class, args[1].toUpperCase(Locale.ROOT));
     }
 
     public static void main(final String[] args) throws Exception {

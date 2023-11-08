@@ -21,7 +21,7 @@ package org.apache.commons.compress.archivers.dump;
 /**
  * Directory entry.
  */
-class Dirent {
+final class Dirent {
     private final int ino;
     private final int parentIno;
     private final int type;
@@ -43,7 +43,7 @@ class Dirent {
     }
 
     /**
-     * Get ino.
+     * Gets ino.
      * @return the i-node
      */
     int getIno() {
@@ -51,7 +51,7 @@ class Dirent {
     }
 
     /**
-     * Get name of directory entry.
+     * Gets name of directory entry.
      *
      * <p>This method returns the raw name as it is stored inside of the archive.</p>
      *
@@ -62,7 +62,7 @@ class Dirent {
     }
 
     /**
-     * Get ino of parent directory.
+     * Gets ino of parent directory.
      * @return the parent i-node
      */
     int getParentIno() {
@@ -70,7 +70,7 @@ class Dirent {
     }
 
     /**
-     * Get entry type.
+     * Gets entry type.
      * @return the entry type
      */
     int getType() {

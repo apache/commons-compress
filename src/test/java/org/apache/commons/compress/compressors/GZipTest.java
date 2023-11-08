@@ -32,7 +32,7 @@ import java.nio.file.Files;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipParameters;
@@ -41,30 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public final class GZipTestCase extends AbstractTestCase {
-
-    @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.tgz");
-        final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath());
-                final GzipCompressorInputStream in = new GzipCompressorInputStream(is)) {
-            IOUtils.toByteArray(in);
-            assertEquals(-1, in.read(buf));
-            assertEquals(-1, in.read(buf));
-        }
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.tgz");
-        try (InputStream is = Files.newInputStream(input.toPath());
-                final GzipCompressorInputStream in = new GzipCompressorInputStream(is)) {
-            IOUtils.toByteArray(in);
-            assertEquals(-1, in.read());
-            assertEquals(-1, in.read());
-        }
-    }
+public final class GZipTest extends AbstractTest {
 
     @Test
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {
@@ -138,7 +115,7 @@ public final class GZipTestCase extends AbstractTestCase {
     @Test
     public void testGzipCreation() throws Exception {
         final File input = getFile("test1.xml");
-        final File output = new File(dir, "test1.xml.gz");
+        final File output = newTempFile("test1.xml.gz");
         try (OutputStream out = Files.newOutputStream(output.toPath())) {
             try (CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("gz", out)) {
                 Files.copy(input.toPath(), cos);
@@ -149,7 +126,7 @@ public final class GZipTestCase extends AbstractTestCase {
     @Test
     public void testGzipUnarchive() throws Exception {
         final File input = getFile("bla.tgz");
-        final File output = new File(dir, "bla.tar");
+        final File output = newTempFile("bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("gz", is);) {
                 Files.copy(in, output.toPath());
@@ -260,9 +237,32 @@ public final class GZipTestCase extends AbstractTestCase {
     }
 
     @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tgz");
+        final byte[] buf = new byte[2];
+        try (InputStream is = Files.newInputStream(input.toPath());
+                final GzipCompressorInputStream in = new GzipCompressorInputStream(is)) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+        }
+    }
+
+    @Test
     public void testOverWrite() throws Exception {
         final GzipCompressorOutputStream out = new GzipCompressorOutputStream(new ByteArrayOutputStream());
         out.close();
         assertThrows(IOException.class, () -> out.write(0), "IOException expected");
+    }
+
+    @Test
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tgz");
+        try (InputStream is = Files.newInputStream(input.toPath());
+                final GzipCompressorInputStream in = new GzipCompressorInputStream(is)) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read());
+            assertEquals(-1, in.read());
+        }
     }
 }

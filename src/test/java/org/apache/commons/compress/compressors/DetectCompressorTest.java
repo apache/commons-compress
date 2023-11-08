@@ -18,7 +18,7 @@
  */
 package org.apache.commons.compress.compressors;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.apache.commons.compress.AbstractTest.getFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -43,7 +43,7 @@ import org.apache.commons.io.input.BrokenInputStream;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("deprecation") // deliberately tests setDecompressConcatenated
-public final class DetectCompressorTestCase {
+public final class DetectCompressorTest {
 
     static class TestData {
 
@@ -121,7 +121,7 @@ public final class DetectCompressorTestCase {
         } catch (final CompressorException e) {
             if (e.getCause() != null && e.getCause() instanceof Exception) {
                 //unwrap cause to reveal MemoryLimitException
-                throw (Exception)e.getCause();
+                throw (Exception) e.getCause();
             }
             throw e;
         }

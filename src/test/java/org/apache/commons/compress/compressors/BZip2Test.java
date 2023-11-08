@@ -25,16 +25,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.junit.jupiter.api.Test;
 
-public final class BZip2TestCase extends AbstractTestCase {
+public final class BZip2Test extends AbstractTest {
 
     @Test
     public void testBzip2Unarchive() throws Exception {
         final File input = getFile("bla.txt.bz2");
-        final File output = new File(dir, "bla.txt");
+        final File output = newTempFile("bla.txt");
         try (final InputStream is = Files.newInputStream(input.toPath());
                 CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("bzip2", is)) {
             Files.copy(in, output.toPath());
@@ -46,14 +46,14 @@ public final class BZip2TestCase extends AbstractTestCase {
         File output;
         final File input = getFile("test.txt");
         {
-            output = new File(dir, "test.txt.bz2");
+            output = newTempFile("test.txt.bz2");
             try (OutputStream out = Files.newOutputStream(output.toPath());
                     final CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("bzip2", out)) {
                 Files.copy(input.toPath(), cos);
             }
         }
 
-        final File decompressed = new File(dir, "decompressed.txt");
+        final File decompressed = newTempFile("decompressed.txt");
         {
             try (InputStream is = Files.newInputStream(output.toPath());
                     CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("bzip2", is)) {

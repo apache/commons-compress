@@ -33,14 +33,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.jupiter.api.Test;
 
-public class TarUtilsTest extends AbstractTestCase {
+public class TarUtilsTest extends AbstractTest {
 
     private void checkName(final String string) {
         final byte[] buff = new byte[100];
@@ -66,323 +66,6 @@ public class TarUtilsTest extends AbstractTestCase {
         TarUtils.formatLongOctalOrBinaryBytes(value, buffer, 0, buffer.length);
         parseValue = TarUtils.parseOctalOrBinary(buffer, 0, buffer.length);
         assertEquals(value, parseValue);
-    }
-
-    @Test
-    public void parseFromPAX01SparseHeaders() throws Exception {
-        final String map = "0,10,20,0,20,5";
-        final List<TarArchiveStructSparse> sparse = TarUtils.parseFromPAX01SparseHeaders(map);
-        assertEquals(3, sparse.size());
-        assertEquals(0, sparse.get(0).getOffset());
-        assertEquals(10, sparse.get(0).getNumbytes());
-        assertEquals(20, sparse.get(1).getOffset());
-        assertEquals(0, sparse.get(1).getNumbytes());
-        assertEquals(20, sparse.get(2).getOffset());
-        assertEquals(5, sparse.get(2).getNumbytes());
-    }
-
-    @Test
-    public void parseFromPAX01SparseHeadersRejectsNegativeNumbytes() throws Exception {
-        assertThrows(IOException.class, () -> TarUtils.parseFromPAX01SparseHeaders("0,10,20,0,20,-5"));
-    }
-
-    @Test
-    public void parseFromPAX01SparseHeadersRejectsNegativeOffset() throws Exception {
-        assertThrows(IOException.class, () -> TarUtils.parseFromPAX01SparseHeaders("0,10,20,0,-2,5"));
-    }
-
-    @Test
-    public void parseFromPAX01SparseHeadersRejectsNonNumericNumbytes() throws Exception {
-        assertThrows(IOException.class, () -> TarUtils.parseFromPAX01SparseHeaders("0,10,20,0,20,b"));
-    }
-
-    @Test
-    public void parseFromPAX01SparseHeadersRejectsNonNumericOffset() throws Exception {
-        assertThrows(IOException.class, () -> TarUtils.parseFromPAX01SparseHeaders("0,10,20,0,2a,5"));
-    }
-
-    @Test
-    public void parseFromPAX01SparseHeadersRejectsOddNumberOfEntries() throws Exception {
-        final String map = "0,10,20,0,20";
-        assertThrows(IOException.class, () -> TarUtils.parseFromPAX01SparseHeaders(map));
-    }
-
-    @Test
-    public void parsePAX01SparseHeadersRejectsOddNumberOfEntries() {
-        final String map = "0,10,20,0,20";
-        assertThrows(UncheckedIOException.class, () -> TarUtils.parsePAX01SparseHeaders(map));
-    }
-
-    @Test
-    public void parsePAX1XSparseHeaders() throws Exception {
-        final byte[] header = ("1\n"
-                + "0\n"
-                + "20\n")
-            .getBytes();
-        final byte[] block = new byte[512];
-        System.arraycopy(header, 0, block, 0, header.length);
-        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
-            final List<TarArchiveStructSparse> sparse = TarUtils.parsePAX1XSparseHeaders(in, 512);
-            assertEquals(1, sparse.size());
-            assertEquals(0, sparse.get(0).getOffset());
-            assertEquals(20, sparse.get(0).getNumbytes());
-            assertEquals(-1, in.read());
-        }
-    }
-
-    @Test
-    public void parsePAX1XSparseHeadersRejectsIncompleteLastLine() throws Exception {
-        final byte[] header = ("1\n"
-                + "0\n"
-                + "20")
-            .getBytes();
-        try (ByteArrayInputStream in = new ByteArrayInputStream(header)) {
-            assertThrows(IOException.class, () -> TarUtils.parsePAX1XSparseHeaders(in, 512));
-        }
-    }
-
-    @Test
-    public void parsePAX1XSparseHeadersRejectsNegativeNumberOfEntries() throws Exception {
-        final byte[] header = ("111111111111111111111111111111111111111111111111111111111111111\n"
-                + "0\n"
-                + "20\n")
-            .getBytes();
-        final byte[] block = new byte[512];
-        System.arraycopy(header, 0, block, 0, header.length);
-        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
-            assertThrows(IOException.class, () -> TarUtils.parsePAX1XSparseHeaders(in, 512));
-        }
-    }
-
-    @Test
-    public void parsePAX1XSparseHeadersRejectsNegativeNumbytes() throws Exception {
-        final byte[] header = ("1\n"
-                + "0\n"
-                + "111111111111111111111111111111111111111111111111111111111111111\n")
-            .getBytes();
-        final byte[] block = new byte[512];
-        System.arraycopy(header, 0, block, 0, header.length);
-        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
-            assertThrows(IOException.class, () -> TarUtils.parsePAX1XSparseHeaders(in, 512));
-        }
-    }
-
-    @Test
-    public void parsePAX1XSparseHeadersRejectsNegativeOffset() throws Exception {
-        final byte[] header = ("1\n"
-                + "111111111111111111111111111111111111111111111111111111111111111\n"
-                + "20\n")
-            .getBytes();
-        final byte[] block = new byte[512];
-        System.arraycopy(header, 0, block, 0, header.length);
-        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
-            assertThrows(IOException.class, () -> TarUtils.parsePAX1XSparseHeaders(in, 512));
-        }
-    }
-
-    @Test
-    public void parsePAX1XSparseHeadersRejectsNonNumericNumberOfEntries() throws Exception {
-        final byte[] header = ("x\n"
-                + "0\n"
-                + "20\n")
-            .getBytes();
-        final byte[] block = new byte[512];
-        System.arraycopy(header, 0, block, 0, header.length);
-        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
-            assertThrows(IOException.class, () -> TarUtils.parsePAX1XSparseHeaders(in, 512));
-        }
-    }
-
-    @Test
-    public void parsePAX1XSparseHeadersRejectsNonNumericNumbytes() throws Exception {
-        final byte[] header = ("1\n"
-                + "0\n"
-                + "2x\n")
-            .getBytes();
-        final byte[] block = new byte[512];
-        System.arraycopy(header, 0, block, 0, header.length);
-        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
-            assertThrows(IOException.class, () -> TarUtils.parsePAX1XSparseHeaders(in, 512));
-        }
-    }
-
-
-    @Test
-    public void parsePAX1XSparseHeadersRejectsNonNumericOffset() throws Exception {
-        final byte[] header = ("1\n"
-                + "x\n"
-                + "20\n")
-            .getBytes();
-        final byte[] block = new byte[512];
-        System.arraycopy(header, 0, block, 0, header.length);
-        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
-            assertThrows(IOException.class, () -> TarUtils.parsePAX1XSparseHeaders(in, 512));
-        }
-    }
-
-    @Test
-    public void paxHeaderEntryWithEmptyValueRemovesKey() throws Exception {
-        final Map<String, String> headers = TarUtils
-                .parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n7 foo=\n"
-                        .getBytes(UTF_8)), null, new HashMap<>());
-        assertEquals(0, headers.size());
-    }
-
-    @Test
-    public void readNonAsciiPaxHeader() throws Exception {
-        final String ae = "\u00e4";
-        final String line = "11 path="+ ae + "\n";
-        assertEquals(11, line.getBytes(UTF_8).length);
-        final Map<String, String> headers = TarUtils
-                .parsePaxHeaders(new ByteArrayInputStream(line.getBytes(UTF_8)), null, new HashMap<>());
-        assertEquals(1, headers.size());
-        assertEquals(ae, headers.get("path"));
-    }
-
-    @Test
-    public void readPax00SparseHeader() throws Exception {
-        final String header = "23 GNU.sparse.offset=0\n26 GNU.sparse.numbytes=10\n";
-        final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
-        TarUtils.parsePaxHeaders(
-            new ByteArrayInputStream(header.getBytes(UTF_8)),
-            sparseHeaders, Collections.emptyMap());
-        assertEquals(1, sparseHeaders.size());
-        assertEquals(0, sparseHeaders.get(0).getOffset());
-        assertEquals(10, sparseHeaders.get(0).getNumbytes());
-    }
-
-    @Test
-    public void readPax00SparseHeaderMakesNumbytesOptional() throws Exception {
-        final String header = "23 GNU.sparse.offset=0\n24 GNU.sparse.offset=10\n";
-        final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
-        TarUtils.parsePaxHeaders(
-            new ByteArrayInputStream(header.getBytes(UTF_8)),
-            sparseHeaders, Collections.emptyMap());
-        assertEquals(2, sparseHeaders.size());
-        assertEquals(0, sparseHeaders.get(0).getOffset());
-        assertEquals(0, sparseHeaders.get(0).getNumbytes());
-        assertEquals(10, sparseHeaders.get(1).getOffset());
-        assertEquals(0, sparseHeaders.get(1).getNumbytes());
-    }
-
-    @Test
-    public void readPax00SparseHeaderRejectsNegativeNumbytes() throws Exception {
-        final String header = "23 GNU.sparse.offset=0\n26 GNU.sparse.numbytes=-1\n";
-        assertThrows(IOException.class, () -> TarUtils.parsePaxHeaders(
-            new ByteArrayInputStream(header.getBytes(UTF_8)),
-            null, Collections.emptyMap()));
-    }
-
-    @Test
-    public void readPax00SparseHeaderRejectsNegativeOffset() throws Exception {
-        final String header = "24 GNU.sparse.offset=-1\n26 GNU.sparse.numbytes=10\n";
-        assertThrows(IOException.class, () -> TarUtils.parsePaxHeaders(
-            new ByteArrayInputStream(header.getBytes(UTF_8)),
-            null, Collections.emptyMap()));
-    }
-
-    @Test
-    public void readPax00SparseHeaderRejectsNonNumericNumbytes() throws Exception {
-        final String header = "23 GNU.sparse.offset=0\n26 GNU.sparse.numbytes=1a\n";
-        assertThrows(IOException.class, () -> TarUtils.parsePaxHeaders(
-            new ByteArrayInputStream(header.getBytes(UTF_8)),
-            null, Collections.emptyMap()));
-    }
-
-    @Test
-    public void readPax00SparseHeaderRejectsNonNumericOffset() throws Exception {
-        final String header = "23 GNU.sparse.offset=a\n26 GNU.sparse.numbytes=10\n";
-        assertThrows(IOException.class, () -> TarUtils.parsePaxHeaders(
-            new ByteArrayInputStream(header.getBytes(UTF_8)),
-            null, Collections.emptyMap()));
-    }
-
-    @Test
-    public void readPaxHeaderWithEmbeddedNewline() throws Exception {
-        final Map<String, String> headers = TarUtils
-                .parsePaxHeaders(new ByteArrayInputStream("28 comment=line1\nline2\nand3\n"
-                        .getBytes(UTF_8)), null, new HashMap<>());
-        assertEquals(1, headers.size());
-        assertEquals("line1\nline2\nand3", headers.get("comment"));
-    }
-
-    @Test
-    public void readPaxHeaderWithoutTrailingNewline() throws Exception {
-        assertThrows(IOException.class, () -> TarUtils.parsePaxHeaders(
-            new ByteArrayInputStream("30 atime=1321711775.9720594634".getBytes(UTF_8)),
-            null, Collections.emptyMap()));
-    }
-
-    @Test
-    public void readSimplePaxHeader() throws Exception {
-        final Map<String, String> headers = TarUtils.parsePaxHeaders(
-                new ByteArrayInputStream("30 atime=1321711775.972059463\n".getBytes(UTF_8)),
-                null, new HashMap<>());
-        assertEquals(1, headers.size());
-        assertEquals("1321711775.972059463", headers.get("atime"));
-    }
-
-    @Test
-    public void readSparseStructsBinary() throws Exception {
-        final byte[] header = {
-            (byte) 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            (byte) 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
-        };
-        assertEquals(24, header.length);
-        final List<TarArchiveStructSparse> sparse = TarUtils.readSparseStructs(header, 0, 1);
-        assertEquals(1, sparse.size());
-        assertEquals(0, sparse.get(0).getOffset());
-        assertEquals(7, sparse.get(0).getNumbytes());
-    }
-
-    @Test
-    public void readSparseStructsOctal() throws Exception {
-        final byte[] header = "00000000000 00000000007 ".getBytes();
-        assertEquals(24, header.length);
-        final List<TarArchiveStructSparse> sparse = TarUtils.readSparseStructs(header, 0, 1);
-        assertEquals(1, sparse.size());
-        assertEquals(0, sparse.get(0).getOffset());
-        assertEquals(7, sparse.get(0).getNumbytes());
-    }
-
-    @Test
-    public void readSparseStructsRejectsNegativeNumbytes() throws Exception {
-        final byte[] header = {
-            (byte) 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-        };
-        assertThrows(IOException.class, () -> TarUtils.readSparseStructs(header, 0, 1));
-    }
-
-    @Test
-    public void readSparseStructsRejectsNegativeOffset() throws Exception {
-        final byte[] header = {
-            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-            (byte) 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
-        };
-        assertThrows(IOException.class, () -> TarUtils.readSparseStructs(header, 0, 1));
-    }
-
-    @Test
-    public void readSparseStructsRejectsNonNumericNumbytes() throws Exception {
-        final byte[] header = "00000000000 0000000000x ".getBytes();
-        assertThrows(IOException.class, () -> TarUtils.readSparseStructs(header, 0, 1));
-    }
-
-    @Test
-    public void readSparseStructsRejectsNonNumericOffset() throws Exception {
-        final byte[] header = "0000000000x 00000000007 ".getBytes();
-        assertThrows(IOException.class, () -> TarUtils.readSparseStructs(header, 0, 1));
-    }
-
-    @Test
-    public void secondEntryWinsWhenPaxHeaderContainsDuplicateKey() throws Exception {
-        final Map<String, String> headers = TarUtils.parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n11 foo=baz\n"
-                        .getBytes(UTF_8)), null, new HashMap<>());
-        assertEquals(1, headers.size());
-        assertEquals("baz", headers.get("foo"));
     }
 
     @Test
@@ -419,6 +102,45 @@ public class TarUtilsTest extends AbstractTestCase {
         assertEquals("7777777", new String(buffer, UTF_8));
         assertThrows(IllegalArgumentException.class, () -> TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length),
                 "Should have cause IllegalArgumentException");
+    }
+
+    @Test
+    public void testParseFromPAX01SparseHeaders() throws Exception {
+        final String map = "0,10,20,0,20,5";
+        final List<TarArchiveStructSparse> sparse = TarUtils.parseFromPAX01SparseHeaders(map);
+        assertEquals(3, sparse.size());
+        assertEquals(0, sparse.get(0).getOffset());
+        assertEquals(10, sparse.get(0).getNumbytes());
+        assertEquals(20, sparse.get(1).getOffset());
+        assertEquals(0, sparse.get(1).getNumbytes());
+        assertEquals(20, sparse.get(2).getOffset());
+        assertEquals(5, sparse.get(2).getNumbytes());
+    }
+
+    @Test
+    public void testParseFromPAX01SparseHeadersRejectsNegativeNumbytes() throws Exception {
+        assertThrows(IOException.class, () -> TarUtils.parseFromPAX01SparseHeaders("0,10,20,0,20,-5"));
+    }
+
+    @Test
+    public void testParseFromPAX01SparseHeadersRejectsNegativeOffset() throws Exception {
+        assertThrows(IOException.class, () -> TarUtils.parseFromPAX01SparseHeaders("0,10,20,0,-2,5"));
+    }
+
+    @Test
+    public void testParseFromPAX01SparseHeadersRejectsNonNumericNumbytes() throws Exception {
+        assertThrows(IOException.class, () -> TarUtils.parseFromPAX01SparseHeaders("0,10,20,0,20,b"));
+    }
+
+    @Test
+    public void testParseFromPAX01SparseHeadersRejectsNonNumericOffset() throws Exception {
+        assertThrows(IOException.class, () -> TarUtils.parseFromPAX01SparseHeaders("0,10,20,0,2a,5"));
+    }
+
+    @Test
+    public void testParseFromPAX01SparseHeadersRejectsOddNumberOfEntries() throws Exception {
+        final String map = "0,10,20,0,20";
+        assertThrows(IOException.class, () -> TarUtils.parseFromPAX01SparseHeaders(map));
     }
 
     @Test
@@ -481,6 +203,119 @@ public class TarUtilsTest extends AbstractTestCase {
     }
 
     @Test
+    public void testParsePAX01SparseHeadersRejectsOddNumberOfEntries() {
+        final String map = "0,10,20,0,20";
+        assertThrows(UncheckedIOException.class, () -> TarUtils.parsePAX01SparseHeaders(map));
+    }
+
+    @Test
+    public void testParsePAX1XSparseHeaders() throws Exception {
+        final byte[] header = ("1\n"
+                + "0\n"
+                + "20\n")
+            .getBytes();
+        final byte[] block = new byte[512];
+        System.arraycopy(header, 0, block, 0, header.length);
+        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
+            final List<TarArchiveStructSparse> sparse = TarUtils.parsePAX1XSparseHeaders(in, 512);
+            assertEquals(1, sparse.size());
+            assertEquals(0, sparse.get(0).getOffset());
+            assertEquals(20, sparse.get(0).getNumbytes());
+            assertEquals(-1, in.read());
+        }
+    }
+
+
+    @Test
+    public void testParsePAX1XSparseHeadersRejectsIncompleteLastLine() throws Exception {
+        final byte[] header = ("1\n"
+                + "0\n"
+                + "20")
+            .getBytes();
+        try (ByteArrayInputStream in = new ByteArrayInputStream(header)) {
+            assertThrows(IOException.class, () -> TarUtils.parsePAX1XSparseHeaders(in, 512));
+        }
+    }
+
+    @Test
+    public void testParsePAX1XSparseHeadersRejectsNegativeNumberOfEntries() throws Exception {
+        final byte[] header = ("111111111111111111111111111111111111111111111111111111111111111\n"
+                + "0\n"
+                + "20\n")
+            .getBytes();
+        final byte[] block = new byte[512];
+        System.arraycopy(header, 0, block, 0, header.length);
+        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
+            assertThrows(IOException.class, () -> TarUtils.parsePAX1XSparseHeaders(in, 512));
+        }
+    }
+
+    @Test
+    public void testParsePAX1XSparseHeadersRejectsNegativeNumbytes() throws Exception {
+        final byte[] header = ("1\n"
+                + "0\n"
+                + "111111111111111111111111111111111111111111111111111111111111111\n")
+            .getBytes();
+        final byte[] block = new byte[512];
+        System.arraycopy(header, 0, block, 0, header.length);
+        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
+            assertThrows(IOException.class, () -> TarUtils.parsePAX1XSparseHeaders(in, 512));
+        }
+    }
+
+    @Test
+    public void testParsePAX1XSparseHeadersRejectsNegativeOffset() throws Exception {
+        final byte[] header = ("1\n"
+                + "111111111111111111111111111111111111111111111111111111111111111\n"
+                + "20\n")
+            .getBytes();
+        final byte[] block = new byte[512];
+        System.arraycopy(header, 0, block, 0, header.length);
+        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
+            assertThrows(IOException.class, () -> TarUtils.parsePAX1XSparseHeaders(in, 512));
+        }
+    }
+
+    @Test
+    public void testParsePAX1XSparseHeadersRejectsNonNumericNumberOfEntries() throws Exception {
+        final byte[] header = ("x\n"
+                + "0\n"
+                + "20\n")
+            .getBytes();
+        final byte[] block = new byte[512];
+        System.arraycopy(header, 0, block, 0, header.length);
+        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
+            assertThrows(IOException.class, () -> TarUtils.parsePAX1XSparseHeaders(in, 512));
+        }
+    }
+
+    @Test
+    public void testParsePAX1XSparseHeadersRejectsNonNumericNumbytes() throws Exception {
+        final byte[] header = ("1\n"
+                + "0\n"
+                + "2x\n")
+            .getBytes();
+        final byte[] block = new byte[512];
+        System.arraycopy(header, 0, block, 0, header.length);
+        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
+            assertThrows(IOException.class, () -> TarUtils.parsePAX1XSparseHeaders(in, 512));
+        }
+    }
+
+    @Test
+    public void testParsePAX1XSparseHeadersRejectsNonNumericOffset() throws Exception {
+        final byte[] header = ("1\n"
+                + "x\n"
+                + "20\n")
+            .getBytes();
+        final byte[] block = new byte[512];
+        System.arraycopy(header, 0, block, 0, header.length);
+        try (ByteArrayInputStream in = new ByteArrayInputStream(block)) {
+            assertThrows(IOException.class, () -> TarUtils.parsePAX1XSparseHeaders(in, 512));
+        }
+    }
+
+    @Test
     public void testParseSparse() {
         final long expectedOffset = 0100000;
         final long expectedNumbytes = 0111000;
@@ -502,6 +337,14 @@ public class TarUtilsTest extends AbstractTestCase {
     }
 
     @Test
+    public void testPaxHeaderEntryWithEmptyValueRemovesKey() throws Exception {
+        final Map<String, String> headers = TarUtils
+                .parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n7 foo=\n"
+                        .getBytes(UTF_8)), null, new HashMap<>());
+        assertEquals(0, headers.size());
+    }
+
+    @Test
     public void testReadNegativeBinary12Byte() {
         final byte[] b = {
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
@@ -518,6 +361,155 @@ public class TarUtilsTest extends AbstractTestCase {
             (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef,
         };
         assertEquals(-3601L, TarUtils.parseOctalOrBinary(b, 0, 8));
+    }
+
+    @Test
+    public void testReadNonAsciiPaxHeader() throws Exception {
+        final String ae = "\u00e4";
+        final String line = "11 path="+ ae + "\n";
+        assertEquals(11, line.getBytes(UTF_8).length);
+        final Map<String, String> headers = TarUtils
+                .parsePaxHeaders(new ByteArrayInputStream(line.getBytes(UTF_8)), null, new HashMap<>());
+        assertEquals(1, headers.size());
+        assertEquals(ae, headers.get("path"));
+    }
+
+    @Test
+    public void testReadPax00SparseHeader() throws Exception {
+        final String header = "23 GNU.sparse.offset=0\n26 GNU.sparse.numbytes=10\n";
+        final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+        TarUtils.parsePaxHeaders(
+            new ByteArrayInputStream(header.getBytes(UTF_8)),
+            sparseHeaders, Collections.emptyMap());
+        assertEquals(1, sparseHeaders.size());
+        assertEquals(0, sparseHeaders.get(0).getOffset());
+        assertEquals(10, sparseHeaders.get(0).getNumbytes());
+    }
+
+    @Test
+    public void testReadPax00SparseHeaderMakesNumbytesOptional() throws Exception {
+        final String header = "23 GNU.sparse.offset=0\n24 GNU.sparse.offset=10\n";
+        final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+        TarUtils.parsePaxHeaders(
+            new ByteArrayInputStream(header.getBytes(UTF_8)),
+            sparseHeaders, Collections.emptyMap());
+        assertEquals(2, sparseHeaders.size());
+        assertEquals(0, sparseHeaders.get(0).getOffset());
+        assertEquals(0, sparseHeaders.get(0).getNumbytes());
+        assertEquals(10, sparseHeaders.get(1).getOffset());
+        assertEquals(0, sparseHeaders.get(1).getNumbytes());
+    }
+
+    @Test
+    public void testReadPax00SparseHeaderRejectsNegativeNumbytes() throws Exception {
+        final String header = "23 GNU.sparse.offset=0\n26 GNU.sparse.numbytes=-1\n";
+        assertThrows(IOException.class, () -> TarUtils.parsePaxHeaders(
+            new ByteArrayInputStream(header.getBytes(UTF_8)),
+            null, Collections.emptyMap()));
+    }
+
+    @Test
+    public void testReadPax00SparseHeaderRejectsNegativeOffset() throws Exception {
+        final String header = "24 GNU.sparse.offset=-1\n26 GNU.sparse.numbytes=10\n";
+        assertThrows(IOException.class, () -> TarUtils.parsePaxHeaders(
+            new ByteArrayInputStream(header.getBytes(UTF_8)),
+            null, Collections.emptyMap()));
+    }
+
+    @Test
+    public void testReadPax00SparseHeaderRejectsNonNumericNumbytes() throws Exception {
+        final String header = "23 GNU.sparse.offset=0\n26 GNU.sparse.numbytes=1a\n";
+        assertThrows(IOException.class, () -> TarUtils.parsePaxHeaders(
+            new ByteArrayInputStream(header.getBytes(UTF_8)),
+            null, Collections.emptyMap()));
+    }
+
+    @Test
+    public void testReadPax00SparseHeaderRejectsNonNumericOffset() throws Exception {
+        final String header = "23 GNU.sparse.offset=a\n26 GNU.sparse.numbytes=10\n";
+        assertThrows(IOException.class, () -> TarUtils.parsePaxHeaders(
+            new ByteArrayInputStream(header.getBytes(UTF_8)),
+            null, Collections.emptyMap()));
+    }
+
+    @Test
+    public void testReadPaxHeaderWithEmbeddedNewline() throws Exception {
+        final Map<String, String> headers = TarUtils
+                .parsePaxHeaders(new ByteArrayInputStream("28 comment=line1\nline2\nand3\n"
+                        .getBytes(UTF_8)), null, new HashMap<>());
+        assertEquals(1, headers.size());
+        assertEquals("line1\nline2\nand3", headers.get("comment"));
+    }
+
+    @Test
+    public void testReadPaxHeaderWithoutTrailingNewline() throws Exception {
+        assertThrows(IOException.class, () -> TarUtils.parsePaxHeaders(
+            new ByteArrayInputStream("30 atime=1321711775.9720594634".getBytes(UTF_8)),
+            null, Collections.emptyMap()));
+    }
+
+    @Test
+    public void testReadSimplePaxHeader() throws Exception {
+        final Map<String, String> headers = TarUtils.parsePaxHeaders(
+                new ByteArrayInputStream("30 atime=1321711775.972059463\n".getBytes(UTF_8)),
+                null, new HashMap<>());
+        assertEquals(1, headers.size());
+        assertEquals("1321711775.972059463", headers.get("atime"));
+    }
+
+    @Test
+    public void testReadSparseStructsBinary() throws Exception {
+        final byte[] header = {
+            (byte) 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            (byte) 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+        };
+        assertEquals(24, header.length);
+        final List<TarArchiveStructSparse> sparse = TarUtils.readSparseStructs(header, 0, 1);
+        assertEquals(1, sparse.size());
+        assertEquals(0, sparse.get(0).getOffset());
+        assertEquals(7, sparse.get(0).getNumbytes());
+    }
+
+    @Test
+    public void testReadSparseStructsOctal() throws Exception {
+        final byte[] header = "00000000000 00000000007 ".getBytes();
+        assertEquals(24, header.length);
+        final List<TarArchiveStructSparse> sparse = TarUtils.readSparseStructs(header, 0, 1);
+        assertEquals(1, sparse.size());
+        assertEquals(0, sparse.get(0).getOffset());
+        assertEquals(7, sparse.get(0).getNumbytes());
+    }
+
+    @Test
+    public void testReadSparseStructsRejectsNegativeNumbytes() throws Exception {
+        final byte[] header = {
+            (byte) 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+        };
+        assertThrows(IOException.class, () -> TarUtils.readSparseStructs(header, 0, 1));
+    }
+
+    @Test
+    public void testReadSparseStructsRejectsNegativeOffset() throws Exception {
+        final byte[] header = {
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,
+        };
+        assertThrows(IOException.class, () -> TarUtils.readSparseStructs(header, 0, 1));
+    }
+
+    @Test
+    public void testReadSparseStructsRejectsNonNumericNumbytes() throws Exception {
+        final byte[] header = "00000000000 0000000000x ".getBytes();
+        assertThrows(IOException.class, () -> TarUtils.readSparseStructs(header, 0, 1));
+    }
+
+    @Test
+    public void testReadSparseStructsRejectsNonNumericOffset() throws Exception {
+        final byte[] header = "0000000000x 00000000007 ".getBytes();
+        assertThrows(IOException.class, () -> TarUtils.readSparseStructs(header, 0, 1));
     }
 
     @Test
@@ -577,6 +569,14 @@ public class TarUtilsTest extends AbstractTestCase {
         final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> checkRoundTripOctalOrBinary(Long.MAX_VALUE, 8),
                 "Should throw exception - value is too long to fit buffer of this len");
         assertEquals("Value 9223372036854775807 is too large for 8 byte field.", e.getMessage());
+    }
+
+    @Test
+    public void testSecondEntryWinsWhenPaxHeaderContainsDuplicateKey() throws Exception {
+        final Map<String, String> headers = TarUtils.parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n11 foo=baz\n"
+                        .getBytes(UTF_8)), null, new HashMap<>());
+        assertEquals(1, headers.size());
+        assertEquals("baz", headers.get("foo"));
     }
     // Check correct trailing bytes are generated
     @Test

@@ -31,7 +31,7 @@ import org.apache.commons.compress.utils.BitInputStream;
  *
  * @since 1.7
  */
-class BitStream extends BitInputStream {
+final class BitStream extends BitInputStream {
 
     BitStream(final InputStream in) {
         super(in, ByteOrder.LITTLE_ENDIAN);

@@ -31,7 +31,7 @@ import org.apache.commons.compress.harmony.pack200.AttributeDefinitionBands.Attr
 import org.objectweb.asm.Label;
 
 /**
- * Set of bands relating to a non-predefined attribute that has had a layout definition given to pack200 (e.g. via one
+ * Sets of bands relating to a non-predefined attribute that has had a layout definition given to pack200 (e.g. via one
  * of the -C, -M, -F or -D command line options)
  */
 public class NewAttributeBands extends BandSet {
@@ -293,9 +293,9 @@ public class NewAttributeBands extends BandSet {
 
         private final String tag;
 
-        private List<ConstantPoolEntry> band;
+        private List<ConstantPoolEntry> band = new ArrayList<>();
 
-        private boolean nullsAllowed = false;
+        private boolean nullsAllowed;
 
         public Reference(final String tag) {
             this.tag = tag;

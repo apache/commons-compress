@@ -27,7 +27,7 @@ import org.apache.commons.compress.utils.ByteUtils;
 /**
  * Various utilities for dump archives.
  */
-class DumpArchiveUtil {
+final class DumpArchiveUtil {
 
     /**
      * Calculate checksum for buffer.

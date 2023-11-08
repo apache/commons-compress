@@ -102,7 +102,7 @@ public class Expander {
      * @param targetDirectory the target directory, may be null to simulate output to dev/null on Linux and NUL on Windows.
      * @throws IOException if an I/O error occurs
      */
-    public void expand(final ArchiveInputStream archive, final File targetDirectory) throws IOException {
+    public void expand(final ArchiveInputStream<?> archive, final File targetDirectory) throws IOException {
         expand(archive, toPath(targetDirectory));
     }
 
@@ -114,7 +114,7 @@ public class Expander {
      * @throws IOException if an I/O error occurs
      * @since 1.22
      */
-    public void expand(final ArchiveInputStream archive, final Path targetDirectory) throws IOException {
+    public void expand(final ArchiveInputStream<?> archive, final Path targetDirectory) throws IOException {
         expand(() -> {
             ArchiveEntry next = archive.getNextEntry();
             while (next != null && !archive.canReadEntryData(next)) {
@@ -199,8 +199,7 @@ public class Expander {
      */
     public void expand(final Path archive, final Path targetDirectory) throws IOException, ArchiveException {
         try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(archive))) {
-            final String format = ArchiveStreamFactory.detect(inputStream);
-            expand(format, archive, targetDirectory);
+            expand(ArchiveStreamFactory.detect(inputStream), archive, targetDirectory);
         }
     }
 
@@ -316,10 +315,10 @@ public class Expander {
      * @since 1.22
      */
     public void expand(final String format, final InputStream archive, final Path targetDirectory, final CloseableConsumer closeableConsumer)
-        throws IOException, ArchiveException {
+            throws IOException, ArchiveException {
         try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
-            expand(c.track(ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, archive)),
-                targetDirectory);
+            ArchiveInputStream<?> archiveInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, archive);
+            expand(c.track(archiveInputStream), targetDirectory);
         }
     }
 

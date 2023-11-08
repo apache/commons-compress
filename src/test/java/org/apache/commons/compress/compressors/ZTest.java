@@ -26,11 +26,11 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.z.ZCompressorInputStream;
 import org.junit.jupiter.api.Test;
 
-public final class ZTestCase extends AbstractTestCase {
+public final class ZTest extends AbstractTest {
 
     @Test
     public void testMatches() {
@@ -43,7 +43,7 @@ public final class ZTestCase extends AbstractTestCase {
 
     private void testUnarchive(final StreamWrapper<CompressorInputStream> wrapper) throws Exception {
         final File input = getFile("bla.tar.Z");
-        final File output = new File(dir, "bla.tar");
+        final File output = newTempFile("bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (InputStream in = wrapper.wrap(is)) {
                 Files.copy(in, output.toPath());

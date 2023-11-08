@@ -26,18 +26,17 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
 import org.junit.jupiter.api.Test;
 
-public final class DumpTestCase extends AbstractTestCase {
+public final class DumpTest extends AbstractTest {
 
     private void archiveDetection(final File f) throws Exception {
-        try (InputStream is = Files.newInputStream(f.toPath())) {
-            assertEquals(DumpArchiveInputStream.class,
-                ArchiveStreamFactory.DEFAULT
-                            .createArchiveInputStream(new BufferedInputStream(is))
-                            .getClass());
+        try (InputStream is = Files.newInputStream(f.toPath());
+                ArchiveInputStream<? extends ArchiveEntry> archiveInputStream = ArchiveStreamFactory.DEFAULT
+                        .createArchiveInputStream(new BufferedInputStream(is))) {
+            assertEquals(DumpArchiveInputStream.class, archiveInputStream.getClass());
         }
     }
 
@@ -47,9 +46,9 @@ public final class DumpTestCase extends AbstractTestCase {
         expected.add("lost+found/");
         expected.add("test1.xml");
         expected.add("test2.xml");
-        try (InputStream is = Files.newInputStream(f.toPath())) {
-            checkArchiveContent(new DumpArchiveInputStream(is),
-                    expected);
+        try (InputStream is = Files.newInputStream(f.toPath());
+                DumpArchiveInputStream inputStream = new DumpArchiveInputStream(is);) {
+            checkArchiveContent(inputStream, expected);
         }
     }
 
@@ -85,10 +84,10 @@ public final class DumpTestCase extends AbstractTestCase {
 
     private void unarchiveAll(final File input) throws Exception {
         try (InputStream is = Files.newInputStream(input.toPath());
-                ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("dump", is)) {
+                ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("dump", is)) {
             ArchiveEntry entry = in.getNextEntry();
             while (entry != null) {
-                final File archiveEntry = new File(dir, entry.getName());
+                final File archiveEntry = newTempFile(entry.getName());
                 archiveEntry.getParentFile().mkdirs();
                 if (entry.isDirectory()) {
                     archiveEntry.mkdir();

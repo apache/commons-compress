@@ -54,7 +54,7 @@ public class AbstractLZ77CompressorInputStreamTest {
     }
 
     @Test
-    public void cantPrefillAfterDataHasBeenRead() throws IOException {
+    public void testCantPrefillAfterDataHasBeenRead() throws IOException {
         final byte[] data = {1, 2, 3, 4};
         try (TestStream s = new TestStream(new ByteArrayInputStream(data))) {
             s.literal(3);
@@ -64,7 +64,7 @@ public class AbstractLZ77CompressorInputStreamTest {
     }
 
     @Test
-    public void ifPrefillExceedsWindowSizeTheLastBytesAreUsed() throws IOException {
+    public void testIfPrefillExceedsWindowSizeTheLastBytesAreUsed() throws IOException {
         final byte[] data = new byte[2048];
         data[2046] = 3;
         data[2047] = 4;
@@ -78,7 +78,7 @@ public class AbstractLZ77CompressorInputStreamTest {
     }
 
     @Test
-    public void prefillCanBeUsedForBackReferences() throws IOException {
+    public void testPrefillCanBeUsedForBackReferences() throws IOException {
         final byte[] data = { 1, 2, 3, 4 };
         try (TestStream s = new TestStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
             s.prefill(data);

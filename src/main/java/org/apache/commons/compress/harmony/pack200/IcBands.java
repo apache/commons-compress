@@ -31,7 +31,7 @@ import java.util.TreeSet;
  */
 public class IcBands extends BandSet {
 
-    class IcTuple implements Comparable<IcTuple> {
+    static class IcTuple implements Comparable<IcTuple> {
 
         protected CPClass C; // this class
         protected int F; // flags
@@ -74,7 +74,7 @@ public class IcBands extends BandSet {
     }
     private final Set<IcTuple> innerClasses = new TreeSet<>();
     private final CpBands cpBands;
-    private int bit16Count = 0;
+    private int bit16Count;
 
     private final Map<String, List<IcTuple>> outerToInner = new HashMap<>();
 

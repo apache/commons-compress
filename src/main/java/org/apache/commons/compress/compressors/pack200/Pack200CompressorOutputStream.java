@@ -117,7 +117,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
             if (properties != null) {
                 p.properties().putAll(properties);
             }
-            try (JarInputStream ji = new JarInputStream(abstractStreamBridge.getInput())) {
+            try (JarInputStream ji = new JarInputStream(abstractStreamBridge.getInputStream())) {
                 p.pack(ji, originalOutput);
             }
         }

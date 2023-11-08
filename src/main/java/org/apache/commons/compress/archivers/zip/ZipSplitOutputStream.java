@@ -31,7 +31,7 @@ import org.apache.commons.compress.utils.FileNameUtils;
  *
  * @since 1.20
  */
-class ZipSplitOutputStream extends OutputStream {
+final class ZipSplitOutputStream extends OutputStream {
 
     /**
      * 8.5.1 Capacities for split archives are as follows:

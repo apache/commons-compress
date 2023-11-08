@@ -204,7 +204,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
     }
 
     /**
-     * Get the uncompressed size of the stream
+     * Gets the uncompressed size of the stream
      *
      * @return the uncompressed size
      */

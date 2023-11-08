@@ -23,7 +23,7 @@ import java.util.LinkedList;
 /**
  * The unit of solid compression.
  */
-class Folder {
+final class Folder {
     static final Folder[] EMPTY_FOLDER_ARRAY = {};
     /// List of coders used in this folder, e.g. one for compression, one for encryption.
     Coder[] coders;

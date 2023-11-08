@@ -290,7 +290,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
 
     private long diskNumberStart;
 
-    private boolean lastModifiedDateSet = false;
+    private boolean lastModifiedDateSet;
 
     private long time = -1;
 
@@ -558,7 +558,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Get all extra fields, including unparseable ones.
+     * Gets all extra fields, including unparseable ones.
      * @return An array of all extra fields. Not necessarily a copy of internal data structures, hence private method
      */
     private ZipExtraField[] getAllExtraFieldsNoCopy() {
@@ -777,7 +777,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Get the name of the entry.
+     * Gets the name of the entry.
      *
      * <p>This method returns the raw name as it is stored inside of the archive.</p>
      *
@@ -923,7 +923,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Get the hash code of the entry.
+     * Gets the hash code of the entry.
      * This uses the name as the hash code.
      * @return a hash code.
      */
@@ -1289,7 +1289,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Set the name of the entry.
+     * Sets the name of the entry.
      * @param name the name to use
      */
     protected void setName(String name) {
@@ -1324,7 +1324,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Set the platform (UNIX or FAT).
+     * Sets the platform (UNIX or FAT).
      * @param platform an {@code int} value - 0 is FAT, 3 is UNIX
      */
     protected void setPlatform(final int platform) {

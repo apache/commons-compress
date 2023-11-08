@@ -34,7 +34,7 @@ import org.apache.commons.compress.utils.IOUtils;
  *
  * @NotThreadSafe
  */
-class TapeInputStream extends FilterInputStream {
+final class TapeInputStream extends FilterInputStream {
     private static final int RECORD_SIZE = DumpArchiveConstants.TP_SIZE;
     private byte[] blockBuffer = new byte[DumpArchiveConstants.TP_SIZE];
     private int currBlkIdx = -1;
@@ -287,7 +287,7 @@ class TapeInputStream extends FilterInputStream {
     }
 
     /**
-     * Set the DumpArchive Buffer's block size. We need to sync the block size with the
+     * Sets the DumpArchive Buffer's block size. We need to sync the block size with the
      * dump archive's actual block size since compression is handled at the
      * block level.
      *

@@ -35,7 +35,7 @@ public final class ZipShort implements Cloneable, Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Get value as two bytes in big endian byte order.
+     * Gets value as two bytes in big endian byte order.
      * @param value the Java int to convert to bytes
      * @return the converted int as a byte array in big endian byte order
      */
@@ -127,7 +127,7 @@ public final class ZipShort implements Cloneable, Serializable {
     }
 
     /**
-     * Get value as two bytes in big endian byte order.
+     * Gets value as two bytes in big endian byte order.
      * @return the value as a two byte array in big endian byte order
      */
     public byte[] getBytes() {
@@ -137,7 +137,7 @@ public final class ZipShort implements Cloneable, Serializable {
     }
 
     /**
-     * Get value as Java int.
+     * Gets value as Java int.
      * @return value as a Java int
      */
     public int getValue() {

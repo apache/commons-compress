@@ -24,73 +24,58 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.junit.jupiter.api.Test;
 
-public final class Pack200UtilsTest extends AbstractTestCase {
+public final class Pack200UtilsTest extends AbstractTest {
 
     @Test
     public void testNormalize() throws Throwable {
         final File input = getFile("bla.jar");
-        final File[] output = createTempDirAndFile();
-        try {
-            Pack200Utils.normalize(input, output[1], new HashMap<>());
-            try (InputStream is = Files.newInputStream(output[1].toPath());
-                    ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
-
-                ArchiveEntry entry = in.getNextEntry();
-                while (entry != null) {
-                    final File archiveEntry = new File(dir, entry.getName());
-                    archiveEntry.getParentFile().mkdirs();
-                    if (entry.isDirectory()) {
-                        archiveEntry.mkdir();
-                        entry = in.getNextEntry();
-                        continue;
-                    }
-                    Files.copy(in, archiveEntry.toPath());
+        final File output = createTempFile();
+        Pack200Utils.normalize(input, output, new HashMap<>());
+        try (InputStream is = Files.newInputStream(output.toPath());
+                ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
+            ArchiveEntry entry = in.getNextEntry();
+            while (entry != null) {
+                final File archiveEntry = newTempFile(entry.getName());
+                archiveEntry.getParentFile().mkdirs();
+                if (entry.isDirectory()) {
+                    archiveEntry.mkdir();
                     entry = in.getNextEntry();
+                    continue;
                 }
-
+                Files.copy(in, archiveEntry.toPath());
+                entry = in.getNextEntry();
             }
-        } finally {
-            output[1].delete();
-            output[0].delete();
         }
     }
 
     @Test
     public void testNormalizeInPlace() throws Throwable {
         final File input = getFile("bla.jar");
-        final File[] output = createTempDirAndFile();
-        try {
-            try (InputStream is = Files.newInputStream(input.toPath())) {
-                Files.copy(is, output[1].toPath(), StandardCopyOption.REPLACE_EXISTING);
-            }
-
-            Pack200Utils.normalize(output[1]);
-
-            try (InputStream is = Files.newInputStream(output[1].toPath());
-                    ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
-
-                ArchiveEntry entry = in.getNextEntry();
-                while (entry != null) {
-                    final File archiveEntry = new File(dir, entry.getName());
-                    archiveEntry.getParentFile().mkdirs();
-                    if (entry.isDirectory()) {
-                        archiveEntry.mkdir();
-                        entry = in.getNextEntry();
-                        continue;
-                    }
-                    Files.copy(in, archiveEntry.toPath());
+        final File output = createTempFile();
+        try (InputStream is = Files.newInputStream(input.toPath())) {
+            Files.copy(is, output.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+        Pack200Utils.normalize(output);
+        try (InputStream is = Files.newInputStream(output.toPath());
+                ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
+            ArchiveEntry entry = in.getNextEntry();
+            while (entry != null) {
+                final File archiveEntry = newTempFile(entry.getName());
+                archiveEntry.getParentFile().mkdirs();
+                if (entry.isDirectory()) {
+                    archiveEntry.mkdir();
                     entry = in.getNextEntry();
+                    continue;
                 }
+                Files.copy(in, archiveEntry.toPath());
+                entry = in.getNextEntry();
             }
-        } finally {
-            output[1].delete();
-            output[0].delete();
         }
     }
 

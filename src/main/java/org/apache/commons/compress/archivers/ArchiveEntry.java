@@ -25,7 +25,9 @@ import java.util.Date;
  */
 public interface ArchiveEntry {
 
-    /** Special value indicating that the size is unknown */
+    /**
+     * Special value {@value} indicating that the size is unknown.
+     */
     long SIZE_UNKNOWN = -1;
 
     /**
@@ -53,7 +55,7 @@ public interface ArchiveEntry {
     long getSize();
 
     /**
-     * Returns true if this entry refers to a directory.
+     * Tests whether this entry refers to a directory (true).
      *
      * @return true if this entry refers to a directory.
      */

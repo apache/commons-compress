@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -47,7 +47,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * Files must be in resources/longpath, and there must be a file.txt containing
  * the list of files in the archives.
  */
-public class LongPathTest extends AbstractTestCase {
+public class LongPathTest extends AbstractTest {
 
     private static final ClassLoader CLASSLOADER = LongPathTest.class.getClassLoader();
     private static final File ARCDIR;
@@ -105,7 +105,7 @@ public class LongPathTest extends AbstractTestCase {
             expected.add("META-INF/");
             expected.add("META-INF/MANIFEST.MF");
         }
-        try (ArchiveInputStream ais = factory.createArchiveInputStream(new BufferedInputStream(Files.newInputStream(file.toPath())))) {
+        try (ArchiveInputStream<?> ais = factory.createArchiveInputStream(new BufferedInputStream(Files.newInputStream(file.toPath())))) {
             // check if expected type recognized
             if (name.endsWith(".tar")) {
                 assertTrue(ais instanceof TarArchiveInputStream);

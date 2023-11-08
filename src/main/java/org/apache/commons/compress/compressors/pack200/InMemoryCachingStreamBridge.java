@@ -29,14 +29,14 @@ import java.io.InputStream;
  *
  * @since 1.3
  */
-class InMemoryCachingStreamBridge extends AbstractStreamBridge {
+final class InMemoryCachingStreamBridge extends AbstractStreamBridge {
 
     InMemoryCachingStreamBridge() {
         super(new ByteArrayOutputStream());
     }
 
     @Override
-    InputStream getInputView() throws IOException {
+    InputStream createInputStream() throws IOException {
         return new ByteArrayInputStream(((ByteArrayOutputStream) out).toByteArray());
     }
 }

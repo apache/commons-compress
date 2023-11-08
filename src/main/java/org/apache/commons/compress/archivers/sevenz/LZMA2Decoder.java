@@ -25,7 +25,7 @@ import org.tukaani.xz.FinishableWrapperOutputStream;
 import org.tukaani.xz.LZMA2InputStream;
 import org.tukaani.xz.LZMA2Options;
 
-class LZMA2Decoder extends AbstractCoder {
+final class LZMA2Decoder extends AbstractCoder {
 
     LZMA2Decoder() {
         super(LZMA2Options.class, Number.class);

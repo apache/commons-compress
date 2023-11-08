@@ -59,8 +59,8 @@ public class CompressorStreamFactoryRoundtripTest {
             compressorOutputStream.flush();
         }
         final ByteArrayInputStream is = new ByteArrayInputStream(compressedOs.toByteArray());
-        try (CompressorInputStream compressorInputStream = factory.createCompressorInputStream(compressorName, is, false)) {
-            final ByteArrayOutputStream decompressedOs = new ByteArrayOutputStream();
+        try (CompressorInputStream compressorInputStream = factory.createCompressorInputStream(compressorName, is, false);
+                final ByteArrayOutputStream decompressedOs = new ByteArrayOutputStream()) {
             IOUtils.copy(compressorInputStream, decompressedOs);
             compressorInputStream.close();
             decompressedOs.flush();

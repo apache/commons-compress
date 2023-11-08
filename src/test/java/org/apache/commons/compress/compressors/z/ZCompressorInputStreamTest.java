@@ -18,7 +18,7 @@
  */
 package org.apache.commons.compress.compressors.z;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.apache.commons.compress.AbstractTest.getFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -42,7 +42,13 @@ import org.junit.jupiter.api.Test;
 public class ZCompressorInputStreamTest {
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() {
+        final SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration());
+        assertThrows(IOException.class, () -> new ZCompressorInputStream(sequenceInputStream));
+    }
+
+    @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.Z");
         final byte[] buf = new byte[2];
         try (InputStream is = Files.newInputStream(input.toPath());
@@ -54,7 +60,7 @@ public class ZCompressorInputStreamTest {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.Z");
         try (InputStream is = Files.newInputStream(input.toPath());
                 ZCompressorInputStream in = new ZCompressorInputStream(is)) {
@@ -62,12 +68,6 @@ public class ZCompressorInputStreamTest {
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
         }
-    }
-
-    @Test
-    public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() {
-        final SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration());
-        assertThrows(IOException.class, () -> new ZCompressorInputStream(sequenceInputStream));
     }
 
     @Test

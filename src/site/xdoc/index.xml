@@ -55,7 +55,7 @@
         </section>
 
         <section name="Status">
-          <p>The current release requires Java 8.</p>
+          <p>The current release requires Java 8 or above.</p>
 
           <p>For a list of changes see the <a href="changes-report.html">Changes Report</a>.</p>
     

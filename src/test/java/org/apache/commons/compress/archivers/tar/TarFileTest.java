@@ -37,26 +37,12 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class TarFileTest extends AbstractTestCase {
-
-    /**
-     * This test ensures the implementation is reading the padded last block if a tool has added one to an archive
-     */
-    @Test
-    public void archiveWithTrailer() throws IOException {
-        try (final SeekableByteChannel channel = Files.newByteChannel(getPath("archive_with_trailer.tar"));
-             final TarFile tarfile = new TarFile(channel, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, false)) {
-            final String tarAppendix = "Hello, world!\n";
-            final ByteBuffer buffer = ByteBuffer.allocate(tarAppendix.length());
-            channel.read(buffer);
-            assertEquals(tarAppendix, new String(buffer.array()));
-        }
-    }
+public class TarFileTest extends AbstractTest {
 
     private void datePriorToEpoch(final String archive) throws Exception {
         try (final TarFile tarFile = new TarFile(getPath(archive))) {
@@ -71,161 +57,17 @@ public class TarFileTest extends AbstractTestCase {
         }
     }
 
-    @Test
-    public void datePriorToEpochInGNUFormat() throws Exception {
-        datePriorToEpoch("preepoch-star.tar");
-    }
-
-    @Test
-    public void datePriorToEpochInPAXFormat() throws Exception {
-        datePriorToEpoch("preepoch-posix.tar");
-    }
-
-    @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        final byte[] buf = new byte[2];
-        try (final TarFile tarFile = new TarFile(getPath("bla.tar"));
-             final InputStream input = tarFile.getInputStream(tarFile.getEntries().get(0))) {
-            IOUtils.toByteArray(input);
-            assertEquals(-1, input.read(buf));
-            assertEquals(-1, input.read(buf));
-        }
-    }
-
-    @Test
-    public void readsArchiveCompletely_COMPRESS245() {
-        try {
-            final Path tempTar = resultDir.toPath().resolve("COMPRESS-245.tar");
-            try (final GZIPInputStream gin = new GZIPInputStream(
-                    Files.newInputStream(getPath("COMPRESS-245.tar.gz")))) {
-                Files.copy(gin, tempTar);
-            }
-            try (final TarFile tarFile = new TarFile(tempTar)) {
-                assertEquals(31, tarFile.getEntries().size());
-            }
-        } catch (final IOException e) {
-            fail("COMPRESS-245: " + e.getMessage());
-        }
-    }
-
-    @Test
-    public void rejectsArchivesWithNegativeSizes() throws Exception {
-        assertThrows(IOException.class, () -> new TarFile(getFile("COMPRESS-569.tar")));
-    }
-
-    @Test
-    public void shouldReadBigGid() throws Exception {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
-            tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
-            final TarArchiveEntry t = new TarArchiveEntry("name");
-            t.setGroupId(4294967294L);
-            t.setSize(1);
-            tos.putArchiveEntry(t);
-            tos.write(30);
-            tos.closeArchiveEntry();
-        }
-        final byte[] data = bos.toByteArray();
-        try (final TarFile tarFile = new TarFile(data)) {
-            final List<TarArchiveEntry> entries = tarFile.getEntries();
-            assertEquals(4294967294L, entries.get(0).getLongGroupId());
-        }
-    }
-
     /**
-     * @link "https://issues.apache.org/jira/browse/COMPRESS-324"
+     * This test ensures the implementation is reading the padded last block if a tool has added one to an archive
      */
     @Test
-    public void shouldReadGNULongNameEntryWithWrongName() throws Exception {
-        try (final TarFile tarFile = new TarFile(getPath("COMPRESS-324.tar"))) {
-            final List<TarArchiveEntry> entries = tarFile.getEntries();
-            assertEquals("1234567890123456789012345678901234567890123456789012345678901234567890"
-                            + "1234567890123456789012345678901234567890123456789012345678901234567890"
-                            + "1234567890123456789012345678901234567890123456789012345678901234567890"
-                            + "1234567890123456789012345678901234567890.txt",
-                    entries.get(0).getName());
-        }
-    }
-
-    @Test
-    public void shouldThrowAnExceptionOnTruncatedEntries() throws Exception {
-        final File dir = mkdir("COMPRESS-279");
-        assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-279.tar")));
-        rmdir(dir);
-    }
-
-    @Test
-    public void shouldUseSpecifiedEncodingWhenReadingGNULongNames()
-            throws Exception {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final String encoding = CharsetNames.UTF_16;
-        final String name = "1234567890123456789012345678901234567890123456789"
-                + "01234567890123456789012345678901234567890123456789"
-                + "01234567890\u00e4";
-        try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, encoding)) {
-            tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
-            final TarArchiveEntry t = new TarArchiveEntry(name);
-            t.setSize(1);
-            tos.putArchiveEntry(t);
-            tos.write(30);
-            tos.closeArchiveEntry();
-        }
-        final byte[] data = bos.toByteArray();
-        try (final TarFile tarFile = new TarFile(data, encoding)) {
-            final List<TarArchiveEntry> entries = tarFile.getEntries();
-            assertEquals(1, entries.size());
-            assertEquals(name, entries.get(0).getName());
-        }
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (final TarFile tarFile = new TarFile(getPath("bla.tar"));
-             final InputStream input = tarFile.getInputStream(tarFile.getEntries().get(0))) {
-            IOUtils.toByteArray(input);
-            assertEquals(-1, input.read());
-            assertEquals(-1, input.read());
-        }
-    }
-
-    /**
-     * @link "https://issues.apache.org/jira/browse/COMPRESS-417"
-     */
-    @Test
-    public void skipsDevNumbersWhenEntryIsNoDevice() throws Exception {
-        try (final TarFile tarFile = new TarFile(getPath("COMPRESS-417.tar"))) {
-            final List<TarArchiveEntry> entries = tarFile.getEntries();
-            assertEquals(2, entries.size());
-            assertEquals("test1.xml", entries.get(0).getName());
-            assertEquals(TarConstants.LF_NORMAL, entries.get(0).getLinkFlag());
-            assertEquals("test2.xml", entries.get(1).getName());
-            assertEquals(TarConstants.LF_NORMAL, entries.get(1).getLinkFlag());
-        }
-    }
-
-    /**
-     * @link "https://issues.apache.org/jira/browse/COMPRESS-355"
-     */
-    @Test
-    public void survivesBlankLinesInPaxHeader() throws Exception {
-        try (final TarFile tarFile = new TarFile(getPath("COMPRESS-355.tar"))) {
-            final List<TarArchiveEntry> entries = tarFile.getEntries();
-            assertEquals(1, entries.size());
-            assertEquals("package/package.json", entries.get(0).getName());
-            assertEquals(TarConstants.LF_NORMAL, entries.get(0).getLinkFlag());
-        }
-    }
-
-    /**
-     * @link "https://issues.apache.org/jira/browse/COMPRESS-356"
-     */
-    @Test
-    public void survivesPaxHeaderWithNameEndingInSlash() throws Exception {
-        try (final TarFile tarFile = new TarFile(getPath("COMPRESS-356.tar"))) {
-            final List<TarArchiveEntry> entries = tarFile.getEntries();
-            assertEquals(1, entries.size());
-            assertEquals("package/package.json", entries.get(0).getName());
-            assertEquals(TarConstants.LF_NORMAL, entries.get(0).getLinkFlag());
+    public void testArchiveWithTrailer() throws IOException {
+        try (final SeekableByteChannel channel = Files.newByteChannel(getPath("archive_with_trailer.tar"));
+             final TarFile tarfile = new TarFile(channel, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, false)) {
+            final String tarAppendix = "Hello, world!\n";
+            final ByteBuffer buffer = ByteBuffer.allocate(tarAppendix.length());
+            channel.read(buffer);
+            assertEquals(tarAppendix, new String(buffer.array()));
         }
     }
 
@@ -266,8 +108,18 @@ public class TarFileTest extends AbstractTestCase {
     }
 
     @Test
+    public void testDatePriorToEpochInGNUFormat() throws Exception {
+        datePriorToEpoch("preepoch-star.tar");
+    }
+
+    @Test
+    public void testDatePriorToEpochInPAXFormat() throws Exception {
+        datePriorToEpoch("preepoch-posix.tar");
+    }
+
+    @Test
     public void testDirectoryWithLongNameEndsWithSlash() throws IOException {
-        final String rootPath = dir.getAbsolutePath();
+        final String rootPath = getTempDirFile().getAbsolutePath();
         final String dirDirectory = "COMPRESS-509";
         final int count = 100;
         final File root = new File(rootPath + "/" + dirDirectory);
@@ -313,6 +165,17 @@ public class TarFileTest extends AbstractTestCase {
     }
 
     @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        final byte[] buf = new byte[2];
+        try (final TarFile tarFile = new TarFile(getPath("bla.tar"));
+             final InputStream input = tarFile.getInputStream(tarFile.getEntries().get(0))) {
+            IOUtils.toByteArray(input);
+            assertEquals(-1, input.read(buf));
+            assertEquals(-1, input.read(buf));
+        }
+    }
+
+    @Test
     public void testParseTarTruncatedInContent() {
         assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-544_truncated_in_content.tar")));
     }
@@ -333,6 +196,142 @@ public class TarFileTest extends AbstractTestCase {
     }
 
     @Test
+    public void testReadsArchiveCompletely_COMPRESS245() {
+        try {
+            final Path tempTar = tempResultDir.toPath().resolve("COMPRESS-245.tar");
+            try (final GZIPInputStream gin = new GZIPInputStream(
+                    Files.newInputStream(getPath("COMPRESS-245.tar.gz")))) {
+                Files.copy(gin, tempTar);
+            }
+            try (final TarFile tarFile = new TarFile(tempTar)) {
+                assertEquals(31, tarFile.getEntries().size());
+            }
+        } catch (final IOException e) {
+            fail("COMPRESS-245: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testRejectsArchivesWithNegativeSizes() throws Exception {
+        assertThrows(IOException.class, () -> new TarFile(getFile("COMPRESS-569.tar")));
+    }
+
+    @Test
+    public void testShouldReadBigGid() throws Exception {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
+            tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
+            final TarArchiveEntry t = new TarArchiveEntry("name");
+            t.setGroupId(4294967294L);
+            t.setSize(1);
+            tos.putArchiveEntry(t);
+            tos.write(30);
+            tos.closeArchiveEntry();
+        }
+        final byte[] data = bos.toByteArray();
+        try (final TarFile tarFile = new TarFile(data)) {
+            final List<TarArchiveEntry> entries = tarFile.getEntries();
+            assertEquals(4294967294L, entries.get(0).getLongGroupId());
+        }
+    }
+
+    /**
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-324">COMPRESS-324</a>
+     */
+    @Test
+    public void testShouldReadGNULongNameEntryWithWrongName() throws Exception {
+        try (final TarFile tarFile = new TarFile(getPath("COMPRESS-324.tar"))) {
+            final List<TarArchiveEntry> entries = tarFile.getEntries();
+            assertEquals("1234567890123456789012345678901234567890123456789012345678901234567890"
+                            + "1234567890123456789012345678901234567890123456789012345678901234567890"
+                            + "1234567890123456789012345678901234567890123456789012345678901234567890"
+                            + "1234567890123456789012345678901234567890.txt",
+                    entries.get(0).getName());
+        }
+    }
+
+    @Test
+    public void testShouldThrowAnExceptionOnTruncatedEntries() throws Exception {
+        createTempDirectory("COMPRESS-279");
+        assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-279.tar")));
+    }
+
+    @Test
+    public void testShouldUseSpecifiedEncodingWhenReadingGNULongNames()
+            throws Exception {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final String encoding = CharsetNames.UTF_16;
+        final String name = "1234567890123456789012345678901234567890123456789"
+                + "01234567890123456789012345678901234567890123456789"
+                + "01234567890\u00e4";
+        try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, encoding)) {
+            tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
+            final TarArchiveEntry t = new TarArchiveEntry(name);
+            t.setSize(1);
+            tos.putArchiveEntry(t);
+            tos.write(30);
+            tos.closeArchiveEntry();
+        }
+        final byte[] data = bos.toByteArray();
+        try (final TarFile tarFile = new TarFile(data, encoding)) {
+            final List<TarArchiveEntry> entries = tarFile.getEntries();
+            assertEquals(1, entries.size());
+            assertEquals(name, entries.get(0).getName());
+        }
+    }
+
+    @Test
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        try (final TarFile tarFile = new TarFile(getPath("bla.tar"));
+             final InputStream input = tarFile.getInputStream(tarFile.getEntries().get(0))) {
+            IOUtils.toByteArray(input);
+            assertEquals(-1, input.read());
+            assertEquals(-1, input.read());
+        }
+    }
+
+    /**
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-417">COMPRESS-417</a>
+     */
+    @Test
+    public void testSkipsDevNumbersWhenEntryIsNoDevice() throws Exception {
+        try (final TarFile tarFile = new TarFile(getPath("COMPRESS-417.tar"))) {
+            final List<TarArchiveEntry> entries = tarFile.getEntries();
+            assertEquals(2, entries.size());
+            assertEquals("test1.xml", entries.get(0).getName());
+            assertEquals(TarConstants.LF_NORMAL, entries.get(0).getLinkFlag());
+            assertEquals("test2.xml", entries.get(1).getName());
+            assertEquals(TarConstants.LF_NORMAL, entries.get(1).getLinkFlag());
+        }
+    }
+
+    /**
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-355">COMPRESS-355</a>
+     */
+    @Test
+    public void testSurvivesBlankLinesInPaxHeader() throws Exception {
+        try (final TarFile tarFile = new TarFile(getPath("COMPRESS-355.tar"))) {
+            final List<TarArchiveEntry> entries = tarFile.getEntries();
+            assertEquals(1, entries.size());
+            assertEquals("package/package.json", entries.get(0).getName());
+            assertEquals(TarConstants.LF_NORMAL, entries.get(0).getLinkFlag());
+        }
+    }
+
+    /**
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-356">COMPRESS-356</a>
+     */
+    @Test
+    public void testSurvivesPaxHeaderWithNameEndingInSlash() throws Exception {
+        try (final TarFile tarFile = new TarFile(getPath("COMPRESS-356.tar"))) {
+            final List<TarArchiveEntry> entries = tarFile.getEntries();
+            assertEquals(1, entries.size());
+            assertEquals("package/package.json", entries.get(0).getName());
+            assertEquals(TarConstants.LF_NORMAL, entries.get(0).getLinkFlag());
+        }
+    }
+
+    @Test
     public void testThrowException() {
         assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-553.tar")));
     }
@@ -343,7 +342,7 @@ public class TarFileTest extends AbstractTestCase {
     }
 
     @Test
-    public void workaroundForBrokenTimeHeader() throws IOException {
+    public void testWorkaroundForBrokenTimeHeader() throws IOException {
         try (final TarFile tarFile = new TarFile(getPath("simple-aix-native-tar.tar"))) {
             final List<TarArchiveEntry> entries = tarFile.getEntries();
             assertEquals(3, entries.size());

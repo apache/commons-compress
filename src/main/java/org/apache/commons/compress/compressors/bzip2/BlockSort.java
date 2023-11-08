@@ -78,7 +78,7 @@ import java.util.BitSet;
  *
  * @NotThreadSafe
  */
-class BlockSort {
+final class BlockSort {
 
     /*
      * Some of the constructs used in the C code cannot be ported

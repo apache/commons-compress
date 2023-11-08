@@ -529,11 +529,11 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
          * A 6-byte block header, the value chosen arbitrarily as 0x314159265359
          * :-). A 32 bit value does not really give a strong enough guarantee
          * that the value will not appear by chance in the compressed
-         * datastream. Worst-case probability of this event, for a 900k block,
+         * data stream. Worst-case probability of this event, for a 900k block,
          * is about 2.0e-3 for 32 bits, 1.0e-5 for 40 bits and 4.0e-8 for 48
          * bits. For a compressed file of size 100Gb -- about 100000 blocks --
          * only a 48-bit marker will do. NB: normal compression/ decompression
-         * donot rely on these statistical properties. They are only important
+         * doesn't rely on these statistical properties. They are only important
          * when trying to recover blocks from damaged files.
          */
         bsPutUByte(0x31);
@@ -714,7 +714,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     /**
      * Writes magic bytes like BZ on the first position of the stream
      * and bytes indicating the file-format, which is
-     * huffmanised, followed by a digit indicating blockSize100k.
+     * huffmanized, followed by a digit indicating blockSize100k.
      * @throws IOException if the magic bytes could not been written
      */
     private void init() throws IOException {
@@ -724,7 +724,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         this.data = new Data(this.blockSize100k);
         this.blockSorter = new BlockSort(this.data);
 
-        // huffmanised magic bytes
+        // huffmanized magic bytes
         bsPutUByte('h');
         bsPutUByte('0' + this.blockSize100k);
 
@@ -859,12 +859,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             nSelectors = 0;
 
             for (int gs = 0; gs < this.nMTF;) {
-                /* Set group start & end marks. */
+                // Set group start & end marks.
 
-                /*
-                 * Calculate the cost of this group as coded by each of the
-                 * coding tables.
-                 */
+                // Calculate the cost of this group as coded by each of the
+                // coding tables.
 
                 final int ge = Math.min(gs + G_SIZE - 1, nMTFShadow - 1);
 

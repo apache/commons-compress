@@ -158,7 +158,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     }
 
     /**
-     * Get the uncompressed size of the stream
+     * Gets the uncompressed size of the stream
      *
      * @return the uncompressed size
      */

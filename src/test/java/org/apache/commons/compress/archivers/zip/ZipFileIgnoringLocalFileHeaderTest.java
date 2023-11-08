@@ -26,46 +26,18 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Enumeration;
 
-import org.apache.commons.compress.AbstractTestCase;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.commons.compress.AbstractTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class ZipFileIgnoringLocalFileHeaderTest {
 
     private static ZipFile openZipWithoutLFH(final String fileName) throws IOException {
-        return new ZipFile(AbstractTestCase.getFile(fileName), ZipEncodingHelper.UTF8, true, true);
+        return new ZipFile(AbstractTest.getFile(fileName), ZipEncodingHelper.UTF8, true, true);
     }
 
+    @TempDir
     private File dir;
-
-    @Test
-    public void getEntryWorks() throws IOException {
-        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
-            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
-            assertEquals(610, ze.getSize());
-        }
-    }
-
-    @Test
-    public void getRawInputStreamReturnsNotNull() throws IOException {
-        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
-            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
-            try (InputStream rawInputStream = zf.getRawInputStream(ze)) {
-                assertNotNull(rawInputStream);
-            }
-        }
-    }
-
-    @BeforeEach
-    public void setUp() throws Exception {
-        dir = AbstractTestCase.mkdir("dir");
-    }
-
-    @AfterEach
-    public void tearDown() {
-        AbstractTestCase.rmdir(dir);
-    }
 
     @Test
     public void testDuplicateEntry() throws Exception {
@@ -78,6 +50,24 @@ public class ZipFileIgnoringLocalFileHeaderTest {
                 }
             }
             assertEquals(2, numberOfEntries);
+        }
+    }
+
+    @Test
+    public void testGetEntryWorks() throws IOException {
+        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
+            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
+            assertEquals(610, ze.getSize());
+        }
+    }
+
+    @Test
+    public void testGetRawInputStreamReturnsNotNull() throws IOException {
+        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
+            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
+            try (InputStream rawInputStream = zf.getRawInputStream(ze)) {
+                assertNotNull(rawInputStream);
+            }
         }
     }
 

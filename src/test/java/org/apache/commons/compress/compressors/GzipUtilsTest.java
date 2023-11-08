@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.apache.commons.compress.compressors.gzip.GzipUtils;
 import org.junit.jupiter.api.Test;
 
-public class GzipUtilsTestCase {
+public class GzipUtilsTest {
 
     @SuppressWarnings("deprecation")
     @Test

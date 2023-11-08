@@ -27,7 +27,7 @@ import org.apache.commons.compress.harmony.unpack200.SegmentOptions;
 
 /**
  */
-public abstract class AbstractBandsTestCase {
+public abstract class AbstractBandsTest {
 
     public class MockAttributeDefinitionBands extends AttrDefinitionBands {
 

@@ -36,10 +36,10 @@ public abstract class BandSet {
     public class BandAnalysisResults {
 
         // The number of Codecs tried so far
-        private int numCodecsTried = 0;
+        private int numCodecsTried;
 
         // The number of bytes saved by using betterCodec instead of the default codec
-        private int saved = 0;
+        private int saved;
 
         // Extra metadata to pass to the segment header (to be appended to the
         // band_headers band)
@@ -65,11 +65,11 @@ public abstract class BandSet {
         private int smallestDelta;
         private int largestDelta;
 
-        private int deltaIsAscending = 0;
-        private int smallDeltaCount = 0;
+        private int deltaIsAscending;
+        private int smallDeltaCount;
 
-        private double averageAbsoluteDelta = 0;
-        private double averageAbsoluteValue = 0;
+        private double averageAbsoluteDelta;
+        private double averageAbsoluteValue;
 
         private Map<Integer, Integer> distinctValues;
 
@@ -719,7 +719,7 @@ public abstract class BandSet {
         }
         return results.numCodecsTried >= effort;
         // May want to also check how much we've saved if performance needs improving, e.g. saved more than effort*2 %
-        // || (float)results.saved/(float)results.encodedBand.length > (float)effort * 2/100;
+        // || (float) results.saved/(float) results.encodedBand.length > (float) effort * 2/100;
     }
 
     private void tryCodecs(final String name, final int[] band, final BHSDCodec defaultCodec, final BandData bandData,

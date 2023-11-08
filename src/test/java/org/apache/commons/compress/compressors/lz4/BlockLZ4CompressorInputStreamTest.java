@@ -26,14 +26,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class BlockLZ4CompressorInputStreamTest extends AbstractTestCase {
+public class BlockLZ4CompressorInputStreamTest extends AbstractTest {
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.block_lz4");
         final byte[] buf = new byte[2];
         try (InputStream is = Files.newInputStream(input.toPath());
@@ -45,7 +45,7 @@ public class BlockLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void readBlaLz4() throws IOException {
+    public void testReadBlaLz4() throws IOException {
         try (InputStream a = new BlockLZ4CompressorInputStream(newInputStream("bla.tar.block_lz4"));
                 InputStream e = newInputStream("bla.tar")) {
             final byte[] expected = IOUtils.toByteArray(e);
@@ -55,7 +55,7 @@ public class BlockLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.block_lz4");
         try (InputStream is = Files.newInputStream(input.toPath());
                 BlockLZ4CompressorInputStream in = new BlockLZ4CompressorInputStream(is)) {

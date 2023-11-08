@@ -27,7 +27,6 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
@@ -64,7 +63,7 @@ import org.apache.commons.compress.utils.CharsetNames;
  *
  * <p>based on code from the jRPM project (jrpm.sourceforge.net)</p>
  */
-public class CpioArchiveOutputStream extends ArchiveOutputStream implements
+public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntry> implements
         CpioConstants {
 
     private CpioArchiveEntry entry;
@@ -248,12 +247,12 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     }
 
     /**
-     * Creates a new ArchiveEntry. The entryName must be an ASCII encoded string.
+     * Creates a new CpioArchiveEntry. The entryName must be an ASCII encoded string.
      *
      * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, String)
      */
     @Override
-    public ArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
+    public CpioArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
             throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
@@ -262,12 +261,12 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     }
 
     /**
-     * Creates a new ArchiveEntry. The entryName must be an ASCII encoded string.
+     * Creates a new CpioArchiveEntry. The entryName must be an ASCII encoded string.
      *
      * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, String)
      */
     @Override
-    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options)
+    public CpioArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options)
             throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
@@ -356,31 +355,30 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      * @throws ClassCastException if entry is not an instance of CpioArchiveEntry
      */
     @Override
-    public void putArchiveEntry(final ArchiveEntry entry) throws IOException {
+    public void putArchiveEntry(final CpioArchiveEntry entry) throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
 
-        final CpioArchiveEntry e = (CpioArchiveEntry) entry;
         ensureOpen();
         if (this.entry != null) {
             closeArchiveEntry(); // close previous entry
         }
-        if (e.getTime() == -1) {
-            e.setTime(System.currentTimeMillis() / 1000);
+        if (entry.getTime() == -1) {
+            entry.setTime(System.currentTimeMillis() / 1000);
         }
 
-        final short format = e.getFormat();
+        final short format = entry.getFormat();
         if (format != this.entryFormat){
             throw new IOException("Header format: "+format+" does not match existing format: "+this.entryFormat);
         }
 
-        if (this.names.put(e.getName(), e) != null) {
-            throw new IOException("Duplicate entry: " + e.getName());
+        if (this.names.put(entry.getName(), entry) != null) {
+            throw new IOException("Duplicate entry: " + entry.getName());
         }
 
-        writeHeader(e);
-        this.entry = e;
+        writeHeader(entry);
+        this.entry = entry;
         this.written = 0;
     }
 

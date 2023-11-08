@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  * anymore. All entries but the last one are returned correctly, the last entry
  * yields an exception.
  */
-public class Maven221MultiVolumeTest extends AbstractTestCase {
+public class Maven221MultiVolumeTest extends AbstractTest {
 
     private static final String[] ENTRIES = {
         // @formatter:off

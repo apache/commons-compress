@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  */
-public class ClassBandsTest extends AbstractBandsTestCase {
+public class ClassBandsTest extends AbstractBandsTest {
 
     public class MockCpBands extends CpBands {
 
@@ -78,7 +78,7 @@ public class ClassBandsTest extends AbstractBandsTestCase {
             return cpUTF8;
         }
     }
-    public class MockSegment extends AbstractBandsTestCase.MockSegment {
+    public class MockSegment extends AbstractBandsTest.MockSegment {
 
         @Override
         protected CpBands getCpBands() {

@@ -45,16 +45,17 @@ import java.nio.file.Path;
  *   <li> optionally write additional data, provided format supports it,</li>
  *   <li>{@link #close()}.</li>
  * </ul>
+ * @param <E> The type of {@link ArchiveEntry} consumed.
  */
-public abstract class ArchiveOutputStream extends OutputStream {
+public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends OutputStream {
 
     static final int BYTE_MASK = 0xFF;
-    /** Temporary buffer used for the {@link #write(int)} method */
+
+    /** Temporary buffer used for the {@link #write(int)} method. */
     private final byte[] oneByte = new byte[1];
 
-    /** holds the number of bytes written to this stream */
+    /** holds the number of bytes written to this stream. */
     private long bytesWritten;
-    // Methods specific to ArchiveOutputStream
 
     /**
      * Whether this stream is able to write the given entry.
@@ -102,7 +103,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
     }
 
     /**
-     * Create an archive entry using the inputFile and entryName provided.
+     * Creates an archive entry using the inputFile and entryName provided.
      *
      * @param inputFile the file to create the entry from
      * @param entryName name to use for the entry
@@ -110,17 +111,17 @@ public abstract class ArchiveOutputStream extends OutputStream {
      *
      * @throws IOException if an I/O error occurs
      */
-    public abstract ArchiveEntry createArchiveEntry(File inputFile, String entryName) throws IOException;
-
-    // Generic implementations of OutputStream methods that may be useful to sub-classes
+    public abstract E createArchiveEntry(File inputFile, String entryName) throws IOException;
 
     /**
-     * Create an archive entry using the inputPath and entryName provided.
-     *
+     * Creates an archive entry using the inputPath and entryName provided.
+     * <p>
      * The default implementation calls simply delegates as:
+     * </p>
      * <pre>return createArchiveEntry(inputFile.toFile(), entryName);</pre>
-     *
+     * <p>
      * Subclasses should override this method.
+     * </p>
      *
      * @param inputPath the file to create the entry from
      * @param entryName name to use for the entry
@@ -130,7 +131,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * @throws IOException if an I/O error occurs
      * @since 1.21
      */
-    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
+    public E createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
         return createArchiveEntry(inputPath.toFile(), entryName);
     }
 
@@ -143,7 +144,8 @@ public abstract class ArchiveOutputStream extends OutputStream {
     public abstract void finish() throws IOException;
 
     /**
-     * Returns the current number of bytes written to this stream.
+     * Gets the current number of bytes written to this stream.
+     *
      * @return the number of written bytes
      * @since 1.1
      */
@@ -152,7 +154,8 @@ public abstract class ArchiveOutputStream extends OutputStream {
     }
 
     /**
-     * Returns the current number of bytes written to this stream.
+     * Gets the current number of bytes written to this stream.
+     *
      * @return the number of written bytes
      * @deprecated this method may yield wrong results for large
      * archives, use #getBytesWritten instead
@@ -170,7 +173,7 @@ public abstract class ArchiveOutputStream extends OutputStream {
      * @param entry describes the entry
      * @throws IOException if an I/O error occurs
      */
-    public abstract void putArchiveEntry(ArchiveEntry entry) throws IOException;
+    public abstract void putArchiveEntry(E entry) throws IOException;
 
     /**
      * Writes a byte to the current archive entry.

@@ -28,13 +28,13 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Random;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.snappy.FramedSnappyCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public final class FramedSnappyTestCase
-    extends AbstractTestCase {
+public final class FramedSnappyTest
+    extends AbstractTest {
 
     @Test
     public void testDefaultExtraction() throws Exception {
@@ -62,7 +62,7 @@ public final class FramedSnappyTestCase
 
     private void testRoundtrip(final File input) throws Exception {
         final long start = System.currentTimeMillis();
-        final File outputSz = new File(dir, input.getName() + ".sz");
+        final File outputSz = newTempFile(input.getName() + ".sz");
         try (OutputStream os = Files.newOutputStream(outputSz.toPath());
                 CompressorOutputStream sos = new CompressorStreamFactory().createCompressorOutputStream("snappy-framed", os)) {
             Files.copy(input.toPath(), sos);
@@ -81,14 +81,14 @@ public final class FramedSnappyTestCase
     @Test
     public void testRoundtripWithOneBigWrite() throws Exception {
         final Random r = new Random();
-        final File input = new File(dir, "bigChunkTest");
+        final File input = newTempFile("bigChunkTest");
         try (OutputStream fs = Files.newOutputStream(input.toPath())) {
             for (int i = 0 ; i < 1 << 17; i++) {
                 fs.write(r.nextInt(256));
             }
         }
         final long start = System.currentTimeMillis();
-        final File outputSz = new File(dir, input.getName() + ".sz");
+        final File outputSz = newTempFile(input.getName() + ".sz");
         try (InputStream is = Files.newInputStream(input.toPath());
              OutputStream os = Files.newOutputStream(outputSz.toPath());
              CompressorOutputStream sos = new CompressorStreamFactory()
@@ -110,7 +110,7 @@ public final class FramedSnappyTestCase
 
     private void testUnarchive(final StreamWrapper<CompressorInputStream> wrapper) throws Exception {
         final File input = getFile("bla.tar.sz");
-        final File output = new File(dir, "bla.tar");
+        final File output = newTempFile("bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             // the intermediate BufferedInputStream is there for mark
             // support in the autodetection test

@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 
-class BoundedSeekableByteChannelInputStream extends InputStream {
+final class BoundedSeekableByteChannelInputStream extends InputStream {
     private static final int MAX_BUF_LEN = 8192;
     private final ByteBuffer buffer;
     private final SeekableByteChannel channel;
