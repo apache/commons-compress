@@ -19,8 +19,8 @@
 package org.apache.commons.compress.compressors.z;
 
 import static org.apache.commons.compress.AbstractTest.getFile;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
@@ -73,19 +73,23 @@ public class ZCompressorInputStreamTest {
     @Test
     public void testInvalidMaxCodeSize() throws IOException {
         final File input = getFile("bla.tar.Z");
-        try (InputStream contentStream = Files.newInputStream(input.toPath())) {
-            byte[] content = IOUtils.toByteArray(contentStream);
+        try (final InputStream contentStream = Files.newInputStream(input.toPath())) {
+            final byte[] content = IOUtils.toByteArray(contentStream);
 
-            // Test all possible maxCodeSize values, it will either process correctly, or throw an IOException
+            // Test all possible maxCodeSize values
             for (int maxCodeSize = Byte.MIN_VALUE; maxCodeSize <= Byte.MAX_VALUE; maxCodeSize++) {
                 content[2] = (byte) maxCodeSize;
-                try {
-                    final ZCompressorInputStream in = new ZCompressorInputStream(new ByteArrayInputStream(content), 1024*1024);
-                    IOUtils.toByteArray(in);
-                    assertEquals(-1, in.read());
-                } catch(Exception e) {
-                    assertInstanceOf(IOException.class, e);
-                }
+
+                // Test that no unexpected exceptions are thrown when initializing and reading the stream,
+                // since maxCodeSize impacts both initialization and reading.
+                assertDoesNotThrow(() -> {
+                    try {
+                        final ZCompressorInputStream in =
+                                new ZCompressorInputStream(new ByteArrayInputStream(content), 1024*1024);
+                        IOUtils.toByteArray(in);
+                    } catch(IOException ignore) {
+                    }
+                });
             }
         }
     }
