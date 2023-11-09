@@ -158,7 +158,6 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
     private final Parameters params;
 
     private boolean finished;
-    private int currentIndex;
 
     // used for frame header checksum and content checksum, if requested
     private final XXHash32 contentHash = new XXHash32();
@@ -230,15 +229,12 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
      */
     public void finish() throws IOException {
         if (!finished) {
-            if (currentIndex > 0) {
-                flushBlock();
-            }
             writeTrailer();
             finished = true;
         }
     }
 
-    private void flushBlock() throws IOException {
+    private void flushBlock(int currentIndex) throws IOException {
         final boolean withBlockDependency = params.withBlockDependency;
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (BlockLZ4CompressorOutputStream o = new BlockLZ4CompressorOutputStream(baos, params.lz77params)) {
@@ -279,18 +275,13 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
             contentHash.update(data, off, len);
         }
         final int blockDataLength = blockData.length;
-        if (currentIndex + len > blockDataLength) {
-            flushBlock();
-            while (len > blockDataLength) {
-                System.arraycopy(data, off, blockData, 0, blockDataLength);
-                off += blockDataLength;
-                len -= blockDataLength;
-                currentIndex = blockDataLength;
-                flushBlock();
-            }
+        while (len > 0) {
+            int copyLen = Math.min(len, blockDataLength);
+            System.arraycopy(data, off, blockData, 0, copyLen);
+            off += blockDataLength;
+            len -= copyLen;
+            flushBlock(copyLen);
         }
-        System.arraycopy(data, off, blockData, currentIndex, len);
-        currentIndex += len;
     }
 
     @Override
