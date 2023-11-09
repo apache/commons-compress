@@ -19,7 +19,6 @@
 package org.apache.commons.compress.compressors.z;
 
 import static org.apache.commons.compress.AbstractTest.getFile;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -30,6 +29,10 @@ import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.nio.file.Files;
 import java.util.Collections;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.IntStream;
+import java.util.stream.Collectors;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
@@ -72,24 +75,28 @@ public class ZCompressorInputStreamTest {
 
     @Test
     public void testInvalidMaxCodeSize() throws IOException {
+        Set<Integer> invalidValues = new TreeSet<>();
+        invalidValues.addAll(IntStream.range(Byte.MIN_VALUE, -120).boxed().collect(Collectors.toSet()));
+        invalidValues.addAll(IntStream.range(-97, -88).boxed().collect(Collectors.toSet()));
+        invalidValues.addAll(IntStream.range(-65, -56).boxed().collect(Collectors.toSet()));
+        invalidValues.addAll(IntStream.range(-33, -24).boxed().collect(Collectors.toSet()));
+        invalidValues.addAll(IntStream.range(-1, 8).boxed().collect(Collectors.toSet()));
+        invalidValues.addAll(IntStream.range(31, 40).boxed().collect(Collectors.toSet()));
+        invalidValues.addAll(IntStream.range(63, 72).boxed().collect(Collectors.toSet()));
+        invalidValues.addAll(IntStream.range(95, 104).boxed().collect(Collectors.toSet()));
+        invalidValues.add(127);
+
         final File input = getFile("bla.tar.Z");
         try (final InputStream contentStream = Files.newInputStream(input.toPath())) {
             final byte[] content = IOUtils.toByteArray(contentStream);
 
-            // Test all possible maxCodeSize values
-            for (int maxCodeSize = Byte.MIN_VALUE; maxCodeSize <= Byte.MAX_VALUE; maxCodeSize++) {
-                content[2] = (byte) maxCodeSize;
+            for (int value : invalidValues) {
+                content[2] = (byte) value;
 
-                // Test that no unexpected exceptions are thrown when initializing and reading the stream,
-                // since maxCodeSize impacts both initialization and reading.
-                assertDoesNotThrow(() -> {
-                    try {
-                        final ZCompressorInputStream in =
-                                new ZCompressorInputStream(new ByteArrayInputStream(content), 1024*1024);
-                        IOUtils.toByteArray(in);
-                    } catch(IOException ignore) {
-                    }
-                });
+                // Test that invalid values always throw an IOException
+                assertThrows(IOException.class, () ->
+                        new ZCompressorInputStream(new ByteArrayInputStream(content), 1024 * 1024)
+                );
             }
         }
     }
