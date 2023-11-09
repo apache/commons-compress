@@ -26,10 +26,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Random;
 import java.util.stream.Stream;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -100,4 +102,20 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTest {
         // System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
+    @Test
+    public void test64KMultipleBlocks() throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int count = 0;
+        byte[] expected = new byte[98304];
+        new Random(0).nextBytes(expected);
+        try (FramedLZ4CompressorOutputStream compressor = 
+                new FramedLZ4CompressorOutputStream(buffer, 
+                        new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
+            compressor.write(expected);
+        }
+        try (FramedLZ4CompressorInputStream sis = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(buffer.toByteArray()))) {
+            final byte[] actual = IOUtils.toByteArray(sis);
+            assertArrayEquals(expected, actual);
+        }
+    }
 }
