@@ -104,18 +104,15 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTest {
 
     @Test
     public void test64KMultipleBlocks() throws IOException {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int count = 0;
-        byte[] expected = new byte[98304];
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        final byte[] expected = new byte[98304];
         new Random(0).nextBytes(expected);
-        try (FramedLZ4CompressorOutputStream compressor = 
-                new FramedLZ4CompressorOutputStream(buffer, 
-                        new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
+        try (FramedLZ4CompressorOutputStream compressor = new FramedLZ4CompressorOutputStream(buffer,
+                new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
             compressor.write(expected);
         }
         try (FramedLZ4CompressorInputStream sis = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(buffer.toByteArray()))) {
-            final byte[] actual = IOUtils.toByteArray(sis);
-            assertArrayEquals(expected, actual);
+            assertArrayEquals(expected, IOUtils.toByteArray(sis));
         }
     }
 }
