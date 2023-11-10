@@ -68,6 +68,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add generics to ArchiveStreamProvider and friends.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add a generic type parameter to ArchiveOutputStream and avoid unchecked/unconfirmed type casts in subclasses.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add a generic type parameter to ArchiveInputStream and deprecate redundant get methods in subclasses.</action>
+      <action type="add" issue="COMPRESS-648" dev="ggregory" due-to="Yakov Shafranovich, Gary Gregory">Add ability to restrict autodetection in CompressorStreamFactory #433.</action>
       <!-- FIX -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Precompile regular expression in ArArchiveInputStream.isBSDLongName(String).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Precompile regular expression in ArArchiveInputStream.isGNULongName(String).</action>
