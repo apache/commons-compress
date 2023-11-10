@@ -75,30 +75,28 @@ public class ZCompressorInputStreamTest {
 
     @Test
     public void testInvalidMaxCodeSize() throws IOException {
-        Set<Integer> invalidValues = new TreeSet<>();
-        invalidValues.addAll(IntStream.range(Byte.MIN_VALUE, -120).boxed().collect(Collectors.toSet()));
-        invalidValues.addAll(IntStream.range(-97, -88).boxed().collect(Collectors.toSet()));
-        invalidValues.addAll(IntStream.range(-65, -56).boxed().collect(Collectors.toSet()));
-        invalidValues.addAll(IntStream.range(-33, -24).boxed().collect(Collectors.toSet()));
-        invalidValues.addAll(IntStream.range(-1, 8).boxed().collect(Collectors.toSet()));
-        invalidValues.addAll(IntStream.range(31, 40).boxed().collect(Collectors.toSet()));
-        invalidValues.addAll(IntStream.range(63, 72).boxed().collect(Collectors.toSet()));
-        invalidValues.addAll(IntStream.range(95, 104).boxed().collect(Collectors.toSet()));
-        invalidValues.add(127);
 
-        final File input = getFile("bla.tar.Z");
-        try (final InputStream contentStream = Files.newInputStream(input.toPath())) {
-            final byte[] content = IOUtils.toByteArray(contentStream);
+        final byte[] bytes = Files.readAllBytes(AbstractTest.getPath("bla.tar.Z"));
 
-            for (int value : invalidValues) {
-                content[2] = (byte) value;
+        // @formatter:off
+        final IntStream[] invalid = {
+            IntStream.range(Byte.MIN_VALUE, -120),
+            IntStream.range(-97, -88),
+            IntStream.range(-65, -56),
+            IntStream.range(-33, -24),
+            IntStream.range(-1, 8),
+            IntStream.range(31, 40),
+            IntStream.range(63, 72),
+            IntStream.range(95, 104),
+            IntStream.range(127, 127)
+            };
+        // @formatter:on
 
-                // Test that invalid values always throw an IOException
-                assertThrows(IOException.class, () ->
-                        new ZCompressorInputStream(new ByteArrayInputStream(content), 1024 * 1024)
-                );
-            }
-        }
+        Stream.of(invalid).forEach(ints -> ints.forEach(i -> {
+            bytes[2] = (byte) i;
+            assertThrows(IllegalArgumentException.class, () -> new ZCompressorInputStream(new ByteArrayInputStream(bytes), 1024 * 1024),
+                    () -> "value=" + i);
+        }));
     }
 
 }
