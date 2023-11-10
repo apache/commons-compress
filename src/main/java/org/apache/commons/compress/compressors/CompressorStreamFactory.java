@@ -213,7 +213,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     }
 
     /**
-     * Try to detect the type of compressor stream.
+     * Detects the type of compressor stream.
      *
      * @param inputStream input stream
      * @return type of compressor stream detected
@@ -229,7 +229,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     }
 
     /**
-     * Try to detect the type of compressor stream while limiting the type to the provided set of compressor names.
+     * Detects the type of compressor stream while limiting the type to the provided set of compressor names.
      *
      * @param inputStream input stream
      * @param compressorNames compressor names to limit autodetection
@@ -478,7 +478,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     private final int memoryLimitInKb;
 
     /**
-     * Create an instance with the decompress Concatenated option set to false.
+     * Constructs an instance with the decompress Concatenated option set to false.
      */
     public CompressorStreamFactory() {
         this.decompressUntilEOF = null;
@@ -486,7 +486,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     }
 
     /**
-     * Create an instance with the provided decompress Concatenated option.
+     * Constructs an instance with the provided decompress Concatenated option.
      *
      * @param decompressUntilEOF
      *            if true, decompress until the end of the input; if false, stop
@@ -500,14 +500,13 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     }
 
     /**
-     * Create an instance with the provided decompress Concatenated option.
+     * Constructs an instance with the provided decompress Concatenated option.
      *
      * @param decompressUntilEOF
      *            if true, decompress until the end of the input; if false, stop
      *            after the first stream and leave the input position to point
      *            to the next byte after the stream. This setting applies to the
      *            gzip, bzip2 and XZ formats only.
-     *
      * @param memoryLimitInKb
      *            Some streams require allocation of potentially significant
      *            byte arrays/tables, and they can offer checks to prevent OOMs
@@ -524,7 +523,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     }
 
     /**
-     * Create a compressor input stream from an input stream, auto-detecting the
+     * Creates a compressor input stream from an input stream, auto-detecting the
      * compressor type from the first few bytes of the stream. The InputStream
      * must support marks, like BufferedInputStream.
      *
@@ -542,7 +541,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     }
 
     /**
-     * Create a compressor input stream from an input stream, auto-detecting the
+     * Creates a compressor input stream from an input stream, auto-detecting the
      * compressor type from the first few bytes of the stream while limiting the detected type
      * to the provided set of compressor names. The InputStream must support marks, like BufferedInputStream.
      *
@@ -767,7 +766,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         return compressorOutputStreamProviders;
     }
 
-    // For Unit tests
+    /** For tests. */
     boolean getDecompressConcatenated() {
         return decompressConcatenated;
     }
@@ -788,7 +787,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     }
 
     /**
-     * Whether to decompress the full input or only the first stream in formats
+     * Sets whether to decompress the full input or only the first stream in formats
      * supporting multiple concatenated input streams.
      *
      * <p>
