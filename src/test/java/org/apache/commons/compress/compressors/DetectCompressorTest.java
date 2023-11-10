@@ -101,23 +101,25 @@ public final class DetectCompressorTest {
     final CompressorStreamFactory factory = new CompressorStreamFactory();
 
     private final TestData[] tests = {
-        new TestData("multiple.bz2", new char[]{'a','b'}, factoryTrue, true),
-        new TestData("multiple.bz2", new char[]{'a','b'}, factorySetTrue, true),
-        new TestData("multiple.bz2", new char[]{'a'}, factoryFalse, false),
-        new TestData("multiple.bz2", new char[]{'a'}, factorySetFalse, false),
-        new TestData("multiple.bz2", new char[]{'a'}, factory, false),
+        // @formatter:off
+        new TestData("multiple.bz2", new char[] { 'a', 'b' }, factoryTrue, true),
+        new TestData("multiple.bz2", new char[] { 'a', 'b' }, factorySetTrue, true),
+        new TestData("multiple.bz2", new char[] { 'a' }, factoryFalse, false),
+        new TestData("multiple.bz2", new char[] { 'a' }, factorySetFalse, false),
+        new TestData("multiple.bz2", new char[] { 'a' }, factory, false),
 
-        new TestData("multiple.gz", new char[]{'a','b'}, factoryTrue, true),
-        new TestData("multiple.gz", new char[]{'a','b'}, factorySetTrue, true),
-        new TestData("multiple.gz", new char[]{'a'}, factoryFalse, false),
-        new TestData("multiple.gz", new char[]{'a'}, factorySetFalse, false),
-        new TestData("multiple.gz", new char[]{'a'}, factory, false),
+        new TestData("multiple.gz", new char[] { 'a', 'b' }, factoryTrue, true),
+        new TestData("multiple.gz", new char[] { 'a', 'b' }, factorySetTrue, true),
+        new TestData("multiple.gz", new char[] { 'a' }, factoryFalse, false),
+        new TestData("multiple.gz", new char[] { 'a' }, factorySetFalse, false),
+        new TestData("multiple.gz", new char[] { 'a' }, factory, false),
 
-        new TestData("multiple.xz", new char[]{'a','b'}, factoryTrue, true),
-        new TestData("multiple.xz", new char[]{'a','b'}, factorySetTrue, true),
-        new TestData("multiple.xz", new char[]{'a'}, factoryFalse, false),
-        new TestData("multiple.xz", new char[]{'a'}, factorySetFalse, false),
-        new TestData("multiple.xz", new char[]{'a'}, factory, false),
+        new TestData("multiple.xz", new char[] { 'a', 'b' }, factoryTrue, true),
+        new TestData("multiple.xz", new char[] { 'a', 'b' }, factorySetTrue, true),
+        new TestData("multiple.xz", new char[] { 'a' }, factoryFalse, false),
+        new TestData("multiple.xz", new char[] { 'a' }, factorySetFalse, false),
+        new TestData("multiple.xz", new char[] { 'a' }, factory, false),
+        // @formatter:off
     };
 
     @SuppressWarnings("resource") // Caller closes.
