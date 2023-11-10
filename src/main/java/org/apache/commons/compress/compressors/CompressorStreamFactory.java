@@ -231,6 +231,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
                 Sets.newHashSet(BZIP2, GZIP, PACK200, SNAPPY_FRAMED, Z, DEFLATE, XZ, LZMA, LZ4_FRAMED, ZSTANDARD);
         return detect(inputStream, defaultCompressorNamesForDetection);
     }
+
     /**
      * Try to detect the type of compressor stream while limiting the type to the provided set of compressor names.
      *
@@ -243,7 +244,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      *
      * @since 1.24
      */
-    public static String detect(final InputStream inputStream, final Set<String> compressorNames) throws CompressorException {
+    static String detect(final InputStream inputStream, final Set<String> compressorNames) throws CompressorException {
         if (inputStream == null) {
             throw new IllegalArgumentException("Stream must not be null.");
         }

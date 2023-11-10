@@ -146,11 +146,7 @@ public final class DetectCompressorTest {
     private String detect(final String testFileName, final Set<String> compressorNames) throws IOException, CompressorException {
         try (InputStream is = new BufferedInputStream(
                 Files.newInputStream(getFile(testFileName).toPath()))) {
-            if (compressorNames != null) {
-                return CompressorStreamFactory.detect(is, compressorNames);
-            } else {
-                return CompressorStreamFactory.detect(is);
-            }
+            return (compressorNames != null) ? CompressorStreamFactory.detect(is, compressorNames) : CompressorStreamFactory.detect(is);
         }
     }
 
@@ -184,65 +180,38 @@ public final class DetectCompressorTest {
 
     @Test
     public void testDetectNullOrEmptyCompressorNames() throws Exception {
-        try (CompressorInputStream bzip2 = createStreamFor("bla.txt.bz2")) {
-            assertThrows(IllegalArgumentException.class, () -> {
-                CompressorStreamFactory.detect(bzip2, (Set<String>) null);
-            });
-        }
-
-        try (CompressorInputStream gzip = createStreamFor("bla.tgz")) {
-            assertThrows(IllegalArgumentException.class, () -> {
-                CompressorStreamFactory.detect(gzip, new HashSet<>());
-            });
-        }
+        assertThrows(IllegalArgumentException.class, () -> CompressorStreamFactory.detect(createStreamFor("bla.txt.bz2"), (Set<String>) null));
+        assertThrows(IllegalArgumentException.class, () -> CompressorStreamFactory.detect(createStreamFor("bla.tgz"), new HashSet<>()));
     }
 
     @Test
     public void testDetectLimitedByName() throws Exception {
-        assertEquals(CompressorStreamFactory.BZIP2, detect("bla.txt.bz2",
-                Collections.singleton(CompressorStreamFactory.BZIP2)));
-        assertEquals(CompressorStreamFactory.GZIP, detect("bla.tgz",
-                Collections.singleton(CompressorStreamFactory.GZIP)));
-        assertEquals(CompressorStreamFactory.PACK200, detect("bla.pack",
-                Collections.singleton(CompressorStreamFactory.PACK200)));
-        assertEquals(CompressorStreamFactory.XZ, detect("bla.tar.xz",
-                Collections.singleton(CompressorStreamFactory.XZ)));
-        assertEquals(CompressorStreamFactory.DEFLATE, detect("bla.tar.deflatez",
-                Collections.singleton(CompressorStreamFactory.DEFLATE)));
-        assertEquals(CompressorStreamFactory.LZ4_FRAMED, detect("bla.tar.lz4",
-                Collections.singleton(CompressorStreamFactory.LZ4_FRAMED)));
-        assertEquals(CompressorStreamFactory.LZMA, detect("bla.tar.lzma",
-                Collections.singleton(CompressorStreamFactory.LZMA)));
-        assertEquals(CompressorStreamFactory.SNAPPY_FRAMED, detect("bla.tar.sz",
-                Collections.singleton(CompressorStreamFactory.SNAPPY_FRAMED)));
-        assertEquals(CompressorStreamFactory.Z, detect("bla.tar.Z",
-                Collections.singleton(CompressorStreamFactory.Z)));
-        assertEquals(CompressorStreamFactory.ZSTANDARD, detect("bla.tar.zst",
-                Collections.singleton(CompressorStreamFactory.ZSTANDARD)));
+        assertEquals(CompressorStreamFactory.BZIP2, detect("bla.txt.bz2", Collections.singleton(CompressorStreamFactory.BZIP2)));
+        assertEquals(CompressorStreamFactory.GZIP, detect("bla.tgz", Collections.singleton(CompressorStreamFactory.GZIP)));
+        assertEquals(CompressorStreamFactory.PACK200, detect("bla.pack", Collections.singleton(CompressorStreamFactory.PACK200)));
+        assertEquals(CompressorStreamFactory.XZ, detect("bla.tar.xz", Collections.singleton(CompressorStreamFactory.XZ)));
+        assertEquals(CompressorStreamFactory.DEFLATE, detect("bla.tar.deflatez", Collections.singleton(CompressorStreamFactory.DEFLATE)));
+        assertEquals(CompressorStreamFactory.LZ4_FRAMED, detect("bla.tar.lz4", Collections.singleton(CompressorStreamFactory.LZ4_FRAMED)));
+        assertEquals(CompressorStreamFactory.LZMA, detect("bla.tar.lzma", Collections.singleton(CompressorStreamFactory.LZMA)));
+        assertEquals(CompressorStreamFactory.SNAPPY_FRAMED, detect("bla.tar.sz", Collections.singleton(CompressorStreamFactory.SNAPPY_FRAMED)));
+        assertEquals(CompressorStreamFactory.Z, detect("bla.tar.Z", Collections.singleton(CompressorStreamFactory.Z)));
+        assertEquals(CompressorStreamFactory.ZSTANDARD, detect("bla.tar.zst", Collections.singleton(CompressorStreamFactory.ZSTANDARD)));
     }
 
     @Test
     public void testDetectLimitedByNameNotFound() throws Exception {
-        assertThrows(CompressorException.class, () ->
-                detect("bla.txt.bz2", Collections.singleton(CompressorStreamFactory.DEFLATE)));
-        assertThrows(CompressorException.class, () ->
-                detect("bla.tgz", Collections.singleton(CompressorStreamFactory.DEFLATE)));
-        assertThrows(CompressorException.class, () ->
-                detect("bla.pack", Collections.singleton(CompressorStreamFactory.DEFLATE)));
-        assertThrows(CompressorException.class, () ->
-                detect("bla.tar.xz", Collections.singleton(CompressorStreamFactory.DEFLATE)));
-        assertThrows(CompressorException.class, () ->
-                detect("bla.tar.deflatez", Collections.singleton(CompressorStreamFactory.BZIP2)));
-        assertThrows(CompressorException.class, () ->
-                detect("bla.tar.lz4", Collections.singleton(CompressorStreamFactory.DEFLATE)));
-        assertThrows(CompressorException.class, () ->
-                detect("bla.tar.lzma", Collections.singleton(CompressorStreamFactory.DEFLATE)));
-        assertThrows(CompressorException.class, () ->
-                detect("bla.tar.sz", Collections.singleton(CompressorStreamFactory.DEFLATE)));
-        assertThrows(CompressorException.class, () ->
-                detect("bla.tar.Z", Collections.singleton(CompressorStreamFactory.DEFLATE)));
-        assertThrows(CompressorException.class, () ->
-                detect("bla.tar.zst", Collections.singleton(CompressorStreamFactory.DEFLATE)));
+        Set<String> compressorNames = Collections.singleton(CompressorStreamFactory.DEFLATE);
+
+        assertThrows(CompressorException.class, () -> detect("bla.txt.bz2", compressorNames));
+        assertThrows(CompressorException.class, () -> detect("bla.tgz", compressorNames));
+        assertThrows(CompressorException.class, () -> detect("bla.pack", compressorNames));
+        assertThrows(CompressorException.class, () -> detect("bla.tar.xz", compressorNames));
+        assertThrows(CompressorException.class, () -> detect("bla.tar.deflatez", Collections.singleton(CompressorStreamFactory.BZIP2)));
+        assertThrows(CompressorException.class, () -> detect("bla.tar.lz4", compressorNames));
+        assertThrows(CompressorException.class, () -> detect("bla.tar.lzma", compressorNames));
+        assertThrows(CompressorException.class, () -> detect("bla.tar.sz", compressorNames));
+        assertThrows(CompressorException.class, () -> detect("bla.tar.Z", compressorNames));
+        assertThrows(CompressorException.class, () -> detect("bla.tar.zst", compressorNames));
     }
 
     @Test
@@ -282,38 +251,32 @@ public final class DetectCompressorTest {
 
     @Test
     public void testCreateLimitedByName() throws Exception {
-        try (CompressorInputStream bzip2 = createStreamFor("bla.txt.bz2",
-                Collections.singleton(CompressorStreamFactory.BZIP2))) {
+        try (CompressorInputStream bzip2 = createStreamFor("bla.txt.bz2", Collections.singleton(CompressorStreamFactory.BZIP2))) {
             assertNotNull(bzip2);
             assertTrue(bzip2 instanceof BZip2CompressorInputStream);
         }
 
-        try (CompressorInputStream gzip = createStreamFor("bla.tgz",
-                Collections.singleton(CompressorStreamFactory.GZIP))) {
+        try (CompressorInputStream gzip = createStreamFor("bla.tgz", Collections.singleton(CompressorStreamFactory.GZIP))) {
             assertNotNull(gzip);
             assertTrue(gzip instanceof GzipCompressorInputStream);
         }
 
-        try (CompressorInputStream pack200 = createStreamFor("bla.pack",
-                Collections.singleton(CompressorStreamFactory.PACK200))) {
+        try (CompressorInputStream pack200 = createStreamFor("bla.pack", Collections.singleton(CompressorStreamFactory.PACK200))) {
             assertNotNull(pack200);
             assertTrue(pack200 instanceof Pack200CompressorInputStream);
         }
 
-        try (CompressorInputStream xz = createStreamFor("bla.tar.xz",
-                Collections.singleton(CompressorStreamFactory.XZ))) {
+        try (CompressorInputStream xz = createStreamFor("bla.tar.xz", Collections.singleton(CompressorStreamFactory.XZ))) {
             assertNotNull(xz);
             assertTrue(xz instanceof XZCompressorInputStream);
         }
 
-        try (CompressorInputStream zlib = createStreamFor("bla.tar.deflatez",
-                Collections.singleton(CompressorStreamFactory.DEFLATE))) {
+        try (CompressorInputStream zlib = createStreamFor("bla.tar.deflatez", Collections.singleton(CompressorStreamFactory.DEFLATE))) {
             assertNotNull(zlib);
             assertTrue(zlib instanceof DeflateCompressorInputStream);
         }
 
-        try (CompressorInputStream zstd = createStreamFor("bla.tar.zst",
-                Collections.singleton(CompressorStreamFactory.ZSTANDARD))) {
+        try (CompressorInputStream zstd = createStreamFor("bla.tar.zst", Collections.singleton(CompressorStreamFactory.ZSTANDARD))) {
             assertNotNull(zstd);
             assertTrue(zstd instanceof ZstdCompressorInputStream);
         }
@@ -321,23 +284,12 @@ public final class DetectCompressorTest {
 
     @Test
     public void testCreateLimitedByNameNotFound() throws Exception {
-        assertThrows(CompressorException.class,
-                () -> createStreamFor("bla.txt.bz2", Collections.singleton(CompressorStreamFactory.BROTLI)));
-
-        assertThrows(CompressorException.class,
-                () -> createStreamFor("bla.tgz", Collections.singleton(CompressorStreamFactory.Z)));
-
-        assertThrows(CompressorException.class,
-                () -> createStreamFor("bla.pack", Collections.singleton(CompressorStreamFactory.SNAPPY_FRAMED)));
-
-        assertThrows(CompressorException.class,
-                () -> createStreamFor("bla.tar.xz", Collections.singleton(CompressorStreamFactory.GZIP)));
-
-        assertThrows(CompressorException.class,
-                () -> createStreamFor("bla.tar.deflatez", Collections.singleton(CompressorStreamFactory.PACK200)));
-
-        assertThrows(CompressorException.class,
-                () -> createStreamFor("bla.tar.zst", Collections.singleton(CompressorStreamFactory.LZ4_FRAMED)));
+        assertThrows(CompressorException.class, () -> createStreamFor("bla.txt.bz2", Collections.singleton(CompressorStreamFactory.BROTLI)));
+        assertThrows(CompressorException.class, () -> createStreamFor("bla.tgz", Collections.singleton(CompressorStreamFactory.Z)));
+        assertThrows(CompressorException.class, () -> createStreamFor("bla.pack", Collections.singleton(CompressorStreamFactory.SNAPPY_FRAMED)));
+        assertThrows(CompressorException.class, () -> createStreamFor("bla.tar.xz", Collections.singleton(CompressorStreamFactory.GZIP)));
+        assertThrows(CompressorException.class, () -> createStreamFor("bla.tar.deflatez", Collections.singleton(CompressorStreamFactory.PACK200)));
+        assertThrows(CompressorException.class, () -> createStreamFor("bla.tar.zst", Collections.singleton(CompressorStreamFactory.LZ4_FRAMED)));
     }
 
     @Test
