@@ -72,11 +72,6 @@ public class ZCompressorInputStream extends LZWInputStream {
         if (blockMode) {
             setClearCode(DEFAULT_CODE_SIZE);
         }
-        // maxCodeSize shifted cannot be less than 256, otherwise the loop in initializeTables() will throw an ArrayIndexOutOfBoundsException
-        // maxCodeSize cannot be smaller than getCodeSize(), otherwise addEntry() will throw an ArrayIndexOutOfBoundsException
-        if ((1 << maxCodeSize) < 256 || getCodeSize() > maxCodeSize) {
-            throw new IOException("Invalid maxCodeSize value: " + maxCodeSize);
-        }
         initializeTables(maxCodeSize, memoryLimitInKb);
         clearEntries();
     }
