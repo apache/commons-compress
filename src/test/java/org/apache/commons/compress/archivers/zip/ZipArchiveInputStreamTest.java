@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -35,6 +36,7 @@ import java.io.InputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.zip.ZipEntry;
@@ -47,6 +49,8 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class ZipArchiveInputStreamTest extends AbstractTest {
 
@@ -707,6 +711,21 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         try (InputStream fis = newInputStream("COMPRESS-548.zip");
                 ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis)) {
             getAllZipEntries(zipInputStream);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    public void zipInputStream(final boolean allowStoredEntriesWithDataDescriptor) {
+        try (ZipArchiveInputStream zIn = new ZipArchiveInputStream(
+                Files.newInputStream(Paths.get("src/test/resources/COMPRESS-647/test.zip")), "UTF-8", false,
+                allowStoredEntriesWithDataDescriptor)) {
+            ZipArchiveEntry zae = zIn.getNextEntry();
+            while (zae != null) {
+                zae = zIn.getNextEntry();
+            }
+        } catch (IOException e) {
+            // Ignore expected exception
         }
     }
 }
