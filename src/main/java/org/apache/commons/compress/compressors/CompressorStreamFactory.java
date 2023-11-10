@@ -224,8 +224,27 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @since 1.14
      */
     public static String detect(final InputStream inputStream) throws CompressorException {
+        final Set<String> defaultCompressorNamesForDetection = Sets.newHashSet(BZIP2, GZIP, PACK200, SNAPPY_FRAMED, Z, DEFLATE, XZ, LZMA, LZ4_FRAMED, ZSTANDARD);
+        return detect(inputStream, defaultCompressorNamesForDetection);
+    }
+
+    /**
+     * Try to detect the type of compressor stream while limiting the type to the provided set of compressor names.
+     *
+     * @param inputStream input stream
+     * @param compressorNames compressor names to limit autodetection
+     * @return type of compressor stream detected
+     * @throws CompressorException if no compressor stream type was detected
+     *                             or if something else went wrong
+     * @throws IllegalArgumentException if stream is null or does not support mark
+     */
+    static String detect(final InputStream inputStream, final Set<String> compressorNames) throws CompressorException {
         if (inputStream == null) {
             throw new IllegalArgumentException("Stream must not be null.");
+        }
+
+        if (compressorNames == null || compressorNames.isEmpty()) {
+            throw new IllegalArgumentException("Compressor names cannot be null or empty");
         }
 
         if (!inputStream.markSupported()) {
@@ -242,43 +261,44 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
             throw new CompressorException("IOException while reading signature.", e);
         }
 
-        if (BZip2CompressorInputStream.matches(signature, signatureLength)) {
+        if (compressorNames.contains(BZIP2) && BZip2CompressorInputStream.matches(signature, signatureLength)) {
             return BZIP2;
         }
 
-        if (GzipCompressorInputStream.matches(signature, signatureLength)) {
+        if (compressorNames.contains(GZIP) && GzipCompressorInputStream.matches(signature, signatureLength)) {
             return GZIP;
         }
 
-        if (Pack200CompressorInputStream.matches(signature, signatureLength)) {
+        if (compressorNames.contains(PACK200) && Pack200CompressorInputStream.matches(signature, signatureLength)) {
             return PACK200;
         }
 
-        if (FramedSnappyCompressorInputStream.matches(signature, signatureLength)) {
+        if (compressorNames.contains(SNAPPY_FRAMED) &&
+                FramedSnappyCompressorInputStream.matches(signature, signatureLength)) {
             return SNAPPY_FRAMED;
         }
 
-        if (ZCompressorInputStream.matches(signature, signatureLength)) {
+        if (compressorNames.contains(Z) && ZCompressorInputStream.matches(signature, signatureLength)) {
             return Z;
         }
 
-        if (DeflateCompressorInputStream.matches(signature, signatureLength)) {
+        if (compressorNames.contains(DEFLATE) && DeflateCompressorInputStream.matches(signature, signatureLength)) {
             return DEFLATE;
         }
 
-        if (XZUtils.matches(signature, signatureLength)) {
+        if (compressorNames.contains(XZ) && XZUtils.matches(signature, signatureLength)) {
             return XZ;
         }
 
-        if (LZMAUtils.matches(signature, signatureLength)) {
+        if (compressorNames.contains(LZMA) && LZMAUtils.matches(signature, signatureLength)) {
             return LZMA;
         }
 
-        if (FramedLZ4CompressorInputStream.matches(signature, signatureLength)) {
+        if (compressorNames.contains(LZ4_FRAMED) && FramedLZ4CompressorInputStream.matches(signature, signatureLength)) {
             return LZ4_FRAMED;
         }
 
-        if (ZstdUtils.matches(signature, signatureLength)) {
+        if (compressorNames.contains(ZSTANDARD) && ZstdUtils.matches(signature, signatureLength)) {
             return ZSTANDARD;
         }
 
@@ -502,6 +522,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         this.decompressConcatenated = decompressUntilEOF;
         this.memoryLimitInKb = memoryLimitInKb;
     }
+
     /**
      * Create a compressor input stream from an input stream, auto-detecting the
      * compressor type from the first few bytes of the stream. The InputStream
@@ -518,6 +539,27 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      */
     public CompressorInputStream createCompressorInputStream(final InputStream in) throws CompressorException {
         return createCompressorInputStream(detect(in), in);
+    }
+
+    /**
+     * Create a compressor input stream from an input stream, auto-detecting the
+     * compressor type from the first few bytes of the stream while limiting the detected type
+     * to the provided set of compressor names. The InputStream must support marks, like BufferedInputStream.
+     *
+     * @param in
+     *            the input stream
+     * @param compressorNames
+     *            compressor names to limit autodetection
+     * @return the compressor input stream
+     * @throws CompressorException
+     *             if the autodetected compressor is not in the provided set of compressor names
+     * @throws IllegalArgumentException
+     *             if the stream is null or does not support mark
+     * @since 1.26
+     */
+    public CompressorInputStream createCompressorInputStream(final InputStream in, final Set<String> compressorNames)
+            throws CompressorException {
+        return createCompressorInputStream(detect(in, compressorNames), in);
     }
 
     /**
