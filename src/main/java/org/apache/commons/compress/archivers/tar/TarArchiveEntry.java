@@ -394,7 +394,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     private long dataOffset = EntryStreamOffsets.OFFSET_UNKNOWN;
 
     /**
-     * Construct an empty entry and prepares the header values.
+     * Constructs an empty entry and prepares the header values.
      */
     private TarArchiveEntry(final boolean preserveAbsolutePath) {
         String user = System.getProperty("user.name", "");
@@ -410,7 +410,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Construct an entry from an archive's header bytes. File is set
+     * Constructs an entry from an archive's header bytes. File is set
      * to null.
      *
      * @param headerBuf The header bytes from a tar archive entry.
@@ -422,7 +422,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Construct an entry from an archive's header bytes. File is set
+     * Constructs an entry from an archive's header bytes. File is set
      * to null.
      *
      * @param headerBuf The header bytes from a tar archive entry.
@@ -437,7 +437,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Construct an entry from an archive's header bytes. File is set
+     * Constructs an entry from an archive's header bytes. File is set
      * to null.
      *
      * @param headerBuf The header bytes from a tar archive entry.
@@ -454,7 +454,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Construct an entry from an archive's header bytes for random access tar. File is set to null.
+     * Constructs an entry from an archive's header bytes for random access tar. File is set to null.
      * @param headerBuf the header bytes from a tar archive entry.
      * @param encoding encoding to use for file names.
      * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be
@@ -471,7 +471,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Construct an entry for a file. File is set to file, and the
+     * Constructs an entry for a file. File is set to file, and the
      * header is constructed from information from the file.
      * The name is set from the normalized file path.
      *
@@ -493,7 +493,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Construct an entry for a file. File is set to file, and the
+     * Constructs an entry for a file. File is set to file, and the
      * header is constructed from information from the file.
      *
      * <p>The entry's name will be the value of the {@code fileName}
@@ -537,7 +537,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Construct an entry from an archive's header bytes. File is set to null.
+     * Constructs an entry from an archive's header bytes. File is set to null.
      *
      * @param globalPaxHeaders the parsed global PAX headers, or null if this is the first one.
      * @param headerBuf The header bytes from a tar archive entry.
@@ -555,7 +555,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Construct an entry from an archive's header bytes for random access tar. File is set to null.
+     * Constructs an entry from an archive's header bytes for random access tar. File is set to null.
      * @param globalPaxHeaders the parsed global PAX headers, or null if this is the first one.
      * @param headerBuf the header bytes from a tar archive entry.
      * @param encoding encoding to use for file names.
@@ -573,7 +573,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Construct an entry for a file. File is set to file, and the
+     * Constructs an entry for a file. File is set to file, and the
      * header is constructed from information from the file.
      * The name is set from the normalized file path.
      *
@@ -592,7 +592,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Construct an entry for a file. File is set to file, and the
+     * Constructs an entry for a file. File is set to file, and the
      * header is constructed from information from the file.
      *
      * <p>The entry's name will be the value of the {@code fileName}
@@ -620,7 +620,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Construct an entry with only a name. This allows the programmer
+     * Constructs an entry with only a name. This allows the programmer
      * to construct the entry's header "by hand". File is set to null.
      *
      * <p>The entry's name will be the value of the {@code name}
@@ -634,7 +634,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Construct an entry with only a name. This allows the programmer
+     * Constructs an entry with only a name. This allows the programmer
      * to construct the entry's header "by hand". File is set to null.
      *
      * <p>The entry's name will be the value of the {@code name}
@@ -662,7 +662,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Construct an entry with a name and a link flag.
+     * Constructs an entry with a name and a link flag.
      *
      * <p>The entry's name will be the value of the {@code name}
      * argument with all file separators replaced by forward slashes
@@ -677,7 +677,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Construct an entry with a name and a link flag.
+     * Constructs an entry with a name and a link flag.
      *
      * <p>The entry's name will be the value of the {@code name}
      * argument with all file separators replaced by forward slashes.

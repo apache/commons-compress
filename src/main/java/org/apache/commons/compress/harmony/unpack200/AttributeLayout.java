@@ -260,7 +260,7 @@ public class AttributeLayout implements IMatcher {
     private int backwardsCallCount;
 
     /**
-     * Construct a default AttributeLayout (equivalent to
+     * Constructs a default AttributeLayout (equivalent to
      * {@code new AttributeLayout(name, context, layout, index, true);})
      *
      * @param name TODO
