@@ -224,8 +224,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @since 1.14
      */
     public static String detect(final InputStream inputStream) throws CompressorException {
-        final Set<String> defaultCompressorNamesForDetection = Sets.newHashSet(BZIP2, GZIP, PACK200, SNAPPY_FRAMED, Z, DEFLATE, XZ, LZMA, LZ4_FRAMED, ZSTANDARD);
-        return detect(inputStream, defaultCompressorNamesForDetection);
+        return detect(inputStream, ALL_NAMES);
     }
 
     /**
@@ -476,6 +475,8 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     private volatile boolean decompressConcatenated;
 
     private final int memoryLimitInKb;
+
+    private static final Set<String> ALL_NAMES = Sets.newHashSet(BZIP2, GZIP, PACK200, SNAPPY_FRAMED, Z, DEFLATE, XZ, LZMA, LZ4_FRAMED, ZSTANDARD);
 
     /**
      * Constructs an instance with the decompress Concatenated option set to false.
