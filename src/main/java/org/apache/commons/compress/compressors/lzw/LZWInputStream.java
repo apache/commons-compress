@@ -172,6 +172,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
         // maxCodeSize shifted cannot be less than 256, otherwise the loop in initializeTables() will throw an ArrayIndexOutOfBoundsException
         // maxCodeSize cannot be smaller than getCodeSize(), otherwise addEntry() will throw an ArrayIndexOutOfBoundsException
         if (1 << maxCodeSize < 256 || getCodeSize() > maxCodeSize) {
+            // TODO test against prefixes.length and characters.length?
             throw new IllegalArgumentException("maxCodeSize " + maxCodeSize + " is out of bounds.");
         }
         final int maxTableSize = 1 << maxCodeSize;
