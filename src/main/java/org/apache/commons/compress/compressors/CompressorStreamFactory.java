@@ -97,8 +97,6 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
     private static final CompressorStreamFactory SINGLETON = new CompressorStreamFactory();
 
-
-
     /**
      * Constant (value {@value}) used to identify the BROTLI compression
      * algorithm.
