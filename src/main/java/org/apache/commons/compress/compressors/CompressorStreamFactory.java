@@ -555,7 +555,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      *             if the autodetected compressor is not in the provided set of compressor names
      * @throws IllegalArgumentException
      *             if the stream is null or does not support mark
-     * @since 1.26
+     * @since 1.25.0
      */
     public CompressorInputStream createCompressorInputStream(final InputStream in, final Set<String> compressorNames)
             throws CompressorException {
