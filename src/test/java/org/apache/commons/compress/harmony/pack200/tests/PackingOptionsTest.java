@@ -108,23 +108,6 @@ public class PackingOptionsTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testPackEffort0() throws Pack200Exception, IOException, URISyntaxException {
-        final File f1 = new File(Archive.class.getResource("/pack200/jndi.jar").toURI());
-        File file = createTempFile("jndiE0", ".pack");
-        try (JarFile in = new JarFile(f1);
-                FileOutputStream out = new FileOutputStream(file)) {
-            final PackingOptions options = new PackingOptions();
-            options.setGzip(false);
-            options.setEffort(0);
-            new Archive(in, out, options).pack();
-        }
-        try (JarFile jf1 = new JarFile(f1);
-                JarFile jf2 = new JarFile(file)) {
-            compareFiles(jf1, jf2);
-        }
-    }
-
-    @Test
     public void testErrorAttributes() throws Exception {
         File file = createTempFile("unknown", ".pack");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/jndiWithUnknownAttributes.jar").toURI()));
@@ -359,13 +342,6 @@ public class PackingOptionsTest extends AbstractTempDirTest {
         }
     }
 
-    private void unpackJar(final File sourceFile, final File destFile) throws Pack200Exception, IOException, FileNotFoundException {
-        try (InputStream in2 = new FileInputStream(sourceFile);
-                JarOutputStream out2 = new JarOutputStream(new FileOutputStream(destFile))) {
-            unpack(in2, out2);
-        }
-    }
-
     @Test
     public void testNewAttributes2() throws Exception {
         File file = createTempFile("unknown", ".pack");
@@ -388,6 +364,23 @@ public class PackingOptionsTest extends AbstractTempDirTest {
                 JarFile jarFile2 = new JarFile(compareFile)) {
             assertEquals(jarFile2.size(), jarFile.size());
             compareJarEntries(jarFile, jarFile2);
+        }
+    }
+
+    @Test
+    public void testPackEffort0() throws Pack200Exception, IOException, URISyntaxException {
+        final File f1 = new File(Archive.class.getResource("/pack200/jndi.jar").toURI());
+        File file = createTempFile("jndiE0", ".pack");
+        try (JarFile in = new JarFile(f1);
+                FileOutputStream out = new FileOutputStream(file)) {
+            final PackingOptions options = new PackingOptions();
+            options.setGzip(false);
+            options.setEffort(0);
+            new Archive(in, out, options).pack();
+        }
+        try (JarFile jf1 = new JarFile(f1);
+                JarFile jf2 = new JarFile(file)) {
+            compareFiles(jf1, jf2);
         }
     }
 
@@ -499,22 +492,6 @@ public class PackingOptionsTest extends AbstractTempDirTest {
         }
     }
 
-    // public void testE0again() throws IOException, Pack200Exception,
-    // URISyntaxException {
-    // JarInputStream inputStream = new
-    // JarInputStream(Archive.class.getResourceAsStream("/pack200/jndi.jar"));
-    // file = File.createTempFile("jndiE0", ".pack");
-    // out = new FileOutputStream(file);
-    // Archive archive = new Archive(inputStream, out, false);
-    // archive.setEffort(0);
-    // archive.pack();
-    // inputStream.close();
-    // out.close();
-    // in = new JarFile(new File(Archive.class.getResource(
-    // "/pack200/jndi.jar").toURI()));
-    // compareFiles(in, new JarFile(file));
-    // }
-
     @Test
     public void testStripDebug() throws IOException, Pack200Exception, URISyntaxException {
         File file = createTempFile("sql", ".pack");
@@ -539,8 +516,31 @@ public class PackingOptionsTest extends AbstractTempDirTest {
         }
     }
 
+    // public void testE0again() throws IOException, Pack200Exception,
+    // URISyntaxException {
+    // JarInputStream inputStream = new
+    // JarInputStream(Archive.class.getResourceAsStream("/pack200/jndi.jar"));
+    // file = File.createTempFile("jndiE0", ".pack");
+    // out = new FileOutputStream(file);
+    // Archive archive = new Archive(inputStream, out, false);
+    // archive.setEffort(0);
+    // archive.pack();
+    // inputStream.close();
+    // out.close();
+    // in = new JarFile(new File(Archive.class.getResource(
+    // "/pack200/jndi.jar").toURI()));
+    // compareFiles(in, new JarFile(file));
+    // }
+
     private void unpack(final InputStream inputStream, final JarOutputStream outputStream) throws Pack200Exception, IOException {
         new org.apache.commons.compress.harmony.unpack200.Archive(inputStream, outputStream).unpack();
+    }
+
+    private void unpackJar(final File sourceFile, final File destFile) throws Pack200Exception, IOException, FileNotFoundException {
+        try (InputStream in2 = new FileInputStream(sourceFile);
+                JarOutputStream out2 = new JarOutputStream(new FileOutputStream(destFile))) {
+            unpack(in2, out2);
+        }
     }
 
 }

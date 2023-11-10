@@ -299,30 +299,6 @@ public class MultiReadOnlySeekableByteChannelTest {
 
     // https://docs.oracle.com/javase/7/docs/api/java/io/Closeable.html#close()
 
-    @Test
-    public void testVerifyGrouped() {
-        assertArrayEquals(new byte[][] { new byte[] { 1, 2, 3, }, new byte[] { 4, 5, 6, }, new byte[] { 7, }, },
-                grouped(new byte[] { 1, 2, 3, 4, 5, 6, 7 }, 3));
-        assertArrayEquals(new byte[][] { new byte[] { 1, 2, 3, }, new byte[] { 4, 5, 6, }, }, grouped(new byte[] { 1, 2, 3, 4, 5, 6 }, 3));
-        assertArrayEquals(new byte[][] { new byte[] { 1, 2, 3, }, new byte[] { 4, 5, }, }, grouped(new byte[] { 1, 2, 3, 4, 5, }, 3));
-    }
-
-    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#position()
-
-    /*
-     * <q>ClosedChannelException - If this channel is closed</q>
-     */
-    @Test
-    @Disabled("we deliberately violate the spec")
-    public void throwsClosedChannelExceptionWhenPositionIsReadOnClosedChannel() throws Exception {
-        try (SeekableByteChannel c = testChannel()) {
-            c.close();
-            c.position();
-        }
-    }
-
-    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#size()
-
     /*
      * <q>ClosedChannelException - If this channel is closed</q>
      */
@@ -334,7 +310,7 @@ public class MultiReadOnlySeekableByteChannelTest {
         }
     }
 
-    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#position(long)
+    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#position()
 
     /*
      * <q>ClosedChannelException - If this channel is closed</q>
@@ -347,6 +323,8 @@ public class MultiReadOnlySeekableByteChannelTest {
         }
     }
 
+    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#size()
+
     /*
      * <q>IOException - If the new position is negative</q>
      */
@@ -357,10 +335,32 @@ public class MultiReadOnlySeekableByteChannelTest {
         }
     }
 
+    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#position(long)
+
     @Test
     public void testTwoEmptyChannelsConcatenateAsEmptyChannel() throws IOException {
         try (SeekableByteChannel channel = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty())) {
             checkEmpty(channel);
+        }
+    }
+
+    @Test
+    public void testVerifyGrouped() {
+        assertArrayEquals(new byte[][] { new byte[] { 1, 2, 3, }, new byte[] { 4, 5, 6, }, new byte[] { 7, }, },
+                grouped(new byte[] { 1, 2, 3, 4, 5, 6, 7 }, 3));
+        assertArrayEquals(new byte[][] { new byte[] { 1, 2, 3, }, new byte[] { 4, 5, 6, }, }, grouped(new byte[] { 1, 2, 3, 4, 5, 6 }, 3));
+        assertArrayEquals(new byte[][] { new byte[] { 1, 2, 3, }, new byte[] { 4, 5, }, }, grouped(new byte[] { 1, 2, 3, 4, 5, }, 3));
+    }
+
+    /*
+     * <q>ClosedChannelException - If this channel is closed</q>
+     */
+    @Test
+    @Disabled("we deliberately violate the spec")
+    public void throwsClosedChannelExceptionWhenPositionIsReadOnClosedChannel() throws Exception {
+        try (SeekableByteChannel c = testChannel()) {
+            c.close();
+            c.position();
         }
     }
 

@@ -241,20 +241,6 @@ public class SeekableInMemoryByteChannelTest {
      * <q>ClosedChannelException - If this channel is closed</q>
      */
     @Test
-    @Disabled("we deliberately violate the spec")
-    public void throwsClosedChannelExceptionWhenPositionIsReadOnClosedChannel() throws Exception {
-        try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
-            c.close();
-            c.position();
-        }
-    }
-
-    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#position(long)
-
-    /*
-     * <q>ClosedChannelException - If this channel is closed</q>
-     */
-    @Test
     public void testThrowsClosedChannelExceptionWhenPositionIsSetOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
@@ -262,29 +248,7 @@ public class SeekableInMemoryByteChannelTest {
         }
     }
 
-    /*
-     * <q>ClosedChannelException - If this channel is closed</q>
-     */
-    @Test
-    @Disabled("we deliberately violate the spec")
-    public void throwsClosedChannelExceptionWhenSizeIsReadOnClosedChannel() throws Exception {
-        try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
-            c.close();
-            c.size();
-        }
-    }
-
-    /*
-     * <q>ClosedChannelException - If this channel is closed</q>
-     */
-    @Test
-    @Disabled("we deliberately violate the spec")
-    public void throwsClosedChannelExceptionWhenTruncateIsCalledOnClosedChannel() throws Exception {
-        try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
-            c.close();
-            c.truncate(0);
-        }
-    }
+    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#position(long)
 
     /*
      * <q>IllegalArgumentException - If the new position is negative</q>
@@ -295,8 +259,6 @@ public class SeekableInMemoryByteChannelTest {
             assertThrows(IllegalArgumentException.class, () -> c.truncate(-1));
         }
     }
-
-    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#truncate(long)
 
     /*
      * <q>IOException - If the new position is negative</q>
@@ -333,6 +295,8 @@ public class SeekableInMemoryByteChannelTest {
             assertEquals(testData.length + 1, c.position());
         }
     }
+
+    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#truncate(long)
 
     /*
      * <q> In either case, if the current position is greater than the given size then it is set to that size.</q>
@@ -387,6 +351,42 @@ public class SeekableInMemoryByteChannelTest {
             final ByteBuffer readBuffer = ByteBuffer.allocate(testData.length);
             assertEquals(testData.length, c.read(readBuffer));
             assertArrayEquals(testData, Arrays.copyOf(readBuffer.array(), testData.length));
+        }
+    }
+
+    /*
+     * <q>ClosedChannelException - If this channel is closed</q>
+     */
+    @Test
+    @Disabled("we deliberately violate the spec")
+    public void throwsClosedChannelExceptionWhenPositionIsReadOnClosedChannel() throws Exception {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
+            c.close();
+            c.position();
+        }
+    }
+
+    /*
+     * <q>ClosedChannelException - If this channel is closed</q>
+     */
+    @Test
+    @Disabled("we deliberately violate the spec")
+    public void throwsClosedChannelExceptionWhenSizeIsReadOnClosedChannel() throws Exception {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
+            c.close();
+            c.size();
+        }
+    }
+
+    /*
+     * <q>ClosedChannelException - If this channel is closed</q>
+     */
+    @Test
+    @Disabled("we deliberately violate the spec")
+    public void throwsClosedChannelExceptionWhenTruncateIsCalledOnClosedChannel() throws Exception {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
+            c.close();
+            c.truncate(0);
         }
     }
 

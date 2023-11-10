@@ -572,6 +572,60 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    public void testThrowsIfStoredDDIsDifferentFromLengthRead() throws IOException {
+        try (InputStream fs = newInputStream("bla-stored-dd-contradicts-actualsize.zip");
+                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
+            final ZipArchiveEntry e = archive.getNextZipEntry();
+            assertNotNull(e);
+            assertEquals("test1.xml", e.getName());
+            assertEquals(-1, e.getCompressedSize());
+            assertEquals(-1, e.getSize());
+            assertThrows(ZipException.class, () -> IOUtils.toByteArray(archive));
+        }
+    }
+
+    @Test
+    public void testThrowsIfStoredDDIsInconsistent() throws IOException {
+        try (InputStream fs = newInputStream("bla-stored-dd-sizes-differ.zip");
+                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
+            final ZipArchiveEntry e = archive.getNextZipEntry();
+            assertNotNull(e);
+            assertEquals("test1.xml", e.getName());
+            assertEquals(-1, e.getCompressedSize());
+            assertEquals(-1, e.getSize());
+            assertThrows(ZipException.class, () -> IOUtils.toByteArray(archive));
+        }
+    }
+
+    /**
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-523">COMPRESS-523</a>
+     */
+    @Test
+    public void testThrowsIfThereIsNoEocd() {
+        assertThrows(IOException.class, () -> fuzzingTest(new int[] { 0x50, 0x4b, 0x01, 0x02, 0x14, 0x00, 0x14, 0x00, 0x08, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x43, 0xbe, 0x00, 0x00, 0x00, 0xb7, 0xe8, 0x07, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00 }));
+    }
+
+    /**
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-518">COMPRESS-518</a>
+     */
+    @Test
+    public void testThrowsIfZip64ExtraCouldNotBeUnderstood() {
+        assertThrows(IOException.class,
+                () -> fuzzingTest(new int[] { 0x50, 0x4b, 0x03, 0x04, 0x2e, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x84, 0xb6, 0xba, 0x46, 0x72, 0xb6, 0xfe, 0x77, 0x63,
+                        0x00, 0x00, 0x00, 0x6b, 0x00, 0x00, 0x00, 0x03, 0x00, 0x1c, 0x00, 0x62, 0x62, 0x62, 0x01, 0x00, 0x09, 0x00, 0x03, 0xe7, 0xce, 0x64,
+                        0x55, 0xf3, 0xce, 0x64, 0x55, 0x75, 0x78, 0x0b, 0x00, 0x01, 0x04, 0x5c, 0xf9, 0x01, 0x00, 0x04, 0x88, 0x13, 0x00, 0x00 }));
+    }
+
+    @Test
+    public void testThrowsIOExceptionIfThereIsCorruptedZip64Extra() throws IOException {
+        try (InputStream fis = newInputStream("COMPRESS-546.zip");
+                ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis)) {
+            assertThrows(IOException.class, () -> getAllZipEntries(zipInputStream));
+        }
+    }
+
+    @Test
     public void testUnshrinkEntry() throws Exception {
         try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("SHRUNK.ZIP"))) {
             ZipArchiveEntry entry = in.getNextZipEntry();
@@ -653,60 +707,6 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         try (InputStream fis = newInputStream("COMPRESS-548.zip");
                 ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis)) {
             getAllZipEntries(zipInputStream);
-        }
-    }
-
-    @Test
-    public void testThrowsIfStoredDDIsDifferentFromLengthRead() throws IOException {
-        try (InputStream fs = newInputStream("bla-stored-dd-contradicts-actualsize.zip");
-                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
-            final ZipArchiveEntry e = archive.getNextZipEntry();
-            assertNotNull(e);
-            assertEquals("test1.xml", e.getName());
-            assertEquals(-1, e.getCompressedSize());
-            assertEquals(-1, e.getSize());
-            assertThrows(ZipException.class, () -> IOUtils.toByteArray(archive));
-        }
-    }
-
-    @Test
-    public void testThrowsIfStoredDDIsInconsistent() throws IOException {
-        try (InputStream fs = newInputStream("bla-stored-dd-sizes-differ.zip");
-                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, "UTF-8", true, true)) {
-            final ZipArchiveEntry e = archive.getNextZipEntry();
-            assertNotNull(e);
-            assertEquals("test1.xml", e.getName());
-            assertEquals(-1, e.getCompressedSize());
-            assertEquals(-1, e.getSize());
-            assertThrows(ZipException.class, () -> IOUtils.toByteArray(archive));
-        }
-    }
-
-    /**
-     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-523">COMPRESS-523</a>
-     */
-    @Test
-    public void testThrowsIfThereIsNoEocd() {
-        assertThrows(IOException.class, () -> fuzzingTest(new int[] { 0x50, 0x4b, 0x01, 0x02, 0x14, 0x00, 0x14, 0x00, 0x08, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x43, 0xbe, 0x00, 0x00, 0x00, 0xb7, 0xe8, 0x07, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00 }));
-    }
-
-    /**
-     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-518">COMPRESS-518</a>
-     */
-    @Test
-    public void testThrowsIfZip64ExtraCouldNotBeUnderstood() {
-        assertThrows(IOException.class,
-                () -> fuzzingTest(new int[] { 0x50, 0x4b, 0x03, 0x04, 0x2e, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x84, 0xb6, 0xba, 0x46, 0x72, 0xb6, 0xfe, 0x77, 0x63,
-                        0x00, 0x00, 0x00, 0x6b, 0x00, 0x00, 0x00, 0x03, 0x00, 0x1c, 0x00, 0x62, 0x62, 0x62, 0x01, 0x00, 0x09, 0x00, 0x03, 0xe7, 0xce, 0x64,
-                        0x55, 0xf3, 0xce, 0x64, 0x55, 0x75, 0x78, 0x0b, 0x00, 0x01, 0x04, 0x5c, 0xf9, 0x01, 0x00, 0x04, 0x88, 0x13, 0x00, 0x00 }));
-    }
-
-    @Test
-    public void testThrowsIOExceptionIfThereIsCorruptedZip64Extra() throws IOException {
-        try (InputStream fis = newInputStream("COMPRESS-546.zip");
-                ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis)) {
-            assertThrows(IOException.class, () -> getAllZipEntries(zipInputStream));
         }
     }
 }
