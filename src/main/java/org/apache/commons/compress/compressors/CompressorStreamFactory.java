@@ -208,6 +208,8 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     private static final String YOU_NEED_XZ_JAVA = youNeed("XZ for Java", "https://tukaani.org/xz/java.html");
     private static final String YOU_NEED_ZSTD_JNI = youNeed("Zstd JNI", "https://github.com/luben/zstd-jni");
 
+    private static final Set<String> ALL_NAMES = Sets.newHashSet(BZIP2, GZIP, PACK200, SNAPPY_FRAMED, Z, DEFLATE, XZ, LZMA, LZ4_FRAMED, ZSTANDARD);
+
     private static Iterable<CompressorStreamProvider> archiveStreamProviderIterable() {
         return ServiceLoader.load(CompressorStreamProvider.class, ClassLoader.getSystemClassLoader());
     }
@@ -475,8 +477,6 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     private volatile boolean decompressConcatenated;
 
     private final int memoryLimitInKb;
-
-    private static final Set<String> ALL_NAMES = Sets.newHashSet(BZIP2, GZIP, PACK200, SNAPPY_FRAMED, Z, DEFLATE, XZ, LZMA, LZ4_FRAMED, ZSTANDARD);
 
     /**
      * Constructs an instance with the decompress Concatenated option set to false.

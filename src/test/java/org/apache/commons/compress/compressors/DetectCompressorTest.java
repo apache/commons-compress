@@ -80,6 +80,21 @@ public final class DetectCompressorTest {
         factorySetFalse.setDecompressConcatenated(false);
     }
 
+    public static Stream<Arguments> getDetectLimitedByNameParams() {
+        return Stream.of(
+                Arguments.of("bla.txt.bz2", CompressorStreamFactory.BZIP2),
+                Arguments.of("bla.tgz", CompressorStreamFactory.GZIP),
+                Arguments.of("bla.pack", CompressorStreamFactory.PACK200),
+                Arguments.of("bla.tar.xz", CompressorStreamFactory.XZ),
+                Arguments.of("bla.tar.deflatez", CompressorStreamFactory.DEFLATE),
+                Arguments.of("bla.tar.lz4", CompressorStreamFactory.LZ4_FRAMED),
+                Arguments.of("bla.tar.lzma", CompressorStreamFactory.LZMA),
+                Arguments.of("bla.tar.sz", CompressorStreamFactory.SNAPPY_FRAMED),
+                Arguments.of("bla.tar.Z", CompressorStreamFactory.Z),
+                Arguments.of("bla.tar.zst", CompressorStreamFactory.ZSTANDARD)
+        );
+    }
+
     final CompressorStreamFactory factory = new CompressorStreamFactory();
 
     private final TestData[] tests = {
@@ -110,11 +125,6 @@ public final class DetectCompressorTest {
     }
 
     @SuppressWarnings("resource") // Caller closes.
-    private CompressorInputStream createStreamFor(final String resource, final Set<String> compressorNames) throws CompressorException, IOException {
-        return factory.createCompressorInputStream(new BufferedInputStream(Files.newInputStream(getFile(resource).toPath())), compressorNames);
-    }
-
-    @SuppressWarnings("resource") // Caller closes.
     private CompressorInputStream createStreamFor(final String resource, final CompressorStreamFactory factory) throws CompressorException, IOException {
         return factory.createCompressorInputStream(new BufferedInputStream(Files.newInputStream(getFile(resource).toPath())));
     }
@@ -134,6 +144,11 @@ public final class DetectCompressorTest {
 
     }
 
+    @SuppressWarnings("resource") // Caller closes.
+    private CompressorInputStream createStreamFor(final String resource, final Set<String> compressorNames) throws CompressorException, IOException {
+        return factory.createCompressorInputStream(new BufferedInputStream(Files.newInputStream(getFile(resource).toPath())), compressorNames);
+    }
+
     private String detect(final String testFileName) throws IOException, CompressorException {
         return detect(testFileName, null);
     }
@@ -142,110 +157,6 @@ public final class DetectCompressorTest {
         try (InputStream is = new BufferedInputStream(Files.newInputStream(getFile(testFileName).toPath()))) {
             return compressorNames != null ? CompressorStreamFactory.detect(is, compressorNames) : CompressorStreamFactory.detect(is);
         }
-    }
-
-    @Test
-    public void testDetect() throws Exception {
-        assertEquals(CompressorStreamFactory.BZIP2, detect("bla.txt.bz2"));
-        assertEquals(CompressorStreamFactory.GZIP, detect("bla.tgz"));
-        assertEquals(CompressorStreamFactory.PACK200, detect("bla.pack"));
-        assertEquals(CompressorStreamFactory.XZ, detect("bla.tar.xz"));
-        assertEquals(CompressorStreamFactory.DEFLATE, detect("bla.tar.deflatez"));
-        assertEquals(CompressorStreamFactory.LZ4_FRAMED, detect("bla.tar.lz4"));
-        assertEquals(CompressorStreamFactory.LZMA, detect("bla.tar.lzma"));
-        assertEquals(CompressorStreamFactory.SNAPPY_FRAMED, detect("bla.tar.sz"));
-        assertEquals(CompressorStreamFactory.Z, detect("bla.tar.Z"));
-        assertEquals(CompressorStreamFactory.ZSTANDARD, detect("bla.tar.zst"));
-
-        //make sure we don't oom on detect
-        assertEquals(CompressorStreamFactory.Z, detect("COMPRESS-386"));
-        assertEquals(CompressorStreamFactory.LZMA, detect("COMPRESS-382"));
-
-        assertThrows(CompressorException.class, () -> CompressorStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))));
-
-        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> CompressorStreamFactory.detect(null), "shouldn't be able to detect null stream");
-        assertEquals("Stream must not be null.", e.getMessage());
-
-        final CompressorException ce = assertThrows(CompressorException.class, () -> CompressorStreamFactory.detect(new BufferedInputStream(new BrokenInputStream())), "Expected IOException");
-        assertEquals("IOException while reading signature.", ce.getMessage());
-    }
-
-    @Test
-    public void testDetectNullOrEmptyCompressorNames() throws Exception {
-        assertThrows(IllegalArgumentException.class, () -> CompressorStreamFactory.detect(createStreamFor("bla.txt.bz2"), (Set<String>) null));
-        assertThrows(IllegalArgumentException.class, () -> CompressorStreamFactory.detect(createStreamFor("bla.tgz"), new HashSet<>()));
-    }
-
-    public static Stream<Arguments> limitedByNameData() {
-        return Stream.of(
-                Arguments.of("bla.txt.bz2", CompressorStreamFactory.BZIP2),
-                Arguments.of("bla.tgz", CompressorStreamFactory.GZIP),
-                Arguments.of("bla.pack", CompressorStreamFactory.PACK200),
-                Arguments.of("bla.tar.xz", CompressorStreamFactory.XZ),
-                Arguments.of("bla.tar.deflatez", CompressorStreamFactory.DEFLATE),
-                Arguments.of("bla.tar.lz4", CompressorStreamFactory.LZ4_FRAMED),
-                Arguments.of("bla.tar.lzma", CompressorStreamFactory.LZMA),
-                Arguments.of("bla.tar.sz", CompressorStreamFactory.SNAPPY_FRAMED),
-                Arguments.of("bla.tar.Z", CompressorStreamFactory.Z),
-                Arguments.of("bla.tar.zst", CompressorStreamFactory.ZSTANDARD)
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("limitedByNameData")
-    public void testDetectLimitedByName(final String filename, final String compressorName) throws Exception {
-        assertEquals(compressorName, detect(filename, Collections.singleton(compressorName)));
-    }
-
-    @Test
-    public void testDetectLimitedByNameNotFound() throws Exception {
-        Set<String> compressorNames = Collections.singleton(CompressorStreamFactory.DEFLATE);
-
-        assertThrows(CompressorException.class, () -> detect("bla.txt.bz2", compressorNames));
-        assertThrows(CompressorException.class, () -> detect("bla.tgz", compressorNames));
-        assertThrows(CompressorException.class, () -> detect("bla.pack", compressorNames));
-        assertThrows(CompressorException.class, () -> detect("bla.tar.xz", compressorNames));
-        assertThrows(CompressorException.class, () -> detect("bla.tar.deflatez", Collections.singleton(CompressorStreamFactory.BZIP2)));
-        assertThrows(CompressorException.class, () -> detect("bla.tar.lz4", compressorNames));
-        assertThrows(CompressorException.class, () -> detect("bla.tar.lzma", compressorNames));
-        assertThrows(CompressorException.class, () -> detect("bla.tar.sz", compressorNames));
-        assertThrows(CompressorException.class, () -> detect("bla.tar.Z", compressorNames));
-        assertThrows(CompressorException.class, () -> detect("bla.tar.zst", compressorNames));
-    }
-
-    @Test
-    public void testCreateWithAutoDetection() throws Exception {
-        try (CompressorInputStream bzip2 = createStreamFor("bla.txt.bz2")) {
-            assertNotNull(bzip2);
-            assertTrue(bzip2 instanceof BZip2CompressorInputStream);
-        }
-
-        try (CompressorInputStream gzip = createStreamFor("bla.tgz")) {
-            assertNotNull(gzip);
-            assertTrue(gzip instanceof GzipCompressorInputStream);
-        }
-
-        try (CompressorInputStream pack200 = createStreamFor("bla.pack")) {
-            assertNotNull(pack200);
-            assertTrue(pack200 instanceof Pack200CompressorInputStream);
-        }
-
-        try (CompressorInputStream xz = createStreamFor("bla.tar.xz")) {
-            assertNotNull(xz);
-            assertTrue(xz instanceof XZCompressorInputStream);
-        }
-
-        try (CompressorInputStream zlib = createStreamFor("bla.tar.deflatez")) {
-            assertNotNull(zlib);
-            assertTrue(zlib instanceof DeflateCompressorInputStream);
-        }
-
-        try (CompressorInputStream zstd = createStreamFor("bla.tar.zst")) {
-            assertNotNull(zstd);
-            assertTrue(zstd instanceof ZstdCompressorInputStream);
-        }
-
-        assertThrows(CompressorException.class, () -> factory.createCompressorInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)));
     }
 
     @Test
@@ -289,6 +200,95 @@ public final class DetectCompressorTest {
         assertThrows(CompressorException.class, () -> createStreamFor("bla.tar.xz", Collections.singleton(CompressorStreamFactory.GZIP)));
         assertThrows(CompressorException.class, () -> createStreamFor("bla.tar.deflatez", Collections.singleton(CompressorStreamFactory.PACK200)));
         assertThrows(CompressorException.class, () -> createStreamFor("bla.tar.zst", Collections.singleton(CompressorStreamFactory.LZ4_FRAMED)));
+    }
+
+    @Test
+    public void testCreateWithAutoDetection() throws Exception {
+        try (CompressorInputStream bzip2 = createStreamFor("bla.txt.bz2")) {
+            assertNotNull(bzip2);
+            assertTrue(bzip2 instanceof BZip2CompressorInputStream);
+        }
+
+        try (CompressorInputStream gzip = createStreamFor("bla.tgz")) {
+            assertNotNull(gzip);
+            assertTrue(gzip instanceof GzipCompressorInputStream);
+        }
+
+        try (CompressorInputStream pack200 = createStreamFor("bla.pack")) {
+            assertNotNull(pack200);
+            assertTrue(pack200 instanceof Pack200CompressorInputStream);
+        }
+
+        try (CompressorInputStream xz = createStreamFor("bla.tar.xz")) {
+            assertNotNull(xz);
+            assertTrue(xz instanceof XZCompressorInputStream);
+        }
+
+        try (CompressorInputStream zlib = createStreamFor("bla.tar.deflatez")) {
+            assertNotNull(zlib);
+            assertTrue(zlib instanceof DeflateCompressorInputStream);
+        }
+
+        try (CompressorInputStream zstd = createStreamFor("bla.tar.zst")) {
+            assertNotNull(zstd);
+            assertTrue(zstd instanceof ZstdCompressorInputStream);
+        }
+
+        assertThrows(CompressorException.class, () -> factory.createCompressorInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)));
+    }
+
+    @Test
+    public void testDetect() throws Exception {
+        assertEquals(CompressorStreamFactory.BZIP2, detect("bla.txt.bz2"));
+        assertEquals(CompressorStreamFactory.GZIP, detect("bla.tgz"));
+        assertEquals(CompressorStreamFactory.PACK200, detect("bla.pack"));
+        assertEquals(CompressorStreamFactory.XZ, detect("bla.tar.xz"));
+        assertEquals(CompressorStreamFactory.DEFLATE, detect("bla.tar.deflatez"));
+        assertEquals(CompressorStreamFactory.LZ4_FRAMED, detect("bla.tar.lz4"));
+        assertEquals(CompressorStreamFactory.LZMA, detect("bla.tar.lzma"));
+        assertEquals(CompressorStreamFactory.SNAPPY_FRAMED, detect("bla.tar.sz"));
+        assertEquals(CompressorStreamFactory.Z, detect("bla.tar.Z"));
+        assertEquals(CompressorStreamFactory.ZSTANDARD, detect("bla.tar.zst"));
+
+        //make sure we don't oom on detect
+        assertEquals(CompressorStreamFactory.Z, detect("COMPRESS-386"));
+        assertEquals(CompressorStreamFactory.LZMA, detect("COMPRESS-382"));
+
+        assertThrows(CompressorException.class, () -> CompressorStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))));
+
+        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> CompressorStreamFactory.detect(null), "shouldn't be able to detect null stream");
+        assertEquals("Stream must not be null.", e.getMessage());
+
+        final CompressorException ce = assertThrows(CompressorException.class, () -> CompressorStreamFactory.detect(new BufferedInputStream(new BrokenInputStream())), "Expected IOException");
+        assertEquals("IOException while reading signature.", ce.getMessage());
+    }
+
+    @ParameterizedTest
+    @MethodSource("getDetectLimitedByNameParams")
+    public void testDetectLimitedByName(final String filename, final String compressorName) throws Exception {
+        assertEquals(compressorName, detect(filename, Collections.singleton(compressorName)));
+    }
+
+    @Test
+    public void testDetectLimitedByNameNotFound() throws Exception {
+        final Set<String> compressorNames = Collections.singleton(CompressorStreamFactory.DEFLATE);
+
+        assertThrows(CompressorException.class, () -> detect("bla.txt.bz2", compressorNames));
+        assertThrows(CompressorException.class, () -> detect("bla.tgz", compressorNames));
+        assertThrows(CompressorException.class, () -> detect("bla.pack", compressorNames));
+        assertThrows(CompressorException.class, () -> detect("bla.tar.xz", compressorNames));
+        assertThrows(CompressorException.class, () -> detect("bla.tar.deflatez", Collections.singleton(CompressorStreamFactory.BZIP2)));
+        assertThrows(CompressorException.class, () -> detect("bla.tar.lz4", compressorNames));
+        assertThrows(CompressorException.class, () -> detect("bla.tar.lzma", compressorNames));
+        assertThrows(CompressorException.class, () -> detect("bla.tar.sz", compressorNames));
+        assertThrows(CompressorException.class, () -> detect("bla.tar.Z", compressorNames));
+        assertThrows(CompressorException.class, () -> detect("bla.tar.zst", compressorNames));
+    }
+
+    @Test
+    public void testDetectNullOrEmptyCompressorNames() throws Exception {
+        assertThrows(IllegalArgumentException.class, () -> CompressorStreamFactory.detect(createStreamFor("bla.txt.bz2"), (Set<String>) null));
+        assertThrows(IllegalArgumentException.class, () -> CompressorStreamFactory.detect(createStreamFor("bla.tgz"), new HashSet<>()));
     }
 
     @Test
