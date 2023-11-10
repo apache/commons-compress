@@ -25,7 +25,6 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collections;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.SortedMap;
