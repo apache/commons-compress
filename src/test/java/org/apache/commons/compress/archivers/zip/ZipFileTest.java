@@ -888,6 +888,13 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
+    public void testThrowsExceptionWhenWritingPreamble() throws IOException {
+        final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
+        outputStream.putArchiveEntry(new ZipArchiveEntry());
+        assertThrows(IllegalStateException.class, () -> outputStream.writePreamble(ByteUtils.EMPTY_BYTE_ARRAY));
+    }
+
+    @Test
     public void testUnixSymlinkSampleFile() throws Exception {
         final String entryPrefix = "COMPRESS-214_unix_symlinks/";
         final TreeMap<String, String> expectedVals = new TreeMap<>();
@@ -964,12 +971,5 @@ public class ZipFileTest extends AbstractTest {
         zf = new ZipFile(archive);
         assertNull(zf.getEntry("\u00e4\\\u00fc.txt"));
         assertNotNull(zf.getEntry("\u00e4/\u00fc.txt"));
-    }
-
-    @Test
-    public void testThrowsExceptionWhenWritingPreamble() throws IOException {
-        final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
-        outputStream.putArchiveEntry(new ZipArchiveEntry());
-        assertThrows(IllegalStateException.class, () -> outputStream.writePreamble(ByteUtils.EMPTY_BYTE_ARRAY));
     }
 }

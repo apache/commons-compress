@@ -101,7 +101,7 @@ final class NioZipEncoding implements ZipEncoding, CharsetAccessor {
     private final boolean useReplacement;
 
     /**
-     * Construct an NioZipEncoding using the given charset.
+     * Constructs an NioZipEncoding using the given charset.
      * @param charset  The character set to use.
      * @param useReplacement should invalid characters be replaced, or reported.
      */
