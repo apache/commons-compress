@@ -105,7 +105,6 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTest {
     @Test
     public void test64KMultipleBlocks() throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int count = 0;
         byte[] expected = new byte[98304];
         new Random(0).nextBytes(expected);
         try (FramedLZ4CompressorOutputStream compressor = 
