@@ -156,7 +156,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     final String encoding;
 
     /**
-     * Construct the cpio input stream with a blocksize of {@link
+     * Constructs the cpio input stream with a blocksize of {@link
      * CpioConstants#BLOCK_SIZE BLOCK_SIZE} and expecting ASCII file
      * names.
      *
@@ -168,7 +168,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     }
 
     /**
-     * Construct the cpio input stream with a blocksize of {@link
+     * Constructs the cpio input stream with a blocksize of {@link
      * CpioConstants#BLOCK_SIZE BLOCK_SIZE} expecting ASCII file
      * names.
      *
@@ -183,7 +183,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     }
 
     /**
-     * Construct the cpio input stream with a blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
+     * Constructs the cpio input stream with a blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
      *
      * @param in
      *            The cpio stream
@@ -206,7 +206,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     }
 
     /**
-     * Construct the cpio input stream with a blocksize of {@link
+     * Constructs the cpio input stream with a blocksize of {@link
      * CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
      *
      * @param in

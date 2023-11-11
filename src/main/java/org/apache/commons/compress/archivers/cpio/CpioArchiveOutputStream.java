@@ -100,7 +100,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     final String encoding;
 
     /**
-     * Construct the cpio output stream. The format for this CPIO stream is the
+     * Constructs the cpio output stream. The format for this CPIO stream is the
      * "new" format using ASCII encoding for file names
      *
      * @param out
@@ -111,7 +111,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     }
 
     /**
-     * Construct the cpio output stream with a specified format, a
+     * Constructs the cpio output stream with a specified format, a
      * blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE} and
      * using ASCII as the file name encoding.
      *
@@ -125,7 +125,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     }
 
     /**
-     * Construct the cpio output stream with a specified format using
+     * Constructs the cpio output stream with a specified format using
      * ASCII as the file name encoding.
      *
      * @param out
@@ -143,7 +143,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     }
 
     /**
-     * Construct the cpio output stream with a specified format using
+     * Constructs the cpio output stream with a specified format using
      * ASCII as the file name encoding.
      *
      * @param out
@@ -178,7 +178,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     }
 
     /**
-     * Construct the cpio output stream. The format for this CPIO stream is the
+     * Constructs the cpio output stream. The format for this CPIO stream is the
      * "new" format.
      *
      * @param out

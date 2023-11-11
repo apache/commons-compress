@@ -984,6 +984,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     private void pushback(final byte[] buf, final int offset, final int length) throws IOException {
+        if (offset < 0) {
+            // Instead of ArrayIndexOutOfBoundsException
+            throw new IOException(String.format("Negative offset %,d into buffer", offset));
+        }
         ((PushbackInputStream) inputStream).unread(buf, offset, length);
         pushedBackBytes(length);
     }
