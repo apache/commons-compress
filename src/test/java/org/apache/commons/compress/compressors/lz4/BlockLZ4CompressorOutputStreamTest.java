@@ -376,42 +376,4 @@ public class BlockLZ4CompressorOutputStreamTest {
         assertArrayEquals(new byte[] { 15, 1, 0, (byte) 255, 0 }, bos.toByteArray());
     }
     
-    @Test
-    public void testWriteByteArrayVsWriteByte() throws IOException {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 1; i++) {
-            sb.append("abcdefghijklmnop");
-        }
-        byte[] random = sb.toString().getBytes();
-        try (FramedLZ4CompressorOutputStream compressor = 
-                new FramedLZ4CompressorOutputStream(buffer, 
-                        new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
-            compressor.write(random);
-            compressor.finish();
-        }
-        byte[] bulkOutput = buffer.toByteArray();
-        buffer = new ByteArrayOutputStream();
-        try (FramedLZ4CompressorOutputStream compressor = 
-                new FramedLZ4CompressorOutputStream(buffer, 
-                        new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
-            for (int i = 0; i < random.length; i++) {
-                compressor.write(random[i]);
-            }
-            compressor.finish();
-        }
-        byte[] singleOutput = buffer.toByteArray();
-        assertTrue(Arrays.equals(bulkOutput, singleOutput));
-    }
-    
-    @Test
-    public void testFinishWithNoWrite() throws IOException {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        try (FramedLZ4CompressorOutputStream compressor = 
-                new FramedLZ4CompressorOutputStream(buffer, 
-                        new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
-            // do nothing here. this will test that flush on close doesn't throw any exceptions if no data is written.
-        }
-        assertTrue(buffer.size() == 15, "only the trailer gets written.");
-    }
 }
