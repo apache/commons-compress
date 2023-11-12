@@ -375,5 +375,4 @@ public class BlockLZ4CompressorOutputStreamTest {
         p.writeTo(bos);
         assertArrayEquals(new byte[] { 15, 1, 0, (byte) 255, 0 }, bos.toByteArray());
     }
-    
 }
