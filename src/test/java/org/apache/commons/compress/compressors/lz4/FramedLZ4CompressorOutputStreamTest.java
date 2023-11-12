@@ -39,17 +39,17 @@ public class FramedLZ4CompressorOutputStreamTest {
     @Test
     public void testWriteByteArrayVsWriteByte() throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        final byte[] random = "abcdefghijklmnop".getBytes();
+        final byte[] bytes = "abcdefghijklmnop".getBytes();
         try (FramedLZ4CompressorOutputStream compressor = new FramedLZ4CompressorOutputStream(buffer,
                 new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
-            compressor.write(random);
+            compressor.write(bytes);
             compressor.finish();
         }
         final byte[] bulkOutput = buffer.toByteArray();
         buffer = new ByteArrayOutputStream();
         try (FramedLZ4CompressorOutputStream compressor = new FramedLZ4CompressorOutputStream(buffer,
                 new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
-            for (final byte element : random) {
+            for (final byte element : bytes) {
                 compressor.write(element);
             }
             compressor.finish();
