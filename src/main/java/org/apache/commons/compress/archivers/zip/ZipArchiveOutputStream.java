@@ -1118,7 +1118,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     private ZipEncoding getEntryEncoding(final ZipArchiveEntry ze) {
         final boolean encodable = zipEncoding.canEncode(ze.getName());
         return !encodable && fallbackToUTF8
-            ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
+            ? ZipEncodingHelper.ZIP_ENCODING_UTF_8 : zipEncoding;
     }
 
     private GeneralPurposeBit getGeneralPurposeBits(final boolean utfFallback, final boolean usesDataDescriptor) {

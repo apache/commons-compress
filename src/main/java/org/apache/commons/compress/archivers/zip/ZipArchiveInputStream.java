@@ -779,7 +779,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
         final GeneralPurposeBit gpFlag = GeneralPurposeBit.parse(lfhBuf, off);
         final boolean hasUTF8Flag = gpFlag.usesUTF8ForNames();
-        final ZipEncoding entryEncoding = hasUTF8Flag ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
+        final ZipEncoding entryEncoding = hasUTF8Flag ? ZipEncodingHelper.ZIP_ENCODING_UTF_8 : zipEncoding;
         current.hasDataDescriptor = gpFlag.usesDataDescriptor();
         current.entry.setGeneralPurposeBit(gpFlag);
 

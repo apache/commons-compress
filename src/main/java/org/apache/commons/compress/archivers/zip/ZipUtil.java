@@ -229,7 +229,7 @@ public abstract class ZipUtil {
             if (origCRC32 == f.getNameCRC32()) {
                 try {
                     return ZipEncodingHelper
-                        .UTF8_ZIP_ENCODING.decode(f.getUnicodeName());
+                        .ZIP_ENCODING_UTF_8.decode(f.getUnicodeName());
                 } catch (final IOException ex) {
                     // UTF-8 unsupported?  should be impossible the
                     // Unicode*ExtraField must contain some bad bytes

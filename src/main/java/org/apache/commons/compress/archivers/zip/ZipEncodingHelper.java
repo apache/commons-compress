@@ -24,6 +24,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 
 import org.apache.commons.compress.utils.CharsetNames;
+import org.apache.commons.compress.utils.Charsets;
 
 /**
  * Static helper functions for robustly encoding file names in ZIP files.
@@ -31,9 +32,9 @@ import org.apache.commons.compress.utils.CharsetNames;
 public abstract class ZipEncodingHelper {
 
     /**
-     * the encoding UTF-8
+     * UTF-8.
      */
-    static final ZipEncoding UTF8_ZIP_ENCODING = getZipEncoding(CharsetNames.UTF_8);
+    static final ZipEncoding ZIP_ENCODING_UTF_8 = getZipEncoding(CharsetNames.UTF_8);
 
     /**
      * Instantiates a ZIP encoding. An NIO based character set encoder/decoder will be returned.
@@ -49,11 +50,9 @@ public abstract class ZipEncodingHelper {
      */
     public static ZipEncoding getZipEncoding(final String name) {
         Charset cs = Charset.defaultCharset();
-        if (name != null) {
-            try {
-                cs = Charset.forName(name);
-            } catch (final UnsupportedCharsetException e) { // NOSONAR we use the default encoding instead
-            }
+        try {
+            cs = Charsets.toCharset(name);
+        } catch (final UnsupportedCharsetException ignore) { // NOSONAR we use the default encoding instead
         }
         final boolean useReplacement = isUTF8(cs.name());
         return new NioZipEncoding(cs, useReplacement);
@@ -70,7 +69,7 @@ public abstract class ZipEncodingHelper {
     }
 
     /**
-     * Returns whether a given encoding is UTF-8. If the given name is null, then check the platform's default encoding.
+     * Tests whether a given encoding is UTF-8. If the given name is null, then check the platform's default encoding.
      *
      * @param charsetName If the given name is null, then check the platform's default encoding.
      */

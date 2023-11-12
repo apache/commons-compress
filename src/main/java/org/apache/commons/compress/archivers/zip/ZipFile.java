@@ -1175,7 +1175,7 @@ public class ZipFile implements Closeable {
 
         final GeneralPurposeBit gpFlag = GeneralPurposeBit.parse(cfhBuf, off);
         final boolean hasUTF8Flag = gpFlag.usesUTF8ForNames();
-        final ZipEncoding entryEncoding = hasUTF8Flag ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
+        final ZipEncoding entryEncoding = hasUTF8Flag ? ZipEncodingHelper.ZIP_ENCODING_UTF_8 : zipEncoding;
         if (hasUTF8Flag) {
             ze.setNameSource(ZipArchiveEntry.NameSource.NAME_WITH_EFS_FLAG);
         }
