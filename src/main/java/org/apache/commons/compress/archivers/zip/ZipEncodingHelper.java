@@ -41,7 +41,7 @@ public abstract class ZipEncodingHelper {
 
     /**
      * Instantiates a ZIP encoding. An NIO based character set encoder/decoder will be returned.
-     * As a special case, if the character set is UTF-8, the nio encoder will be configured  replace malformed and
+     * As a special case, if the character set is UTF-8, theNIOencoder will be configured  replace malformed and
      * unmappable characters with '?'. This matches existing behavior from the older fallback encoder.
      * <p>
      *     If the requested character set cannot be found, the platform default will
