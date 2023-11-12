@@ -19,7 +19,6 @@
 package org.apache.commons.compress.archivers.jar;
 
 import java.security.cert.Certificate;
-import java.util.Arrays;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.zip.ZipEntry;
@@ -34,23 +33,41 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
  */
 public class JarArchiveEntry extends ZipArchiveEntry {
 
-    // These are always null - see https://issues.apache.org/jira/browse/COMPRESS-18 for discussion
-    private final Attributes manifestAttributes = null;
-    private final Certificate[] certificates = null;
-
+    /**
+     * Constructs a new instance.
+     *
+     * @param entry See super.
+     * @throws ZipException See super.
+     */
     public JarArchiveEntry(final JarEntry entry) throws ZipException {
         super(entry);
-
     }
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param name See super.
+     */
     public JarArchiveEntry(final String name) {
         super(name);
     }
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param entry See super.
+     * @throws ZipException See super.
+     */
     public JarArchiveEntry(final ZipArchiveEntry entry) throws ZipException {
         super(entry);
     }
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param entry See super.
+     * @throws ZipException See super.
+     */
     public JarArchiveEntry(final ZipEntry entry) throws ZipException {
         super(entry);
     }
@@ -59,32 +76,29 @@ public class JarArchiveEntry extends ZipArchiveEntry {
      * Gets a copy of the list of certificates or null if there are none.
      *
      * @return Always returns null in the current implementation
-     *
      * @deprecated since 1.5, not currently implemented
      */
     @Deprecated
     public Certificate[] getCertificates() {
-        if (certificates != null) { // never true currently // NOSONAR
-            return Arrays.copyOf(certificates, certificates.length);
-        }
-        /*
-         * Note, the method
-         * Certificate[] java.util.jar.JarEntry.getCertificates()
-         * also returns null or the list of certificates (but not copied)
-         */
+        //
+        // Note, the method
+        // Certificate[] java.util.jar.JarEntry.getCertificates()
+        // also returns null or the list of certificates (but not copied)
+        //
+        // see https://issues.apache.org/jira/browse/COMPRESS-18 for discussion
         return null;
     }
 
     /**
-     * This method is not implemented and won't ever be.
-     * The JVM equivalent has a different name {@link java.util.jar.JarEntry#getAttributes()}
+     * This method is not implemented and won't ever be. The JVM equivalent has a different name {@link java.util.jar.JarEntry#getAttributes()}
      *
      * @deprecated since 1.5, do not use; always returns null
      * @return Always returns null.
      */
     @Deprecated
     public Attributes getManifestAttributes() {
-        return manifestAttributes;
+        // see https://issues.apache.org/jira/browse/COMPRESS-18 for discussion
+        return null;
     }
 
 }
