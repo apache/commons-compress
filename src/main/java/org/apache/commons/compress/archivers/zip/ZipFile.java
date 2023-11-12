@@ -848,13 +848,13 @@ public class ZipFile implements Closeable {
      * @since 1.6
      */
     public Iterable<ZipArchiveEntry> getEntriesInPhysicalOrder(final String name) {
-        ZipArchiveEntry[] entriesOfThatName = ZipArchiveEntry.EMPTY_ARRAY;
+        ZipArchiveEntry[] entries = ZipArchiveEntry.EMPTY_ARRAY;
         final LinkedList<ZipArchiveEntry> linkedList = nameMap.get(name);
         if (linkedList != null) {
-            entriesOfThatName = linkedList.toArray(entriesOfThatName);
-            Arrays.sort(entriesOfThatName, offsetComparator);
+            entries = linkedList.toArray(entries);
+            Arrays.sort(entries, offsetComparator);
         }
-        return Arrays.asList(entriesOfThatName);
+        return Arrays.asList(entries);
     }
 
     /**
@@ -868,8 +868,8 @@ public class ZipFile implements Closeable {
      * @return the ZipArchiveEntry corresponding to the given name - or {@code null} if not present.
      */
     public ZipArchiveEntry getEntry(final String name) {
-        final LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.get(name);
-        return entriesOfThatName != null ? entriesOfThatName.getFirst() : null;
+        final LinkedList<ZipArchiveEntry> entries = nameMap.get(name);
+        return entries != null ? entries.getFirst() : null;
     }
 
     /**
