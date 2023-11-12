@@ -33,7 +33,7 @@ public class FramedLZ4CompressorOutputStreamTest {
                 new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
             // do nothing here. this will test that flush on close doesn't throw any exceptions if no data is written.
         }
-        assertTrue(buffer.size() == 15, "only the trailer gets written.");
+        assertTrue(buffer.size() == 15, "Only the trailer gets written.");
     }
 
     @Test
