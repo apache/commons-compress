@@ -1,3 +1,91 @@
+Apache Commons Compress 
+Version 1.25.0-SNAPSHOT
+Release Notes
+
+INTRODUCTION:
+
+Apache Commons Compress defines an API for working with compression and
+archive formats.  These include: bzip2, gzip, pack200, LZMA, XZ, Snappy,
+traditional Unix Compress, DEFLATE, DEFLATE64, LZ4, Brotli, Zstandard and
+ar, cpio, jar, tar, zip, dump, 7z, arj.
+
+Apache Commons Compress defines an API for working with
+compression and archive formats.  These include: bzip2, gzip, pack200,
+LZMA, XZ, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
+Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
+
+Minor feature and maintenance release.
+
+Changes in this version include:
+
+New features:
+o           Add GzipParameters.getFileName() and deprecate getFilename(). Thanks to Gary Gregory. 
+o           Add GzipParameters.setFileName(String) and deprecate setFilename(String). Thanks to Gary Gregory. 
+o           Add FileNameUtil.getCompressedFileName(String) and deprecate getCompressedFilename(String). Thanks to Gary Gregory. 
+o           Add FileNameUtil.getUncompressedFileName(String) and deprecate getUncompressedFilename(String). Thanks to Gary Gregory. 
+o           Add FileNameUtil.isCompressedFileName(String) and deprecate isCompressedFilename(String). Thanks to Gary Gregory. 
+o           Add BZip2Utils.getCompressedFileName(String) and deprecate getCompressedFilename(String). Thanks to Gary Gregory. 
+o           Add BZip2Utils.getUncompressedFileName(String) and deprecate getUncompressedFilename(String). Thanks to Gary Gregory. 
+o           Add BZip2Utils.isCompressedFileName(String) and deprecate isCompressedFilename(String). Thanks to Gary Gregory. 
+o           Add LZMAUtils.getCompressedFileName(String) and deprecate getCompressedFilename(String). Thanks to Gary Gregory. 
+o           Add LZMAUtils.getUncompressedFileName(String) and deprecate getUncompressedFilename(String). Thanks to Gary Gregory. 
+o           Add LZMAUtils.isCompressedFileName(String) and deprecate isCompressedFilename(String). Thanks to Gary Gregory. 
+o           Add XYUtils.getCompressedFileName(String) and deprecate getCompressedFilename(String). Thanks to Gary Gregory. 
+o           Add XYUtils.getUncompressedFileName(String) and deprecate getUncompressedFilename(String). Thanks to Gary Gregory. 
+o           Add XYUtils.isCompressedFileName(String) and deprecate isCompressedFilename(String). Thanks to Gary Gregory. 
+o           Add GzipUtils.getCompressedFileName(String) and deprecate getCompressedFilename(String). Thanks to Gary Gregory. 
+o           Add GzipUtils.getUncompressedFileName(String) and deprecate getUncompressedFilename(String). Thanks to Gary Gregory. 
+o           Add GzipUtils.isCompressedFileName(String) and deprecate isCompressedFilename(String). Thanks to Gary Gregory. 
+o           Add SevenZOutputFile.putArchiveEntry(SevenZArchiveEntry) and deprecate putArchiveEntry(ArchiveEntry). Thanks to Gary Gregory. 
+o           Add generics to ChangeSet and ChangeSetPerformer. Thanks to Gary Gregory. 
+o           Add generics to ArchiveStreamProvider and friends. Thanks to Gary Gregory. 
+o           Add a generic type parameter to ArchiveOutputStream and avoid unchecked/unconfirmed type casts in subclasses. Thanks to Gary Gregory. 
+o           Add a generic type parameter to ArchiveInputStream and deprecate redundant get methods in subclasses. Thanks to Gary Gregory. 
+o COMPRESS-648:  Add ability to restrict autodetection in CompressorStreamFactory #433. Thanks to Yakov Shafranovich, Gary Gregory. 
+
+Fixed Bugs:
+o           Precompile regular expression in ArArchiveInputStream.isBSDLongName(String). Thanks to Gary Gregory. 
+o           Precompile regular expression in ArArchiveInputStream.isGNULongName(String). Thanks to Gary Gregory. 
+o           Precompile regular expression in TarArchiveEntry.parseInstantFromDecimalSeconds(String). Thanks to Gary Gregory. 
+o           Precompile regular expression in ChangeSet.addDeletion(Change). Thanks to Gary Gregory. 
+o COMPRESS-649:  Improve performance in BlockLZ4CompressorOutputStream. Thanks to Gary Gregory. 
+o           Null-guard Lister.main(String[]) for programmatic invocation. Thanks to Gary Gregory. 
+o           NPE in pack200.NewAttributeBands.Reference.addAttributeToBand(NewAttribute, InputStream). Thanks to Gary Gregory. 
+o           Incorrect lazy initialization and update of static field in pack200.CodecEncoding.getSpecifier(Codec, Codec). Thanks to Gary Gregory. 
+o           Incorrect string comparison in unpack200.AttributeLayout.numBackwardsCallables(). Thanks to Gary Gregory. 
+o           Inefficient use of keySet iterator instead of entrySet iterator in pack200.PackingOptions.addOrUpdateAttributeActions(List, Map, int). Thanks to Gary Gregory. 
+o           Package private class pack200.IcBands.IcTuple should be a static inner class. Thanks to Gary Gregory. 
+o           Private class ZipFile.BoundedFileChannelInputStream should be a static inner class. Thanks to Gary Gregory. 
+o           Refactor internal SevenZ AES256SHA256Decoder InputStream into a named static inner class. Thanks to Gary Gregory. 
+o           Refactor internal SevenZ AES256SHA256Decoder OutputStream into a named static inner class. Thanks to Gary Gregory. 
+o           Use the root Locale for string conversion of command line options in org.apache.commons.compress.archivers.sevenz.CLI. Thanks to Gary Gregory. 
+o           Calling PackingUtils.config(PackingOptions) with null now closes the internal FileHandler. Thanks to Gary Gregory. 
+o COMPRESS-650:  LZ4 compressor throws IndexOutOfBoundsException. Thanks to Chad Preisler. 
+o COMPRESS-632:  LZWInputStream.initializeTables(int) should throw IllegalArgumentException instead of ArrayIndexOutOfBoundsException. Thanks to Yakov Shafranovich, Gary Gregory. 
+o COMPRESS-647:  Throw IOException instead of ArrayIndexOutOfBoundsException when reading Zip with data descriptor entries. Thanks to Robin Schimpf, Gary Gregory. 
+
+Changes:
+o           Bump org.slf4j:slf4j-api from 2.0.8 to 2.0.9 #413. Thanks to Dependabot. 
+o           Bump commons-io:commons-io from 2.13.0 to 2.15.0. Thanks to Gary Gregory. 
+o           Bump com.github.luben:zstd-jni from 1.5.5-5 to 1.5.5-10 #422, #431. Thanks to Dependabot. 
+o           Bump org.ow2.asm:asm from 9.5 to 9.6 #421. Thanks to Dependabot. 
+o           Bump org.apache.commons:commons-parent from 62 to 64 #421. Thanks to Dependabot, Gary Gregory. 
+
+
+Historical list of changes: https://commons.apache.org/proper/commons-compress/changes-report.html
+
+For complete information on Apache Commons Compress, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Compress website:
+
+https://commons.apache.org/proper/commons-compress/
+
+Download page: https://commons.apache.org/proper/commons-compress/download_io.cgi
+
+Have fun!
+-Apache Commons Team
+
+==============================================================================
+
               Apache Commons Compress 1.24.0 RELEASE NOTES
 
 Apache Commons Compress defines an API for working with
