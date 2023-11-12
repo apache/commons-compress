@@ -104,11 +104,11 @@ public final class IOUtils {
      * @throws IOException
      *             if an error occurs
      * @throws IllegalArgumentException
-     *             if buffersize is smaller than or equal to 0
+     *             if bufferSize is smaller than or equal to 0
      */
     public static long copy(final InputStream input, final OutputStream output, final int bufferSize) throws IOException {
         if (bufferSize < 1) {
-            throw new IllegalArgumentException("buffersize must be bigger than 0");
+            throw new IllegalArgumentException("bufferSize must be bigger than 0");
         }
         final byte[] buffer = new byte[bufferSize];
         int n = 0;
@@ -157,13 +157,13 @@ public final class IOUtils {
      * @throws IOException
      *             if an error occurs
      * @throws IllegalArgumentException
-     *             if buffersize is smaller than or equal to 0
+     *             if bufferSize is smaller than or equal to 0
      * @since 1.21
      */
     public static long copyRange(final InputStream input, final long len, final OutputStream output,
         final int bufferSize) throws IOException {
         if (bufferSize < 1) {
-            throw new IllegalArgumentException("buffersize must be bigger than 0");
+            throw new IllegalArgumentException("bufferSize must be bigger than 0");
         }
         final byte[] buffer = new byte[(int) Math.min(bufferSize, len)];
         int n = 0;
