@@ -334,7 +334,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * The encoding to use for file names and the file comment.
      *
      * <p>For a list of possible values see <a
-     * href="http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html">http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html</a>.
+     * href="https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html">Supported Encodings</a>.
      * Defaults to UTF-8.</p>
      */
     private String encoding = DEFAULT_ENCODING;
@@ -1451,7 +1451,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * The encoding to use for file names and the file comment.
      *
      * <p>For a list of possible values see <a
-     * href="http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html">http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html</a>.
+     * href="https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html">Supported Encodings</a>.
      * Defaults to UTF-8.</p>
      * @param encoding the encoding to use for file names, use null
      * for the platform's default encoding
