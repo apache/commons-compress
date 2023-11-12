@@ -884,10 +884,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         case C_ISNWK:
             break;
         default:
-            throw new IllegalArgumentException(
-                                               "Unknown mode. "
-                                               + "Full: " + Long.toHexString(mode)
-                                               + " Masked: " + Long.toHexString(maskedMode));
+            throw new IllegalArgumentException("Unknown mode. " + "Full: " + Long.toHexString(mode) + " Masked: " + Long.toHexString(maskedMode));
         }
 
         this.mode = mode;
