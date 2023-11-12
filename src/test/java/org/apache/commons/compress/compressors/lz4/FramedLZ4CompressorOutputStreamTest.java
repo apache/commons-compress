@@ -39,9 +39,7 @@ public class FramedLZ4CompressorOutputStreamTest {
     @Test
     public void testWriteByteArrayVsWriteByte() throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        final StringBuilder sb = new StringBuilder();
-        sb.append("abcdefghijklmnop");
-        final byte[] random = sb.toString().getBytes();
+        final byte[] random = "abcdefghijklmnop".getBytes();
         try (FramedLZ4CompressorOutputStream compressor = new FramedLZ4CompressorOutputStream(buffer,
                 new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
             compressor.write(random);
