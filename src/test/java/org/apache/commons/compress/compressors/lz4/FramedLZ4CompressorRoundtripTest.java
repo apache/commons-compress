@@ -108,7 +108,7 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTest {
         final byte[] expected = new byte[98304];
         new Random(0).nextBytes(expected);
         try (FramedLZ4CompressorOutputStream compressor = new FramedLZ4CompressorOutputStream(buffer,
-                        new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
+                new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
             compressor.write(expected);
         }
         try (FramedLZ4CompressorInputStream sis = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(buffer.toByteArray()))) {
