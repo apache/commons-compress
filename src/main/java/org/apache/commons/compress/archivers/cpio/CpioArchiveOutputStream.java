@@ -158,8 +158,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      *
      * @since 1.6
      */
-    public CpioArchiveOutputStream(final OutputStream out, final short format,
-                                   final int blockSize, final String encoding) {
+    public CpioArchiveOutputStream(final OutputStream out, final short format, final int blockSize, final String encoding) {
         this.out = out;
         switch (format) {
         case FORMAT_NEW:
@@ -168,7 +167,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
         case FORMAT_OLD_BINARY:
             break;
         default:
-            throw new IllegalArgumentException("Unknown format: "+format);
+            throw new IllegalArgumentException("Unknown format: " + format);
 
         }
         this.entryFormat = format;
