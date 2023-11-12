@@ -297,7 +297,7 @@ public class MultiReadOnlySeekableByteChannelTest {
         checkEmpty(makeEmpty());
     }
 
-    // https://docs.oracle.com/javase/7/docs/api/java/io/Closeable.html#close()
+    // https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html#close()
 
     /*
      * <q>ClosedChannelException - If this channel is closed</q>
@@ -310,7 +310,7 @@ public class MultiReadOnlySeekableByteChannelTest {
         }
     }
 
-    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#position()
+    // https://docs.oracle.com/javase/8/docs/api/java/nio/channels/SeekableByteChannel.html#position()
 
     /*
      * <q>ClosedChannelException - If this channel is closed</q>
@@ -323,7 +323,7 @@ public class MultiReadOnlySeekableByteChannelTest {
         }
     }
 
-    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#size()
+    // https://docs.oracle.com/javase/8/docs/api/java/nio/channels/SeekableByteChannel.html#size()
 
     /*
      * <q>IOException - If the new position is negative</q>
@@ -335,7 +335,7 @@ public class MultiReadOnlySeekableByteChannelTest {
         }
     }
 
-    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#position(long)
+    // https://docs.oracle.com/javase/8/docs/api/java/nio/channels/SeekableByteChannel.html#position(long)
 
     @Test
     public void testTwoEmptyChannelsConcatenateAsEmptyChannel() throws IOException {

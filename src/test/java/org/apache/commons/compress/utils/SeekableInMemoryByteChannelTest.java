@@ -200,7 +200,7 @@ public class SeekableInMemoryByteChannelTest {
 
     // Contract Tests added in response to https://issues.apache.org/jira/browse/COMPRESS-499
 
-    // https://docs.oracle.com/javase/7/docs/api/java/io/Closeable.html#close()
+    // https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html#close()
 
     @Test
     public void testShouldWriteDataProperly() throws IOException {
@@ -216,7 +216,7 @@ public class SeekableInMemoryByteChannelTest {
         }
     }
 
-    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#position()
+    // https://docs.oracle.com/javase/8/docs/api/java/nio/channels/SeekableByteChannel.html#position()
 
     @Test
     public void testShouldWriteDataProperlyAfterPositionSet() throws IOException {
@@ -235,7 +235,7 @@ public class SeekableInMemoryByteChannelTest {
         }
     }
 
-    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#size()
+    // https://docs.oracle.com/javase/8/docs/api/java/nio/channels/SeekableByteChannel.html#size()
 
     /*
      * <q>ClosedChannelException - If this channel is closed</q>
@@ -248,7 +248,7 @@ public class SeekableInMemoryByteChannelTest {
         }
     }
 
-    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#position(long)
+    // https://docs.oracle.com/javase/8/docs/api/java/nio/channels/SeekableByteChannel.html#position(long)
 
     /*
      * <q>IllegalArgumentException - If the new position is negative</q>
@@ -296,7 +296,7 @@ public class SeekableInMemoryByteChannelTest {
         }
     }
 
-    // https://docs.oracle.com/javase/7/docs/api/java/nio/channels/SeekableByteChannel.html#truncate(long)
+    // https://docs.oracle.com/javase/8/docs/api/java/nio/channels/SeekableByteChannel.html#truncate(long)
 
     /*
      * <q> In either case, if the current position is greater than the given size then it is set to that size.</q>
