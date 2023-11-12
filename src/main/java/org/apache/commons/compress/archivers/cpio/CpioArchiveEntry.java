@@ -286,16 +286,14 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *
      * @since 1.1
      */
-    public CpioArchiveEntry(final short format, final File inputFile,
-                            final String entryName) {
+    public CpioArchiveEntry(final short format, final File inputFile, final String entryName) {
         this(format, entryName, inputFile.isFile() ? inputFile.length() : 0);
-        if (inputFile.isDirectory()){
+        if (inputFile.isDirectory()) {
             setMode(C_ISDIR);
-        } else if (inputFile.isFile()){
+        } else if (inputFile.isFile()) {
             setMode(C_ISREG);
         } else {
-            throw new IllegalArgumentException("Cannot determine type of file "
-                                               + inputFile.getName());
+            throw new IllegalArgumentException("Cannot determine type of file " + inputFile.getName());
         }
         // TODO set other fields as needed
         setTime(inputFile.lastModified() / 1000);
