@@ -355,7 +355,7 @@ public class ZipFile implements Closeable {
 
     /**
      * Closes a ZIP file quietly; throwing no IOException, does nothing on null input.
-     * 
+     *
      * @param zipFile file to close, can be null
      */
     public static void closeQuietly(final ZipFile zipFile) {
@@ -690,7 +690,7 @@ public class ZipFile implements Closeable {
      * <p>
      * May return false if it is set up to use encryption or a compression method that hasn't been implemented yet.
      * </p>
-     * 
+     *
      * @since 1.1
      * @param entry the entry
      * @return whether this class is able to read the given entry.
@@ -701,7 +701,7 @@ public class ZipFile implements Closeable {
 
     /**
      * Closes the archive.
-     * 
+     *
      * @throws IOException if an error occurs closing the archive.
      */
     @Override
@@ -756,7 +756,7 @@ public class ZipFile implements Closeable {
 
     /**
      * Ensures that the close method of this ZIP file is called when there are no more references to it.
-     * 
+     *
      * @see #close()
      */
     @Override
@@ -836,8 +836,7 @@ public class ZipFile implements Closeable {
      */
     public Enumeration<ZipArchiveEntry> getEntriesInPhysicalOrder() {
         final ZipArchiveEntry[] allEntries = entries.toArray(ZipArchiveEntry.EMPTY_ARRAY);
-        Arrays.sort(allEntries, offsetComparator);
-        return Collections.enumeration(Arrays.asList(allEntries));
+        return Collections.enumeration(Arrays.asList(sortByOffset(allEntries)));
     }
 
     /**
@@ -848,13 +847,8 @@ public class ZipFile implements Closeable {
      * @since 1.6
      */
     public Iterable<ZipArchiveEntry> getEntriesInPhysicalOrder(final String name) {
-        ZipArchiveEntry[] entries = ZipArchiveEntry.EMPTY_ARRAY;
-        final LinkedList<ZipArchiveEntry> linkedList = nameMap.get(name);
-        if (linkedList != null) {
-            entries = linkedList.toArray(entries);
-            Arrays.sort(entries, offsetComparator);
-        }
-        return Arrays.asList(entries);
+        final LinkedList<ZipArchiveEntry> linkedList = nameMap.getOrDefault(name, ZipArchiveEntry.EMPTY_LINKED_LIST);
+        return Arrays.asList(sortByOffset(linkedList.toArray(ZipArchiveEntry.EMPTY_ARRAY)));
     }
 
     /**
@@ -1413,6 +1407,17 @@ public class ZipFile implements Closeable {
             throw new EOFException();
         }
         archive.position(newPosition);
+    }
+
+    /**
+     * Sorts entries in place by offset.
+     *
+     * @param allEntries entries to sort
+     * @return the given entries, sorted.
+     */
+    private ZipArchiveEntry[] sortByOffset(final ZipArchiveEntry[] allEntries) {
+        Arrays.sort(allEntries, offsetComparator);
+        return allEntries;
     }
 
     /**
