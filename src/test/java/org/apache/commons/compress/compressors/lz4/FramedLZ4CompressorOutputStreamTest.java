@@ -54,8 +54,7 @@ public class FramedLZ4CompressorOutputStreamTest {
             }
             compressor.finish();
         }
-        final byte[] singleOutput = buffer.toByteArray();
-        assertTrue(Arrays.equals(bulkOutput, singleOutput));
+        assertTrue(Arrays.equals(bulkOutput, buffer.toByteArray()));
     }
 
 }
