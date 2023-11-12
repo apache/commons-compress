@@ -25,42 +25,39 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 public class FramedLZ4CompressorOutputStreamTest {
-    
-    @Test
-    public void testWriteByteArrayVsWriteByte() throws IOException {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        StringBuilder sb = new StringBuilder();
-        sb.append("abcdefghijklmnop");
-        byte[] random = sb.toString().getBytes();
-        try (FramedLZ4CompressorOutputStream compressor = 
-                new FramedLZ4CompressorOutputStream(buffer, 
-                        new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
-            compressor.write(random);
-            compressor.finish();
-        }
-        byte[] bulkOutput = buffer.toByteArray();
-        buffer = new ByteArrayOutputStream();
-        try (FramedLZ4CompressorOutputStream compressor = 
-                new FramedLZ4CompressorOutputStream(buffer, 
-                        new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
-            for (int i = 0; i < random.length; i++) {
-                compressor.write(random[i]);
-            }
-            compressor.finish();
-        }
-        byte[] singleOutput = buffer.toByteArray();
-        assertTrue(Arrays.equals(bulkOutput, singleOutput));
-    }
-    
+
     @Test
     public void testFinishWithNoWrite() throws IOException {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        try (FramedLZ4CompressorOutputStream compressor = 
-                new FramedLZ4CompressorOutputStream(buffer, 
-                        new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        try (FramedLZ4CompressorOutputStream compressor = new FramedLZ4CompressorOutputStream(buffer,
+                new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
             // do nothing here. this will test that flush on close doesn't throw any exceptions if no data is written.
         }
         assertTrue(buffer.size() == 15, "only the trailer gets written.");
     }
-    
+
+    @Test
+    public void testWriteByteArrayVsWriteByte() throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        final StringBuilder sb = new StringBuilder();
+        sb.append("abcdefghijklmnop");
+        final byte[] random = sb.toString().getBytes();
+        try (FramedLZ4CompressorOutputStream compressor = new FramedLZ4CompressorOutputStream(buffer,
+                new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
+            compressor.write(random);
+            compressor.finish();
+        }
+        final byte[] bulkOutput = buffer.toByteArray();
+        buffer = new ByteArrayOutputStream();
+        try (FramedLZ4CompressorOutputStream compressor = new FramedLZ4CompressorOutputStream(buffer,
+                new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
+            for (final byte element : random) {
+                compressor.write(element);
+            }
+            compressor.finish();
+        }
+        final byte[] singleOutput = buffer.toByteArray();
+        assertTrue(Arrays.equals(bulkOutput, singleOutput));
+    }
+
 }
