@@ -23,21 +23,17 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 
+import org.apache.commons.compress.utils.CharsetNames;
+
 /**
  * Static helper functions for robustly encoding file names in ZIP files.
  */
 public abstract class ZipEncodingHelper {
 
-
-    /**
-     * name of the encoding UTF-8
-     */
-    static final String UTF8 = "UTF8";
-
     /**
      * the encoding UTF-8
      */
-    static final ZipEncoding UTF8_ZIP_ENCODING = getZipEncoding(UTF8);
+    static final ZipEncoding UTF8_ZIP_ENCODING = getZipEncoding(CharsetNames.UTF_8);
 
     /**
      * Instantiates a ZIP encoding. An NIO based character set encoder/decoder will be returned.

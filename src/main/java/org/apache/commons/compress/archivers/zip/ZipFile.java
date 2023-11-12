@@ -47,6 +47,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
 import org.apache.commons.compress.utils.BoundedArchiveInputStream;
 import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
+import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
@@ -442,7 +443,7 @@ public class ZipFile implements Closeable {
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(final File f) throws IOException {
-        this(f, ZipEncodingHelper.UTF8);
+        this(f, CharsetNames.UTF_8);
     }
 
     /**
@@ -502,7 +503,7 @@ public class ZipFile implements Closeable {
      * @since 1.22
      */
     public ZipFile(final Path path) throws IOException {
-        this(path, ZipEncodingHelper.UTF8);
+        this(path, CharsetNames.UTF_8);
     }
 
     /**
@@ -565,7 +566,7 @@ public class ZipFile implements Closeable {
      * @since 1.13
      */
     public ZipFile(final SeekableByteChannel channel) throws IOException {
-        this(channel, "unknown archive", ZipEncodingHelper.UTF8, true);
+        this(channel, "unknown archive", CharsetNames.UTF_8, true);
     }
 
     /**
@@ -668,7 +669,7 @@ public class ZipFile implements Closeable {
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(final String name) throws IOException {
-        this(new File(name).toPath(), ZipEncodingHelper.UTF8);
+        this(new File(name).toPath(), CharsetNames.UTF_8);
     }
 
     /**

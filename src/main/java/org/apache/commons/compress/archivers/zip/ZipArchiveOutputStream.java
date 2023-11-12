@@ -39,6 +39,7 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
@@ -213,7 +214,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * default encoding for file names and comment.
      */
-    static final String DEFAULT_ENCODING = ZipEncodingHelper.UTF8;
+    static final String DEFAULT_ENCODING = CharsetNames.UTF_8;
 
     /**
      * General purpose flag, which indicates that file names are

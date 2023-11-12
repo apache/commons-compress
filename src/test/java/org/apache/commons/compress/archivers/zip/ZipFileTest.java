@@ -53,6 +53,7 @@ import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.function.IORunnable;
@@ -246,7 +247,7 @@ public class ZipFileTest extends AbstractTest {
         }
 
         try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(data)) {
-            zf = new ZipFile(channel, ZipEncodingHelper.UTF8);
+            zf = new ZipFile(channel, CharsetNames.UTF_8);
             final ArrayList<ZipArchiveEntry> l = Collections.list(zf.getEntries());
             assertEntryName(l, 0, "AbstractUnicodeExtraField");
             assertEntryName(l, 1, "AsiExtraField");
@@ -311,7 +312,7 @@ public class ZipFileTest extends AbstractTest {
             data = IOUtils.toByteArray(fis);
         }
         try (final SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(data)) {
-            zf = new ZipFile(channel, ZipEncodingHelper.UTF8);
+            zf = new ZipFile(channel, CharsetNames.UTF_8);
 
             final Map<String, byte[]> content = new HashMap<>();
             for (final ZipArchiveEntry entry : Collections.list(zf.getEntries())) {
