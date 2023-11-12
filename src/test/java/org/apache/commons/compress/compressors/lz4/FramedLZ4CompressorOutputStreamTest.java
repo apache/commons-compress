@@ -24,19 +24,13 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
-/**
- *
- * @author Chad Preisler
- */
 public class FramedLZ4CompressorOutputStreamTest {
     
     @Test
     public void testWriteByteArrayVsWriteByte() throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 1; i++) {
-            sb.append("abcdefghijklmnop");
-        }
+        sb.append("abcdefghijklmnop");
         byte[] random = sb.toString().getBytes();
         try (FramedLZ4CompressorOutputStream compressor = 
                 new FramedLZ4CompressorOutputStream(buffer, 
