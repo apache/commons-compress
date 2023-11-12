@@ -115,9 +115,7 @@ final class NioZipEncoding implements ZipEncoding, CharsetAccessor {
      */
     @Override
     public boolean canEncode(final String name) {
-        final CharsetEncoder enc = newEncoder();
-
-        return enc.canEncode(name);
+        return newEncoder().canEncode(name);
     }
 
     /**
