@@ -25,50 +25,50 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Provides an InputStream to read all data written to this
- * OutputStream.
+ * Provides an InputStream to read all data written to this OutputStream.
  *
  * @ThreadSafe
  * @since 1.3
  */
 abstract class AbstractStreamBridge extends FilterOutputStream {
-    private InputStream input;
-    private final Object inputLock = new Object();
+
+    private InputStream inputStream;
+    private final Object inputStreamLock = new Object();
 
     protected AbstractStreamBridge() {
         this(null);
     }
 
-    protected AbstractStreamBridge(final OutputStream out) {
-        super(out);
-    }
-
-    /**
-     * Provides the input view.
-     */
-    InputStream getInput() throws IOException {
-        synchronized (inputLock) {
-            if (input == null) {
-                input = getInputView();
-            }
-        }
-        return input;
+    protected AbstractStreamBridge(final OutputStream outputStream) {
+        super(outputStream);
     }
 
     /**
      * Creates the input view.
      */
-    abstract InputStream getInputView() throws IOException;
+    abstract InputStream createInputStream() throws IOException;
+
+    /**
+     * Provides the input view.
+     */
+    InputStream getInputStream() throws IOException {
+        synchronized (inputStreamLock) {
+            if (inputStream == null) {
+                inputStream = createInputStream();
+            }
+        }
+        return inputStream;
+    }
 
     /**
      * Closes input and output and releases all associated resources.
      */
     void stop() throws IOException {
         close();
-        synchronized (inputLock) {
-            if (input != null) {
-                input.close();
-                input = null;
+        synchronized (inputStreamLock) {
+            if (inputStream != null) {
+                inputStream.close();
+                inputStream = null;
             }
         }
     }

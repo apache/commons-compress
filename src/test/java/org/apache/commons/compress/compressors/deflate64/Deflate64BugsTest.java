@@ -16,7 +16,7 @@
  */
 package org.apache.commons.compress.compressors.deflate64;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.apache.commons.compress.AbstractTest.getFile;
 
 import java.io.InputStream;
 import java.util.Enumeration;
@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 public class Deflate64BugsTest {
 
     @Test
-    public void readBeyondMemoryException() throws Exception {
+    public void testReadBeyondMemoryException() throws Exception {
         try (ZipFile zfile = new ZipFile(getFile("COMPRESS-380/COMPRESS-380-readbeyondmemory.zip"))) {
             final Enumeration<ZipArchiveEntry> entries = zfile.getEntries();
             while (entries.hasMoreElements()) {

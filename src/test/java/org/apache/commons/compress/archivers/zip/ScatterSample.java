@@ -16,7 +16,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
@@ -25,9 +24,10 @@ import org.apache.commons.compress.parallel.InputStreamSupplier;
 public class ScatterSample {
 
     final ParallelScatterZipCreator scatterZipCreator = new ParallelScatterZipCreator();
-    final ScatterZipOutputStream dirs = ScatterZipOutputStream.fileBased(File.createTempFile("scatter-dirs", "tmp"));
+    final ScatterZipOutputStream dirs;
 
-    public ScatterSample() throws IOException {
+    ScatterSample(final ScatterSampleTest scatterSampleTest) throws IOException {
+        this.dirs = ScatterZipOutputStream.fileBased(scatterSampleTest.createTempFile("scatter-dirs", "tmp"));
     }
 
     public void addEntry(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier streamSupplier) throws IOException {

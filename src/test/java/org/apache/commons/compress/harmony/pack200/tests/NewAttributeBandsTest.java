@@ -52,7 +52,7 @@ import org.junit.jupiter.params.provider.ValueSource;
  */
 public class NewAttributeBandsTest {
 
-    private class MockNewAttributeBands extends NewAttributeBands {
+    private final class MockNewAttributeBands extends NewAttributeBands {
 
         public MockNewAttributeBands(final int effort, final CpBands cpBands,
                 final SegmentHeader header, final AttributeDefinition def)

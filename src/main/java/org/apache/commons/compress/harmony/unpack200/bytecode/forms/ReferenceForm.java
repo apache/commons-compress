@@ -60,7 +60,7 @@ public abstract class ReferenceForm extends ByteCodeForm {
     protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset)
         throws Pack200Exception {
         final SegmentConstantPool globalPool = operandManager.globalConstantPool();
-        ClassFileEntry[] nested = new ClassFileEntry[] {globalPool.getConstantPoolEntry(getPoolID(), offset)};
+        final ClassFileEntry[] nested = {globalPool.getConstantPoolEntry(getPoolID(), offset)};
         Objects.requireNonNull(nested[0], "Null nested entries are not allowed");
         byteCode.setNested(nested);
         byteCode.setNestedPositions(new int[][] {{0, 2}});

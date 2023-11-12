@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 public class BlockSortTest {
 
-    private static class DS {
+    private static final class DS {
         private final BZip2CompressorOutputStream.Data data;
         private final BlockSort s;
         DS(final BZip2CompressorOutputStream.Data data, final BlockSort s) {

@@ -31,7 +31,7 @@ import org.apache.commons.compress.utils.FileNameUtils;
  *
  * @since 1.20
  */
-class ZipSplitOutputStream extends OutputStream {
+final class ZipSplitOutputStream extends OutputStream {
 
     /**
      * 8.5.1 Capacities for split archives are as follows:
@@ -116,7 +116,7 @@ class ZipSplitOutputStream extends OutputStream {
      * @throws IOException
      */
     private Path createNewSplitSegmentFile(final Integer zipSplitSegmentSuffixIndex) throws IOException {
-        final int newZipSplitSegmentSuffixIndex = zipSplitSegmentSuffixIndex == null ? (currentSplitSegmentIndex + 2) : zipSplitSegmentSuffixIndex;
+        final int newZipSplitSegmentSuffixIndex = zipSplitSegmentSuffixIndex == null ? currentSplitSegmentIndex + 2 : zipSplitSegmentSuffixIndex;
         final String baseName = FileNameUtils.getBaseName(zipFile);
         String extension = ".z";
         if (newZipSplitSegmentSuffixIndex <= 9) {

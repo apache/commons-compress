@@ -52,7 +52,7 @@ public final class Parameters {
                 : Math.max(minBackReferenceLength, maxBackReferenceLength / 2);
             final int candidates = maxCandidates != null ? maxCandidates : Math.max(256, windowSize / 128);
             final boolean lazy = lazyMatches == null || lazyMatches;
-            final int threshold = lazy ? (lazyThreshold != null ? lazyThreshold : niceLen) : minBackReferenceLength;
+            final int threshold = lazy ? lazyThreshold != null ? lazyThreshold : niceLen : minBackReferenceLength;
 
             return new Parameters(windowSize, minBackReferenceLength, maxBackReferenceLength,
                 maxOffset, maxLiteralLength, niceLen, candidates, lazy, threshold);
@@ -258,7 +258,7 @@ public final class Parameters {
 
     private static boolean isPowerOfTwo(final int x) {
         // pre-condition: x > 0
-        return (x & (x - 1)) == 0;
+        return (x & x - 1) == 0;
     }
     private final int windowSize, minBackReferenceLength, maxBackReferenceLength, maxOffset, maxLiteralLength,
         niceBackReferenceLength, maxCandidates, lazyThreshold;

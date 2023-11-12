@@ -27,7 +27,6 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
@@ -64,7 +63,7 @@ import org.apache.commons.compress.utils.CharsetNames;
  *
  * <p>based on code from the jRPM project (jrpm.sourceforge.net)</p>
  */
-public class CpioArchiveOutputStream extends ArchiveOutputStream implements
+public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntry> implements
         CpioConstants {
 
     private CpioArchiveEntry entry;
@@ -101,7 +100,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     final String encoding;
 
     /**
-     * Construct the cpio output stream. The format for this CPIO stream is the
+     * Constructs the cpio output stream. The format for this CPIO stream is the
      * "new" format using ASCII encoding for file names
      *
      * @param out
@@ -112,7 +111,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     }
 
     /**
-     * Construct the cpio output stream with a specified format, a
+     * Constructs the cpio output stream with a specified format, a
      * blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE} and
      * using ASCII as the file name encoding.
      *
@@ -126,7 +125,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     }
 
     /**
-     * Construct the cpio output stream with a specified format using
+     * Constructs the cpio output stream with a specified format using
      * ASCII as the file name encoding.
      *
      * @param out
@@ -144,7 +143,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     }
 
     /**
-     * Construct the cpio output stream with a specified format using
+     * Constructs the cpio output stream with a specified format using
      * ASCII as the file name encoding.
      *
      * @param out
@@ -159,8 +158,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      *
      * @since 1.6
      */
-    public CpioArchiveOutputStream(final OutputStream out, final short format,
-                                   final int blockSize, final String encoding) {
+    public CpioArchiveOutputStream(final OutputStream out, final short format, final int blockSize, final String encoding) {
         this.out = out;
         switch (format) {
         case FORMAT_NEW:
@@ -169,7 +167,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
         case FORMAT_OLD_BINARY:
             break;
         default:
-            throw new IllegalArgumentException("Unknown format: "+format);
+            throw new IllegalArgumentException("Unknown format: " + format);
 
         }
         this.entryFormat = format;
@@ -179,7 +177,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     }
 
     /**
-     * Construct the cpio output stream. The format for this CPIO stream is the
+     * Constructs the cpio output stream. The format for this CPIO stream is the
      * "new" format.
      *
      * @param out
@@ -248,12 +246,12 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     }
 
     /**
-     * Creates a new ArchiveEntry. The entryName must be an ASCII encoded string.
+     * Creates a new CpioArchiveEntry. The entryName must be an ASCII encoded string.
      *
      * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, String)
      */
     @Override
-    public ArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
+    public CpioArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
             throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
@@ -262,12 +260,12 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
     }
 
     /**
-     * Creates a new ArchiveEntry. The entryName must be an ASCII encoded string.
+     * Creates a new CpioArchiveEntry. The entryName must be an ASCII encoded string.
      *
      * @see org.apache.commons.compress.archivers.ArchiveOutputStream#createArchiveEntry(java.io.File, String)
      */
     @Override
-    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options)
+    public CpioArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options)
             throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
@@ -356,31 +354,30 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
      * @throws ClassCastException if entry is not an instance of CpioArchiveEntry
      */
     @Override
-    public void putArchiveEntry(final ArchiveEntry entry) throws IOException {
+    public void putArchiveEntry(final CpioArchiveEntry entry) throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
 
-        final CpioArchiveEntry e = (CpioArchiveEntry) entry;
         ensureOpen();
         if (this.entry != null) {
             closeArchiveEntry(); // close previous entry
         }
-        if (e.getTime() == -1) {
-            e.setTime(System.currentTimeMillis() / 1000);
+        if (entry.getTime() == -1) {
+            entry.setTime(System.currentTimeMillis() / 1000);
         }
 
-        final short format = e.getFormat();
+        final short format = entry.getFormat();
         if (format != this.entryFormat){
             throw new IOException("Header format: "+format+" does not match existing format: "+this.entryFormat);
         }
 
-        if (this.names.put(e.getName(), e) != null) {
-            throw new IOException("Duplicate entry: " + e.getName());
+        if (this.names.put(entry.getName(), entry) != null) {
+            throw new IOException("Duplicate entry: " + entry.getName());
         }
 
-        writeHeader(e);
-        this.entry = e;
+        writeHeader(entry);
+        this.entry = entry;
         this.written = 0;
     }
 
@@ -504,7 +501,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
             inode = devMin = 0;
         } else if (inode == 0 && devMin == 0) {
             inode = nextArtificalDeviceAndInode & 0xFFFFFFFF;
-            devMin = (nextArtificalDeviceAndInode++ >> 32) & 0xFFFFFFFF;
+            devMin = nextArtificalDeviceAndInode++ >> 32 & 0xFFFFFFFF;
         } else {
             nextArtificalDeviceAndInode =
                 Math.max(nextArtificalDeviceAndInode,
@@ -537,7 +534,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
             inode = device = 0;
         } else if (inode == 0 && device == 0) {
             inode = nextArtificalDeviceAndInode & 0777777;
-            device = (nextArtificalDeviceAndInode++ >> 18) & 0777777;
+            device = nextArtificalDeviceAndInode++ >> 18 & 0777777;
         } else {
             nextArtificalDeviceAndInode =
                 Math.max(nextArtificalDeviceAndInode,
@@ -566,7 +563,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream implements
             inode = device = 0;
         } else if (inode == 0 && device == 0) {
             inode = nextArtificalDeviceAndInode & 0xFFFF;
-            device = (nextArtificalDeviceAndInode++ >> 16) & 0xFFFF;
+            device = nextArtificalDeviceAndInode++ >> 16 & 0xFFFF;
         } else {
             nextArtificalDeviceAndInode =
                 Math.max(nextArtificalDeviceAndInode,

@@ -53,7 +53,7 @@ public interface CompressorStreamProvider {
      *            if true, decompress until the end of the input; if false, stop
      *            after the first stream and leave the input position to point
      *            to the next byte after the stream. This setting applies to the
-     *            gzip, bzip2 and xz formats only.
+     *            gzip, bzip2 and XZ formats only.
      * @return compressor input stream
      * @throws CompressorException
      *             if the compressor name is not known

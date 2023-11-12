@@ -407,7 +407,7 @@ public class ClassBands extends BandSet {
         final List<Attribute>[] otherAttributes = new List[limit + 1];
         for (int i = 0; i < limit; i++) {
             final AttributeLayout layout = attrMap.getAttributeLayout(i, AttributeLayout.CONTEXT_CLASS);
-            if (layout != null && !(layout.isDefaultLayout())) {
+            if (layout != null && !layout.isDefaultLayout()) {
                 otherLayouts[i] = layout;
                 counts[i] = SegmentUtils.countMatches(classFlags, layout);
             }
@@ -657,7 +657,7 @@ public class ClassBands extends BandSet {
         final List<Attribute>[] otherAttributes = new List[limit + 1];
         for (int i = 0; i < limit; i++) {
             final AttributeLayout layout = attrMap.getAttributeLayout(i, AttributeLayout.CONTEXT_CODE);
-            if (layout != null && !(layout.isDefaultLayout())) {
+            if (layout != null && !layout.isDefaultLayout()) {
                 otherLayouts[i] = layout;
                 counts[i] = SegmentUtils.countMatches(codeFlags, layout);
             }
@@ -855,7 +855,7 @@ public class ClassBands extends BandSet {
         final List<Attribute>[] otherAttributes = new List[limit + 1];
         for (int i = 0; i < limit; i++) {
             final AttributeLayout layout = attrMap.getAttributeLayout(i, AttributeLayout.CONTEXT_FIELD);
-            if (layout != null && !(layout.isDefaultLayout())) {
+            if (layout != null && !layout.isDefaultLayout()) {
                 otherLayouts[i] = layout;
                 counts[i] = SegmentUtils.countMatches(fieldFlags, layout);
             }
@@ -1115,7 +1115,7 @@ public class ClassBands extends BandSet {
         final int[] counts = new int[limit + 1];
         for (int i = 0; i < limit; i++) {
             final AttributeLayout layout = attrMap.getAttributeLayout(i, AttributeLayout.CONTEXT_METHOD);
-            if (layout != null && !(layout.isDefaultLayout())) {
+            if (layout != null && !layout.isDefaultLayout()) {
                 otherLayouts[i] = layout;
                 counts[i] = SegmentUtils.countMatches(methodFlags, layout);
             }

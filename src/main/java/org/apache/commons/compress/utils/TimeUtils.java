@@ -147,7 +147,7 @@ public final class TimeUtils {
      */
     public static long toNtfsTime(final FileTime fileTime) {
         final Instant instant = fileTime.toInstant();
-        final long javaHundredNanos = (instant.getEpochSecond() * HUNDRED_NANOS_PER_SECOND) + (instant.getNano() / 100);
+        final long javaHundredNanos = instant.getEpochSecond() * HUNDRED_NANOS_PER_SECOND + instant.getNano() / 100;
         return Math.subtractExact(javaHundredNanos, WINDOWS_EPOCH_OFFSET);
     }
 
@@ -180,7 +180,7 @@ public final class TimeUtils {
      */
     public static FileTime truncateToHundredNanos(final FileTime fileTime) {
         final Instant instant = fileTime.toInstant();
-        return FileTime.from(Instant.ofEpochSecond(instant.getEpochSecond(), (instant.getNano() / 100) * 100));
+        return FileTime.from(Instant.ofEpochSecond(instant.getEpochSecond(), instant.getNano() / 100 * 100));
     }
 
     /**

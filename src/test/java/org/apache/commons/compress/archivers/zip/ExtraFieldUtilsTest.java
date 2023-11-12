@@ -87,18 +87,6 @@ public class ExtraFieldUtilsTest implements UnixStat {
 
     private byte[] aLocal;
 
-    @Test
-    public void parseTurnsArrayIndexOutOfBoundsIntoZipException() {
-        ExtraFieldUtils.register(AiobThrowingExtraField.class);
-        final AiobThrowingExtraField f = new AiobThrowingExtraField();
-        final byte[] d = new byte[4 + AiobThrowingExtraField.LENGTH];
-        System.arraycopy(f.getHeaderId().getBytes(), 0, d, 0, 2);
-        System.arraycopy(f.getLocalFileDataLength().getBytes(), 0, d, 2, 2);
-        System.arraycopy(f.getLocalFileDataData(), 0, d, 4, AiobThrowingExtraField.LENGTH);
-        final ZipException e = assertThrows(ZipException.class, () -> ExtraFieldUtils.parse(d), "data should be invalid");
-        assertEquals("Failed to parse corrupt ZIP extra field of type 1000", e.getMessage(), "message");
-    }
-
     @BeforeEach
     public void setUp() {
         a = new AsiExtraField();
@@ -210,6 +198,18 @@ public class ExtraFieldUtilsTest implements UnixStat {
         assertTrue(ze[1] instanceof UnrecognizedExtraField, "type field 2");
         assertEquals(1, ze[1].getCentralDirectoryLength().getValue(), "data length field 2");
 
+    }
+
+    @Test
+    public void testParseTurnsArrayIndexOutOfBoundsIntoZipException() {
+        ExtraFieldUtils.register(AiobThrowingExtraField.class);
+        final AiobThrowingExtraField f = new AiobThrowingExtraField();
+        final byte[] d = new byte[4 + AiobThrowingExtraField.LENGTH];
+        System.arraycopy(f.getHeaderId().getBytes(), 0, d, 0, 2);
+        System.arraycopy(f.getLocalFileDataLength().getBytes(), 0, d, 2, 2);
+        System.arraycopy(f.getLocalFileDataData(), 0, d, 4, AiobThrowingExtraField.LENGTH);
+        final ZipException e = assertThrows(ZipException.class, () -> ExtraFieldUtils.parse(d), "data should be invalid");
+        assertEquals("Failed to parse corrupt ZIP extra field of type 1000", e.getMessage(), "message");
     }
 
     @Test

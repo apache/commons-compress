@@ -26,7 +26,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -47,7 +47,7 @@ public class XXHash32Test {
     @MethodSource("factory")
     public void verifyChecksum(final String fileName, final String expectedChecksum) throws IOException {
         final XXHash32 h = new XXHash32();
-        final File file = AbstractTestCase.getFile(fileName);
+        final File file = AbstractTest.getFile(fileName);
         try (InputStream s = Files.newInputStream(file.toPath())) {
             final byte[] b = IOUtils.toByteArray(s);
             h.update(b, 0, b.length);

@@ -34,7 +34,7 @@ import java.nio.charset.CodingErrorAction;
  * <p>The methods of this class are reentrant.</p>
  * @Immutable
  */
-class NioZipEncoding implements ZipEncoding, CharsetAccessor {
+final class NioZipEncoding implements ZipEncoding, CharsetAccessor {
 
     private static final char REPLACEMENT = '?';
     private static final byte[] REPLACEMENT_BYTES = { (byte) REPLACEMENT };
@@ -58,9 +58,9 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
         cb.put('%');
         cb.put('U');
 
-        cb.put(HEX_CHARS[(c >> 12) & 0x0f]);
-        cb.put(HEX_CHARS[(c >> 8) & 0x0f]);
-        cb.put(HEX_CHARS[(c >> 4) & 0x0f]);
+        cb.put(HEX_CHARS[c >> 12 & 0x0f]);
+        cb.put(HEX_CHARS[c >> 8 & 0x0f]);
+        cb.put(HEX_CHARS[c >> 4 & 0x0f]);
         cb.put(HEX_CHARS[c & 0x0f]);
         cb.flip();
         return cb;
@@ -101,7 +101,7 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
     private final boolean useReplacement;
 
     /**
-     * Construct an NioZipEncoding using the given charset.
+     * Constructs an NioZipEncoding using the given charset.
      * @param charset  The character set to use.
      * @param useReplacement should invalid characters be replaced, or reported.
      */
@@ -115,9 +115,7 @@ class NioZipEncoding implements ZipEncoding, CharsetAccessor {
      */
     @Override
     public boolean canEncode(final String name) {
-        final CharsetEncoder enc = newEncoder();
-
-        return enc.canEncode(name);
+        return newEncoder().canEncode(name);
     }
 
     /**

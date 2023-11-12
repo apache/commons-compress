@@ -22,8 +22,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
@@ -33,7 +33,7 @@ import org.apache.commons.compress.utils.IOUtils;
  *
  * @NotThreadSafe
  */
-public class ArArchiveInputStream extends ArchiveInputStream {
+public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
 
     // offsets and length of meta data parts
     private static final int NAME_OFFSET = 0;
@@ -55,10 +55,9 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     static final String BSD_LONGNAME_PREFIX = "#1/";
     private static final int BSD_LONGNAME_PREFIX_LEN =
         BSD_LONGNAME_PREFIX.length();
-    private static final String BSD_LONGNAME_PATTERN =
-        "^" + BSD_LONGNAME_PREFIX + "\\d+";
+    private static final Pattern BSD_LONGNAME_PATTERN = Pattern.compile("^" + BSD_LONGNAME_PREFIX + "\\d+");
     private static final String GNU_STRING_TABLE_NAME = "//";
-    private static final String GNU_LONGNAME_PATTERN = "^/\\d+";
+    private static final Pattern GNU_LONGNAME_PATTERN = Pattern.compile("^/\\d+");
     /**
      * Does the name look like it is a long name (or a name containing
      * spaces) as encoded by BSD ar?
@@ -82,7 +81,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * @since 1.3
      */
     private static boolean isBSDLongName(final String name) {
-        return name != null && name.matches(BSD_LONGNAME_PATTERN);
+        return name != null && BSD_LONGNAME_PATTERN.matcher(name).matches();
     }
 
     /**
@@ -218,7 +217,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
     }
 
     /**
-     * Get an extended name from the GNU extended name buffer.
+     * Gets an extended name from the GNU extended name buffer.
      *
      * @param offset pointer to entry within the buffer
      * @return the extended file name; without trailing "/" if present.
@@ -226,7 +225,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      */
     private String getExtendedName(final int offset) throws IOException {
         if (namebuffer == null) {
-            throw new IOException("Cannot process GNU long filename as no // record was found");
+            throw new IOException("Cannot process GNU long file name as no // record was found");
         }
         for (int i = offset; i < namebuffer.length; i++) {
             if (namebuffer[i] == '\012' || namebuffer[i] == 0) {
@@ -245,7 +244,9 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * @return the next AR entry.
      * @throws IOException
      *             if the entry could not be read
+     * @deprecated Use {@link #getNextEntry()}.
      */
+    @Deprecated
     public ArArchiveEntry getNextArEntry() throws IOException {
         if (currentEntry != null) {
             final long entryEnd = entryOffset + currentEntry.getLength();
@@ -301,11 +302,11 @@ public class ArArchiveInputStream extends ArchiveInputStream {
 
         entryOffset = offset;
 
-//        GNU ar uses a '/' to mark the end of the filename; this allows for the use of spaces without the use of an extended filename.
+//        GNU ar uses a '/' to mark the end of the file name; this allows for the use of spaces without the use of an extended file name.
 
         // entry name is stored as ASCII string
         String temp = ArchiveUtils.toAsciiString(metaData, NAME_OFFSET, NAME_LEN).trim();
-        if (isGNUStringTable(temp)) { // GNU extended filenames entry
+        if (isGNUStringTable(temp)) { // GNU extended file names entry
             currentEntry = readGNUStringTable(metaData, LENGTH_OFFSET, LENGTH_LEN);
             return getNextArEntry();
         }
@@ -345,7 +346,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * org.apache.commons.compress.archivers.ArchiveInputStream#getNextEntry()
      */
     @Override
-    public ArchiveEntry getNextEntry() throws IOException {
+    public ArArchiveEntry getNextEntry() throws IOException {
         return getNextArEntry();
     }
 
@@ -356,7 +357,7 @@ public class ArArchiveInputStream extends ArchiveInputStream {
      * @see #isGNUStringTable
      */
     private boolean isGNULongName(final String name) {
-        return name != null && name.matches(GNU_LONGNAME_PATTERN);
+        return name != null && GNU_LONGNAME_PATTERN.matcher(name).matches();
     }
 
     /*

@@ -60,7 +60,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
      */
     public SeekableInMemoryByteChannel(final byte[] data) {
         this.data = data;
-        size = data.length;
+        this.size = data.length;
     }
 
     /**

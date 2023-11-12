@@ -32,7 +32,7 @@ public class MetadataBandGroup extends BandSet {
     public static final int CONTEXT_METHOD = 2;
 
     private final String type;
-    private int numBackwardsCalls = 0;
+    private int numBackwardsCalls;
 
     public IntList param_NB = new IntList(); // TODO: Lazy instantiation?
     public IntList anno_N = new IntList();

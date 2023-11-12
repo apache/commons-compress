@@ -98,19 +98,19 @@ public final class IOUtils {
      *            the InputStream to copy
      * @param output
      *            the target, may be null to simulate output to dev/null on Linux and NUL on Windows
-     * @param buffersize
+     * @param bufferSize
      *            the buffer size to use, must be bigger than 0
      * @return the number of bytes copied
      * @throws IOException
      *             if an error occurs
      * @throws IllegalArgumentException
-     *             if buffersize is smaller than or equal to 0
+     *             if bufferSize is smaller than or equal to 0
      */
-    public static long copy(final InputStream input, final OutputStream output, final int buffersize) throws IOException {
-        if (buffersize < 1) {
-            throw new IllegalArgumentException("buffersize must be bigger than 0");
+    public static long copy(final InputStream input, final OutputStream output, final int bufferSize) throws IOException {
+        if (bufferSize < 1) {
+            throw new IllegalArgumentException("bufferSize must be bigger than 0");
         }
-        final byte[] buffer = new byte[buffersize];
+        final byte[] buffer = new byte[bufferSize];
         int n = 0;
         long count = 0;
         while (-1 != (n = input.read(buffer))) {
@@ -151,21 +151,21 @@ public final class IOUtils {
      *            maximum amount of bytes to copy
      * @param output
      *            the target, may be null to simulate output to dev/null on Linux and NUL on Windows
-     * @param buffersize
+     * @param bufferSize
      *            the buffer size to use, must be bigger than 0
      * @return the number of bytes copied
      * @throws IOException
      *             if an error occurs
      * @throws IllegalArgumentException
-     *             if buffersize is smaller than or equal to 0
+     *             if bufferSize is smaller than or equal to 0
      * @since 1.21
      */
     public static long copyRange(final InputStream input, final long len, final OutputStream output,
-        final int buffersize) throws IOException {
-        if (buffersize < 1) {
-            throw new IllegalArgumentException("buffersize must be bigger than 0");
+        final int bufferSize) throws IOException {
+        if (bufferSize < 1) {
+            throw new IllegalArgumentException("bufferSize must be bigger than 0");
         }
-        final byte[] buffer = new byte[(int) Math.min(buffersize, len)];
+        final byte[] buffer = new byte[(int) Math.min(bufferSize, len)];
         int n = 0;
         long count = 0;
         while (count < len && -1 != (n = input.read(buffer, 0, (int) Math.min(len - count, buffer.length)))) {

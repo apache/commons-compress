@@ -36,7 +36,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -47,7 +47,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class ParameterizedArchiverTest extends AbstractTestCase {
+public class ParameterizedArchiverTest extends AbstractTest {
 
     // can't test 7z here as 7z cannot write to non-seekable streams
     // and reading logic would be different as well - see
@@ -68,8 +68,8 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
         // TODO How to parameterize a BeforeEach method?
         setUp(format);
         try (OutputStream os = Files.newOutputStream(target.toPath());
-             ArchiveOutputStream aos = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, os)) {
-            new Archiver().create(aos, dir);
+             ArchiveOutputStream<?> aos = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, os)) {
+            new Archiver().create(aos, getTempDirFile());
         }
         verifyContent(format);
     }
@@ -97,7 +97,7 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
         setUp(format);
         try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
             StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-            new Archiver().create(format, c, dir);
+            new Archiver().create(format, c, getTempDirFile());
         }
         verifyContent(format);
     }
@@ -107,7 +107,7 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
     public void fileVersion(final String format) throws Exception {
         // TODO How to parameterize a BeforeEach method?
         setUp(format);
-        new Archiver().create(format, target, dir);
+        new Archiver().create(format, target, getTempDirFile());
         verifyContent(format);
     }
 
@@ -117,28 +117,27 @@ public class ParameterizedArchiverTest extends AbstractTestCase {
         // TODO How to parameterize a BeforeEach method?
         setUp(format);
         try (OutputStream os = Files.newOutputStream(target.toPath())) {
-            new Archiver().create(format, os, dir);
+            new Archiver().create(format, os, getTempDirFile());
         }
         verifyContent(format);
     }
 
     public void setUp(final String format) throws Exception {
-        super.setUp();
-        final File c = new File(dir, "a/b/c");
+        final File c = newTempFile("a/b/c");
         c.mkdirs();
-        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/d.txt").toPath())) {
+        try (OutputStream os = Files.newOutputStream(newTempFile("a/b/d.txt").toPath())) {
             os.write("Hello, world 1".getBytes(UTF_8));
         }
-        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/c/e.txt").toPath())) {
+        try (OutputStream os = Files.newOutputStream(newTempFile("a/b/c/e.txt").toPath())) {
             os.write("Hello, world 2".getBytes(UTF_8));
         }
-        target = new File(resultDir, "test." + format);
+        target = new File(tempResultDir, "test." + format);
     }
 
     private void verifyContent(final String format) throws IOException, ArchiveException {
         try (InputStream is = Files.newInputStream(target.toPath());
              BufferedInputStream bis = new BufferedInputStream(is);
-             ArchiveInputStream ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, bis)) {
+             ArchiveInputStream<?> ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, bis)) {
             assertDir("a", ais.getNextEntry());
             assertDir("a/b", ais.getNextEntry());
             final ArchiveEntry n = ais.getNextEntry();

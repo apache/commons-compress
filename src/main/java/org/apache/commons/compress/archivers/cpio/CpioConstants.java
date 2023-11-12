@@ -88,10 +88,10 @@ public interface CpioConstants {
     int C_ISFIFO = 0010000;
 
 
-    /** Set user ID */
+    /** Sets user ID */
     int C_ISUID  = 0004000;
 
-    /** Set group ID */
+    /** Sets group ID */
     int C_ISGID  = 0002000;
 
     /** On directories, restricted deletion flag. */

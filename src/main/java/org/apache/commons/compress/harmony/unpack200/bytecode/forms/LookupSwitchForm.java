@@ -62,10 +62,10 @@ public class LookupSwitchForm extends SwitchForm {
         // First, there's the bytecode. Then there are 0-3
         // bytes of padding so that the first (default)
         // label is on a 4-byte offset.
-        final int padLength = 3 - (codeLength % 4);
+        final int padLength = 3 - codeLength % 4;
         final int rewriteSize = 1 + padLength + 4 // defaultbytes
             + 4 // npairs
-            + (4 * caseValues.length) + (4 * casePcs.length);
+            + 4 * caseValues.length + 4 * casePcs.length;
 
         final int[] newRewrite = new int[rewriteSize];
         int rewriteIndex = 0;

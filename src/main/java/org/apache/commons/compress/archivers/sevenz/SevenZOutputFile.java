@@ -57,12 +57,16 @@ import org.apache.commons.compress.utils.TimeUtils;
 
 /**
  * Writes a 7z file.
+ *
  * @since 1.6
  */
 public class SevenZOutputFile implements Closeable {
-    private class OutputStreamWrapper extends OutputStream {
+
+    private final class OutputStreamWrapper extends OutputStream {
+
         private static final int BUF_SIZE = 8192;
         private final ByteBuffer buffer = ByteBuffer.allocate(BUF_SIZE);
+
         @Override
         public void close() throws IOException {
             // the file will be closed by the containing class's close method
@@ -375,10 +379,24 @@ public class SevenZOutputFile implements Closeable {
      * {@link #closeArchiveEntry()} to complete the process.
      *
      * @param archiveEntry describes the entry
+     * @deprecated Use {@link #putArchiveEntry(SevenZArchiveEntry)}.
      */
+    @Deprecated
     public void putArchiveEntry(final ArchiveEntry archiveEntry) {
-        final SevenZArchiveEntry entry = (SevenZArchiveEntry) archiveEntry;
-        files.add(entry);
+        putArchiveEntry((SevenZArchiveEntry) archiveEntry);
+    }
+
+    /**
+     * Records an archive entry to add.
+     *
+     * The caller must then write the content to the archive and call
+     * {@link #closeArchiveEntry()} to complete the process.
+     *
+     * @param archiveEntry describes the entry
+     * @since 1.25.0
+     */
+    public void putArchiveEntry(final SevenZArchiveEntry archiveEntry) {
+        files.add(archiveEntry);
     }
 
     /**
@@ -520,7 +538,7 @@ public class SevenZOutputFile implements Closeable {
         int cache = 0;
         int shift = 7;
         for (int i = 0; i < length; i++) {
-            cache |= ((bits.get(i) ? 1 : 0) << shift);
+            cache |= (bits.get(i) ? 1 : 0) << shift;
             if (--shift < 0) {
                 header.write(cache);
                 shift = 7;
@@ -868,8 +886,8 @@ public class SevenZOutputFile implements Closeable {
         int mask = 0x80;
         int i;
         for (i = 0; i < 8; i++) {
-            if (value < ((1L << ( 7  * (i + 1))))) {
-                firstByte |= (value >>> (8 * i));
+            if (value < 1L << 7  * (i + 1)) {
+                firstByte |= value >>> 8 * i;
                 break;
             }
             firstByte |= mask;

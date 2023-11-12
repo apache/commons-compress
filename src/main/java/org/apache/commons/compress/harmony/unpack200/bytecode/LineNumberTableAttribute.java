@@ -25,7 +25,7 @@ import java.io.IOException;
 public class LineNumberTableAttribute extends BCIRenumberedAttribute {
 
     private static CPUTF8 attributeName;
-    
+
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
@@ -49,7 +49,7 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
 
     @Override
     protected int getLength() {
-        return 2 + (4 * lineNumberTableLength);
+        return 2 + 4 * lineNumberTableLength;
     }
 
     /*

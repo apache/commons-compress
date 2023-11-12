@@ -23,7 +23,8 @@ package org.apache.commons.compress.compressors.bzip2;
  * data.
  * @NotThreadSafe
  */
-class CRC {
+final class CRC {
+
     private static final int[] crc32Table = {
             0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9,
             0x130476dc, 0x17c56b6b, 0x1a864db2, 0x1e475005,
@@ -114,20 +115,20 @@ class CRC {
         }
 
         void updateCRC(final int inCh) {
-            int temp = (globalCrc >> 24) ^ inCh;
+            int temp = globalCrc >> 24 ^ inCh;
             if (temp < 0) {
                 temp = 256 + temp;
             }
-            globalCrc = (globalCrc << 8) ^ CRC.crc32Table[temp];
+            globalCrc = globalCrc << 8 ^ CRC.crc32Table[temp];
         }
 
         void updateCRC(final int inCh, int repeat) {
             int globalCrcShadow = this.globalCrc;
             while (repeat-- > 0) {
-                final int temp = (globalCrcShadow >> 24) ^ inCh;
-                globalCrcShadow = (globalCrcShadow << 8) ^ crc32Table[(temp >= 0)
+                final int temp = globalCrcShadow >> 24 ^ inCh;
+                globalCrcShadow = globalCrcShadow << 8 ^ crc32Table[temp >= 0
                                                           ? temp
-                                                          : (temp + 256)];
+                                                          : temp + 256];
             }
             this.globalCrc = globalCrcShadow;
         }

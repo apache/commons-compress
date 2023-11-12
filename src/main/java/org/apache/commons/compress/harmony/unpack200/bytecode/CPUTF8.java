@@ -20,6 +20,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Objects;
 
+import org.apache.commons.compress.utils.CharsetNames;
+
 /**
  * UTF8 constant pool entry, used for storing long Strings.
  */
@@ -81,7 +83,7 @@ public class CPUTF8 extends ConstantPoolEntry {
 
     @Override
     public String toString() {
-        return "UTF8: " + utf8;
+        return CharsetNames.UTF_8 + ":" + utf8;
     }
 
     public String underlyingString() {

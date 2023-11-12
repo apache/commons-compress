@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -37,6 +38,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Testcase porting a test from Python's testsuite.
+ *
  * @see "https://issues.apache.org/jira/browse/COMPRESS-253"
  */
 public class PythonTruncatedBzip2Test {
@@ -45,14 +47,6 @@ public class PythonTruncatedBzip2Test {
 
     private static byte[] DATA;
     private static byte[] TRUNCATED_DATA;
-    // Helper method since Arrays#copyOfRange is Java 1.6+
-    // Does not check parameters, so may fail if they are incompatible
-    private static byte[] copyOfRange(final byte[] original, final int from, final int to) {
-        final int length = to - from;
-        final byte[] buff = new byte[length];
-        System.arraycopy(original, from, buff, 0, length);
-        return buff;
-    }
 
     @BeforeAll
     public static void initializeTestData() throws IOException {
@@ -63,13 +57,13 @@ public class PythonTruncatedBzip2Test {
         DATA = out.toByteArray();
 
         // Drop the eos_magic field (6 bytes) and CRC (4 bytes).
-        TRUNCATED_DATA = copyOfRange(DATA, 0, DATA.length - 10);
+        TRUNCATED_DATA = Arrays.copyOfRange(DATA, 0, DATA.length - 10);
     }
 
+    @SuppressWarnings("resource") // Caller closes
     private static ReadableByteChannel makeBZ2C(final InputStream source) throws IOException {
         final BufferedInputStream bin = new BufferedInputStream(source);
         final BZip2CompressorInputStream bZin = new BZip2CompressorInputStream(bin, true);
-
         return Channels.newChannel(bZin);
     }
 
@@ -83,34 +77,30 @@ public class PythonTruncatedBzip2Test {
 
     @BeforeEach
     public void initializeChannel() throws IOException {
-        final InputStream source = new ByteArrayInputStream(TRUNCATED_DATA);
-        this.bz2Channel = makeBZ2C(source);
+        this.bz2Channel = makeBZ2C(new ByteArrayInputStream(TRUNCATED_DATA));
     }
 
     @Test
     public void testPartialReadTruncatedData() throws IOException {
-        //with BZ2File(self.filename) as f:
-        //    self.assertEqual(f.read(len(self.TEXT)), self.TEXT)
-        //    self.assertRaises(EOFError, f.read, 1)
+        // with BZ2File(self.filename) as f:
+        // self.assertEqual(f.read(len(self.TEXT)), self.TEXT)
+        // self.assertRaises(EOFError, f.read, 1)
 
         final int length = TEXT.length();
         final ByteBuffer buffer1 = ByteBuffer.allocate(length);
         bz2Channel.read(buffer1);
 
-        assertArrayEquals(copyOfRange(TEXT.getBytes(), 0, length),
-                buffer1.array());
+        assertArrayEquals(Arrays.copyOfRange(TEXT.getBytes(), 0, length), buffer1.array());
 
         // subsequent read should throw
         final ByteBuffer buffer2 = ByteBuffer.allocate(1);
-        assertThrows(IOException.class, () -> bz2Channel.read(buffer2),
-                "The read should have thrown.");
+        assertThrows(IOException.class, () -> bz2Channel.read(buffer2), "The read should have thrown.");
     }
 
     @Test
     public void testTruncatedData() {
         // with BZ2File(self.filename) as f:
         // self.assertRaises(EOFError, f.read)
-        System.out.println("Attempt to read the whole thing in, should throw ...");
         final ByteBuffer buffer = ByteBuffer.allocate(8192);
         assertThrows(IOException.class, () -> bz2Channel.read(buffer));
     }

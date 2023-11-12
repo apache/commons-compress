@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
@@ -37,35 +38,37 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.junit.jupiter.api.Test;
 
-public final class DetectArchiverTestCase extends AbstractTestCase {
+public final class DetectArchiverTest extends AbstractTest {
 
     final ClassLoader classLoader = getClass().getClassLoader();
 
-    private void checkEmptyArchive(final String type) throws Exception{
+    private void checkEmptyArchive(final String type) throws Exception {
         final Path ar = createEmptyArchive(type); // will be deleted by tearDown()
-        ar.toFile().deleteOnExit(); // Just in case file cannot be deleted
         assertDoesNotThrow(() -> {
-            try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(ar));
-                 ArchiveInputStream ais = factory.createArchiveInputStream(in)) {
+            try (BufferedInputStream inputStream = new BufferedInputStream(Files.newInputStream(ar));
+                    ArchiveInputStream<?> ais = factory.createArchiveInputStream(inputStream)) {
+                // empty
             }
         }, "Should have recognized empty archive for " + type);
     }
 
-    private ArchiveInputStream getStreamFor(final String resource)
+    @SuppressWarnings("resource") // Caller closes
+    private <T extends ArchiveInputStream<? extends E>, E extends ArchiveEntry> T createArchiveInputStream(final String resource)
             throws ArchiveException, IOException {
         return factory.createArchiveInputStream(new BufferedInputStream(newInputStream(resource)));
     }
 
     @Test
     public void testCOMPRESS_117() throws Exception {
-        final ArchiveInputStream tar = getStreamFor("COMPRESS-117.tar");
-        assertNotNull(tar);
-        assertTrue(tar instanceof TarArchiveInputStream);
+        try (ArchiveInputStream<?> tar = createArchiveInputStream("COMPRESS-117.tar")) {
+            assertNotNull(tar);
+            assertTrue(tar instanceof TarArchiveInputStream);
+        }
     }
 
     @Test
     public void testCOMPRESS_335() throws Exception {
-        try (final ArchiveInputStream tar = getStreamFor("COMPRESS-335.tar")) {
+        try (ArchiveInputStream<?> tar = createArchiveInputStream("COMPRESS-335.tar")) {
             assertNotNull(tar);
             assertTrue(tar instanceof TarArchiveInputStream);
         }
@@ -74,38 +77,38 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
     @Test
     public void testDetection() throws Exception {
 
-        try (final ArchiveInputStream ar = getStreamFor("bla.ar")) {
+        try (ArchiveInputStream<?> ar = createArchiveInputStream("bla.ar")) {
             assertNotNull(ar);
             assertTrue(ar instanceof ArArchiveInputStream);
         }
 
-        try (final ArchiveInputStream tar = getStreamFor("bla.tar")) {
+        try (ArchiveInputStream<?> tar = createArchiveInputStream("bla.tar")) {
             assertNotNull(tar);
             assertTrue(tar instanceof TarArchiveInputStream);
         }
 
-        try (final ArchiveInputStream zip = getStreamFor("bla.zip")) {
+        try (ArchiveInputStream<?> zip = createArchiveInputStream("bla.zip")) {
             assertNotNull(zip);
             assertTrue(zip instanceof ZipArchiveInputStream);
         }
 
-        try (final ArchiveInputStream jar = getStreamFor("bla.jar")) {
+        try (ArchiveInputStream<?> jar = createArchiveInputStream("bla.jar")) {
             assertNotNull(jar);
             assertTrue(jar instanceof ZipArchiveInputStream);
         }
 
-        try (final ArchiveInputStream cpio = getStreamFor("bla.cpio")) {
+        try (ArchiveInputStream<?> cpio = createArchiveInputStream("bla.cpio")) {
             assertNotNull(cpio);
             assertTrue(cpio instanceof CpioArchiveInputStream);
         }
 
-        try (final ArchiveInputStream arj = getStreamFor("bla.arj")) {
+        try (ArchiveInputStream<?> arj = createArchiveInputStream("bla.arj")) {
             assertNotNull(arj);
             assertTrue(arj instanceof ArjArchiveInputStream);
         }
 
 // Not yet implemented
-//        final ArchiveInputStream tgz = getStreamFor("bla.tgz");
+//        final ArchiveInputStream<?> tgz = getStreamFor("bla.tgz");
 //        assertNotNull(tgz);
 //        assertTrue(tgz instanceof TarArchiveInputStream);
 
@@ -120,7 +123,7 @@ public final class DetectArchiverTestCase extends AbstractTestCase {
 
     @Test
     public void testDetectionNotArchive() {
-        assertThrows(ArchiveException.class, () -> getStreamFor("test.txt"));
+        assertThrows(ArchiveException.class, () -> createArchiveInputStream("test.txt"));
     }
 
     @Test

@@ -48,7 +48,7 @@ import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
  */
 public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableByteChannel {
 
-    private static class ZipSplitSegmentComparator implements Comparator<Path>, Serializable {
+    private static final class ZipSplitSegmentComparator implements Comparator<Path>, Serializable {
         private static final long serialVersionUID = 20200123L;
 
         @Override

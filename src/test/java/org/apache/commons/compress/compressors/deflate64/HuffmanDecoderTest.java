@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 public class HuffmanDecoderTest {
     @Test
-    public void decodeFixedHuffmanBlockWithMemoryLookup() throws Exception {
+    public void testDecodeFixedHuffmanBlockWithMemoryLookup() throws Exception {
         final byte[] data = {
                 //|--- binary filling ---|76543210
                 0b11111111111111111111111111110011, // final block + fixed huffman + H
@@ -57,7 +57,7 @@ public class HuffmanDecoderTest {
     }
 
     @Test
-    public void decodeFixedHuffmanBlockWithMemoryLookupInExactBuffer() throws Exception {
+    public void testDecodeFixedHuffmanBlockWithMemoryLookupInExactBuffer() throws Exception {
         final byte[] data = {
                 //|--- binary filling ---|76543210
                 0b11111111111111111111111111110011, // final block + fixed huffman + H
@@ -91,7 +91,7 @@ public class HuffmanDecoderTest {
     }
 
     @Test
-    public void decodeFixedHuffmanBlockWithMemoryLookupInSmallBuffer() throws Exception {
+    public void testDecodeFixedHuffmanBlockWithMemoryLookupInSmallBuffer() throws Exception {
         final byte[] data = {
                 //|--- binary filling ---|76543210
                 0b11111111111111111111111111110011, // final block + fixed huffman + H
@@ -126,7 +126,7 @@ public class HuffmanDecoderTest {
     }
 
     @Test
-    public void decodeSimpleFixedHuffmanBlock() throws Exception {
+    public void testDecodeSimpleFixedHuffmanBlock() throws Exception {
         final byte[] data = {
                 //|--- binary filling ---|76543210
                 0b11111111111111111111111111110011, // final block + fixed huffman + H
@@ -154,7 +154,7 @@ public class HuffmanDecoderTest {
 
 
     @Test
-    public void decodeSimpleFixedHuffmanBlockToSmallBuffer() throws Exception {
+    public void testDecodeSimpleFixedHuffmanBlockToSmallBuffer() throws Exception {
         final byte[] data = {
                 //|--- binary filling ---|76543210
                 0b11111111111111111111111111110011, // final block + fixed huffman + H
@@ -184,7 +184,7 @@ public class HuffmanDecoderTest {
     }
 
     @Test
-    public void decodeUncompressedBlock() throws Exception {
+    public void testDecodeUncompressedBlock() throws Exception {
         final byte[] data = {
                 0b1, // end of block + no compression mode
                 11, 0, -12, -1, // len & ~len
@@ -200,7 +200,7 @@ public class HuffmanDecoderTest {
     }
 
     @Test
-    public void decodeUncompressedBlockWithInvalidLenNLenValue() throws Exception {
+    public void testDecodeUncompressedBlockWithInvalidLenNLenValue() throws Exception {
         final byte[] data = {
                 0b1, // end of block + no compression mode
                 11, 0, -12, -2, // len & ~len

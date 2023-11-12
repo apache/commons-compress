@@ -16,9 +16,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.apache.commons.compress.AbstractTestCase.mkdir;
-import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.ACCESS_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.CREATE_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.MODIFY_TIME_BIT;
@@ -43,9 +40,11 @@ import java.util.Enumeration;
 import java.util.TimeZone;
 import java.util.zip.ZipException;
 
+import org.apache.commons.compress.AbstractTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class X5455_ExtendedTimestampTest {
     private final static ZipShort X5455 = new ZipShort(0x5455);
@@ -57,7 +56,6 @@ public class X5455_ExtendedTimestampTest {
     static {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
-
 
     /**
      * InfoZIP seems to adjust the time stored inside the LFH and CD
@@ -85,13 +83,13 @@ public class X5455_ExtendedTimestampTest {
      */
     private X5455_ExtendedTimestamp xf;
 
+    @TempDir
     private File tmpDir;
 
     @BeforeEach
     public void before() {
         xf = new X5455_ExtendedTimestamp();
     }
-
 
     private void parseReparse(
             final byte providedFlags,
@@ -159,17 +157,8 @@ public class X5455_ExtendedTimestampTest {
     @AfterEach
     public void removeTempFiles() {
         if (tmpDir != null) {
-            rmdir(tmpDir);
+            AbstractTest.forceDelete(tmpDir);
         }
-    }
-
-    @Test
-    public void resetsFlagsWhenLocalFileArrayIsTooShort() throws Exception {
-        final byte[] local = {
-            7
-        }; // claims all three time values would be present, but they are not
-        xf.parseFromLocalFileData(local, 0, 1);
-        assertArrayEquals(new byte[1], xf.getLocalFileDataData());
     }
 
     @Test
@@ -472,6 +461,15 @@ public class X5455_ExtendedTimestampTest {
     }
 
     @Test
+    public void testResetsFlagsWhenLocalFileArrayIsTooShort() throws Exception {
+        final byte[] local = {
+            7
+        }; // claims all three time values would be present, but they are not
+        xf.parseFromLocalFileData(local, 0, 1);
+        assertArrayEquals(new byte[1], xf.getLocalFileDataData());
+    }
+
+    @Test
     public void testSampleFile() throws Exception {
 
         /*
@@ -507,7 +505,7 @@ public class X5455_ExtendedTimestampTest {
         well.
          */
 
-        final File archive = getFile("COMPRESS-210_unix_time_zip_test.zip");
+        final File archive = AbstractTest.getFile("COMPRESS-210_unix_time_zip_test.zip");
 
         try (ZipFile zf = new ZipFile(archive)) {
             final Enumeration<ZipArchiveEntry> en = zf.getEntries();
@@ -585,13 +583,15 @@ public class X5455_ExtendedTimestampTest {
 
     @Test
     public void testWriteReadRoundtrip() throws IOException {
-        tmpDir = mkdir("X5455");
         final File output = new File(tmpDir, "write_rewrite.zip");
-        final Date d = new Date(97, 8, 24, 15, 10, 2);
+        final Calendar instance = Calendar.getInstance();
+        instance.clear();
+        instance.set(1997, 8, 24, 15, 10, 2);
+        final Date date = instance.getTime();
         try (final OutputStream out = Files.newOutputStream(output.toPath());
              ZipArchiveOutputStream os = new ZipArchiveOutputStream(out)) {
             final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
-            xf.setModifyJavaTime(d);
+            xf.setModifyJavaTime(date);
             xf.setFlags((byte) 1);
             ze.addExtraField(xf);
             os.putArchiveEntry(ze);
@@ -603,7 +603,7 @@ public class X5455_ExtendedTimestampTest {
             final X5455_ExtendedTimestamp ext = (X5455_ExtendedTimestamp) ze.getExtraField(X5455);
             assertNotNull(ext);
             assertTrue(ext.isBit0_modifyTimePresent());
-            assertEquals(d, ext.getModifyJavaTime());
+            assertEquals(date, ext.getModifyJavaTime());
         }
     }
 }

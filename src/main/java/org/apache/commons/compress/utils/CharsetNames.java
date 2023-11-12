@@ -20,7 +20,7 @@ package org.apache.commons.compress.utils;
 /**
  * Character encoding names required of every implementation of the Java platform.
  *
- * From the Java documentation <a href="https://download.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard
+ * From the Java documentation <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html">Standard
  * charsets</a>:
  * <p>
  * <cite>Every implementation of the Java platform is required to support the following character encodings. Consult the
@@ -47,7 +47,7 @@ package org.apache.commons.compress.utils;
  * <p>This perhaps would best belong in the [lang] project. Even if a similar interface is defined in [lang], it is not
  * foreseen that [compress] would be made to depend on [lang].</p>
  *
- * @see <a href="https://download.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
+ * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
  * @since 1.4
  */
 public class CharsetNames {
@@ -57,7 +57,7 @@ public class CharsetNames {
      * Every implementation of the Java platform is required to support this character encoding.
      * </p>
      *
-     * @see <a href="https://download.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
+     * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
     public static final String ISO_8859_1 = "ISO-8859-1";
 
@@ -69,7 +69,7 @@ public class CharsetNames {
      * Every implementation of the Java platform is required to support this character encoding.
      * </p>
      *
-     * @see <a href="https://download.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
+     * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
     public static final String US_ASCII = "US-ASCII";
 
@@ -82,7 +82,7 @@ public class CharsetNames {
      * Every implementation of the Java platform is required to support this character encoding.
      * </p>
      *
-     * @see <a href="https://download.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
+     * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
     public static final String UTF_16 = "UTF-16";
 
@@ -94,7 +94,7 @@ public class CharsetNames {
      * Every implementation of the Java platform is required to support this character encoding.
      * </p>
      *
-     * @see <a href="https://download.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
+     * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
     public static final String UTF_16BE = "UTF-16BE";
 
@@ -106,7 +106,7 @@ public class CharsetNames {
      * Every implementation of the Java platform is required to support this character encoding.
      * </p>
      *
-     * @see <a href="https://download.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
+     * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
     public static final String UTF_16LE = "UTF-16LE";
 
@@ -118,7 +118,7 @@ public class CharsetNames {
      * Every implementation of the Java platform is required to support this character encoding.
      * </p>
      *
-     * @see <a href="https://download.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
+     * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
     public static final String UTF_8 = "UTF-8";
 }

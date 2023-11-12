@@ -63,10 +63,10 @@ public class SegmentConstantPool {
             return true;
         }
         if (REGEX_MATCH_INIT.equals(regexString)) {
-            if (compareString.length() < (INITSTRING.length())) {
+            if (compareString.length() < INITSTRING.length()) {
                 return false;
             }
-            return (INITSTRING.equals(compareString.substring(0, INITSTRING.length())));
+            return INITSTRING.equals(compareString.substring(0, INITSTRING.length()));
         }
         throw new Error("regex trying to match a pattern I don't know: " + regexString);
     }

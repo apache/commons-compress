@@ -290,7 +290,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
 
     private long diskNumberStart;
 
-    private boolean lastModifiedDateSet = false;
+    private boolean lastModifiedDateSet;
 
     private long time = -1;
 
@@ -553,12 +553,12 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
 
     private ZipExtraField[] getAllExtraFields() {
         final ZipExtraField[] allExtraFieldsNoCopy = getAllExtraFieldsNoCopy();
-        return (allExtraFieldsNoCopy == extraFields) ? copyOf(allExtraFieldsNoCopy, allExtraFieldsNoCopy.length)
+        return allExtraFieldsNoCopy == extraFields ? copyOf(allExtraFieldsNoCopy, allExtraFieldsNoCopy.length)
             : allExtraFieldsNoCopy;
     }
 
     /**
-     * Get all extra fields, including unparseable ones.
+     * Gets all extra fields, including unparseable ones.
      * @return An array of all extra fields. Not necessarily a copy of internal data structures, hence private method
      */
     private ZipExtraField[] getAllExtraFieldsNoCopy() {
@@ -777,7 +777,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Get the name of the entry.
+     * Gets the name of the entry.
      *
      * <p>This method returns the raw name as it is stored inside of the archive.</p>
      *
@@ -799,7 +799,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
 
     private ZipExtraField[] getParseableExtraFields() {
         final ZipExtraField[] parseableExtraFields = getParseableExtraFieldsNoCopy();
-        return (parseableExtraFields == extraFields) ? copyOf(parseableExtraFields, parseableExtraFields.length)
+        return parseableExtraFields == extraFields ? copyOf(parseableExtraFields, parseableExtraFields.length)
             : parseableExtraFields;
     }
 
@@ -886,7 +886,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      */
     public int getUnixMode() {
         return platform != PLATFORM_UNIX ? 0 :
-            (int) ((getExternalAttributes() >> SHORT_SHIFT) & SHORT_MASK);
+            (int) (getExternalAttributes() >> SHORT_SHIFT & SHORT_MASK);
     }
 
     /**
@@ -923,7 +923,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Get the hash code of the entry.
+     * Gets the hash code of the entry.
      * This uses the name as the hash code.
      * @return a hash code.
      */
@@ -1089,7 +1089,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      * @since 1.14
      */
     public void setAlignment(final int alignment) {
-        if ((alignment & (alignment - 1)) != 0 || alignment > 0xffff) {
+        if ((alignment & alignment - 1) != 0 || alignment > 0xffff) {
             throw new IllegalArgumentException("Invalid value for alignment, must be power of two and no bigger than "
                 + 0xffff + " but is " + alignment);
         }
@@ -1289,7 +1289,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Set the name of the entry.
+     * Sets the name of the entry.
      * @param name the name to use
      */
     protected void setName(String name) {
@@ -1324,7 +1324,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Set the platform (UNIX or FAT).
+     * Sets the platform (UNIX or FAT).
      * @param platform an {@code int} value - 0 is FAT, 3 is UNIX
      */
     protected void setPlatform(final int platform) {
@@ -1398,7 +1398,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      */
     public void setUnixMode(final int mode) {
         // CheckStyle:MagicNumberCheck OFF - no point
-        setExternalAttributes((mode << SHORT_SHIFT)
+        setExternalAttributes(mode << SHORT_SHIFT
                               // MS-DOS read-only attribute
                               | ((mode & 0200) == 0 ? 1 : 0)
                               // MS-DOS directory flag

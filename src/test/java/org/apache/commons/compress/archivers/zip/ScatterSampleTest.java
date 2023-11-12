@@ -17,6 +17,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -25,11 +26,12 @@ import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.compress.AbstractTempDirTest;
 import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class ScatterSampleTest {
+public class ScatterSampleTest extends AbstractTempDirTest {
 
     private void checkFile(final File result) throws IOException {
         try (final ZipFile zipFile = new ZipFile(result)) {
@@ -43,11 +45,11 @@ public class ScatterSampleTest {
                 assertEquals('o', b[4]);
             }
         }
-        result.delete();
+        assertTrue(result.delete());
     }
 
     private void createFile(final File result) throws IOException, ExecutionException, InterruptedException {
-        final ScatterSample scatterSample = new ScatterSample();
+        final ScatterSample scatterSample = new ScatterSample(this);
         final ZipArchiveEntry archiveEntry = new ZipArchiveEntry("test1.xml");
         archiveEntry.setMethod(ZipEntry.DEFLATED);
         final InputStreamSupplier supp = () -> new ByteArrayInputStream("Hello".getBytes());
@@ -60,8 +62,7 @@ public class ScatterSampleTest {
 
     @Test
     public void testSample() throws Exception {
-        final File result = File.createTempFile("testSample", "fe");
-
+        final File result = createTempFile("testSample", "fe");
         createFile(result);
         checkFile(result);
     }

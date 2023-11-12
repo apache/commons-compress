@@ -34,25 +34,25 @@ import java.util.Arrays;
  */
 public enum SevenZMethod {
     /** no compression at all */
-    COPY(new byte[] { (byte)0x00 }),
+    COPY(new byte[] { (byte) 0x00 }),
     /** LZMA - only supported when reading */
-    LZMA(new byte[] { (byte)0x03, (byte)0x01, (byte)0x01 }),
+    LZMA(new byte[] { (byte) 0x03, (byte) 0x01, (byte) 0x01 }),
     /** LZMA2 */
-    LZMA2(new byte[] { (byte)0x21 }),
+    LZMA2(new byte[] { (byte) 0x21 }),
     /** Deflate */
-    DEFLATE(new byte[] { (byte)0x04, (byte)0x01, (byte)0x08 }),
+    DEFLATE(new byte[] { (byte) 0x04, (byte) 0x01, (byte) 0x08 }),
     /**
      * Deflate64
      * @since 1.16
      */
-    DEFLATE64(new byte[] { (byte)0x04, (byte)0x01, (byte)0x09 }),
+    DEFLATE64(new byte[] { (byte) 0x04, (byte) 0x01, (byte) 0x09 }),
     /** BZIP2 */
-    BZIP2(new byte[] { (byte)0x04, (byte)0x02, (byte)0x02 }),
+    BZIP2(new byte[] { (byte) 0x04, (byte) 0x02, (byte) 0x02 }),
     /**
      * AES encryption with a key length of 256 bit using SHA256 for
      * hashes - only supported when reading
      */
-    AES256SHA256(new byte[] { (byte)0x06, (byte)0xf1, (byte)0x07, (byte)0x01 }),
+    AES256SHA256(new byte[] { (byte) 0x06, (byte) 0xf1, (byte) 0x07, (byte) 0x01 }),
     /**
      * BCJ x86 platform version 1.
      * @since 1.8

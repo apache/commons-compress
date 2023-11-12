@@ -50,7 +50,7 @@ import org.apache.commons.compress.utils.BoundedInputStream;
  */
 public class ScatterZipOutputStream implements Closeable {
 
-    private static class CompressedEntry {
+    private static final class CompressedEntry {
         final ZipArchiveEntryRequest zipArchiveEntryRequest;
         final long crc;
         final long compressedSize;

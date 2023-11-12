@@ -18,8 +18,9 @@ package org.apache.commons.compress.archivers.arj;
 
 import java.util.Arrays;
 
-class MainHeader {
-    static class Flags {
+final class MainHeader {
+
+    final static class Flags {
         static final int GARBLED = 0x01;
         static final int OLD_SECURED_NEW_ANSI_PAGE = 0x02;
         static final int VOLUME = 0x04;
@@ -29,7 +30,8 @@ class MainHeader {
         static final int SECURED = 0x40;
         static final int ALTNAME = 0x80;
     }
-    static class HostOS {
+
+    final static class HostOS {
         static final int MS_DOS = 0;
         static final int PRIMOS = 1;
         static final int UNIX = 2;

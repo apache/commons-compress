@@ -26,35 +26,12 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class ArjArchiveInputStreamTest extends AbstractTestCase {
-
-    @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        final byte[] buf = new byte[2];
-        try (InputStream in = newInputStream("bla.arj");
-             ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
-            IOUtils.toByteArray(archive);
-            assertEquals(-1, archive.read(buf));
-            assertEquals(-1, archive.read(buf));
-        }
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (InputStream in = newInputStream("bla.arj");
-             ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
-            IOUtils.toByteArray(archive);
-            assertEquals(-1, archive.read());
-            assertEquals(-1, archive.read());
-        }
-    }
+public class ArjArchiveInputStreamTest extends AbstractTest {
 
     @Test
     public void testArjUnarchive() throws Exception {
@@ -77,6 +54,18 @@ public class ArjArchiveInputStreamTest extends AbstractTestCase {
             }
         }
         assertEquals(result.toString(), expected.toString());
+    }
+
+    @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        final byte[] buf = new byte[2];
+        try (InputStream in = newInputStream("bla.arj");
+             ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
+            final ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read(buf));
+            assertEquals(-1, archive.read(buf));
+        }
     }
 
     @Test
@@ -104,6 +93,17 @@ public class ArjArchiveInputStreamTest extends AbstractTestCase {
             cal.set(2008, 9, 6, 21, 50, 52);
             cal.set(Calendar.MILLISECOND, 0);
             assertEquals(cal.getTime(), entry.getLastModifiedDate());
+        }
+    }
+
+    @Test
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        try (InputStream in = newInputStream("bla.arj");
+             ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
+            final ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read());
+            assertEquals(-1, archive.read());
         }
     }
 

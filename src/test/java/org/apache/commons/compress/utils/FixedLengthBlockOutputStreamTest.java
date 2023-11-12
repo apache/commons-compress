@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
 
 public class FixedLengthBlockOutputStreamTest {
 
-    private static class MockOutputStream extends OutputStream {
+    private static final class MockOutputStream extends OutputStream {
 
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         private final int requiredWriteSize;
@@ -86,7 +86,7 @@ public class FixedLengthBlockOutputStreamTest {
         }
     }
 
-    private static class MockWritableByteChannel implements WritableByteChannel {
+    private static final class MockWritableByteChannel implements WritableByteChannel {
 
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         private final int requiredWriteSize;
@@ -186,7 +186,7 @@ public class FixedLengthBlockOutputStreamTest {
                 }
             }
             final ByteArrayOutputStream bos = mock.bos;
-            final double v = Math.ceil((reps * msg.length) / (double) blockSize) * blockSize;
+            final double v = Math.ceil(reps * msg.length / (double) blockSize) * blockSize;
             assertEquals((long) v, bos.size(), "wrong size");
             final int strLen = msg.length * reps;
             final byte[] output = bos.toByteArray();
@@ -246,7 +246,7 @@ public class FixedLengthBlockOutputStreamTest {
             }
         }
         final long expectedDataSize = reps * 4L;
-        final long expectedFileSize = (long)Math.ceil(expectedDataSize/(double)blockSize)*blockSize;
+        final long expectedFileSize = (long) Math.ceil(expectedDataSize/(double) blockSize)*blockSize;
         assertEquals(expectedFileSize, Files.size(tempFile), "file size");
         final DataInputStream din = new DataInputStream(Files.newInputStream(tempFile));
         for (int i = 0; i < reps; i++) {
@@ -267,7 +267,7 @@ public class FixedLengthBlockOutputStreamTest {
             try (FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(mock, blockSize)) {
 
                 out.write(msg);
-                assertEquals((msg.length / blockSize) * blockSize, bos.size(), "no partial write");
+                assertEquals(msg.length / blockSize * blockSize, bos.size(), "no partial write");
             }
             validate(blockSize, msg, bos.toByteArray());
         }
@@ -282,7 +282,7 @@ public class FixedLengthBlockOutputStreamTest {
             final ByteArrayOutputStream bos = mock.bos;
             try (FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(mock, blockSize)) {
                 out.write(msg);
-                assertEquals((msg.length / blockSize) * blockSize, bos.size(), "no partial write");
+                assertEquals(msg.length / blockSize * blockSize, bos.size(), "no partial write");
             }
             validate(blockSize, msg, bos.toByteArray());
         }

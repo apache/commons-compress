@@ -45,11 +45,6 @@ public class OsgiITest {
     @Inject
     private BundleContext ctx;
 
-    @Test
-    public void canLoadBundle() {
-        assertNotNull("Expected to find bundle " + EXPECTED_BUNDLE_NAME, loadBundle());
-    }
-
     @Configuration
     public Option[] config() {
         return new Option[] {
@@ -79,7 +74,12 @@ public class OsgiITest {
     }
 
     @Test
-    public void properlyDetectsRunningInsideOsgiEnv() throws Exception {
+    public void testCanLoadBundle() {
+        assertNotNull("Expected to find bundle " + EXPECTED_BUNDLE_NAME, loadBundle());
+    }
+
+    @Test
+    public void testProperlyDetectsRunningInsideOsgiEnv() throws Exception {
         final Class<?> osgiUtils = loadBundle().loadClass("org.apache.commons.compress.utils.OsgiUtils");
         assertNotNull("Can load OsgiUtils via bundle", osgiUtils);
 

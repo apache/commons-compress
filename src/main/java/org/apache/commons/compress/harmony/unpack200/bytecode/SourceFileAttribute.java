@@ -70,7 +70,7 @@ public class SourceFileAttribute extends Attribute {
     public int hashCode() {
         final int PRIME = 31;
         int result = super.hashCode();
-        result = PRIME * result + ((name == null) ? 0 : name.hashCode());
+        result = PRIME * result + (name == null ? 0 : name.hashCode());
         return result;
     }
 

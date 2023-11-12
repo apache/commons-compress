@@ -25,7 +25,7 @@ import java.util.Arrays;
  *
  * @Immutable
  */
-class CpioUtil {
+final class CpioUtil {
 
     /**
      * Converts a byte array to a long. Halfwords can be swapped by setting

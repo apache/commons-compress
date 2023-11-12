@@ -35,12 +35,12 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
+public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
 
     interface StreamWrapper {
         InputStream wrap(InputStream in) throws Exception;
@@ -52,21 +52,6 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
         return to;
     }
 
-    @Test
-    public void backreferenceAtStartCausesIOException() {
-        expectIOException("COMPRESS-490/ArrayIndexOutOfBoundsException1.lz4");
-    }
-
-    @Test
-    public void backreferenceOfSize0CausesIOException() {
-        expectIOException("COMPRESS-490/ArithmeticException.lz4");
-    }
-
-    @Test
-    public void backreferenceWithOffsetTooBigCausesIOException() {
-        expectIOException("COMPRESS-490/ArrayIndexOutOfBoundsException2.lz4");
-    }
-
     private void expectIOException(final String fileName) {
         assertThrows(IOException.class, () -> {
             try (InputStream is = Files.newInputStream(getFile(fileName).toPath());
@@ -74,84 +59,6 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
                 IOUtils.toByteArray(in);
             }
         });
-    }
-
-    @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.tar.lz4");
-        final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath());
-                FramedLZ4CompressorInputStream in = new FramedLZ4CompressorInputStream(is)) {
-            IOUtils.toByteArray(in);
-            assertEquals(-1, in.read(buf));
-            assertEquals(-1, in.read(buf));
-        }
-    }
-
-    @Test
-    public void readBlaDumpLz4() throws IOException {
-        try (InputStream a = new FramedLZ4CompressorInputStream(newInputStream("bla.dump.lz4"));
-            InputStream e = newInputStream("bla.dump")) {
-            final byte[] expected = IOUtils.toByteArray(e);
-            final byte[] actual = IOUtils.toByteArray(a);
-            assertArrayEquals(expected, actual);
-        }
-    }
-
-    @Test
-    public void readBlaLz4() throws IOException {
-        try (InputStream a = new FramedLZ4CompressorInputStream(newInputStream("bla.tar.lz4"));
-            InputStream e = newInputStream("bla.tar")) {
-            final byte[] expected = IOUtils.toByteArray(e);
-            final byte[] actual = IOUtils.toByteArray(a);
-            assertArrayEquals(expected, actual);
-        }
-    }
-
-    @Test
-    public void readBlaLz4ViaFactory() throws Exception {
-        try (InputStream a = new CompressorStreamFactory()
-                 .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(),
-                                              newInputStream("bla.tar.lz4"));
-            InputStream e = newInputStream("bla.tar")) {
-            final byte[] expected = IOUtils.toByteArray(e);
-            final byte[] actual = IOUtils.toByteArray(a);
-            assertArrayEquals(expected, actual);
-        }
-    }
-
-    @Test
-    public void readBlaLz4ViaFactoryAutoDetection() throws Exception {
-        try (InputStream a = new CompressorStreamFactory()
-                 .createCompressorInputStream(new BufferedInputStream(newInputStream("bla.tar.lz4")));
-            InputStream e = newInputStream("bla.tar")) {
-            final byte[] expected = IOUtils.toByteArray(e);
-            final byte[] actual = IOUtils.toByteArray(a);
-            assertArrayEquals(expected, actual);
-        }
-    }
-
-    @Test
-    public void readBlaLz4ViaFactoryWithDecompressConcatenated() throws Exception {
-        try (InputStream a = new CompressorStreamFactory()
-                 .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(),
-                                              newInputStream("bla.tar.lz4"),
-                                              true);
-            InputStream e = newInputStream("bla.tar")) {
-            final byte[] expected = IOUtils.toByteArray(e);
-            final byte[] actual = IOUtils.toByteArray(a);
-            assertArrayEquals(expected, actual);
-        }
-    }
-
-    @Test
-    public void readBlaLz4WithDecompressConcatenated() throws IOException {
-        try (InputStream a = new FramedLZ4CompressorInputStream(newInputStream("bla.tar.lz4"), true);
-            InputStream e = newInputStream("bla.tar")) {
-            final byte[] expected = IOUtils.toByteArray(e);
-            final byte[] actual = IOUtils.toByteArray(a);
-            assertArrayEquals(expected, actual);
-        }
     }
 
     private void readDoubledBlaLz4(final StreamWrapper wrapper, final boolean expectDuplicateOutput) throws Exception {
@@ -169,40 +76,143 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void readDoubledBlaLz4ViaFactoryWithDecompressConcatenatedFalse() throws Exception {
+    public void testBackreferenceAtStartCausesIOException() {
+        expectIOException("COMPRESS-490/ArrayIndexOutOfBoundsException1.lz4");
+    }
+
+    @Test
+    public void testBackreferenceOfSize0CausesIOException() {
+        expectIOException("COMPRESS-490/ArithmeticException.lz4");
+    }
+
+    @Test
+    public void testBackreferenceWithOffsetTooBigCausesIOException() {
+        expectIOException("COMPRESS-490/ArrayIndexOutOfBoundsException2.lz4");
+    }
+
+    @Test
+    public void testMatches() throws IOException {
+        assertFalse(FramedLZ4CompressorInputStream.matches(new byte[10], 4));
+        final byte[] b = new byte[12];
+        IOUtils.read(getFile("bla.tar.lz4"), b);
+        assertFalse(FramedLZ4CompressorInputStream.matches(b, 3));
+        assertTrue(FramedLZ4CompressorInputStream.matches(b, 4));
+        assertTrue(FramedLZ4CompressorInputStream.matches(b, 5));
+    }
+
+    @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = getFile("bla.tar.lz4");
+        final byte[] buf = new byte[2];
+        try (InputStream is = Files.newInputStream(input.toPath());
+                FramedLZ4CompressorInputStream in = new FramedLZ4CompressorInputStream(is)) {
+            IOUtils.toByteArray(in);
+            assertEquals(-1, in.read(buf));
+            assertEquals(-1, in.read(buf));
+        }
+    }
+
+    @Test
+    public void testReadBlaDumpLz4() throws IOException {
+        try (InputStream a = new FramedLZ4CompressorInputStream(newInputStream("bla.dump.lz4"));
+            InputStream e = newInputStream("bla.dump")) {
+            final byte[] expected = IOUtils.toByteArray(e);
+            final byte[] actual = IOUtils.toByteArray(a);
+            assertArrayEquals(expected, actual);
+        }
+    }
+
+    @Test
+    public void testReadBlaLz4() throws IOException {
+        try (InputStream a = new FramedLZ4CompressorInputStream(newInputStream("bla.tar.lz4"));
+            InputStream e = newInputStream("bla.tar")) {
+            final byte[] expected = IOUtils.toByteArray(e);
+            final byte[] actual = IOUtils.toByteArray(a);
+            assertArrayEquals(expected, actual);
+        }
+    }
+
+    @Test
+    public void testReadBlaLz4ViaFactory() throws Exception {
+        try (InputStream a = new CompressorStreamFactory()
+                 .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(),
+                                              newInputStream("bla.tar.lz4"));
+            InputStream e = newInputStream("bla.tar")) {
+            final byte[] expected = IOUtils.toByteArray(e);
+            final byte[] actual = IOUtils.toByteArray(a);
+            assertArrayEquals(expected, actual);
+        }
+    }
+
+    @Test
+    public void testReadBlaLz4ViaFactoryAutoDetection() throws Exception {
+        try (InputStream a = new CompressorStreamFactory()
+                 .createCompressorInputStream(new BufferedInputStream(newInputStream("bla.tar.lz4")));
+            InputStream e = newInputStream("bla.tar")) {
+            final byte[] expected = IOUtils.toByteArray(e);
+            final byte[] actual = IOUtils.toByteArray(a);
+            assertArrayEquals(expected, actual);
+        }
+    }
+
+    @Test
+    public void testReadBlaLz4ViaFactoryWithDecompressConcatenated() throws Exception {
+        try (InputStream a = new CompressorStreamFactory()
+                 .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(),
+                                              newInputStream("bla.tar.lz4"),
+                                              true);
+            InputStream e = newInputStream("bla.tar")) {
+            final byte[] expected = IOUtils.toByteArray(e);
+            final byte[] actual = IOUtils.toByteArray(a);
+            assertArrayEquals(expected, actual);
+        }
+    }
+
+    @Test
+    public void testReadBlaLz4WithDecompressConcatenated() throws IOException {
+        try (InputStream a = new FramedLZ4CompressorInputStream(newInputStream("bla.tar.lz4"), true);
+            InputStream e = newInputStream("bla.tar")) {
+            final byte[] expected = IOUtils.toByteArray(e);
+            final byte[] actual = IOUtils.toByteArray(a);
+            assertArrayEquals(expected, actual);
+        }
+    }
+
+    @Test
+    public void testReadDoubledBlaLz4ViaFactoryWithDecompressConcatenatedFalse() throws Exception {
         readDoubledBlaLz4(in -> new CompressorStreamFactory()
             .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(), in, false), false);
     }
 
     @Test
-    public void readDoubledBlaLz4ViaFactoryWithDecompressConcatenatedTrue() throws Exception {
+    public void testReadDoubledBlaLz4ViaFactoryWithDecompressConcatenatedTrue() throws Exception {
         readDoubledBlaLz4(in -> new CompressorStreamFactory()
             .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(), in, true), true);
     }
 
     @Test
-    public void readDoubledBlaLz4ViaFactoryWithoutExplicitDecompressConcatenated() throws Exception {
+    public void testReadDoubledBlaLz4ViaFactoryWithoutExplicitDecompressConcatenated() throws Exception {
         readDoubledBlaLz4(in -> new CompressorStreamFactory()
             .createCompressorInputStream(CompressorStreamFactory.getLZ4Framed(), in), false);
     }
 
     @Test
-    public void readDoubledBlaLz4WithDecompressConcatenatedFalse() throws Exception {
+    public void testReadDoubledBlaLz4WithDecompressConcatenatedFalse() throws Exception {
         readDoubledBlaLz4(in -> new FramedLZ4CompressorInputStream(in, false), false);
     }
 
     @Test
-    public void readDoubledBlaLz4WithDecompressConcatenatedTrue() throws Exception {
+    public void testReadDoubledBlaLz4WithDecompressConcatenatedTrue() throws Exception {
         readDoubledBlaLz4(in -> new FramedLZ4CompressorInputStream(in, true), true);
     }
 
     @Test
-    public void readDoubledBlaLz4WithoutExplicitDecompressConcatenated() throws Exception {
+    public void testReadDoubledBlaLz4WithoutExplicitDecompressConcatenated() throws Exception {
         readDoubledBlaLz4(FramedLZ4CompressorInputStream::new, false);
     }
 
     @Test
-    public void readsUncompressedBlocks() throws IOException {
+    public void testReadsUncompressedBlocks() throws IOException {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -221,7 +231,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void readsUncompressedBlocksUsingSingleByteRead() throws IOException {
+    public void testReadsUncompressedBlocksUsingSingleByteRead() throws IOException {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -238,7 +248,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsBlocksWithoutChecksum() {
+    public void testRejectsBlocksWithoutChecksum() {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x70, // flag - Version 01, block independent, with block checksum, no content size, no content checksum
@@ -256,7 +266,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsFileWithBadHeaderChecksum() {
+    public void testRejectsFileWithBadHeaderChecksum() {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
@@ -271,7 +281,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsFileWithInsufficientContentSize() {
+    public void testRejectsFileWithInsufficientContentSize() {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x6C, // flag - Version 01, block independent, no block checksum, with content size, with content checksum
@@ -285,7 +295,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsFileWithoutBlockSizeByte() {
+    public void testRejectsFileWithoutBlockSizeByte() {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
@@ -298,7 +308,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsFileWithoutFrameDescriptor() {
+    public void testRejectsFileWithoutFrameDescriptor() {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18 // signature
         };
@@ -310,7 +320,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsFileWithoutHeaderChecksum() {
+    public void testRejectsFileWithoutHeaderChecksum() {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
@@ -324,7 +334,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsFileWithWrongVersion() {
+    public void testRejectsFileWithWrongVersion() {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x24, // flag - Version 00, block independent, no block checksum, no content size, with content checksum
@@ -337,12 +347,12 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsNonLZ4Stream() {
+    public void testRejectsNonLZ4Stream() {
         assertThrows(IOException.class, () -> new FramedLZ4CompressorInputStream(newInputStream("bla.tar")));
     }
 
     @Test
-    public void rejectsSkippableFrameFollowedByJunk() {
+    public void testRejectsSkippableFrameFollowedByJunk() {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -365,7 +375,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsSkippableFrameFollowedByTooFewBytes() {
+    public void testRejectsSkippableFrameFollowedByTooFewBytes() {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -388,7 +398,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsSkippableFrameWithBadSignaturePrefix() {
+    public void testRejectsSkippableFrameWithBadSignaturePrefix() {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -409,7 +419,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsSkippableFrameWithBadSignatureTrailer() {
+    public void testRejectsSkippableFrameWithBadSignatureTrailer() {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -429,7 +439,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsSkippableFrameWithPrematureEnd() {
+    public void testRejectsSkippableFrameWithPrematureEnd() {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -451,7 +461,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsSkippableFrameWithPrematureEndInLengthBytes() {
+    public void testRejectsSkippableFrameWithPrematureEndInLengthBytes() {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -472,7 +482,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsStreamsWithBadContentChecksum() {
+    public void testRejectsStreamsWithBadContentChecksum() {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
@@ -492,7 +502,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsStreamsWithoutContentChecksum() {
+    public void testRejectsStreamsWithoutContentChecksum() {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x64, // flag - Version 01, block independent, no block checksum, no content size, with content checksum
@@ -511,7 +521,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void rejectsTrailingBytesAfterValidFrame() {
+    public void testRejectsTrailingBytesAfterValidFrame() {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -531,7 +541,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.lz4");
         try (InputStream is = Files.newInputStream(input.toPath());
                 FramedLZ4CompressorInputStream in = new FramedLZ4CompressorInputStream(is);) {
@@ -542,7 +552,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void skipsOverSkippableFrames() throws IOException {
+    public void testSkipsOverSkippableFrames() throws IOException {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -571,7 +581,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
     }
 
     @Test
-    public void skipsOverTrailingSkippableFrames() throws IOException {
+    public void testSkipsOverTrailingSkippableFrames() throws IOException {
         final byte[] input = {
             4, 0x22, 0x4d, 0x18, // signature
             0x60, // flag - Version 01, block independent, no block checksum, no content size, no content checksum
@@ -590,16 +600,6 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTestCase {
                     'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!'
                 }, actual);
         }
-    }
-
-    @Test
-    public void testMatches() throws IOException {
-        assertFalse(FramedLZ4CompressorInputStream.matches(new byte[10], 4));
-        final byte[] b = new byte[12];
-        IOUtils.read(getFile("bla.tar.lz4"), b);
-        assertFalse(FramedLZ4CompressorInputStream.matches(b, 3));
-        assertTrue(FramedLZ4CompressorInputStream.matches(b, 4));
-        assertTrue(FramedLZ4CompressorInputStream.matches(b, 5));
     }
 
 }

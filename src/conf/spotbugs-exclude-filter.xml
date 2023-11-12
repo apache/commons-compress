@@ -28,19 +28,6 @@
 
   <!-- Reason: References to System.out/err == -->
   <Match>
-    <Class name="org.apache.commons.compress.archivers.Lister" />
-    <Or>
-      <Method name="main" />
-      <Method name="usage" />
-    </Or>
-    <Bug pattern="NP_ALWAYS_NULL" />
-  </Match>
-  <Match>
-    <Class name="org.apache.commons.compress.archivers.zip.ZipFile" />
-    <Method name="finalize" />
-    <Bug pattern="NP_ALWAYS_NULL" />
-  </Match>
-  <Match>
     <Class name="org.apache.commons.compress.archivers.dump.DumpArchiveUtil" />
     <Method name="dumpBlock" />
     <Bug pattern="NP_ALWAYS_NULL" />
@@ -117,37 +104,6 @@
     <Class name="org.apache.commons.compress.compressors.pack200.TempFileCachingStreamBridge$1" />
     <Method name="&lt;init&gt;" />
     <Bug pattern="OBL_UNSATISFIED_OBLIGATION" />
-  </Match>
-
-  <!-- Reason: the contract is to use default encoding (unless told otherwise) -->
-  <Match>
-    <Class name="org.apache.commons.compress.archivers.arj.ArjArchiveInputStream" />
-    <Method name="readString" />
-    <Bug pattern="DM_DEFAULT_ENCODING" />
-  </Match>
-  <Match>
-    <Class name="org.apache.commons.compress.archivers.zip.AsiExtraField" />
-    <Or>
-      <Method name="getLocalFileDataData" />
-      <Method name="getLocalFileDataLength" />
-      <Method name="parseFromLocalFileData" />
-    </Or>
-    <Bug pattern="DM_DEFAULT_ENCODING" />
-  </Match>
-  <Match>
-    <Class name="org.apache.commons.compress.archivers.zip.FallbackZipEncoding" />
-    <Or>
-      <Method name="decode" />
-      <Method name="encode" />
-    </Or>
-    <Bug pattern="DM_DEFAULT_ENCODING" />
-  </Match>
-
-  <!-- Reason: default encoding is good enough for exception message -->
-  <Match>
-    <Class name="org.apache.commons.compress.archivers.tar.TarUtils" />
-    <Method name="exceptionMessage" />
-    <Bug pattern="DM_DEFAULT_ENCODING" />
   </Match>
 
   <!-- Reason: unrolled loop, all possible cases are covered -->

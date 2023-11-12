@@ -158,7 +158,7 @@ public class ZCompressorInputStream extends LZWInputStream {
         // When codeBits changes, the remaining unused symbols in the current
         // group of 8 are still written out, in the old codeSize,
         // as garbage values (usually zeroes) that need to be skipped.
-        long codeReadsToThrowAway = 8 - (totalCodesRead % 8);
+        long codeReadsToThrowAway = 8 - totalCodesRead % 8;
         if (codeReadsToThrowAway == 8) {
             codeReadsToThrowAway = 0;
         }

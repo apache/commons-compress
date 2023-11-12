@@ -46,7 +46,7 @@ import java.util.ResourceBundle;
 public class Messages {
 
     // ResourceBundle holding the system messages.
-    static private ResourceBundle bundle = null;
+    static private ResourceBundle bundle;
 
     static {
         // Attempt to load the messages.
@@ -71,7 +71,7 @@ public class Messages {
      * @return String the formatted message.
      */
     public static String format(final String format, final Object[] args) {
-        final StringBuilder answer = new StringBuilder(format.length() + (args.length * 20));
+        final StringBuilder answer = new StringBuilder(format.length() + args.length * 20);
         final String[] argStrings = new String[args.length];
         Arrays.setAll(argStrings, i -> Objects.toString(args[i], "<null>")); //$NON-NLS-1$
         int lastI = 0;

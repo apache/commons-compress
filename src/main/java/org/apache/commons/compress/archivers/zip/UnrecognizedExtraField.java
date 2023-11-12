@@ -48,7 +48,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     private byte[] centralData;
 
     /**
-     * Get the central data.
+     * Gets the central data.
      * @return the central data if present, else return the local file data
      */
     @Override
@@ -60,7 +60,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     }
 
     /**
-     * Get the central data length.
+     * Gets the central data length.
      * If there is no central data, get the local file data length.
      * @return the central data length
      */
@@ -73,7 +73,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     }
 
     /**
-     * Get the header id.
+     * Gets the header id.
      * @return the header id
      */
     @Override
@@ -82,7 +82,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     }
 
     /**
-     * Get the local data.
+     * Gets the local data.
      * @return the local data
      */
     @Override
@@ -91,7 +91,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     }
 
     /**
-     * Get the length of the local data.
+     * Gets the length of the local data.
      * @return the length of the local data
      */
     @Override
@@ -127,7 +127,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     }
 
     /**
-     * Set the extra field data in central directory.
+     * Sets the extra field data in central directory.
      * @param data the data to use
      */
     public void setCentralDirectoryData(final byte[] data) {
@@ -135,7 +135,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     }
 
     /**
-     * Set the header id.
+     * Sets the header id.
      * @param headerId the header id to use
      */
     public void setHeaderId(final ZipShort headerId) {
@@ -143,7 +143,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     }
 
     /**
-     * Set the extra field data in the local file data -
+     * Sets the extra field data in the local file data -
      * without Header-ID or length specifier.
      * @param data the field data to use
      */

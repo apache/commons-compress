@@ -47,47 +47,48 @@ public class TarUtils {
 
     private static final int BYTE_MASK = 255;
 
-    static final ZipEncoding DEFAULT_ENCODING =
-        ZipEncodingHelper.getZipEncoding(null);
+    static final ZipEncoding DEFAULT_ENCODING = ZipEncodingHelper.getZipEncoding(null);
 
     /**
      * Encapsulates the algorithms used up to Commons Compress 1.3 as
      * ZipEncoding.
      */
     static final ZipEncoding FALLBACK_ENCODING = new ZipEncoding() {
-            @Override
-            public boolean canEncode(final String name) { return true; }
+        @Override
+        public boolean canEncode(final String name) {
+            return true;
+        }
 
-            @Override
-            public String decode(final byte[] buffer) {
-                final int length = buffer.length;
-                final StringBuilder result = new StringBuilder(length);
+        @Override
+        public String decode(final byte[] buffer) {
+            final int length = buffer.length;
+            final StringBuilder result = new StringBuilder(length);
 
-                for (final byte b : buffer) {
-                    if (b == 0) { // Trailing null
-                        break;
-                    }
-                    result.append((char) (b & 0xFF)); // Allow for sign-extension
+            for (final byte b : buffer) {
+                if (b == 0) { // Trailing null
+                    break;
                 }
-
-                return result.toString();
+                result.append((char) (b & 0xFF)); // Allow for sign-extension
             }
 
-            @Override
-            public ByteBuffer encode(final String name) {
-                final int length = name.length();
-                final byte[] buf = new byte[length];
+            return result.toString();
+        }
 
-                // copy until end of input or output is reached.
-                for (int i = 0; i < length; ++i) {
-                    buf[i] = (byte) name.charAt(i);
-                }
-                return ByteBuffer.wrap(buf);
+        @Override
+        public ByteBuffer encode(final String name) {
+            final int length = name.length();
+            final byte[] buf = new byte[length];
+
+            // copy until end of input or output is reached.
+            for (int i = 0; i < length; ++i) {
+                buf[i] = (byte) name.charAt(i);
             }
-        };
+            return ByteBuffer.wrap(buf);
+        }
+    };
 
     /**
-     * Compute the checksum of a tar entry header.
+     * Computes the checksum of a tar entry header.
      *
      * @param buf The tar entry's header buffer.
      * @return The computed checksum.
@@ -184,7 +185,7 @@ public class TarUtils {
     }
 
     /**
-     * Write an octal long integer into a buffer.
+     * Writes an octal long integer into a buffer.
      *
      * Uses {@link #formatUnsignedOctalString} to format
      * the value as an octal string with leading zeros.
@@ -208,7 +209,7 @@ public class TarUtils {
     }
 
     /**
-     * Write a long integer into a buffer as an octal string if this
+     * Writes a long integer into a buffer as an octal string if this
      * will fit, or as a binary number otherwise.
      *
      * Uses {@link #formatUnsignedOctalString} to format
@@ -246,7 +247,7 @@ public class TarUtils {
     }
 
     /**
-     * Copy a name into a buffer.
+     * Copies a name into a buffer.
      * Copies characters from the name into the buffer
      * starting at the specified offset.
      * If the buffer is longer than the name, the buffer
@@ -275,7 +276,7 @@ public class TarUtils {
     }
 
     /**
-     * Copy a name into a buffer.
+     * Copies a name into a buffer.
      * Copies characters from the name into the buffer
      * starting at the specified offset.
      * If the buffer is longer than the name, the buffer
@@ -313,7 +314,7 @@ public class TarUtils {
     }
 
     /**
-     * Write an octal integer into a buffer.
+     * Writes an octal integer into a buffer.
      *
      * Uses {@link #formatUnsignedOctalString} to format
      * the value as an octal string with leading zeros.
@@ -338,7 +339,7 @@ public class TarUtils {
     }
 
     /**
-     * Fill buffer with unsigned octal number, padded with leading zeroes.
+     * Fills a buffer with unsigned octal number, padded with leading zeroes.
      *
      * @param value number to convert to octal - treated as unsigned
      * @param buffer destination buffer
@@ -413,7 +414,7 @@ public class TarUtils {
     }
 
     /**
-     * Parse a boolean byte from a buffer.
+     * Parses a boolean byte from a buffer.
      * Leading spaces and NUL are ignored.
      * The buffer may contain trailing spaces or NULs.
      *
@@ -474,7 +475,7 @@ public class TarUtils {
     }
 
     /**
-     * Parse an entry name from a buffer.
+     * Parses an entry name from a buffer.
      * Parsing stops when a NUL is found
      * or the buffer length is reached.
      *
@@ -497,7 +498,7 @@ public class TarUtils {
     }
 
     /**
-     * Parse an entry name from a buffer.
+     * Parses an entry name from a buffer.
      * Parsing stops when a NUL is found
      * or the buffer length is reached.
      *
@@ -527,7 +528,7 @@ public class TarUtils {
     }
 
     /**
-     * Parse an octal string from a buffer.
+     * Parses an octal string from a buffer.
      *
      * <p>Leading spaces are ignored.
      * The buffer must contain a trailing space or NUL,
@@ -592,7 +593,7 @@ public class TarUtils {
     }
 
     /**
-     * Compute the value contained in a byte buffer.  If the most
+     * Computes the value contained in a byte buffer.  If the most
      * significant bit of the first byte in the buffer is set, this
      * bit is ignored and the rest of the buffer is interpreted as a
      * binary number.  Otherwise, the buffer is interpreted as an
@@ -623,11 +624,15 @@ public class TarUtils {
 
     /**
      * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
-     * GNU.sparse.map
-     *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
      *
-     * <p>Will internally invoke {@link #parseFromPAX01SparseHeaders} and map IOExceptions to a RzuntimeException, You
+     * <p>
+     * <em>GNU.sparse.map</em>:
+     *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
+     * </p>
+     * <p>
+     * Will internally invoke {@link #parseFromPAX01SparseHeaders} and map IOExceptions to a RzuntimeException, You
      * should use {@link #parseFromPAX01SparseHeaders} directly instead.
+     * </p>
      *
      * @param sparseMap the sparse map string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
      * @return sparse headers parsed from sparse map
@@ -693,18 +698,21 @@ public class TarUtils {
     /**
      * For PAX Format 0.0, the sparse headers(GNU.sparse.offset and GNU.sparse.numbytes)
      * may appear multi times, and they look like:
-     *
+     * <pre>
      * GNU.sparse.size=size
      * GNU.sparse.numblocks=numblocks
      * repeat numblocks times
      *   GNU.sparse.offset=offset
      *   GNU.sparse.numbytes=numbytes
      * end repeat
-     *
-     * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
-     *
-     * GNU.sparse.map
+     * </pre>
+     * <p>
+     * For PAX Format 0.1, the sparse headers are stored in a single variable: GNU.sparse.map
+     * </p>
+     * <p>
+     * <em>GNU.sparse.map</em>:
      *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
+     * </p>
      *
      * @param inputStream input stream to read keys and values
      * @param sparseHeaders used in PAX Format 0.0 &amp; 0.1, as it may appear multiple times,
@@ -723,18 +731,21 @@ public class TarUtils {
     /**
      * For PAX Format 0.0, the sparse headers(GNU.sparse.offset and GNU.sparse.numbytes)
      * may appear multi times, and they look like:
-     *
+     * <pre>
      * GNU.sparse.size=size
      * GNU.sparse.numblocks=numblocks
      * repeat numblocks times
      *   GNU.sparse.offset=offset
      *   GNU.sparse.numbytes=numbytes
      * end repeat
-     *
+     * </pre>
+     * <p>
      * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
-     *
-     * GNU.sparse.map
+     * </p>
+     * <p>
+     * <em>GNU.sparse.map</em>:
      *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
+     * </p>
      *
      * @param inputStream input stream to read keys and values
      * @param sparseHeaders used in PAX Format 0.0 &amp; 0.1, as it may appear multiple times,
@@ -768,7 +779,7 @@ public class TarUtils {
                     while((ch = inputStream.read()) != -1) {
                         read++;
                         totalRead++;
-                        if (totalRead < 0 || (headerSize >= 0 && totalRead >= headerSize)) {
+                        if (totalRead < 0 || headerSize >= 0 && totalRead >= headerSize) {
                             break;
                         }
                         if (ch == '='){ // end of keyword
@@ -936,7 +947,7 @@ public class TarUtils {
      * Wikipedia <a href="https://en.wikipedia.org/wiki/Tar_(computing)#File_header">says</a>:
      * <blockquote>
      * The checksum is calculated by taking the sum of the unsigned byte values
-     * of the header block with the eight checksum bytes taken to be ascii
+     * of the header block with the eight checksum bytes taken to be ASCII
      * spaces (decimal value 32). It is stored as a six digit octal number with
      * leading zeroes followed by a NUL and then a space. Various
      * implementations do not adhere to this format. For better compatibility,
@@ -951,6 +962,7 @@ public class TarUtils {
      * heuristic rather than an absolute and final truth. The checksum
      * verification logic may well evolve over time as more special cases
      * are encountered.
+     * </p>
      *
      * @param header tar header
      * @return whether the checksum is reasonably good
@@ -973,7 +985,7 @@ public class TarUtils {
         return storedSum == unsignedSum || storedSum == signedSum;
     }
 
-    /** Private constructor to prevent instantiation of this utility class. */
+    /** Prevents instantiation. */
     private TarUtils(){
     }
 

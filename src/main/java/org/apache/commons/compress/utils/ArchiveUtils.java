@@ -150,7 +150,7 @@ public class ArchiveUtils {
     }
 
     /**
-     * Check if buffer contents matches Ascii String.
+     * Check if buffer contents matches ASCII String.
      *
      * @param expected the expected string
      * @param buffer the buffer
@@ -161,7 +161,7 @@ public class ArchiveUtils {
     }
 
     /**
-     * Check if buffer contents matches Ascii String.
+     * Check if buffer contents matches ASCII String.
      *
      * @param expected expected string
      * @param buffer the buffer
@@ -212,7 +212,7 @@ public class ArchiveUtils {
     }
 
     /**
-     * Convert a string to Ascii bytes.
+     * Convert a string to ASCII bytes.
      * Used for comparing "magic" strings which need to be independent of the default Locale.
      *
      * @param inputString string to convert
@@ -226,7 +226,7 @@ public class ArchiveUtils {
      * Convert an input byte array to a String using the ASCII character set.
      *
      * @param inputBytes bytes to convert
-     * @return the bytes, interpreted as an Ascii string
+     * @return the bytes, interpreted as an ASCII string
      */
     public static String toAsciiString(final byte[] inputBytes){
         return new String(inputBytes, US_ASCII);
@@ -238,7 +238,7 @@ public class ArchiveUtils {
      * @param inputBytes input byte array
      * @param offset offset within array
      * @param length length of array
-     * @return the bytes, interpreted as an Ascii string
+     * @return the bytes, interpreted as an ASCII string
      */
     public static String toAsciiString(final byte[] inputBytes, final int offset, final int length){
         return new String(inputBytes, offset, length, US_ASCII);

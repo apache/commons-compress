@@ -25,27 +25,17 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class FactoryTest extends AbstractTestCase {
-
-    @Test
-    public void blockRoundtripViaFactory() throws Exception {
-        roundtripViaFactory(CompressorStreamFactory.getLZ4Block());
-    }
-
-    @Test
-    public void frameRoundtripViaFactory() throws Exception {
-        roundtripViaFactory(CompressorStreamFactory.getLZ4Framed());
-    }
+public class FactoryTest extends AbstractTest {
 
     private void roundtripViaFactory(final String format) throws Exception {
         final Path input = getPath("bla.tar");
         long start = System.currentTimeMillis();
-        final Path outputSz = dir.toPath().resolve(input.getFileName() + "." + format + ".lz4");
+        final Path outputSz = getTempDirFile().toPath().resolve(input.getFileName() + "." + format + ".lz4");
         try (OutputStream os = Files.newOutputStream(outputSz);
                 OutputStream los = new CompressorStreamFactory().createCompressorOutputStream(format, os)) {
             Files.copy(input, los);
@@ -60,5 +50,15 @@ public class FactoryTest extends AbstractTestCase {
             assertArrayEquals(expected, actual);
         }
         // System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
+    }
+
+    @Test
+    public void testBlockRoundtripViaFactory() throws Exception {
+        roundtripViaFactory(CompressorStreamFactory.getLZ4Block());
+    }
+
+    @Test
+    public void testFrameRoundtripViaFactory() throws Exception {
+        roundtripViaFactory(CompressorStreamFactory.getLZ4Framed());
     }
 }

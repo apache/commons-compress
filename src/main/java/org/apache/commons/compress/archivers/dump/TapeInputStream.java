@@ -34,7 +34,7 @@ import org.apache.commons.compress.utils.IOUtils;
  *
  * @NotThreadSafe
  */
-class TapeInputStream extends FilterInputStream {
+final class TapeInputStream extends FilterInputStream {
     private static final int RECORD_SIZE = DumpArchiveConstants.TP_SIZE;
     private byte[] blockBuffer = new byte[DumpArchiveConstants.TP_SIZE];
     private int currBlkIdx = -1;
@@ -133,7 +133,7 @@ class TapeInputStream extends FilterInputStream {
         if (len == 0) {
             return 0;
         }
-        if ((len % RECORD_SIZE) != 0) {
+        if (len % RECORD_SIZE != 0) {
             throw new IllegalArgumentException(
                 "All reads must be multiple of record size (" + RECORD_SIZE +
                 " bytes.");
@@ -155,7 +155,7 @@ class TapeInputStream extends FilterInputStream {
 
             int n = 0;
 
-            if ((readOffset + (len - bytes)) <= blockSize) {
+            if (readOffset + len - bytes <= blockSize) {
                 // we can read entirely from the buffer.
                 n = len - bytes;
             } else {
@@ -184,7 +184,7 @@ class TapeInputStream extends FilterInputStream {
             throw new IOException("Input buffer is closed");
         }
 
-        if (!isCompressed || (currBlkIdx == -1)) {
+        if (!isCompressed || currBlkIdx == -1) {
             // file is not compressed
             readFully(blockBuffer, 0, blockSize);
             bytesRead += blockSize;
@@ -201,8 +201,8 @@ class TapeInputStream extends FilterInputStream {
                 bytesRead += blockSize;
             } else {
                 // this block is compressed.
-                final int flags = (h >> 1) & 0x07;
-                int length = (h >> 4) & 0x0FFFFFFF;
+                final int flags = h >> 1 & 0x07;
+                int length = h >> 4 & 0x0FFFFFFF;
                 final byte[] compBuffer = readRange(length);
                 bytesRead += length;
 
@@ -287,7 +287,7 @@ class TapeInputStream extends FilterInputStream {
     }
 
     /**
-     * Set the DumpArchive Buffer's block size. We need to sync the block size with the
+     * Sets the DumpArchive Buffer's block size. We need to sync the block size with the
      * dump archive's actual block size since compression is handled at the
      * block level.
      *
@@ -334,7 +334,7 @@ class TapeInputStream extends FilterInputStream {
      */
     @Override
     public long skip(final long len) throws IOException {
-        if ((len % RECORD_SIZE) != 0) {
+        if (len % RECORD_SIZE != 0) {
             throw new IllegalArgumentException(
                 "All reads must be multiple of record size (" + RECORD_SIZE +
                 " bytes.");
@@ -349,7 +349,7 @@ class TapeInputStream extends FilterInputStream {
             // return -1 if there's a problem.
             if (readOffset == blockSize) {
                 try {
-                    readBlock((len - bytes) < blockSize);
+                    readBlock(len - bytes < blockSize);
                 } catch (final ShortFileException sfe) { // NOSONAR
                     return -1;
                 }
@@ -357,7 +357,7 @@ class TapeInputStream extends FilterInputStream {
 
             long n = 0;
 
-            if ((readOffset + (len - bytes)) <= blockSize) {
+            if (readOffset + (len - bytes) <= blockSize) {
                 // we can read entirely from the buffer.
                 n = len - bytes;
             } else {

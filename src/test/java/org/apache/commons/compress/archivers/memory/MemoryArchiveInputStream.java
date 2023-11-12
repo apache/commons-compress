@@ -20,35 +20,33 @@ package org.apache.commons.compress.archivers.memory;
 
 import java.io.IOException;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
-public final class MemoryArchiveInputStream extends ArchiveInputStream {
+public final class MemoryArchiveInputStream extends ArchiveInputStream<MemoryArchiveEntry> {
 
-    private final String[] filenames;
+    private final String[] fileNames;
     private final String[] content;
     private int p;
 
     public MemoryArchiveInputStream( final String[][] pFiles ) {
         final int pFilesLength = pFiles.length;
-        filenames = new String[pFilesLength];
+        fileNames = new String[pFilesLength];
         content = new String[pFilesLength];
 
         for (int i = 0; i < pFilesLength; i++) {
             final String[] nameAndContent = pFiles[i];
-            filenames[i] = nameAndContent[0];
+            fileNames[i] = nameAndContent[0];
             content[i] = nameAndContent[1];
         }
         p = 0;
     }
 
     @Override
-    public ArchiveEntry getNextEntry() throws IOException {
-        if (p >= filenames.length) {
+    public MemoryArchiveEntry getNextEntry() throws IOException {
+        if (p >= fileNames.length) {
             return null;
         }
-
-        return new MemoryArchiveEntry(filenames[p]);
+        return new MemoryArchiveEntry(fileNames[p]);
     }
 
     @Override

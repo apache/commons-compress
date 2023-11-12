@@ -131,9 +131,9 @@ public class IcBands extends BandSet {
 
         // Now order the result as a subsequence of ic_all
         relevantTuples.sort((arg0, arg1) -> {
-            final Integer index1 = Integer.valueOf(arg0.getTupleIndex());
+            final int index1 = arg0.getTupleIndex();
             final Integer index2 = Integer.valueOf(arg1.getTupleIndex());
-            return index1.compareTo(index2);
+            return Integer.compare(index1, index2);
         });
 
         return relevantTuples.toArray(IcTuple.EMPTY_ARRAY);
@@ -213,7 +213,7 @@ public class IcBands extends BandSet {
             // this relation is 1:M
 
             // If it's not anon and the outer is not anon, it could be relevant
-            if ((!tuple.isAnonymous() && !tuple.outerIsAnonymous()) || (tuple.nestedExplicitFlagSet())) {
+            if (!tuple.isAnonymous() && !tuple.outerIsAnonymous() || tuple.nestedExplicitFlagSet()) {
 
                 // add tuple to corresponding bucket
                 final String key = tuple.outerClassString();

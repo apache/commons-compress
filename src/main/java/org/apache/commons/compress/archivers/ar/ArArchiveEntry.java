@@ -30,10 +30,10 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 
 /**
  * Represents an archive entry in the "ar" format.
- *
+ * <p>
  * Each AR archive starts with "!&lt;arch&gt;" followed by a LF. After these 8 bytes
  * the archive entries are listed. The format of an entry header is as it follows:
- *
+ * </p>
  * <pre>
  * START BYTE   END BYTE    NAME                    FORMAT      LENGTH
  * 0            15          File name               ASCII       16
@@ -44,16 +44,17 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * 48           57          File size (bytes)       Decimal     10
  * 58           59          File magic              \140\012    2
  * </pre>
- *
+ * <p>
  * This specifies that an ar archive entry header contains 60 bytes.
- *
+ * </p>
+ * <p>
  * Due to the limitation of the file name length to 16 bytes GNU and
  * BSD has their own variants of this format. Currently Commons
  * Compress can read but not write the GNU variant.  It fully supports
  * the BSD variant.
+ * </p>
  *
  * @see <a href="https://www.freebsd.org/cgi/man.cgi?query=ar&sektion=5">ar man page</a>
- *
  * @Immutable
  */
 public class ArArchiveEntry implements ArchiveEntry {
@@ -65,6 +66,7 @@ public class ArArchiveEntry implements ArchiveEntry {
     public static final String TRAILER = "`\012";
 
     private static final int DEFAULT_MODE = 33188; // = (octal) 0100644
+
     /**
      * SVR4/GNU adds a trailing / to names; BSD does not.
      * They also vary in how names longer than 16 characters are represented.
@@ -153,13 +155,19 @@ public class ArArchiveEntry implements ArchiveEntry {
         return name.equals(other.name);
     }
 
+    /**
+     * Gets the group ID.
+     *
+     * @return the group ID.
+     */
     public int getGroupId() {
         return groupId;
     }
 
     /**
-     * Last modified time in seconds since the epoch.
-     * @return the last modified date
+     * Gets the last modified time in seconds since the epoch.
+     *
+     * @return the last modified date.
      */
     public long getLastModified() {
         return lastModified;
@@ -170,10 +178,20 @@ public class ArArchiveEntry implements ArchiveEntry {
         return new Date(1000 * getLastModified());
     }
 
+    /**
+     * Gets the length.
+     *
+     * @return the length.
+     */
     public long getLength() {
         return length;
     }
 
+    /**
+     * Gets the mode.
+     *
+     * @return the mode.
+     */
     public int getMode() {
         return mode;
     }
@@ -188,6 +206,11 @@ public class ArArchiveEntry implements ArchiveEntry {
         return this.getLength();
     }
 
+    /**
+     * Gets the user ID.
+     *
+     * @return the user ID.
+     */
     public int getUserId() {
         return userId;
     }

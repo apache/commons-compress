@@ -46,8 +46,8 @@ public abstract class VariableInstructionForm extends ByteCodeForm {
                 + " but this won't fit in the rewrite array");
         }
 
-        rewrite[absPosition] = ((0xFF00) & operand) >> 8;
-        rewrite[absPosition + 1] = ((0x00FF) & operand);
+        rewrite[absPosition] = (0xFF00 & operand) >> 8;
+        rewrite[absPosition + 1] = 0x00FF & operand;
     }
 
     /**
@@ -70,10 +70,10 @@ public abstract class VariableInstructionForm extends ByteCodeForm {
                 + " but this won't fit in the rewrite array");
         }
 
-        rewrite[absPosition] = ((0xFF000000) & operand) >> 24;
-        rewrite[absPosition + 1] = ((0x00FF0000) & operand) >> 16;
-        rewrite[absPosition + 2] = ((0x0000FF00) & operand) >> 8;
-        rewrite[absPosition + 3] = ((0x000000FF) & operand);
+        rewrite[absPosition] = (0xFF000000 & operand) >> 24;
+        rewrite[absPosition + 1] = (0x00FF0000 & operand) >> 16;
+        rewrite[absPosition + 2] = (0x0000FF00 & operand) >> 8;
+        rewrite[absPosition + 3] = 0x000000FF & operand;
     }
 
     /**
@@ -94,8 +94,8 @@ public abstract class VariableInstructionForm extends ByteCodeForm {
 
         // Find the first -1 in the rewrite array
         for (int index = 0; index < rewrite.length - 3; index++) {
-            if ((rewrite[index] == -1) && (rewrite[index + 1] == -1) && (rewrite[index + 2] == -1)
-                && (rewrite[index + 3] == -1)) {
+            if (rewrite[index] == -1 && rewrite[index + 1] == -1 && rewrite[index + 2] == -1
+                && rewrite[index + 3] == -1) {
                 firstOperandPosition = index;
                 break;
             }

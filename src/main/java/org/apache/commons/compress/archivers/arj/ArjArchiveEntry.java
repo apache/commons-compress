@@ -29,21 +29,70 @@ import org.apache.commons.compress.archivers.zip.ZipUtil;
  * @since 1.6
  */
 public class ArjArchiveEntry implements ArchiveEntry {
+
     /**
      * The known values for HostOs.
      */
     public static class HostOs {
+
+        /**
+         * {@value}
+         */
         public static final int DOS = 0;
+
+        /**
+         * {@value}
+         */
         public static final int PRIMOS = 1;
+
+        /**
+         * {@value}
+         */
         public static final int UNIX = 2;
+
+        /**
+         * {@value}
+         */
         public static final int AMIGA = 3;
+
+        /**
+         * {@value}
+         */
         public static final int MAC_OS = 4;
+
+        /**
+         * {@value}
+         */
         public static final int OS_2 = 5;
+
+        /**
+         * {@value}
+         */
         public static final int APPLE_GS = 6;
+
+        /**
+         * {@value}
+         */
         public static final int ATARI_ST = 7;
+
+        /**
+         * {@value}
+         */
         public static final int NEXT = 8;
+
+        /**
+         * {@value}
+         */
         public static final int VAX_VMS = 9;
+
+        /**
+         * {@value}
+         */
         public static final int WIN95 = 10;
+
+        /**
+         * {@value}
+         */
         public static final int WIN32 = 11;
     }
 
@@ -116,7 +165,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Get this entry's name.
+     * Gets this entry's name.
      *
      * <p>This method returns the raw name as it is stored inside of the archive.</p>
      *
@@ -132,7 +181,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Get this entry's file size.
+     * Gets this entry's file size.
      *
      * @return This entry's file size.
      */

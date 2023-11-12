@@ -123,8 +123,8 @@ public class AttributeLayoutTest {
                 AttributeLayout.CONTEXT_CLASS, "RS", 1);
         final Segment segment = new TestSegment();
         assertNull(layout.getValue(-1, segment.getConstantPool()));
-        assertEquals("Eins", ((CPUTF8)layout.getValue(0, segment.getConstantPool())).underlyingString());
-        assertEquals("Zwei", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
+        assertEquals("Eins", ((CPUTF8) layout.getValue(0, segment.getConstantPool())).underlyingString());
+        assertEquals("Zwei", ((CPUTF8) layout.getValue(1, segment.getConstantPool())).underlyingString());
     }
 
     @Test
@@ -133,8 +133,8 @@ public class AttributeLayoutTest {
                 AttributeLayout.CONTEXT_CLASS, "RSN", 1);
         final Segment segment = new TestSegment();
         assertNull(layout.getValue(0, segment.getConstantPool()));
-        assertEquals("Eins", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
-        assertEquals("Zwei", ((CPUTF8)layout.getValue(2, segment.getConstantPool())).underlyingString());
+        assertEquals("Eins", ((CPUTF8) layout.getValue(1, segment.getConstantPool())).underlyingString());
+        assertEquals("Zwei", ((CPUTF8) layout.getValue(2, segment.getConstantPool())).underlyingString());
     }
 
     @Test
@@ -143,8 +143,8 @@ public class AttributeLayoutTest {
                 AttributeLayout.CONTEXT_CLASS, "RU", 1);
         final Segment segment = new TestSegment();
         assertNull(layout.getValue(-1, segment.getConstantPool()));
-        assertEquals("Zero", ((CPUTF8)layout.getValue(0, segment.getConstantPool())).underlyingString());
-        assertEquals("One", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
+        assertEquals("Zero", ((CPUTF8) layout.getValue(0, segment.getConstantPool())).underlyingString());
+        assertEquals("One", ((CPUTF8) layout.getValue(1, segment.getConstantPool())).underlyingString());
     }
 
     @Test
@@ -153,8 +153,8 @@ public class AttributeLayoutTest {
                 AttributeLayout.CONTEXT_CLASS, "RUN", 1);
         final Segment segment = new TestSegment();
         assertNull(layout.getValue(0, segment.getConstantPool()));
-        assertEquals("Zero", ((CPUTF8)layout.getValue(1, segment.getConstantPool())).underlyingString());
-        assertEquals("One", ((CPUTF8)layout.getValue(2, segment.getConstantPool())).underlyingString());
+        assertEquals("Zero", ((CPUTF8) layout.getValue(1, segment.getConstantPool())).underlyingString());
+        assertEquals("One", ((CPUTF8) layout.getValue(2, segment.getConstantPool())).underlyingString());
     }
 
     @ParameterizedTest

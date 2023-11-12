@@ -130,7 +130,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
              * eight are stored in a byte following the tag byte.
              */
 
-            length = 4 + ((b >> 2) & 0x07);
+            length = 4 + (b >> 2 & 0x07);
             uncompressedBytesRemaining -= length;
             offset = (b & 0xE0) << 3;
             b = readOneByte();
@@ -204,7 +204,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
     }
 
     /**
-     * Get the uncompressed size of the stream
+     * Gets the uncompressed size of the stream
      *
      * @return the uncompressed size
      */
@@ -304,7 +304,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
             if (b == -1) {
                 throw new IOException("Premature end of stream reading size");
             }
-            sz |= (b & 0x7f) << (index++ * 7);
+            sz |= (b & 0x7f) << index++ * 7;
         } while (0 != (b & 0x80));
         return sz;
     }

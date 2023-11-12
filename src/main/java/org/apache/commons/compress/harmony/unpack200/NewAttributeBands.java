@@ -41,7 +41,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.harmony.unpack200.bytecode.NewAttribute;
 
 /**
- * Set of bands relating to a non-predefined attribute
+ * Sets of bands relating to a non-predefined attribute
  */
 public class NewAttributeBands extends BandSet {
 
@@ -214,7 +214,7 @@ public class NewAttributeBands extends BandSet {
                 attribute.addInteger(2, value);
             } else if (tag.equals("SH")) {
                 attribute.addInteger(2, (short) value);
-            } else if ((tag.equals("I") || tag.equals("FI")) || tag.equals("SI")) {
+            } else if (tag.equals("I") || tag.equals("FI") || tag.equals("SI")) {
                 attribute.addInteger(4, value);
             } else if (tag.equals("V") || tag.equals("FV") || tag.equals("SV")) {
                 // Don't add V's - they shouldn't be written out to the class
@@ -620,7 +620,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Get one attribute at the given index from the various bands. The correct bands must have already been read in.
+     * Gets one attribute at the given index from the various bands. The correct bands must have already been read in.
      *
      * @param index TODO
      * @param elements TODO
@@ -688,7 +688,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Tokenise the layout into AttributeElements
+     * Tokenize the layout into AttributeElements
      *
      * @throws IOException If an I/O error occurs.
      */
@@ -876,7 +876,7 @@ public class NewAttributeBands extends BandSet {
         stream.mark(100);
         int i;
         int length = 0;
-        while ((i = (stream.read())) != -1 && Character.isDigit((char) i)) {
+        while ((i = stream.read()) != -1 && Character.isDigit((char) i)) {
             length++;
         }
         stream.reset();

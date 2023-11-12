@@ -31,11 +31,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
-import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorOutputStream;
@@ -43,16 +43,16 @@ import org.apache.commons.compress.compressors.pack200.Pack200Strategy;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public final class Pack200TestCase extends AbstractTestCase {
+public final class Pack200Test extends AbstractTest {
 
     private void jarArchiveCreation(final Pack200Strategy mode) throws Exception {
-        final File output = new File(dir, "bla.pack");
+        final File output = newTempFile("bla.pack");
 
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
 
         try (OutputStream out = new Pack200CompressorOutputStream(Files.newOutputStream(output.toPath()), mode);
-             ArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("jar", out)) {
+             JarArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("jar", out)) {
 
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
             Files.copy(file1.toPath(), os);
@@ -64,7 +64,7 @@ public final class Pack200TestCase extends AbstractTestCase {
         }
 
         try (InputStream is = new Pack200CompressorInputStream(output);
-            final ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
+            final ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
             final List<String> files = new ArrayList<>();
             files.add("testdata/test1.xml");
             files.add("testdata/test2.xml");
@@ -78,11 +78,11 @@ public final class Pack200TestCase extends AbstractTestCase {
         try (
             InputStream is = useFile ? new Pack200CompressorInputStream(input, mode)
                 : new Pack200CompressorInputStream(Files.newInputStream(input.toPath()), mode);
-            ArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
+            ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
 
             ArchiveEntry entry = in.getNextEntry();
             while (entry != null) {
-                final File archiveEntry = new File(dir, entry.getName());
+                final File archiveEntry = newTempFile(entry.getName());
                 archiveEntry.getParentFile().mkdirs();
                 if (entry.isDirectory()) {
                     archiveEntry.mkdir();
@@ -105,16 +105,6 @@ public final class Pack200TestCase extends AbstractTestCase {
         }
     }
 
-    @Test
-    public void multiByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
-    }
-
-    @Test
-    public void multiByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
-        multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
-    }
-
     private void singleByteReadConsistentlyReturnsMinusOneAtEof(final Pack200Strategy s) throws Exception {
         final File input = getFile("bla.pack");
         try (final Pack200CompressorInputStream in = new Pack200CompressorInputStream(input, s)) {
@@ -122,16 +112,6 @@ public final class Pack200TestCase extends AbstractTestCase {
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
         }
-    }
-
-    @Test
-    public void singleByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
-    }
-
-    @Test
-    public void singleByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
-        singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
     }
 
     @Test
@@ -206,8 +186,18 @@ public final class Pack200TestCase extends AbstractTestCase {
     }
 
     @Test
+    public void testMultiByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
+    }
+
+    @Test
+    public void testMultiByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
+        multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
+    }
+
+    @Test
     public void testOutputStreamMethods() throws Exception {
-        final File output = new File(dir, "bla.pack");
+        final File output = newTempFile("bla.pack");
         final Map<String, String> m = new HashMap<>();
         m.put("foo", "bar");
         try (OutputStream out = Files.newOutputStream(output.toPath());
@@ -224,6 +214,16 @@ public final class Pack200TestCase extends AbstractTestCase {
             is.read(sig);
             assertFalse(Pack200CompressorInputStream.matches(sig, 2));
         }
+    }
+
+    @Test
+    public void testSingleByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
+    }
+
+    @Test
+    public void testSingleByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
+        singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
     }
 
 }

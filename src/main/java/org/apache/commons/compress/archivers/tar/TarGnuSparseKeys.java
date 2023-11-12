@@ -22,7 +22,7 @@ package org.apache.commons.compress.archivers.tar;
 /**
  * GNU sparse key names.
  */
-class TarGnuSparseKeys {
+final class TarGnuSparseKeys {
 
     static final String MAP = "GNU.sparse.map";
     static final String NAME = "GNU.sparse.name";

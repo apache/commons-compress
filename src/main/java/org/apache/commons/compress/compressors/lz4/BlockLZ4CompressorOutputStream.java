@@ -42,8 +42,8 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
     final static class Pair {
         private static int lengths(final int litLength, final int brLength) {
             final int l = Math.min(litLength, 15);
-            final int br = brLength < 4 ? 0 : (brLength < 19 ? brLength - 4 : 15);
-            return (l << BlockLZ4CompressorInputStream.SIZE_BITS) | br;
+            final int br = brLength < 4 ? 0 : brLength < 19 ? brLength - 4 : 15;
+            return l << BlockLZ4CompressorInputStream.SIZE_BITS | br;
         }
         private static void writeLength(int length, final OutputStream out) throws IOException {
             while (length >= 255) {
@@ -54,6 +54,8 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         }
         private final Deque<byte[]> literals = new LinkedList<>();
 
+        private int literalLength;
+
         private int brOffset, brLength;
 
         private boolean written;
@@ -62,6 +64,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
             final byte[] copy = Arrays.copyOfRange(block.getData(), block.getOffset(),
                 block.getOffset() + block.getLength());
             literals.add(copy);
+            literalLength += copy.length;
             return copy;
         }
 
@@ -87,11 +90,20 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         }
 
         private int literalLength() {
-            return literals.stream().mapToInt(b -> b.length).sum();
+            // This method is performance sensitive
+            if (literalLength != 0) {
+                return literalLength;
+            }
+            int length = 0;
+            for (final byte[] b : literals) {
+                length += b.length;
+            }
+            return literalLength = length;
         }
 
         private void prependLiteral(final byte[] data) {
             literals.addFirst(data);
+            literalLength += data.length;
         }
 
         private void prependTo(final Pair other) {

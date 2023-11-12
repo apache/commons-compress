@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 public class DumpArchiveEntryTest {
     @Test
-    public void publicNameAddsTrailingSlashForDirectories() {
+    public void testPublicNameAddsTrailingSlashForDirectories() {
         final DumpArchiveEntry ent = new DumpArchiveEntry("foo", "bar", -1,
                                                     DumpArchiveEntry.TYPE
                                                     .DIRECTORY);
@@ -34,7 +34,7 @@ public class DumpArchiveEntryTest {
     }
 
     @Test
-    public void publicNameRemovesLeadingDotSlash() {
+    public void testPublicNameRemovesLeadingDotSlash() {
         final DumpArchiveEntry ent = new DumpArchiveEntry("./foo", "bar");
         assertEquals("bar", ent.getSimpleName());
         assertEquals("./foo", ent.getOriginalName());

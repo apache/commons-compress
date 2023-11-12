@@ -19,8 +19,9 @@ package org.apache.commons.compress.archivers.arj;
 import java.util.Arrays;
 import java.util.Objects;
 
-class LocalFileHeader {
-    static class FileTypes {
+final class LocalFileHeader {
+
+    final static class FileTypes {
         static final int BINARY = 0;
         static final int SEVEN_BIT_TEXT = 1;
         static final int COMMENT_HEADER = 2;
@@ -28,14 +29,16 @@ class LocalFileHeader {
         static final int VOLUME_LABEL = 4;
         static final int CHAPTER_LABEL = 5;
     }
-    static class Flags {
+
+    final static class Flags {
         static final int GARBLED = 0x01;
         static final int VOLUME = 0x04;
         static final int EXTFILE = 0x08;
         static final int PATHSYM = 0x10;
         static final int BACKUP = 0x20;
     }
-    static class Methods {
+
+    final static class Methods {
         static final int STORED = 0;
         static final int COMPRESSED_MOST = 1;
         static final int COMPRESSED = 2;
@@ -44,6 +47,7 @@ class LocalFileHeader {
         static final int NO_DATA_NO_CRC = 8;
         static final int NO_DATA = 9;
     }
+
     int archiverVersionNumber;
     int minVersionToExtract;
     int hostOS;

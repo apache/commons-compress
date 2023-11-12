@@ -32,9 +32,12 @@ import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.ExactMath;
 
+/**
+ * TODO This class can't be final because it is mocked by Mockito.
+ */
 class HuffmanDecoder implements Closeable {
 
-    private static class BinaryTreeNode {
+    private static final class BinaryTreeNode {
         private final int bits;
         int literal = -1;
         BinaryTreeNode leftNode;
@@ -75,7 +78,7 @@ class HuffmanDecoder implements Closeable {
         abstract HuffmanState state();
     }
 
-    private static class DecodingMemory {
+    private static final class DecodingMemory {
         private final byte[] memory;
         private final int mask;
         private int wHead;
@@ -103,7 +106,7 @@ class HuffmanDecoder implements Closeable {
         }
 
         private int incCounter(final int counter) {
-            final int newCounter = (counter + 1) & mask;
+            final int newCounter = counter + 1 & mask;
             if (!wrappedAround && newCounter < counter) {
                 wrappedAround = true;
             }
@@ -114,7 +117,7 @@ class HuffmanDecoder implements Closeable {
             if (distance > memory.length) {
                 throw new IllegalStateException("Illegal distance parameter: " + distance);
             }
-            final int start = (wHead - distance) & mask;
+            final int start = wHead - distance & mask;
             if (!wrappedAround && start >= wHead) {
                 throw new IllegalStateException("Attempt to read beyond memory: dist=" + distance);
             }
@@ -124,7 +127,7 @@ class HuffmanDecoder implements Closeable {
         }
     }
 
-    private class HuffmanCodes extends DecoderState {
+    private final class HuffmanCodes extends DecoderState {
         private boolean endOfBlock;
         private final HuffmanState state;
         private final BinaryTreeNode lengthTree;
@@ -214,7 +217,7 @@ class HuffmanDecoder implements Closeable {
             return endOfBlock ? INITIAL : state;
         }
     }
-    private static class InitialState extends DecoderState {
+    private static final class InitialState extends DecoderState {
         @Override
         int available() {
             return 0;
@@ -239,7 +242,7 @@ class HuffmanDecoder implements Closeable {
         }
     }
 
-    private class UncompressedState extends DecoderState {
+    private final class UncompressedState extends DecoderState {
         private final long blockLength;
         private long read;
 
@@ -375,7 +378,7 @@ class HuffmanDecoder implements Closeable {
                 BinaryTreeNode node = root;
                 final int lit = literalCodes[len - 1];
                 for (int p = len - 1; p >= 0; p--) {
-                    final int bit = lit & (1 << p);
+                    final int bit = lit & 1 << p;
                     node = bit == 0 ? node.left() : node.right();
                     if (node == null) {
                         throw new IllegalStateException("node doesn't exist in Huffman tree");
@@ -405,7 +408,7 @@ class HuffmanDecoder implements Closeable {
         int code = 0;
         final int[] nextCode = new int[max + 1];
         for (int i = 0; i <= max; i++) {
-            code = (code + blCount[i]) << 1;
+            code = code + blCount[i] << 1;
             nextCode[i] = code;
         }
 

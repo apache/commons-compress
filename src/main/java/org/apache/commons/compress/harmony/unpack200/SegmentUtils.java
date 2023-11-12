@@ -71,7 +71,7 @@ public final class SegmentUtils {
     public static int countBit16(final int[] flags) {
         int count = 0;
         for (final int flag : flags) {
-            if ((flag & (1 << 16)) != 0) {
+            if ((flag & 1 << 16) != 0) {
                 count++;
             }
         }
@@ -81,7 +81,7 @@ public final class SegmentUtils {
     public static int countBit16(final long[] flags) {
         int count = 0;
         for (final long flag : flags) {
-            if ((flag & (1 << 16)) != 0) {
+            if ((flag & 1 << 16) != 0) {
                 count++;
             }
         }
@@ -92,7 +92,7 @@ public final class SegmentUtils {
         int count = 0;
         for (final long[] flag : flags) {
             for (final long element : flag) {
-                if ((element & (1 << 16)) != 0) {
+                if ((element & 1 << 16) != 0) {
                     count++;
                 }
             }

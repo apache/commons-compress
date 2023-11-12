@@ -26,7 +26,17 @@ import java.util.List;
  */
 public class NewAttribute extends BCIRenumberedAttribute {
 
-    private static class BCIndex extends AbstractBcValue {
+    // Bytecode-related value (either a bytecode index or a length)
+    private static abstract class AbstractBcValue {
+
+        int actualValue;
+
+        public void setActualValue(final int value) {
+            this.actualValue = value;
+        }
+
+    }
+    private static final class BCIndex extends AbstractBcValue {
 
         private final int index;
 
@@ -34,7 +44,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
             this.index = index;
         }
     }
-    private static class BCLength extends AbstractBcValue {
+    private static final class BCLength extends AbstractBcValue {
 
         private final int length;
 
@@ -42,7 +52,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
             this.length = length;
         }
     }
-    private static class BCOffset extends AbstractBcValue {
+    private static final class BCOffset extends AbstractBcValue {
 
         private final int offset;
         private int index;
@@ -53,16 +63,6 @@ public class NewAttribute extends BCIRenumberedAttribute {
 
         public void setIndex(final int index) {
             this.index = index;
-        }
-
-    }
-    // Bytecode-related value (either a bytecode index or a length)
-    private static abstract class AbstractBcValue {
-
-        int actualValue;
-
-        public void setActualValue(final int value) {
-            this.actualValue = value;
         }
 
     }
@@ -220,7 +220,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
             if (obj instanceof Long) {
                 value = ((Long) obj).longValue();
             } else if (obj instanceof ClassFileEntry) {
-                value = pool.indexOf(((ClassFileEntry) obj));
+                value = pool.indexOf((ClassFileEntry) obj);
             } else if (obj instanceof AbstractBcValue) {
                 value = ((AbstractBcValue) obj).actualValue;
             }

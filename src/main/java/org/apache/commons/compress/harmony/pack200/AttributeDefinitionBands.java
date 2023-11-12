@@ -46,11 +46,27 @@ public class AttributeDefinitionBands extends BandSet {
         }
 
     }
+    
+    /**
+     * {@value}
+     */
     public static final int CONTEXT_CLASS = 0;
+    
+    /**
+     * {@value}
+     */
     public static final int CONTEXT_CODE = 3;
+    
+    /**
+     * {@value}
+     */
     public static final int CONTEXT_FIELD = 1;
 
+    /**
+     * {@value}
+     */
     public static final int CONTEXT_METHOD = 2;
+
     private final List<AttributeDefinition> classAttributeLayouts = new ArrayList<>();
     private final List<AttributeDefinition> methodAttributeLayouts = new ArrayList<>();
     private final List<AttributeDefinition> fieldAttributeLayouts = new ArrayList<>();
@@ -208,7 +224,7 @@ public class AttributeDefinitionBands extends BandSet {
         final int[] attributeDefinitionLayout = new int[attributeDefinitions.size()];
         for (int i = 0; i < attributeDefinitionLayout.length; i++) {
             final AttributeDefinition def = attributeDefinitions.get(i);
-            attributeDefinitionHeader[i] = def.contextType | (def.index + 1 << 2);
+            attributeDefinitionHeader[i] = def.contextType | def.index + 1 << 2;
             attributeDefinitionName[i] = def.name.getIndex();
             attributeDefinitionLayout[i] = def.layout.getIndex();
         }

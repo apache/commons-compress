@@ -68,7 +68,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
             // I've already added the first element (at 0) before
             // entering this loop, so make sure I don't add one
             // after the last element.
-            if (i < (codePacked.length - 1)) {
+            if (i < codePacked.length - 1) {
                 byteCodeOffsets.add(Integer.valueOf(lastBytecodePosition + byteCode.getLength()));
             }
             if (byteCode.getOpcode() == 0xC4) {

@@ -31,7 +31,7 @@ import org.apache.commons.compress.harmony.pack200.AttributeDefinitionBands.Attr
 import org.objectweb.asm.Label;
 
 /**
- * Set of bands relating to a non-predefined attribute that has had a layout definition given to pack200 (e.g. via one
+ * Sets of bands relating to a non-predefined attribute that has had a layout definition given to pack200 (e.g. via one
  * of the -C, -M, -F or -D command line options)
  */
 public class NewAttributeBands extends BandSet {
@@ -181,7 +181,7 @@ public class NewAttributeBands extends BandSet {
                 value = readInteger(2, inputStream) & 0xFFFF; // unsigned short
             } else if (tag.equals("SH")) {
                 value = readInteger(2, inputStream);
-            } else if ((tag.equals("I") || tag.equals("FI")) || tag.equals("SI")) {
+            } else if (tag.equals("I") || tag.equals("FI") || tag.equals("SI")) {
                 value = readInteger(4, inputStream);
             } else if (tag.equals("V") || tag.equals("FV") || tag.equals("SV")) {
                 // Not currently supported
@@ -293,9 +293,9 @@ public class NewAttributeBands extends BandSet {
 
         private final String tag;
 
-        private List<ConstantPoolEntry> band;
+        private List<ConstantPoolEntry> band = new ArrayList<>();
 
-        private boolean nullsAllowed = false;
+        private boolean nullsAllowed;
 
         public Reference(final String tag) {
             this.tag = tag;
@@ -811,7 +811,7 @@ public class NewAttributeBands extends BandSet {
         stream.mark(100);
         int i;
         int length = 0;
-        while ((i = (stream.read())) != -1 && Character.isDigit((char) i)) {
+        while ((i = stream.read()) != -1 && Character.isDigit((char) i)) {
             length++;
         }
         stream.reset();

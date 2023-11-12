@@ -45,6 +45,7 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
+import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 
@@ -80,12 +81,12 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  * @see ZipFile
  * @NotThreadSafe
  */
-public class ZipArchiveInputStream extends ArchiveInputStream implements InputStreamStatistics {
+public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> implements InputStreamStatistics {
 
     /**
      * Bounded input stream adapted from commons-io
      */
-    private class BoundedInputStream extends FilterInputStream {
+    private final class BoundedInputStream extends FilterInputStream {
 
         /** the max length to provide */
         private final long max;
@@ -364,7 +365,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
      * @param inputStream the stream to wrap
      */
     public ZipArchiveInputStream(final InputStream inputStream) {
-        this(inputStream, ZipEncodingHelper.UTF8);
+        this(inputStream, CharsetNames.UTF_8);
     }
 
     /**
@@ -453,8 +454,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
             if (buf.array()[i] == LFH[0] && buf.array()[i + 1] == LFH[1]) {
                 int expectDDPos = i;
                 if (i >= expectedDDLen &&
-                    (buf.array()[i + 2] == LFH[2] && buf.array()[i + 3] == LFH[3])
-                    || (buf.array()[i + 2] == CFH[2] && buf.array()[i + 3] == CFH[3])) {
+                    buf.array()[i + 2] == LFH[2] && buf.array()[i + 3] == LFH[3]
+                    || buf.array()[i + 2] == CFH[2] && buf.array()[i + 3] == CFH[3]) {
                     // found an LFH or CFH:
                     expectDDPos = i - expectedDDLen;
                     done = true;
@@ -673,7 +674,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     }
 
     /**
-     * Get the number of bytes Inflater has actually processed.
+     * Gets the number of bytes Inflater has actually processed.
      *
      * <p>for Java &lt; Java7 the getBytes* methods in
      * Inflater/Deflater seem to return unsigned ints rather than
@@ -720,10 +721,18 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     }
 
     @Override
-    public ArchiveEntry getNextEntry() throws IOException {
+    public ZipArchiveEntry getNextEntry() throws IOException {
         return getNextZipEntry();
     }
 
+    /**
+     * Gets the next entry.
+     *
+     * @return the next entry.
+     * @throws IOException
+     * @deprecated Use {@link #getNextEntry()}.
+     */
+    @Deprecated
     public ZipArchiveEntry getNextZipEntry() throws IOException {
         uncompressedCount = 0;
 
@@ -766,11 +775,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
 
         final int versionMadeBy = ZipShort.getValue(lfhBuf, off);
         off += SHORT;
-        current.entry.setPlatform((versionMadeBy >> ZipFile.BYTE_SHIFT) & ZipFile.NIBLET_MASK);
+        current.entry.setPlatform(versionMadeBy >> ZipFile.BYTE_SHIFT & ZipFile.NIBLET_MASK);
 
         final GeneralPurposeBit gpFlag = GeneralPurposeBit.parse(lfhBuf, off);
         final boolean hasUTF8Flag = gpFlag.usesUTF8ForNames();
-        final ZipEncoding entryEncoding = hasUTF8Flag ? ZipEncodingHelper.UTF8_ZIP_ENCODING : zipEncoding;
+        final ZipEncoding entryEncoding = hasUTF8Flag ? ZipEncodingHelper.ZIP_ENCODING_UTF_8 : zipEncoding;
         current.hasDataDescriptor = gpFlag.usesDataDescriptor();
         current.entry.setGeneralPurposeBit(gpFlag);
 
@@ -976,6 +985,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
     }
 
     private void pushback(final byte[] buf, final int offset, final int length) throws IOException {
+        if (offset < 0) {
+            // Instead of ArrayIndexOutOfBoundsException
+            throw new IOException(String.format("Negative offset %,d into buffer", offset));
+        }
         ((PushbackInputStream) inputStream).unread(buf, offset, length);
         pushedBackBytes(length);
     }
@@ -1232,7 +1245,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         }
 
         int toRead = Math.min(buf.remaining(), length);
-        if ((csize - current.bytesRead) < toRead) {
+        if (csize - current.bytesRead < toRead) {
             // if it is smaller than toRead then it fits into an int
             toRead = (int) (csize - current.bytesRead);
         }
@@ -1384,9 +1397,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
         return entry.getCompressedSize() != ArchiveEntry.SIZE_UNKNOWN
             || entry.getMethod() == ZipEntry.DEFLATED
             || entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode()
-            || (entry.getGeneralPurposeBit().usesDataDescriptor()
+            || entry.getGeneralPurposeBit().usesDataDescriptor()
                 && allowStoredEntriesWithDataDescriptor
-                && entry.getMethod() == ZipEntry.STORED);
+                && entry.getMethod() == ZipEntry.STORED;
     }
 
     /**
@@ -1398,7 +1411,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream implements InputSt
      */
     private boolean supportsDataDescriptorFor(final ZipArchiveEntry entry) {
         return !entry.getGeneralPurposeBit().usesDataDescriptor()
-                || (allowStoredEntriesWithDataDescriptor && entry.getMethod() == ZipEntry.STORED)
+                || allowStoredEntriesWithDataDescriptor && entry.getMethod() == ZipEntry.STORED
                 || entry.getMethod() == ZipEntry.DEFLATED
                 || entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode();
     }

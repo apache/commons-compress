@@ -33,8 +33,9 @@ import java.io.InputStream;
 public interface InputStreamSupplier {
 
     /**
-     * Supply an input stream for a resource.
-     * @return the input stream. Should never null, but may be an empty stream.
+     * Supplies an input stream for a resource.
+     *
+     * @return the input stream. Should never be null, but may be an empty stream.
      */
     InputStream get();
 }

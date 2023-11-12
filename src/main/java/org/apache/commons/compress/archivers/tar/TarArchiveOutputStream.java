@@ -35,10 +35,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.CountingOutputStream;
 import org.apache.commons.compress.utils.FixedLengthBlockOutputStream;
 import org.apache.commons.compress.utils.TimeUtils;
@@ -58,7 +58,7 @@ import org.apache.commons.compress.utils.TimeUtils;
  *
  * @NotThreadSafe
  */
-public class TarArchiveOutputStream extends ArchiveOutputStream {
+public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry> {
 
     /**
      * Fail if a long file name is required in the archive.
@@ -96,8 +96,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     public static final int BIGNUMBER_POSIX = 2;
     private static final int RECORD_SIZE = 512;
 
-    private static final ZipEncoding ASCII =
-        ZipEncodingHelper.getZipEncoding("ASCII");
+    private static final ZipEncoding ASCII = ZipEncodingHelper.getZipEncoding(CharsetNames.US_ASCII);
+
     private static final int BLOCK_SIZE_UNSPECIFIED = -511;
     private long currSize;
     private String currName;
@@ -128,8 +128,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     private final CountingOutputStream countingOut;
 
     private final ZipEncoding zipEncoding;
-    
-    /** 
+
+    /**
      * The provided encoding (for unit tests).
      */
     final String encoding;
@@ -361,7 +361,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     @Override
-    public ArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
+    public TarArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
         throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
@@ -370,7 +370,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
     }
 
     @Override
-    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
+    public TarArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
@@ -565,35 +565,34 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
      *         exceeds the limits of a traditional tar header.
      */
     @Override
-    public void putArchiveEntry(final ArchiveEntry archiveEntry) throws IOException {
+    public void putArchiveEntry(final TarArchiveEntry archiveEntry) throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
-        final TarArchiveEntry entry = (TarArchiveEntry) archiveEntry;
-        if (entry.isGlobalPaxHeader()) {
-            final byte[] data = encodeExtendedPaxHeadersContents(entry.getExtraPaxHeaders());
-            entry.setSize(data.length);
-            entry.writeEntryHeader(recordBuf, zipEncoding, bigNumberMode == BIGNUMBER_STAR);
+        if (archiveEntry.isGlobalPaxHeader()) {
+            final byte[] data = encodeExtendedPaxHeadersContents(archiveEntry.getExtraPaxHeaders());
+            archiveEntry.setSize(data.length);
+            archiveEntry.writeEntryHeader(recordBuf, zipEncoding, bigNumberMode == BIGNUMBER_STAR);
             writeRecord(recordBuf);
-            currSize= entry.getSize();
+            currSize= archiveEntry.getSize();
             currBytes = 0;
             this.haveUnclosedEntry = true;
             write(data);
             closeArchiveEntry();
         } else {
             final Map<String, String> paxHeaders = new HashMap<>();
-            final String entryName = entry.getName();
-            final boolean paxHeaderContainsPath = handleLongName(entry, entryName, paxHeaders, "path",
+            final String entryName = archiveEntry.getName();
+            final boolean paxHeaderContainsPath = handleLongName(archiveEntry, entryName, paxHeaders, "path",
                 TarConstants.LF_GNUTYPE_LONGNAME, "file name");
-            final String linkName = entry.getLinkName();
+            final String linkName = archiveEntry.getLinkName();
             final boolean paxHeaderContainsLinkPath = linkName != null && !linkName.isEmpty()
-                && handleLongName(entry, linkName, paxHeaders, "linkpath",
+                && handleLongName(archiveEntry, linkName, paxHeaders, "linkpath",
                 TarConstants.LF_GNUTYPE_LONGLINK, "link name");
 
             if (bigNumberMode == BIGNUMBER_POSIX) {
-                addPaxHeadersForBigNumbers(paxHeaders, entry);
+                addPaxHeadersForBigNumbers(paxHeaders, archiveEntry);
             } else if (bigNumberMode != BIGNUMBER_STAR) {
-                failForBigNumbers(entry);
+                failForBigNumbers(archiveEntry);
             }
 
             if (addPaxHeadersForNonAsciiNames && !paxHeaderContainsPath
@@ -602,25 +601,25 @@ public class TarArchiveOutputStream extends ArchiveOutputStream {
             }
 
             if (addPaxHeadersForNonAsciiNames && !paxHeaderContainsLinkPath
-                && (entry.isLink() || entry.isSymbolicLink())
+                && (archiveEntry.isLink() || archiveEntry.isSymbolicLink())
                 && !ASCII.canEncode(linkName)) {
                 paxHeaders.put("linkpath", linkName);
             }
-            paxHeaders.putAll(entry.getExtraPaxHeaders());
+            paxHeaders.putAll(archiveEntry.getExtraPaxHeaders());
 
             if (!paxHeaders.isEmpty()) {
-                writePaxHeaders(entry, entryName, paxHeaders);
+                writePaxHeaders(archiveEntry, entryName, paxHeaders);
             }
 
-            entry.writeEntryHeader(recordBuf, zipEncoding, bigNumberMode == BIGNUMBER_STAR);
+            archiveEntry.writeEntryHeader(recordBuf, zipEncoding, bigNumberMode == BIGNUMBER_STAR);
             writeRecord(recordBuf);
 
             currBytes = 0;
 
-            if (entry.isDirectory()) {
+            if (archiveEntry.isDirectory()) {
                 currSize = 0;
             } else {
-                currSize = entry.getSize();
+                currSize = archiveEntry.getSize();
             }
             currName = entryName;
             haveUnclosedEntry = true;

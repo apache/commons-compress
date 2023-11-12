@@ -18,8 +18,8 @@
 package org.apache.commons.compress.archivers.tar;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.apache.commons.compress.AbstractTestCase.getPath;
+import static org.apache.commons.compress.AbstractTest.getFile;
+import static org.apache.commons.compress.AbstractTest.getPath;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.jupiter.api.Test;
@@ -49,10 +49,8 @@ import org.junit.jupiter.api.condition.EnabledOnOs;
 
 public class TarArchiveEntryTest implements TarConstants {
 
-    private static final String OS =
-        System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
-    private static final String ROOT =
-        OS.startsWith("windows") || OS.startsWith("netware") ? "C:\\" : "/";
+    private static final String OS = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
+    private static final String ROOT = OS.startsWith("windows") || OS.startsWith("netware") ? "C:\\" : "/";
 
     private void assertGnuMagic(final TarArchiveEntry t) {
         assertEquals(MAGIC_GNU + VERSION_GNU_SPACE, readMagic(t));
@@ -72,15 +70,68 @@ public class TarArchiveEntryTest implements TarConstants {
         return entry;
     }
 
+    private String readMagic(final TarArchiveEntry t) {
+        final byte[] buf = new byte[512];
+        t.writeEntryHeader(buf);
+        return new String(buf, MAGIC_OFFSET, MAGICLEN + VERSIONLEN);
+    }
+
     @Test
-    public void getFileFromNonFileEntry() {
+    public void testExtraPaxHeaders() throws IOException {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        TarArchiveEntry entry = new TarArchiveEntry("./weasels");
+        try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
+            entry.addPaxHeader("APACHE.mustelida", "true");
+            entry.addPaxHeader("SCHILY.xattr.user.org.apache.weasels", "maximum weasels");
+            entry.addPaxHeader("size", "1");
+            assertEquals(2, entry.getExtraPaxHeaders().size(), "extra header count");
+            assertEquals("true", entry.getExtraPaxHeader("APACHE.mustelida"), "APACHE.mustelida");
+            assertEquals("maximum weasels", entry.getExtraPaxHeader("SCHILY.xattr.user.org.apache.weasels"), "SCHILY.xattr.user.org.apache.weasels");
+            assertEquals(entry.getSize(), 1, "size");
+
+            tos.putArchiveEntry(entry);
+            tos.write('W');
+            tos.closeArchiveEntry();
+        }
+        assertNotEquals(0, entry.getExtraPaxHeaders().size(), "should have extra headers before clear");
+        entry.clearExtraPaxHeaders();
+        assertEquals(0, entry.getExtraPaxHeaders().size(), "extra headers should be empty after clear");
+        try (TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
+            entry = tis.getNextTarEntry();
+            assertNotNull(entry, "couldn't get entry");
+
+            assertEquals(2, entry.getExtraPaxHeaders().size(), "extra header count");
+            assertEquals("true", entry.getExtraPaxHeader("APACHE.mustelida"), "APACHE.mustelida");
+            assertEquals("maximum weasels", entry.getExtraPaxHeader("SCHILY.xattr.user.org.apache.weasels"), "user.org.apache.weasels");
+
+            assertEquals('W', tis.read());
+            assertTrue(tis.read() < 0, "should be at end of entry");
+
+            assertNull(tis.getNextTarEntry(), "should be at end of file");
+        }
+    }
+
+    /**
+     * JIRA issue SANDBOX-284
+     *
+     * @see "https://issues.apache.org/jira/browse/SANDBOX-284"
+     */
+    @Test
+    public void testFileSystemRoot() {
+        final TarArchiveEntry t = new TarArchiveEntry(new File(ROOT));
+        assertEquals("/", t.getName());
+        assertEquals(TarConstants.LF_DIR, t.getLinkFlag());
+    }
+
+    @Test
+    public void testGetFileFromNonFileEntry() {
         final TarArchiveEntry entry = new TarArchiveEntry("test.txt");
         assertNull(entry.getFile());
         assertNull(entry.getPath());
     }
 
     @Test
-    public void getOrderedSparseHeadersRejectsOverlappingStructs() throws Exception {
+    public void testGetOrderedSparseHeadersRejectsOverlappingStructs() throws Exception {
         final TarArchiveEntry te = new TarArchiveEntry("test");
         te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
         te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(10, 5), new TarArchiveStructSparse(12, 1)));
@@ -88,7 +139,7 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void getOrderedSparseHeadersRejectsStructsPointingBeyondOutputEntry() throws Exception {
+    public void testGetOrderedSparseHeadersRejectsStructsPointingBeyondOutputEntry() throws Exception {
         final TarArchiveEntry te = new TarArchiveEntry("test");
         te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(200, 2)));
         te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
@@ -96,7 +147,7 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void getOrderedSparseHeadersRejectsStructsWithReallyBigNumbers() throws Exception {
+    public void testGetOrderedSparseHeadersRejectsStructsWithReallyBigNumbers() throws Exception {
         final TarArchiveEntry te = new TarArchiveEntry("test");
         te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", String.valueOf(Long.MAX_VALUE)));
         te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(Long.MAX_VALUE, 2)));
@@ -104,12 +155,12 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void getOrderedSparseHeadersSortsAndFiltersSparseStructs() throws Exception {
+    public void testGetOrderedSparseHeadersSortsAndFiltersSparseStructs() throws Exception {
         final TarArchiveEntry te = new TarArchiveEntry("test");
         // hacky way to set realSize
         te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
-        te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(10, 2), new TarArchiveStructSparse(20, 0),
-            new TarArchiveStructSparse(15, 1), new TarArchiveStructSparse(0, 0)));
+        te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(10, 2), new TarArchiveStructSparse(20, 0), new TarArchiveStructSparse(15, 1),
+                new TarArchiveStructSparse(0, 0)));
         final List<TarArchiveStructSparse> strs = te.getOrderedSparseHeaders();
         assertEquals(3, strs.size());
         assertEquals(10, strs.get(0).getOffset());
@@ -118,7 +169,59 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void negativeOffsetInConstructorNotAllowed() {
+    public void testLinkFlagConstructor() {
+        final TarArchiveEntry t = new TarArchiveEntry("/foo", LF_GNUTYPE_LONGNAME);
+        assertGnuMagic(t);
+        assertEquals("foo", t.getName());
+        assertEquals(TarConstants.LF_GNUTYPE_LONGNAME, t.getLinkFlag());
+    }
+
+    @Test
+    public void testLinkFlagConstructorWithFileFlag() {
+        final TarArchiveEntry t = new TarArchiveEntry("/foo", LF_NORMAL);
+        assertPosixMagic(t);
+        assertEquals("foo", t.getName());
+        assertEquals(TarConstants.LF_NORMAL, t.getLinkFlag());
+    }
+
+    @Test
+    public void testLinkFlagConstructorWithPreserve() {
+        final TarArchiveEntry t = new TarArchiveEntry("/foo", LF_GNUTYPE_LONGNAME, true);
+        assertGnuMagic(t);
+        assertEquals("/foo", t.getName());
+        assertEquals(TarConstants.LF_GNUTYPE_LONGNAME, t.getLinkFlag());
+    }
+
+    @Test
+    @EnabledOnOs(org.junit.jupiter.api.condition.OS.LINUX)
+    public void testLinuxFileInformationFromFile() throws IOException {
+        final TarArchiveEntry entry = new TarArchiveEntry(getFile("test1.xml"));
+        assertNotEquals(0, entry.getLongUserId());
+        assertNotEquals(0, entry.getLongGroupId());
+        assertNotEquals("", entry.getUserName());
+    }
+
+    @Test
+    @EnabledOnOs(org.junit.jupiter.api.condition.OS.LINUX)
+    public void testLinuxFileInformationFromPath() throws IOException {
+        final TarArchiveEntry entry = new TarArchiveEntry(getPath("test1.xml"));
+        assertNotEquals(0, entry.getLongUserId());
+        assertNotEquals(0, entry.getLongGroupId());
+        assertNotEquals("", entry.getUserName());
+    }
+
+    @Test
+    public void testMaxFileSize() {
+        final TarArchiveEntry t = new TarArchiveEntry("");
+        t.setSize(0);
+        t.setSize(1);
+        assertThrows(IllegalArgumentException.class, () -> t.setSize(-1));
+        t.setSize(077777777777L);
+        t.setSize(0100000000000L);
+    }
+
+    @Test
+    public void testNegativeOffsetInConstructorNotAllowed() {
         // @formatter:off
         final byte[] entryContent = ("test1.xml\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
                 "\u0000" +
@@ -141,16 +244,40 @@ public class TarArchiveEntryTest implements TarConstants {
                 "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000" +
                 "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000").getBytes(UTF_8);
         // @formatter:on
-        assertThrows(IllegalArgumentException.class, () -> new TarArchiveEntry(entryContent, ZipEncodingHelper.getZipEncoding(CharsetNames.ISO_8859_1), false, -1));
+        assertThrows(IllegalArgumentException.class,
+                () -> new TarArchiveEntry(entryContent, ZipEncodingHelper.getZipEncoding(CharsetNames.ISO_8859_1), false, -1));
     }
 
     @Test
-    public void negativeOffsetInSetterNotAllowed() {
+    public void testNegativeOffsetInSetterNotAllowed() {
         assertThrows(IllegalArgumentException.class, () -> new TarArchiveEntry("test").setDataOffset(-1));
     }
 
     @Test
-    public void preservesDriveSpecOnWindowsAndNetwareIfAskedTo() {
+    public void testPaxTimeFieldsForInvalidValues() {
+        final String[] headerNames = { "LIBARCHIVE.creationtime", "atime", "mtime", "ctime" };
+        // @formatter:off
+        final String[] testValues = {
+                // Generate a number with a very large integer or fractional component
+                new Random().nextLong() + "." + String.join("",
+                        Collections.nCopies(15000, String.valueOf(Long.MAX_VALUE))),
+                // These two examples use the exponent notation
+                "9e9999999",
+                "9E9999999"
+        };
+        // @formatter:on
+
+        final TarArchiveEntry entry = new TarArchiveEntry("test.txt");
+        for (String name : headerNames) {
+            for (String value : testValues) {
+                final Exception exp = assertThrows(IllegalArgumentException.class, () -> entry.addPaxHeader(name, value));
+                assert exp.getCause().getMessage().startsWith("Corrupted PAX header. Time field value is invalid");
+            }
+        }
+    }
+
+    @Test
+    public void testPreservesDriveSpecOnWindowsAndNetwareIfAskedTo() {
         assumeTrue("C:\\".equals(ROOT));
         TarArchiveEntry t = new TarArchiveEntry(ROOT + "foo.txt", true);
         assertEquals("C:/foo.txt", t.getName());
@@ -160,14 +287,8 @@ public class TarArchiveEntryTest implements TarConstants {
         assertEquals(TarConstants.LF_GNUTYPE_LONGNAME, t.getLinkFlag());
     }
 
-    private String readMagic(final TarArchiveEntry t) {
-        final byte[] buf = new byte[512];
-        t.writeEntryHeader(buf);
-        return new String(buf, MAGIC_OFFSET, MAGICLEN + VERSIONLEN);
-    }
-
     @Test
-    public void shouldNotWriteTimePaxHeadersByDefault() throws IOException {
+    public void testShouldNotWriteTimePaxHeadersByDefault() throws IOException {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
             final TarArchiveEntry entry = createEntryForTimeTests();
@@ -197,7 +318,7 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void shouldParseTimePaxHeadersAndNotCountAsExtraPaxHeaders() {
+    public void testShouldParseTimePaxHeadersAndNotCountAsExtraPaxHeaders() {
         final TarArchiveEntry entry = createEntryForTimeTests();
         assertEquals(0, entry.getExtraPaxHeaders().size(), "extra header count");
         assertNull(entry.getExtraPaxHeader("size"), "size");
@@ -213,7 +334,7 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void shouldWriteTimesAsPaxHeadersForPosixMode() throws IOException {
+    public void testShouldWriteTimesAsPaxHeadersForPosixMode() throws IOException {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
             final TarArchiveEntry entry = createEntryForTimeTests();
@@ -244,7 +365,7 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void shouldWriteTimesAsPaxHeadersForPosixModeAndCreationTimeShouldBeUsedAsCtime() throws IOException {
+    public void testShouldWriteTimesAsPaxHeadersForPosixModeAndCreationTimeShouldBeUsedAsCtime() throws IOException {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
             final TarArchiveEntry entry = createEntryForTimeTests();
@@ -276,7 +397,7 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void shouldWriteTimesForStarMode() throws IOException {
+    public void testShouldWriteTimesForStarMode() throws IOException {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
             final TarArchiveEntry entry = createEntryForTimeTests();
@@ -307,190 +428,55 @@ public class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    public void testExtraPaxHeaders() throws IOException {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final TarArchiveOutputStream tos = new TarArchiveOutputStream(bos);
-
-        TarArchiveEntry entry = new TarArchiveEntry("./weasels");
-        entry.addPaxHeader("APACHE.mustelida", "true");
-        entry.addPaxHeader("SCHILY.xattr.user.org.apache.weasels", "maximum weasels");
-        entry.addPaxHeader("size", "1");
-        assertEquals(2, entry.getExtraPaxHeaders().size(), "extra header count");
-        assertEquals("true", entry.getExtraPaxHeader("APACHE.mustelida"), "APACHE.mustelida");
-        assertEquals("maximum weasels", entry.getExtraPaxHeader("SCHILY.xattr.user.org.apache.weasels"), "SCHILY.xattr.user.org.apache.weasels");
-        assertEquals(entry.getSize(), 1, "size");
-
-        tos.putArchiveEntry(entry);
-        tos.write('W');
-        tos.closeArchiveEntry();
-        tos.close();
-        assertNotEquals(0, entry.getExtraPaxHeaders().size(), "should have extra headers before clear");
-        entry.clearExtraPaxHeaders();
-        assertEquals(0, entry.getExtraPaxHeaders().size(), "extra headers should be empty after clear");
-        final TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()));
-        entry = tis.getNextTarEntry();
-        assertNotNull(entry, "couldn't get entry");
-
-        assertEquals(2, entry.getExtraPaxHeaders().size(), "extra header count");
-        assertEquals("true", entry.getExtraPaxHeader("APACHE.mustelida"), "APACHE.mustelida");
-        assertEquals("maximum weasels", entry.getExtraPaxHeader("SCHILY.xattr.user.org.apache.weasels"), "user.org.apache.weasels");
-
-        assertEquals('W', tis.read());
-        assertTrue(tis.read() < 0, "should be at end of entry");
-
-        assertNull(tis.getNextTarEntry(), "should be at end of file");
-        tis.close();
-    }
-
-    /**
-     * JIRA issue SANDBOX-284
-     *
-     * @see "https://issues.apache.org/jira/browse/SANDBOX-284"
-     */
-    @Test
-    public void testFileSystemRoot() {
-        final TarArchiveEntry t = new TarArchiveEntry(new File(ROOT));
-        assertEquals("/", t.getName());
-        assertEquals(TarConstants.LF_DIR, t.getLinkFlag());
-    }
-
-    @Test
-    public void testLinkFlagConstructor() {
-        final TarArchiveEntry t = new TarArchiveEntry("/foo", LF_GNUTYPE_LONGNAME);
-        assertGnuMagic(t);
-        assertEquals("foo", t.getName());
-        assertEquals(TarConstants.LF_GNUTYPE_LONGNAME, t.getLinkFlag());
-    }
-
-    @Test
-    public void testLinkFlagConstructorWithFileFlag() {
-        final TarArchiveEntry t = new TarArchiveEntry("/foo", LF_NORMAL);
-        assertPosixMagic(t);
-        assertEquals("foo", t.getName());
-        assertEquals(TarConstants.LF_NORMAL, t.getLinkFlag());
-    }
-
-    @Test
-    public void testLinkFlagConstructorWithPreserve() {
-        final TarArchiveEntry t = new TarArchiveEntry("/foo", LF_GNUTYPE_LONGNAME,
-                                                true);
-        assertGnuMagic(t);
-        assertEquals("/foo", t.getName());
-        assertEquals(TarConstants.LF_GNUTYPE_LONGNAME, t.getLinkFlag());
-    }
-
-    @Test
-    @EnabledOnOs(org.junit.jupiter.api.condition.OS.LINUX)
-    public void testLinuxFileInformationFromFile() throws IOException {
-        final TarArchiveEntry entry = new TarArchiveEntry(getFile("test1.xml"));
-        assertNotEquals(0, entry.getLongUserId());
-        assertNotEquals(0, entry.getLongGroupId());
-        assertNotEquals("", entry.getUserName());
-    }
-
-    @Test
-    @EnabledOnOs(org.junit.jupiter.api.condition.OS.LINUX)
-    public void testLinuxFileInformationFromPath() throws IOException {
-        final TarArchiveEntry entry = new TarArchiveEntry(getPath("test1.xml"));
-        assertNotEquals(0, entry.getLongUserId());
-        assertNotEquals(0, entry.getLongGroupId());
-        assertNotEquals("", entry.getUserName());
-    }
-
-    @Test
-    public void testMaxFileSize(){
-        final TarArchiveEntry t = new TarArchiveEntry("");
-        t.setSize(0);
-        t.setSize(1);
-        assertThrows(IllegalArgumentException.class, () -> t.setSize(-1));
-        t.setSize(077777777777L);
-        t.setSize(0100000000000L);
-    }
-
-    @Test
-    public void testPaxTimeFieldsForInvalidValues() {
-        final String[] headerNames = { "LIBARCHIVE.creationtime", "atime", "mtime", "ctime" };
-        // @formatter:off
-        final String[] testValues = {
-                // Generate a number with a very large integer or fractional component
-                new Random().nextLong() + "." + String.join("",
-                        Collections.nCopies(15000, String.valueOf(Long.MAX_VALUE))),
-                // These two examples use the exponent notation
-                "9e9999999",
-                "9E9999999"
-        };
-        // @formatter:on
-
-        final TarArchiveEntry entry = new TarArchiveEntry("test.txt");
-        for (String name : headerNames) {
-            for (String value : testValues) {
-                Exception exp = assertThrows(IllegalArgumentException.class, () -> entry.addPaxHeader(name, value));
-                assert(exp.getCause().getMessage().startsWith("Corrupted PAX header. Time field value is invalid"));
-            }
-        }
-    }
-
-    @Test
     public void testTarFileWithFSRoot() throws IOException {
         final File f = File.createTempFile("taetest", ".tar");
-        f.deleteOnExit();
-        TarArchiveOutputStream tout = null;
-        TarArchiveInputStream tin = null;
+        TarArchiveEntry t = new TarArchiveEntry(new File(ROOT));
         try {
-            tout = new TarArchiveOutputStream(Files.newOutputStream(f.toPath()));
-            TarArchiveEntry t = new TarArchiveEntry(new File(ROOT));
-            tout.putArchiveEntry(t);
-            tout.closeArchiveEntry();
-            t = new TarArchiveEntry(new File(new File(ROOT), "foo.txt"));
-            t.setSize(6);
-            tout.putArchiveEntry(t);
-            tout.write(new byte[] {'h', 'e', 'l', 'l', 'o', ' '});
-            tout.closeArchiveEntry();
-            t = new TarArchiveEntry(new File(new File(ROOT), "bar.txt")
-                                    .getAbsolutePath());
-            t.setSize(5);
-            tout.putArchiveEntry(t);
-            tout.write(new byte[] {'w', 'o', 'r', 'l', 'd'});
-            tout.closeArchiveEntry();
-            t = new TarArchiveEntry("dummy");
-            t.setName(new File(new File(ROOT), "baz.txt").getAbsolutePath());
-            t.setSize(1);
-            tout.putArchiveEntry(t);
-            tout.write(new byte[] {'!'});
-            tout.closeArchiveEntry();
-            tout.close();
-            tout = null;
-
-            tin = new TarArchiveInputStream(Files.newInputStream(f.toPath()));
-            //tin.setDebug(true);
-            t = tin.getNextTarEntry();
-            assertNotNull(t);
-            assertEquals("/", t.getName());
-            assertEquals(TarConstants.LF_DIR, t.getLinkFlag());
-            assertTrue(t.isCheckSumOK());
-            t = tin.getNextTarEntry();
-            assertNotNull(t);
-            assertEquals("foo.txt", t.getName());
-            assertEquals(TarConstants.LF_NORMAL, t.getLinkFlag());
-            assertTrue(t.isCheckSumOK());
-            t = tin.getNextTarEntry();
-            assertNotNull(t);
-            assertEquals("bar.txt", t.getName());
-            assertEquals(TarConstants.LF_NORMAL, t.getLinkFlag());
-            assertTrue(t.isCheckSumOK());
-            t = tin.getNextTarEntry();
-            assertNotNull(t);
-            assertEquals("baz.txt", t.getName());
-            assertEquals(TarConstants.LF_NORMAL, t.getLinkFlag());
-            assertTrue(t.isCheckSumOK());
+            try (TarArchiveOutputStream tout = new TarArchiveOutputStream(Files.newOutputStream(f.toPath()))) {
+                tout.putArchiveEntry(t);
+                tout.closeArchiveEntry();
+                t = new TarArchiveEntry(new File(new File(ROOT), "foo.txt"));
+                t.setSize(6);
+                tout.putArchiveEntry(t);
+                tout.write(new byte[] { 'h', 'e', 'l', 'l', 'o', ' ' });
+                tout.closeArchiveEntry();
+                t = new TarArchiveEntry(new File(new File(ROOT), "bar.txt").getAbsolutePath());
+                t.setSize(5);
+                tout.putArchiveEntry(t);
+                tout.write(new byte[] { 'w', 'o', 'r', 'l', 'd' });
+                tout.closeArchiveEntry();
+                t = new TarArchiveEntry("dummy");
+                t.setName(new File(new File(ROOT), "baz.txt").getAbsolutePath());
+                t.setSize(1);
+                tout.putArchiveEntry(t);
+                tout.write(new byte[] { '!' });
+                tout.closeArchiveEntry();
+            }
+            try (TarArchiveInputStream tin = new TarArchiveInputStream(Files.newInputStream(f.toPath()))) {
+                // tin.setDebug(true);
+                t = tin.getNextTarEntry();
+                assertNotNull(t);
+                assertEquals("/", t.getName());
+                assertEquals(TarConstants.LF_DIR, t.getLinkFlag());
+                assertTrue(t.isCheckSumOK());
+                t = tin.getNextTarEntry();
+                assertNotNull(t);
+                assertEquals("foo.txt", t.getName());
+                assertEquals(TarConstants.LF_NORMAL, t.getLinkFlag());
+                assertTrue(t.isCheckSumOK());
+                t = tin.getNextTarEntry();
+                assertNotNull(t);
+                assertEquals("bar.txt", t.getName());
+                assertEquals(TarConstants.LF_NORMAL, t.getLinkFlag());
+                assertTrue(t.isCheckSumOK());
+                t = tin.getNextTarEntry();
+                assertNotNull(t);
+                assertEquals("baz.txt", t.getName());
+                assertEquals(TarConstants.LF_NORMAL, t.getLinkFlag());
+                assertTrue(t.isCheckSumOK());
+            }
         } finally {
-            if (tin != null) {
-                tin.close();
-            }
-            if (tout != null) {
-                tout.close();
-            }
-            AbstractTestCase.tryHardToDelete(f);
+            AbstractTest.forceDelete(f);
         }
     }
 

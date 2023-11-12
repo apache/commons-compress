@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 public class OsgiUtilsTest {
 
     @Test
-    public void detectsItIsNotRunningInsideOsgiEnv() {
+    public void testDetectsItIsNotRunningInsideOsgiEnv() {
         assertFalse(OsgiUtils.isRunningInOsgiEnvironment());
     }
 

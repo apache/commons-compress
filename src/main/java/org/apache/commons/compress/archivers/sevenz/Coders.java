@@ -43,7 +43,7 @@ import org.tukaani.xz.PowerPCOptions;
 import org.tukaani.xz.SPARCOptions;
 import org.tukaani.xz.X86Options;
 
-class Coders {
+final class Coders {
     static class BCJDecoder extends AbstractCoder {
         private final FilterOptions opts;
         BCJDecoder(final FilterOptions opts) {
@@ -186,7 +186,7 @@ class Coders {
             // byte following the data stream; this used to be zlib's requirement
             // and has been fixed a long time ago, but the contract persists so
             // we comply.
-            // https://docs.oracle.com/javase/7/docs/api/java/util/zip/Inflater.html#Inflater(boolean)
+            // https://docs.oracle.com/javase/8/docs/api/java/util/zip/Inflater.html#Inflater(boolean)
             final InflaterInputStream inflaterInputStream = new InflaterInputStream(new SequenceInputStream(in,
                 new ByteArrayInputStream(ONE_ZERO_BYTE)), inflater);
             return new DeflateDecoderInputStream(inflaterInputStream, inflater);

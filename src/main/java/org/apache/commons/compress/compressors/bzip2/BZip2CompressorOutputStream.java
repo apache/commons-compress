@@ -178,7 +178,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
         Data(final int blockSize100k) {
             final int n = blockSize100k * BZip2Constants.BASEBLOCKSIZE;
-            this.block = new byte[(n + 1 + NUM_OVERSHOOT_BYTES)];
+            this.block = new byte[n + 1 + NUM_OVERSHOOT_BYTES];
             this.fmap = new int[n];
             this.sfmap = new char[2 * n];
         }
@@ -211,8 +211,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
      *            {@code BZip2CompressorOutputStream}.
      */
     public static int chooseBlockSize(final long inputLength) {
-        return (inputLength > 0) ? (int) Math
-            .min((inputLength / 132000) + 1, 9) : MAX_BLOCKSIZE;
+        return inputLength > 0 ? (int) Math
+            .min(inputLength / 132000 + 1, 9) : MAX_BLOCKSIZE;
     }
 
     private static void hbAssignCodes(final int[] code, final byte[] length,
@@ -284,8 +284,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                         break;
                     }
 
-                    if ((yy < nHeap)
-                        && (weight[heap[yy + 1]] < weight[heap[yy]])) {
+                    if (yy < nHeap
+                        && weight[heap[yy + 1]] < weight[heap[yy]]) {
                         yy++;
                     }
 
@@ -314,8 +314,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                         break;
                     }
 
-                    if ((yy < nHeap)
-                        && (weight[heap[yy + 1]] < weight[heap[yy]])) {
+                    if (yy < nHeap
+                        && weight[heap[yy + 1]] < weight[heap[yy]]) {
                         yy++;
                     }
 
@@ -333,9 +333,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
                 final int weight_n1 = weight[n1];
                 final int weight_n2 = weight[n2];
-                weight[nNodes] = ((weight_n1 & 0xffffff00)
-                                  + (weight_n2 & 0xffffff00))
-                    | (1 + Math.max(weight_n1 & 0x000000ff, weight_n2 & 0x000000ff));
+                weight[nNodes] = (weight_n1 & 0xffffff00)
+                                  + (weight_n2 & 0xffffff00)
+                    | 1 + Math.max(weight_n1 & 0x000000ff, weight_n2 & 0x000000ff);
 
                 parent[nNodes] = -1;
                 nHeap++;
@@ -459,7 +459,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         this.out = out;
 
         /* 20 is just a paranoia constant */
-        this.allowableBlockSize = (this.blockSize100k * BZip2Constants.BASEBLOCKSIZE) - 20;
+        this.allowableBlockSize = this.blockSize100k * BZip2Constants.BASEBLOCKSIZE - 20;
         init();
     }
 
@@ -478,9 +478,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     private void bsPutInt(final int u) throws IOException {
-        bsW(8, (u >> 24) & 0xff);
-        bsW(8, (u >> 16) & 0xff);
-        bsW(8, (u >> 8) & 0xff);
+        bsW(8, u >> 24 & 0xff);
+        bsW(8, u >> 16 & 0xff);
+        bsW(8, u >> 8 & 0xff);
         bsW(8, u & 0xff);
     }
 
@@ -499,7 +499,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             bsLiveShadow -= 8;
         }
 
-        this.bsBuff = bsBuffShadow | (v << (32 - bsLiveShadow - n));
+        this.bsBuff = bsBuffShadow | v << 32 - bsLiveShadow - n;
         this.bsLive = bsLiveShadow + n;
     }
 
@@ -514,7 +514,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
     private void endBlock() throws IOException {
         this.blockCRC = this.crc.getFinalCRC();
-        this.combinedCRC = (this.combinedCRC << 1) | (this.combinedCRC >>> 31);
+        this.combinedCRC = this.combinedCRC << 1 | this.combinedCRC >>> 31;
         this.combinedCRC ^= this.blockCRC;
 
         // empty block at end of file
@@ -529,11 +529,11 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
          * A 6-byte block header, the value chosen arbitrarily as 0x314159265359
          * :-). A 32 bit value does not really give a strong enough guarantee
          * that the value will not appear by chance in the compressed
-         * datastream. Worst-case probability of this event, for a 900k block,
+         * data stream. Worst-case probability of this event, for a 900k block,
          * is about 2.0e-3 for 32 bits, 1.0e-5 for 40 bits and 4.0e-8 for 48
          * bits. For a compressed file of size 100Gb -- about 100000 blocks --
          * only a 48-bit marker will do. NB: normal compression/ decompression
-         * donot rely on these statistical properties. They are only important
+         * doesn't rely on these statistical properties. They are only important
          * when trying to recover blocks from damaged files.
          */
         bsPutUByte(0x31);
@@ -668,7 +668,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                         if (zPend < 2) {
                             break;
                         }
-                        zPend = (zPend - 2) >> 1;
+                        zPend = zPend - 2 >> 1;
                     }
                     zPend = 0;
                 }
@@ -694,7 +694,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                 if (zPend < 2) {
                     break;
                 }
-                zPend = (zPend - 2) >> 1;
+                zPend = zPend - 2 >> 1;
             }
         }
 
@@ -714,7 +714,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     /**
      * Writes magic bytes like BZ on the first position of the stream
      * and bytes indicating the file-format, which is
-     * huffmanised, followed by a digit indicating blockSize100k.
+     * huffmanized, followed by a digit indicating blockSize100k.
      * @throws IOException if the magic bytes could not been written
      */
     private void init() throws IOException {
@@ -724,7 +724,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         this.data = new Data(this.blockSize100k);
         this.blockSorter = new BlockSort(this.data);
 
-        // huffmanised magic bytes
+        // huffmanized magic bytes
         bsPutUByte('h');
         bsPutUByte('0' + this.blockSize100k);
 
@@ -764,8 +764,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
         /* Decide how many coding tables to use */
         // assert (this.nMTF > 0) : this.nMTF;
-        final int nGroups = (this.nMTF < 200) ? 2 : (this.nMTF < 600) ? 3
-            : (this.nMTF < 1200) ? 4 : (this.nMTF < 2400) ? 5 : 6;
+        final int nGroups = this.nMTF < 200 ? 2 : this.nMTF < 600 ? 3
+            : this.nMTF < 1200 ? 4 : this.nMTF < 2400 ? 5 : 6;
 
         /* Generate an initial set of coding tables */
         sendMTFValues0(nGroups, alphaSize);
@@ -806,18 +806,18 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             int ge = gs - 1;
             int aFreq = 0;
 
-            for (final int a = alphaSize - 1; (aFreq < tFreq) && (ge < a);) {
+            for (final int a = alphaSize - 1; aFreq < tFreq && ge < a;) {
                 aFreq += mtfFreq[++ge];
             }
 
-            if ((ge > gs) && (nPart != nGroups) && (nPart != 1)
-                && (((nGroups - nPart) & 1) != 0)) {
+            if (ge > gs && nPart != nGroups && nPart != 1
+                && (nGroups - nPart & 1) != 0) {
                 aFreq -= mtfFreq[ge--];
             }
 
             final byte[] len_np = len[nPart - 1];
             for (int v = alphaSize; --v >= 0;) {
-                if ((v >= gs) && (v <= ge)) {
+                if (v >= gs && v <= ge) {
                     len_np[v] = LESSER_ICOST;
                 } else {
                     len_np[v] = GREATER_ICOST;
@@ -859,12 +859,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             nSelectors = 0;
 
             for (int gs = 0; gs < this.nMTF;) {
-                /* Set group start & end marks. */
+                // Set group start & end marks.
 
-                /*
-                 * Calculate the cost of this group as coded by each of the
-                 * coding tables.
-                 */
+                // Calculate the cost of this group as coded by each of the
+                // coding tables.
 
                 final int ge = Math.min(gs + G_SIZE - 1, nMTFShadow - 1);
 
@@ -1034,7 +1032,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                         bsLiveShadow -= 8;
                     }
                     if (inUse[i16 + j]) {
-                        bsBuffShadow |= 1 << (32 - bsLiveShadow - 1);
+                        bsBuffShadow |= 1 << 32 - bsLiveShadow - 1;
                     }
                     bsLiveShadow++;
                 }
@@ -1064,7 +1062,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                     bsBuffShadow <<= 8;
                     bsLiveShadow -= 8;
                 }
-                bsBuffShadow |= 1 << (32 - bsLiveShadow - 1);
+                bsBuffShadow |= 1 << 32 - bsLiveShadow - 1;
                 bsLiveShadow++;
             }
 
@@ -1100,7 +1098,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                 bsBuffShadow <<= 8;
                 bsLiveShadow -= 8;
             }
-            bsBuffShadow |= curr << (32 - bsLiveShadow - 5);
+            bsBuffShadow |= curr << 32 - bsLiveShadow - 5;
             bsLiveShadow += 5;
 
             for (int i = 0; i < alphaSize; i++) {
@@ -1112,7 +1110,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                         bsBuffShadow <<= 8;
                         bsLiveShadow -= 8;
                     }
-                    bsBuffShadow |= 2 << (32 - bsLiveShadow - 2);
+                    bsBuffShadow |= 2 << 32 - bsLiveShadow - 2;
                     bsLiveShadow += 2;
 
                     curr++; /* 10 */
@@ -1125,7 +1123,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                         bsBuffShadow <<= 8;
                         bsLiveShadow -= 8;
                     }
-                    bsBuffShadow |= 3 << (32 - bsLiveShadow - 2);
+                    bsBuffShadow |= 3 << 32 - bsLiveShadow - 2;
                     bsLiveShadow += 2;
 
                     curr--; /* 11 */
@@ -1179,7 +1177,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                     bsLiveShadow -= 8;
                 }
                 final int n = len_selCtr[sfmap_i] & 0xFF;
-                bsBuffShadow |= code_selCtr[sfmap_i] << (32 - bsLiveShadow - n);
+                bsBuffShadow |= code_selCtr[sfmap_i] << 32 - bsLiveShadow - n;
                 bsLiveShadow += n;
 
                 gs++;

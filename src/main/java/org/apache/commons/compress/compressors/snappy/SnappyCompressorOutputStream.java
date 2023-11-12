@@ -214,12 +214,12 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
     }
     private void writeBackReferenceWithLittleEndianOffset(final int tag, final int offsetBytes, final int len, final int offset)
         throws IOException {
-        os.write(tag | ((len - 1) << 2));
+        os.write(tag | len - 1 << 2);
         writeLittleEndian(offsetBytes, offset);
     }
 
     private void writeBackReferenceWithOneOffsetByte(final int len, final int offset) throws IOException {
-        os.write(ONE_BYTE_COPY_TAG | ((len - 4) << 2) | ((offset & 0x700) >> 3));
+        os.write(ONE_BYTE_COPY_TAG | len - 4 << 2 | (offset & 0x700) >> 3);
         os.write(offset & 0xff);
     }
     private void writeBackReferenceWithTwoOffsetBytes(final int len, final int offset) throws IOException {

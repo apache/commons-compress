@@ -57,7 +57,7 @@ public class LocalVariableTableAttribute extends BCIRenumberedAttribute {
 
     @Override
     protected int getLength() {
-        return 2 + (10 * localVariableTableLength);
+        return 2 + 10 * localVariableTableLength;
     }
 
     @Override

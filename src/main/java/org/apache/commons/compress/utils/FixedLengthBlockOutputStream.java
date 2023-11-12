@@ -55,7 +55,7 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
      * breaks up writes into 8KB max chunks. Since the purpose of this class is to always write
      * complete blocks, we need to write a simple class to take care of it.
      */
-    private static class BufferAtATimeOutputChannel implements WritableByteChannel {
+    private static final class BufferAtATimeOutputChannel implements WritableByteChannel {
 
         private final OutputStream out;
         private final AtomicBoolean closed = new AtomicBoolean(false);

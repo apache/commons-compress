@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 public class SkipShieldingInputStreamTest {
 
     @Test
-    public void skipDelegatesToRead() throws IOException {
+    public void testSkipDelegatesToRead() throws IOException {
         try (InputStream i = new SkipShieldingInputStream(new InputStream() {
                 @Override
                 public int read() {
@@ -49,7 +49,7 @@ public class SkipShieldingInputStreamTest {
     }
 
     @Test
-    public void skipHasAnUpperBoundOnRead() throws IOException {
+    public void testSkipHasAnUpperBoundOnRead() throws IOException {
         try (InputStream i = new SkipShieldingInputStream(new InputStream() {
                 @Override
                 public int read() {
@@ -70,7 +70,7 @@ public class SkipShieldingInputStreamTest {
     }
 
     @Test
-    public void skipSwallowsNegativeArguments() throws IOException {
+    public void testSkipSwallowsNegativeArguments() throws IOException {
         try (InputStream i = new SkipShieldingInputStream(new InputStream() {
                 @Override
                 public int read() {

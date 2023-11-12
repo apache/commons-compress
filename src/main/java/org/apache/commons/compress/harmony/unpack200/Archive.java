@@ -106,7 +106,7 @@ public class Archive {
     }
 
     public void setQuiet(final boolean quiet) {
-        if (quiet || (logLevel == Segment.LOG_LEVEL_QUIET)) {
+        if (quiet || logLevel == Segment.LOG_LEVEL_QUIET) {
             logLevel = Segment.LOG_LEVEL_QUIET;
         }
     }
@@ -144,7 +144,7 @@ public class Archive {
                 }
             }
             inputStream.mark(2);
-            if (((inputStream.read() & 0xFF) | (inputStream.read() & 0xFF) << 8) == GZIPInputStream.GZIP_MAGIC) {
+            if ((inputStream.read() & 0xFF | (inputStream.read() & 0xFF) << 8) == GZIPInputStream.GZIP_MAGIC) {
                 inputStream.reset();
                 inputStream = new BufferedInputStream(new GZIPInputStream(inputStream));
             } else {

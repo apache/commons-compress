@@ -34,6 +34,11 @@ public class AnnotationDefaultAttribute extends AnnotationsAttribute {
 
     private final ElementValue elementValue;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param elementValue element value to track.
+     */
     public AnnotationDefaultAttribute(final ElementValue elementValue) {
         super(attributeName);
         this.elementValue = elementValue;

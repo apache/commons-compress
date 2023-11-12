@@ -394,7 +394,7 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Get all TAR Archive Entries from the TarFile
+     * Gets all TAR Archive Entries from the TarFile
      *
      * @return All entries from the tar file
      */
@@ -417,9 +417,9 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Get the next entry in this tar archive as longname data.
+     * Gets the next entry in this tar archive as long name data.
      *
-     * @return The next entry in the archive as longname data, or null.
+     * @return The next entry in the archive as long name data, or null.
      * @throws IOException on error
      */
     private byte[] getLongNameData() throws IOException {
@@ -449,7 +449,7 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Get the next entry in this tar archive. This will skip
+     * Gets the next entry in this tar archive. This will skip
      * to the end of the current entry, if there is one, and
      * place the position of the channel at the header of the
      * next entry, and read the header and instantiate a new
@@ -537,7 +537,7 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Get the next record in this tar archive. This will skip
+     * Gets the next record in this tar archive. This will skip
      * over any remaining data in the current entry, if there
      * is one, and place the input stream at the header of the
      * next entry.
@@ -711,8 +711,8 @@ public class TarFile implements Closeable {
      */
     private void skipRecordPadding() throws IOException {
         if (!isDirectory() && currEntry.getSize() > 0 && currEntry.getSize() % recordSize != 0) {
-            final long numRecords = (currEntry.getSize() / recordSize) + 1;
-            final long padding = (numRecords * recordSize) - currEntry.getSize();
+            final long numRecords = currEntry.getSize() / recordSize + 1;
+            final long padding = numRecords * recordSize - currEntry.getSize();
             repositionForwardBy(padding);
             throwExceptionIfPositionIsNotInArchive();
         }

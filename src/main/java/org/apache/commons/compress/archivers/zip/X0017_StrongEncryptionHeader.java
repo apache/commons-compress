@@ -282,7 +282,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     }
 
     /**
-     * Get encryption algorithm.
+     * Gets encryption algorithm.
      * @return the encryption algorithm
      */
     public EncryptionAlgorithm getEncryptionAlgorithm() {
@@ -290,7 +290,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     }
 
     /**
-     * Get hash algorithm.
+     * Gets hash algorithm.
      * @return the hash algorithm
      */
     public HashAlgorithm getHashAlgorithm() {
@@ -298,7 +298,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     }
 
     /**
-     * Get record count.
+     * Gets record count.
      * @return the record count
      */
     public long getRecordCount() {

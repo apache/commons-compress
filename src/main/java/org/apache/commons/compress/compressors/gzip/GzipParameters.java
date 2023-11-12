@@ -33,7 +33,7 @@ public class GzipParameters {
 
     private int compressionLevel = Deflater.DEFAULT_COMPRESSION;
     private long modificationTime;
-    private String filename;
+    private String fileName;
     private String comment;
     private int operatingSystem = 255; // Unknown OS by default
     private int bufferSize = 512;
@@ -59,7 +59,7 @@ public class GzipParameters {
 
     /**
      * Gets the deflater strategy.
-     * 
+     *
      * @return the deflater strategy, {@link Deflater#DEFAULT_STRATEGY} by default.
      * @see #setDeflateStrategy(int)
      * @see Deflater#setStrategy(int)
@@ -69,8 +69,25 @@ public class GzipParameters {
         return deflateStrategy;
     }
 
+    /**
+     * Gets the file name.
+     *
+     * @return the file name.
+     * @deprecated Use {@link #getFileName()}.
+     */
+    @Deprecated
     public String getFilename() {
-        return filename;
+        return fileName;
+    }
+
+    /**
+     * Gets the file name.
+     *
+     * @return the file name.
+     * @since 2.25.0
+     */
+    public String getFileName() {
+        return fileName;
     }
 
     public long getModificationTime() {
@@ -122,7 +139,7 @@ public class GzipParameters {
      * @see Deflater#setStrategy(int)
      * @since 1.23
      */
-    public void setDeflateStrategy(int deflateStrategy) {
+    public void setDeflateStrategy(final int deflateStrategy) {
         this.deflateStrategy = deflateStrategy;
     }
 
@@ -130,9 +147,20 @@ public class GzipParameters {
      * Sets the name of the compressed file.
      *
      * @param fileName the name of the file without the directory path
+     * @deprecated Use {@link #setFileName(String)}.
      */
+    @Deprecated
     public void setFilename(final String fileName) {
-        this.filename = fileName;
+        this.fileName = fileName;
+    }
+
+    /**
+     * Sets the name of the compressed file.
+     *
+     * @param fileName the name of the file without the directory path
+     */
+    public void setFileName(final String fileName) {
+        this.fileName = fileName;
     }
 
     /**

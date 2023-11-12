@@ -285,7 +285,7 @@ public class GzipCompressorInputStream extends CompressorInputStream
 
         // Original file name
         if ((flg & FNAME) != 0) {
-            parameters.setFilename(new String(readToNull(inData), GzipUtils.GZIP_ENCODING));
+            parameters.setFileName(new String(readToNull(inData), GzipUtils.GZIP_ENCODING));
         }
 
         // Comment

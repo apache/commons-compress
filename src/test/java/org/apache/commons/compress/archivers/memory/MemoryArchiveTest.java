@@ -27,7 +27,7 @@ import java.io.IOException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.junit.jupiter.api.Test;
 
-public final class MemoryArchiveTestCase {
+public final class MemoryArchiveTest {
 
     @Test
     public void testReading() throws IOException {

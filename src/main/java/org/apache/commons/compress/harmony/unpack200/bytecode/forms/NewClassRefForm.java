@@ -49,7 +49,7 @@ public class NewClassRefForm extends ClassRefForm {
         if (offset == 0) {
             // Use current class
             final SegmentConstantPool globalPool = operandManager.globalConstantPool();
-            ClassFileEntry[] nested = new ClassFileEntry[] {globalPool.getClassPoolEntry(operandManager.getCurrentClass())};
+            final ClassFileEntry[] nested = {globalPool.getClassPoolEntry(operandManager.getCurrentClass())};
             byteCode.setNested(nested);
             byteCode.setNestedPositions(new int[][] {{0, 2}});
         } else {

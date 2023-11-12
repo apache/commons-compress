@@ -22,16 +22,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Stores the results of a performed ChangeSet operation.
+ * Stores the results of a performed {@link ChangeSet} operation.
  */
 public class ChangeSetResults {
+
     private final List<String> addedFromChangeSet = new ArrayList<>();
     private final List<String> addedFromStream = new ArrayList<>();
     private final List<String> deleted = new ArrayList<>();
 
     /**
-     * Adds the name of a file to the result list which has been
-     * copied from the changeset to the target stream
+     * Adds the name of a file to the result list which has been copied from the {@link ChangeSet} to the target stream
+     *
      * @param fileName the name of the file
      */
     void addedFromChangeSet(final String fileName) {
@@ -39,8 +40,8 @@ public class ChangeSetResults {
     }
 
     /**
-     * Adds the name of a file to the result list which has been
-     * copied from the source stream to the target stream.
+     * Adds the name of a file to the result list which has been copied from the source stream to the target stream.
+     *
      * @param fileName the file name which has been added from the original stream
      */
     void addedFromStream(final String fileName) {
@@ -49,6 +50,7 @@ public class ChangeSetResults {
 
     /**
      * Adds the file name of a recently deleted file to the result list.
+     *
      * @param fileName the file which has been deleted
      */
     void deleted(final String fileName) {
@@ -56,7 +58,8 @@ public class ChangeSetResults {
     }
 
     /**
-     * Returns a list of file names which has been added from the changeset
+     * Gets a list of file names which has been added from the {@link ChangeSet}
+     *
      * @return the list of file names
      */
     public List<String> getAddedFromChangeSet() {
@@ -64,7 +67,8 @@ public class ChangeSetResults {
     }
 
     /**
-     * Returns a list of file names which has been added from the original stream
+     * Gets a list of file names which has been added from the original stream
+     *
      * @return the list of file names
      */
     public List<String> getAddedFromStream() {
@@ -72,7 +76,8 @@ public class ChangeSetResults {
     }
 
     /**
-     * Returns a list of file names which has been deleted
+     * Gets a list of file names which has been deleted
+     *
      * @return the list of file names
      */
     public List<String> getDeleted() {
@@ -80,7 +85,8 @@ public class ChangeSetResults {
     }
 
     /**
-     * Checks if a file name already has been added to the result list
+     * Tests if a file name already has been added to the result list
+     *
      * @param fileName the file name to check
      * @return true, if this file name already has been added
      */

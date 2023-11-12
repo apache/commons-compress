@@ -152,7 +152,7 @@ public class CodeAttributeTest {
                 mixedByteArray, // codePacked
                 segment, // segment
                 operandManager, // operandManager
-                new ArrayList());
+                new ArrayList<>());
         assertEquals(29, attribute.getLength());
 
         attribute.attributes.add(new LocalVariableTableAttribute(0, null, null,

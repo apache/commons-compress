@@ -23,7 +23,7 @@ import java.util.LinkedList;
 /**
  * The unit of solid compression.
  */
-class Folder {
+final class Folder {
     static final Folder[] EMPTY_FOLDER_ARRAY = {};
     /// List of coders used in this folder, e.g. one for compression, one for encryption.
     Coder[] coders;
@@ -96,7 +96,7 @@ class Folder {
         if (totalOutputStreams == 0) {
             return 0;
         }
-        for (int i = ((int) totalOutputStreams) - 1; i >= 0; i--) {
+        for (int i = (int) totalOutputStreams - 1; i >= 0; i--) {
             if (findBindPairForOutStream(i) < 0) {
                 return unpackSizes[i];
             }

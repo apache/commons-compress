@@ -34,7 +34,7 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.StreamingNotSupportedException;
@@ -42,7 +42,7 @@ import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class SevenZArchiverTest extends AbstractTestCase {
+public class SevenZArchiverTest extends AbstractTest {
     private File target;
 
     private void assertDir(final String expectedName, final ArchiveEntry entry) {
@@ -63,49 +63,47 @@ public class SevenZArchiverTest extends AbstractTestCase {
         assertArrayEquals(expected, actual);
     }
 
-    @Test
-    public void channelVersion() throws IOException, ArchiveException {
-        try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
-            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-            new Archiver().create("7z", c, dir);
-        }
-        verifyContent();
-    }
-
-    @Test
-    public void fileVersion() throws IOException, ArchiveException {
-        new Archiver().create("7z", target, dir);
-        verifyContent();
-    }
-
-    @Test
-    public void outputStreamVersion() throws IOException {
-        try (OutputStream os = Files.newOutputStream(target.toPath())) {
-            assertThrows(StreamingNotSupportedException.class, () -> new Archiver().create("7z", os, dir));
-        }
-    }
-
     @BeforeEach
-    @Override
     public void setUp() throws Exception {
-        super.setUp();
-        final File c = new File(dir, "a/b/c");
+        final File c = newTempFile("a/b/c");
         c.mkdirs();
-        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/d.txt").toPath())) {
+        try (OutputStream os = Files.newOutputStream(newTempFile("a/b/d.txt").toPath())) {
             os.write("Hello, world 1".getBytes(UTF_8));
         }
-        try (OutputStream os = Files.newOutputStream(new File(dir, "a/b/c/e.txt").toPath())) {
+        try (OutputStream os = Files.newOutputStream(newTempFile("a/b/c/e.txt").toPath())) {
             os.write("Hello, world 2".getBytes(UTF_8));
         }
-        target = new File(resultDir, "test.7z");
+        target = new File(tempResultDir, "test.7z");
+    }
+
+    @Test
+    public void testChannelVersion() throws IOException, ArchiveException {
+        try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
+            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+            new Archiver().create("7z", c, getTempDirFile());
+        }
+        verifyContent();
+    }
+
+    @Test
+    public void testFileVersion() throws IOException, ArchiveException {
+        new Archiver().create("7z", target, getTempDirFile());
+        verifyContent();
+    }
+
+    @Test
+    public void testOutputStreamVersion() throws IOException {
+        try (OutputStream os = Files.newOutputStream(target.toPath())) {
+            assertThrows(StreamingNotSupportedException.class, () -> new Archiver().create("7z", os, getTempDirFile()));
+        }
     }
 
     // not really a 7z test, but I didn't feel like adding a new test just for this
     @Test
-    public void unknownFormat() throws IOException {
+    public void testUnknownFormat() throws IOException {
         try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE, StandardOpenOption.CREATE,
             StandardOpenOption.TRUNCATE_EXISTING)) {
-            assertThrows(ArchiveException.class, () -> new Archiver().create("unknown format", c, dir));
+            assertThrows(ArchiveException.class, () -> new Archiver().create("unknown format", c, getTempDirFile()));
         }
     }
 

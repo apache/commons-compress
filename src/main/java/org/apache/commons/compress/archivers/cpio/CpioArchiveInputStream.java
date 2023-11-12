@@ -22,7 +22,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
@@ -64,7 +63,7 @@ import org.apache.commons.compress.utils.IOUtils;
  * <p>Based on code from the jRPM project (jrpm.sourceforge.net)
  */
 
-public class CpioArchiveInputStream extends ArchiveInputStream implements
+public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry> implements
         CpioConstants {
 
     /**
@@ -157,7 +156,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     final String encoding;
 
     /**
-     * Construct the cpio input stream with a blocksize of {@link
+     * Constructs the cpio input stream with a blocksize of {@link
      * CpioConstants#BLOCK_SIZE BLOCK_SIZE} and expecting ASCII file
      * names.
      *
@@ -169,7 +168,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     }
 
     /**
-     * Construct the cpio input stream with a blocksize of {@link
+     * Constructs the cpio input stream with a blocksize of {@link
      * CpioConstants#BLOCK_SIZE BLOCK_SIZE} expecting ASCII file
      * names.
      *
@@ -184,7 +183,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     }
 
     /**
-     * Construct the cpio input stream with a blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
+     * Constructs the cpio input stream with a blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
      *
      * @param in
      *            The cpio stream
@@ -207,7 +206,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     }
 
     /**
-     * Construct the cpio input stream with a blocksize of {@link
+     * Constructs the cpio input stream with a blocksize of {@link
      * CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
      *
      * @param in
@@ -292,7 +291,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
      * @throws IOException
      *             if an I/O error has occurred or if a CPIO file error has
      *             occurred
+     * @deprecated Use {@link #getNextEntry()}.
      */
+    @Deprecated
     public CpioArchiveEntry getNextCPIOEntry() throws IOException {
         ensureOpen();
         if (this.entry != null) {
@@ -338,7 +339,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements
     }
 
     @Override
-    public ArchiveEntry getNextEntry() throws IOException {
+    public CpioArchiveEntry getNextEntry() throws IOException {
         return getNextCPIOEntry();
     }
 

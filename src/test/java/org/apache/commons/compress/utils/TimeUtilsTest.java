@@ -124,17 +124,6 @@ public class TimeUtilsTest {
         );
     }
 
-    @Test
-    public void shouldCheckWhetherTimeCanBeRepresentedAsUnixTime() {
-        assertTrue(TimeUtils.isUnixTime(null));
-        assertTrue(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2022-12-27T12:45:22Z"))));
-        assertTrue(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2038-01-19T03:14:07Z"))));
-        assertTrue(TimeUtils.isUnixTime(FileTime.from(Instant.parse("1901-12-13T23:14:08Z"))));
-        assertFalse(TimeUtils.isUnixTime(FileTime.from(Instant.parse("1901-12-13T03:14:08Z"))));
-        assertFalse(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2038-01-19T03:14:08Z"))));
-        assertFalse(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2099-06-30T12:31:42Z"))));
-    }
-
     @ParameterizedTest
     @MethodSource("dateToNtfsProvider")
     public void shouldConvertDateToFileTime(final String instant, final long ignored) {
@@ -193,16 +182,6 @@ public class TimeUtilsTest {
         assertEquals(parsed, ntfsTimeToFileTime(ntfsTime));
     }
 
-    @Test
-    public void shouldConvertNullDateToNullFileTime() {
-        assertNull(toFileTime(null));
-    }
-
-    @Test
-    public void shouldConvertNullFileTimeToNullDate() {
-        assertNull(toDate(null));
-    }
-
     @ParameterizedTest
     @MethodSource("fileTimeToUnixTimeArguments")
     public void shouldConvertUnixTimeToFileTime(final long unixTime, final String expectedInstant) {
@@ -215,5 +194,26 @@ public class TimeUtilsTest {
         final FileTime originalTime = FileTime.from(Instant.parse(original));
         final FileTime truncatedTime = FileTime.from(Instant.parse(truncated));
         assertEquals(truncatedTime, TimeUtils.truncateToHundredNanos(originalTime));
+    }
+
+    @Test
+    public void testShouldCheckWhetherTimeCanBeRepresentedAsUnixTime() {
+        assertTrue(TimeUtils.isUnixTime(null));
+        assertTrue(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2022-12-27T12:45:22Z"))));
+        assertTrue(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2038-01-19T03:14:07Z"))));
+        assertTrue(TimeUtils.isUnixTime(FileTime.from(Instant.parse("1901-12-13T23:14:08Z"))));
+        assertFalse(TimeUtils.isUnixTime(FileTime.from(Instant.parse("1901-12-13T03:14:08Z"))));
+        assertFalse(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2038-01-19T03:14:08Z"))));
+        assertFalse(TimeUtils.isUnixTime(FileTime.from(Instant.parse("2099-06-30T12:31:42Z"))));
+    }
+
+    @Test
+    public void testShouldConvertNullDateToNullFileTime() {
+        assertNull(toFileTime(null));
+    }
+
+    @Test
+    public void testShouldConvertNullFileTimeToNullDate() {
+        assertNull(toDate(null));
     }
 }

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Enumeration;
+import java.util.Objects;
 
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.tar.TarFile;
@@ -32,8 +33,12 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 /**
  * Simple command line application that lists the contents of an archive.
  *
- * <p>The name of the archive must be given as a command line argument.</p>
- * <p>The optional second argument defines the archive type, in case the format is not recognized.</p>
+ * <p>
+ * The name of the archive must be given as a command line argument.
+ * </p>
+ * <p>
+ * The optional second argument defines the archive type, in case the format is not recognized.
+ * </p>
  *
  * @since 1.1
  */
@@ -41,54 +46,53 @@ public final class Lister {
 
     private static final ArchiveStreamFactory FACTORY = ArchiveStreamFactory.DEFAULT;
 
-    private static ArchiveInputStream createArchiveInputStream(final String[] args, final InputStream fis)
-            throws ArchiveException {
+    private static <T extends ArchiveInputStream<? extends E>, E extends ArchiveEntry> T createArchiveInputStream(final String[] args,
+            final InputStream inputStream) throws ArchiveException {
         if (args.length > 1) {
-            return FACTORY.createArchiveInputStream(args[1], fis);
+            return FACTORY.createArchiveInputStream(args[1], inputStream);
         }
-        return FACTORY.createArchiveInputStream(fis);
+        return FACTORY.createArchiveInputStream(inputStream);
     }
 
-    private static String detectFormat(final File f) throws ArchiveException, IOException {
-        try (final InputStream fis = new BufferedInputStream(Files.newInputStream(f.toPath()))) {
-            return ArchiveStreamFactory.detect(fis);
+    private static String detectFormat(final File file) throws ArchiveException, IOException {
+        try (final InputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
+            return ArchiveStreamFactory.detect(inputStream);
         }
     }
 
-    private static void list7z(final File f) throws IOException {
-        try (SevenZFile z = new SevenZFile(f)) {
-            System.out.println("Created " + z);
-            ArchiveEntry ae;
-            while ((ae = z.getNextEntry()) != null) {
-                final String name = ae.getName() == null ? z.getDefaultName() + " (entry name was null)"
-                    : ae.getName();
+    private static void list7z(final File file) throws IOException {
+        try (SevenZFile sevenZFile = new SevenZFile(file)) {
+            System.out.println("Created " + sevenZFile);
+            ArchiveEntry entry;
+            while ((entry = sevenZFile.getNextEntry()) != null) {
+                final String name = entry.getName() == null ? sevenZFile.getDefaultName() + " (entry name was null)" : entry.getName();
                 System.out.println(name);
             }
         }
     }
 
-    private static void listStream(final File f, final String[] args) throws ArchiveException, IOException {
-        try (final InputStream fis = new BufferedInputStream(Files.newInputStream(f.toPath()));
-                final ArchiveInputStream ais = createArchiveInputStream(args, fis)) {
-            System.out.println("Created " + ais.toString());
-            ArchiveEntry ae;
-            while ((ae = ais.getNextEntry()) != null) {
-                System.out.println(ae.getName());
+    private static void listStream(final File file, final String[] args) throws ArchiveException, IOException {
+        try (final InputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()));
+                final ArchiveInputStream<?> archiveInputStream = createArchiveInputStream(args, inputStream)) {
+            System.out.println("Created " + archiveInputStream.toString());
+            ArchiveEntry entry;
+            while ((entry = archiveInputStream.getNextEntry()) != null) {
+                System.out.println(entry.getName());
             }
         }
     }
 
-    private static void listZipUsingTarFile(final File f) throws IOException {
-        try (TarFile t = new TarFile(f)) {
-            System.out.println("Created " + t);
-            t.getEntries().forEach(en -> System.out.println(en.getName()));
+    private static void listZipUsingTarFile(final File file) throws IOException {
+        try (TarFile tarFile = new TarFile(file)) {
+            System.out.println("Created " + tarFile);
+            tarFile.getEntries().forEach(en -> System.out.println(en.getName()));
         }
     }
 
-    private static void listZipUsingZipFile(final File f) throws IOException {
-        try (ZipFile z = new ZipFile(f)) {
-            System.out.println("Created " + z);
-            for (final Enumeration<ZipArchiveEntry> en = z.getEntries(); en.hasMoreElements(); ) {
+    private static void listZipUsingZipFile(final File file) throws IOException {
+        try (ZipFile zipFile = new ZipFile(file)) {
+            System.out.println("Created " + zipFile);
+            for (final Enumeration<ZipArchiveEntry> en = zipFile.getEntries(); en.hasMoreElements();) {
                 System.out.println(en.nextElement().getName());
             }
         }
@@ -105,27 +109,28 @@ public final class Lister {
      *
      * @param args name of the archive and optional argument archive type.
      * @throws ArchiveException Archiver related Exception.
-     * @throws IOException an I/O exception.
+     * @throws IOException      an I/O exception.
      */
     public static void main(final String[] args) throws ArchiveException, IOException {
-        if (args.length == 0) {
+        if (args == null || args.length == 0) {
             usage();
             return;
         }
+        Objects.requireNonNull(args[0], "args[0]");
         System.out.println("Analysing " + args[0]);
-        final File f = new File(args[0]);
-        if (!f.isFile()) {
-            System.err.println(f + " doesn't exist or is a directory");
+        final File file = new File(args[0]);
+        if (!file.isFile()) {
+            System.err.println(file + " doesn't exist or is a directory");
         }
-        final String format = args.length > 1 ? args[1] : detectFormat(f);
+        final String format = args.length > 1 ? args[1] : detectFormat(file);
         if (ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format)) {
-            list7z(f);
+            list7z(file);
         } else if ("zipfile".equals(format)) {
-            listZipUsingZipFile(f);
+            listZipUsingZipFile(file);
         } else if ("tarfile".equals(format)) {
-            listZipUsingTarFile(f);
+            listZipUsingTarFile(file);
         } else {
-            listStream(f, args);
+            listStream(file, args);
         }
     }
 
