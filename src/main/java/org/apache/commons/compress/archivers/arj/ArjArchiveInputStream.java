@@ -235,6 +235,9 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         try (final DataInputStream basicHeader = new DataInputStream(new ByteArrayInputStream(basicHeaderBytes))) {
 
             final int firstHeaderSize = basicHeader.readUnsignedByte();
+            if (firstHeaderSize == 0) {
+                throw new IOException("Invalid first header size: 0");
+            }
             final byte[] firstHeaderBytes = readRange(basicHeader, firstHeaderSize - 1);
             pushedBackBytes(firstHeaderBytes.length);
             try (final DataInputStream firstHeader = new DataInputStream(new ByteArrayInputStream(firstHeaderBytes))) {
@@ -290,6 +293,9 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
                 new ByteArrayInputStream(basicHeaderBytes));
 
         final int firstHeaderSize = basicHeader.readUnsignedByte();
+        if (firstHeaderSize == 0) {
+            throw new IOException("Invalid first header size: 0");
+        }
         final byte[] firstHeaderBytes = readRange(basicHeader, firstHeaderSize - 1);
         pushedBackBytes(firstHeaderBytes.length);
 
