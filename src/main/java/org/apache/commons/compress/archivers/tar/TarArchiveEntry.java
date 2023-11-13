@@ -286,6 +286,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         final BigDecimal epochSeconds = new BigDecimal(value);
         final long seconds = epochSeconds.longValue();
         final long nanos = epochSeconds.remainder(BigDecimal.ONE).movePointRight(9).longValue();
+        if (seconds < Instant.MIN.getEpochSecond() || seconds > Instant.MAX.getEpochSecond()) {
+            throw new IOException("Corrupted PAX header. Time field value is invalid '" + value + "'");
+        }
         return Instant.ofEpochSecond(seconds, nanos);
     }
 
