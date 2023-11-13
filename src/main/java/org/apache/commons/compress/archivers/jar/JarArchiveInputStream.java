@@ -74,7 +74,7 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
      * Gets the next entry.
      *
      * @return the next entry.
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      * @deprecated Use {@link #getNextEntry()}.
      */
     @Deprecated
