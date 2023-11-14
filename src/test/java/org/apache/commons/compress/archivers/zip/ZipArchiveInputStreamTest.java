@@ -512,8 +512,8 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
                 InputStream inputStream = Channels.newInputStream(channel);
                 ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, CharsetNames.UTF_8, true, false, true)) {
 
-            final File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
-            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(Files.newInputStream(fileToCompare.toPath()), CharsetNames.UTF_8,
+            final Path fileToCompare = getPath("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
+            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(Files.newInputStream(fileToCompare), CharsetNames.UTF_8,
                     true, false, true)) {
 
                 ArchiveEntry entry;
@@ -534,8 +534,8 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
                 InputStream inputStream = Channels.newInputStream(channel);
                 ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, CharsetNames.UTF_8, true, false, true)) {
 
-            final File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip_zip64.zip");
-            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(Files.newInputStream(fileToCompare.toPath()), CharsetNames.UTF_8,
+            final Path fileToCompare = getPath("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip_zip64.zip");
+            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(Files.newInputStream(fileToCompare), CharsetNames.UTF_8,
                     true, false, true)) {
 
                 ArchiveEntry entry;
