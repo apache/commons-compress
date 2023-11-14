@@ -21,13 +21,17 @@ package org.apache.commons.compress.archivers.arj;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -104,6 +108,16 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
+        }
+    }
+
+    @Test
+    public void testFirstHeaderSizeSetToZero() throws Exception {
+        try (InputStream in = newInputStream("arj/zero_sized_headers.arj")) {
+            final ArchiveException ex = assertThrows(ArchiveException.class, () -> {
+                ArjArchiveInputStream archive = new ArjArchiveInputStream(in);
+            });
+            assertTrue(ex.getCause() instanceof IOException);
         }
     }
 
