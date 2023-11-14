@@ -34,7 +34,9 @@ import java.io.InputStream;
  * problems with {@code skip} throwing an exception.</p>
  *
  * @since 1.17
+ * @deprecated No longer used.
  */
+@Deprecated
 public class SkipShieldingInputStream extends FilterInputStream {
     private static final int SKIP_BUFFER_SIZE = 8192;
     // we can use a shared buffer as the content is discarded anyway

@@ -50,9 +50,8 @@ public class ZstdRoundtripTest extends AbstractTest {
         //System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
         //    + ", compressed bytes: " + output.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
-        try (InputStream is = Files.newInputStream(input.toPath());
-             ZstdCompressorInputStream zis = new ZstdCompressorInputStream(Files.newInputStream(output.toPath()))) {
-            final byte[] expected = IOUtils.toByteArray(is);
+        try (ZstdCompressorInputStream zis = new ZstdCompressorInputStream(Files.newInputStream(output.toPath()))) {
+            final byte[] expected = Files.readAllBytes(input.toPath());
             final byte[] actual = IOUtils.toByteArray(zis);
             assertArrayEquals(expected, actual);
         }

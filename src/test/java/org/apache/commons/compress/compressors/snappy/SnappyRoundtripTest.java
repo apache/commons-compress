@@ -75,9 +75,8 @@ public final class SnappyRoundtripTest extends AbstractTest {
         // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
         // + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
-        try (InputStream is = Files.newInputStream(input.toPath());
-                SnappyCompressorInputStream sis = new SnappyCompressorInputStream(Files.newInputStream(outputSz.toPath()), params.getWindowSize())) {
-            final byte[] expected = IOUtils.toByteArray(is);
+        try (SnappyCompressorInputStream sis = new SnappyCompressorInputStream(Files.newInputStream(outputSz.toPath()), params.getWindowSize())) {
+            final byte[] expected = Files.readAllBytes(input.toPath());
             final byte[] actual = IOUtils.toByteArray(sis);
             assertArrayEquals(expected, actual);
         }

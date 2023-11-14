@@ -46,7 +46,6 @@ import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
 import org.apache.commons.compress.archivers.tar.TarFile;
 import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public class ExpanderTest extends AbstractTest {
@@ -56,10 +55,8 @@ public class ExpanderTest extends AbstractTest {
     private void assertHelloWorld(final String fileName, final String suffix) throws IOException {
         assertTrue(new File(tempResultDir, fileName).isFile(), fileName + " does not exist");
         final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
-        try (InputStream is = Files.newInputStream(new File(tempResultDir, fileName).toPath())) {
-            final byte[] actual = IOUtils.toByteArray(is);
-            assertArrayEquals(expected, actual);
-        }
+        final byte[] actual = Files.readAllBytes(tempResultDir.toPath().resolve(fileName));
+        assertArrayEquals(expected, actual);
     }
 
     private void setup7z() throws IOException {

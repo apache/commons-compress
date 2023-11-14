@@ -32,6 +32,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -149,25 +150,25 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      */
     protected File checkArchiveContent(final ArchiveInputStream<?> inputStream, final List<String> expected, final boolean cleanUp)
             throws Exception {
-        final File result = createTempDirectory("dir-result");
+        final Path result = createTempDirectory("dir-result");
 
         try {
             ArchiveEntry entry;
             while ((entry = inputStream.getNextEntry()) != null) {
-                final File outputFile = new File(result.getCanonicalPath() + "/result/" + entry.getName());
+                final Path outputFile = Paths.get(result.toString(), "result", entry.getName());
                 long bytesCopied = 0;
                 if (entry.isDirectory()) {
-                    outputFile.mkdirs();
+                    Files.createDirectories(outputFile);
                 } else {
-                    outputFile.getParentFile().mkdirs();
-                    bytesCopied = Files.copy(inputStream, outputFile.toPath());
+                    Files.createDirectories(outputFile.getParent());
+                    bytesCopied = Files.copy(inputStream, outputFile);
                 }
                 final long size = entry.getSize();
                 if (size != ArchiveEntry.SIZE_UNKNOWN) {
                     assertEquals(size, bytesCopied, "Entry.size should equal bytes read.");
                 }
 
-                if (!outputFile.exists()) {
+                if (!Files.exists(outputFile)) {
                     fail("Extraction failed: " + entry.getName());
                 }
                 if (expected != null && !expected.remove(getExpectedString(entry))) {
@@ -186,7 +187,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
                 forceDelete(result);
             }
         }
-        return result;
+        return result.toFile();
     }
 
     /**
@@ -305,8 +306,8 @@ public abstract class AbstractTest extends AbstractTempDirTest {
         return archivePath;
     }
 
-    public File createTempDirectory(final String prefix) throws IOException {
-        return Files.createTempDirectory(getTempDirPath(), prefix).toFile();
+    public Path createTempDirectory(final String prefix) throws IOException {
+        return Files.createTempDirectory(getTempDirPath(), prefix);
     }
 
     /**

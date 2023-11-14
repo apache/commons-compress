@@ -45,6 +45,7 @@ final class MainHeader {
         static final int WIN95 = 10;
         static final int WIN32 = 11;
     }
+
     int archiverVersionNumber;
     int minVersionToExtract;
     int hostOS;
@@ -63,9 +64,7 @@ final class MainHeader {
     int arjProtectionFactor;
     int arjFlags2;
     String name;
-
     String comment;
-
     byte[] extendedHeaderBytes;
 
     @Override
