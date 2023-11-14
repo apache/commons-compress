@@ -38,7 +38,6 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -49,11 +48,7 @@ public class ParameterizedExpanderTest extends AbstractTest {
     // 7z and ZIP using ZipFile is in ExpanderTest
     @Parameters(name = "format={0}")
     public static Stream<Arguments> data() {
-        return Stream.of(
-                   Arguments.of("tar"),
-                   Arguments.of("cpio"),
-                   Arguments.of("zip")
-        );
+        return Stream.of(Arguments.of("tar"), Arguments.of("cpio"), Arguments.of("zip"));
     }
 
     private File archive;
@@ -64,7 +59,7 @@ public class ParameterizedExpanderTest extends AbstractTest {
         // TODO How to parameterize a BeforeEach method?
         setUp(format);
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()));
-             ArchiveInputStream<?> ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, i)) {
+                ArchiveInputStream<?> ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, i)) {
             new Expander().expand(ais, tempResultDir);
         }
         verifyTargetDir();
@@ -73,10 +68,8 @@ public class ParameterizedExpanderTest extends AbstractTest {
     private void assertHelloWorld(final String fileName, final String suffix) throws IOException {
         assertTrue(new File(tempResultDir, fileName).isFile(), fileName + " does not exist");
         final byte[] expected = ("Hello, world " + suffix).getBytes(UTF_8);
-        try (InputStream is = Files.newInputStream(new File(tempResultDir, fileName).toPath())) {
-            final byte[] actual = IOUtils.toByteArray(is);
-            assertArrayEquals(expected, actual);
-        }
+        final byte[] actual = Files.readAllBytes(tempResultDir.toPath().resolve(fileName));
+        assertArrayEquals(expected, actual);
     }
 
     @ParameterizedTest
