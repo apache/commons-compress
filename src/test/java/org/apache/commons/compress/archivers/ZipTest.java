@@ -37,6 +37,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -237,10 +238,7 @@ public final class ZipTest extends AbstractTest {
                     continue;
                 }
                 // compare all files one by one
-                final File fileToCompare = new File(entry.getName());
-                try (InputStream inputStreamToCompare = Files.newInputStream(fileToCompare.toPath())) {
-                    assertArrayEquals(IOUtils.toByteArray(splitInputStream), IOUtils.toByteArray(inputStreamToCompare));
-                }
+                assertArrayEquals(IOUtils.toByteArray(splitInputStream), Files.readAllBytes(Paths.get(entry.getName())));
                 filesCount++;
             }
             // and the number of files should equal
