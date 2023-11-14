@@ -58,6 +58,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     private static final Pattern BSD_LONGNAME_PATTERN = Pattern.compile("^" + BSD_LONGNAME_PREFIX + "\\d+");
     private static final String GNU_STRING_TABLE_NAME = "//";
     private static final Pattern GNU_LONGNAME_PATTERN = Pattern.compile("^/\\d+");
+
     /**
      * Does the name look like it is a long name (or a name containing
      * spaces) as encoded by BSD ar?
@@ -179,9 +180,11 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         }
         return Integer.parseInt(string, base);
     }
+
     private long asLong(final byte[] byteArray, final int offset, final int len) {
         return Long.parseLong(ArchiveUtils.toAsciiString(byteArray, offset, len).trim());
     }
+
     /*
      * (non-Javadoc)
      *
