@@ -263,7 +263,10 @@ public class TarArchiveEntryTest implements TarConstants {
                         Collections.nCopies(15000, String.valueOf(Long.MAX_VALUE))),
                 // These two examples use the exponent notation
                 "9e9999999",
-                "9E9999999"
+                "9E9999999",
+                // These examples are out of range for java.time.Instant
+                String.valueOf(Long.MAX_VALUE),
+                String.valueOf(Long.MIN_VALUE)
         };
         // @formatter:on
 
