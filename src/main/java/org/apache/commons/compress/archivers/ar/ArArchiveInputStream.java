@@ -209,7 +209,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         try {
             nameLen = Integer.parseInt(bsdLongName.substring(BSD_LONGNAME_PREFIX_LEN));
         } catch (NumberFormatException ex) {
-            throw new IOException("Broken archive, unable to parse BSD long name length field as a number");
+            throw new IOException("Broken archive, unable to parse BSD long name length field as a number", ex);
         }
 
         final byte[] name = IOUtils.readRange(input, nameLen);
@@ -234,7 +234,10 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         }
         for (int i = offset; i < namebuffer.length; i++) {
             if (namebuffer[i] == '\012' || namebuffer[i] == 0) {
-                if (namebuffer[i - 1] == '/') {
+                // Avoid array errors
+                if (i == 0) {
+                    break;
+                } else if (namebuffer[i - 1] == '/') {
                     i--; // drop trailing /
                 }
 
@@ -326,7 +329,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         try {
             len = asLong(metaData, LENGTH_OFFSET, LENGTH_LEN);
         } catch (NumberFormatException ex) {
-            throw new IOException("Broken archive, unable to parse ar_size field as a number");
+            throw new IOException("Broken archive, unable to parse ar_size field as a number", ex);
         }
         if (temp.endsWith("/")) { // GNU terminator
             temp = temp.substring(0, temp.length() - 1);
@@ -335,7 +338,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
             try {
                 off = Integer.parseInt(temp.substring(1));// get the offset
             } catch (NumberFormatException ex) {
-                throw new IOException("Broken archive, unable to parse GNU long name offset field as a number");
+                throw new IOException("Broken archive, unable to parse GNU long name offset field as a number", ex);
             }
             temp = getExtendedName(off); // convert to the long name
         } else if (isBSDLongName(temp)) {
@@ -360,7 +363,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
                     asLong(metaData, LAST_MODIFIED_OFFSET, LAST_MODIFIED_LEN));
             return currentEntry;
         } catch (final NumberFormatException ex) {
-            throw new IOException("Broken archive, unable to parse entry metadata fields as numbers");
+            throw new IOException("Broken archive, unable to parse entry metadata fields as numbers", ex);
         }
     }
 
@@ -418,7 +421,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         try {
             bufflen = asInt(length, offset, len); // Assume length will fit in an int
         } catch (NumberFormatException ex) {
-            throw new IOException("Broken archive, unable to parse GNU string table length field as a number");
+            throw new IOException("Broken archive, unable to parse GNU string table length field as a number", ex);
         }
 
         namebuffer = IOUtils.readRange(input, bufflen);
