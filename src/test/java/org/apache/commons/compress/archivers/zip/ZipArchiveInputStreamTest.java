@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -36,6 +35,7 @@ import java.io.InputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Arrays;
@@ -359,11 +359,10 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
      */
     @Test
     public void testReadDeflate64CompressedStream() throws Exception {
-        final File input = getFile("COMPRESS-380/COMPRESS-380-input");
+        final Path input = getPath("COMPRESS-380/COMPRESS-380-input");
         final File archive = getFile("COMPRESS-380/COMPRESS-380.zip");
-        try (InputStream in = Files.newInputStream(input.toPath());
-                ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(archive.toPath()))) {
-            final byte[] orig = IOUtils.toByteArray(in);
+        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+            final byte[] orig = Files.readAllBytes(input);
             final ZipArchiveEntry e = zin.getNextZipEntry();
             final byte[] fromZip = IOUtils.toByteArray(zin);
             assertArrayEquals(orig, fromZip);
