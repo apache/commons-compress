@@ -138,16 +138,16 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      */
     private ArArchiveEntry currentEntry;
 
-    // Storage area for extra long names (GNU ar)
+    /** Storage area for extra long names (GNU ar). */
     private byte[] namebuffer;
 
-    /*
+    /**
      * The offset where the current entry started. -1 if no entry has been
      * called
      */
     private long entryOffset = -1;
 
-    // cached buffer for meta data - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
+    /** cached buffer for meta data - must only be used locally in the class (COMPRESS-172 - reduce garbage collection). */
     private final byte[] metaData =
         new byte[NAME_LEN + LAST_MODIFIED_LEN + USER_ID_LEN + GROUP_ID_LEN + FILE_MODE_LEN + LENGTH_LEN];
 
