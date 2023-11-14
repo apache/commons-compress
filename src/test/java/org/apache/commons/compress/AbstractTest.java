@@ -101,6 +101,10 @@ public abstract class AbstractTest extends AbstractTempDirTest {
         return Files.newInputStream(getPath(path));
     }
 
+    public static byte[] readAllBytes(final String path) throws IOException {
+        return Files.readAllBytes(getPath(path));
+    }
+
     @TempDir
     protected File tempResultDir;
 

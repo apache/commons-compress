@@ -215,7 +215,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
 
     @Test
     public void testMultiByteReadThrowsAtEofForCorruptedStoredEntry() throws Exception {
-        final byte[] content = Files.readAllBytes(getFile("COMPRESS-264.zip").toPath());
+        final byte[] content = readAllBytes("COMPRESS-264.zip");
         // make size much bigger than entry's real size
         for (int i = 17; i < 26; i++) {
             content[i] = (byte) 0xff;
@@ -359,10 +359,9 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
      */
     @Test
     public void testReadDeflate64CompressedStream() throws Exception {
-        final Path input = getPath("COMPRESS-380/COMPRESS-380-input");
+        final byte[] orig = readAllBytes("COMPRESS-380/COMPRESS-380-input");
         final File archive = getFile("COMPRESS-380/COMPRESS-380.zip");
         try (ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(archive.toPath()))) {
-            final byte[] orig = Files.readAllBytes(input);
             final ZipArchiveEntry e = zin.getNextZipEntry();
             final byte[] fromZip = IOUtils.toByteArray(zin);
             assertArrayEquals(orig, fromZip);
@@ -466,7 +465,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
 
     @Test
     public void testSingleByteReadThrowsAtEofForCorruptedStoredEntry() throws Exception {
-        final byte[] content = Files.readAllBytes(getFile("COMPRESS-264.zip").toPath());
+        final byte[] content = readAllBytes("COMPRESS-264.zip");
         // make size much bigger than entry's real size
         for (int i = 17; i < 26; i++) {
             content[i] = (byte) 0xff;
@@ -648,7 +647,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
                 assertTrue(in.canReadEntryData(entry));
             }
 
-            assertArrayEquals(Files.readAllBytes(getPath("test2.xml")), IOUtils.toByteArray(in));
+            assertArrayEquals(readAllBytes("test2.xml"), IOUtils.toByteArray(in));
         }
     }
 

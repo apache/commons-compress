@@ -58,4 +58,8 @@ public class AbstractTempDirTest {
         return new File(getTempDirFile(), child);
     }
 
+    protected Path newTempPath(final String child) {
+        return getTempDirPath().resolve(child);
+    }
+
 }

@@ -73,7 +73,7 @@ public final class GZipTest extends AbstractTest {
      */
     @Test
     public void testCorruptedInput() throws Exception {
-        final byte[] data = Files.readAllBytes(getPath("bla.tgz"));
+        final byte[] data = readAllBytes("bla.tgz");
         try (InputStream in = new ByteArrayInputStream(data, 0, data.length - 1);
              CompressorInputStream cin = new CompressorStreamFactory().createCompressorInputStream("gz", in);
              OutputStream out = new ByteArrayOutputStream()) {
@@ -82,7 +82,7 @@ public final class GZipTest extends AbstractTest {
     }
 
     private void testExtraFlags(final int compressionLevel, final int flag, final int bufferSize) throws Exception {
-        final byte[] content = Files.readAllBytes(getFile("test3.xml").toPath());
+        final byte[] content = readAllBytes("test3.xml");
 
         final ByteArrayOutputStream bout = new ByteArrayOutputStream();
 

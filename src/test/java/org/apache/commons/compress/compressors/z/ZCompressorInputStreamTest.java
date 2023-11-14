@@ -50,7 +50,7 @@ public class ZCompressorInputStreamTest {
 
     @Test
     public void testInvalidMaxCodeSize() throws IOException {
-        final byte[] bytes = Files.readAllBytes(AbstractTest.getPath("bla.tar.Z"));
+        final byte[] bytes = AbstractTest.readAllBytes("bla.tar.Z");
 
         // @formatter:off
         final IntStream[] invalid = {

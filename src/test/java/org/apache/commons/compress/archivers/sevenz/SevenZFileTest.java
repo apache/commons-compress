@@ -299,7 +299,7 @@ public class SevenZFileTest extends AbstractTest {
 
     @Test
     public void testGetEntriesOfUnarchiveInMemoryTest() throws IOException {
-        final byte[] data = Files.readAllBytes(getFile("bla.7z").toPath());
+        final byte[] data = readAllBytes("bla.7z");
         try (SevenZFile sevenZFile = new SevenZFile(new SeekableInMemoryByteChannel(data))) {
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
             final Iterator<SevenZArchiveEntry> iter = entries.iterator();

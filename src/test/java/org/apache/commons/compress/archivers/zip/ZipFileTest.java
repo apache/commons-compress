@@ -241,7 +241,7 @@ public class ZipFileTest extends AbstractTest {
 
     @Test
     public void testCDOrderInMemory() throws Exception {
-        final byte[] data = Files.readAllBytes(getPath("ordertest.zip"));
+        final byte[] data = readAllBytes("ordertest.zip");
 
         try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(data)) {
             zf = new ZipFile(channel, CharsetNames.UTF_8);

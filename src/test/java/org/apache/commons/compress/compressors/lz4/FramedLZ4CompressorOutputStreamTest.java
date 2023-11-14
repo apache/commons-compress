@@ -18,10 +18,12 @@
  */
 package org.apache.commons.compress.compressors.lz4;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
 
 public class FramedLZ4CompressorOutputStreamTest {

@@ -46,6 +46,7 @@ import java.util.stream.Stream;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -116,12 +117,9 @@ public class ZipMemoryFileSystemTest {
 
     @Test
     public void testPositionToSomeZipSplitSegmentInMemory() throws IOException {
-        final Path firstFile = getPath("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
-        final Path secondFile = getPath("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
-        final Path lastFile = getPath("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
-        final byte[] firstBytes = Files.readAllBytes(firstFile);
-        final byte[] secondBytes = Files.readAllBytes(secondFile);
-        final byte[] lastBytes = Files.readAllBytes(lastFile);
+        final byte[] firstBytes = AbstractTest.readAllBytes("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
+        final byte[] secondBytes = AbstractTest.readAllBytes("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z02");
+        final byte[] lastBytes = AbstractTest.readAllBytes("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
         final int firstFileSize = firstBytes.length;
         final int secondFileSize = secondBytes.length;
         final int lastFileSize = lastBytes.length;
