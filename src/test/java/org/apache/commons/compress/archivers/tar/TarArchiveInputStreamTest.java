@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -320,13 +321,13 @@ public class TarArchiveInputStreamTest extends AbstractTest {
 
     @Test
     public void testShouldThrowAnExceptionOnTruncatedEntries() throws Exception {
-        final File dir = createTempDirectory("COMPRESS-279");
+        final Path dir = createTempDirectory("COMPRESS-279");
         try (TarArchiveInputStream is = getTestStream("/COMPRESS-279.tar")) {
             assertThrows(IOException.class, () -> {
                 TarArchiveEntry entry = is.getNextTarEntry();
                 int count = 0;
                 while (entry != null) {
-                    Files.copy(is, new File(dir, String.valueOf(count)).toPath());
+                    Files.copy(is, dir.resolve(String.valueOf(count)));
                     count++;
                     entry = is.getNextTarEntry();
                 }
