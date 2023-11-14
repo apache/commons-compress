@@ -76,6 +76,32 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    public void testInvalidBadTableLength() throws Exception {
+        try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/bad_table_length_gnu.ar");
+             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+            assertThrows(IOException.class, archive::getNextEntry);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"bad_long_namelen_bsd.ar", "bad_long_namelen_gnu1.ar", "bad_long_namelen_gnu2.ar", "bad_long_namelen_gnu3.ar", "bad_table_length_gnu.ar"})
+    public void testInvalidLongNameLength(final String testFileName) throws Exception {
+        try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/" + testFileName);
+             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+            assertThrows(IOException.class, archive::getNextEntry);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"bad_group.ar", "bad_length.ar", "bad_modified.ar", "bad_user.ar"})
+    public void testInvalidNumericFields(final String testFileName) throws Exception {
+        try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/" + testFileName);
+             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+            assertThrows(IOException.class, archive::getNextEntry);
+        }
+    }
+
+    @Test
     public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.ar");
@@ -134,32 +160,6 @@ public class ArArchiveInputStreamTest extends AbstractTest {
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
-        }
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"bad_group.ar", "bad_length.ar", "bad_modified.ar", "bad_user.ar"})
-    public void testInvalidNumericFields(final String testFileName) throws Exception {
-        try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/" + testFileName);
-             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            assertThrows(IOException.class, archive::getNextEntry);
-        }
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"bad_long_namelen_bsd.ar", "bad_long_namelen_gnu1.ar", "bad_long_namelen_gnu2.ar", "bad_long_namelen_gnu3.ar", "bad_table_length_gnu.ar"})
-    public void testInvalidLongNameLength(final String testFileName) throws Exception {
-        try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/" + testFileName);
-             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            assertThrows(IOException.class, archive::getNextEntry);
-        }
-    }
-
-    @Test
-    public void testInvalidBadTableLength() throws Exception {
-        try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/bad_table_length_gnu.ar");
-             ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            assertThrows(IOException.class, archive::getNextEntry);
         }
     }
 
