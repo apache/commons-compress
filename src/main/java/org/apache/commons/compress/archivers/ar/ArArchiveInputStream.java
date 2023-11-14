@@ -244,9 +244,8 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
                 // Check there is a something to return, otherwise break out of the loop
                 if (i - offset > 0) {
                     return ArchiveUtils.toAsciiString(namebuffer, offset, i - offset);
-                } else {
-                    break;
                 }
+                break;
             }
         }
         throw new IOException("Failed to read entry: " + offset);
