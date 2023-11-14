@@ -165,7 +165,7 @@ public final class IOUtils {
         if (bufferSize < 1) {
             throw new IllegalArgumentException("bufferSize must be bigger than 0");
         }
-        final byte[] buffer = new byte[(int) Math.min(bufferSize, len)];
+        final byte[] buffer = new byte[(int) Math.min(bufferSize, Math.max(0, len))];
         int n = 0;
         long count = 0;
         while (count < len && -1 != (n = input.read(buffer, 0, (int) Math.min(len - count, buffer.length)))) {

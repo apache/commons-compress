@@ -729,7 +729,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * Gets the next entry.
      *
      * @return the next entry.
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      * @deprecated Use {@link #getNextEntry()}.
      */
     @Deprecated
