@@ -1169,7 +1169,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Hashcodes are based on entry names.
+     * Hash codes are based on entry names.
      *
      * @return the entry hash code
      */
