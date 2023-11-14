@@ -24,9 +24,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Random;
 
 import org.apache.commons.compress.AbstractTest;
@@ -65,18 +65,18 @@ public final class SnappyRoundtripTest extends AbstractTest {
         // System.err.println("byte array" + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
-    private void roundTripTest(final File input, final Parameters params) throws IOException {
+    private void roundTripTest(final Path input, final Parameters params) throws IOException {
         long start = System.currentTimeMillis();
-        final File outputSz = newTempFile(input.getName() + ".raw.sz");
+        final File outputSz = newTempFile(input.getFileName() + ".raw.sz");
         try (OutputStream os = Files.newOutputStream(outputSz.toPath());
-                SnappyCompressorOutputStream sos = new SnappyCompressorOutputStream(os, input.length(), params)) {
-            Files.copy(input.toPath(), sos);
+                SnappyCompressorOutputStream sos = new SnappyCompressorOutputStream(os, Files.size(input), params)) {
+            Files.copy(input, sos);
         }
         // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
         // + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
         try (SnappyCompressorInputStream sis = new SnappyCompressorInputStream(Files.newInputStream(outputSz.toPath()), params.getWindowSize())) {
-            final byte[] expected = Files.readAllBytes(input.toPath());
+            final byte[] expected = Files.readAllBytes(input);
             final byte[] actual = IOUtils.toByteArray(sis);
             assertArrayEquals(expected, actual);
         }
@@ -84,7 +84,7 @@ public final class SnappyRoundtripTest extends AbstractTest {
     }
 
     private void roundTripTest(final String testFile) throws IOException {
-        roundTripTest(getFile(testFile),
+        roundTripTest(getPath(testFile),
             SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE)
                 .build());
     }
@@ -105,7 +105,7 @@ public final class SnappyRoundtripTest extends AbstractTest {
     @Test
     public void testBlaTarRoundtripTunedForCompressionRatio() throws IOException {
         // System.err.println("Configuration: tuned for compression ratio");
-        roundTripTest(getFile("bla.tar"),
+        roundTripTest(getPath("bla.tar"),
             SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE)
                 .tunedForCompressionRatio()
                 .build());
@@ -114,7 +114,7 @@ public final class SnappyRoundtripTest extends AbstractTest {
     @Test
     public void testBlaTarRoundtripTunedForSpeed() throws IOException {
         // System.err.println("Configuration: tuned for speed");
-        roundTripTest(getFile("bla.tar"),
+        roundTripTest(getPath("bla.tar"),
             SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE)
                 .tunedForSpeed()
                 .build());
@@ -172,14 +172,14 @@ public final class SnappyRoundtripTest extends AbstractTest {
         // The four byte methods would require even more luck and a
         // buffer (and a file written to disk) that was 2^5 bigger
         // than the buffer used here.
-        final File f = newTempFile("reallyBigLiteralTest");
-        try (OutputStream fs = Files.newOutputStream(f.toPath())) {
+        final Path path = newTempPath("reallyBigLiteralTest");
+        try (OutputStream outputStream = Files.newOutputStream(path)) {
             final int cnt = 1 << 19;
             final Random r = new Random();
             for (int i = 0 ; i < cnt; i++) {
-                fs.write(r.nextInt(256));
+                outputStream.write(r.nextInt(256));
             }
         }
-        roundTripTest(f, newParameters(1 << 18, 4, 64, 1 << 16 - 1, 1 << 18 - 1));
+        roundTripTest(path, newParameters(1 << 18, 4, 64, 1 << 16 - 1, 1 << 18 - 1));
     }
 }

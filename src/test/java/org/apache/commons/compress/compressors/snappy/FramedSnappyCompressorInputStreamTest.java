@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.zip.ZipFile;
@@ -73,19 +74,19 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
      */
     @Test
     public void testLoremIpsum() throws Exception {
-        final File outputSz = newTempFile("lorem-ipsum.1");
-        final File outputGz = newTempFile("lorem-ipsum.2");
+        final Path outputSz = newTempPath("lorem-ipsum.1");
+        final Path outputGz = newTempPath("lorem-ipsum.2");
         try (InputStream isSz = newInputStream("lorem-ipsum.txt.sz")) {
             try (InputStream in = new FramedSnappyCompressorInputStream(isSz)) {
-                Files.copy(in, outputSz.toPath());
+                Files.copy(in, outputSz);
             }
             try (InputStream isGz = newInputStream("lorem-ipsum.txt.gz");
                     InputStream in = new GzipCompressorInputStream(isGz)) {
-                Files.copy(in, outputGz.toPath());
+                Files.copy(in, outputGz);
             }
         }
 
-        assertArrayEquals(Files.readAllBytes(outputSz.toPath()), Files.readAllBytes(outputGz.toPath()));
+        assertArrayEquals(Files.readAllBytes(outputSz), Files.readAllBytes(outputGz));
     }
 
     @Test

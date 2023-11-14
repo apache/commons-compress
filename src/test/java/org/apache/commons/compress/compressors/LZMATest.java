@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
@@ -37,14 +38,14 @@ public final class LZMATest extends AbstractTest {
 
     @Test
     public void testLzmaRoundtrip() throws Exception {
-        final File input = getFile("test1.xml");
+        final Path input = getPath("test1.xml");
         final File compressed = newTempFile("test1.xml.xz");
         try (OutputStream out = Files.newOutputStream(compressed.toPath())) {
             try (CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("lzma", out)) {
-                Files.copy(input.toPath(), cos);
+                Files.copy(input, cos);
             }
         }
-        final byte[] orig = Files.readAllBytes(input.toPath());
+        final byte[] orig = Files.readAllBytes(input);
         final byte[] uncompressed;
         try (InputStream is = Files.newInputStream(compressed.toPath()); CompressorInputStream in = new LZMACompressorInputStream(is)) {
             uncompressed = IOUtils.toByteArray(in);
