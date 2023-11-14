@@ -64,7 +64,9 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     public void testFirstHeaderSizeSetToZero() throws Exception {
         try (InputStream in = newInputStream("arj/zero_sized_headers.arj")) {
             final ArchiveException ex = assertThrows(ArchiveException.class, () -> {
-                ArjArchiveInputStream archive = new ArjArchiveInputStream(in);
+                try (ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
+                    // empty
+                }
             });
             assertTrue(ex.getCause() instanceof IOException);
         }
