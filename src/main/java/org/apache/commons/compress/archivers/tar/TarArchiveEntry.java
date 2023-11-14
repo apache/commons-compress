@@ -290,8 +290,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         try {
             return Instant.ofEpochSecond(seconds, nanos);
         } catch (DateTimeException | ArithmeticException e) {
-            // DateTimeException if the instant exceeds the maximum or minimum instant
-            // ArithmeticException if numeric overflow occurs
+            // DateTimeException: Thrown if the instant exceeds the maximum or minimum instant.
+            // ArithmeticException: Thrown if numeric overflow occurs.
             throw new IOException("Corrupted PAX header. Time field value is invalid '" + value + "'", e);
         }
     }
