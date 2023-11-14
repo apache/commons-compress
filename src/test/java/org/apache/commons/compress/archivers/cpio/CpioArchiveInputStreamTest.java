@@ -20,7 +20,9 @@ package org.apache.commons.compress.archivers.cpio;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.AbstractTest;
@@ -101,6 +103,14 @@ public class CpioArchiveInputStreamTest extends AbstractTest {
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
+        }
+    }
+
+    @Test
+    public void testInvalidLongValueInMetadata() throws Exception {
+        try (InputStream in = newInputStream("org/apache/commons/compress/cpio/bad_long_value.cpio");
+             CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
+            assertThrows(IOException.class, archive::getNextEntry);
         }
     }
 
