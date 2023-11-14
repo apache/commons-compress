@@ -648,9 +648,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
                 assertTrue(in.canReadEntryData(entry));
             }
 
-            try (InputStream original = newInputStream("test2.xml")) {
-                assertArrayEquals(IOUtils.toByteArray(original), IOUtils.toByteArray(in));
-            }
+            assertArrayEquals(Files.readAllBytes(getPath("test2.xml")), IOUtils.toByteArray(in));
         }
     }
 
