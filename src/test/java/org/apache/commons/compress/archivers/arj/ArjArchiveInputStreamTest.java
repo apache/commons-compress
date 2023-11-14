@@ -61,6 +61,16 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    public void testFirstHeaderSizeSetToZero() throws Exception {
+        try (InputStream in = newInputStream("arj/zero_sized_headers.arj")) {
+            final ArchiveException ex = assertThrows(ArchiveException.class, () -> {
+                ArjArchiveInputStream archive = new ArjArchiveInputStream(in);
+            });
+            assertTrue(ex.getCause() instanceof IOException);
+        }
+    }
+
+    @Test
     public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.arj");
@@ -108,16 +118,6 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
-        }
-    }
-
-    @Test
-    public void testFirstHeaderSizeSetToZero() throws Exception {
-        try (InputStream in = newInputStream("arj/zero_sized_headers.arj")) {
-            final ArchiveException ex = assertThrows(ArchiveException.class, () -> {
-                ArjArchiveInputStream archive = new ArjArchiveInputStream(in);
-            });
-            assertTrue(ex.getCause() instanceof IOException);
         }
     }
 
