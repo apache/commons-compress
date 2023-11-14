@@ -27,8 +27,6 @@ public class CpioArchiveEntryTest {
     public void testGetHeaderPadCountOverflow() throws Exception {
         CpioArchiveEntry entry = new CpioArchiveEntry(CpioConstants.FORMAT_NEW);
         entry.setName("test name");
-        assertThrows(IllegalArgumentException.class, () -> {
-            entry.getHeaderPadCount(Long.MAX_VALUE);
-        });
+        assertThrows(IllegalArgumentException.class, () -> entry.getHeaderPadCount(Long.MAX_VALUE));
     }
 }
