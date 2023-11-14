@@ -45,8 +45,10 @@ The <action> type attribute can be add,update,fix,remove.
   </properties>
   <body>
     <release version="1.25.1" date="202Y-MM-DD" description="Minor feature and maintenance release.">
+      <!--  FIX -->
       <action type="fix" issue="COMPRESS-632" dev="ggregory" due-to="Yakov Shafranovich, Gary Gregory">Check for invalid PAX values in TarArchiveEntry #438.</action>
       <action type="fix" issue="COMPRESS-632" dev="ggregory" due-to="Yakov Shafranovich, Gary Gregory">Fix for zero size headers in ArjInputStream #439.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate SkipShieldingInputStream without replacement (no longer used).</action>
     </release> 
     <release version="1.25.0" date="2023-11-12" description="Minor feature and maintenance release.">
       <!-- ADD -->
