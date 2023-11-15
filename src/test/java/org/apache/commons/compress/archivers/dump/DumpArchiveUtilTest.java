@@ -18,9 +18,12 @@
  */
 package org.apache.commons.compress.archivers.dump;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
 
 public class DumpArchiveUtilTest {
 
@@ -48,4 +51,9 @@ public class DumpArchiveUtilTest {
                              (byte) 0xCD, (byte) 0xAB
                          }, 0));
     }
+
+    @Test void testDecodeInvalidArguments() {
+        assertThrows(IOException.class, () -> DumpArchiveUtil.decode(null, new byte[10], 10, -1));
+    }
+
 }
