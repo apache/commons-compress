@@ -47,11 +47,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 public class X5455_ExtendedTimestampTest {
-    private final static ZipShort X5455 = new ZipShort(0x5455);
+    private static final ZipShort X5455 = new ZipShort(0x5455);
 
-    private final static ZipLong ZERO_TIME = new ZipLong(0);
-    private final static ZipLong MAX_TIME_SECONDS = new ZipLong(Integer.MAX_VALUE);
-    private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss Z");
+    private static final ZipLong ZERO_TIME = new ZipLong(0);
+    private static final ZipLong MAX_TIME_SECONDS = new ZipLong(Integer.MAX_VALUE);
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss Z");
 
     static {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));

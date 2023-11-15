@@ -63,7 +63,7 @@ public class IcBands extends BandSet {
      * Answer the relevant IcTuples for the specified className and class constant pool.
      *
      * @param className String name of the class X for ic_relevant(X)
-     * @param cp ClassConstantPool used to generate ic_relevant(X)
+     * @param cp        ClassConstantPool used to generate ic_relevant(X)
      * @return array of IcTuple
      */
     public IcTuple[] getRelevantIcTuples(final String className, final ClassConstantPool cp) {
@@ -205,8 +205,7 @@ public class IcBands extends BandSet {
             //
             final Object result = thisClassToTuple.put(tuple.thisClassString(), tuple);
             if (result != null) {
-                throw new Error("Collision detected in <thisClassString, IcTuple> mapping. "
-                    + "There are at least two inner clases with the same name.");
+                throw new Error("Collision detected in <thisClassString, IcTuple> mapping. " + "There are at least two inner clases with the same name.");
             }
 
             // generate mapping outerClassString -> IcTuple

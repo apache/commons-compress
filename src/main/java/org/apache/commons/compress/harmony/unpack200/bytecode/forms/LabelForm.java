@@ -39,10 +39,8 @@ public class LabelForm extends ByteCodeForm {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#fixUpByteCodeTarget(org.apache.commons.
-     * compress.harmony.unpack200.bytecode.ByteCode,
-     * org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute)
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#fixUpByteCodeTarget(org.apache.commons.
+     * compress.harmony.unpack200.bytecode.ByteCode, org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute)
      */
     @Override
     public void fixUpByteCodeTargets(final ByteCode byteCode, final CodeAttribute codeAttribute) {
@@ -50,32 +48,28 @@ public class LabelForm extends ByteCodeForm {
         final int originalTarget = byteCode.getByteCodeTargets()[0];
         final int sourceIndex = byteCode.getByteCodeIndex();
         final int absoluteInstructionTargetIndex = sourceIndex + originalTarget;
-        final int targetValue = codeAttribute.byteCodeOffsets.get(absoluteInstructionTargetIndex)
-            .intValue();
+        final int targetValue = codeAttribute.byteCodeOffsets.get(absoluteInstructionTargetIndex).intValue();
         final int sourceValue = codeAttribute.byteCodeOffsets.get(sourceIndex).intValue();
         // The operand is the difference between the source instruction
         // and the destination instruction.
         byteCode.setOperandSigned2Bytes(targetValue - sourceValue, 0);
         if (widened) {
-            byteCode.setNestedPositions(new int[][] {{0, 4}});
+            byteCode.setNestedPositions(new int[][] { { 0, 4 } });
         } else {
-            byteCode.setNestedPositions(new int[][] {{0, 2}});
+            byteCode.setNestedPositions(new int[][] { { 0, 2 } });
         }
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#setByteCodeOperands(org.apache.commons.
-     * compress.harmony.unpack200.bytecode.ByteCode,
-     * org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#setByteCodeOperands(org.apache.commons.
+     * compress.harmony.unpack200.bytecode.ByteCode, org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
      * org.apache.commons.compress.harmony.unpack200.SegmentConstantPool)
      */
     @Override
-    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager,
-        final int codeLength) {
-        byteCode.setByteCodeTargets(new int[] {operandManager.nextLabel()});
+    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) {
+        byteCode.setByteCodeTargets(new int[] { operandManager.nextLabel() });
         // The byte code operands actually get set later -
         // once we have all the bytecodes - in fixUpByteCodeTarget().
     }

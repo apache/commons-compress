@@ -25,6 +25,7 @@ import java.io.InputStream;
 
 /**
  * Re-implements {@link FilterInputStream#close()} to do nothing.
+ *
  * @since 1.14
  */
 public class CloseShieldFilterInputStream extends FilterInputStream {

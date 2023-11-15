@@ -29,7 +29,9 @@ import org.apache.commons.compress.utils.ByteUtils;
 /**
  * CompressorOutputStream for the framing Snappy format.
  *
- * <p>Based on the "spec" in the version "Last revised: 2013-10-25"</p>
+ * <p>
+ * Based on the "spec" in the version "Last revised: 2013-10-25"
+ * </p>
  *
  * @see <a href="https://github.com/google/snappy/blob/master/framing_format.txt">Snappy framing format description</a>
  * @since 1.14
@@ -50,6 +52,7 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
         x &= 0xffffFFFFL;
         return x;
     }
+
     private final OutputStream out;
     private final Parameters params;
     private final PureJavaCrc32C checksum = new PureJavaCrc32C();
@@ -62,22 +65,20 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
     private final ByteUtils.ByteConsumer consumer;
 
     /**
-     * Constructs a new output stream that compresses
-     * snappy-framed-compressed data to the specified output stream.
+     * Constructs a new output stream that compresses snappy-framed-compressed data to the specified output stream.
+     *
      * @param out the OutputStream to which to write the compressed data
      * @throws IOException if writing the signature fails
      */
     public FramedSnappyCompressorOutputStream(final OutputStream out) throws IOException {
-        this(out, SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE)
-             .build());
+        this(out, SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE).build());
     }
 
     /**
-     * Constructs a new output stream that compresses
-     * snappy-framed-compressed data to the specified output stream.
-     * @param out the OutputStream to which to write the compressed data
-     * @param params parameters used to fine-tune compression, in
-     * particular to balance compression ratio vs compression speed.
+     * Constructs a new output stream that compresses snappy-framed-compressed data to the specified output stream.
+     *
+     * @param out    the OutputStream to which to write the compressed data
+     * @param params parameters used to fine-tune compression, in particular to balance compression ratio vs compression speed.
      * @throws IOException if writing the signature fails
      */
     public FramedSnappyCompressorOutputStream(final OutputStream out, final Parameters params) throws IOException {
@@ -97,8 +98,8 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
     }
 
     /**
-     * Compresses all remaining data and writes it to the stream,
-     * doesn't close the underlying stream.
+     * Compresses all remaining data and writes it to the stream, doesn't close the underlying stream.
+     *
      * @throws IOException if an error occurs
      */
     public void finish() throws IOException {

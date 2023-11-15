@@ -21,8 +21,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * Some bytecodes (such as (a)ldc, fldc and ildc) have single-byte references to the class pool. This class is the
- * abstract superclass of those classes.
+ * Some bytecodes (such as (a)ldc, fldc and ildc) have single-byte references to the class pool. This class is the abstract superclass of those classes.
  */
 public abstract class SingleByteReferenceForm extends ReferenceForm {
 
@@ -44,13 +43,12 @@ public abstract class SingleByteReferenceForm extends ReferenceForm {
     }
 
     @Override
-    protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset)
-        throws Pack200Exception {
+    protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset) throws Pack200Exception {
         super.setNestedEntries(byteCode, operandManager, offset);
         if (widened) {
-            byteCode.setNestedPositions(new int[][] {{0, 2}});
+            byteCode.setNestedPositions(new int[][] { { 0, 2 } });
         } else {
-            byteCode.setNestedPositions(new int[][] {{0, 1}});
+            byteCode.setNestedPositions(new int[][] { { 0, 1 } });
         }
     }
 }

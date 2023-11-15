@@ -37,8 +37,7 @@ public class InnerClassesAttribute extends Attribute {
         int innerNameIndex = -1;
         int innerClassAccessFlags = -1;
 
-        public InnerClassesEntry(final CPClass innerClass, final CPClass outerClass, final CPUTF8 innerName,
-            final int flags) {
+        InnerClassesEntry(final CPClass innerClass, final CPClass outerClass, final CPUTF8 innerName, final int flags) {
             this.innerClassInfo = innerClass;
             this.outerClassInfo = outerClass;
             this.innerClassName = innerName;
@@ -96,8 +95,7 @@ public class InnerClassesAttribute extends Attribute {
         nestedClassFileEntries.add(getAttributeName());
     }
 
-    public void addInnerClassesEntry(final CPClass innerClass, final CPClass outerClass, final CPUTF8 innerName,
-        final int flags) {
+    public void addInnerClassesEntry(final CPClass innerClass, final CPClass outerClass, final CPUTF8 innerName, final int flags) {
         if (innerClass != null) {
             nestedClassFileEntries.add(innerClass);
         }

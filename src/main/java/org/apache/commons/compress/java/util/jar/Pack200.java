@@ -36,8 +36,7 @@ import org.apache.commons.compress.harmony.archive.internal.nls.Messages;
 public abstract class Pack200 {
 
     /**
-     * The interface defining the API for converting a JAR file to an output
-     * stream in the Pack200 format.
+     * The interface defining the API for converting a JAR file to an output stream in the Pack200 format.
      */
     public interface Packer {
 
@@ -97,8 +96,7 @@ public abstract class Pack200 {
         String METHOD_ATTRIBUTE_PFX = "pack.method.attribute.";//$NON-NLS-1$
 
         /**
-         * if it shall attempt to determine the latest modification time if this
-         * is set to {@code LATEST}.
+         * if it shall attempt to determine the latest modification time if this is set to {@code LATEST}.
          */
         String MODIFICATION_TIME = "pack.modification.time";//$NON-NLS-1$
 
@@ -140,33 +138,25 @@ public abstract class Pack200 {
         /**
          * add a listener for PropertyChange events
          *
-         * @param listener
-         *            the listener to listen if PropertyChange events occurs
+         * @param listener the listener to listen if PropertyChange events occurs
          */
         void addPropertyChangeListener(PropertyChangeListener listener);
 
         /**
          * Pack the specified JAR file to the specified output stream.
          *
-         * @param in
-         *            JAR file to be compressed.
-         * @param out
-         *            stream of compressed data.
-         * @throws IOException
-         *             if I/O exception occurs.
+         * @param in  JAR file to be compressed.
+         * @param out stream of compressed data.
+         * @throws IOException if I/O exception occurs.
          */
         void pack(JarFile in, OutputStream out) throws IOException;
 
         /**
-         * Pack the data from the specified jar input stream to the specified
-         * output stream.
+         * Pack the data from the specified jar input stream to the specified output stream.
          *
-         * @param in
-         *            stream of uncompressed JAR data.
-         * @param out
-         *            stream of compressed data.
-         * @throws IOException
-         *             if I/O exception occurs.
+         * @param in  stream of uncompressed JAR data.
+         * @param out stream of compressed data.
+         * @throws IOException if I/O exception occurs.
          */
         void pack(JarInputStream in, OutputStream out) throws IOException;
 
@@ -180,21 +170,18 @@ public abstract class Pack200 {
         /**
          * remove a listener
          *
-         * @param listener
-         *            listener to remove
+         * @param listener listener to remove
          */
         void removePropertyChangeListener(PropertyChangeListener listener);
     }
 
     /**
-     * The interface defining the API for converting a packed stream in the
-     * Pack200 format to a JAR file.
+     * The interface defining the API for converting a packed stream in the Pack200 format to a JAR file.
      */
     public interface Unpacker {
 
         /**
-         * The String indicating if the unpacker should ignore all transmitted
-         * values, can be replaced by either {@code true} or {@code false}.
+         * The String indicating if the unpacker should ignore all transmitted values, can be replaced by either {@code true} or {@code false}.
          */
         String DEFLATE_HINT = "unpack.deflate.hint";//$NON-NLS-1$
 
@@ -221,9 +208,7 @@ public abstract class Pack200 {
         /**
          * add a listener for {@code PropertyChange} events.
          *
-         * @param listener
-         *            the listener to listen if {@code PropertyChange} events
-         *            occurs.
+         * @param listener the listener to listen if {@code PropertyChange} events occurs.
          */
         void addPropertyChangeListener(PropertyChangeListener listener);
 
@@ -237,33 +222,25 @@ public abstract class Pack200 {
         /**
          * remove a listener.
          *
-         * @param listener
-         *            listener to remove.
+         * @param listener listener to remove.
          */
         void removePropertyChangeListener(PropertyChangeListener listener);
 
         /**
-         * Unpack the contents of the specified {@code File} to the specified
-         * JAR output stream.
+         * Unpack the contents of the specified {@code File} to the specified JAR output stream.
          *
-         * @param in
-         *            file to be uncompressed.
-         * @param out
-         *            JAR output stream of uncompressed data.
-         * @throws IOException
-         *             if I/O exception occurs.
+         * @param in  file to be uncompressed.
+         * @param out JAR output stream of uncompressed data.
+         * @throws IOException if I/O exception occurs.
          */
         void unpack(File in, JarOutputStream out) throws IOException;
 
         /**
          * Unpack the specified stream to the specified JAR output stream.
          *
-         * @param in
-         *            stream to uncompressed.
-         * @param out
-         *            JAR output stream of uncompressed data.
-         * @throws IOException
-         *             if I/O exception occurs.
+         * @param in  stream to uncompressed.
+         * @param out JAR output stream of uncompressed data.
+         * @throws IOException if I/O exception occurs.
          */
         void unpack(InputStream in, JarOutputStream out) throws IOException;
     }
@@ -287,10 +264,8 @@ public abstract class Pack200 {
     /**
      * Returns a new instance of a packer engine.
      * <p>
-     * The implementation of the packer engine is defined by the system property
-     * {@code 'java.util.jar.Pack200.Packer'}. If this system property is
-     * defined an instance of the specified class is returned, otherwise the
-     * system's default implementation is returned.
+     * The implementation of the packer engine is defined by the system property {@code 'java.util.jar.Pack200.Packer'}. If this system property is defined an
+     * instance of the specified class is returned, otherwise the system's default implementation is returned.
      *
      * @return an instance of {@code Packer}
      */
@@ -301,10 +276,8 @@ public abstract class Pack200 {
     /**
      * Returns a new instance of an unpacker engine.
      * <p>
-     * The implementation of the unpacker engine is defined by the system
-     * property {@link Pack200.Unpacker}. If this system
-     * property is defined an instance of the specified class is returned,
-     * otherwise the system's default implementation is returned.
+     * The implementation of the unpacker engine is defined by the system property {@link Pack200.Unpacker}. If this system property is defined an instance of
+     * the specified class is returned, otherwise the system's default implementation is returned.
      *
      * @return an instance of {@link Pack200.Unpacker}.
      */

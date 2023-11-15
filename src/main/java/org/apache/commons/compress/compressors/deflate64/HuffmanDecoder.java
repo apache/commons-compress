@@ -69,7 +69,7 @@ class HuffmanDecoder implements Closeable {
     }
 
     private abstract static class DecoderState {
-        abstract int available() throws IOException ;
+        abstract int available() throws IOException;
 
         abstract boolean hasData();
 
@@ -217,6 +217,7 @@ class HuffmanDecoder implements Closeable {
             return endOfBlock ? INITIAL : state;
         }
     }
+
     private static final class InitialState extends DecoderState {
         @Override
         int available() {
@@ -310,12 +311,11 @@ class HuffmanDecoder implements Closeable {
      * 266   1     13,14   276   3   59-66
      * --------------------------------------------------------------------
      * </pre>
+     *
      * value = (base of run length) << 5 | (number of extra bits to read)
      */
-    private static final short[] RUN_LENGTH_TABLE = {
-            96, 128, 160, 192, 224, 256, 288, 320, 353, 417, 481, 545, 610, 738, 866,
-            994, 1123, 1379, 1635, 1891, 2148, 2660, 3172, 3684, 4197, 5221, 6245, 7269, 112
-    };
+    private static final short[] RUN_LENGTH_TABLE = { 96, 128, 160, 192, 224, 256, 288, 320, 353, 417, 481, 545, 610, 738, 866, 994, 1123, 1379, 1635, 1891,
+            2148, 2660, 3172, 3684, 4197, 5221, 6245, 7269, 112 };
     /**
      * <pre>
      * --------------------------------------------------------------------
@@ -335,20 +335,18 @@ class HuffmanDecoder implements Closeable {
      * 31   14   49153-65536
      * --------------------------------------------------------------------
      * </pre>
+     *
      * value = (base of distance) << 4 | (number of extra bits to read)
      */
-    private static final int[] DISTANCE_TABLE = {
-            16, 32, 48, 64, 81, 113, 146, 210, 275, 403,  // 0-9
+    private static final int[] DISTANCE_TABLE = { 16, 32, 48, 64, 81, 113, 146, 210, 275, 403, // 0-9
             532, 788, 1045, 1557, 2070, 3094, 4119, 6167, 8216, 12312, // 10-19
             16409, 24601, 32794, 49178, 65563, 98331, 131100, 196636, 262173, 393245, // 20-29
             524318, 786462 // 30-31
     };
     /**
-     * When using dynamic huffman codes the order in which the values are stored
-     * follows the positioning below
+     * When using dynamic huffman codes the order in which the values are stored follows the positioning below
      */
-    private static final int[] CODE_LENGTHS_ORDER =
-            {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
+    private static final int[] CODE_LENGTHS_ORDER = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
     /**
      * Huffman Fixed Literal / Distance tables for mode 1
      */
@@ -397,8 +395,7 @@ class HuffmanDecoder implements Closeable {
 
         for (final int aLitTable : litTable) {
             if (aLitTable < 0 || aLitTable > 64) {
-                throw new IllegalArgumentException("Invalid code " + aLitTable
-                    + " in literal table");
+                throw new IllegalArgumentException("Invalid code " + aLitTable + " in literal table");
             }
             max = Math.max(max, aLitTable);
             blCount[aLitTable]++;
@@ -567,7 +564,7 @@ class HuffmanDecoder implements Closeable {
         final long bLen = readBits(16);
         final long bNLen = readBits(16);
         if (((bLen ^ 0xFFFF) & 0xFFFF) != bNLen) {
-            //noinspection DuplicateStringLiteralInspection
+            // noinspection DuplicateStringLiteralInspection
             throw new IllegalStateException("Illegal LEN / NLEN values");
         }
         state = new UncompressedState(bLen);

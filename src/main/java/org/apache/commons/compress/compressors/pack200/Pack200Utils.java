@@ -39,73 +39,69 @@ import org.apache.commons.compress.java.util.jar.Pack200;
  */
 public class Pack200Utils {
     /**
-     * Normalizes a JAR archive in-place, so it can be safely signed
-     * and packed.
+     * Normalizes a JAR archive in-place, so it can be safely signed and packed.
      *
-     * <p>As stated in <a
-     * href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a>
-     * javadocs applying a Pack200 compression to a JAR archive will
-     * in general make its signatures invalid.  In order to prepare a
-     * JAR for signing it should be "normalized" by packing and
-     * unpacking it.  This is what this method does.</p>
+     * <p>
+     * As stated in <a href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a> javadocs applying a
+     * Pack200 compression to a JAR archive will in general make its signatures invalid. In order to prepare a JAR for signing it should be "normalized" by
+     * packing and unpacking it. This is what this method does.
+     * </p>
      *
-     * <p>Note this methods implicitly sets the segment length to
-     * -1.</p>
+     * <p>
+     * Note this methods implicitly sets the segment length to -1.
+     * </p>
      *
      * @param jar the JAR archive to normalize
      * @throws IOException if reading or writing fails
      */
-    public static void normalize(final File jar)
-        throws IOException {
+    public static void normalize(final File jar) throws IOException {
         normalize(jar, jar, null);
     }
 
     /**
      * Normalizes a JAR archive, so it can be safely signed and packed.
      *
-     * <p>As stated in <a
-     * href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a>
-     * javadocs applying a Pack200 compression to a JAR archive will
-     * in general make its signatures invalid.  In order to prepare a
-     * JAR for signing it should be "normalized" by packing and
-     * unpacking it.  This is what this method does.</p>
+     * <p>
+     * As stated in <a href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a> javadocs applying a
+     * Pack200 compression to a JAR archive will in general make its signatures invalid. In order to prepare a JAR for signing it should be "normalized" by
+     * packing and unpacking it. This is what this method does.
+     * </p>
      *
-     * <p>This method does not replace the existing archive but creates
-     * a new one.</p>
+     * <p>
+     * This method does not replace the existing archive but creates a new one.
+     * </p>
      *
-     * <p>Note this methods implicitly sets the segment length to
-     * -1.</p>
+     * <p>
+     * Note this methods implicitly sets the segment length to -1.
+     * </p>
      *
      * @param from the JAR archive to normalize
-     * @param to the normalized archive
+     * @param to   the normalized archive
      * @throws IOException if reading or writing fails
      */
-    public static void normalize(final File from, final File to)
-        throws IOException {
+    public static void normalize(final File from, final File to) throws IOException {
         normalize(from, to, null);
     }
 
     /**
      * Normalizes a JAR archive, so it can be safely signed and packed.
      *
-     * <p>As stated in <a
-     * href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a>
-     * javadocs applying a Pack200 compression to a JAR archive will
-     * in general make its signatures invalid.  In order to prepare a
-     * JAR for signing it should be "normalized" by packing and
-     * unpacking it.  This is what this method does.</p>
+     * <p>
+     * As stated in <a href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a> javadocs applying a
+     * Pack200 compression to a JAR archive will in general make its signatures invalid. In order to prepare a JAR for signing it should be "normalized" by
+     * packing and unpacking it. This is what this method does.
+     * </p>
      *
-     * <p>This method does not replace the existing archive but creates
-     * a new one.</p>
+     * <p>
+     * This method does not replace the existing archive but creates a new one.
+     * </p>
      *
-     * @param from the JAR archive to normalize
-     * @param to the normalized archive
-     * @param props properties to set for the pack operation.  This
-     * method will implicitly set the segment limit to -1.
+     * @param from  the JAR archive to normalize
+     * @param to    the normalized archive
+     * @param props properties to set for the pack operation. This method will implicitly set the segment limit to -1.
      * @throws IOException if reading or writing fails
      */
-    public static void normalize(final File from, final File to, Map<String, String> props)
-            throws IOException {
+    public static void normalize(final File from, final File to, Map<String, String> props) throws IOException {
         if (props == null) {
             props = new HashMap<>();
         }
@@ -113,7 +109,7 @@ public class Pack200Utils {
         final Path tempFile = Files.createTempFile("commons-compress", "pack200normalize");
         try {
             try (OutputStream fos = Files.newOutputStream(tempFile);
-                 JarFile jarFile = new JarFile(from)) {
+                    JarFile jarFile = new JarFile(from)) {
                 final Pack200.Packer packer = Pack200.newPacker();
                 packer.properties().putAll(props);
                 packer.pack(jarFile, fos);
@@ -128,25 +124,22 @@ public class Pack200Utils {
     }
 
     /**
-     * Normalizes a JAR archive in-place, so it can be safely signed
-     * and packed.
+     * Normalizes a JAR archive in-place, so it can be safely signed and packed.
      *
-     * <p>As stated in <a
-     * href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a>
-     * javadocs applying a Pack200 compression to a JAR archive will
-     * in general make its signatures invalid.  In order to prepare a
-     * JAR for signing it should be "normalized" by packing and
-     * unpacking it.  This is what this method does.</p>
+     * <p>
+     * As stated in <a href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.Packer.html">Pack200.Packer's</a> javadocs applying a
+     * Pack200 compression to a JAR archive will in general make its signatures invalid. In order to prepare a JAR for signing it should be "normalized" by
+     * packing and unpacking it. This is what this method does.
+     * </p>
      *
-     * @param jar the JAR archive to normalize
-     * @param props properties to set for the pack operation.  This
-     * method will implicitly set the segment limit to -1.
+     * @param jar   the JAR archive to normalize
+     * @param props properties to set for the pack operation. This method will implicitly set the segment limit to -1.
      * @throws IOException if reading or writing fails
      */
-    public static void normalize(final File jar, final Map<String, String> props)
-        throws IOException {
+    public static void normalize(final File jar, final Map<String, String> props) throws IOException {
         normalize(jar, jar, props);
     }
 
-    private Pack200Utils() { }
+    private Pack200Utils() {
+    }
 }

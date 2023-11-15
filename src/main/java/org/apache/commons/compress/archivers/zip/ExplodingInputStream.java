@@ -28,9 +28,7 @@ import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 
 /**
- * The implode compression method was added to PKZIP 1.01 released in 1989.
- * It was then dropped from PKZIP 2.0 released in 1993 in favor of the deflate
- * method.
+ * The implode compression method was added to PKZIP 1.01 released in 1989. It was then dropped from PKZIP 2.0 released in 1993 in favor of the deflate method.
  * <p>
  * The algorithm is described in the ZIP File Format Specification.
  *
@@ -71,14 +69,13 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
     private long treeSizes;
 
     /**
-     * Create a new stream decompressing the content of the specified stream
-     * using the explode algorithm.
+     * Create a new stream decompressing the content of the specified stream using the explode algorithm.
      *
      * @param dictionarySize the size of the sliding dictionary (4096 or 8192)
      * @param numberOfTrees  the number of trees (2 or 3)
      * @param in             the compressed data stream
      */
-    public ExplodingInputStream(final int dictionarySize, final int numberOfTrees, final InputStream in) {
+    ExplodingInputStream(final int dictionarySize, final int numberOfTrees, final InputStream in) {
         if (dictionarySize != 4096 && dictionarySize != 8192) {
             throw new IllegalArgumentException("The dictionary size must be 4096 or 8192");
         }
@@ -101,6 +98,7 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
 
     /**
      * Fill the sliding dictionary with more data.
+     *
      * @throws IOException on error.
      */
     private void fillBuffer() throws IOException {

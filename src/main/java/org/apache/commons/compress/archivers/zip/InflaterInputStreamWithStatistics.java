@@ -29,20 +29,20 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  *
  * @since 1.17
  */
-/* package */ class InflaterInputStreamWithStatistics extends InflaterInputStream
-    implements InputStreamStatistics {
+class InflaterInputStreamWithStatistics extends InflaterInputStream implements InputStreamStatistics {
+
     private long compressedCount;
     private long uncompressedCount;
 
-    public InflaterInputStreamWithStatistics(final InputStream in) {
+    InflaterInputStreamWithStatistics(final InputStream in) {
         super(in);
     }
 
-    public InflaterInputStreamWithStatistics(final InputStream in, final Inflater inf) {
+    InflaterInputStreamWithStatistics(final InputStream in, final Inflater inf) {
         super(in, inf);
     }
 
-    public InflaterInputStreamWithStatistics(final InputStream in, final Inflater inf, final int size) {
+    InflaterInputStreamWithStatistics(final InputStream in, final Inflater inf, final int size) {
         super(in, inf, size);
     }
 

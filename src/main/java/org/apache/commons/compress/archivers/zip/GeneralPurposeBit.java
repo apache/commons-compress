@@ -17,8 +17,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 /**
- * Parser/encoder for the "general purpose bit" field in ZIP's local
- * file and central directory headers.
+ * Parser/encoder for the "general purpose bit" field in ZIP's local file and central directory headers.
  *
  * @since 1.1
  * @NotThreadSafe
@@ -33,8 +32,8 @@ public final class GeneralPurposeBit implements Cloneable {
     /**
      * Indicates the size of the sliding dictionary used by the compression method 6 (imploding).
      * <ul>
-     *   <li>0: 4096 bytes</li>
-     *   <li>1: 8192 bytes</li>
+     * <li>0: 4096 bytes</li>
+     * <li>1: 8192 bytes</li>
      * </ul>
      */
     private static final int SLIDING_DICTIONARY_SIZE_FLAG = 1 << 1;
@@ -42,15 +41,14 @@ public final class GeneralPurposeBit implements Cloneable {
     /**
      * Indicates the number of Shannon-Fano trees used by the compression method 6 (imploding).
      * <ul>
-     *   <li>0: 2 trees (lengths, distances)</li>
-     *   <li>1: 3 trees (literals, lengths, distances)</li>
+     * <li>0: 2 trees (lengths, distances)</li>
+     * <li>1: 3 trees (literals, lengths, distances)</li>
      * </ul>
      */
     private static final int NUMBER_OF_SHANNON_FANO_TREES_FLAG = 1 << 2;
 
     /**
-     * Indicates that a data descriptor stored after the file contents
-     * will hold CRC and size information.
+     * Indicates that a data descriptor stored after the file contents will hold CRC and size information.
      */
     private static final int DATA_DESCRIPTOR_FLAG = 1 << 3;
 
@@ -62,16 +60,17 @@ public final class GeneralPurposeBit implements Cloneable {
     /**
      * Indicates that file names are written in UTF-8.
      *
-     * <p>The only reason this is public is that {@link
-     * ZipArchiveOutputStream#EFS_FLAG} was public in Apache Commons
-     * Compress 1.0 and we needed a substitute for it.</p>
+     * <p>
+     * The only reason this is public is that {@link ZipArchiveOutputStream#EFS_FLAG} was public in Apache Commons Compress 1.0 and we needed a substitute for
+     * it.
+     * </p>
      */
     public static final int UFT8_NAMES_FLAG = 1 << 11;
 
     /**
      * Parses the supported flags from the given archive data.
      *
-     * @param data local file header or a central directory entry.
+     * @param data   local file header or a central directory entry.
      * @param offset offset at which the general purpose bit starts
      * @return parsed flags
      */
@@ -86,6 +85,7 @@ public final class GeneralPurposeBit implements Cloneable {
         b.numberOfShannonFanoTrees = (generalPurposeFlag & NUMBER_OF_SHANNON_FANO_TREES_FLAG) != 0 ? 3 : 2;
         return b;
     }
+
     private boolean languageEncodingFlag;
     private boolean dataDescriptorFlag;
     private boolean encryptionFlag;
@@ -103,12 +103,13 @@ public final class GeneralPurposeBit implements Cloneable {
             return super.clone();
         } catch (final CloneNotSupportedException ex) {
             // impossible
-            throw new UnsupportedOperationException("GeneralPurposeBit is not Cloneable?", ex); //NOSONAR
+            throw new UnsupportedOperationException("GeneralPurposeBit is not Cloneable?", ex); // NOSONAR
         }
     }
 
     /**
      * Encodes the set bits in a form suitable for ZIP archives.
+     *
      * @return the encoded general purpose bits
      */
     public byte[] encode() {
@@ -120,20 +121,12 @@ public final class GeneralPurposeBit implements Cloneable {
     /**
      * Encodes the set bits in a form suitable for ZIP archives.
      *
-     * @param buf the output buffer
-     * @param  offset
-     *         The offset within the output buffer of the first byte to be written.
-     *         must be non-negative and no larger than {@code buf.length-2}
+     * @param buf    the output buffer
+     * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length-2}
      */
     public void encode(final byte[] buf, final int offset) {
-                ZipShort.putShort((dataDescriptorFlag ? DATA_DESCRIPTOR_FLAG : 0)
-                        |
-                        (languageEncodingFlag ? UFT8_NAMES_FLAG : 0)
-                        |
-                        (encryptionFlag ? ENCRYPTION_FLAG : 0)
-                        |
-                        (strongEncryptionFlag ? STRONG_ENCRYPTION_FLAG : 0)
-                        , buf, offset);
+        ZipShort.putShort((dataDescriptorFlag ? DATA_DESCRIPTOR_FLAG : 0) | (languageEncodingFlag ? UFT8_NAMES_FLAG : 0)
+                | (encryptionFlag ? ENCRYPTION_FLAG : 0) | (strongEncryptionFlag ? STRONG_ENCRYPTION_FLAG : 0), buf, offset);
     }
 
     @Override
@@ -142,10 +135,8 @@ public final class GeneralPurposeBit implements Cloneable {
             return false;
         }
         final GeneralPurposeBit g = (GeneralPurposeBit) o;
-        return g.encryptionFlag == encryptionFlag
-            && g.strongEncryptionFlag == strongEncryptionFlag
-            && g.languageEncodingFlag == languageEncodingFlag
-            && g.dataDescriptorFlag == dataDescriptorFlag;
+        return g.encryptionFlag == encryptionFlag && g.strongEncryptionFlag == strongEncryptionFlag && g.languageEncodingFlag == languageEncodingFlag
+                && g.dataDescriptorFlag == dataDescriptorFlag;
     }
 
     /**
@@ -164,17 +155,14 @@ public final class GeneralPurposeBit implements Cloneable {
 
     @Override
     public int hashCode() {
-        return 3 * (7 * (13 * (17 * (encryptionFlag ? 1 : 0)
-                               + (strongEncryptionFlag ? 1 : 0))
-                         + (languageEncodingFlag ? 1 : 0))
-                    + (dataDescriptorFlag ? 1 : 0));
+        return 3 * (7 * (13 * (17 * (encryptionFlag ? 1 : 0) + (strongEncryptionFlag ? 1 : 0)) + (languageEncodingFlag ? 1 : 0))
+                + (dataDescriptorFlag ? 1 : 0));
     }
 
     /**
-     * whether the current entry will use the data descriptor to store
-     * CRC and size information.
-     * @param b whether the current entry will use the data descriptor to store
-     * CRC and size information
+     * whether the current entry will use the data descriptor to store CRC and size information.
+     *
+     * @param b whether the current entry will use the data descriptor to store CRC and size information
      */
     public void useDataDescriptor(final boolean b) {
         dataDescriptorFlag = b;
@@ -182,6 +170,7 @@ public final class GeneralPurposeBit implements Cloneable {
 
     /**
      * whether the current entry will be encrypted.
+     *
      * @param b whether the current entry will be encrypted
      */
     public void useEncryption(final boolean b) {
@@ -189,18 +178,17 @@ public final class GeneralPurposeBit implements Cloneable {
     }
 
     /**
-     * whether the current entry uses the data descriptor to store CRC
-     * and size information.
-     * @return whether the current entry uses the data descriptor to store CRC
-     * and size information
+     * whether the current entry uses the data descriptor to store CRC and size information.
+     *
+     * @return whether the current entry uses the data descriptor to store CRC and size information
      */
     public boolean usesDataDescriptor() {
         return dataDescriptorFlag;
     }
 
-
     /**
      * whether the current entry is encrypted.
+     *
      * @return whether the current entry is encrypted
      */
     public boolean usesEncryption() {
@@ -209,6 +197,7 @@ public final class GeneralPurposeBit implements Cloneable {
 
     /**
      * whether the current entry is encrypted using strong encryption.
+     *
      * @return whether the current entry is encrypted using strong encryption
      */
     public boolean usesStrongEncryption() {
@@ -216,8 +205,9 @@ public final class GeneralPurposeBit implements Cloneable {
     }
 
     /**
-     * whether the current entry will be encrypted  using strong encryption.
-     * @param b whether the current entry will be encrypted  using strong encryption
+     * whether the current entry will be encrypted using strong encryption.
+     *
+     * @param b whether the current entry will be encrypted using strong encryption
      */
     public void useStrongEncryption(final boolean b) {
         strongEncryptionFlag = b;
@@ -228,6 +218,7 @@ public final class GeneralPurposeBit implements Cloneable {
 
     /**
      * whether the current entry uses UTF8 for file name and comment.
+     *
      * @return whether the current entry uses UTF8 for file name and comment.
      */
     public boolean usesUTF8ForNames() {
@@ -236,6 +227,7 @@ public final class GeneralPurposeBit implements Cloneable {
 
     /**
      * whether the current entry will use UTF8 for file name and comment.
+     *
      * @param b whether the current entry will use UTF8 for file name and comment.
      */
     public void useUTF8ForNames(final boolean b) {

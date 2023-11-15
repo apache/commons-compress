@@ -20,8 +20,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * This class implements the byte code form of all bytecodes which either have no operands (such as nop) or have all
- * their operands passed on the stack (not encoded as bytes in the bytecode streams).
+ * This class implements the byte code form of all bytecodes which either have no operands (such as nop) or have all their operands passed on the stack (not
+ * encoded as bytes in the bytecode streams).
  */
 public class NoArgumentForm extends ByteCodeForm {
 
@@ -32,15 +32,12 @@ public class NoArgumentForm extends ByteCodeForm {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#setByteCodeOperands(org.apache.commons.
-     * compress.harmony.unpack200.bytecode.ByteCode,
-     * org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#setByteCodeOperands(org.apache.commons.
+     * compress.harmony.unpack200.bytecode.ByteCode, org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
      * org.apache.commons.compress.harmony.unpack200.SegmentConstantPool)
      */
     @Override
-    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager,
-        final int codeLength) {
+    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) {
         // Nothing to do for no-argument form
     }
 }

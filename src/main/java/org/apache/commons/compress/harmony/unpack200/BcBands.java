@@ -205,10 +205,8 @@ public class BcBands extends BandSet {
         int bcEscCount = 0;
         int bcEscRefCount = 0;
 
-        final AttributeLayout abstractModifier = attributeDefinitionMap.getAttributeLayout(AttributeLayout.ACC_ABSTRACT,
-            AttributeLayout.CONTEXT_METHOD);
-        final AttributeLayout nativeModifier = attributeDefinitionMap.getAttributeLayout(AttributeLayout.ACC_NATIVE,
-            AttributeLayout.CONTEXT_METHOD);
+        final AttributeLayout abstractModifier = attributeDefinitionMap.getAttributeLayout(AttributeLayout.ACC_ABSTRACT, AttributeLayout.CONTEXT_METHOD);
+        final AttributeLayout nativeModifier = attributeDefinitionMap.getAttributeLayout(AttributeLayout.ACC_NATIVE, AttributeLayout.CONTEXT_METHOD);
 
         methodByteCodePacked = new byte[classCount][][];
         int bcParsed = 0;
@@ -350,12 +348,10 @@ public class BcBands extends BandSet {
                             if (nextInstruction == 132) { // iinc
                                 bcLocalCount++;
                                 bcShortCount++;
-                            } else if (endsWithLoad(nextInstruction) || endsWithStore(nextInstruction)
-                                || nextInstruction == 169) {
+                            } else if (endsWithLoad(nextInstruction) || endsWithStore(nextInstruction) || nextInstruction == 169) {
                                 bcLocalCount++;
                             } else {
-                                segment.log(Segment.LOG_LEVEL_VERBOSE,
-                                    "Found unhandled " + ByteCode.getByteCode(nextInstruction));
+                                segment.log(Segment.LOG_LEVEL_VERBOSE, "Found unhandled " + ByteCode.getByteCode(nextInstruction));
                             }
                             i++;
                             break;
@@ -438,20 +434,17 @@ public class BcBands extends BandSet {
 
         final AttributeLayoutMap attributeDefinitionMap = segment.getAttrDefinitionBands().getAttributeDefinitionMap();
 
-        final AttributeLayout abstractModifier = attributeDefinitionMap.getAttributeLayout(AttributeLayout.ACC_ABSTRACT,
-            AttributeLayout.CONTEXT_METHOD);
-        final AttributeLayout nativeModifier = attributeDefinitionMap.getAttributeLayout(AttributeLayout.ACC_NATIVE,
-            AttributeLayout.CONTEXT_METHOD);
-        final AttributeLayout staticModifier = attributeDefinitionMap.getAttributeLayout(AttributeLayout.ACC_STATIC,
-            AttributeLayout.CONTEXT_METHOD);
+        final AttributeLayout abstractModifier = attributeDefinitionMap.getAttributeLayout(AttributeLayout.ACC_ABSTRACT, AttributeLayout.CONTEXT_METHOD);
+        final AttributeLayout nativeModifier = attributeDefinitionMap.getAttributeLayout(AttributeLayout.ACC_NATIVE, AttributeLayout.CONTEXT_METHOD);
+        final AttributeLayout staticModifier = attributeDefinitionMap.getAttributeLayout(AttributeLayout.ACC_STATIC, AttributeLayout.CONTEXT_METHOD);
 
         final int[] wideByteCodeArray = new int[wideByteCodes.size()];
         for (int index = 0; index < wideByteCodeArray.length; index++) {
             wideByteCodeArray[index] = wideByteCodes.get(index).intValue();
         }
-        final OperandManager operandManager = new OperandManager(bcCaseCount, bcCaseValue, bcByte, bcShort, bcLocal,
-            bcLabel, bcIntRef, bcFloatRef, bcLongRef, bcDoubleRef, bcStringRef, bcClassRef, bcFieldRef, bcMethodRef,
-            bcIMethodRef, bcThisField, bcSuperField, bcThisMethod, bcSuperMethod, bcInitRef, wideByteCodeArray);
+        final OperandManager operandManager = new OperandManager(bcCaseCount, bcCaseValue, bcByte, bcShort, bcLocal, bcLabel, bcIntRef, bcFloatRef, bcLongRef,
+                bcDoubleRef, bcStringRef, bcClassRef, bcFieldRef, bcMethodRef, bcIMethodRef, bcThisField, bcSuperField, bcThisMethod, bcSuperMethod, bcInitRef,
+                wideByteCodeArray);
         operandManager.setSegment(segment);
 
         int i = 0;
@@ -494,19 +487,17 @@ public class BcBands extends BandSet {
                                 // exception table catch_type should be 0
                                 cpHandlerClass = segment.getCpBands().cpClassValue(handlerClass);
                             }
-                            final ExceptionTableEntry entry = new ExceptionTableEntry(handlerStartPCs[i][j],
-                                handlerEndPCs[i][j], handlerCatchPCs[i][j], cpHandlerClass);
+                            final ExceptionTableEntry entry = new ExceptionTableEntry(handlerStartPCs[i][j], handlerEndPCs[i][j], handlerCatchPCs[i][j],
+                                    cpHandlerClass);
                             exceptionTable.add(entry);
                         }
                     }
-                    final CodeAttribute codeAttr = new CodeAttribute(maxStack, maxLocal, methodByteCodePacked[c][m],
-                        segment, operandManager, exceptionTable);
+                    final CodeAttribute codeAttr = new CodeAttribute(maxStack, maxLocal, methodByteCodePacked[c][m], segment, operandManager, exceptionTable);
                     final List<Attribute> methodAttributesList = methodAttributes[c][m];
                     // Make sure we add the code attribute in the right place
                     int indexForCodeAttr = 0;
                     for (final Attribute attribute : methodAttributesList) {
-                        if (!(attribute instanceof NewAttribute)
-                            || ((NewAttribute) attribute).getLayoutIndex() >= 15) {
+                        if (!(attribute instanceof NewAttribute) || ((NewAttribute) attribute).getLayoutIndex() >= 15) {
                             break;
                         }
                         indexForCodeAttr++;

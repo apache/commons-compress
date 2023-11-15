@@ -24,6 +24,7 @@ import java.io.InputStream;
 
 /**
  * Input stream that tracks the number of bytes read.
+ *
  * @since 1.3
  * @NotThreadSafe
  */
@@ -35,8 +36,7 @@ public class CountingInputStream extends FilterInputStream {
     }
 
     /**
-     * Increments the counter of already read bytes.
-     * Doesn't increment if the EOF has been hit (read == -1)
+     * Increments the counter of already read bytes. Doesn't increment if the EOF has been hit (read == -1)
      *
      * @param read the number of bytes read
      */
@@ -48,6 +48,7 @@ public class CountingInputStream extends FilterInputStream {
 
     /**
      * Returns the current number of bytes read from this stream.
+     *
      * @return the number of read bytes
      */
     public long getBytesRead() {

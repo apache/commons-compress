@@ -37,15 +37,13 @@ public abstract class ZipEncodingHelper {
     static final ZipEncoding ZIP_ENCODING_UTF_8 = getZipEncoding(CharsetNames.UTF_8);
 
     /**
-     * Instantiates a ZIP encoding. An NIO based character set encoder/decoder will be returned.
-     * As a special case, if the character set is UTF-8, theNIOencoder will be configured  replace malformed and
-     * unmappable characters with '?'. This matches existing behavior from the older fallback encoder.
+     * Instantiates a ZIP encoding. An NIO based character set encoder/decoder will be returned. As a special case, if the character set is UTF-8, theNIOencoder
+     * will be configured replace malformed and unmappable characters with '?'. This matches existing behavior from the older fallback encoder.
      * <p>
-     *     If the requested character set cannot be found, the platform default will
-     *     be used instead.
+     * If the requested character set cannot be found, the platform default will be used instead.
      * </p>
-     * @param name The name of the ZIP encoding. Specify {@code null} for
-     *             the platform's default encoding.
+     *
+     * @param name The name of the ZIP encoding. Specify {@code null} for the platform's default encoding.
      * @return A ZIP encoding for the given encoding name.
      */
     public static ZipEncoding getZipEncoding(final String name) {

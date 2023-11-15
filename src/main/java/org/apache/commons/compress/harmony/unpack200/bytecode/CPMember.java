@@ -37,9 +37,9 @@ public class CPMember extends ClassFileEntry {
     /**
      * Create a new CPMember
      *
-     * @param name TODO
+     * @param name       TODO
      * @param descriptor TODO
-     * @param flags TODO
+     * @param flags      TODO
      * @param attributes TODO
      * @throws NullPointerException if name or descriptor is null
      */

@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 
 public class X7875_NewUnixTest {
 
-    private final static ZipShort X7875 = new ZipShort(0x7875);
+    private static final ZipShort X7875 = new ZipShort(0x7875);
 
     private static byte[] trimTest(final byte[] b) { return X7875_NewUnix.trimLeadingZeroesForceMinLength(b); }
 

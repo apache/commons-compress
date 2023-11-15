@@ -18,10 +18,8 @@
  */
 package org.apache.commons.compress.archivers.dump;
 
-
 /**
- * Invalid Format Exception. There was an error decoding a
- * tape segment header.
+ * Invalid Format Exception. There was an error decoding a tape segment header.
  */
 public class InvalidFormatException extends DumpArchiveException {
     private static final long serialVersionUID = 1L;
@@ -32,8 +30,7 @@ public class InvalidFormatException extends DumpArchiveException {
     }
 
     public InvalidFormatException(final long offset) {
-        super("there was an error decoding a tape segment header at offset " +
-            offset + ".");
+        super("there was an error decoding a tape segment header at offset " + offset + ".");
         this.offset = offset;
     }
 

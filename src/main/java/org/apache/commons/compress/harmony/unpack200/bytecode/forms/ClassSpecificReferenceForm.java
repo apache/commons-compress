@@ -23,9 +23,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * Abstract superclass of all classes that have class-specific references to constant pool information. These classes
- * have a context (a string representing a pack200 class) i.e., they send getClassSpecificPoolEntry instead of
- * getConstantPoolEntry.
+ * Abstract superclass of all classes that have class-specific references to constant pool information. These classes have a context (a string representing a
+ * pack200 class) i.e., they send getClassSpecificPoolEntry instead of getConstantPoolEntry.
  */
 public abstract class ClassSpecificReferenceForm extends ReferenceForm {
 
@@ -42,13 +41,11 @@ public abstract class ClassSpecificReferenceForm extends ReferenceForm {
     protected abstract int getPoolID();
 
     @Override
-    protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset)
-        throws Pack200Exception {
+    protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset) throws Pack200Exception {
         final SegmentConstantPool globalPool = operandManager.globalConstantPool();
-        final ClassFileEntry[] nested = {
-            globalPool.getClassSpecificPoolEntry(getPoolID(), offset, context(operandManager))};
+        final ClassFileEntry[] nested = { globalPool.getClassSpecificPoolEntry(getPoolID(), offset, context(operandManager)) };
         byteCode.setNested(nested);
-        byteCode.setNestedPositions(new int[][] {{0, 2}});
+        byteCode.setNestedPositions(new int[][] { { 0, 2 } });
     }
 
 }

@@ -55,7 +55,7 @@ public final class Lister {
     }
 
     private static String detectFormat(final File file) throws ArchiveException, IOException {
-        try (final InputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
+        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
             return ArchiveStreamFactory.detect(inputStream);
         }
     }
@@ -72,8 +72,8 @@ public final class Lister {
     }
 
     private static void listStream(final File file, final String[] args) throws ArchiveException, IOException {
-        try (final InputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()));
-                final ArchiveInputStream<?> archiveInputStream = createArchiveInputStream(args, inputStream)) {
+        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()));
+                ArchiveInputStream<?> archiveInputStream = createArchiveInputStream(args, inputStream)) {
             System.out.println("Created " + archiveInputStream.toString());
             ArchiveEntry entry;
             while ((entry = archiveInputStream.getNextEntry()) != null) {

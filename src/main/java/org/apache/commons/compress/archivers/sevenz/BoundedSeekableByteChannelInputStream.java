@@ -27,8 +27,7 @@ final class BoundedSeekableByteChannelInputStream extends InputStream {
     private final SeekableByteChannel channel;
     private long bytesRemaining;
 
-    public BoundedSeekableByteChannelInputStream(final SeekableByteChannel channel,
-            final long size) {
+    BoundedSeekableByteChannelInputStream(final SeekableByteChannel channel, final long size) {
         this.channel = channel;
         this.bytesRemaining = size;
         if (size < MAX_BUF_LEN && size > 0) {
@@ -59,13 +58,13 @@ final class BoundedSeekableByteChannelInputStream extends InputStream {
     /**
      * Reads up to len bytes of data from the input stream into an array of bytes.
      *
-     * <p>An attempt is made to read as many as len bytes, but a
-     * smaller number may be read. The number of bytes actually read
-     * is returned as an integer.</p>
+     * <p>
+     * An attempt is made to read as many as len bytes, but a smaller number may be read. The number of bytes actually read is returned as an integer.
+     * </p>
      *
-     * <p>This implementation may return 0 if the underlying {@link
-     * SeekableByteChannel} is non-blocking and currently hasn't got
-     * any bytes available.</p>
+     * <p>
+     * This implementation may return 0 if the underlying {@link SeekableByteChannel} is non-blocking and currently hasn't got any bytes available.
+     * </p>
      */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {

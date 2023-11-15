@@ -17,33 +17,7 @@
  * under the License.
  */
 
-package org.apache.commons.compress.utils;
-
-import java.util.Collections;
-import java.util.HashSet;
-
 /**
- * Set utilities
- *
- * @since 1.13
+ * Apache Commons Compress.
  */
-public class Sets {
-
-    /**
-     * Creates a new HashSet filled with the given elements
-     *
-     * @param elements the elements to fill the new set
-     * @param <E>      type of elements contained in new set
-     * @return A new HasSet
-     */
-    @SafeVarargs
-    public static <E> HashSet<E> newHashSet(final E... elements) {
-        final HashSet<E> set = new HashSet<>(elements.length);
-        Collections.addAll(set, elements);
-        return set;
-    }
-
-    private Sets() {
-        // Do not instantiate
-    }
-}
+package org.apache.commons.compress;

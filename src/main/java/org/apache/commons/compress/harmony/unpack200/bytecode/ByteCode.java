@@ -60,9 +60,8 @@ public class ByteCode extends ClassFileEntry {
     }
 
     /**
-     * Some ByteCodes (in particular, those with labels need to be fixed up after all the bytecodes in the CodeAttribute
-     * have been added. (This can't be done beforehand because the CodeAttribute needs to be complete before targets can
-     * be assigned.)
+     * Some ByteCodes (in particular, those with labels need to be fixed up after all the bytecodes in the CodeAttribute have been added. (This can't be done
+     * beforehand because the CodeAttribute needs to be complete before targets can be assigned.)
      *
      * @param codeAttribute the code attribute
      */
@@ -129,11 +128,10 @@ public class ByteCode extends ClassFileEntry {
     }
 
     /**
-     * Some bytecodes (the ones with variable lengths) can't have a static rewrite array - they need the ability to
-     * update the array. This method permits their associated bytecode formst to query their rewrite array.
+     * Some bytecodes (the ones with variable lengths) can't have a static rewrite array - they need the ability to update the array. This method permits their
+     * associated bytecode formst to query their rewrite array.
      *
-     * Note that this should not be called from bytecodes which have a static rewrite; use the table in ByteCodeForm
-     * instead to specify those rewrites.
+     * Note that this should not be called from bytecodes which have a static rewrite; use the table in ByteCodeForm instead to specify those rewrites.
      *
      * @return Some bytecodes.
      */
@@ -147,8 +145,7 @@ public class ByteCode extends ClassFileEntry {
     }
 
     /**
-     * This method will answer true if the receiver is a multi-bytecode instruction (such as aload0_putfield_super);
-     * otherwise, it will answer false.
+     * This method will answer true if the receiver is a multi-bytecode instruction (such as aload0_putfield_super); otherwise, it will answer false.
      *
      * @return boolean true if multibytecode, false otherwise
      */
@@ -163,8 +160,7 @@ public class ByteCode extends ClassFileEntry {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#resolve(org.apache.commons.compress.harmony
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#resolve(org.apache.commons.compress.harmony
      * .unpack200.bytecode.ClassConstantPool)
      */
     @Override
@@ -193,8 +189,8 @@ public class ByteCode extends ClassFileEntry {
     }
 
     /**
-     * ByteCodes may need to know their position in the code array (in particular, label byte codes need to know where
-     * they are in order to calculate their targets). This method lets the CodeAttribute specify where the byte code is.
+     * ByteCodes may need to know their position in the code array (in particular, label byte codes need to know where they are in order to calculate their
+     * targets). This method lets the CodeAttribute specify where the byte code is.
      *
      * Since there are no aload0+label instructions, this method doesn't worry about multioperation bytecodes.
      *
@@ -205,9 +201,8 @@ public class ByteCode extends ClassFileEntry {
     }
 
     /**
-     * Some ByteCodes (in particular, those with labels) have to keep track of byteCodeTargets. These are initially
-     * offsets in the CodeAttribute array relative to the byteCodeOffset, but later get fixed up to point to the
-     * absolute position in the CodeAttribute array. This method sets the targets.
+     * Some ByteCodes (in particular, those with labels) have to keep track of byteCodeTargets. These are initially offsets in the CodeAttribute array relative
+     * to the byteCodeOffset, but later get fixed up to point to the absolute position in the CodeAttribute array. This method sets the targets.
      *
      * @param byteCodeTargets int index in array
      */
@@ -220,28 +215,25 @@ public class ByteCode extends ClassFileEntry {
     }
 
     /**
-     * nestedPositions is an array of arrays of ints. Each subarray specifies a position of a nested element (from the
-     * nested[] array) and the length of that element.
+     * nestedPositions is an array of arrays of ints. Each subarray specifies a position of a nested element (from the nested[] array) and the length of that
+     * element.
      *
-     * For instance, one might have a nested of: {CPClass java/lang/Foo, CPFloat 3.14} The nestedPositions would then
-     * be: {{0,2},{2,2}} In other words, when the bytecode is resolved, the CPClass will be resolved to an int and
-     * inserted at position 0 and 1 of the rewrite arguments (the first occurrences of -1). The CPFloat will be resolved
-     * to an int position and inserted at positions 2 and 3 of the rewrite arguments.
+     * For instance, one might have a nested of: {CPClass java/lang/Foo, CPFloat 3.14} The nestedPositions would then be: {{0,2},{2,2}} In other words, when the
+     * bytecode is resolved, the CPClass will be resolved to an int and inserted at position 0 and 1 of the rewrite arguments (the first occurrences of -1). The
+     * CPFloat will be resolved to an int position and inserted at positions 2 and 3 of the rewrite arguments.
      *
-     * @param nestedPositions Each subarray specifies a position of a nested element (from the nested[] array) and the
-     *        length of that element.
+     * @param nestedPositions Each subarray specifies a position of a nested element (from the nested[] array) and the length of that element.
      */
     public void setNestedPositions(final int[][] nestedPositions) {
         this.nestedPositions = nestedPositions;
     }
 
     /**
-     * Given an int operand, set the rewrite bytes for that position and the one immediately following it to a
-     * high-byte, low-byte encoding of the operand.
+     * Given an int operand, set the rewrite bytes for that position and the one immediately following it to a high-byte, low-byte encoding of the operand.
      *
-     * @param operand int to set the rewrite bytes to
-     * @param position int position in the operands of the rewrite bytes. For a rewrite array of {100, -1, -1, -1}
-     *        position 0 is the first -1, position 1 is the second -1, etc.
+     * @param operand  int to set the rewrite bytes to
+     * @param position int position in the operands of the rewrite bytes. For a rewrite array of {100, -1, -1, -1} position 0 is the first -1, position 1 is the
+     *                 second -1, etc.
      */
     public void setOperand2Bytes(final int operand, final int position) {
         final int firstOperandIndex = getByteCodeForm().firstOperandIndex();
@@ -252,8 +244,7 @@ public class ByteCode extends ClassFileEntry {
         }
 
         if (firstOperandIndex + position + 1 > byteCodeFormLength) {
-            throw new Error("Trying to rewrite " + this + " with an int at position " + position
-                + " but this won't fit in the rewrite array");
+            throw new Error("Trying to rewrite " + this + " with an int at position " + position + " but this won't fit in the rewrite array");
         }
 
         rewrite[firstOperandIndex + position] = (operand & 0xFF00) >> 8;
@@ -261,12 +252,11 @@ public class ByteCode extends ClassFileEntry {
     }
 
     /**
-     * Given an int operand, treat it as a byte and set the rewrite byte for that position to that value. Mask of
-     * anything beyond 0xFF.
+     * Given an int operand, treat it as a byte and set the rewrite byte for that position to that value. Mask of anything beyond 0xFF.
      *
-     * @param operand int to set the rewrite byte to (unsigned)
-     * @param position int position in the operands of the rewrite bytes. For a rewrite array of {100, -1, -1, -1}
-     *        position 0 is the first -1, position 1 is the second -1, etc.
+     * @param operand  int to set the rewrite byte to (unsigned)
+     * @param position int position in the operands of the rewrite bytes. For a rewrite array of {100, -1, -1, -1} position 0 is the first -1, position 1 is the
+     *                 second -1, etc.
      */
     public void setOperandByte(final int operand, final int position) {
         final int firstOperandIndex = getByteCodeForm().firstOperandIndex();
@@ -277,16 +267,15 @@ public class ByteCode extends ClassFileEntry {
         }
 
         if (firstOperandIndex + position > byteCodeFormLength) {
-            throw new Error("Trying to rewrite " + this + " with an byte at position " + position
-                + " but this won't fit in the rewrite array");
+            throw new Error("Trying to rewrite " + this + " with an byte at position " + position + " but this won't fit in the rewrite array");
         }
 
         rewrite[firstOperandIndex + position] = operand & 0xFF;
     }
 
     /**
-     * Given an array of ints which correspond to bytes in the operand of the bytecode, set the rewrite bytes of the
-     * operand to be the appropriate values. All values in operands[] will be masked with 0xFF so they fit into a byte.
+     * Given an array of ints which correspond to bytes in the operand of the bytecode, set the rewrite bytes of the operand to be the appropriate values. All
+     * values in operands[] will be masked with 0xFF so they fit into a byte.
      *
      * @param operands int[] rewrite operand bytes
      */
@@ -299,8 +288,7 @@ public class ByteCode extends ClassFileEntry {
         }
 
         if (byteCodeFormLength != operands.length) {
-            throw new Error("Trying to rewrite " + this + " with " + operands.length + " but bytecode has length "
-                + byteCodeForm.operandLength());
+            throw new Error("Trying to rewrite " + this + " with " + operands.length + " but bytecode has length " + byteCodeForm.operandLength());
         }
 
         for (int index = 0; index < byteCodeFormLength; index++) {
@@ -309,10 +297,9 @@ public class ByteCode extends ClassFileEntry {
     }
 
     /**
-     * This is just like setOperandInt, but takes special care when the operand is less than 0 to make sure it's written
-     * correctly.
+     * This is just like setOperandInt, but takes special care when the operand is less than 0 to make sure it's written correctly.
      *
-     * @param operand int to set the rewrite bytes to
+     * @param operand  int to set the rewrite bytes to
      * @param position int position of the operands in the rewrite bytes
      */
     public void setOperandSigned2Bytes(final int operand, final int position) {
@@ -325,11 +312,9 @@ public class ByteCode extends ClassFileEntry {
     }
 
     /**
-     * Some bytecodes (the ones with variable lengths) can't have a static rewrite array - they need the ability to
-     * update the array. This method permits that.
+     * Some bytecodes (the ones with variable lengths) can't have a static rewrite array - they need the ability to update the array. This method permits that.
      *
-     * Note that this should not be called from bytecodes which have a static rewrite; use the table in ByteCodeForm
-     * instead to specify those rewrites.
+     * Note that this should not be called from bytecodes which have a static rewrite; use the table in ByteCodeForm instead to specify those rewrites.
      *
      * @param rewrite Some bytecodes.
      */

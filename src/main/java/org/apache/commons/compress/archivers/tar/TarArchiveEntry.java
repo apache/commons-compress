@@ -53,36 +53,27 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.TimeUtils;
 
 /**
- * This class represents an entry in a Tar archive. It consists
- * of the entry's header, as well as the entry's File. Entries
- * can be instantiated in one of three ways, depending on how
- * they are to be used.
+ * This class represents an entry in a Tar archive. It consists of the entry's header, as well as the entry's File. Entries can be instantiated in one of three
+ * ways, depending on how they are to be used.
  * <p>
- * TarEntries that are created from the header bytes read from
- * an archive are instantiated with the {@link TarArchiveEntry#TarArchiveEntry(byte[])}
- * constructor. These entries will be used when extracting from
- * or listing the contents of an archive. These entries have their
- * header filled in using the header bytes. They also set the File
- * to null, since they reference an archive entry not a file.
+ * TarEntries that are created from the header bytes read from an archive are instantiated with the {@link TarArchiveEntry#TarArchiveEntry(byte[])} constructor.
+ * These entries will be used when extracting from or listing the contents of an archive. These entries have their header filled in using the header bytes. They
+ * also set the File to null, since they reference an archive entry not a file.
  * </p>
  * <p>
- * TarEntries that are created from Files that are to be written
- * into an archive are instantiated with the {@link TarArchiveEntry#TarArchiveEntry(File)}
- * or {@link TarArchiveEntry#TarArchiveEntry(Path)} constructor.
- * These entries have their header filled in using the File's information.
- * They also keep a reference to the File for convenience when writing entries.
+ * TarEntries that are created from Files that are to be written into an archive are instantiated with the {@link TarArchiveEntry#TarArchiveEntry(File)} or
+ * {@link TarArchiveEntry#TarArchiveEntry(Path)} constructor. These entries have their header filled in using the File's information. They also keep a reference
+ * to the File for convenience when writing entries.
  * </p>
  * <p>
- * Finally, TarEntries can be constructed from nothing but a name.
- * This allows the programmer to construct the entry by hand, for
- * instance when only an InputStream is available for writing to
- * the archive, and the header information is constructed from
- * other information. In this case the header fields are set to
- * defaults and the File is set to null.
+ * Finally, TarEntries can be constructed from nothing but a name. This allows the programmer to construct the entry by hand, for instance when only an
+ * InputStream is available for writing to the archive, and the header information is constructed from other information. In this case the header fields are set
+ * to defaults and the File is set to null.
  * </p>
  * <p>
  * The C structure for a Tar Entry's header is:
  * </p>
+ *
  * <pre>
  * struct header {
  *   char name[100];     // TarConstants.NAMELEN    - offset   0
@@ -107,16 +98,13 @@ import org.apache.commons.compress.utils.TimeUtils;
  * } header;
  * </pre>
  * <p>
- * All unused bytes are set to null.
- * New-style GNU tar files are slightly different from the above.
- * For values of size larger than 077777777777L (11 7s)
- * or uid and gid larger than 07777777L (7 7s)
- * the sign bit of the first byte is set, and the rest of the
- * field is the binary representation of the number.
- * See {@link TarUtils#parseOctalOrBinary(byte[], int, int)}.
+ * All unused bytes are set to null. New-style GNU tar files are slightly different from the above. For values of size larger than 077777777777L (11 7s) or uid
+ * and gid larger than 07777777L (7 7s) the sign bit of the first byte is set, and the rest of the field is the binary representation of the number. See
+ * {@link TarUtils#parseOctalOrBinary(byte[], int, int)}.
  * <p>
  * The C structure for a old GNU Tar Entry's header is:
  * </p>
+ *
  * <pre>
  * struct oldgnu_header {
  *   char unused_pad1[345]; // TarConstants.PAD1LEN_GNU       - offset 0
@@ -134,6 +122,7 @@ import org.apache.commons.compress.utils.TimeUtils;
  * <p>
  * Whereas, "struct sparse" is:
  * </p>
+ *
  * <pre>
  * struct sparse {
  *   char offset[12];   // offset 0
@@ -143,6 +132,7 @@ import org.apache.commons.compress.utils.TimeUtils;
  * <p>
  * The C structure for a xstar (Jörg Schilling star) Tar Entry's header is:
  * </p>
+ *
  * <pre>
  * struct star_header {
  *   char name[100];     // offset   0
@@ -173,6 +163,7 @@ import org.apache.commons.compress.utils.TimeUtils;
  * <p>
  * The C structure for the xstar-specific parts of a xstar Tar Entry's header is:
  * </p>
+ *
  * <pre>
  * struct xstar_in_header {
  *   char fill[345];         // offset 0     Everything before t_prefix
@@ -197,8 +188,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     private static final TarArchiveEntry[] EMPTY_TAR_ARCHIVE_ENTRY_ARRAY = {};
 
     /**
-     * Value used to indicate unknown mode, user/groupids, device numbers and modTime when parsing a file in lenient
-     * mode and the archive contains illegal fields.
+     * Value used to indicate unknown mode, user/groupids, device numbers and modTime when parsing a file in lenient mode and the archive contains illegal
+     * fields.
+     *
      * @since 1.19
      */
     public static final long UNKNOWN = -1L;
@@ -214,18 +206,17 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Convert millis to seconds
+     *
      * @deprecated Unused.
      */
     @Deprecated
     public static final int MILLIS_PER_SECOND = 1000;
 
     /**
-     * Regular expression pattern for validating values in pax extended header file time fields.
-     * These fields contain two numeric values (seconds and sub-second values) as per this definition:
-     * https://pubs.opengroup.org/onlinepubs/9699919799/utilities/pax.html#tag_20_92_13_05
+     * Regular expression pattern for validating values in pax extended header file time fields. These fields contain two numeric values (seconds and sub-second
+     * values) as per this definition: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/pax.html#tag_20_92_13_05
      * <p>
-     * Since they are parsed into long values, maximum length of each is the same as Long.MAX_VALUE
-     * which is 19 digits.
+     * Since they are parsed into long values, maximum length of each is the same as Long.MAX_VALUE which is 19 digits.
      * </p>
      */
     private static final Pattern PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN = Pattern.compile("-?\\d{1,19}(?:\\.\\d{1,19})?");
@@ -314,30 +305,26 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /** The entry's size. */
     private long size;
     /**
-     * The entry's modification time.
-     * Corresponds to the POSIX {@code mtime} attribute.
+     * The entry's modification time. Corresponds to the POSIX {@code mtime} attribute.
      */
     private FileTime mTime;
 
     /**
-     * The entry's status change time.
-     * Corresponds to the POSIX {@code ctime} attribute.
+     * The entry's status change time. Corresponds to the POSIX {@code ctime} attribute.
      *
      * @since 1.22
      */
     private FileTime cTime;
 
     /**
-     * The entry's last access time.
-     * Corresponds to the POSIX {@code atime} attribute.
+     * The entry's last access time. Corresponds to the POSIX {@code atime} attribute.
      *
      * @since 1.22
      */
     private FileTime aTime;
 
     /**
-     * The entry's creation time.
-     * Corresponds to the POSIX {@code birthtime} attribute.
+     * The entry's creation time. Corresponds to the POSIX {@code birthtime} attribute.
      *
      * @since 1.22
      */
@@ -382,8 +369,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /** is this entry a GNU sparse entry using one of the PAX formats? */
     private boolean paxGNUSparse;
 
-    /** is this entry a GNU sparse entry using 1.X PAX formats?
-     *  the sparse headers of 1.x PAX Format is stored in file data block */
+    /**
+     * is this entry a GNU sparse entry using 1.X PAX formats? the sparse headers of 1.x PAX Format is stored in file data block
+     */
     private boolean paxGNU1XSparse;
 
     /** is this entry a star sparse entry using the PAX header? */
@@ -392,11 +380,11 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /** The entry's file reference */
     private final Path file;
 
-    /** The entry's file linkOptions*/
+    /** The entry's file linkOptions */
     private final LinkOption[] linkOptions;
 
-    /** Extra, user supplied pax headers     */
-    private final Map<String,String> extraPaxHeaders = new HashMap<>();
+    /** Extra, user supplied pax headers */
+    private final Map<String, String> extraPaxHeaders = new HashMap<>();
 
     private long dataOffset = EntryStreamOffsets.OFFSET_UNKNOWN;
 
@@ -417,8 +405,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Constructs an entry from an archive's header bytes. File is set
-     * to null.
+     * Constructs an entry from an archive's header bytes. File is set to null.
      *
      * @param headerBuf The header bytes from a tar archive entry.
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
@@ -429,69 +416,63 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Constructs an entry from an archive's header bytes. File is set
-     * to null.
+     * Constructs an entry from an archive's header bytes. File is set to null.
      *
      * @param headerBuf The header bytes from a tar archive entry.
-     * @param encoding encoding to use for file names
+     * @param encoding  encoding to use for file names
      * @since 1.4
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
-     * @throws IOException on error
+     * @throws IOException              on error
      */
-    public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding)
-        throws IOException {
+    public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding) throws IOException {
         this(headerBuf, encoding, false);
     }
 
     /**
-     * Constructs an entry from an archive's header bytes. File is set
-     * to null.
+     * Constructs an entry from an archive's header bytes. File is set to null.
      *
      * @param headerBuf The header bytes from a tar archive entry.
-     * @param encoding encoding to use for file names
-     * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be
-     * ignored and the fields set to {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
+     * @param encoding  encoding to use for file names
+     * @param lenient   when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
+     *                  {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @since 1.19
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
-     * @throws IOException on error
+     * @throws IOException              on error
      */
-    public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient)
-        throws IOException {
+    public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient) throws IOException {
         this(Collections.emptyMap(), headerBuf, encoding, lenient);
     }
 
     /**
      * Constructs an entry from an archive's header bytes for random access tar. File is set to null.
-     * @param headerBuf the header bytes from a tar archive entry.
-     * @param encoding encoding to use for file names.
-     * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be
-     * ignored and the fields set to {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
+     *
+     * @param headerBuf  the header bytes from a tar archive entry.
+     * @param encoding   encoding to use for file names.
+     * @param lenient    when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
+     *                   {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @param dataOffset position of the entry data in the random access file.
      * @since 1.21
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format.
-     * @throws IOException on error.
+     * @throws IOException              on error.
      */
-    public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient,
-            final long dataOffset) throws IOException {
+    public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient, final long dataOffset) throws IOException {
         this(headerBuf, encoding, lenient);
         setDataOffset(dataOffset);
     }
 
     /**
-     * Constructs an entry for a file. File is set to file, and the
-     * header is constructed from information from the file.
-     * The name is set from the normalized file path.
+     * Constructs an entry for a file. File is set to file, and the header is constructed from information from the file. The name is set from the normalized
+     * file path.
      *
-     * <p>The entry's name will be the value of the {@code file}'s
-     * path with all file separators replaced by forward slashes and
-     * leading slashes as well as Windows drive letters stripped. The
-     * name will end in a slash if the {@code file} represents a
-     * directory.</p>
+     * <p>
+     * The entry's name will be the value of the {@code file}'s path with all file separators replaced by forward slashes and leading slashes as well as Windows
+     * drive letters stripped. The name will end in a slash if the {@code file} represents a directory.
+     * </p>
      *
-     * <p>Note: Since 1.21 this internally uses the same code as the
-     * TarArchiveEntry constructors with a {@link Path} as parameter.
-     * But all thrown exceptions are ignored. If handling those
-     * exceptions is needed consider switching to the path constructors.</p>
+     * <p>
+     * Note: Since 1.21 this internally uses the same code as the TarArchiveEntry constructors with a {@link Path} as parameter. But all thrown exceptions are
+     * ignored. If handling those exceptions is needed consider switching to the path constructors.
+     * </p>
      *
      * @param file The file that the entry represents.
      */
@@ -500,21 +481,19 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Constructs an entry for a file. File is set to file, and the
-     * header is constructed from information from the file.
+     * Constructs an entry for a file. File is set to file, and the header is constructed from information from the file.
      *
-     * <p>The entry's name will be the value of the {@code fileName}
-     * argument with all file separators replaced by forward slashes
-     * and leading slashes as well as Windows drive letters stripped.
-     * The name will end in a slash if the {@code file} represents a
-     * directory.</p>
+     * <p>
+     * The entry's name will be the value of the {@code fileName} argument with all file separators replaced by forward slashes and leading slashes as well as
+     * Windows drive letters stripped. The name will end in a slash if the {@code file} represents a directory.
+     * </p>
      *
-     * <p>Note: Since 1.21 this internally uses the same code as the
-     * TarArchiveEntry constructors with a {@link Path} as parameter.
-     * But all thrown exceptions are ignored. If handling those
-     * exceptions is needed consider switching to the path constructors.</p>
+     * <p>
+     * Note: Since 1.21 this internally uses the same code as the TarArchiveEntry constructors with a {@link Path} as parameter. But all thrown exceptions are
+     * ignored. If handling those exceptions is needed consider switching to the path constructors.
+     * </p>
      *
-     * @param file The file that the entry represents.
+     * @param file     The file that the entry represents.
      * @param fileName the name to be used for the entry.
      */
     public TarArchiveEntry(final File file, final String fileName) {
@@ -547,48 +526,47 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Constructs an entry from an archive's header bytes. File is set to null.
      *
      * @param globalPaxHeaders the parsed global PAX headers, or null if this is the first one.
-     * @param headerBuf The header bytes from a tar archive entry.
-     * @param encoding encoding to use for file names
-     * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be
-     * ignored and the fields set to {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
+     * @param headerBuf        The header bytes from a tar archive entry.
+     * @param encoding         encoding to use for file names
+     * @param lenient          when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
+     *                         {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @since 1.22
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
-     * @throws IOException on error
+     * @throws IOException              on error
      */
-    public TarArchiveEntry(final Map<String, String> globalPaxHeaders, final byte[] headerBuf,
-            final ZipEncoding encoding, final boolean lenient) throws IOException {
+    public TarArchiveEntry(final Map<String, String> globalPaxHeaders, final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient)
+            throws IOException {
         this(false);
         parseTarHeader(globalPaxHeaders, headerBuf, encoding, false, lenient);
     }
 
     /**
      * Constructs an entry from an archive's header bytes for random access tar. File is set to null.
+     *
      * @param globalPaxHeaders the parsed global PAX headers, or null if this is the first one.
-     * @param headerBuf the header bytes from a tar archive entry.
-     * @param encoding encoding to use for file names.
-     * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be
-     * ignored and the fields set to {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
-     * @param dataOffset position of the entry data in the random access file.
+     * @param headerBuf        the header bytes from a tar archive entry.
+     * @param encoding         encoding to use for file names.
+     * @param lenient          when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
+     *                         {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
+     * @param dataOffset       position of the entry data in the random access file.
      * @since 1.22
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format.
-     * @throws IOException on error.
+     * @throws IOException              on error.
      */
-    public TarArchiveEntry(final Map<String, String> globalPaxHeaders, final byte[] headerBuf,
-            final ZipEncoding encoding, final boolean lenient, final long dataOffset) throws IOException {
+    public TarArchiveEntry(final Map<String, String> globalPaxHeaders, final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient,
+            final long dataOffset) throws IOException {
         this(globalPaxHeaders, headerBuf, encoding, lenient);
         setDataOffset(dataOffset);
     }
 
     /**
-     * Constructs an entry for a file. File is set to file, and the
-     * header is constructed from information from the file.
-     * The name is set from the normalized file path.
+     * Constructs an entry for a file. File is set to file, and the header is constructed from information from the file. The name is set from the normalized
+     * file path.
      *
-     * <p>The entry's name will be the value of the {@code file}'s
-     * path with all file separators replaced by forward slashes and
-     * leading slashes as well as Windows drive letters stripped. The
-     * name will end in a slash if the {@code file} represents a
-     * directory.</p>
+     * <p>
+     * The entry's name will be the value of the {@code file}'s path with all file separators replaced by forward slashes and leading slashes as well as Windows
+     * drive letters stripped. The name will end in a slash if the {@code file} represents a directory.
+     * </p>
      *
      * @param file The file that the entry represents.
      * @throws IOException if an I/O error occurs
@@ -599,17 +577,15 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Constructs an entry for a file. File is set to file, and the
-     * header is constructed from information from the file.
+     * Constructs an entry for a file. File is set to file, and the header is constructed from information from the file.
      *
-     * <p>The entry's name will be the value of the {@code fileName}
-     * argument with all file separators replaced by forward slashes
-     * and leading slashes as well as Windows drive letters stripped.
-     * The name will end in a slash if the {@code file} represents a
-     * directory.</p>
+     * <p>
+     * The entry's name will be the value of the {@code fileName} argument with all file separators replaced by forward slashes and leading slashes as well as
+     * Windows drive letters stripped. The name will end in a slash if the {@code file} represents a directory.
+     * </p>
      *
-     * @param file     The file that the entry represents.
-     * @param fileName the name to be used for the entry.
+     * @param file        The file that the entry represents.
+     * @param fileName    the name to be used for the entry.
      * @param linkOptions options indicating how symbolic links are handled.
      * @throws IOException if an I/O error occurs
      * @since 1.21
@@ -627,12 +603,12 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Constructs an entry with only a name. This allows the programmer
-     * to construct the entry's header "by hand". File is set to null.
+     * Constructs an entry with only a name. This allows the programmer to construct the entry's header "by hand". File is set to null.
      *
-     * <p>The entry's name will be the value of the {@code name}
-     * argument with all file separators replaced by forward slashes
-     * and leading slashes as well as Windows drive letters stripped.</p>
+     * <p>
+     * The entry's name will be the value of the {@code name} argument with all file separators replaced by forward slashes and leading slashes as well as
+     * Windows drive letters stripped.
+     * </p>
      *
      * @param name the entry name
      */
@@ -641,17 +617,15 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Constructs an entry with only a name. This allows the programmer
-     * to construct the entry's header "by hand". File is set to null.
+     * Constructs an entry with only a name. This allows the programmer to construct the entry's header "by hand". File is set to null.
      *
-     * <p>The entry's name will be the value of the {@code name}
-     * argument with all file separators replaced by forward slashes.
-     * Leading slashes and Windows drive letters are stripped if
-     * {@code preserveAbsolutePath} is {@code false}.</p>
+     * <p>
+     * The entry's name will be the value of the {@code name} argument with all file separators replaced by forward slashes. Leading slashes and Windows drive
+     * letters are stripped if {@code preserveAbsolutePath} is {@code false}.
+     * </p>
      *
-     * @param name the entry name
-     * @param preserveAbsolutePath whether to allow leading slashes
-     * or drive letters in the name.
+     * @param name                 the entry name
+     * @param preserveAbsolutePath whether to allow leading slashes or drive letters in the name.
      *
      * @since 1.1
      */
@@ -671,12 +645,12 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Constructs an entry with a name and a link flag.
      *
-     * <p>The entry's name will be the value of the {@code name}
-     * argument with all file separators replaced by forward slashes
-     * and leading slashes as well as Windows drive letters
-     * stripped.</p>
+     * <p>
+     * The entry's name will be the value of the {@code name} argument with all file separators replaced by forward slashes and leading slashes as well as
+     * Windows drive letters stripped.
+     * </p>
      *
-     * @param name the entry name
+     * @param name     the entry name
      * @param linkFlag the entry link flag.
      */
     public TarArchiveEntry(final String name, final byte linkFlag) {
@@ -686,15 +660,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Constructs an entry with a name and a link flag.
      *
-     * <p>The entry's name will be the value of the {@code name}
-     * argument with all file separators replaced by forward slashes.
-     * Leading slashes and Windows drive letters are stripped if
-     * {@code preserveAbsolutePath} is {@code false}.</p>
+     * <p>
+     * The entry's name will be the value of the {@code name} argument with all file separators replaced by forward slashes. Leading slashes and Windows drive
+     * letters are stripped if {@code preserveAbsolutePath} is {@code false}.
+     * </p>
      *
-     * @param name the entry name
-     * @param linkFlag the entry link flag.
-     * @param preserveAbsolutePath whether to allow leading slashes
-     * or drive letters in the name.
+     * @param name                 the entry name
+     * @param linkFlag             the entry link flag.
+     * @param preserveAbsolutePath whether to allow leading slashes or drive letters in the name.
      *
      * @since 1.5
      */
@@ -708,8 +681,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * add a PAX header to this entry. If the header corresponds to an existing field in the entry,
-     * that field will be set; otherwise the header will be added to the extraPaxHeaders Map
+     * add a PAX header to this entry. If the header corresponds to an existing field in the entry, that field will be set; otherwise the header will be added
+     * to the extraPaxHeaders Map
+     *
      * @param name  The full name of the header to set.
      * @param value value of header.
      * @since 1.15
@@ -724,6 +698,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * clear all extra PAX headers.
+     *
      * @since 1.15
      */
     public void clearExtraPaxHeaders() {
@@ -731,8 +706,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Determine if the two entries are equal. Equality is determined
-     * by the header names being equal.
+     * Determine if the two entries are equal. Equality is determined by the header names being equal.
      *
      * @param it Entry to be checked for equality.
      * @return True if the entries are equal.
@@ -746,8 +720,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Determine if the two entries are equal. Equality is determined
-     * by the header names being equal.
+     * Determine if the two entries are equal. Equality is determined by the header names being equal.
      *
      * @param it Entry to be checked for equality.
      * @return True if the entries are equal.
@@ -805,8 +778,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             try {
                 realSize = Integer.parseInt(headers.get(TarGnuSparseKeys.REALSIZE));
             } catch (final NumberFormatException ex) {
-                throw new IOException("Corrupted TAR archive. GNU.sparse.realsize header for "
-                    + name + " contains non-numeric value");
+                throw new IOException("Corrupted TAR archive. GNU.sparse.realsize header for " + name + " contains non-numeric value");
             }
         }
     }
@@ -817,8 +789,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             try {
                 realSize = Long.parseLong(headers.get("SCHILY.realsize"));
             } catch (final NumberFormatException ex) {
-                throw new IOException("Corrupted TAR archive. SCHILY.realsize header for "
-                    + name + " contains non-numeric value");
+                throw new IOException("Corrupted TAR archive. SCHILY.realsize header for " + name + " contains non-numeric value");
             }
         }
     }
@@ -835,6 +806,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * {@inheritDoc}
+     *
      * @since 1.21
      */
     @Override
@@ -863,11 +835,12 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * If this entry represents a file, and the file is a directory, return
-     * an array of TarEntries for this entry's children.
+     * If this entry represents a file, and the file is a directory, return an array of TarEntries for this entry's children.
      *
-     * <p>This method is only useful for entries created from a {@code
-     * File} or {@code Path} but not for entries read from an archive.</p>
+     * <p>
+     * This method is only useful for entries created from a {@code
+     * File} or {@code Path} but not for entries read from an archive.
+     * </p>
      *
      * @return An array of TarEntry's for this entry's children.
      */
@@ -889,6 +862,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * get named extra PAX header
+     *
      * @param name The full name of an extended PAX header to retrieve
      * @return The value of the header, if any.
      * @since 1.15
@@ -899,6 +873,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * get extra PAX Headers
+     *
      * @return read-only map containing any extra PAX Headers
      * @since 1.15
      */
@@ -909,8 +884,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Gets this entry's file.
      *
-     * <p>This method is only useful for entries created from a {@code
-     * File} or {@code Path} but not for entries read from an archive.</p>
+     * <p>
+     * This method is only useful for entries created from a {@code
+     * File} or {@code Path} but not for entries read from an archive.
+     * </p>
      *
      * @return this entry's file or null if the entry was not created from a file.
      */
@@ -925,8 +902,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Gets this entry's group id.
      *
      * @return This entry's group id.
-     * @deprecated use #getLongGroupId instead as group ids can be
-     * bigger than {@link Integer#MAX_VALUE}
+     * @deprecated use #getLongGroupId instead as group ids can be bigger than {@link Integer#MAX_VALUE}
      */
     @Deprecated
     public int getGroupId() {
@@ -953,8 +929,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Gets this entry's modification time.
-     * This is equivalent to {@link TarArchiveEntry#getLastModifiedTime()}, but precision is truncated to milliseconds.
+     * Gets this entry's modification time. This is equivalent to {@link TarArchiveEntry#getLastModifiedTime()}, but precision is truncated to milliseconds.
      *
      * @return This entry's modification time.
      * @see TarArchiveEntry#getLastModifiedTime()
@@ -1023,8 +998,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Gets this entry's modification time.
-     * This is equivalent to {@link TarArchiveEntry#getLastModifiedTime()}, but precision is truncated to milliseconds.
+     * Gets this entry's modification time. This is equivalent to {@link TarArchiveEntry#getLastModifiedTime()}, but precision is truncated to milliseconds.
      *
      * @return This entry's modification time.
      * @see TarArchiveEntry#getLastModifiedTime()
@@ -1036,7 +1010,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Gets this entry's name.
      *
-     * <p>This method returns the raw name as it is stored inside of the archive.</p>
+     * <p>
+     * This method returns the raw name as it is stored inside of the archive.
+     * </p>
      *
      * @return This entry's name.
      */
@@ -1056,23 +1032,18 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         if (sparseHeaders == null || sparseHeaders.isEmpty()) {
             return Collections.emptyList();
         }
-        final List<TarArchiveStructSparse> orderedAndFiltered = sparseHeaders.stream()
-            .filter(s -> s.getOffset() > 0 || s.getNumbytes() > 0)
-            .sorted(Comparator.comparingLong(TarArchiveStructSparse::getOffset))
-            .collect(Collectors.toList());
+        final List<TarArchiveStructSparse> orderedAndFiltered = sparseHeaders.stream().filter(s -> s.getOffset() > 0 || s.getNumbytes() > 0)
+                .sorted(Comparator.comparingLong(TarArchiveStructSparse::getOffset)).collect(Collectors.toList());
 
         final int numberOfHeaders = orderedAndFiltered.size();
         for (int i = 0; i < numberOfHeaders; i++) {
             final TarArchiveStructSparse str = orderedAndFiltered.get(i);
-            if (i + 1 < numberOfHeaders
-                && str.getOffset() + str.getNumbytes() > orderedAndFiltered.get(i + 1).getOffset()) {
-                throw new IOException("Corrupted TAR archive. Sparse blocks for "
-                    + getName() + " overlap each other.");
+            if (i + 1 < numberOfHeaders && str.getOffset() + str.getNumbytes() > orderedAndFiltered.get(i + 1).getOffset()) {
+                throw new IOException("Corrupted TAR archive. Sparse blocks for " + getName() + " overlap each other.");
             }
             if (str.getOffset() + str.getNumbytes() < 0) {
                 // integer overflow?
-                throw new IOException("Unreadable TAR archive. Offset and numbytes for sparse block in "
-                    + getName() + " too large.");
+                throw new IOException("Unreadable TAR archive. Offset and numbytes for sparse block in " + getName() + " too large.");
             }
         }
         if (!orderedAndFiltered.isEmpty()) {
@@ -1088,8 +1059,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Gets this entry's file.
      *
-     * <p>This method is only useful for entries created from a {@code
-     * File} or {@code Path} but not for entries read from an archive.</p>
+     * <p>
+     * This method is only useful for entries created from a {@code
+     * File} or {@code Path} but not for entries read from an archive.
+     * </p>
      *
      * @return this entry's file or null if the entry was not created from a file.
      * @since 1.21
@@ -1101,9 +1074,13 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Gets this entry's real file size in case of a sparse file.
      *
-     * <p>This is the size a file would take on disk if the entry was expanded.</p>
+     * <p>
+     * This is the size a file would take on disk if the entry was expanded.
+     * </p>
      *
-     * <p>If the file is not a sparse file, return size instead of realSize.</p>
+     * <p>
+     * If the file is not a sparse file, return size instead of realSize.
+     * </p>
      *
      * @return This entry's real file size, if the file is not a sparse file, return size instead of realSize.
      */
@@ -1117,8 +1094,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Gets this entry's file size.
      *
-     * <p>This is the size the entry's data uses inside the archive. Usually this is the same as {@link
-     * #getRealSize}, but it doesn't take the "holes" into account when the entry represents a sparse file.
+     * <p>
+     * This is the size the entry's data uses inside the archive. Usually this is the same as {@link #getRealSize}, but it doesn't take the "holes" into account
+     * when the entry represents a sparse file.
      *
      * @return This entry's file size.
      */
@@ -1151,8 +1129,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Gets this entry's user id.
      *
      * @return This entry's user id.
-     * @deprecated use #getLongUserId instead as user ids can be
-     * bigger than {@link Integer#MAX_VALUE}
+     * @deprecated use #getLongUserId instead as user ids can be bigger than {@link Integer#MAX_VALUE}
      */
     @Deprecated
     public int getUserId() {
@@ -1210,9 +1187,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Determine if the given entry is a descendant of this entry.
-     * Descendancy is determined by the name of the descendant
-     * starting with this entry's name.
+     * Determine if the given entry is a descendant of this entry. Descendancy is determined by the name of the descendant starting with this entry's name.
      *
      * @param desc Entry to be checked as a descendent of this.
      * @return True if entry is a descendant of this.
@@ -1240,8 +1215,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Indicates in case of an oldgnu sparse file if an extension
-     * sparse header follows.
+     * Indicates in case of an oldgnu sparse file if an extension sparse header follows.
      *
      * @return true if an extension oldgnu sparse header follows.
      */
@@ -1323,8 +1297,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             // We come only here if we try to read in a GNU/xstar/xustar multivolume archive starting past volume #0
             // As of 1.22, commons-compress does not support multivolume tar archives.
             // If/when it does, this should work as intended.
-            if ((header[XSTAR_MULTIVOLUME_OFFSET] & 0x80) == 0
-                    && header[XSTAR_MULTIVOLUME_OFFSET + 11] != ' ') {
+            if ((header[XSTAR_MULTIVOLUME_OFFSET] & 0x80) == 0 && header[XSTAR_MULTIVOLUME_OFFSET + 11] != ' ') {
                 return true;
             }
         }
@@ -1361,8 +1334,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Indicate if this entry is a GNU or star sparse block using the
-     * oldgnu format.
+     * Indicate if this entry is a GNU or star sparse block using the oldgnu format.
      *
      * @return true if this is a sparse extension provided by GNU tar or star
      * @since 1.11
@@ -1382,8 +1354,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Indicate if this entry is a GNU sparse block using one of the
-     * PAX formats.
+     * Indicate if this entry is a GNU sparse block using one of the PAX formats.
      *
      * @return true if this is a sparse extension provided by GNU tar
      * @since 1.11
@@ -1401,8 +1372,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      *
      */
     public boolean isPaxHeader() {
-        return linkFlag == LF_PAX_EXTENDED_HEADER_LC
-            || linkFlag == LF_PAX_EXTENDED_HEADER_UC;
+        return linkFlag == LF_PAX_EXTENDED_HEADER_LC || linkFlag == LF_PAX_EXTENDED_HEADER_UC;
     }
 
     /**
@@ -1427,6 +1397,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * {@inheritDoc}
+     *
      * @since 1.21
      */
     @Override
@@ -1456,11 +1427,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
 
         /*
-        If SCHILY.archtype is present in the global PAX header, we can use it to identify the type of archive.
-
-        Possible values for XSTAR:
-        - xustar: 'xstar' format without "tar" signature at header offset 508.
-        - exustar: 'xustar' format variant that always includes x-headers and g-headers.
+         * If SCHILY.archtype is present in the global PAX header, we can use it to identify the type of archive.
+         *
+         * Possible values for XSTAR: - xustar: 'xstar' format without "tar" signature at header offset 508. - exustar: 'xustar' format variant that always
+         * includes x-headers and g-headers.
          */
         final String archType = globalPaxHeaders.get("SCHILY.archtype");
         if (archType != null) {
@@ -1485,7 +1455,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         if (lenient) {
             try {
                 return TarUtils.parseOctalOrBinary(header, offset, length);
-            } catch (final IllegalArgumentException ex) { //NOSONAR
+            } catch (final IllegalArgumentException ex) { // NOSONAR
                 return UNKNOWN;
             }
         }
@@ -1506,7 +1476,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 parseTarHeader(header, TarUtils.DEFAULT_ENCODING, true, false);
             } catch (final IOException ex2) {
                 // not really possible
-                throw new UncheckedIOException(ex2); //NOSONAR
+                throw new UncheckedIOException(ex2); // NOSONAR
             }
         }
     }
@@ -1514,27 +1484,22 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Parse an entry's header information from a header buffer.
      *
-     * @param header The tar entry header buffer to get information from.
+     * @param header   The tar entry header buffer to get information from.
      * @param encoding encoding to use for file names
      * @since 1.4
-     * @throws IllegalArgumentException if any of the numeric fields
-     * have an invalid format
-     * @throws IOException on error
+     * @throws IllegalArgumentException if any of the numeric fields have an invalid format
+     * @throws IOException              on error
      */
-    public void parseTarHeader(final byte[] header, final ZipEncoding encoding)
-        throws IOException {
+    public void parseTarHeader(final byte[] header, final ZipEncoding encoding) throws IOException {
         parseTarHeader(header, encoding, false, false);
     }
 
-    private void parseTarHeader(final byte[] header, final ZipEncoding encoding,
-                                final boolean oldStyle, final boolean lenient)
-        throws IOException {
+    private void parseTarHeader(final byte[] header, final ZipEncoding encoding, final boolean oldStyle, final boolean lenient) throws IOException {
         parseTarHeader(Collections.emptyMap(), header, encoding, oldStyle, lenient);
     }
 
-    private void parseTarHeader(final Map<String, String> globalPaxHeaders, final byte[] header,
-                                final ZipEncoding encoding, final boolean oldStyle, final boolean lenient)
-        throws IOException {
+    private void parseTarHeader(final Map<String, String> globalPaxHeaders, final byte[] header, final ZipEncoding encoding, final boolean oldStyle,
+            final boolean lenient) throws IOException {
         try {
             parseTarHeaderUnwrapped(globalPaxHeaders, header, encoding, oldStyle, lenient);
         } catch (final IllegalArgumentException ex) {
@@ -1542,13 +1507,11 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
     }
 
-    private void parseTarHeaderUnwrapped(final Map<String, String> globalPaxHeaders, final byte[] header,
-                                         final ZipEncoding encoding, final boolean oldStyle, final boolean lenient)
-        throws IOException {
+    private void parseTarHeaderUnwrapped(final Map<String, String> globalPaxHeaders, final byte[] header, final ZipEncoding encoding, final boolean oldStyle,
+            final boolean lenient) throws IOException {
         int offset = 0;
 
-        name = oldStyle ? TarUtils.parseName(header, offset, NAMELEN)
-            : TarUtils.parseName(header, offset, NAMELEN, encoding);
+        name = oldStyle ? TarUtils.parseName(header, offset, NAMELEN) : TarUtils.parseName(header, offset, NAMELEN, encoding);
         offset += NAMELEN;
         mode = (int) parseOctalOrBinary(header, offset, MODELEN, lenient);
         offset += MODELEN;
@@ -1566,18 +1529,15 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         checkSumOK = TarUtils.verifyCheckSum(header);
         offset += CHKSUMLEN;
         linkFlag = header[offset++];
-        linkName = oldStyle ? TarUtils.parseName(header, offset, NAMELEN)
-            : TarUtils.parseName(header, offset, NAMELEN, encoding);
+        linkName = oldStyle ? TarUtils.parseName(header, offset, NAMELEN) : TarUtils.parseName(header, offset, NAMELEN, encoding);
         offset += NAMELEN;
         magic = TarUtils.parseName(header, offset, MAGICLEN);
         offset += MAGICLEN;
         version = TarUtils.parseName(header, offset, VERSIONLEN);
         offset += VERSIONLEN;
-        userName = oldStyle ? TarUtils.parseName(header, offset, UNAMELEN)
-            : TarUtils.parseName(header, offset, UNAMELEN, encoding);
+        userName = oldStyle ? TarUtils.parseName(header, offset, UNAMELEN) : TarUtils.parseName(header, offset, UNAMELEN, encoding);
         offset += UNAMELEN;
-        groupName = oldStyle ? TarUtils.parseName(header, offset, GNAMELEN)
-            : TarUtils.parseName(header, offset, GNAMELEN, encoding);
+        groupName = oldStyle ? TarUtils.parseName(header, offset, GNAMELEN) : TarUtils.parseName(header, offset, GNAMELEN, encoding);
         offset += GNAMELEN;
         if (linkFlag == LF_CHR || linkFlag == LF_BLK) {
             devMajor = (int) parseOctalOrBinary(header, offset, DEVLEN, lenient);
@@ -1598,8 +1558,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             offset += OFFSETLEN_GNU;
             offset += LONGNAMESLEN_GNU;
             offset += PAD2LEN_GNU;
-            sparseHeaders =
-                new ArrayList<>(TarUtils.readSparseStructs(header, offset, SPARSE_HEADERS_IN_OLDGNU_HEADER));
+            sparseHeaders = new ArrayList<>(TarUtils.readSparseStructs(header, offset, SPARSE_HEADERS_IN_OLDGNU_HEADER));
             offset += SPARSELEN_GNU;
             isExtended = TarUtils.parseBoolean(header, offset);
             offset += ISEXTENDEDLEN_GNU;
@@ -1608,9 +1567,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             break;
         }
         case FORMAT_XSTAR: {
-            final String xstarPrefix = oldStyle
-                ? TarUtils.parseName(header, offset, PREFIXLEN_XSTAR)
-                : TarUtils.parseName(header, offset, PREFIXLEN_XSTAR, encoding);
+            final String xstarPrefix = oldStyle ? TarUtils.parseName(header, offset, PREFIXLEN_XSTAR)
+                    : TarUtils.parseName(header, offset, PREFIXLEN_XSTAR, encoding);
             offset += PREFIXLEN_XSTAR;
             if (!xstarPrefix.isEmpty()) {
                 name = xstarPrefix + "/" + name;
@@ -1623,16 +1581,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
         case FORMAT_POSIX:
         default: {
-            final String prefix = oldStyle
-                ? TarUtils.parseName(header, offset, PREFIXLEN)
-                : TarUtils.parseName(header, offset, PREFIXLEN, encoding);
+            final String prefix = oldStyle ? TarUtils.parseName(header, offset, PREFIXLEN) : TarUtils.parseName(header, offset, PREFIXLEN, encoding);
             offset += PREFIXLEN; // NOSONAR - assignment as documentation
             // SunOS tar -E does not add / to directory names, so fix
             // up to be consistent
-            if (isDirectory() && !name.endsWith("/")){
+            if (isDirectory() && !name.endsWith("/")) {
                 name = name + "/";
             }
-            if (!prefix.isEmpty()){
+            if (!prefix.isEmpty()) {
                 name = prefix + "/" + name;
             }
         }
@@ -1640,8 +1596,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * process one pax header, using the entries extraPaxHeaders map as source for extra headers
-     * used when handling entries for sparse files.
+     * process one pax header, using the entries extraPaxHeaders map as source for extra headers used when handling entries for sparse files.
+     *
      * @param key
      * @param val
      * @since 1.15
@@ -1651,105 +1607,90 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Process one pax header, using the supplied map as source for extra headers to be used when handling
-     * entries for sparse files
+     * Process one pax header, using the supplied map as source for extra headers to be used when handling entries for sparse files
      *
-     * @param key  the header name.
-     * @param val  the header value.
-     * @param headers  map of headers used for dealing with sparse file.
-     * @throws NumberFormatException  if encountered errors when parsing the numbers
+     * @param key     the header name.
+     * @param val     the header value.
+     * @param headers map of headers used for dealing with sparse file.
+     * @throws NumberFormatException if encountered errors when parsing the numbers
      * @since 1.15
      */
-    private void processPaxHeader(final String key, final String val, final Map<String, String> headers)
-        throws IOException {
-    /*
-     * The following headers are defined for Pax.
-     * charset: cannot use these without changing TarArchiveEntry fields
-     * mtime
-     * atime
-     * ctime
-     * LIBARCHIVE.creationtime
-     * comment
-     * gid, gname
-     * linkpath
-     * size
-     * uid,uname
-     * SCHILY.devminor, SCHILY.devmajor: don't have setters/getters for those
-     *
-     * GNU sparse files use additional members, we use
-     * GNU.sparse.size to detect the 0.0 and 0.1 versions and
-     * GNU.sparse.realsize for 1.0.
-     *
-     * star files use additional members of which we use
-     * SCHILY.filetype in order to detect star sparse files.
-     *
-     * If called from addExtraPaxHeader, these additional headers must be already present .
-     */
+    private void processPaxHeader(final String key, final String val, final Map<String, String> headers) throws IOException {
+        /*
+         * The following headers are defined for Pax. charset: cannot use these without changing TarArchiveEntry fields mtime atime ctime
+         * LIBARCHIVE.creationtime comment gid, gname linkpath size uid,uname SCHILY.devminor, SCHILY.devmajor: don't have setters/getters for those
+         *
+         * GNU sparse files use additional members, we use GNU.sparse.size to detect the 0.0 and 0.1 versions and GNU.sparse.realsize for 1.0.
+         *
+         * star files use additional members of which we use SCHILY.filetype in order to detect star sparse files.
+         *
+         * If called from addExtraPaxHeader, these additional headers must be already present .
+         */
         switch (key) {
-            case "path":
-                setName(val);
-                break;
-            case "linkpath":
-                setLinkName(val);
-                break;
-            case "gid":
-                setGroupId(Long.parseLong(val));
-                break;
-            case "gname":
-                setGroupName(val);
-                break;
-            case "uid":
-                setUserId(Long.parseLong(val));
-                break;
-            case "uname":
-                setUserName(val);
-                break;
-            case "size":
-                final long size = Long.parseLong(val);
-                if (size < 0) {
-                    throw new IOException("Corrupted TAR archive. Entry size is negative");
-                }
-                setSize(size);
-                break;
-            case "mtime":
-                setLastModifiedTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
-                break;
-            case "atime":
-                setLastAccessTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
-                break;
-            case "ctime":
-                setStatusChangeTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
-                break;
-            case "LIBARCHIVE.creationtime":
-                setCreationTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
-                break;
-            case "SCHILY.devminor":
-                final int devMinor = Integer.parseInt(val);
-                if (devMinor < 0) {
-                    throw new IOException("Corrupted TAR archive. Dev-Minor is negative");
-                }
-                setDevMinor(devMinor);
-                break;
-            case "SCHILY.devmajor":
-                final int devMajor = Integer.parseInt(val);
-                if (devMajor < 0) {
-                    throw new IOException("Corrupted TAR archive. Dev-Major is negative");
-                }
-                setDevMajor(devMajor);
-                break;
-            case TarGnuSparseKeys.SIZE:
-                fillGNUSparse0xData(headers);
-                break;
-            case TarGnuSparseKeys.REALSIZE:
-                fillGNUSparse1xData(headers);
-                break;
-            case "SCHILY.filetype":
-                if ("sparse".equals(val)) {
-                    fillStarSparseData(headers);
-                }
-                break;
-            default:
-                extraPaxHeaders.put(key, val);
+        case "path":
+            setName(val);
+            break;
+        case "linkpath":
+            setLinkName(val);
+            break;
+        case "gid":
+            setGroupId(Long.parseLong(val));
+            break;
+        case "gname":
+            setGroupName(val);
+            break;
+        case "uid":
+            setUserId(Long.parseLong(val));
+            break;
+        case "uname":
+            setUserName(val);
+            break;
+        case "size":
+            final long size = Long.parseLong(val);
+            if (size < 0) {
+                throw new IOException("Corrupted TAR archive. Entry size is negative");
+            }
+            setSize(size);
+            break;
+        case "mtime":
+            setLastModifiedTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
+            break;
+        case "atime":
+            setLastAccessTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
+            break;
+        case "ctime":
+            setStatusChangeTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
+            break;
+        case "LIBARCHIVE.creationtime":
+            setCreationTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
+            break;
+        case "SCHILY.devminor":
+            final int devMinor = Integer.parseInt(val);
+            if (devMinor < 0) {
+                throw new IOException("Corrupted TAR archive. Dev-Minor is negative");
+            }
+            setDevMinor(devMinor);
+            break;
+        case "SCHILY.devmajor":
+            final int devMajor = Integer.parseInt(val);
+            if (devMajor < 0) {
+                throw new IOException("Corrupted TAR archive. Dev-Major is negative");
+            }
+            setDevMajor(devMajor);
+            break;
+        case TarGnuSparseKeys.SIZE:
+            fillGNUSparse0xData(headers);
+            break;
+        case TarGnuSparseKeys.REALSIZE:
+            fillGNUSparse1xData(headers);
+            break;
+        case "SCHILY.filetype":
+            if ("sparse".equals(val)) {
+                fillStarSparseData(headers);
+            }
+            break;
+        default:
+            extraPaxHeaders.put(key, val);
         }
     }
 
@@ -1818,6 +1759,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Sets the offset of the data for the tar entry.
+     *
      * @param dataOffset the position of the data in the tar.
      * @since 1.21
      */
@@ -1836,9 +1778,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @since 1.4
      */
     public void setDevMajor(final int devNo) {
-        if (devNo < 0){
-            throw new IllegalArgumentException("Major device number is out of "
-                                               + "range: " + devNo);
+        if (devNo < 0) {
+            throw new IllegalArgumentException("Major device number is out of " + "range: " + devNo);
         }
         this.devMajor = devNo;
     }
@@ -1851,9 +1792,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @since 1.4
      */
     public void setDevMinor(final int devNo) {
-        if (devNo < 0){
-            throw new IllegalArgumentException("Minor device number is out of "
-                                               + "range: " + devNo);
+        if (devNo < 0) {
+            throw new IllegalArgumentException("Minor device number is out of " + "range: " + devNo);
         }
         this.devMinor = devNo;
     }
@@ -1889,7 +1829,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Convenience method to set this entry's group and user ids.
      *
-     * @param userId This entry's new user id.
+     * @param userId  This entry's new user id.
      * @param groupId This entry's new group id.
      */
     public void setIds(final int userId, final int groupId) {
@@ -1959,8 +1899,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Sets this entry's modification time. The parameter passed
-     * to this method is in "Java time".
+     * Sets this entry's modification time. The parameter passed to this method is in "Java time".
      *
      * @param time This entry's new modification time.
      * @see TarArchiveEntry#setLastModifiedTime(FileTime)
@@ -1981,7 +1920,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Convenience method to set this entry's group and user names.
      *
-     * @param userName This entry's new user name.
+     * @param userName  This entry's new user name.
      * @param groupName This entry's new group name.
      */
     public void setNames(final String userName, final String groupName) {
@@ -1996,7 +1935,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @throws IllegalArgumentException if the size is &lt; 0.
      */
     public void setSize(final long size) {
-        if (size < 0){
+        if (size < 0) {
             throw new IllegalArgumentException("Size is out of range: " + size);
         }
         this.size = size;
@@ -2004,6 +1943,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Sets this entry's sparse headers
+     *
      * @param sparseHeaders The new sparse headers
      * @since 1.20
      */
@@ -2051,6 +1991,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Update the entry using a map of pax headers.
+     *
      * @param headers
      * @since 1.15
      */
@@ -2063,7 +2004,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Write an entry's header information to a header buffer.
      *
-     * <p>This method does not use the star/GNU tar/BSD tar extensions.</p>
+     * <p>
+     * This method does not use the star/GNU tar/BSD tar extensions.
+     * </p>
      *
      * @param outbuf The tar entry header buffer to fill in.
      */
@@ -2075,7 +2018,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 writeEntryHeader(outbuf, TarUtils.FALLBACK_ENCODING, false);
             } catch (final IOException ex2) {
                 // impossible
-                throw new UncheckedIOException(ex2); //NOSONAR
+                throw new UncheckedIOException(ex2); // NOSONAR
             }
         }
     }
@@ -2083,46 +2026,35 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Write an entry's header information to a header buffer.
      *
-     * @param outbuf The tar entry header buffer to fill in.
+     * @param outbuf   The tar entry header buffer to fill in.
      * @param encoding encoding to use when writing the file name.
-     * @param starMode whether to use the star/GNU tar/BSD tar
-     * extension for numeric fields if their value doesn't fit in the
-     * maximum size of standard tar archives
+     * @param starMode whether to use the star/GNU tar/BSD tar extension for numeric fields if their value doesn't fit in the maximum size of standard tar
+     *                 archives
      * @since 1.4
      * @throws IOException on error
      */
-    public void writeEntryHeader(final byte[] outbuf, final ZipEncoding encoding,
-                                 final boolean starMode) throws IOException {
+    public void writeEntryHeader(final byte[] outbuf, final ZipEncoding encoding, final boolean starMode) throws IOException {
         int offset = 0;
 
-        offset = TarUtils.formatNameBytes(name, outbuf, offset, NAMELEN,
-                                          encoding);
+        offset = TarUtils.formatNameBytes(name, outbuf, offset, NAMELEN, encoding);
         offset = writeEntryHeaderField(mode, outbuf, offset, MODELEN, starMode);
-        offset = writeEntryHeaderField(userId, outbuf, offset, UIDLEN,
-                                       starMode);
-        offset = writeEntryHeaderField(groupId, outbuf, offset, GIDLEN,
-                                       starMode);
+        offset = writeEntryHeaderField(userId, outbuf, offset, UIDLEN, starMode);
+        offset = writeEntryHeaderField(groupId, outbuf, offset, GIDLEN, starMode);
         offset = writeEntryHeaderField(size, outbuf, offset, SIZELEN, starMode);
-        offset = writeEntryHeaderField(TimeUtils.toUnixTime(mTime), outbuf, offset,
-                                       MODTIMELEN, starMode);
+        offset = writeEntryHeaderField(TimeUtils.toUnixTime(mTime), outbuf, offset, MODTIMELEN, starMode);
 
         final int csOffset = offset;
 
         offset = fill((byte) ' ', offset, outbuf, CHKSUMLEN);
 
         outbuf[offset++] = linkFlag;
-        offset = TarUtils.formatNameBytes(linkName, outbuf, offset, NAMELEN,
-                                          encoding);
+        offset = TarUtils.formatNameBytes(linkName, outbuf, offset, NAMELEN, encoding);
         offset = TarUtils.formatNameBytes(magic, outbuf, offset, MAGICLEN);
         offset = TarUtils.formatNameBytes(version, outbuf, offset, VERSIONLEN);
-        offset = TarUtils.formatNameBytes(userName, outbuf, offset, UNAMELEN,
-                                          encoding);
-        offset = TarUtils.formatNameBytes(groupName, outbuf, offset, GNAMELEN,
-                                          encoding);
-        offset = writeEntryHeaderField(devMajor, outbuf, offset, DEVLEN,
-                                       starMode);
-        offset = writeEntryHeaderField(devMinor, outbuf, offset, DEVLEN,
-                                       starMode);
+        offset = TarUtils.formatNameBytes(userName, outbuf, offset, UNAMELEN, encoding);
+        offset = TarUtils.formatNameBytes(groupName, outbuf, offset, GNAMELEN, encoding);
+        offset = writeEntryHeaderField(devMajor, outbuf, offset, DEVLEN, starMode);
+        offset = writeEntryHeaderField(devMinor, outbuf, offset, DEVLEN, starMode);
 
         if (starMode) {
             // skip prefix
@@ -2143,17 +2075,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         TarUtils.formatCheckSumOctalBytes(chk, outbuf, csOffset, CHKSUMLEN);
     }
 
-    private int writeEntryHeaderField(final long value, final byte[] outbuf, final int offset,
-                                      final int length, final boolean starMode) {
-        if (!starMode && (value < 0
-                          || value >= 1L << 3 * (length - 1))) {
+    private int writeEntryHeaderField(final long value, final byte[] outbuf, final int offset, final int length, final boolean starMode) {
+        if (!starMode && (value < 0 || value >= 1L << 3 * (length - 1))) {
             // value doesn't fit into field when written as octal
             // number, will be written to PAX header or causes an
             // error
             return TarUtils.formatLongOctalBytes(0, outbuf, offset, length);
         }
-        return TarUtils.formatLongOctalOrBinaryBytes(value, outbuf, offset,
-                                                     length);
+        return TarUtils.formatLongOctalOrBinaryBytes(value, outbuf, offset, length);
     }
 
     private int writeEntryHeaderOptionalTimeField(final FileTime time, int offset, final byte[] outbuf, final int fieldLength) {
@@ -2166,4 +2095,3 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
 }
-

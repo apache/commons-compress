@@ -93,14 +93,11 @@ final class LZMA2Decoder extends AbstractCoder {
         final int dictSize = getDictSize(opts);
         final int lead = Integer.numberOfLeadingZeros(dictSize);
         final int secondBit = (dictSize >>> 30 - lead) - 2;
-        return new byte[] {
-            (byte) ((19 - lead) * 2 + secondBit)
-        };
+        return new byte[] { (byte) ((19 - lead) * 2 + secondBit) };
     }
 
     @Override
-    Object getOptionsFromCoder(final Coder coder, final InputStream in)
-        throws IOException {
+    Object getOptionsFromCoder(final Coder coder, final InputStream in) throws IOException {
         return getDictionarySize(coder);
     }
 

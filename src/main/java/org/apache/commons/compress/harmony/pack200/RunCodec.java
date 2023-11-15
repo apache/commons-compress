@@ -23,8 +23,8 @@ import java.util.Arrays;
 import org.apache.commons.compress.utils.ExactMath;
 
 /**
- * A run codec is a grouping of two nested codecs; K values are decoded from the first codec, and the remaining codes
- * are decoded from the remaining codec. Note that since this codec maintains state, the instances are not reusable.
+ * A run codec is a grouping of two nested codecs; K values are decoded from the first codec, and the remaining codes are decoded from the remaining codec. Note
+ * that since this codec maintains state, the instances are not reusable.
  */
 public class RunCodec extends Codec {
 

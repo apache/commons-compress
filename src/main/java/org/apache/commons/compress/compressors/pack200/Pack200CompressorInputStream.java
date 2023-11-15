@@ -84,7 +84,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     /**
      * Decompresses the given file, caching the decompressed data in memory and using the given properties.
      *
-     * @param file     the file to decompress
+     * @param file       the file to decompress
      * @param properties Pack200 properties to use
      * @throws IOException if reading fails
      */
@@ -95,7 +95,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     /**
      * Decompresses the given file using the given strategy to cache the results.
      *
-     * @param file    the file to decompress
+     * @param file the file to decompress
      * @param mode the strategy to use
      * @throws IOException if reading fails
      */
@@ -106,8 +106,8 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     /**
      * Decompresses the given file using the given strategy to cache the results and the given properties.
      *
-     * @param file     the file to decompress
-     * @param mode  the strategy to use
+     * @param file       the file to decompress
+     * @param mode       the strategy to use
      * @param properties Pack200 properties to use
      * @throws IOException if reading fails
      */
@@ -133,7 +133,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
             throws IOException {
         this.originalInputStream = inputStream;
         this.abstractStreamBridge = mode.newStreamBridge();
-        try (final JarOutputStream jarOut = new JarOutputStream(abstractStreamBridge)) {
+        try (JarOutputStream jarOut = new JarOutputStream(abstractStreamBridge)) {
             final Pack200.Unpacker unpacker = Pack200.newUnpacker();
             if (properties != null) {
                 unpacker.properties().putAll(properties);
@@ -141,7 +141,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
             if (file == null) {
                 // unpack would close this stream but we want to give the call site more control
                 // TODO unpack should not close its given stream.
-                try (final CloseShieldFilterInputStream closeShield = new CloseShieldFilterInputStream(inputStream)) {
+                try (CloseShieldFilterInputStream closeShield = new CloseShieldFilterInputStream(inputStream)) {
                     unpacker.unpack(closeShield, jarOut);
                 }
             } else {
@@ -157,8 +157,8 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
      * When reading from a file the File-arg constructor may provide better performance.
      * </p>
      *
-     * @param inputStream    the InputStream from which this object should be created
-     * @param properties Pack200 properties to use
+     * @param inputStream the InputStream from which this object should be created
+     * @param properties  Pack200 properties to use
      * @throws IOException if reading fails
      */
     public Pack200CompressorInputStream(final InputStream inputStream, final Map<String, String> properties) throws IOException {
@@ -172,8 +172,8 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
      * When reading from a file the File-arg constructor may provide better performance.
      * </p>
      *
-     * @param inputStream   the InputStream from which this object should be created
-     * @param mode the strategy to use
+     * @param inputStream the InputStream from which this object should be created
+     * @param mode        the strategy to use
      * @throws IOException if reading fails
      */
     public Pack200CompressorInputStream(final InputStream inputStream, final Pack200Strategy mode) throws IOException {
@@ -187,9 +187,9 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
      * When reading from a file the File-arg constructor may provide better performance.
      * </p>
      *
-     * @param inputStream    the InputStream from which this object should be created
-     * @param mode  the strategy to use
-     * @param properties Pack200 properties to use
+     * @param inputStream the InputStream from which this object should be created
+     * @param mode        the strategy to use
+     * @param properties  Pack200 properties to use
      * @throws IOException if reading fails
      */
     public Pack200CompressorInputStream(final InputStream inputStream, final Pack200Strategy mode, final Map<String, String> properties) throws IOException {

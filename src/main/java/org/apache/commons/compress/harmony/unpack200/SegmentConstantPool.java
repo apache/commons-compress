@@ -49,12 +49,11 @@ public class SegmentConstantPool {
     protected static final String REGEX_MATCH_INIT = "^" + INITSTRING + ".*";
 
     /**
-     * We don't want a dependency on regex in Pack200. The only place one exists is in matchSpecificPoolEntryIndex(). To
-     * eliminate this dependency, we've implemented the world's stupidest regexMatch. It knows about the two forms we
-     * care about: .* (aka REGEX_MATCH_ALL) {@code ^<init>;.*} (aka REGEX_MATCH_INIT) and will answer correctly if those
-     * are passed as the regexString.
+     * We don't want a dependency on regex in Pack200. The only place one exists is in matchSpecificPoolEntryIndex(). To eliminate this dependency, we've
+     * implemented the world's stupidest regexMatch. It knows about the two forms we care about: .* (aka REGEX_MATCH_ALL) {@code ^<init>;.*} (aka
+     * REGEX_MATCH_INIT) and will answer correctly if those are passed as the regexString.
      *
-     * @param regexString String against which the compareString will be matched
+     * @param regexString   String against which the compareString will be matched
      * @param compareString String to match against the regexString
      * @return boolean true if the compareString matches the regexString; otherwise false.
      */
@@ -70,6 +69,7 @@ public class SegmentConstantPool {
         }
         throw new Error("regex trying to match a pattern I don't know: " + regexString);
     }
+
     private final CpBands bands;
     private final SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
 
@@ -100,17 +100,16 @@ public class SegmentConstantPool {
     }
 
     /**
-     * Subset the constant pool of the specified type to be just that which has the specified class name. Answer the
-     * ConstantPoolEntry at the desiredIndex of the subsetted pool.
+     * Subset the constant pool of the specified type to be just that which has the specified class name. Answer the ConstantPoolEntry at the desiredIndex of
+     * the subsetted pool.
      *
-     * @param cp type of constant pool array to search
-     * @param desiredIndex index of the constant pool
+     * @param cp               type of constant pool array to search
+     * @param desiredIndex     index of the constant pool
      * @param desiredClassName class to use to generate a subset of the pool
      * @return ConstantPoolEntry
      * @throws Pack200Exception TODO
      */
-    public ConstantPoolEntry getClassSpecificPoolEntry(final int cp, final long desiredIndex,
-        final String desiredClassName) throws Pack200Exception {
+    public ConstantPoolEntry getClassSpecificPoolEntry(final int cp, final long desiredIndex, final String desiredClassName) throws Pack200Exception {
         final int index = (int) desiredIndex;
         int realIndex = -1;
         String[] array;
@@ -156,11 +155,11 @@ public class SegmentConstantPool {
             return bands.cpClassValue(index);
         case SIGNATURE:
             throw new Error("I don't know what to do with signatures yet");
-            // return null /* new CPSignature(bands.getCpSignature()[index]) */;
+        // return null /* new CPSignature(bands.getCpSignature()[index]) */;
         case CP_DESCR:
             throw new Error("I don't know what to do with descriptors yet");
-            // return null /* new CPDescriptor(bands.getCpDescriptor()[index])
-            // */;
+        // return null /* new CPDescriptor(bands.getCpDescriptor()[index])
+        // */;
         case CP_FIELD:
             return bands.cpFieldValue(index);
         case CP_METHOD:
@@ -177,21 +176,19 @@ public class SegmentConstantPool {
     /**
      * Answer the init method for the specified class.
      *
-     * @param cp constant pool to search (must be CP_METHOD)
-     * @param value index of init method
+     * @param cp               constant pool to search (must be CP_METHOD)
+     * @param value            index of init method
      * @param desiredClassName String class name of the init method
      * @return CPMethod init method
      * @throws Pack200Exception TODO
      */
-    public ConstantPoolEntry getInitMethodPoolEntry(final int cp, final long value, final String desiredClassName)
-        throws Pack200Exception {
+    public ConstantPoolEntry getInitMethodPoolEntry(final int cp, final long value, final String desiredClassName) throws Pack200Exception {
         int realIndex = -1;
         if (cp != CP_METHOD) {
             // TODO really an error?
             throw new Error("Nothing but CP_METHOD can be an <init>");
         }
-        realIndex = matchSpecificPoolEntryIndex(bands.getCpMethodClass(), bands.getCpMethodDescriptor(),
-            desiredClassName, REGEX_MATCH_INIT, (int) value);
+        realIndex = matchSpecificPoolEntryIndex(bands.getCpMethodClass(), bands.getCpMethodDescriptor(), desiredClassName, REGEX_MATCH_INIT, (int) value);
         return getConstantPoolEntry(cp, realIndex);
     }
 
@@ -229,45 +226,40 @@ public class SegmentConstantPool {
     }
 
     /**
-     * A number of things make use of subsets of structures. In one particular example, _super bytecodes will use a
-     * subset of method or field classes which have just those methods / fields defined in the superclass. Similarly,
-     * _this bytecodes use just those methods/fields defined in this class, and _init bytecodes use just those methods
-     * that start with {@code <init>}.
+     * A number of things make use of subsets of structures. In one particular example, _super bytecodes will use a subset of method or field classes which have
+     * just those methods / fields defined in the superclass. Similarly, _this bytecodes use just those methods/fields defined in this class, and _init
+     * bytecodes use just those methods that start with {@code <init>}.
      *
-     * This method takes an array of names, a String to match for, an index and a boolean as parameters, and answers the
-     * array position in the array of the indexth element which matches (or equals) the String (depending on the state
-     * of the boolean)
+     * This method takes an array of names, a String to match for, an index and a boolean as parameters, and answers the array position in the array of the
+     * indexth element which matches (or equals) the String (depending on the state of the boolean)
      *
-     * In other words, if the class array consists of: Object [position 0, 0th instance of Object] String [position 1,
-     * 0th instance of String] String [position 2, 1st instance of String] Object [position 3, 1st instance of Object]
-     * Object [position 4, 2nd instance of Object] then matchSpecificPoolEntryIndex(..., "Object", 2, false) will answer
-     * 4. matchSpecificPoolEntryIndex(..., "String", 0, false) will answer 1.
+     * In other words, if the class array consists of: Object [position 0, 0th instance of Object] String [position 1, 0th instance of String] String [position
+     * 2, 1st instance of String] Object [position 3, 1st instance of Object] Object [position 4, 2nd instance of Object] then matchSpecificPoolEntryIndex(...,
+     * "Object", 2, false) will answer 4. matchSpecificPoolEntryIndex(..., "String", 0, false) will answer 1.
      *
-     * @param nameArray Array of Strings against which the compareString is tested
+     * @param nameArray     Array of Strings against which the compareString is tested
      * @param compareString String for which to search
-     * @param desiredIndex nth element with that match (counting from 0)
+     * @param desiredIndex  nth element with that match (counting from 0)
      * @return int index into nameArray, or -1 if not found.
      */
-    protected int matchSpecificPoolEntryIndex(final String[] nameArray, final String compareString,
-        final int desiredIndex) {
+    protected int matchSpecificPoolEntryIndex(final String[] nameArray, final String compareString, final int desiredIndex) {
         return matchSpecificPoolEntryIndex(nameArray, nameArray, compareString, REGEX_MATCH_ALL, desiredIndex);
     }
 
     /**
-     * This method's function is to look through pairs of arrays. It keeps track of the number of hits it finds using
-     * the following basis of comparison for a hit: - the primaryArray[index] must be .equals() to the
-     * primaryCompareString - the secondaryArray[index] .matches() the secondaryCompareString. When the desiredIndex
-     * number of hits has been reached, the index into the original two arrays of the element hit is returned.
+     * This method's function is to look through pairs of arrays. It keeps track of the number of hits it finds using the following basis of comparison for a
+     * hit: - the primaryArray[index] must be .equals() to the primaryCompareString - the secondaryArray[index] .matches() the secondaryCompareString. When the
+     * desiredIndex number of hits has been reached, the index into the original two arrays of the element hit is returned.
      *
-     * @param primaryArray The first array to search
-     * @param secondaryArray The second array (must be same .length as primaryArray)
-     * @param primaryCompareString The String to compare against primaryArray using .equals()
+     * @param primaryArray          The first array to search
+     * @param secondaryArray        The second array (must be same .length as primaryArray)
+     * @param primaryCompareString  The String to compare against primaryArray using .equals()
      * @param secondaryCompareRegex The String to compare against secondaryArray using .matches()
-     * @param desiredIndex The nth hit whose position we're seeking
+     * @param desiredIndex          The nth hit whose position we're seeking
      * @return int index that represents the position of the nth hit in primaryArray and secondaryArray
      */
-    protected int matchSpecificPoolEntryIndex(final String[] primaryArray, final String[] secondaryArray,
-        final String primaryCompareString, final String secondaryCompareRegex, final int desiredIndex) {
+    protected int matchSpecificPoolEntryIndex(final String[] primaryArray, final String[] secondaryArray, final String primaryCompareString,
+            final String secondaryCompareRegex, final int desiredIndex) {
         int instanceCount = -1;
         final List<Integer> indexList = arrayCache.indexesForArrayKey(primaryArray, primaryCompareString);
         if (indexList.isEmpty()) {

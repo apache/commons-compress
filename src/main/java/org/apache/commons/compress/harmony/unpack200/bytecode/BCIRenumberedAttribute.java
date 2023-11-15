@@ -50,9 +50,8 @@ public abstract class BCIRenumberedAttribute extends Attribute {
     }
 
     /**
-     * In Pack200, line number tables are BCI renumbered. This method takes the byteCodeOffsets (which is a List of
-     * Integers specifying the offset in the byte code array of each instruction) and updates the start_pcs so that it
-     * points to the instruction index itself, not the BCI renumbering of the instruction.
+     * In Pack200, line number tables are BCI renumbered. This method takes the byteCodeOffsets (which is a List of Integers specifying the offset in the byte
+     * code array of each instruction) and updates the start_pcs so that it points to the instruction index itself, not the BCI renumbering of the instruction.
      *
      * @param byteCodeOffsets List of Integer offsets of the bytecode array
      * @throws Pack200Exception TODO

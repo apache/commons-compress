@@ -40,7 +40,7 @@ public class CPUTF8 extends ConstantPoolEntry {
     /**
      * Creates a new CPUTF8 instance
      *
-     * @param utf8 TODO
+     * @param utf8        TODO
      * @param globalIndex - index in CpBands
      * @throws NullPointerException if utf8 is null
      */
@@ -48,6 +48,7 @@ public class CPUTF8 extends ConstantPoolEntry {
         super(ConstantPoolEntry.CP_UTF8, globalIndex);
         this.utf8 = Objects.requireNonNull(utf8, "utf8");
     }
+
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {

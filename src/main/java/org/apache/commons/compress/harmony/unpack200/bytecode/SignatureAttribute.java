@@ -25,6 +25,7 @@ import java.io.IOException;
 public class SignatureAttribute extends Attribute {
 
     private static CPUTF8 attributeName;
+
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
@@ -50,7 +51,7 @@ public class SignatureAttribute extends Attribute {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] {getAttributeName(), signature};
+        return new ClassFileEntry[] { getAttributeName(), signature };
     }
 
     @Override

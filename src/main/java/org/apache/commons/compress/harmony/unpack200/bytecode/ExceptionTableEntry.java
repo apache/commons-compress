@@ -36,14 +36,13 @@ public class ExceptionTableEntry {
     private int catchTypeIndex;
 
     /**
-     * Create a new ExceptionTableEntry. Exception tables are of two kinds: either a normal one (with a Throwable as the
-     * catchType) or a finally clause (which has no catchType). In the class file, the finally clause is represented
-     * as catchType == 0.
+     * Create a new ExceptionTableEntry. Exception tables are of two kinds: either a normal one (with a Throwable as the catchType) or a finally clause (which
+     * has no catchType). In the class file, the finally clause is represented as catchType == 0.
      *
      * To create a finally clause with this method, pass in null for the catchType.
      *
-     * @param startPC int
-     * @param endPC int
+     * @param startPC   int
+     * @param endPC     int
      * @param handlerPC int
      * @param catchType CPClass (if it's a normal catch) or null (if it's a finally clause).
      */

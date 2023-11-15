@@ -26,8 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * StreamBridge that caches all data written to the output side in
- * a temporary file.
+ * StreamBridge that caches all data written to the output side in a temporary file.
  *
  * @since 1.3
  */

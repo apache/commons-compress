@@ -143,12 +143,9 @@ public class ClassConstantPool {
     }
 
     private void initialSort() {
-        final TreeSet<ClassFileEntry> inCpAll = new TreeSet<>(
-                Comparator.comparingInt(arg0 -> ((ConstantPoolEntry) arg0).getGlobalIndex()));
-        final TreeSet<ClassFileEntry> cpUtf8sNotInCpAll = new TreeSet<>(
-                Comparator.comparing(arg0 -> ((CPUTF8) arg0).underlyingString()));
-        final TreeSet<ClassFileEntry> cpClassesNotInCpAll = new TreeSet<>(
-                Comparator.comparing(arg0 -> ((CPClass) arg0).getName()));
+        final TreeSet<ClassFileEntry> inCpAll = new TreeSet<>(Comparator.comparingInt(arg0 -> ((ConstantPoolEntry) arg0).getGlobalIndex()));
+        final TreeSet<ClassFileEntry> cpUtf8sNotInCpAll = new TreeSet<>(Comparator.comparing(arg0 -> ((CPUTF8) arg0).underlyingString()));
+        final TreeSet<ClassFileEntry> cpClassesNotInCpAll = new TreeSet<>(Comparator.comparing(arg0 -> ((CPClass) arg0).getName()));
 
         for (final ClassFileEntry entry2 : entries) {
             final ConstantPoolEntry entry = (ConstantPoolEntry) entry2;

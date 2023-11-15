@@ -29,9 +29,7 @@ final class StreamMap {
 
     @Override
     public String toString() {
-        return "StreamMap with indices of " + folderFirstPackStreamIndex.length
-            + " folders, offsets of " + packStreamOffsets.length + " packed streams,"
-            + " first files of " + folderFirstFileIndex.length + " folders and"
-            + " folder indices for " + fileFolderIndex.length + " files";
+        return "StreamMap with indices of " + folderFirstPackStreamIndex.length + " folders, offsets of " + packStreamOffsets.length + " packed streams,"
+                + " first files of " + folderFirstFileIndex.length + " folders and" + " folder indices for " + fileFolderIndex.length + " files";
     }
 }

@@ -40,12 +40,10 @@ public class Lists {
     }
 
     /**
-     * Creates a new {@link ArrayList} filled with the contents of the given
-     * {@code iterator}.
+     * Creates a new {@link ArrayList} filled with the contents of the given {@code iterator}.
      *
-     * @param iterator
-     *            the source iterator
-     * @param <E> type of elements contained in new list
+     * @param iterator the source iterator
+     * @param <E>      type of elements contained in new list
      * @return a new {@link ArrayList}
      */
     public static <E> ArrayList<E> newArrayList(final Iterator<? extends E> iterator) {

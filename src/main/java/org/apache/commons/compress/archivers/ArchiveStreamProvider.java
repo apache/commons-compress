@@ -49,8 +49,8 @@ public interface ArchiveStreamProvider {
      * @throws StreamingNotSupportedException if the format cannot be read from a stream
      * @throws IllegalArgumentException       if the archiver name or stream is null
      */
-    <I extends ArchiveInputStream<? extends ArchiveEntry>> I createArchiveInputStream(final String archiverName, final InputStream inputStream,
-            final String encoding) throws ArchiveException;
+    <I extends ArchiveInputStream<? extends ArchiveEntry>> I createArchiveInputStream(String archiverName, InputStream inputStream, String encoding)
+            throws ArchiveException;
 
     /**
      * Creates an archive output stream from an archiver name and an output stream.
@@ -68,8 +68,8 @@ public interface ArchiveStreamProvider {
      * @throws StreamingNotSupportedException if the format cannot be written to a stream
      * @throws IllegalArgumentException       if the archiver name or stream is null
      */
-    <O extends ArchiveOutputStream<? extends ArchiveEntry>> O createArchiveOutputStream(final String archiverName, final OutputStream outputStream,
-            final String encoding) throws ArchiveException;
+    <O extends ArchiveOutputStream<? extends ArchiveEntry>> O createArchiveOutputStream(String archiverName, OutputStream outputStream, String encoding)
+            throws ArchiveException;
 
     /**
      * Gets all the input stream archive names for this provider

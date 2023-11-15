@@ -25,6 +25,7 @@ import java.util.zip.ZipException;
 
 /**
  * A common base class for Unicode extra information extra fields.
+ *
  * @NotThreadSafe
  */
 public abstract class AbstractUnicodeExtraField implements ZipExtraField {
@@ -39,28 +40,22 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     }
 
     /**
-     * Assemble as unicode extension from the name/comment and
-     * encoding of the original ZIP entry.
+     * Assemble as unicode extension from the name/comment and encoding of the original ZIP entry.
      *
-     * @param text The file name or comment.
-     * @param bytes The encoded of the file name or comment in the ZIP
-     * file.
+     * @param text  The file name or comment.
+     * @param bytes The encoded of the file name or comment in the ZIP file.
      */
     protected AbstractUnicodeExtraField(final String text, final byte[] bytes) {
         this(text, bytes, 0, bytes.length);
     }
 
     /**
-     * Assemble as unicode extension from the name/comment and
-     * encoding of the original ZIP entry.
+     * Assemble as unicode extension from the name/comment and encoding of the original ZIP entry.
      *
-     * @param text The file name or comment.
-     * @param bytes The encoded of the file name or comment in the ZIP
-     * file.
-     * @param off The offset of the encoded file name or comment in
-     * {@code bytes}.
-     * @param len The length of the encoded file name or comment in
-     * {@code bytes}.
+     * @param text  The file name or comment.
+     * @param bytes The encoded of the file name or comment in the ZIP file.
+     * @param off   The offset of the encoded file name or comment in {@code bytes}.
+     * @param len   The length of the encoded file name or comment in {@code bytes}.
      */
     protected AbstractUnicodeExtraField(final String text, final byte[] bytes, final int off, final int len) {
         final CRC32 crc32 = new CRC32();
@@ -131,19 +126,15 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
     }
 
     /**
-     * Doesn't do anything special since this class always uses the
-     * same data in central directory and local file data.
+     * Doesn't do anything special since this class always uses the same data in central directory and local file data.
      */
     @Override
-    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset,
-                                              final int length)
-        throws ZipException {
+    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset, final int length) throws ZipException {
         parseFromLocalFileData(buffer, offset, length);
     }
 
     @Override
-    public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length)
-        throws ZipException {
+    public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length) throws ZipException {
 
         if (length < 5) {
             throw new ZipException("UniCode path extra data must have at least 5 bytes.");
@@ -152,8 +143,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         final int version = buffer[offset];
 
         if (version != 0x01) {
-            throw new ZipException("Unsupported version [" + version
-                                   + "] for UniCode path extra data.");
+            throw new ZipException("Unsupported version [" + version + "] for UniCode path extra data.");
         }
 
         nameCRC32 = ZipLong.getValue(buffer, offset + 1);

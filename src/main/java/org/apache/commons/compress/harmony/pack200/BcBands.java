@@ -80,6 +80,7 @@ public class BcBands extends BandSet {
     private int byteCodeOffset;
     private int renumberedOffset;
     private final IntList bcLabelRelativeOffsets = new IntList();
+
     public BcBands(final CpBands cpBands, final Segment segment, final int effort) {
         super(effort, segment.getSegmentHeader());
         this.cpBands = cpBands;
@@ -87,8 +88,8 @@ public class BcBands extends BandSet {
     }
 
     /**
-     * All input classes for the segment have now been read in, so this method is called so that this class can
-     * calculate/complete anything it could not do while classes were being read.
+     * All input classes for the segment have now been read in, so this method is called so that this class can calculate/complete anything it could not do
+     * while classes were being read.
      */
     public void finaliseBands() {
         bcThisField = getIndexInClass(bcThisField);
@@ -237,8 +238,7 @@ public class BcBands extends BandSet {
                     bcLabel.remove(i);
                     final Integer offset = labelsToOffsets.get(label);
                     final int relativeOffset = bcLabelRelativeOffsets.get(i);
-                    bcLabel.add(i,
-                        Integer.valueOf(bciRenumbering.get(offset.intValue()) - bciRenumbering.get(relativeOffset)));
+                    bcLabel.add(i, Integer.valueOf(bciRenumbering.get(offset.intValue()) - bciRenumbering.get(relativeOffset)));
                 }
             }
             bcCodes.add(endMarker);
