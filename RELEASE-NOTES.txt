@@ -1,5 +1,5 @@
 Apache Commons Compress 
-Version 1.25.0-SNAPSHOT
+Version 1.25.0
 Release Notes
 
 INTRODUCTION:
