@@ -18,9 +18,9 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.Assert.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 public class CpioArchiveEntryTest {
     @Test
