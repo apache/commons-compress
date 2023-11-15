@@ -1,3 +1,5 @@
+*        text=auto
+
 *.ar                                    binary
 *.arj                                   binary
 *.java                                  text diff=java
