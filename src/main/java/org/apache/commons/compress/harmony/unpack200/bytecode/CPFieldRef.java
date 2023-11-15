@@ -72,8 +72,9 @@ public class CPFieldRef extends ConstantPoolEntry {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] {className, nameAndType};
+        return new ClassFileEntry[] { className, nameAndType };
     }
+
     @Override
     public int hashCode() {
         if (!hashCodeComputed) {

@@ -93,7 +93,7 @@ public class PackingUtils {
      * @throws IOException If an I/O error occurs.
      */
     public static void copyThroughJar(final JarFile jarFile, final OutputStream outputStream) throws IOException {
-        try (final JarOutputStream jarOutputStream = new JarOutputStream(outputStream)) {
+        try (JarOutputStream jarOutputStream = new JarOutputStream(outputStream)) {
             jarOutputStream.setComment("PACK200");
             final byte[] bytes = new byte[16384];
             final Enumeration<JarEntry> entries = jarFile.entries();
@@ -122,7 +122,7 @@ public class PackingUtils {
      */
     public static void copyThroughJar(final JarInputStream jarInputStream, final OutputStream outputStream) throws IOException {
         final Manifest manifest = jarInputStream.getManifest();
-        try (final JarOutputStream jarOutputStream = new JarOutputStream(outputStream, manifest)) {
+        try (JarOutputStream jarOutputStream = new JarOutputStream(outputStream, manifest)) {
             jarOutputStream.setComment("PACK200");
             log("Packed " + JarFile.MANIFEST_NAME);
 

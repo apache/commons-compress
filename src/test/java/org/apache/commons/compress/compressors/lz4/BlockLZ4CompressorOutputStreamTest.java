@@ -51,7 +51,7 @@ public class BlockLZ4CompressorOutputStreamTest {
 
     private byte[] compress(final byte[] input, final int... lengthOfTrailers) throws IOException {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             BlockLZ4CompressorOutputStream lo = new BlockLZ4CompressorOutputStream(baos)) {
+                BlockLZ4CompressorOutputStream lo = new BlockLZ4CompressorOutputStream(baos)) {
             lo.write(input);
             for (int i = 0; i < lengthOfTrailers.length; i++) {
                 final int lengthOfTrailer = lengthOfTrailers[i];
@@ -110,7 +110,7 @@ public class BlockLZ4CompressorOutputStreamTest {
         p.addLiteral(new LZ77Compressor.LiteralBlock(b, 1, 4));
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         p.writeTo(bos);
-        assertArrayEquals(new byte[] { 4<<4, 2, 3, 4, 5 }, bos.toByteArray());
+        assertArrayEquals(new byte[] { 4 << 4, 2, 3, 4, 5 }, bos.toByteArray());
     }
 
     @Test
@@ -150,7 +150,7 @@ public class BlockLZ4CompressorOutputStreamTest {
             // in LZ4
             final byte[] compressed = compress(i);
             final byte[] expected = prepareExpected(i + 1);
-            expected[0] = (byte) (i<<4);
+            expected[0] = (byte) (i << 4);
             assertArrayEquals(expected, compressed, "input length is " + i);
         }
 
@@ -165,9 +165,9 @@ public class BlockLZ4CompressorOutputStreamTest {
             final byte[] compressed = compress(i);
             final byte[] expected = prepareExpected(i < 15 ? i + 1 : i + 2);
             if (i < 15) {
-                expected[0] = (byte) (i<<4);
+                expected[0] = (byte) (i << 4);
             } else {
-                expected[0] = (byte) (15<<4);
+                expected[0] = (byte) (15 << 4);
                 expected[1] = (byte) (i - 15);
             }
             assertArrayEquals(expected, compressed, "input length is " + i);
@@ -180,11 +180,11 @@ public class BlockLZ4CompressorOutputStreamTest {
             // back-reference
             final byte[] compressed = compress(i);
             final byte[] expected = prepareExpected(17);
-            expected[0] = (byte) (1<<4 | i - 17);
+            expected[0] = (byte) (1 << 4 | i - 17);
             // two-byte offset
             expected[2] = 1;
             expected[3] = 0;
-            expected[4] = (byte) (12<<4);
+            expected[4] = (byte) (12 << 4);
             assertArrayEquals(expected, compressed, "input length is " + i);
         }
     }
@@ -198,11 +198,11 @@ public class BlockLZ4CompressorOutputStreamTest {
             // we can split the back-reference and merge it with the literal
             final byte[] compressed = compress(16, i);
             final byte[] expected = prepareExpected(17);
-            expected[0] = (byte) (1<<4 | i - 1);
+            expected[0] = (byte) (1 << 4 | i - 1);
             // two-byte offset
             expected[2] = 1;
             expected[3] = 0;
-            expected[4] = (byte) (12<<4);
+            expected[4] = (byte) (12 << 4);
             for (int j = 0; j < i; j++) {
                 expected[expected.length - 1 - j] = 1;
             }
@@ -218,11 +218,11 @@ public class BlockLZ4CompressorOutputStreamTest {
             // algorithm will chip off a few bytes from the first Pair
             final byte[] compressed = compress(16, i);
             final byte[] expected = prepareExpected(17);
-            expected[0] = (byte) (1<<4 | i - 1);
+            expected[0] = (byte) (1 << 4 | i - 1);
             // two-byte offset
             expected[2] = 1;
             expected[3] = 0;
-            expected[4] = (byte) (12<<4);
+            expected[4] = (byte) (12 << 4);
             for (int j = 0; j < i; j++) {
                 expected[expected.length - 1 - j] = 1;
             }
@@ -237,11 +237,11 @@ public class BlockLZ4CompressorOutputStreamTest {
             // rewriting the second one is sufficient
             final byte[] compressed = compress(16, i);
             final byte[] expected = prepareExpected(i + 5);
-            expected[0] = (byte) (1<<4 | 11);
+            expected[0] = (byte) (1 << 4 | 11);
             // two-byte offset
             expected[2] = 1;
             expected[3] = 0;
-            expected[4] = (byte) (i<<4);
+            expected[4] = (byte) (i << 4);
             for (int j = 0; j < i; j++) {
                 expected[expected.length - 1 - j] = 1;
             }
@@ -259,11 +259,11 @@ public class BlockLZ4CompressorOutputStreamTest {
         // back-reference
         final byte[] compressed = compress(6, 5, 5, 1);
         final byte[] expected = prepareExpected(17);
-        expected[0] = (byte) (1<<4);
+        expected[0] = (byte) (1 << 4);
         // two-byte offset
         expected[2] = 1;
         expected[3] = 0;
-        expected[4] = (byte) (12<<4);
+        expected[4] = (byte) (12 << 4);
         for (int i = 6; i < 11; i++) {
             expected[i] = 1;
         }
@@ -286,11 +286,11 @@ public class BlockLZ4CompressorOutputStreamTest {
         // we'll need to split the back-reference and chop off the last 12 bytes
         final byte[] compressed = compress(toCompress);
         final byte[] expected = prepareExpected(1 + 4 + 2 + 1 + 12);
-        expected[0] = (byte) (4<<4 | 5);
+        expected[0] = (byte) (4 << 4 | 5);
         expected[1] = 1;
         expected[5] = 4;
         expected[6] = 0;
-        expected[7] = (byte) (12<<4);
+        expected[7] = (byte) (12 << 4);
         for (int i = 11; i < expected.length; i += 4) {
             expected[i] = 1;
         }
@@ -306,8 +306,7 @@ public class BlockLZ4CompressorOutputStreamTest {
         p.setBackReference(new LZ77Compressor.BackReference(1, 5));
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         p.writeTo(bos);
-        assertArrayEquals(new byte[] { (4<<4) + 1, 2, 3, 4, 5, 1, 0 },
-            bos.toByteArray());
+        assertArrayEquals(new byte[] { (4 << 4) + 1, 2, 3, 4, 5, 1, 0 }, bos.toByteArray());
     }
 
     @Test
@@ -318,8 +317,7 @@ public class BlockLZ4CompressorOutputStreamTest {
         p.addLiteral(new LZ77Compressor.LiteralBlock(b, 0, 6));
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         p.writeTo(bos);
-        assertArrayEquals(new byte[] { (byte) (15<<4), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6 },
-            bos.toByteArray());
+        assertArrayEquals(new byte[] { (byte) (15 << 4), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6 }, bos.toByteArray());
     }
 
     @Test
@@ -341,8 +339,7 @@ public class BlockLZ4CompressorOutputStreamTest {
         p.addLiteral(new LZ77Compressor.LiteralBlock(b, 0, 9));
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         p.writeTo(bos);
-        assertArrayEquals(new byte[] { (byte) (15<<4), (byte) 254, 1 },
-            Arrays.copyOfRange(bos.toByteArray(), 0, 3));
+        assertArrayEquals(new byte[] { (byte) (15 << 4), (byte) 254, 1 }, Arrays.copyOfRange(bos.toByteArray(), 0, 3));
     }
 
     @Test
@@ -354,8 +351,7 @@ public class BlockLZ4CompressorOutputStreamTest {
         }
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         p.writeTo(bos);
-        assertArrayEquals(new byte[] { (byte) (15<<4), (byte) 255, 0, 1 },
-            Arrays.copyOfRange(bos.toByteArray(), 0, 4));
+        assertArrayEquals(new byte[] { (byte) (15 << 4), (byte) 255, 0, 1 }, Arrays.copyOfRange(bos.toByteArray(), 0, 4));
     }
 
     @Test

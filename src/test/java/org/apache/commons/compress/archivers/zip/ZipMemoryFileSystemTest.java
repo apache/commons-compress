@@ -83,7 +83,7 @@ public class ZipMemoryFileSystemTest {
             walk.sorted(Comparator.reverseOrder()).peek(path -> println("Deleting: " + path.toAbsolutePath())).forEach(path -> {
                 try {
                     Files.deleteIfExists(path);
-                } catch (final IOException ignore) {
+                } catch (IOException ignore) {
                 }
             });
         }
@@ -213,8 +213,7 @@ public class ZipMemoryFileSystemTest {
                 }
             }
 
-            try (final ZipFile zf = new ZipFile(Files.newByteChannel(target, StandardOpenOption.READ), target.getFileName().toString(), CharsetNames.UTF_8,
-                    true)) {
+            try (ZipFile zf = new ZipFile(Files.newByteChannel(target, StandardOpenOption.READ), target.getFileName().toString(), CharsetNames.UTF_8, true)) {
                 final ZipArchiveEntry b_entry = zf.getEntries("b.txt").iterator().next();
                 assertEquals(8, b_entry.getSize());
                 try (InputStream inputStream = zf.getInputStream(b_entry)) {
@@ -295,7 +294,7 @@ public class ZipMemoryFileSystemTest {
                 }
             }
 
-            try (final ZipFile zf = new ZipFile(target)) {
+            try (ZipFile zf = new ZipFile(target)) {
                 final ZipArchiveEntry b_entry = zf.getEntries("b.txt").iterator().next();
                 assertEquals(8, b_entry.getSize());
                 try (InputStream inputStream = zf.getInputStream(b_entry)) {
@@ -320,7 +319,7 @@ public class ZipMemoryFileSystemTest {
             Files.write(textFileInMemSys, bytes);
 
             final Path zipInLocalSys = Files.createTempFile(dir, "commons-compress-memoryfs", ".zip");
-            try (final ZipArchiveOutputStream zipOut = new ZipArchiveOutputStream(zipInLocalSys.toFile())) {
+            try (ZipArchiveOutputStream zipOut = new ZipArchiveOutputStream(zipInLocalSys.toFile())) {
                 final ZipArchiveEntry entry = new ZipArchiveEntry(textFileInMemSys, textFileInMemSys.getFileName().toString());
                 entry.setSize(Files.size(textFileInMemSys));
                 zipOut.putArchiveEntry(entry);
@@ -340,8 +339,8 @@ public class ZipMemoryFileSystemTest {
             Files.write(p, "Test".getBytes(UTF_8));
 
             final Path f = Files.createTempFile(dir, "commons-compress-memoryfs", ".zip");
-            try (final OutputStream out = Files.newOutputStream(f);
-                    final ArchiveOutputStream<ZipArchiveEntry> zipOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.ZIP, out)) {
+            try (OutputStream out = Files.newOutputStream(f);
+                    ArchiveOutputStream<ZipArchiveEntry> zipOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.ZIP, out)) {
                 final ZipArchiveEntry entry = new ZipArchiveEntry(p, p.getFileName().toString());
                 entry.setSize(Files.size(p));
                 zipOut.putArchiveEntry(entry);
@@ -362,7 +361,7 @@ public class ZipMemoryFileSystemTest {
             Files.write(textFileInMemSys, bytes);
 
             final Path zipInLocalSys = Files.createTempFile(dir, "commons-compress-memoryfs", ".zip");
-            try (final ZipArchiveOutputStream zipOut = new ZipArchiveOutputStream(zipInLocalSys)) {
+            try (ZipArchiveOutputStream zipOut = new ZipArchiveOutputStream(zipInLocalSys)) {
                 final ZipArchiveEntry entry = new ZipArchiveEntry(textFileInMemSys, textFileInMemSys.getFileName().toString());
                 entry.setSize(Files.size(textFileInMemSys));
                 zipOut.putArchiveEntry(entry);
@@ -384,9 +383,9 @@ public class ZipMemoryFileSystemTest {
             Files.write(textFileInMemSys, bytes);
 
             final Path zipInLocalSys = Files.createTempFile(dir, "commons-compress-memoryfs", ".zip");
-            try (final SeekableByteChannel byteChannel = Files.newByteChannel(zipInLocalSys,
+            try (SeekableByteChannel byteChannel = Files.newByteChannel(zipInLocalSys,
                     EnumSet.of(StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING));
-                    final ZipArchiveOutputStream zipOut = new ZipArchiveOutputStream(byteChannel)) {
+                    ZipArchiveOutputStream zipOut = new ZipArchiveOutputStream(byteChannel)) {
                 final ZipArchiveEntry entry = new ZipArchiveEntry(textFileInMemSys, textFileInMemSys.getFileName().toString());
                 entry.setSize(Files.size(textFileInMemSys));
                 zipOut.putArchiveEntry(entry);
@@ -408,7 +407,7 @@ public class ZipMemoryFileSystemTest {
             Files.write(textFileInMemSys, bytes);
 
             final Path zipInLocalSys = Files.createTempFile(dir, "commons-compress-memoryfs", ".zip");
-            try (final ZipArchiveOutputStream zipOut = new ZipArchiveOutputStream(zipInLocalSys.toFile(), 64 * 1024L)) {
+            try (ZipArchiveOutputStream zipOut = new ZipArchiveOutputStream(zipInLocalSys.toFile(), 64 * 1024L)) {
                 final ZipArchiveEntry entry = new ZipArchiveEntry(textFileInMemSys, textFileInMemSys.getFileName().toString());
                 entry.setSize(Files.size(textFileInMemSys));
                 zipOut.putArchiveEntry(entry);
@@ -432,8 +431,8 @@ public class ZipMemoryFileSystemTest {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
             final Path p = fileSystem.getPath("target.zip");
 
-            try (final OutputStream out = Files.newOutputStream(p);
-                    final ArchiveOutputStream<ZipArchiveEntry> zipOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.ZIP, out)) {
+            try (OutputStream out = Files.newOutputStream(p);
+                    ArchiveOutputStream<ZipArchiveEntry> zipOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.ZIP, out)) {
                 final String content = "Test";
                 final ZipArchiveEntry entry = new ZipArchiveEntry("test.txt");
                 entry.setSize(content.length());
@@ -453,7 +452,7 @@ public class ZipMemoryFileSystemTest {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
             final Path zipInMemSys = fileSystem.getPath("target.zip");
 
-            try (final ZipArchiveOutputStream zipOut = new ZipArchiveOutputStream(zipInMemSys)) {
+            try (ZipArchiveOutputStream zipOut = new ZipArchiveOutputStream(zipInMemSys)) {
                 final String content = "Test";
                 final ZipArchiveEntry entry = new ZipArchiveEntry("test.txt");
                 entry.setSize(content.length());
@@ -473,9 +472,9 @@ public class ZipMemoryFileSystemTest {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
             final Path zipInMemSys = fileSystem.getPath("target.zip");
 
-            try (final SeekableByteChannel byteChannel = Files.newByteChannel(zipInMemSys,
+            try (SeekableByteChannel byteChannel = Files.newByteChannel(zipInMemSys,
                     EnumSet.of(StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE_NEW));
-                    final ZipArchiveOutputStream zipOut = new ZipArchiveOutputStream(byteChannel)) {
+                    ZipArchiveOutputStream zipOut = new ZipArchiveOutputStream(byteChannel)) {
                 final String content = "Test";
                 final ZipArchiveEntry entry = new ZipArchiveEntry("test.txt");
                 entry.setSize(content.length());
@@ -497,7 +496,7 @@ public class ZipMemoryFileSystemTest {
             final byte[] bytes = new byte[100 * 1024];
             SecureRandom.getInstanceStrong().nextBytes(bytes);
 
-            try (final ZipArchiveOutputStream zipOut = new ZipArchiveOutputStream(zipInMemSys, 64 * 1024L)) {
+            try (ZipArchiveOutputStream zipOut = new ZipArchiveOutputStream(zipInMemSys, 64 * 1024L)) {
                 final ZipArchiveEntry entry = new ZipArchiveEntry("test.txt");
                 entry.setSize(bytes.length);
                 zipOut.putArchiveEntry(entry);

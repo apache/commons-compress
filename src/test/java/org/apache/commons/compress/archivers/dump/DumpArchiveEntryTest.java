@@ -25,9 +25,7 @@ import org.junit.jupiter.api.Test;
 public class DumpArchiveEntryTest {
     @Test
     public void testPublicNameAddsTrailingSlashForDirectories() {
-        final DumpArchiveEntry ent = new DumpArchiveEntry("foo", "bar", -1,
-                                                    DumpArchiveEntry.TYPE
-                                                    .DIRECTORY);
+        final DumpArchiveEntry ent = new DumpArchiveEntry("foo", "bar", -1, DumpArchiveEntry.TYPE.DIRECTORY);
         assertEquals("bar", ent.getSimpleName());
         assertEquals("foo", ent.getOriginalName());
         assertEquals("foo/", ent.getName());

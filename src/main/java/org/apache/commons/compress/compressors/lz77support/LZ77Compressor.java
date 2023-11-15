@@ -25,58 +25,50 @@ import java.util.Objects;
 /**
  * Helper class for compression algorithms that use the ideas of LZ77.
  *
- * <p>Most LZ77 derived algorithms split input data into blocks of
- * uncompressed data (called literal blocks) and back-references
- * (pairs of offsets and lengths) that state "add {@code length}
- * bytes that are the same as those already written starting
- * {@code offset} bytes before the current position. The details
- * of how those blocks and back-references are encoded are quite
- * different between the algorithms and some algorithms perform
- * additional steps (Huffman encoding in the case of DEFLATE for
- * example).</p>
+ * <p>
+ * Most LZ77 derived algorithms split input data into blocks of uncompressed data (called literal blocks) and back-references (pairs of offsets and lengths)
+ * that state "add {@code length} bytes that are the same as those already written starting {@code offset} bytes before the current position. The details of how
+ * those blocks and back-references are encoded are quite different between the algorithms and some algorithms perform additional steps (Huffman encoding in the
+ * case of DEFLATE for example).
+ * </p>
  *
- * <p>This class attempts to extract the core logic - finding
- * back-references - so it can be re-used. It follows the algorithm
- * explained in section 4 of RFC 1951 (DEFLATE) and currently doesn't
- * implement the "lazy match" optimization. The three-byte hash
- * function used in this class is the same as the one used by zlib and
- * InfoZIP's ZIP implementation of DEFLATE. The whole class is
- * strongly inspired by InfoZIP's implementation.</p>
+ * <p>
+ * This class attempts to extract the core logic - finding back-references - so it can be re-used. It follows the algorithm explained in section 4 of RFC 1951
+ * (DEFLATE) and currently doesn't implement the "lazy match" optimization. The three-byte hash function used in this class is the same as the one used by zlib
+ * and InfoZIP's ZIP implementation of DEFLATE. The whole class is strongly inspired by InfoZIP's implementation.
+ * </p>
  *
- * <p>LZ77 is used vaguely here (as well as many other places that
- * talk about it :-), LZSS would likely be closer to the truth but
- * LZ77 has become the synonym for a whole family of algorithms.</p>
+ * <p>
+ * LZ77 is used vaguely here (as well as many other places that talk about it :-), LZSS would likely be closer to the truth but LZ77 has become the synonym for
+ * a whole family of algorithms.
+ * </p>
  *
- * <p>The API consists of a compressor that is fed {@code byte}s
- * and emits {@link Block}s to a registered callback where the blocks
- * represent either {@link LiteralBlock literal blocks}, {@link
- * BackReference back-references} or {@link EOD end of data
- * markers}. In order to ensure the callback receives all information,
- * the {@code #finish} method must be used once all data has been fed
- * into the compressor.</p>
+ * <p>
+ * The API consists of a compressor that is fed {@code byte}s and emits {@link Block}s to a registered callback where the blocks represent either
+ * {@link LiteralBlock literal blocks}, {@link BackReference back-references} or {@link EOD end of data markers}. In order to ensure the callback receives all
+ * information, the {@code #finish} method must be used once all data has been fed into the compressor.
+ * </p>
  *
- * <p>Several parameters influence the outcome of the "compression":</p>
+ * <p>
+ * Several parameters influence the outcome of the "compression":
+ * </p>
  * <dl>
  *
- *  <dt>{@code windowSize}</dt> <dd>the size of the sliding
- *  window, must be a power of two - this determines the maximum
- *  offset a back-reference can take. The compressor maintains a
- *  buffer of twice of {@code windowSize} - real world values are
- *  in the area of 32k.</dd>
+ * <dt>{@code windowSize}</dt>
+ * <dd>the size of the sliding window, must be a power of two - this determines the maximum offset a back-reference can take. The compressor maintains a buffer
+ * of twice of {@code windowSize} - real world values are in the area of 32k.</dd>
  *
- *  <dt>{@code minBackReferenceLength}</dt>
- *  <dd>Minimal length of a back-reference found. A true minimum of 3 is
- *  hard-coded inside of this implementation but bigger lengths can be
- *  configured.</dd>
+ * <dt>{@code minBackReferenceLength}</dt>
+ * <dd>Minimal length of a back-reference found. A true minimum of 3 is hard-coded inside of this implementation but bigger lengths can be configured.</dd>
  *
- *  <dt>{@code maxBackReferenceLength}</dt>
- *  <dd>Maximal length of a back-reference found.</dd>
+ * <dt>{@code maxBackReferenceLength}</dt>
+ * <dd>Maximal length of a back-reference found.</dd>
  *
- *  <dt>{@code maxOffset}</dt>
- *  <dd>Maximal offset of a back-reference.</dd>
+ * <dt>{@code maxOffset}</dt>
+ * <dd>Maximal offset of a back-reference.</dd>
  *
- *  <dt>{@code maxLiteralLength}</dt>
- *  <dd>Maximal length of a literal block.</dd>
+ * <dt>{@code maxLiteralLength}</dt>
+ * <dd>Maximal length of a literal block.</dd>
  * </dl>
  *
  * @see "https://tools.ietf.org/html/rfc1951#section-4"
@@ -90,28 +82,35 @@ public class LZ77Compressor {
      */
     public static final class BackReference extends Block {
         private final int offset, length;
+
         public BackReference(final int offset, final int length) {
             this.offset = offset;
             this.length = length;
         }
+
         /**
          * Provides the length of the back-reference.
+         *
          * @return the length
          */
         public int getLength() {
             return length;
         }
+
         /**
          * Provides the offset of the back-reference.
+         *
          * @return the offset
          */
         public int getOffset() {
             return offset;
         }
+
         @Override
         public BlockType getType() {
             return BlockType.BACK_REFERENCE;
         }
+
         @Override
         public String toString() {
             return "BackReference with offset " + offset + " and length " + length;
@@ -121,29 +120,32 @@ public class LZ77Compressor {
     /**
      * Base class representing blocks the compressor may emit.
      *
-     * <p>This class is not supposed to be subclassed by classes
-     * outside of Commons Compress so it is considered internal and
-     * changed that would break subclasses may get introduced with
-     * future releases.</p>
+     * <p>
+     * This class is not supposed to be subclassed by classes outside of Commons Compress so it is considered internal and changed that would break subclasses
+     * may get introduced with future releases.
+     * </p>
      */
-    public static abstract class Block {
+    public abstract static class Block {
         /** Enumeration of the block types the compressor may emit. */
         public enum BlockType {
             LITERAL, BACK_REFERENCE, EOD
         }
+
         public abstract BlockType getType();
     }
 
     /**
      * Callback invoked while the compressor processes data.
      *
-     * <p>The callback is invoked on the same thread that receives the
-     * bytes to compress and may be invoked multiple times during the
-     * execution of {@link #compress} or {@link #finish}.</p>
+     * <p>
+     * The callback is invoked on the same thread that receives the bytes to compress and may be invoked multiple times during the execution of
+     * {@link #compress} or {@link #finish}.
+     * </p>
      */
     public interface Callback {
         /**
          * Consumes a block.
+         *
          * @param b the block to consume
          * @throws IOException in case of an error
          */
@@ -161,47 +163,57 @@ public class LZ77Compressor {
     /**
      * Represents a literal block of data.
      *
-     * <p>For performance reasons this encapsulates the real data, not
-     * a copy of it. Don't modify the data and process it inside of
-     * {@link Callback#accept} immediately as it will get overwritten
-     * sooner or later.</p>
+     * <p>
+     * For performance reasons this encapsulates the real data, not a copy of it. Don't modify the data and process it inside of {@link Callback#accept}
+     * immediately as it will get overwritten sooner or later.
+     * </p>
      */
     public static final class LiteralBlock extends Block {
         private final byte[] data;
         private final int offset, length;
+
         public LiteralBlock(final byte[] data, final int offset, final int length) {
             this.data = data;
             this.offset = offset;
             this.length = length;
         }
+
         /**
          * The literal data.
          *
-         * <p>This returns a life view of the actual data in order to
-         * avoid copying, modify the array at your own risk.</p>
+         * <p>
+         * This returns a life view of the actual data in order to avoid copying, modify the array at your own risk.
+         * </p>
+         *
          * @return the data
          */
         public byte[] getData() {
             return data;
         }
+
         /**
          * Length of literal block.
+         *
          * @return the length
          */
         public int getLength() {
             return length;
         }
+
         /**
          * Offset into data where the literal block starts.
+         *
          * @return the offset
          */
         public int getOffset() {
             return offset;
         }
+
         @Override
         public BlockType getType() {
             return BlockType.LITERAL;
         }
+
         @Override
         public String toString() {
             return "LiteralBlock starting at " + offset + " with length " + length;
@@ -258,7 +270,8 @@ public class LZ77Compressor {
 
     /**
      * Initializes a compressor with parameters and a callback.
-     * @param params the parameters
+     *
+     * @param params   the parameters
      * @param callback the callback
      * @throws NullPointerException if either parameter is {@code null}
      */
@@ -323,23 +336,23 @@ public class LZ77Compressor {
             }
         }
     }
+
     /**
-     * Feeds bytes into the compressor which in turn may emit zero or
-     * more blocks to the callback during the execution of this
-     * method.
+     * Feeds bytes into the compressor which in turn may emit zero or more blocks to the callback during the execution of this method.
+     *
      * @param data the data to compress - must not be null
      * @throws IOException if the callback throws an exception
      */
     public void compress(final byte[] data) throws IOException {
         compress(data, 0, data.length);
     }
+
     /**
-     * Feeds bytes into the compressor which in turn may emit zero or
-     * more blocks to the callback during the execution of this
-     * method.
+     * Feeds bytes into the compressor which in turn may emit zero or more blocks to the callback during the execution of this method.
+     *
      * @param data the data to compress - must not be null
-     * @param off the start offset of the data
-     * @param len the number of bytes to compress
+     * @param off  the start offset of the data
+     * @param len  the number of bytes to compress
      * @throws IOException if the callback throws an exception
      */
     public void compress(final byte[] data, int off, int len) throws IOException {
@@ -371,12 +384,12 @@ public class LZ77Compressor {
     }
 
     /**
-     * Tells the compressor to process all remaining data and signal
-     * end of data to the callback.
+     * Tells the compressor to process all remaining data and signal end of data to the callback.
      *
-     * <p>The compressor will in turn emit at least one block ({@link
-     * EOD}) but potentially multiple blocks to the callback during
-     * the execution of this method.</p>
+     * <p>
+     * The compressor will in turn emit at least one block ({@link EOD}) but potentially multiple blocks to the callback during the execution of this method.
+     * </p>
+     *
      * @throws IOException if the callback throws an exception
      */
     public void finish() throws IOException {
@@ -403,11 +416,11 @@ public class LZ77Compressor {
     }
 
     /**
-     * Inserts the current three byte sequence into the dictionary and
-     * returns the previous head of the hash-chain.
+     * Inserts the current three byte sequence into the dictionary and returns the previous head of the hash-chain.
      *
-     * <p>Updates {@code insertHash} and {@code prev} as a
-     * side effect.</p>
+     * <p>
+     * Updates {@code insertHash} and {@code prev} as a side effect.
+     * </p>
      */
     private int insertString(final int pos) {
         insertHash = nextHash(insertHash, window[pos - 1 + NUMBER_OF_BYTES_IN_HASH]);
@@ -429,12 +442,11 @@ public class LZ77Compressor {
     }
 
     /**
-     * Searches the hash chain for real matches and returns the length
-     * of the longest match (0 if none were found) that isn't too far
-     * away (WRT maxOffset).
+     * Searches the hash chain for real matches and returns the length of the longest match (0 if none were found) that isn't too far away (WRT maxOffset).
      *
-     * <p>Sets matchStart to the index of the start position of the
-     * longest match as a side effect.</p>
+     * <p>
+     * Sets matchStart to the index of the start position of the longest match as a side effect.
+     * </p>
      */
     private int longestMatch(int matchHead) {
         final int minLength = params.getMinBackReferenceLength();
@@ -490,12 +502,12 @@ public class LZ77Compressor {
     }
 
     /**
-     * Assumes we are calculating the hash for three consecutive bytes
-     * as a rolling hash, i.e. for bytes ABCD if H is the hash of ABC
-     * the new hash for BCD is nextHash(H, D).
+     * Assumes we are calculating the hash for three consecutive bytes as a rolling hash, i.e. for bytes ABCD if H is the hash of ABC the new hash for BCD is
+     * nextHash(H, D).
      *
-     * <p>The hash is shifted by five bits on each update so all
-     * effects of A have been swapped after the third update.</p>
+     * <p>
+     * The hash is shifted by five bits on each update so all effects of A have been swapped after the third update.
+     * </p>
      */
     private int nextHash(final int oldHash, final byte nextByte) {
         final int nextVal = nextByte & 0xFF;
@@ -505,10 +517,10 @@ public class LZ77Compressor {
     /**
      * Adds some initial data to fill the window with.
      *
-     * <p>This is used if the stream has been cut into blocks and
-     * back-references of one block may refer to data of the previous
-     * block(s). One such example is the LZ4 frame format using block
-     * dependency.</p>
+     * <p>
+     * This is used if the stream has been cut into blocks and back-references of one block may refer to data of the previous block(s). One such example is the
+     * LZ4 frame format using block dependency.
+     * </p>
      *
      * @param data the data to fill the window with.
      * @throws IllegalStateException if the compressor has already started to accept data

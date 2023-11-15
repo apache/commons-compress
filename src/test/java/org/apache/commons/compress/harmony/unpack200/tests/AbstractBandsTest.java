@@ -39,13 +39,14 @@ public abstract class AbstractBandsTest {
         public AttributeLayoutMap getAttributeDefinitionMap() {
             try {
                 return new AttributeLayoutMap();
-            } catch (final Pack200Exception e) {
+            } catch (Pack200Exception e) {
                 fail(e.getLocalizedMessage());
             }
             return null;
         }
 
     }
+
     public class MockSegment extends Segment {
 
         @Override
@@ -74,7 +75,7 @@ public abstract class AbstractBandsTest {
         public SegmentOptions getOptions() {
             try {
                 return new SegmentOptions(0);
-            } catch (final Pack200Exception e) {
+            } catch (Pack200Exception e) {
                 return null;
             }
         }

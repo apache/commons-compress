@@ -24,6 +24,7 @@ import java.io.OutputStream;
 
 /**
  * Stream that tracks the number of bytes read.
+ *
  * @since 1.3
  * @NotThreadSafe
  */
@@ -35,8 +36,7 @@ public class CountingOutputStream extends FilterOutputStream {
     }
 
     /**
-     * Increments the counter of already written bytes.
-     * Doesn't increment if the EOF has been hit (written == -1)
+     * Increments the counter of already written bytes. Doesn't increment if the EOF has been hit (written == -1)
      *
      * @param written the number of bytes written
      */
@@ -45,13 +45,16 @@ public class CountingOutputStream extends FilterOutputStream {
             bytesWritten += written;
         }
     }
+
     /**
      * Returns the current number of bytes written to this stream.
+     *
      * @return the number of written bytes
      */
     public long getBytesWritten() {
         return bytesWritten;
     }
+
     @Override
     public void write(final byte[] b) throws IOException {
         write(b, 0, b.length);

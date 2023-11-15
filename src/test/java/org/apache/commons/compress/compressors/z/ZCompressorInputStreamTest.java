@@ -68,8 +68,7 @@ public class ZCompressorInputStreamTest {
 
         Stream.of(invalid).forEach(ints -> ints.forEach(i -> {
             bytes[2] = (byte) i;
-            assertThrows(IllegalArgumentException.class, () -> new ZCompressorInputStream(new ByteArrayInputStream(bytes), 1024 * 1024),
-                    () -> "value=" + i);
+            assertThrows(IllegalArgumentException.class, () -> new ZCompressorInputStream(new ByteArrayInputStream(bytes), 1024 * 1024), () -> "value=" + i);
         }));
     }
 

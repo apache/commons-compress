@@ -110,9 +110,7 @@ public class LZMAUtilsTest {
 
     @Test
     public void testMatches() {
-        final byte[] data = {
-            (byte) 0x5D, 0, 0,
-        };
+        final byte[] data = { (byte) 0x5D, 0, 0, };
         assertFalse(LZMAUtils.matches(data, 2));
         assertTrue(LZMAUtils.matches(data, 3));
         assertTrue(LZMAUtils.matches(data, 4));

@@ -39,8 +39,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  *
  * This is a very simple implementation.
  *
- * Files must be in resources/archives, and there must be a file.txt containing
- * the list of files in the archives.
+ * Files must be in resources/archives, and there must be a file.txt containing the list of files in the archives.
  */
 public class ArchiveReadTest extends AbstractTest {
 
@@ -51,7 +50,7 @@ public class ArchiveReadTest extends AbstractTest {
     static {
         try {
             ARCDIR = new File(CLASSLOADER.getResource("archives").toURI());
-        } catch (final URISyntaxException e) {
+        } catch (URISyntaxException e) {
             throw new AssertionError(e);
         }
     }
@@ -70,7 +69,7 @@ public class ArchiveReadTest extends AbstractTest {
         assertTrue(ARCDIR.exists());
         final File listing = new File(ARCDIR, "files.txt");
         assertTrue(listing.canRead(), "files.txt is readable");
-        try (final BufferedReader br = new BufferedReader(Files.newBufferedReader(listing.toPath()))) {
+        try (BufferedReader br = new BufferedReader(Files.newBufferedReader(listing.toPath()))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (!line.startsWith("#")) {

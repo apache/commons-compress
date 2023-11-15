@@ -108,7 +108,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     public void testAddAlreadyExistingWithReplaceTrue(final String archiverName) throws Exception {
         final Path inputPath = createArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
-        try (final InputStream inputStream = Files.newInputStream(inputPath);
+        try (InputStream inputStream = Files.newInputStream(inputPath);
                 ArchiveInputStream archiveInputStream = factory.createArchiveInputStream(archiverName, inputStream);
                 OutputStream newOutputStream = Files.newOutputStream(result);
                 ArchiveOutputStream archiveOutputStream = factory.createArchiveOutputStream(archiverName, newOutputStream);
@@ -515,7 +515,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     public void testDeleteFile2(final String archiverName) throws Exception {
         final Path inputPath = createArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
-        try (final InputStream inputStream = Files.newInputStream(inputPath);
+        try (InputStream inputStream = Files.newInputStream(inputPath);
                 ArchiveInputStream archiveInputStream = factory.createArchiveInputStream(archiverName, inputStream);
                 OutputStream newOutputStream = Files.newOutputStream(result);
                 ArchiveOutputStream archiveOutputStream = factory.createArchiveOutputStream(archiverName, newOutputStream)) {

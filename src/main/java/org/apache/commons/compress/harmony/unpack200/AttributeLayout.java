@@ -212,11 +212,10 @@ public class AttributeLayout implements IMatcher {
     /**
      * Context names.
      */
-    public static final String[] contextNames = {"Class", "Field", "Method", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        "Code",}; //$NON-NLS-1$
+    public static final String[] contextNames = { "Class", "Field", "Method", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "Code", }; //$NON-NLS-1$
 
-    private static ClassFileEntry getValue(final String layout, long value, final SegmentConstantPool pool)
-        throws Pack200Exception {
+    private static ClassFileEntry getValue(final String layout, long value, final SegmentConstantPool pool) throws Pack200Exception {
         if (layout.startsWith("R")) { //$NON-NLS-1$
             // references
             if (layout.indexOf('N') != -1) {
@@ -260,24 +259,21 @@ public class AttributeLayout implements IMatcher {
     private int backwardsCallCount;
 
     /**
-     * Constructs a default AttributeLayout (equivalent to
-     * {@code new AttributeLayout(name, context, layout, index, true);})
+     * Constructs a default AttributeLayout (equivalent to {@code new AttributeLayout(name, context, layout, index, true);})
      *
-     * @param name TODO
+     * @param name    TODO
      * @param context TODO
-     * @param layout TODO
-     * @param index TODO
+     * @param layout  TODO
+     * @param index   TODO
      * @throws Pack200Exception Attribute context out of range.
      * @throws Pack200Exception Cannot have a null layout.
      * @throws Pack200Exception Cannot have an unnamed layout.
      */
-    public AttributeLayout(final String name, final int context, final String layout, final int index)
-        throws Pack200Exception {
+    public AttributeLayout(final String name, final int context, final String layout, final int index) throws Pack200Exception {
         this(name, context, layout, index, true);
     }
 
-    public AttributeLayout(final String name, final int context, final String layout, final int index,
-        final boolean isDefault) throws Pack200Exception {
+    public AttributeLayout(final String name, final int context, final String layout, final int index, final boolean isDefault) throws Pack200Exception {
         this.index = index;
         this.context = context;
         if (index >= 0) {
@@ -285,8 +281,7 @@ public class AttributeLayout implements IMatcher {
         } else {
             this.mask = 0;
         }
-        if (context != CONTEXT_CLASS && context != CONTEXT_CODE && context != CONTEXT_FIELD
-            && context != CONTEXT_METHOD) {
+        if (context != CONTEXT_CLASS && context != CONTEXT_CODE && context != CONTEXT_FIELD && context != CONTEXT_METHOD) {
             throw new Pack200Exception("Attribute context out of range: " + context);
         }
         if (layout == null) {
@@ -308,7 +303,7 @@ public class AttributeLayout implements IMatcher {
             return Codec.BCI5;
         }
         if (layout.indexOf('S') >= 0 && layout.indexOf("KS") < 0 //$NON-NLS-1$
-            && layout.indexOf("RS") < 0) { //$NON-NLS-1$
+                && layout.indexOf("RS") < 0) { //$NON-NLS-1$
             return Codec.SIGNED5;
         }
         if (layout.indexOf('B') >= 0) {
@@ -337,8 +332,7 @@ public class AttributeLayout implements IMatcher {
         return getValue(layout, value, pool);
     }
 
-    public ClassFileEntry getValue(final long value, final String type, final SegmentConstantPool pool)
-        throws Pack200Exception {
+    public ClassFileEntry getValue(final long value, final String type, final SegmentConstantPool pool) throws Pack200Exception {
         // TODO This really needs to be better tested, esp. the different types
         // TODO This should have the ability to deal with RUN stuff too, and
         // unions
@@ -349,7 +343,7 @@ public class AttributeLayout implements IMatcher {
             return getValue("KS", value, pool);
         }
         return getValue("K" + type + layout.substring(2), value, //$NON-NLS-1$
-            pool);
+                pool);
     }
 
     @Override

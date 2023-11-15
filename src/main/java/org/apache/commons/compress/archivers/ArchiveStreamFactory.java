@@ -78,7 +78,7 @@ import org.apache.commons.compress.utils.Sets;
  * out.close();
  * in.close();
  * </pre>
- * 
+ *
  * @Immutable provided that the deprecated method setEntryEncoding is not used.
  * @ThreadSafe even if the deprecated method setEntryEncoding is used
  */
@@ -92,7 +92,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     /**
      * The singleton instance using the platform default encoding.
-     * 
+     *
      * @since 1.21
      */
     public static final ArchiveStreamFactory DEFAULT = new ArchiveStreamFactory();
@@ -139,56 +139,56 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     /**
      * Constant (value {@value}) used to identify the AR archive format.
-     * 
+     *
      * @since 1.1
      */
     public static final String AR = "ar";
 
     /**
      * Constant (value {@value}) used to identify the ARJ archive format. Not supported as an output stream type.
-     * 
+     *
      * @since 1.6
      */
     public static final String ARJ = "arj";
 
     /**
      * Constant (value {@value}) used to identify the CPIO archive format.
-     * 
+     *
      * @since 1.1
      */
     public static final String CPIO = "cpio";
 
     /**
      * Constant (value {@value}) used to identify the Unix DUMP archive format. Not supported as an output stream type.
-     * 
+     *
      * @since 1.3
      */
     public static final String DUMP = "dump";
 
     /**
      * Constant (value {@value}) used to identify the JAR archive format.
-     * 
+     *
      * @since 1.1
      */
     public static final String JAR = "jar";
 
     /**
      * Constant used to identify the TAR archive format.
-     * 
+     *
      * @since 1.1
      */
     public static final String TAR = "tar";
 
     /**
      * Constant (value {@value}) used to identify the ZIP archive format.
-     * 
+     *
      * @since 1.1
      */
     public static final String ZIP = "zip";
 
     /**
      * Constant (value {@value}) used to identify the 7z archive format.
-     * 
+     *
      * @since 1.8
      */
     public static final String SEVEN_Z = "7z";
@@ -199,7 +199,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     /**
      * Try to determine the type of Archiver
-     * 
+     *
      * @param in input stream
      * @return type of archiver if found
      * @throws ArchiveException if an archiver cannot be detected in the stream

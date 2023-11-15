@@ -36,29 +36,22 @@ import org.junit.jupiter.api.Test;
 
 public final class SnappyRoundtripTest extends AbstractTest {
 
-    private static Parameters newParameters(final int windowSize, final int minBackReferenceLength, final int maxBackReferenceLength,
-        final int maxOffset, final int maxLiteralLength) {
-        return Parameters.builder(windowSize)
-            .withMinBackReferenceLength(minBackReferenceLength)
-            .withMaxBackReferenceLength(maxBackReferenceLength)
-            .withMaxOffset(maxOffset)
-            .withMaxLiteralLength(maxLiteralLength)
-            .build();
+    private static Parameters newParameters(final int windowSize, final int minBackReferenceLength, final int maxBackReferenceLength, final int maxOffset,
+            final int maxLiteralLength) {
+        return Parameters.builder(windowSize).withMinBackReferenceLength(minBackReferenceLength).withMaxBackReferenceLength(maxBackReferenceLength)
+                .withMaxOffset(maxOffset).withMaxLiteralLength(maxLiteralLength).build();
     }
 
     private void roundTripTest(final byte[] input, final Parameters params) throws IOException {
         long start = System.currentTimeMillis();
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try (
-             SnappyCompressorOutputStream sos = new SnappyCompressorOutputStream(os, input.length, params)) {
+        try (SnappyCompressorOutputStream sos = new SnappyCompressorOutputStream(os, input.length, params)) {
             sos.write(input);
         }
         // System.err.println("byte array" + " written, uncompressed bytes: " + input.length
-        //    + ", compressed bytes: " + os.size() + " after " + (System.currentTimeMillis() - start) + "ms");
+        // + ", compressed bytes: " + os.size() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
-        try (
-             SnappyCompressorInputStream sis = new SnappyCompressorInputStream(new ByteArrayInputStream(os.toByteArray()),
-                 params.getWindowSize())) {
+        try (SnappyCompressorInputStream sis = new SnappyCompressorInputStream(new ByteArrayInputStream(os.toByteArray()), params.getWindowSize())) {
             final byte[] actual = IOUtils.toByteArray(sis);
             assertArrayEquals(input, actual);
         }
@@ -84,9 +77,7 @@ public final class SnappyRoundtripTest extends AbstractTest {
     }
 
     private void roundTripTest(final String testFile) throws IOException {
-        roundTripTest(getPath(testFile),
-            SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE)
-                .build());
+        roundTripTest(getPath(testFile), SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE).build());
     }
 
     // yields no compression at all
@@ -106,18 +97,14 @@ public final class SnappyRoundtripTest extends AbstractTest {
     public void testBlaTarRoundtripTunedForCompressionRatio() throws IOException {
         // System.err.println("Configuration: tuned for compression ratio");
         roundTripTest(getPath("bla.tar"),
-            SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE)
-                .tunedForCompressionRatio()
-                .build());
+                SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE).tunedForCompressionRatio().build());
     }
 
     @Test
     public void testBlaTarRoundtripTunedForSpeed() throws IOException {
         // System.err.println("Configuration: tuned for speed");
         roundTripTest(getPath("bla.tar"),
-            SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE)
-                .tunedForSpeed()
-                .build());
+                SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE).tunedForSpeed().build());
     }
 
     // yields no compression at all
@@ -139,20 +126,20 @@ public final class SnappyRoundtripTest extends AbstractTest {
         // of random noise that doesn't contain any 0000 at all, then
         // add 0000.
         final File f = newTempFile("reallyBigOffsetTest");
-        final ByteArrayOutputStream fs = new ByteArrayOutputStream((1<<16) + 1024);
-            fs.write(0);
-            fs.write(0);
-            fs.write(0);
-            fs.write(0);
-            final int cnt = 1 << 16 + 5;
-            final Random r = new Random();
-            for (int i = 0 ; i < cnt; i++) {
-                fs.write(r.nextInt(255) + 1);
-            }
-            fs.write(0);
-            fs.write(0);
-            fs.write(0);
-            fs.write(0);
+        final ByteArrayOutputStream fs = new ByteArrayOutputStream((1 << 16) + 1024);
+        fs.write(0);
+        fs.write(0);
+        fs.write(0);
+        fs.write(0);
+        final int cnt = 1 << 16 + 5;
+        final Random r = new Random();
+        for (int i = 0; i < cnt; i++) {
+            fs.write(r.nextInt(255) + 1);
+        }
+        fs.write(0);
+        fs.write(0);
+        fs.write(0);
+        fs.write(0);
 
         roundTripTest(fs.toByteArray(), newParameters(1 << 17, 4, 64, 1 << 17 - 1, 1 << 17 - 1));
     }
@@ -176,7 +163,7 @@ public final class SnappyRoundtripTest extends AbstractTest {
         try (OutputStream outputStream = Files.newOutputStream(path)) {
             final int cnt = 1 << 19;
             final Random r = new Random();
-            for (int i = 0 ; i < cnt; i++) {
+            for (int i = 0; i < cnt; i++) {
                 outputStream.write(r.nextInt(256));
             }
         }

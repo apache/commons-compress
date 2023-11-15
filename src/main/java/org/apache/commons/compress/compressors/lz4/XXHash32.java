@@ -38,12 +38,13 @@ public class XXHash32 implements Checksum {
     private static final int PRIME1 = (int) 2654435761L;
     private static final int PRIME2 = (int) 2246822519L;
     private static final int PRIME3 = (int) 3266489917L;
-    private static final int PRIME4 =  668265263;
-    private static final int PRIME5 =  374761393;
+    private static final int PRIME4 = 668265263;
+    private static final int PRIME5 = 374761393;
 
     private static int getInt(final byte[] buffer, final int idx) {
         return (int) (fromLittleEndian(buffer, idx, 4) & 0xffffffffL);
     }
+
     private final byte[] oneByte = new byte[1];
     private final int[] state = new int[4];
     // Note: the code used to use ByteBuffer but the manual method is 50% faster
@@ -64,6 +65,7 @@ public class XXHash32 implements Checksum {
 
     /**
      * Creates an XXHash32 instance.
+     *
      * @param seed the seed to use
      */
     public XXHash32(final int seed) {
@@ -75,11 +77,7 @@ public class XXHash32 implements Checksum {
     public long getValue() {
         int hash;
         if (totalLen > BUF_SIZE) {
-            hash =
-                rotateLeft(state[0],  1) +
-                rotateLeft(state[1],  7) +
-                rotateLeft(state[2], 12) +
-                rotateLeft(state[3], 18);
+            hash = rotateLeft(state[0], 1) + rotateLeft(state[1], 7) + rotateLeft(state[2], 12) + rotateLeft(state[3], 18);
         } else {
             hash = state[2] + PRIME5;
         }

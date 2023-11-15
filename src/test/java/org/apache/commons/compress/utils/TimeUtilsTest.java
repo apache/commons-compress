@@ -42,86 +42,47 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class TimeUtilsTest {
 
     public static Stream<Arguments> dateToNtfsProvider() {
-        return Stream.of(
-            Arguments.of("1601-01-01T00:00:00.000Z", 0),
-            Arguments.of("1601-01-01T00:00:00.000Z", 1),
-            Arguments.of("1600-12-31T23:59:59.999Z", -1),
-            Arguments.of("1601-01-01T00:00:00.001Z", HUNDRED_NANOS_PER_MILLISECOND),
-            Arguments.of("1601-01-01T00:00:00.001Z", HUNDRED_NANOS_PER_MILLISECOND + 1),
-            Arguments.of("1601-01-01T00:00:00.000Z", HUNDRED_NANOS_PER_MILLISECOND - 1),
-            Arguments.of("1600-12-31T23:59:59.999Z", -HUNDRED_NANOS_PER_MILLISECOND),
-            Arguments.of("1600-12-31T23:59:59.999Z", -HUNDRED_NANOS_PER_MILLISECOND + 1),
-            Arguments.of("1600-12-31T23:59:59.998Z", -HUNDRED_NANOS_PER_MILLISECOND - 1),
-            Arguments.of("1970-01-01T00:00:00.000Z", -WINDOWS_EPOCH_OFFSET),
-            Arguments.of("1970-01-01T00:00:00.000Z", -WINDOWS_EPOCH_OFFSET + 1),
-            Arguments.of("1970-01-01T00:00:00.001Z", -WINDOWS_EPOCH_OFFSET + HUNDRED_NANOS_PER_MILLISECOND),
-            Arguments.of("1969-12-31T23:59:59.999Z", -WINDOWS_EPOCH_OFFSET - 1),
-            Arguments.of("1969-12-31T23:59:59.999Z", -WINDOWS_EPOCH_OFFSET - HUNDRED_NANOS_PER_MILLISECOND)
-        );
+        return Stream.of(Arguments.of("1601-01-01T00:00:00.000Z", 0), Arguments.of("1601-01-01T00:00:00.000Z", 1), Arguments.of("1600-12-31T23:59:59.999Z", -1),
+                Arguments.of("1601-01-01T00:00:00.001Z", HUNDRED_NANOS_PER_MILLISECOND),
+                Arguments.of("1601-01-01T00:00:00.001Z", HUNDRED_NANOS_PER_MILLISECOND + 1),
+                Arguments.of("1601-01-01T00:00:00.000Z", HUNDRED_NANOS_PER_MILLISECOND - 1),
+                Arguments.of("1600-12-31T23:59:59.999Z", -HUNDRED_NANOS_PER_MILLISECOND),
+                Arguments.of("1600-12-31T23:59:59.999Z", -HUNDRED_NANOS_PER_MILLISECOND + 1),
+                Arguments.of("1600-12-31T23:59:59.998Z", -HUNDRED_NANOS_PER_MILLISECOND - 1), Arguments.of("1970-01-01T00:00:00.000Z", -WINDOWS_EPOCH_OFFSET),
+                Arguments.of("1970-01-01T00:00:00.000Z", -WINDOWS_EPOCH_OFFSET + 1),
+                Arguments.of("1970-01-01T00:00:00.001Z", -WINDOWS_EPOCH_OFFSET + HUNDRED_NANOS_PER_MILLISECOND),
+                Arguments.of("1969-12-31T23:59:59.999Z", -WINDOWS_EPOCH_OFFSET - 1),
+                Arguments.of("1969-12-31T23:59:59.999Z", -WINDOWS_EPOCH_OFFSET - HUNDRED_NANOS_PER_MILLISECOND));
     }
 
     public static Stream<Arguments> fileTimeToNtfsProvider() {
-        return Stream.of(
-            Arguments.of("1601-01-01T00:00:00.0000000Z", 0),
-            Arguments.of("1601-01-01T00:00:00.0000001Z", 1),
-            Arguments.of("1600-12-31T23:59:59.9999999Z", -1),
-            Arguments.of("1601-01-01T00:00:00.0010000Z", HUNDRED_NANOS_PER_MILLISECOND),
-            Arguments.of("1601-01-01T00:00:00.0010001Z", HUNDRED_NANOS_PER_MILLISECOND + 1),
-            Arguments.of("1601-01-01T00:00:00.0009999Z", HUNDRED_NANOS_PER_MILLISECOND - 1),
-            Arguments.of("1600-12-31T23:59:59.9990000Z", -HUNDRED_NANOS_PER_MILLISECOND),
-            Arguments.of("1600-12-31T23:59:59.9990001Z", -HUNDRED_NANOS_PER_MILLISECOND + 1),
-            Arguments.of("1600-12-31T23:59:59.9989999Z", -HUNDRED_NANOS_PER_MILLISECOND - 1),
-            Arguments.of("1970-01-01T00:00:00.0000000Z", -WINDOWS_EPOCH_OFFSET),
-            Arguments.of("1970-01-01T00:00:00.0000001Z", -WINDOWS_EPOCH_OFFSET + 1),
-            Arguments.of("1970-01-01T00:00:00.0010000Z", -WINDOWS_EPOCH_OFFSET + HUNDRED_NANOS_PER_MILLISECOND),
-            Arguments.of("1969-12-31T23:59:59.9999999Z", -WINDOWS_EPOCH_OFFSET - 1),
-            Arguments.of("1969-12-31T23:59:59.9990000Z", -WINDOWS_EPOCH_OFFSET - HUNDRED_NANOS_PER_MILLISECOND)
-        );
+        return Stream.of(Arguments.of("1601-01-01T00:00:00.0000000Z", 0), Arguments.of("1601-01-01T00:00:00.0000001Z", 1),
+                Arguments.of("1600-12-31T23:59:59.9999999Z", -1), Arguments.of("1601-01-01T00:00:00.0010000Z", HUNDRED_NANOS_PER_MILLISECOND),
+                Arguments.of("1601-01-01T00:00:00.0010001Z", HUNDRED_NANOS_PER_MILLISECOND + 1),
+                Arguments.of("1601-01-01T00:00:00.0009999Z", HUNDRED_NANOS_PER_MILLISECOND - 1),
+                Arguments.of("1600-12-31T23:59:59.9990000Z", -HUNDRED_NANOS_PER_MILLISECOND),
+                Arguments.of("1600-12-31T23:59:59.9990001Z", -HUNDRED_NANOS_PER_MILLISECOND + 1),
+                Arguments.of("1600-12-31T23:59:59.9989999Z", -HUNDRED_NANOS_PER_MILLISECOND - 1),
+                Arguments.of("1970-01-01T00:00:00.0000000Z", -WINDOWS_EPOCH_OFFSET), Arguments.of("1970-01-01T00:00:00.0000001Z", -WINDOWS_EPOCH_OFFSET + 1),
+                Arguments.of("1970-01-01T00:00:00.0010000Z", -WINDOWS_EPOCH_OFFSET + HUNDRED_NANOS_PER_MILLISECOND),
+                Arguments.of("1969-12-31T23:59:59.9999999Z", -WINDOWS_EPOCH_OFFSET - 1),
+                Arguments.of("1969-12-31T23:59:59.9990000Z", -WINDOWS_EPOCH_OFFSET - HUNDRED_NANOS_PER_MILLISECOND));
     }
 
     public static Stream<Arguments> fileTimeToUnixTimeArguments() {
-        return Stream.of(
-                Arguments.of(0L, "1970-01-01T00:00:00Z"),
-                Arguments.of(1672141989L, "2022-12-27T11:53:09Z"),
-                Arguments.of(Integer.MAX_VALUE, "2038-01-19T03:14:07Z")
-        );
+        return Stream.of(Arguments.of(0L, "1970-01-01T00:00:00Z"), Arguments.of(1672141989L, "2022-12-27T11:53:09Z"),
+                Arguments.of(Integer.MAX_VALUE, "2038-01-19T03:14:07Z"));
     }
 
     public static Stream<Arguments> truncateFileTimeProvider() {
-        return Stream.of(
-                Arguments.of(
-                        "2022-05-10T18:25:33.123456789Z",
-                        "2022-05-10T18:25:33.1234567Z"
-                ),
-                Arguments.of(
-                        "1970-01-01T00:00:00.000000001Z",
-                        "1970-01-01T00:00:00.0000000Z"
-                ),
-                Arguments.of(
-                        "1970-01-01T00:00:00.000000010Z",
-                        "1970-01-01T00:00:00.0000000Z"
-                ),
-                Arguments.of(
-                        "1970-01-01T00:00:00.000000199Z",
-                        "1970-01-01T00:00:00.0000001Z"
-                ),
-                Arguments.of(
-                        "1969-12-31T23:59:59.999999999Z",
-                        "1969-12-31T23:59:59.9999999Z"
-                ),
-                Arguments.of(
-                        "1969-12-31T23:59:59.000000001Z",
-                        "1969-12-31T23:59:59.0000000Z"
-                ),
-                Arguments.of(
-                        "1969-12-31T23:59:59.000000010Z",
-                        "1969-12-31T23:59:59.0000000Z"
-                ),
-                Arguments.of(
-                        "1969-12-31T23:59:59.000000199Z",
-                        "1969-12-31T23:59:59.0000001Z"
-                )
-        );
+        return Stream.of(Arguments.of("2022-05-10T18:25:33.123456789Z", "2022-05-10T18:25:33.1234567Z"),
+                Arguments.of("1970-01-01T00:00:00.000000001Z", "1970-01-01T00:00:00.0000000Z"),
+                Arguments.of("1970-01-01T00:00:00.000000010Z", "1970-01-01T00:00:00.0000000Z"),
+                Arguments.of("1970-01-01T00:00:00.000000199Z", "1970-01-01T00:00:00.0000001Z"),
+                Arguments.of("1969-12-31T23:59:59.999999999Z", "1969-12-31T23:59:59.9999999Z"),
+                Arguments.of("1969-12-31T23:59:59.000000001Z", "1969-12-31T23:59:59.0000000Z"),
+                Arguments.of("1969-12-31T23:59:59.000000010Z", "1969-12-31T23:59:59.0000000Z"),
+                Arguments.of("1969-12-31T23:59:59.000000199Z", "1969-12-31T23:59:59.0000001Z"));
     }
 
     @ParameterizedTest

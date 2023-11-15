@@ -20,11 +20,11 @@ package org.apache.commons.compress.archivers.zip;
 /**
  * Info-ZIP Unicode Comment Extra Field (0x6375):
  *
- * <p>Stores the UTF-8 version of the file comment as stored in the
- * central directory header.</p>
+ * <p>
+ * Stores the UTF-8 version of the file comment as stored in the central directory header.
+ * </p>
  *
- * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">PKWARE
- * APPNOTE.TXT, section 4.6.8</a>
+ * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">PKWARE APPNOTE.TXT, section 4.6.8</a>
  *
  * @NotThreadSafe super-class is not thread-safe
  */
@@ -32,32 +32,28 @@ public class UnicodeCommentExtraField extends AbstractUnicodeExtraField {
 
     public static final ZipShort UCOM_ID = new ZipShort(0x6375);
 
-    public UnicodeCommentExtraField () {
+    public UnicodeCommentExtraField() {
     }
 
     /**
-     * Assemble as unicode comment extension from the comment given as
-     * text as well as the bytes actually written to the archive.
+     * Assemble as unicode comment extension from the comment given as text as well as the bytes actually written to the archive.
      *
      * @param comment The file comment
-     * @param bytes the bytes actually written to the archive
+     * @param bytes   the bytes actually written to the archive
      */
     public UnicodeCommentExtraField(final String comment, final byte[] bytes) {
         super(comment, bytes);
     }
 
     /**
-     * Assemble as unicode comment extension from the name given as
-     * text as well as the encoded bytes actually written to the archive.
+     * Assemble as unicode comment extension from the name given as text as well as the encoded bytes actually written to the archive.
      *
-     * @param text The file name
+     * @param text  The file name
      * @param bytes the bytes actually written to the archive
-     * @param off The offset of the encoded comment in {@code bytes}.
-     * @param len The length of the encoded comment or comment in
-     * {@code bytes}.
+     * @param off   The offset of the encoded comment in {@code bytes}.
+     * @param len   The length of the encoded comment or comment in {@code bytes}.
      */
-    public UnicodeCommentExtraField(final String text, final byte[] bytes, final int off,
-                                    final int len) {
+    public UnicodeCommentExtraField(final String text, final byte[] bytes, final int off, final int len) {
         super(text, bytes, off, len);
     }
 

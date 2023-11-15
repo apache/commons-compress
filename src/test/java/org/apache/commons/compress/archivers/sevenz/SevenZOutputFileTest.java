@@ -96,7 +96,7 @@ public class SevenZOutputFileTest extends AbstractTest {
     }
 
     private void createAndReadBack(final File output, final Iterable<SevenZMethodConfiguration> methods) throws Exception {
-        try (final SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
+        try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
             outArchive.setContentMethods(methods);
             addFile(outArchive, 0, true);
         }
@@ -107,7 +107,7 @@ public class SevenZOutputFileTest extends AbstractTest {
     }
 
     private void createAndReadBack(final SeekableInMemoryByteChannel output, final Iterable<SevenZMethodConfiguration> methods) throws Exception {
-        try (final SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
+        try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
             outArchive.setContentMethods(methods);
             addFile(outArchive, 0, true);
         }

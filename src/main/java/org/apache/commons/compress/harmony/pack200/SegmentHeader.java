@@ -20,8 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * SegmentHeader is the header band of a {@link Segment}. Corresponds to {@code segment_header} in the pack200
- * specification.
+ * SegmentHeader is the header band of a {@link Segment}. Corresponds to {@code segment_header} in the pack200 specification.
  */
 public class SegmentHeader extends BandSet {
 
@@ -64,7 +63,7 @@ public class SegmentHeader extends BandSet {
         }
     }
 
-    private static final int[] magic = {0xCA, 0xFE, 0xD0, 0x0D};
+    private static final int[] magic = { 0xCA, 0xFE, 0xD0, 0x0D };
     private static final int archive_minver = 7;
     private static final int archive_majver = 150;
 

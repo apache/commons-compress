@@ -119,7 +119,7 @@ public final class DetectCompressorTest {
         new TestData("multiple.xz", new char[] { 'a' }, factoryFalse, false),
         new TestData("multiple.xz", new char[] { 'a' }, factorySetFalse, false),
         new TestData("multiple.xz", new char[] { 'a' }, factory, false),
-        // @formatter:off
+        // @formatter:on
     };
 
     @SuppressWarnings("resource") // Caller closes.
@@ -128,12 +128,14 @@ public final class DetectCompressorTest {
     }
 
     @SuppressWarnings("resource") // Caller closes.
-    private CompressorInputStream createCompressorInputStream(final String resource, final CompressorStreamFactory factory) throws CompressorException, IOException {
+    private CompressorInputStream createCompressorInputStream(final String resource, final CompressorStreamFactory factory)
+            throws CompressorException, IOException {
         return factory.createCompressorInputStream(new BufferedInputStream(Files.newInputStream(getFile(resource).toPath())));
     }
 
     @SuppressWarnings("resource") // Caller closes.
-    private CompressorInputStream createCompressorInputStream(final String resource, final Set<String> compressorNames) throws CompressorException, IOException {
+    private CompressorInputStream createCompressorInputStream(final String resource, final Set<String> compressorNames)
+            throws CompressorException, IOException {
         return factory.createCompressorInputStream(new BufferedInputStream(Files.newInputStream(getFile(resource).toPath())), compressorNames);
     }
 
@@ -142,7 +144,7 @@ public final class DetectCompressorTest {
         final InputStream is = new BufferedInputStream(Files.newInputStream(getFile(fileName).toPath()));
         try {
             return fac.createCompressorInputStream(is);
-        } catch (final CompressorException e) {
+        } catch (CompressorException e) {
             if (e.getCause() != null && e.getCause() instanceof Exception) {
                 // unwrap cause to reveal MemoryLimitException
                 throw (Exception) e.getCause();
@@ -319,7 +321,6 @@ public final class DetectCompressorTest {
             }
         }
     }
-
 
     @Test
     public void testOverride() {

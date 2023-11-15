@@ -23,6 +23,7 @@ import java.util.zip.Deflater;
 
 /**
  * Parameters for the Deflate compressor.
+ *
  * @since 1.9
  */
 public class DeflateParameters {
@@ -35,6 +36,7 @@ public class DeflateParameters {
 
     /**
      * The compression level.
+     *
      * @see #setCompressionLevel
      * @return the compression level
      */
@@ -61,8 +63,9 @@ public class DeflateParameters {
     /**
      * Sets the zlib header presence parameter.
      *
-     * <p>This affects whether or not the zlib header will be written
-     * (when compressing) or expected (when decompressing).</p>
+     * <p>
+     * This affects whether or not the zlib header will be written (when compressing) or expected (when decompressing).
+     * </p>
      *
      * @param zlibHeader true if zlib header shall be written
      */
@@ -71,8 +74,8 @@ public class DeflateParameters {
     }
 
     /**
-     * Whether or not the zlib header shall be written (when
-     * compressing) or expected (when decompressing).
+     * Whether or not the zlib header shall be written (when compressing) or expected (when decompressing).
+     *
      * @return true if zlib header shall be written
      */
     public boolean withZlibHeader() {

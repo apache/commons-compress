@@ -70,7 +70,7 @@ public final class DeflateTest extends AbstractTest {
      * @throws Exception
      */
     @Test
-    public void testRawDeflateCreation()  throws Exception {
+    public void testRawDeflateCreation() throws Exception {
         final File input = getFile("test1.xml");
         final File output = newTempFile("test1.xml.deflate");
         try (OutputStream out = Files.newOutputStream(output.toPath())) {

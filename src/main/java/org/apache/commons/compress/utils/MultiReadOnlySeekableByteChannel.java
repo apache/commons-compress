@@ -33,12 +33,14 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Read-Only Implementation of {@link SeekableByteChannel} that
- * concatenates a collection of other {@link SeekableByteChannel}s.
+ * Read-Only Implementation of {@link SeekableByteChannel} that concatenates a collection of other {@link SeekableByteChannel}s.
  *
- * <p>This is a lose port of <a
- * href="https://github.com/frugalmechanic/fm-common/blob/master/jvm/src/main/scala/fm/common/MultiReadOnlySeekableByteChannel.scala">MultiReadOnlySeekableByteChannel</a>
- * by Tim Underwood.</p>
+ * <p>
+ * This is a lose port of <a href=
+ * "https://github.com/frugalmechanic/fm-common/blob/master/jvm/src/main/scala/fm/common/MultiReadOnlySeekableByteChannel.scala">
+ * MultiReadOnlySeekableByteChannel</a>
+ * by Tim Underwood.
+ * </p>
  *
  * @since 1.19
  */
@@ -51,7 +53,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      *
      * @param files the files to concatenate
      * @throws NullPointerException if files is null
-     * @throws IOException if opening a channel for one of the files fails
+     * @throws IOException          if opening a channel for one of the files fails
      * @return SeekableByteChannel that concatenates all provided files
      */
     public static SeekableByteChannel forFiles(final File... files) throws IOException {
@@ -65,13 +67,13 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
 
     /**
      * Concatenates the given file paths.
-     * @param paths the file paths to concatenate, note that the LAST FILE of files should be the LAST SEGMENT(.zip)
-     * and these files should be added in correct order (e.g.: .z01, .z02... .z99, .zip)
+     *
+     * @param paths the file paths to concatenate, note that the LAST FILE of files should be the LAST SEGMENT(.zip) and these files should be added in correct
+     *              order (e.g.: .z01, .z02... .z99, .zip)
      * @return SeekableByteChannel that concatenates all provided files
      * @throws NullPointerException if files is null
-     * @throws IOException if opening a channel for one of the files fails
-     * @throws IOException if the first channel doesn't seem to hold
-     * the beginning of a split archive
+     * @throws IOException          if opening a channel for one of the files fails
+     * @throws IOException          if the first channel doesn't seem to hold the beginning of a split archive
      * @since 1.22
      */
     public static SeekableByteChannel forPaths(final Path... paths) throws IOException {
@@ -112,8 +114,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * @throws NullPointerException if channels is null
      */
     public MultiReadOnlySeekableByteChannel(final List<SeekableByteChannel> channels) {
-        this.channels = Collections.unmodifiableList(new ArrayList<>(
-            Objects.requireNonNull(channels, "channels must not be null")));
+        this.channels = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(channels, "channels must not be null")));
     }
 
     @Override
@@ -141,9 +142,10 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     /**
      * Gets this channel's position.
      *
-     * <p>This method violates the contract of {@link SeekableByteChannel#position()} as it will not throw any exception
-     * when invoked on a closed channel. Instead it will return the position the channel had when close has been
-     * called.</p>
+     * <p>
+     * This method violates the contract of {@link SeekableByteChannel#position()} as it will not throw any exception when invoked on a closed channel. Instead
+     * it will return the position the channel had when close has been called.
+     * </p>
      */
     @Override
     public long position() {
@@ -179,7 +181,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
                 pos = -1L; // Mark pos as already being set
                 newChannelPos = tmp;
             } else {
-                // newPosition is past this channel.  Set channel
+                // newPosition is past this channel. Set channel
                 // position to the end and substract channel size from
                 // pos
                 pos -= size;

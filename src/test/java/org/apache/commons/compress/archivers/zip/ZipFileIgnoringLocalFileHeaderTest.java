@@ -42,7 +42,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
 
     @Test
     public void testDuplicateEntry() throws Exception {
-        try (final ZipFile zf = openZipWithoutLFH("COMPRESS-227.zip")) {
+        try (ZipFile zf = openZipWithoutLFH("COMPRESS-227.zip")) {
             int numberOfEntries = 0;
             for (final ZipArchiveEntry entry : zf.getEntries("test1.txt")) {
                 numberOfEntries++;
@@ -56,7 +56,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
 
     @Test
     public void testGetEntryWorks() throws IOException {
-        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
+        try (ZipFile zf = openZipWithoutLFH("bla.zip")) {
             final ZipArchiveEntry ze = zf.getEntry("test1.xml");
             assertEquals(610, ze.getSize());
         }
@@ -64,7 +64,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
 
     @Test
     public void testGetRawInputStreamReturnsNotNull() throws IOException {
-        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
+        try (ZipFile zf = openZipWithoutLFH("bla.zip")) {
             final ZipArchiveEntry ze = zf.getEntry("test1.xml");
             try (InputStream rawInputStream = zf.getRawInputStream(ze)) {
                 assertNotNull(rawInputStream);
@@ -74,7 +74,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
 
     @Test
     public void testPhysicalOrder() throws IOException {
-        try (final ZipFile zf = openZipWithoutLFH("ordertest.zip")) {
+        try (ZipFile zf = openZipWithoutLFH("ordertest.zip")) {
             final Enumeration<ZipArchiveEntry> e = zf.getEntriesInPhysicalOrder();
             ZipArchiveEntry ze;
             do {
@@ -86,11 +86,12 @@ public class ZipFileIgnoringLocalFileHeaderTest {
 
     /**
      * Simple unarchive test. Asserts nothing.
+     *
      * @throws Exception
      */
     @Test
     public void testZipUnarchive() throws Exception {
-        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
+        try (ZipFile zf = openZipWithoutLFH("bla.zip")) {
             for (final Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements();) {
                 final ZipArchiveEntry entry = e.nextElement();
                 try (InputStream inputStream = zf.getInputStream(entry)) {

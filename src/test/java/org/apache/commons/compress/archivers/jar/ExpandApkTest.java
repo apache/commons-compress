@@ -38,9 +38,8 @@ public class ExpandApkTest {
 
     @Test
     public void test() throws IOException {
-        Streams
-            .failableStream(
+        Streams.failableStream(
                 PathUtils.walk(Paths.get("src/test/resources/android"), new SuffixFileFilter("." + ArchiveStreamFactory.APK, IOCase.INSENSITIVE), 100, false))
-            .forEach(path -> new Expander().expand(ArchiveStreamFactory.APK, println(path), null));
+                .forEach(path -> new Expander().expand(ArchiveStreamFactory.APK, println(path), null));
     }
 }

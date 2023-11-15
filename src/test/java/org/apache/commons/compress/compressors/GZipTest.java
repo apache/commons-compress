@@ -47,8 +47,7 @@ public final class GZipTest extends AbstractTest {
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {
         final File input = getFile("multiple.gz");
         try (InputStream is = Files.newInputStream(input.toPath())) {
-            try (CompressorInputStream in = new CompressorStreamFactory()
-                    .createCompressorInputStream("gz", is)) {
+            try (CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("gz", is)) {
                 assertEquals('a', in.read());
                 assertEquals(-1, in.read());
             }
@@ -75,8 +74,8 @@ public final class GZipTest extends AbstractTest {
     public void testCorruptedInput() throws Exception {
         final byte[] data = readAllBytes("bla.tgz");
         try (InputStream in = new ByteArrayInputStream(data, 0, data.length - 1);
-             CompressorInputStream cin = new CompressorStreamFactory().createCompressorInputStream("gz", in);
-             OutputStream out = new ByteArrayOutputStream()) {
+                CompressorInputStream cin = new CompressorStreamFactory().createCompressorInputStream("gz", in);
+                OutputStream out = new ByteArrayOutputStream()) {
             assertThrows(IOException.class, () -> IOUtils.copy(cin, out), "Expected an exception");
         }
     }
@@ -193,19 +192,17 @@ public final class GZipTest extends AbstractTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {0, -1})
+    @ValueSource(ints = { 0, -1 })
     public void testInvalidBufferSize(final int bufferSize) {
         final GzipParameters parameters = new GzipParameters();
-        assertThrows(IllegalArgumentException.class, () -> parameters.setBufferSize(bufferSize),
-                "IllegalArgumentException not thrown");
+        assertThrows(IllegalArgumentException.class, () -> parameters.setBufferSize(bufferSize), "IllegalArgumentException not thrown");
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {10, -5})
+    @ValueSource(ints = { 10, -5 })
     public void testInvalidCompressionLevel(final int compressionLevel) {
         final GzipParameters parameters = new GzipParameters();
-        assertThrows(IllegalArgumentException.class, () -> parameters.setCompressionLevel(compressionLevel),
-                "IllegalArgumentException not thrown");
+        assertThrows(IllegalArgumentException.class, () -> parameters.setCompressionLevel(compressionLevel), "IllegalArgumentException not thrown");
     }
 
     @Test
@@ -241,7 +238,7 @@ public final class GZipTest extends AbstractTest {
         final File input = getFile("bla.tgz");
         final byte[] buf = new byte[2];
         try (InputStream is = Files.newInputStream(input.toPath());
-                final GzipCompressorInputStream in = new GzipCompressorInputStream(is)) {
+                GzipCompressorInputStream in = new GzipCompressorInputStream(is)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read(buf));
             assertEquals(-1, in.read(buf));
@@ -259,7 +256,7 @@ public final class GZipTest extends AbstractTest {
     public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tgz");
         try (InputStream is = Files.newInputStream(input.toPath());
-                final GzipCompressorInputStream in = new GzipCompressorInputStream(is)) {
+                GzipCompressorInputStream in = new GzipCompressorInputStream(is)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());

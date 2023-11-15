@@ -41,7 +41,9 @@ public interface ArchiveEntry {
     /**
      * Gets the name of the entry in this archive. May refer to a file or directory or other item.
      *
-     * <p>This method returns the raw name as it is stored inside of the archive.</p>
+     * <p>
+     * This method returns the raw name as it is stored inside of the archive.
+     * </p>
      *
      * @return The name of this entry in the archive.
      */

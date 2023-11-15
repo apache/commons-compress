@@ -26,8 +26,7 @@ import java.nio.ByteOrder;
 import org.apache.commons.compress.utils.BitInputStream;
 
 /**
- * Iterates over the bits of an InputStream. For each byte the bits
- * are read from the right to the left.
+ * Iterates over the bits of an InputStream. For each byte the bits are read from the right to the left.
  *
  * @since 1.7
  */

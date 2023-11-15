@@ -37,8 +37,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 public final class BlockLZ4CompressorRoundtripTest extends AbstractTest {
 
     public static Stream<Arguments> factory() {
-        return Stream.of(
-                Arguments.of("default", BlockLZ4CompressorOutputStream.createParameterBuilder().build()),
+        return Stream.of(Arguments.of("default", BlockLZ4CompressorOutputStream.createParameterBuilder().build()),
                 Arguments.of("tuned for speed", BlockLZ4CompressorOutputStream.createParameterBuilder().tunedForSpeed().build()),
                 Arguments.of("tuned for compression ratio", BlockLZ4CompressorOutputStream.createParameterBuilder().tunedForCompressionRatio().build()));
     }
@@ -68,7 +67,8 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTest {
         final File input = getFile(testFile);
         long start = System.currentTimeMillis();
         final File outputSz = newTempFile(input.getName() + ".block.lz4");
-        try (OutputStream os = Files.newOutputStream(outputSz.toPath()); BlockLZ4CompressorOutputStream los = new BlockLZ4CompressorOutputStream(os, params)) {
+        try (OutputStream os = Files.newOutputStream(outputSz.toPath());
+                BlockLZ4CompressorOutputStream los = new BlockLZ4CompressorOutputStream(os, params)) {
             Files.copy(input.toPath(), los);
         }
         // System.err.println("Configuration: " + config);

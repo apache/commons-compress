@@ -142,9 +142,9 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
 
     @Test
     public void testRemainingChunkTypes() throws Exception {
-        try (final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
                 InputStream isSz = newInputStream("mixed.txt.sz");
-                final FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(isSz);) {
+                FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(isSz);) {
             IOUtils.copy(in, out);
             assertArrayEquals(new byte[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', '5', '6', '7', '8', '9', '5', '6', '7', '8', '9', '5', '6', '7', '8',
                     '9', '5', '6', '7', '8', '9', 10, '1', '2', '3', '4', '1', '2', '3', '4', }, out.toByteArray());
@@ -165,10 +165,10 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
     @Test
     public void testUnskippableChunk() {
         final byte[] input = { (byte) 0xff, 6, 0, 0, 's', 'N', 'a', 'P', 'p', 'Y', 2, 2, 0, 0, 1, 1 };
-        try (final FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(new ByteArrayInputStream(input))) {
+        try (FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(new ByteArrayInputStream(input))) {
             final IOException exception = assertThrows(IOException.class, () -> in.read());
             assertTrue(exception.getMessage().contains("Unskippable chunk"));
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
         }
     }
 

@@ -29,8 +29,8 @@ public class SegmentConstantPoolArrayCacheTest {
     @Test
     public void testMultipleArrayMultipleHit() {
         final SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
-        final String[] arrayOne = {"Zero", "Shared", "Two", "Shared", "Shared"};
-        final String[] arrayTwo = {"Shared", "One", "Shared", "Shared", "Shared"};
+        final String[] arrayOne = { "Zero", "Shared", "Two", "Shared", "Shared" };
+        final String[] arrayTwo = { "Shared", "One", "Shared", "Shared", "Shared" };
 
         List<Integer> listOne = arrayCache.indexesForArrayKey(arrayOne, "Shared");
         List<Integer> listTwo = arrayCache.indexesForArrayKey(arrayTwo, "Shared");
@@ -62,7 +62,7 @@ public class SegmentConstantPoolArrayCacheTest {
     @Test
     public void testSingleMultipleHitArray() {
         final SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
-        final String[] array = {"Zero", "OneThreeFour", "Two", "OneThreeFour", "OneThreeFour"};
+        final String[] array = { "Zero", "OneThreeFour", "Two", "OneThreeFour", "OneThreeFour" };
         final List<Integer> list = arrayCache.indexesForArrayKey(array, "OneThreeFour");
         assertEquals(3, list.size());
         assertEquals(1, list.get(0).intValue());
@@ -73,7 +73,7 @@ public class SegmentConstantPoolArrayCacheTest {
     @Test
     public void testSingleSimpleArray() {
         final SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
-        final String[] array = {"Zero", "One", "Two", "Three", "Four"};
+        final String[] array = { "Zero", "One", "Two", "Three", "Four" };
         final List<Integer> list = arrayCache.indexesForArrayKey(array, "Three");
         assertEquals(1, list.size());
         assertEquals(3, list.get(0).intValue());

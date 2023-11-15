@@ -33,8 +33,7 @@ import org.apache.commons.compress.compressors.snappy.FramedSnappyCompressorInpu
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public final class FramedSnappyTest
-    extends AbstractTest {
+public final class FramedSnappyTest extends AbstractTest {
 
     @Test
     public void testDefaultExtraction() throws Exception {
@@ -43,9 +42,7 @@ public final class FramedSnappyTest
 
     @Test
     public void testDefaultExtractionViaFactory() throws Exception {
-        testUnarchive(is -> new CompressorStreamFactory()
-            .createCompressorInputStream(CompressorStreamFactory.SNAPPY_FRAMED,
-                                         is));
+        testUnarchive(is -> new CompressorStreamFactory().createCompressorInputStream(CompressorStreamFactory.SNAPPY_FRAMED, is));
     }
 
     @Test
@@ -83,25 +80,24 @@ public final class FramedSnappyTest
         final Random r = new Random();
         final File input = newTempFile("bigChunkTest");
         try (OutputStream fs = Files.newOutputStream(input.toPath())) {
-            for (int i = 0 ; i < 1 << 17; i++) {
+            for (int i = 0; i < 1 << 17; i++) {
                 fs.write(r.nextInt(256));
             }
         }
         final long start = System.currentTimeMillis();
         final File outputSz = newTempFile(input.getName() + ".sz");
         try (InputStream is = Files.newInputStream(input.toPath());
-             OutputStream os = Files.newOutputStream(outputSz.toPath());
-             CompressorOutputStream sos = new CompressorStreamFactory()
-                 .createCompressorOutputStream("snappy-framed", os)) {
+                OutputStream os = Files.newOutputStream(outputSz.toPath());
+                CompressorOutputStream sos = new CompressorStreamFactory().createCompressorOutputStream("snappy-framed", os)) {
             final byte[] b = IOUtils.toByteArray(is);
             sos.write(b[0]);
             sos.write(b, 1, b.length - 1); // must be split into multiple compressed chunks
         }
         // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-        //    + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
+        // + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         try (InputStream is = Files.newInputStream(input.toPath());
-             CompressorInputStream sis = new CompressorStreamFactory()
-                 .createCompressorInputStream("snappy-framed", Files.newInputStream(outputSz.toPath()))) {
+                CompressorInputStream sis = new CompressorStreamFactory().createCompressorInputStream("snappy-framed",
+                        Files.newInputStream(outputSz.toPath()))) {
             final byte[] expected = IOUtils.toByteArray(is);
             final byte[] actual = IOUtils.toByteArray(sis);
             assertArrayEquals(expected, actual);
@@ -122,8 +118,7 @@ public final class FramedSnappyTest
         final File original = getFile("bla.tar");
         try (InputStream written = Files.newInputStream(output.toPath())) {
             try (InputStream orig = Files.newInputStream(original.toPath())) {
-                assertArrayEquals(IOUtils.toByteArray(written),
-                        IOUtils.toByteArray(orig));
+                assertArrayEquals(IOUtils.toByteArray(written), IOUtils.toByteArray(orig));
             }
         }
     }

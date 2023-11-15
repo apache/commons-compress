@@ -26,10 +26,7 @@ public final class DumpArchiveConstants {
      * The type of compression.
      */
     public enum COMPRESSION_TYPE {
-        UNKNOWN(-1),
-        ZLIB(0),
-        BZLIB(1),
-        LZO(2);
+        UNKNOWN(-1), ZLIB(0), BZLIB(1), LZO(2);
 
         public static COMPRESSION_TYPE find(final int code) {
             for (final COMPRESSION_TYPE t : values()) {
@@ -47,16 +44,12 @@ public final class DumpArchiveConstants {
             this.code = code;
         }
     }
+
     /**
      * The type of tape segment.
      */
     public enum SEGMENT_TYPE {
-        TAPE(1),
-        INODE(2),
-        BITS(3),
-        ADDR(4),
-        END(5),
-        CLRI(6);
+        TAPE(1), INODE(2), BITS(3), ADDR(4), END(5), CLRI(6);
 
         public static SEGMENT_TYPE find(final int code) {
             for (final SEGMENT_TYPE t : values()) {
@@ -74,6 +67,7 @@ public final class DumpArchiveConstants {
             this.code = code;
         }
     }
+
     public static final int TP_SIZE = 1024;
     public static final int NTREC = 10;
     public static final int HIGH_DENSITY_NTREC = 32;

@@ -55,11 +55,11 @@ public class AbstractLZ77CompressorInputStreamTest {
 
     @Test
     public void testCantPrefillAfterDataHasBeenRead() throws IOException {
-        final byte[] data = {1, 2, 3, 4};
+        final byte[] data = { 1, 2, 3, 4 };
         try (TestStream s = new TestStream(new ByteArrayInputStream(data))) {
             s.literal(3);
             assertEquals(1, s.read());
-            assertThrows(IllegalStateException.class, () -> s.prefill(new byte[] {1, 2, 3}));
+            assertThrows(IllegalStateException.class, () -> s.prefill(new byte[] { 1, 2, 3 }));
         }
     }
 

@@ -54,7 +54,7 @@ public class LongSymLinkTest extends AbstractTest {
     static {
         try {
             ARCDIR = new File(CLASSLOADER.getResource("longsymlink").toURI());
-        } catch (final URISyntaxException e) {
+        } catch (URISyntaxException e) {
             throw new AssertionError(e);
         }
     }
@@ -123,9 +123,11 @@ public class LongSymLinkTest extends AbstractTest {
                 // CPIO does not store directories or directory names
                 expected.clear();
                 for (final String ent : FILELIST) {
-                    if (!ent.endsWith("/")) {// not a directory
+                    if (!ent.endsWith("/")) {
+                        // not a directory
                         final int lastSlash = ent.lastIndexOf('/');
-                        if (lastSlash >= 0) { // extract path name
+                        if (lastSlash >= 0) {
+                            // extract path name
                             expected.add(ent.substring(lastSlash + 1));
                         } else {
                             expected.add(ent);

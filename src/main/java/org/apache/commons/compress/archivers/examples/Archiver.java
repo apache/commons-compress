@@ -99,7 +99,7 @@ public class Archiver {
     /**
      * Creates an archive {@code target} by recursively including all files and directories in {@code directory}.
      *
-     * @param target the stream to write the new archive to.
+     * @param target    the stream to write the new archive to.
      * @param directory the directory that contains the files to archive.
      * @throws IOException if an I/O error occurs
      */
@@ -110,7 +110,7 @@ public class Archiver {
     /**
      * Creates an archive {@code target} by recursively including all files and directories in {@code directory}.
      *
-     * @param target the stream to write the new archive to.
+     * @param target    the stream to write the new archive to.
      * @param directory the directory that contains the files to archive.
      * @throws IOException if an I/O error occurs or the archive cannot be created for other reasons.
      * @since 1.21
@@ -122,15 +122,15 @@ public class Archiver {
     /**
      * Creates an archive {@code target} by recursively including all files and directories in {@code directory}.
      *
-     * @param target the stream to write the new archive to.
-     * @param directory the directory that contains the files to archive.
+     * @param target           the stream to write the new archive to.
+     * @param directory        the directory that contains the files to archive.
      * @param fileVisitOptions linkOptions to configure the traversal of the source {@code directory}.
-     * @param linkOptions indicating how symbolic links are handled.
+     * @param linkOptions      indicating how symbolic links are handled.
      * @throws IOException if an I/O error occurs or the archive cannot be created for other reasons.
      * @since 1.21
      */
-    public void create(final ArchiveOutputStream<?> target, final Path directory,
-            final EnumSet<FileVisitOption> fileVisitOptions, final LinkOption... linkOptions) throws IOException {
+    public void create(final ArchiveOutputStream<?> target, final Path directory, final EnumSet<FileVisitOption> fileVisitOptions,
+            final LinkOption... linkOptions) throws IOException {
         Files.walkFileTree(directory, fileVisitOptions, Integer.MAX_VALUE, new ArchiverFileVisitor<>(target, directory, linkOptions));
         target.finish();
     }
@@ -138,7 +138,7 @@ public class Archiver {
     /**
      * Creates an archive {@code target} by recursively including all files and directories in {@code directory}.
      *
-     * @param target the file to write the new archive to.
+     * @param target    the file to write the new archive to.
      * @param directory the directory that contains the files to archive.
      * @throws IOException if an I/O error occurs
      */
@@ -149,7 +149,7 @@ public class Archiver {
     /**
      * Creates an archive {@code target} by recursively including all files and directories in {@code directory}.
      *
-     * @param target the file to write the new archive to.
+     * @param target    the file to write the new archive to.
      * @param directory the directory that contains the files to archive.
      * @throws IOException if an I/O error occurs
      * @since 1.21
@@ -159,14 +159,12 @@ public class Archiver {
         Files.walkFileTree(directory, new ArchiverFileVisitor(null, directory) {
 
             @Override
-            protected FileVisitResult visit(final Path path, final BasicFileAttributes attrs, final boolean isFile)
-                throws IOException {
+            protected FileVisitResult visit(final Path path, final BasicFileAttributes attrs, final boolean isFile) throws IOException {
                 Objects.requireNonNull(path);
                 Objects.requireNonNull(attrs);
                 final String name = directory.relativize(path).toString().replace('\\', '/');
                 if (!name.isEmpty()) {
-                    final SevenZArchiveEntry archiveEntry = target.createArchiveEntry(path,
-                        isFile || name.endsWith("/") ? name : name + "/");
+                    final SevenZArchiveEntry archiveEntry = target.createArchiveEntry(path, isFile || name.endsWith("/") ? name : name + "/");
                     target.putArchiveEntry(archiveEntry);
                     if (isFile) {
                         // Refactor this as a BiConsumer on Java 8
@@ -185,14 +183,13 @@ public class Archiver {
      * Creates an archive {@code target} using the format {@code
      * format} by recursively including all files and directories in {@code directory}.
      *
-     * @param format the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
-     * @param target the file to write the new archive to.
+     * @param format    the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
+     * @param target    the file to write the new archive to.
      * @param directory the directory that contains the files to archive.
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      * @throws ArchiveException if the archive cannot be created for other reasons
      */
-    public void create(final String format, final File target, final File directory)
-        throws IOException, ArchiveException {
+    public void create(final String format, final File target, final File directory) throws IOException, ArchiveException {
         create(format, target.toPath(), directory.toPath());
     }
 
@@ -205,16 +202,15 @@ public class Archiver {
      * {@link #create(String,OutputStream,File,CloseableConsumer)} instead.
      * </p>
      *
-     * @param format the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
-     * @param target the stream to write the new archive to.
+     * @param format    the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
+     * @param target    the stream to write the new archive to.
      * @param directory the directory that contains the files to archive.
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      * @throws ArchiveException if the archive cannot be created for other reasons
      * @deprecated this method leaks resources
      */
     @Deprecated
-    public void create(final String format, final OutputStream target, final File directory)
-        throws IOException, ArchiveException {
+    public void create(final String format, final OutputStream target, final File directory) throws IOException, ArchiveException {
         create(format, target, directory, CloseableConsumer.NULL_CONSUMER);
     }
 
@@ -223,22 +219,21 @@ public class Archiver {
      * format} by recursively including all files and directories in {@code directory}.
      *
      * <p>
-     * This method creates a wrapper around the archive stream and the caller of this method is responsible for closing
-     * it - probably at the same time as closing the stream itself. The caller is informed about the wrapper object via
-     * the {@code
+     * This method creates a wrapper around the archive stream and the caller of this method is responsible for closing it - probably at the same time as
+     * closing the stream itself. The caller is informed about the wrapper object via the {@code
      * closeableConsumer} callback as soon as it is no longer needed by this class.
      * </p>
      *
-     * @param format the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
-     * @param target the stream to write the new archive to.
-     * @param directory the directory that contains the files to archive.
+     * @param format            the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
+     * @param target            the stream to write the new archive to.
+     * @param directory         the directory that contains the files to archive.
      * @param closeableConsumer is informed about the stream wrapped around the passed in stream
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      * @throws ArchiveException if the archive cannot be created for other reasons
      * @since 1.19
      */
-    public void create(final String format, final OutputStream target, final File directory,
-        final CloseableConsumer closeableConsumer) throws IOException, ArchiveException {
+    public void create(final String format, final OutputStream target, final File directory, final CloseableConsumer closeableConsumer)
+            throws IOException, ArchiveException {
         try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
             ArchiveOutputStream<? extends ArchiveEntry> archiveOutputStream = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, target);
             create(c.track(archiveOutputStream), directory);
@@ -249,15 +244,14 @@ public class Archiver {
      * Creates an archive {@code target} using the format {@code
      * format} by recursively including all files and directories in {@code directory}.
      *
-     * @param format the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
-     * @param target the file to write the new archive to.
+     * @param format    the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
+     * @param target    the file to write the new archive to.
      * @param directory the directory that contains the files to archive.
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      * @throws ArchiveException if the archive cannot be created for other reasons
      * @since 1.21
      */
-    public void create(final String format, final Path target, final Path directory)
-            throws IOException, ArchiveException {
+    public void create(final String format, final Path target, final Path directory) throws IOException, ArchiveException {
         if (prefersSeekableByteChannel(format)) {
             try (SeekableByteChannel channel = FileChannel.open(target, StandardOpenOption.WRITE, StandardOpenOption.CREATE,
                     StandardOpenOption.TRUNCATE_EXISTING)) {
@@ -276,20 +270,19 @@ public class Archiver {
      * format} by recursively including all files and directories in {@code directory}.
      *
      * <p>
-     * This method creates a wrapper around the target channel which is never closed and thus leaks resources, please
-     * use {@link #create(String,SeekableByteChannel,File,CloseableConsumer)} instead.
+     * This method creates a wrapper around the target channel which is never closed and thus leaks resources, please use
+     * {@link #create(String,SeekableByteChannel,File,CloseableConsumer)} instead.
      * </p>
      *
-     * @param format the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
-     * @param target the channel to write the new archive to.
+     * @param format    the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
+     * @param target    the channel to write the new archive to.
      * @param directory the directory that contains the files to archive.
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      * @throws ArchiveException if the archive cannot be created for other reasons
      * @deprecated this method leaks resources
      */
     @Deprecated
-    public void create(final String format, final SeekableByteChannel target, final File directory)
-        throws IOException, ArchiveException {
+    public void create(final String format, final SeekableByteChannel target, final File directory) throws IOException, ArchiveException {
         create(format, target, directory, CloseableConsumer.NULL_CONSUMER);
     }
 
@@ -298,22 +291,21 @@ public class Archiver {
      * format} by recursively including all files and directories in {@code directory}.
      *
      * <p>
-     * This method creates a wrapper around the archive channel and the caller of this method is responsible for closing
-     * it - probably at the same time as closing the channel itself. The caller is informed about the wrapper object via
-     * the {@code
+     * This method creates a wrapper around the archive channel and the caller of this method is responsible for closing it - probably at the same time as
+     * closing the channel itself. The caller is informed about the wrapper object via the {@code
      * closeableConsumer} callback as soon as it is no longer needed by this class.
      * </p>
      *
-     * @param format the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
-     * @param target the channel to write the new archive to.
-     * @param directory the directory that contains the files to archive.
+     * @param format            the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
+     * @param target            the channel to write the new archive to.
+     * @param directory         the directory that contains the files to archive.
      * @param closeableConsumer is informed about the stream wrapped around the passed in stream
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      * @throws ArchiveException if the archive cannot be created for other reasons
      * @since 1.19
      */
-    public void create(final String format, final SeekableByteChannel target, final File directory,
-        final CloseableConsumer closeableConsumer) throws IOException, ArchiveException {
+    public void create(final String format, final SeekableByteChannel target, final File directory, final CloseableConsumer closeableConsumer)
+            throws IOException, ArchiveException {
         try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
             if (!prefersSeekableByteChannel(format)) {
                 create(format, c.track(Channels.newOutputStream(target)), directory);
@@ -332,10 +324,10 @@ public class Archiver {
      * Creates an archive {@code target} using the format {@code
      * format} by recursively including all files and directories in {@code directory}.
      *
-     * @param format the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
-     * @param target the channel to write the new archive to.
+     * @param format    the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
+     * @param target    the channel to write the new archive to.
      * @param directory the directory that contains the files to archive.
-     * @throws IOException if an I/O error occurs
+     * @throws IOException           if an I/O error occurs
      * @throws IllegalStateException if the format does not support {@code SeekableByteChannel}.
      */
     public void create(final String format, final SeekableByteChannel target, final Path directory) throws IOException {
@@ -353,7 +345,6 @@ public class Archiver {
     }
 
     private boolean prefersSeekableByteChannel(final String format) {
-        return ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)
-            || ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format);
+        return ArchiveStreamFactory.ZIP.equalsIgnoreCase(format) || ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format);
     }
 }

@@ -36,46 +36,44 @@ final class ZipSplitOutputStream extends OutputStream {
     /**
      * 8.5.1 Capacities for split archives are as follows:
      * <p>
-     * Maximum number of segments = 4,294,967,295 - 1
-     * Maximum .ZIP segment size = 4,294,967,295 bytes (refer to section 8.5.6)
-     * Minimum segment size = 64K
+     * Maximum number of segments = 4,294,967,295 - 1 Maximum .ZIP segment size = 4,294,967,295 bytes (refer to section 8.5.6) Minimum segment size = 64K
      * Maximum PKSFX segment size = 2,147,483,647 bytes
      */
-    private final static long ZIP_SEGMENT_MIN_SIZE = 64 * 1024L;
-    private final static long ZIP_SEGMENT_MAX_SIZE = 4294967295L;
+    private static final long ZIP_SEGMENT_MIN_SIZE = 64 * 1024L;
+    private static final long ZIP_SEGMENT_MAX_SIZE = 4294967295L;
+
     private OutputStream outputStream;
     private Path zipFile;
     private final long splitSize;
     private int currentSplitSegmentIndex;
     private long currentSplitSegmentBytesWritten;
-
     private boolean finished;
     private final byte[] singleByte = new byte[1];
 
     /**
-     * Creates a split ZIP. If the ZIP file is smaller than the split size,
-     * then there will only be one split ZIP, and its suffix is .zip,
-     * otherwise the split segments should be like .z01, .z02, ... .z(N-1), .zip
+     * Creates a split ZIP. If the ZIP file is smaller than the split size, then there will only be one split ZIP, and its suffix is .zip, otherwise the split
+     * segments should be like .z01, .z02, ... .z(N-1), .zip
+     *
      * @param zipFile   the ZIP file to write to
      * @param splitSize the split size
      * @throws IllegalArgumentException if arguments are illegal: Zip split segment size should between 64K and 4,294,967,295.
-     * @throws IOException if an I/O error occurs
+     * @throws IOException              if an I/O error occurs
      */
-    public ZipSplitOutputStream(final File zipFile, final long splitSize) throws IllegalArgumentException, IOException {
+    ZipSplitOutputStream(final File zipFile, final long splitSize) throws IllegalArgumentException, IOException {
         this(zipFile.toPath(), splitSize);
     }
 
     /**
-     * Creates a split ZIP. If the ZIP file is smaller than the split size,
-     * then there will only be one split ZIP, and its suffix is .zip,
-     * otherwise the split segments should be like .z01, .z02, ... .z(N-1), .zip
+     * Creates a split ZIP. If the ZIP file is smaller than the split size, then there will only be one split ZIP, and its suffix is .zip, otherwise the split
+     * segments should be like .z01, .z02, ... .z(N-1), .zip
+     *
      * @param zipFile   the path to ZIP file to write to
      * @param splitSize the split size
      * @throws IllegalArgumentException if arguments are illegal: Zip split segment size should between 64K and 4,294,967,295.
-     * @throws IOException if an I/O error occurs
+     * @throws IOException              if an I/O error occurs
      * @since 1.22
      */
-    public ZipSplitOutputStream(final Path zipFile, final long splitSize) throws IllegalArgumentException, IOException {
+    ZipSplitOutputStream(final Path zipFile, final long splitSize) throws IllegalArgumentException, IOException {
         if (splitSize < ZIP_SEGMENT_MIN_SIZE || splitSize > ZIP_SEGMENT_MAX_SIZE) {
             throw new IllegalArgumentException("Zip split segment size should between 64K and 4,294,967,295");
         }
@@ -94,22 +92,15 @@ final class ZipSplitOutputStream extends OutputStream {
     }
 
     /**
-     * Create the new ZIP split segment, the last ZIP segment should be .zip, and the ZIP split segments' suffix should be
-     * like .z01, .z02, .z03, ... .z99, .z100, ..., .z(N-1), .zip
+     * Create the new ZIP split segment, the last ZIP segment should be .zip, and the ZIP split segments' suffix should be like .z01, .z02, .z03, ... .z99,
+     * .z100, ..., .z(N-1), .zip
      * <p>
-     * 8.3.3 Split ZIP files are typically written to the same location
-     * and are subject to name collisions if the spanned name
-     * format is used since each segment will reside on the same
-     * drive. To avoid name collisions, split archives are named
-     * as follows.
+     * 8.3.3 Split ZIP files are typically written to the same location and are subject to name collisions if the spanned name format is used since each segment
+     * will reside on the same drive. To avoid name collisions, split archives are named as follows.
      * <p>
-     * Segment 1   = filename.z01
-     * Segment n-1 = filename.z(n-1)
-     * Segment n   = filename.zip
+     * Segment 1 = filename.z01 Segment n-1 = filename.z(n-1) Segment n = filename.zip
      * <p>
-     * NOTE:
-     * The ZIP split segment begin from 1,2,3,... , and we're creating a new segment,
-     * so the new segment suffix should be (currentSplitSegmentIndex + 2)
+     * NOTE: The ZIP split segment begin from 1,2,3,... , and we're creating a new segment, so the new segment suffix should be (currentSplitSegmentIndex + 2)
      *
      * @param zipSplitSegmentSuffixIndex
      * @return
@@ -185,9 +176,8 @@ final class ZipSplitOutputStream extends OutputStream {
     /**
      * Some data can not be written to different split segments, for example:
      * <p>
-     * 4.4.1.5  The end of central directory record and the Zip64 end
-     * of central directory locator record MUST reside on the same
-     * disk when splitting or spanning an archive.
+     * 4.4.1.5 The end of central directory record and the Zip64 end of central directory locator record MUST reside on the same disk when splitting or spanning
+     * an archive.
      *
      * @param unsplittableContentSize
      * @throws IllegalArgumentException
@@ -210,8 +200,7 @@ final class ZipSplitOutputStream extends OutputStream {
     }
 
     /**
-     * Write the data to ZIP split segments, if the remaining space of current split segment
-     * is not enough, then a new split segment should be created
+     * Write the data to ZIP split segments, if the remaining space of current split segment is not enough, then a new split segment should be created
      *
      * @param b   data to write
      * @param off offset of the start of data in param b
@@ -240,7 +229,7 @@ final class ZipSplitOutputStream extends OutputStream {
 
     @Override
     public void write(final int i) throws IOException {
-        singleByte[0] = (byte)(i & 0xff);
+        singleByte[0] = (byte) (i & 0xff);
         write(singleByte);
     }
 

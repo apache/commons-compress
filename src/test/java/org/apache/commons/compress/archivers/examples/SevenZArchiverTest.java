@@ -51,8 +51,7 @@ public class SevenZArchiverTest extends AbstractTest {
         assertTrue(entry.isDirectory(), expectedName + " is not a directory");
     }
 
-    private void assertHelloWorld(final String expectedName, final String suffix, final ArchiveEntry entry, final SevenZFile z)
-        throws IOException {
+    private void assertHelloWorld(final String expectedName, final String suffix, final ArchiveEntry entry, final SevenZFile z) throws IOException {
         assertNotNull(entry, () -> expectedName + " does not exists");
         assertEquals(expectedName, entry.getName());
         assertFalse(entry.isDirectory(), expectedName + " is a directory");
@@ -78,8 +77,8 @@ public class SevenZArchiverTest extends AbstractTest {
 
     @Test
     public void testChannelVersion() throws IOException, ArchiveException {
-        try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
-            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+        try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE, StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING)) {
             new Archiver().create("7z", c, getTempDirFile());
         }
         verifyContent();
@@ -102,7 +101,7 @@ public class SevenZArchiverTest extends AbstractTest {
     @Test
     public void testUnknownFormat() throws IOException {
         try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE, StandardOpenOption.CREATE,
-            StandardOpenOption.TRUNCATE_EXISTING)) {
+                StandardOpenOption.TRUNCATE_EXISTING)) {
             assertThrows(ArchiveException.class, () -> new Archiver().create("unknown format", c, getTempDirFile()));
         }
     }

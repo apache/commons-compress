@@ -47,7 +47,8 @@ public final class LZMATest extends AbstractTest {
         }
         final byte[] orig = Files.readAllBytes(input);
         final byte[] uncompressed;
-        try (InputStream is = Files.newInputStream(compressed.toPath()); CompressorInputStream in = new LZMACompressorInputStream(is)) {
+        try (InputStream is = Files.newInputStream(compressed.toPath());
+                CompressorInputStream in = new LZMACompressorInputStream(is)) {
             uncompressed = IOUtils.toByteArray(in);
         }
         assertArrayEquals(orig, uncompressed);
@@ -58,7 +59,7 @@ public final class LZMATest extends AbstractTest {
         final File input = getFile("bla.tar.lzma");
         final File output = newTempFile("bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
-            try (final CompressorInputStream in = new LZMACompressorInputStream(is)) {
+            try (CompressorInputStream in = new LZMACompressorInputStream(is)) {
                 Files.copy(in, output.toPath());
             }
         }
@@ -69,7 +70,7 @@ public final class LZMATest extends AbstractTest {
         final File input = getFile("bla.tar.lzma");
         final File output = newTempFile("bla.tar");
         try (InputStream is = new BufferedInputStream(Files.newInputStream(input.toPath()))) {
-            try (final CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream(is)) {
+            try (CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream(is)) {
                 Files.copy(in, output.toPath());
             }
         }

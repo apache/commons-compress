@@ -95,7 +95,7 @@ public class CLI {
         if (!f.isFile()) {
             System.err.println(f + " doesn't exist or is a directory");
         }
-        try (final SevenZFile archive = new SevenZFile(f)) {
+        try (SevenZFile archive = new SevenZFile(f)) {
             SevenZArchiveEntry ae;
             while ((ae = archive.getNextEntry()) != null) {
                 mode.takeAction(archive, ae);

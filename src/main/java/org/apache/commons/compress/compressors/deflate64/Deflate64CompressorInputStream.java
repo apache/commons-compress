@@ -88,14 +88,14 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
         while (true) {
             final int r = read(oneByte);
             switch (r) {
-                case 1:
-                    return oneByte[0] & 0xFF;
-                case -1:
-                    return -1;
-                case 0:
-                    continue;
-                default:
-                    throw new IllegalStateException("Invalid return value from read: " + r);
+            case 1:
+                return oneByte[0] & 0xFF;
+            case -1:
+                return -1;
+            case 0:
+                continue;
+            default:
+                throw new IllegalStateException("Invalid return value from read: " + r);
             }
         }
     }

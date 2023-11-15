@@ -62,7 +62,7 @@ public class ZipLongTest {
      */
     @Test
     public void testFromBytes() {
-        final byte[] val = {0x78, 0x56, 0x34, 0x12};
+        final byte[] val = { 0x78, 0x56, 0x34, 0x12 };
         final ZipLong zl = new ZipLong(val);
         assertEquals(0x12345678, zl.getValue(), "value from bytes");
     }

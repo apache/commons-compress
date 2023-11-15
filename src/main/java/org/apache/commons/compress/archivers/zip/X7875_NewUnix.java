@@ -30,9 +30,8 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.utils.ByteUtils;
 
 /**
- * An extra field that stores UNIX UID/GID data (owner &amp; group ownership) for a given
- * ZIP entry.  We're using the field definition given in Info-Zip's source archive:
- * zip-3.0.tar.gz/proginfo/extrafld.txt
+ * An extra field that stores UNIX UID/GID data (owner &amp; group ownership) for a given ZIP entry. We're using the field definition given in Info-Zip's source
+ * archive: zip-3.0.tar.gz/proginfo/extrafld.txt
  *
  * <pre>
  * Local-header version:
@@ -54,6 +53,7 @@ import org.apache.commons.compress.utils.ByteUtils;
  * 0x7855        Short       tag for this extra block type ("Ux")
  * TSize         Short       total data size for this block (0)
  * </pre>
+ *
  * @since 1.5
  */
 public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
@@ -63,10 +63,8 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Not really for external usage, but marked "package" visibility
-     * to help us JUnit it.   Trims a byte array of leading zeroes while
-     * also enforcing a minimum length, and thus it really trims AND pads
-     * at the same time.
+     * Not really for external usage, but marked "package" visibility to help us JUnit it. Trims a byte array of leading zeroes while also enforcing a minimum
+     * length, and thus it really trims AND pads at the same time.
      *
      * @param array byte[] array to trim & pad.
      * @return trimmed & padded byte[] array.
@@ -85,42 +83,31 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         }
 
         /*
-
-        I agonized over my choice of MIN_LENGTH=1.  Here's the situation:
-        InfoZip (the tool I am using to test interop) always sets these
-        to length=4.  And so a UID of 0 (typically root) for example is
-        encoded as {4,0,0,0,0} (len=4, 32 bits of zero), when it could just
-        as easily be encoded as {1,0} (len=1, 8 bits of zero) according to
-        the spec.
-
-        In the end I decided on MIN_LENGTH=1 for four reasons:
-
-        1.)  We are adhering to the spec as far as I can tell, and so
-             a consumer that cannot parse this is broken.
-
-        2.)  Fundamentally, ZIP files are about shrinking things, so
-             let's save a few bytes per entry while we can.
-
-        3.)  Of all the people creating ZIP files using commons-
-             compress, how many care about UNIX UID/GID attributes
-             of the files they store?   (e.g., I am probably thinking
-             way too hard about this and no one cares!)
-
-        4.)  InfoZip's tool, even though it carefully stores every UID/GID
-             for every file zipped on a Unix machine (by default) currently
-             appears unable to ever restore UID/GID.
-             unzip -X has no effect on my machine, even when run as root!!!!
-
-        And thus it is decided:  MIN_LENGTH=1.
-
-        If anyone runs into interop problems from this, feel free to set
-        it to MIN_LENGTH=4 at some future time, and then we will behave
-        exactly like InfoZip (requires changes to unit tests, though).
-
-        And I am sorry that the time you spent reading this comment is now
-        gone, and you can never have it back.
-
-        */
+         *
+         * I agonized over my choice of MIN_LENGTH=1. Here's the situation: InfoZip (the tool I am using to test interop) always sets these to length=4. And so
+         * a UID of 0 (typically root) for example is encoded as {4,0,0,0,0} (len=4, 32 bits of zero), when it could just as easily be encoded as {1,0} (len=1,
+         * 8 bits of zero) according to the spec.
+         *
+         * In the end I decided on MIN_LENGTH=1 for four reasons:
+         *
+         * 1.) We are adhering to the spec as far as I can tell, and so a consumer that cannot parse this is broken.
+         *
+         * 2.) Fundamentally, ZIP files are about shrinking things, so let's save a few bytes per entry while we can.
+         *
+         * 3.) Of all the people creating ZIP files using commons- compress, how many care about UNIX UID/GID attributes of the files they store? (e.g., I am
+         * probably thinking way too hard about this and no one cares!)
+         *
+         * 4.) InfoZip's tool, even though it carefully stores every UID/GID for every file zipped on a Unix machine (by default) currently appears unable to
+         * ever restore UID/GID. unzip -X has no effect on my machine, even when run as root!!!!
+         *
+         * And thus it is decided: MIN_LENGTH=1.
+         *
+         * If anyone runs into interop problems from this, feel free to set it to MIN_LENGTH=4 at some future time, and then we will behave exactly like InfoZip
+         * (requires changes to unit tests, though).
+         *
+         * And I am sorry that the time you spent reading this comment is now gone, and you can never have it back.
+         *
+         */
         final int MIN_LENGTH = 1;
 
         final byte[] trimmedArray = new byte[Math.max(MIN_LENGTH, array.length - pos)];
@@ -134,7 +121,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     // (thanks to BigInteger.toByteArray() and a reverse() method we created).
     // Also, the spec theoretically allows UID/GID up to 255 bytes long!
     //
-    // NOTE:  equals() and hashCode() currently assume these can never be null.
+    // NOTE: equals() and hashCode() currently assume these can never be null.
     private BigInteger uid;
 
     private BigInteger gid;
@@ -162,8 +149,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     }
 
     /**
-     * The actual data to put into central directory data - without Header-ID
-     * or length specifier.
+     * The actual data to put into central directory data - without Header-ID or length specifier.
      *
      * @return get the data
      */
@@ -173,8 +159,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     }
 
     /**
-     * Length of the extra field in the central directory data - without
-     * Header-ID or length specifier.
+     * Length of the extra field in the central directory data - without Header-ID or length specifier.
      *
      * @return a {@code ZipShort} for the length of the data of this extra field
      */
@@ -184,14 +169,14 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     }
 
     /**
-     * Gets the GID as a long.  GID is typically a 32 bit unsigned
-     * value on most UNIX systems, so we return a long to avoid
-     * integer overflow into the negatives in case values above
-     * and including 2^31 are being used.
+     * Gets the GID as a long. GID is typically a 32 bit unsigned value on most UNIX systems, so we return a long to avoid integer overflow into the negatives
+     * in case values above and including 2^31 are being used.
      *
      * @return the GID value.
      */
-    public long getGID() { return ZipUtil.bigToLong(gid); }
+    public long getGID() {
+        return ZipUtil.bigToLong(gid);
+    }
 
     /**
      * The Header-ID.
@@ -204,8 +189,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     }
 
     /**
-     * The actual data to put into local file data - without Header-ID
-     * or length specifier.
+     * The actual data to put into local file data - without Header-ID or length specifier.
      *
      * @return get the data
      */
@@ -215,7 +199,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         byte[] gidBytes = gid.toByteArray();
 
         // BigInteger might prepend a leading-zero to force a positive representation
-        // (e.g., so that the sign-bit is set to zero).  We need to remove that
+        // (e.g., so that the sign-bit is set to zero). We need to remove that
         // before sending the number over the wire.
         uidBytes = trimLeadingZeroesForceMinLength(uidBytes);
         final int uidBytesLen = uidBytes != null ? uidBytes.length : 0;
@@ -223,10 +207,10 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         final int gidBytesLen = gidBytes != null ? gidBytes.length : 0;
 
         // Couldn't bring myself to just call getLocalFileDataLength() when we've
-        // already got the arrays right here.  Yeah, yeah, I know, premature
+        // already got the arrays right here. Yeah, yeah, I know, premature
         // optimization is the root of all...
         //
-        // The 3 comes from:  version=1 + uidsize=1 + gidsize=1
+        // The 3 comes from: version=1 + uidsize=1 + gidsize=1
         final byte[] data = new byte[3 + uidBytesLen + gidBytesLen];
 
         // reverse() switches byte array from big-endian to little-endian.
@@ -252,8 +236,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     }
 
     /**
-     * Length of the extra field in the local file data - without
-     * Header-ID or length specifier.
+     * Length of the extra field in the local file data - without Header-ID or length specifier.
      *
      * @return a {@code ZipShort} for the length of the data of this extra field
      */
@@ -264,19 +247,19 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         b = trimLeadingZeroesForceMinLength(gid.toByteArray());
         final int gidSize = b == null ? 0 : b.length;
 
-        // The 3 comes from:  version=1 + uidsize=1 + gidsize=1
+        // The 3 comes from: version=1 + uidsize=1 + gidsize=1
         return new ZipShort(3 + uidSize + gidSize);
     }
 
     /**
-     * Gets the UID as a long.  UID is typically a 32 bit unsigned
-     * value on most UNIX systems, so we return a long to avoid
-     * integer overflow into the negatives in case values above
-     * and including 2^31 are being used.
+     * Gets the UID as a long. UID is typically a 32 bit unsigned value on most UNIX systems, so we return a long to avoid integer overflow into the negatives
+     * in case values above and including 2^31 are being used.
      *
      * @return the UID value.
      */
-    public long getUID() { return ZipUtil.bigToLong(uid); }
+    public long getUID() {
+        return ZipUtil.bigToLong(uid);
+    }
 
     @Override
     public int hashCode() {
@@ -290,13 +273,10 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     }
 
     /**
-     * Doesn't do anything since this class doesn't store anything
-     * inside the central directory.
+     * Doesn't do anything since this class doesn't store anything inside the central directory.
      */
     @Override
-    public void parseFromCentralDirectoryData(
-            final byte[] buffer, final int offset, final int length
-    ) throws ZipException {
+    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset, final int length) throws ZipException {
     }
 
     /**
@@ -308,19 +288,15 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * @throws java.util.zip.ZipException on error
      */
     @Override
-    public void parseFromLocalFileData(
-            final byte[] data, int offset, final int length
-    ) throws ZipException {
+    public void parseFromLocalFileData(final byte[] data, int offset, final int length) throws ZipException {
         reset();
         if (length < 3) {
-            throw new ZipException("X7875_NewUnix length is too short, only "
-                + length + " bytes");
+            throw new ZipException("X7875_NewUnix length is too short, only " + length + " bytes");
         }
         this.version = signedByteToUnsignedInt(data[offset++]);
         final int uidSize = signedByteToUnsignedInt(data[offset++]);
         if (uidSize + 3 > length) {
-            throw new ZipException("X7875_NewUnix invalid: uidSize " + uidSize
-                + " doesn't fit into " + length + " bytes");
+            throw new ZipException("X7875_NewUnix invalid: uidSize " + uidSize + " doesn't fit into " + length + " bytes");
         }
         final byte[] uidBytes = Arrays.copyOfRange(data, offset, offset + uidSize);
         offset += uidSize;
@@ -328,16 +304,14 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
 
         final int gidSize = signedByteToUnsignedInt(data[offset++]);
         if (uidSize + 3 + gidSize > length) {
-            throw new ZipException("X7875_NewUnix invalid: gidSize " + gidSize
-                + " doesn't fit into " + length + " bytes");
+            throw new ZipException("X7875_NewUnix invalid: gidSize " + gidSize + " doesn't fit into " + length + " bytes");
         }
         final byte[] gidBytes = Arrays.copyOfRange(data, offset, offset + gidSize);
         this.gid = new BigInteger(1, reverse(gidBytes)); // sign-bit forced positive
     }
 
     /**
-     * Reset state back to newly constructed state.  Helps us make sure
-     * parse() calls always generate clean results.
+     * Reset state back to newly constructed state. Helps us make sure parse() calls always generate clean results.
      */
     private void reset() {
         // Typical UID/GID of the first non-root user created on a Unix system.
@@ -364,11 +338,9 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     }
 
     /**
-     * Returns a String representation of this class useful for
-     * debugging purposes.
+     * Returns a String representation of this class useful for debugging purposes.
      *
-     * @return A String representation of this class useful for
-     *         debugging purposes.
+     * @return A String representation of this class useful for debugging purposes.
      */
     @Override
     public String toString() {

@@ -31,62 +31,55 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
 /**
  * Encapsulates code common to LZ77 decompressors.
  *
- * <p>Assumes the stream consists of blocks of literal data and
- * back-references (called copies) in any order. Of course the first
- * block must be a literal block for the scheme to work - unless the
- * {@link #prefill prefill} method has been used to provide initial
- * data that is never returned by {@link #read read} but only used for
- * back-references.</p>
+ * <p>
+ * Assumes the stream consists of blocks of literal data and back-references (called copies) in any order. Of course the first block must be a literal block for
+ * the scheme to work - unless the {@link #prefill prefill} method has been used to provide initial data that is never returned by {@link #read read} but only
+ * used for back-references.
+ * </p>
  *
- * <p>Subclasses must override the three-arg {@link #read read} method
- * as the no-arg version delegates to it and the default
- * implementation delegates to the no-arg version, leading to infinite
- * mutual recursion and a {@code StackOverflowError} otherwise.</p>
+ * <p>
+ * Subclasses must override the three-arg {@link #read read} method as the no-arg version delegates to it and the default implementation delegates to the no-arg
+ * version, leading to infinite mutual recursion and a {@code StackOverflowError} otherwise.
+ * </p>
  *
- * <p>The contract for subclasses' {@code read} implementation is:</p>
+ * <p>
+ * The contract for subclasses' {@code read} implementation is:
+ * </p>
  * <ul>
  *
- *  <li>keep track of the current state of the stream. Is it inside a
- *  literal block or a back-reference or in-between blocks?</li>
+ * <li>keep track of the current state of the stream. Is it inside a literal block or a back-reference or in-between blocks?</li>
  *
- *  <li>Use {@link #readOneByte} to access the underlying stream
- *  directly.</li>
+ * <li>Use {@link #readOneByte} to access the underlying stream directly.</li>
  *
- *  <li>If a new literal block starts, use {@link #startLiteral} to
- *  tell this class about it and read the literal data using {@link
- *  #readLiteral} until it returns {@code 0}. {@link
- *  #hasMoreDataInBlock} will return {@code false} before the next
- *  call to {@link #readLiteral} would return {@code 0}.</li>
+ * <li>If a new literal block starts, use {@link #startLiteral} to tell this class about it and read the literal data using {@link #readLiteral} until it
+ * returns {@code 0}. {@link #hasMoreDataInBlock} will return {@code false} before the next call to {@link #readLiteral} would return {@code 0}.</li>
  *
- *  <li>If a new back-reference starts, use {@link #startBackReference} to
- *  tell this class about it and read the literal data using {@link
- *  #readBackReference} until it returns {@code 0}. {@link
- *  #hasMoreDataInBlock} will return {@code false} before the next
- *  call to {@link #readBackReference} would return {@code 0}.</li>
+ * <li>If a new back-reference starts, use {@link #startBackReference} to tell this class about it and read the literal data using {@link #readBackReference}
+ * until it returns {@code 0}. {@link #hasMoreDataInBlock} will return {@code false} before the next call to {@link #readBackReference} would return
+ * {@code 0}.</li>
  *
- *  <li>If the end of the stream has been reached, return {@code -1}
- *  as this class' methods will never do so themselves.</li>
+ * <li>If the end of the stream has been reached, return {@code -1} as this class' methods will never do so themselves.</li>
  *
  * </ul>
  *
- * <p>{@link #readOneByte} and {@link #readLiteral} update the counter
- * for bytes read.</p>
+ * <p>
+ * {@link #readOneByte} and {@link #readLiteral} update the counter for bytes read.
+ * </p>
  *
  * @since 1.14
  */
-public abstract class AbstractLZ77CompressorInputStream extends CompressorInputStream
-    implements InputStreamStatistics {
+public abstract class AbstractLZ77CompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
     /** Size of the window - must be bigger than the biggest offset expected. */
     private final int windowSize;
 
     /**
-     * Buffer to write decompressed bytes to for back-references, will
-     * be three times windowSize big.
+     * Buffer to write decompressed bytes to for back-references, will be three times windowSize big.
      *
-     * <p>Three times so we can slide the whole buffer a windowSize to
-     * the left once we've read twice windowSize and still have enough
-     * data inside of it to satisfy back-references.</p>
+     * <p>
+     * Three times so we can slide the whole buffer a windowSize to the left once we've read twice windowSize and still have enough data inside of it to satisfy
+     * back-references.
+     * </p>
      */
     private final byte[] buf;
 
@@ -119,10 +112,8 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     /**
      * Creates a new LZ77 input stream.
      *
-     * @param is
-     *            An InputStream to read compressed data from
-     * @param windowSize
-     *            Size of the window kept for back-references, must be bigger than the biggest offset expected.
+     * @param is         An InputStream to read compressed data from
+     * @param windowSize Size of the window kept for back-references, must be bigger than the biggest offset expected.
      *
      * @throws IllegalArgumentException if windowSize is not bigger than 0
      */
@@ -168,6 +159,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
 
     /**
      * Is there still data remaining inside the current block?
+     *
      * @return true if there is still data remaining inside the current block.
      */
     protected final boolean hasMoreDataInBlock() {
@@ -177,10 +169,10 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     /**
      * Adds some initial data to fill the window with.
      *
-     * <p>This is used if the stream has been cut into blocks and
-     * back-references of one block may refer to data of the previous
-     * block(s). One such example is the LZ4 frame format using block
-     * dependency.</p>
+     * <p>
+     * This is used if the stream has been cut into blocks and back-references of one block may refer to data of the previous block(s). One such example is the
+     * LZ4 frame format using block dependency.
+     * </p>
      *
      * @param data the data to fill the window with.
      * @throws IllegalStateException if the stream has already started to read data
@@ -205,15 +197,13 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
 
     /**
      * Reads data from the current back-reference.
-     * @param b buffer to write data to
+     *
+     * @param b   buffer to write data to
      * @param off offset to start writing to
      * @param len maximum amount of data to read
-     * @return number of bytes read, may be 0. Will never return -1 as
-     * EOF-detection is the responsibility of the subclass
-     * @throws NullPointerException if {@code b} is null
-     * @throws IndexOutOfBoundsException if {@code off} is
-     * negative, {@code len} is negative, or {@code len} is
-     * greater than {@code b.length - off}
+     * @return number of bytes read, may be 0. Will never return -1 as EOF-detection is the responsibility of the subclass
+     * @throws NullPointerException      if {@code b} is null
+     * @throws IndexOutOfBoundsException if {@code off} is negative, {@code len} is negative, or {@code len} is greater than {@code b.length - off}
      */
     protected final int readBackReference(final byte[] b, final int off, final int len) {
         final int avail = available();
@@ -238,18 +228,14 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
 
     /**
      * Reads data from the current literal block.
-     * @param b buffer to write data to
+     *
+     * @param b   buffer to write data to
      * @param off offset to start writing to
      * @param len maximum amount of data to read
-     * @return number of bytes read, may be 0. Will never return -1 as
-     * EOF-detection is the responsibility of the subclass
-     * @throws IOException if the underlying stream throws or signals
-     * an EOF before the amount of data promised for the block have
-     * been read
-     * @throws NullPointerException if {@code b} is null
-     * @throws IndexOutOfBoundsException if {@code off} is
-     * negative, {@code len} is negative, or {@code len} is
-     * greater than {@code b.length - off}
+     * @return number of bytes read, may be 0. Will never return -1 as EOF-detection is the responsibility of the subclass
+     * @throws IOException               if the underlying stream throws or signals an EOF before the amount of data promised for the block have been read
+     * @throws NullPointerException      if {@code b} is null
+     * @throws IndexOutOfBoundsException if {@code off} is negative, {@code len} is negative, or {@code len} is greater than {@code b.length - off}
      */
     protected final int readLiteral(final byte[] b, final int off, final int len) throws IOException {
         final int avail = available();
@@ -282,16 +268,14 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
 
     /**
      * Used by subclasses to signal the next block contains a back-reference with the given coordinates.
+     *
      * @param offset the offset of the back-reference
      * @param length the length of the back-reference
-     * @throws IllegalArgumentException if offset not bigger than 0 or
-     * bigger than the number of bytes available for back-references
-     * or if length is negative
+     * @throws IllegalArgumentException if offset not bigger than 0 or bigger than the number of bytes available for back-references or if length is negative
      */
     protected final void startBackReference(final int offset, final long length) {
         if (offset <= 0 || offset > writeIndex) {
-            throw new IllegalArgumentException("offset must be bigger than 0 but not bigger than the number"
-                + " of bytes available for back-references");
+            throw new IllegalArgumentException("offset must be bigger than 0 but not bigger than the number" + " of bytes available for back-references");
         }
         if (length < 0) {
             throw new IllegalArgumentException("length must not be negative");
@@ -301,8 +285,8 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     }
 
     /**
-     * Used by subclasses to signal the next block contains the given
-     * amount of literal data.
+     * Used by subclasses to signal the next block contains the given amount of literal data.
+     *
      * @param length the length of the block
      * @throws IllegalArgumentException if length is negative
      */
@@ -316,8 +300,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     private void tryToCopy(final int bytesToCopy) {
         // this will fit into the buffer without sliding and not
         // require more than is available inside the back-reference
-        final int copy = Math.min((int) Math.min(bytesToCopy, bytesRemaining),
-                            buf.length - writeIndex);
+        final int copy = Math.min((int) Math.min(bytesToCopy, bytesRemaining), buf.length - writeIndex);
         if (copy == 0) {
             // NOP
         } else if (backReferenceOffset == 1) { // pretty common special case
@@ -348,11 +331,8 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
 
     private void tryToReadLiteral(final int bytesToRead) throws IOException {
         // min of "what is still inside the literal", "what does the user want" and "how much can fit into the buffer"
-        final int reallyTryToRead = Math.min((int) Math.min(bytesToRead, bytesRemaining),
-                                             buf.length - writeIndex);
-        final int bytesRead = reallyTryToRead > 0
-            ? IOUtils.readFully(in, buf, writeIndex, reallyTryToRead)
-            : 0 /* happens for bytesRemaining == 0 */;
+        final int reallyTryToRead = Math.min((int) Math.min(bytesToRead, bytesRemaining), buf.length - writeIndex);
+        final int bytesRead = reallyTryToRead > 0 ? IOUtils.readFully(in, buf, writeIndex, reallyTryToRead) : 0 /* happens for bytesRemaining == 0 */;
         count(bytesRead);
         if (reallyTryToRead != bytesRead) {
             throw new IOException("Premature end of stream reading literal");

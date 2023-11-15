@@ -38,7 +38,7 @@ public class IcBands extends BandSet {
         protected CPClass C2; // outer class
         protected CPUTF8 N; // name
 
-        public IcTuple(final CPClass C, final int F, final CPClass C2, final CPUTF8 N) {
+        IcTuple(final CPClass C, final int F, final CPClass C2, final CPUTF8 N) {
             this.C = C;
             this.F = F;
             this.C2 = C2;
@@ -54,8 +54,7 @@ public class IcBands extends BandSet {
         public boolean equals(final Object o) {
             if (o instanceof IcTuple) {
                 final IcTuple icT = (IcTuple) o;
-                return C.equals(icT.C) && F == icT.F && Objects.equals(C2, icT.C2)
-                    && Objects.equals(N, icT.N);
+                return C.equals(icT.C) && F == icT.F && Objects.equals(C2, icT.C2) && Objects.equals(N, icT.N);
             }
             return false;
         }
@@ -72,6 +71,7 @@ public class IcBands extends BandSet {
         }
 
     }
+
     private final Set<IcTuple> innerClasses = new TreeSet<>();
     private final CpBands cpBands;
     private int bit16Count;
@@ -91,8 +91,7 @@ public class IcBands extends BandSet {
                 innerClasses.add(innerClass);
             } else {
                 flags |= 1 << 16;
-                final IcTuple icTuple = new IcTuple(cpBands.getCPClass(name), flags, cpBands.getCPClass(outerName),
-                    cpBands.getCPUtf8(innerName));
+                final IcTuple icTuple = new IcTuple(cpBands.getCPClass(name), flags, cpBands.getCPClass(outerName), cpBands.getCPUtf8(innerName));
                 final boolean added = innerClasses.add(icTuple);
                 if (added) {
                     bit16Count++;
@@ -122,8 +121,8 @@ public class IcBands extends BandSet {
     }
 
     /**
-     * All input classes for the segment have now been read in, so this method is called so that this class can
-     * calculate/complete anything it could not do while classes were being read.
+     * All input classes for the segment have now been read in, so this method is called so that this class can calculate/complete anything it could not do
+     * while classes were being read.
      */
     public void finaliseBands() {
         segmentHeader.setIc_count(innerClasses.size());

@@ -20,7 +20,6 @@ package org.apache.commons.compress.archivers.dump;
 
 import java.io.IOException;
 
-
 /**
  * Dump Archive Exception
  */

@@ -36,11 +36,8 @@ public class XXHash32Test {
 
     public static Stream<Arguments> factory() {
         return Stream.of(
-            // reference checksums created with xxh32sum
-            Arguments.of("bla.tar", "fbb5c8d1"),
-            Arguments.of("bla.tar.xz", "4106a208"),
-            Arguments.of("8.posix.tar.gz", "9fce116a")
-        );
+                // reference checksums created with xxh32sum
+                Arguments.of("bla.tar", "fbb5c8d1"), Arguments.of("bla.tar.xz", "4106a208"), Arguments.of("8.posix.tar.gz", "9fce116a"));
     }
 
     @ParameterizedTest

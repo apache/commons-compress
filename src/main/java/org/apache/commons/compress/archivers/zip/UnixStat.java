@@ -30,6 +30,7 @@ public interface UnixStat {
     int PERM_MASK = 07777;
     /**
      * Bits used to indicate the file system object type.
+     *
      * @since 1.14
      */
     int FILE_TYPE_FLAG = 0170000;

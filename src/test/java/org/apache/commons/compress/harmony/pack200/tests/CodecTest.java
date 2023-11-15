@@ -42,40 +42,28 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class CodecTest {
 
-    static Stream<Arguments> bCodings(){
+    static Stream<Arguments> bCodings() {
         return IntStream.rangeClosed(1, 5).mapToObj(Arguments::of);
     }
 
     static Stream<Arguments> codecFamily() {
-        return Stream.of(
-                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs1),
-                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs2),
-                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs3),
-                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs4),
-                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs5),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs1),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs2),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs3),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs4),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs5),
-                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaSignedCodecs1),
-                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaSignedCodecs2),
-                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaDoubleSignedCodecs1),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs1),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs2),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs3),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs4),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs5),
-                Arguments.of((Object) CanonicalCodecFamilies.deltaDoubleSignedCodecs1)
-        );
+        return Stream.of(Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs1),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs2), Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs3),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs4), Arguments.of((Object) CanonicalCodecFamilies.nonDeltaUnsignedCodecs5),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs1), Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs2),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs3), Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs4),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaUnsignedCodecs5), Arguments.of((Object) CanonicalCodecFamilies.nonDeltaSignedCodecs1),
+                Arguments.of((Object) CanonicalCodecFamilies.nonDeltaSignedCodecs2), Arguments.of((Object) CanonicalCodecFamilies.nonDeltaDoubleSignedCodecs1),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs1), Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs2),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs3), Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs4),
+                Arguments.of((Object) CanonicalCodecFamilies.deltaSignedCodecs5), Arguments.of((Object) CanonicalCodecFamilies.deltaDoubleSignedCodecs1));
     }
 
     static Stream<Arguments> hCodings() {
         return IntStream.range(0, 256).mapToObj(Arguments::of);
     }
 
-    private long decode(final Codec codec, final byte[] data, final long value,
-            final long last) throws IOException, Pack200Exception {
+    private long decode(final Codec codec, final byte[] data, final long value, final long last) throws IOException, Pack200Exception {
         final ByteArrayInputStream in = new ByteArrayInputStream(data);
         assertEquals(value, codec.decode(in, last));
         assertEquals(-1, in.read());
@@ -115,7 +103,7 @@ public class CodecTest {
     @Test
     public void testByte1DeltaException() throws Exception {
         final Codec BYTE1D = new BHSDCodec(1, 256, 0, 1);
-        assertThrows(Pack200Exception.class, () -> BYTE1D.decode(new ByteArrayInputStream(new byte[]{(byte) 1})),
+        assertThrows(Pack200Exception.class, () -> BYTE1D.decode(new ByteArrayInputStream(new byte[] { (byte) 1 })),
                 "Decoding with a delta stream and not passing a last value should throw an exception");
     }
 
@@ -198,7 +186,7 @@ public class CodecTest {
     @MethodSource("codecFamily")
     public void testCodecFamilies(final BHSDCodec[] family) {
         for (int i = 1; i < family.length; i++) {
-            final BHSDCodec previous = family[i-1];
+            final BHSDCodec previous = family[i - 1];
             final BHSDCodec codec = family[i];
             assertTrue(codec.largest() >= previous.largest());
             assertTrue(codec.smallest() <= previous.smallest());
@@ -241,21 +229,14 @@ public class CodecTest {
         decode(Codec.UNSIGNED5, new byte[] { (byte) 192, 29 }, 2048, 0);
         decode(Codec.UNSIGNED5, new byte[] { (byte) 255, (byte) 191 }, 12479, 0);
 
-        decode(Codec.UNSIGNED5, new byte[] { (byte) 192, (byte) 192, 0 },
-                12480, 0);
-        decode(Codec.UNSIGNED5,
-                new byte[] { (byte) 255, (byte) 255, (byte) 191 }, 798911, 0);
-        decode(Codec.UNSIGNED5, new byte[] { (byte) 192, (byte) 192,
-                (byte) 192, 0 }, 798912, 0);
-        decode(Codec.UNSIGNED5, new byte[] { (byte) 255, (byte) 255,
-                (byte) 255, (byte) 191 }, 51130559, 0);
-        decode(Codec.UNSIGNED5, new byte[] { (byte) 192, (byte) 192,
-                (byte) 192, (byte) 192, 0 }, 51130560, 0);
+        decode(Codec.UNSIGNED5, new byte[] { (byte) 192, (byte) 192, 0 }, 12480, 0);
+        decode(Codec.UNSIGNED5, new byte[] { (byte) 255, (byte) 255, (byte) 191 }, 798911, 0);
+        decode(Codec.UNSIGNED5, new byte[] { (byte) 192, (byte) 192, (byte) 192, 0 }, 798912, 0);
+        decode(Codec.UNSIGNED5, new byte[] { (byte) 255, (byte) 255, (byte) 255, (byte) 191 }, 51130559, 0);
+        decode(Codec.UNSIGNED5, new byte[] { (byte) 192, (byte) 192, (byte) 192, (byte) 192, 0 }, 51130560, 0);
         decodeFail(Codec.UNSIGNED5, new byte[] { (byte) 192 });
         decodeFail(Codec.UNSIGNED5, new byte[] { (byte) 192, (byte) 192 });
-        decodeFail(Codec.UNSIGNED5, new byte[] { (byte) 192, (byte) 192,
-                (byte) 192 });
-        decodeFail(Codec.UNSIGNED5, new byte[] { (byte) 192, (byte) 192,
-                (byte) 192, (byte) 192 });
+        decodeFail(Codec.UNSIGNED5, new byte[] { (byte) 192, (byte) 192, (byte) 192 });
+        decodeFail(Codec.UNSIGNED5, new byte[] { (byte) 192, (byte) 192, (byte) 192, (byte) 192 });
     }
 }

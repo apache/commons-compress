@@ -40,8 +40,7 @@ public abstract class AnnotationsAttribute extends Attribute {
         private int typeIndex;
         private int[] nameIndexes;
 
-        public Annotation(final int numPairs, final CPUTF8 type, final CPUTF8[] elementNames,
-            final ElementValue[] elementValues) {
+        public Annotation(final int numPairs, final CPUTF8 type, final CPUTF8[] elementNames, final ElementValue[] elementValues) {
             this.numPairs = numPairs;
             this.type = type;
             this.elementNames = elementNames;
@@ -108,7 +107,7 @@ public abstract class AnnotationsAttribute extends Attribute {
                 entries.add(((CPNameAndType) value).name);
                 entries.add(((CPNameAndType) value).descriptor);
             } else if (value instanceof ClassFileEntry) {
-            	// TODO? ClassFileEntry is an Object
+                // TODO? ClassFileEntry is an Object
                 entries.add(value);
             } else if (value instanceof ElementValue[]) {
                 final ElementValue[] values = (ElementValue[]) value;

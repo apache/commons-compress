@@ -20,13 +20,12 @@ package org.apache.commons.compress.compressors.snappy;
 
 /**
  * Dialects of the framing format that {@link FramedSnappyCompressorInputStream} can deal with.
+ *
  * @since 1.12
  */
 public enum FramedSnappyDialect {
     /**
-     * The standard as defined by the <a
-     * href="https://github.com/google/snappy/blob/master/framing_format.txt">Snappy
-     * framing format description</a>
+     * The standard as defined by the <a href="https://github.com/google/snappy/blob/master/framing_format.txt">Snappy framing format description</a>
      */
     STANDARD(true, true),
     /**
@@ -36,8 +35,7 @@ public enum FramedSnappyDialect {
 
     private final boolean streamIdentifier, checksumWithCompressedChunks;
 
-    FramedSnappyDialect(final boolean hasStreamIdentifier,
-                        final boolean usesChecksumWithCompressedChunks) {
+    FramedSnappyDialect(final boolean hasStreamIdentifier, final boolean usesChecksumWithCompressedChunks) {
         this.streamIdentifier = hasStreamIdentifier;
         this.checksumWithCompressedChunks = usesChecksumWithCompressedChunks;
     }

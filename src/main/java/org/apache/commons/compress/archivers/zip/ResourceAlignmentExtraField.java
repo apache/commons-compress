@@ -18,18 +18,18 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-
 import java.util.zip.ZipException;
 
 /**
- * An extra field who's sole purpose is to align and pad the local file header
- * so that the entry's data starts at a certain position.
+ * An extra field who's sole purpose is to align and pad the local file header so that the entry's data starts at a certain position.
  *
- * <p>The padding content of the padding is ignored and not retained
- * when reading a padding field.</p>
+ * <p>
+ * The padding content of the padding is ignored and not retained when reading a padding field.
+ * </p>
  *
- * <p>This enables Commons Compress to create "aligned" archives
- * similar to Android's {@code zipalign} command line tool.</p>
+ * <p>
+ * This enables Commons Compress to create "aligned" archives similar to Android's {@code zipalign} command line tool.
+ * </p>
  *
  * @since 1.14
  * @see "https://developer.android.com/studio/command-line/zipalign.html"
@@ -78,8 +78,7 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
     /**
      * Indicates whether method change is allowed when re-compressing the ZIP file.
      *
-     * @return
-     *      true if method change is allowed, false otherwise.
+     * @return true if method change is allowed, false otherwise.
      */
     public boolean allowMethodChange() {
         return allowMethodChange;
@@ -88,8 +87,7 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
     /**
      * Gets requested alignment.
      *
-     * @return
-     *      requested alignment.
+     * @return requested alignment.
      */
     public short getAlignment() {
         return alignment;
@@ -113,8 +111,7 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
     @Override
     public byte[] getLocalFileDataData() {
         final byte[] content = new byte[BASE_SIZE + padding];
-        ZipShort.putShort(alignment | (allowMethodChange ? ALLOW_METHOD_MESSAGE_CHANGE_FLAG : 0),
-                          content, 0);
+        ZipShort.putShort(alignment | (allowMethodChange ? ALLOW_METHOD_MESSAGE_CHANGE_FLAG : 0), content, 0);
         return content;
     }
 

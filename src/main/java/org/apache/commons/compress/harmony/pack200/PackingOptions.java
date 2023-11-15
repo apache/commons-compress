@@ -106,8 +106,7 @@ public class PackingOptions {
     }
 
     /**
-     * Tell the compressor to pass the file with the given name, or if the name is a directory name all files under that
-     * directory will be passed.
+     * Tell the compressor to pass the file with the given name, or if the name is a directory name all files under that directory will be passed.
      *
      * @param passFileName the file name
      */
@@ -269,9 +268,8 @@ public class PackingOptions {
     }
 
     /**
-     * Sets strip debug attributes. If true, all debug attributes (i.e. LineNumberTable, SourceFile, LocalVariableTable and
-     * LocalVariableTypeTable attributes) are stripped when reading the input class files and not included in the output
-     * archive.
+     * Sets strip debug attributes. If true, all debug attributes (i.e. LineNumberTable, SourceFile, LocalVariableTable and LocalVariableTypeTable attributes)
+     * are stripped when reading the input class files and not included in the output archive.
      *
      * @param stripDebug If true, all debug attributes.
      */

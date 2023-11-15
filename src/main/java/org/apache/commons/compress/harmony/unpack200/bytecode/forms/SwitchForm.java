@@ -28,10 +28,8 @@ public abstract class SwitchForm extends VariableInstructionForm {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#fixUpByteCodeTargets(org.apache.commons
-     * .compress.harmony.unpack200.bytecode.ByteCode,
-     * org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute)
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#fixUpByteCodeTargets(org.apache.commons
+     * .compress.harmony.unpack200.bytecode.ByteCode, org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute)
      */
     @Override
     public void fixUpByteCodeTargets(final ByteCode byteCode, final CodeAttribute codeAttribute) {
@@ -44,8 +42,7 @@ public abstract class SwitchForm extends VariableInstructionForm {
         final int sourceValue = codeAttribute.byteCodeOffsets.get(sourceIndex).intValue();
         for (int index = 0; index < numberOfLabels; index++) {
             final int absoluteInstructionTargetIndex = sourceIndex + originalTargets[index];
-            final int targetValue = codeAttribute.byteCodeOffsets.get(absoluteInstructionTargetIndex)
-                .intValue();
+            final int targetValue = codeAttribute.byteCodeOffsets.get(absoluteInstructionTargetIndex).intValue();
             replacementTargets[index] = targetValue - sourceValue;
         }
         final int[] rewriteArray = byteCode.getRewrite();

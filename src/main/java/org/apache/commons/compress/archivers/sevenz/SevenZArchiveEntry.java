@@ -39,6 +39,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Converts Java time to NTFS time.
+     *
      * @param date the Java time
      * @return the NTFS time
      * @deprecated Use {@link TimeUtils#toNtfsTime(Date)} instead.
@@ -50,8 +51,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Converts NTFS time (100 nanosecond units since 1 January 1601)
-     * to Java time.
+     * Converts NTFS time (100 nanosecond units since 1 January 1601) to Java time.
+     *
      * @param ntfsTime the NTFS time in 100 nanosecond units
      * @return the Java time
      * @deprecated Use {@link TimeUtils#ntfsTimeToDate(long)} instead.
@@ -96,29 +97,15 @@ public class SevenZArchiveEntry implements ArchiveEntry {
             return false;
         }
         final SevenZArchiveEntry other = (SevenZArchiveEntry) obj;
-        return
-            Objects.equals(name, other.name) &&
-            hasStream == other.hasStream &&
-            isDirectory == other.isDirectory &&
-            isAntiItem == other.isAntiItem &&
-            hasCreationDate == other.hasCreationDate &&
-            hasLastModifiedDate == other.hasLastModifiedDate &&
-            hasAccessDate == other.hasAccessDate &&
-            Objects.equals(creationDate, other.creationDate) &&
-            Objects.equals(lastModifiedDate, other.lastModifiedDate) &&
-            Objects.equals(accessDate, other.accessDate) &&
-            hasWindowsAttributes == other.hasWindowsAttributes &&
-            windowsAttributes == other.windowsAttributes &&
-            hasCrc == other.hasCrc &&
-            crc == other.crc &&
-            compressedCrc == other.compressedCrc &&
-            size == other.size &&
-            compressedSize == other.compressedSize &&
-            equalSevenZMethods(contentMethods, other.contentMethods);
+        return Objects.equals(name, other.name) && hasStream == other.hasStream && isDirectory == other.isDirectory && isAntiItem == other.isAntiItem
+                && hasCreationDate == other.hasCreationDate && hasLastModifiedDate == other.hasLastModifiedDate && hasAccessDate == other.hasAccessDate
+                && Objects.equals(creationDate, other.creationDate) && Objects.equals(lastModifiedDate, other.lastModifiedDate)
+                && Objects.equals(accessDate, other.accessDate) && hasWindowsAttributes == other.hasWindowsAttributes
+                && windowsAttributes == other.windowsAttributes && hasCrc == other.hasCrc && crc == other.crc && compressedCrc == other.compressedCrc
+                && size == other.size && compressedSize == other.compressedSize && equalSevenZMethods(contentMethods, other.contentMethods);
     }
 
-    private boolean equalSevenZMethods(final Iterable<? extends SevenZMethodConfiguration> c1,
-        final Iterable<? extends SevenZMethodConfiguration> c2) {
+    private boolean equalSevenZMethods(final Iterable<? extends SevenZMethodConfiguration> c1, final Iterable<? extends SevenZMethodConfiguration> c2) {
         if (c1 == null) {
             return c2 == null;
         }
@@ -138,8 +125,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Gets the access date.
-     * This is equivalent to {@link SevenZArchiveEntry#getAccessTime()}, but precision is truncated to milliseconds.
+     * Gets the access date. This is equivalent to {@link SevenZArchiveEntry#getAccessTime()}, but precision is truncated to milliseconds.
      *
      * @throws UnsupportedOperationException if the entry hasn't got an access date.
      * @return the access date
@@ -160,8 +146,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
         if (hasAccessDate) {
             return accessDate;
         }
-        throw new UnsupportedOperationException(
-                "The entry doesn't have this timestamp");
+        throw new UnsupportedOperationException("The entry doesn't have this timestamp");
     }
 
     /**
@@ -195,15 +180,16 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Gets the (compression) methods to use for entry's content - the
-     * default is LZMA2.
+     * Gets the (compression) methods to use for entry's content - the default is LZMA2.
      *
-     * <p>Currently only {@link SevenZMethod#COPY}, {@link
-     * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
-     * SevenZMethod#DEFLATE} are supported when writing archives.</p>
+     * <p>
+     * Currently only {@link SevenZMethod#COPY}, {@link SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link SevenZMethod#DEFLATE} are supported when
+     * writing archives.
+     * </p>
      *
-     * <p>The methods will be consulted in iteration order to create
-     * the final output.</p>
+     * <p>
+     * The methods will be consulted in iteration order to create the final output.
+     * </p>
      *
      * @since 1.8
      * @return the methods to use for the content
@@ -214,6 +200,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Gets the CRC.
+     *
      * @deprecated use getCrcValue instead.
      * @return the CRC
      */
@@ -233,8 +220,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Gets the creation date.
-     * This is equivalent to {@link SevenZArchiveEntry#getCreationTime()}, but precision is truncated to milliseconds.
+     * Gets the creation date. This is equivalent to {@link SevenZArchiveEntry#getCreationTime()}, but precision is truncated to milliseconds.
      *
      * @throws UnsupportedOperationException if the entry hasn't got a creation date.
      * @return the new creation date
@@ -255,12 +241,12 @@ public class SevenZArchiveEntry implements ArchiveEntry {
         if (hasCreationDate) {
             return creationDate;
         }
-        throw new UnsupportedOperationException(
-                "The entry doesn't have this timestamp");
+        throw new UnsupportedOperationException("The entry doesn't have this timestamp");
     }
 
     /**
      * Gets whether this entry has got an access date at all.
+     *
      * @return whether this entry has got an access date at all.
      */
     public boolean getHasAccessDate() {
@@ -270,7 +256,10 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Gets whether this entry has got a crc.
      *
-     * <p>In general entries without streams don't have a CRC either.</p>
+     * <p>
+     * In general entries without streams don't have a CRC either.
+     * </p>
+     *
      * @return whether this entry has got a crc.
      */
     public boolean getHasCrc() {
@@ -279,6 +268,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Gets whether this entry has got a creation date at all.
+     *
      * @return whether the entry has got a creation date
      */
     public boolean getHasCreationDate() {
@@ -287,6 +277,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Gets whether this entry has got a last modified date at all.
+     *
      * @return whether this entry has got a last modified date at all
      */
     public boolean getHasLastModifiedDate() {
@@ -295,6 +286,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Gets whether this entry has windows attributes.
+     *
      * @return whether this entry has windows attributes.
      */
     public boolean getHasWindowsAttributes() {
@@ -302,8 +294,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Gets the last modified date.
-     * This is equivalent to {@link SevenZArchiveEntry#getLastModifiedTime()}, but precision is truncated to milliseconds.
+     * Gets the last modified date. This is equivalent to {@link SevenZArchiveEntry#getLastModifiedTime()}, but precision is truncated to milliseconds.
      *
      * @throws UnsupportedOperationException if the entry hasn't got a last modified date.
      * @return the last modified date
@@ -325,14 +316,15 @@ public class SevenZArchiveEntry implements ArchiveEntry {
         if (hasLastModifiedDate) {
             return lastModifiedDate;
         }
-        throw new UnsupportedOperationException(
-                "The entry doesn't have this timestamp");
+        throw new UnsupportedOperationException("The entry doesn't have this timestamp");
     }
 
     /**
      * Gets this entry's name.
      *
-     * <p>This method returns the raw name as it is stored inside of the archive.</p>
+     * <p>
+     * This method returns the raw name as it is stored inside of the archive.
+     * </p>
      *
      * @return This entry's name.
      */
@@ -353,6 +345,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Gets the windows attributes.
+     *
      * @return the windows attributes
      */
     public int getWindowsAttributes() {
@@ -375,8 +368,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Tests whether this is an "anti-item" used in differential backups,
-     * meaning it should delete the same file from a previous backup.
+     * Tests whether this is an "anti-item" used in differential backups, meaning it should delete the same file from a previous backup.
      *
      * @return true if it is an anti-item, false otherwise
      */
@@ -405,8 +397,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Sets the access date using NTFS time (100 nanosecond units
-     * since 1 January 1601)
+     * Sets the access date using NTFS time (100 nanosecond units since 1 January 1601)
+     *
      * @param ntfsAccessDate the access date
      */
     public void setAccessDate(final long ntfsAccessDate) {
@@ -427,8 +419,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Sets whether this is an "anti-item" used in differential backups,
-     * meaning it should delete the same file from a previous backup.
+     * Sets whether this is an "anti-item" used in differential backups, meaning it should delete the same file from a previous backup.
+     *
      * @param isAntiItem true if it is an anti-item, false otherwise
      */
     public void setAntiItem(final boolean isAntiItem) {
@@ -437,6 +429,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets the compressed CRC.
+     *
      * @deprecated use setCompressedCrcValue instead.
      * @param crc the CRC
      */
@@ -447,6 +440,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets the compressed CRC.
+     *
      * @since 1.7
      * @param crc the CRC
      */
@@ -464,15 +458,16 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Sets the (compression) methods to use for entry's content - the
-     * default is LZMA2.
+     * Sets the (compression) methods to use for entry's content - the default is LZMA2.
      *
-     * <p>Currently only {@link SevenZMethod#COPY}, {@link
-     * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
-     * SevenZMethod#DEFLATE} are supported when writing archives.</p>
+     * <p>
+     * Currently only {@link SevenZMethod#COPY}, {@link SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link SevenZMethod#DEFLATE} are supported when
+     * writing archives.
+     * </p>
      *
-     * <p>The methods will be consulted in iteration order to create
-     * the final output.</p>
+     * <p>
+     * The methods will be consulted in iteration order to create the final output.
+     * </p>
      *
      * @param methods the methods to use for the content
      * @since 1.8
@@ -488,15 +483,16 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Sets the (compression) methods to use for entry's content - the
-     * default is LZMA2.
+     * Sets the (compression) methods to use for entry's content - the default is LZMA2.
      *
-     * <p>Currently only {@link SevenZMethod#COPY}, {@link
-     * SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link
-     * SevenZMethod#DEFLATE} are supported when writing archives.</p>
+     * <p>
+     * Currently only {@link SevenZMethod#COPY}, {@link SevenZMethod#LZMA2}, {@link SevenZMethod#BZIP2} and {@link SevenZMethod#DEFLATE} are supported when
+     * writing archives.
+     * </p>
      *
-     * <p>The methods will be consulted in iteration order to create
-     * the final output.</p>
+     * <p>
+     * The methods will be consulted in iteration order to create the final output.
+     * </p>
      *
      * @param methods the methods to use for the content
      * @since 1.22
@@ -507,6 +503,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets the CRC.
+     *
      * @deprecated use setCrcValue instead.
      * @param crc the CRC
      */
@@ -517,6 +514,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets the CRC.
+     *
      * @since 1.7
      * @param crc the CRC
      */
@@ -535,8 +533,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Sets the creation date using NTFS time (100 nanosecond units
-     * since 1 January 1601)
+     * Sets the creation date using NTFS time (100 nanosecond units since 1 January 1601)
+     *
      * @param ntfsCreationDate the creation date
      */
     public void setCreationDate(final long ntfsCreationDate) {
@@ -567,6 +565,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets whether this entry has got an access date at all.
+     *
      * @param hasAcessDate whether this entry has got an access date at all.
      */
     public void setHasAccessDate(final boolean hasAcessDate) {
@@ -575,6 +574,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets whether this entry has got a crc.
+     *
      * @param hasCrc whether this entry has got a crc.
      */
     public void setHasCrc(final boolean hasCrc) {
@@ -583,6 +583,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets whether this entry has got a creation date at all.
+     *
      * @param hasCreationDate whether the entry has got a creation date
      */
     public void setHasCreationDate(final boolean hasCreationDate) {
@@ -591,8 +592,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets whether this entry has got a last modified date at all.
-     * @param hasLastModifiedDate whether this entry has got a last
-     * modified date at all
+     *
+     * @param hasLastModifiedDate whether this entry has got a last modified date at all
      */
     public void setHasLastModifiedDate(final boolean hasLastModifiedDate) {
         this.hasLastModifiedDate = hasLastModifiedDate;
@@ -600,6 +601,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets whether there is any content associated with this entry.
+     *
      * @param hasStream whether there is any content associated with this entry.
      */
     public void setHasStream(final boolean hasStream) {
@@ -608,6 +610,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets whether this entry has windows attributes.
+     *
      * @param hasWindowsAttributes whether this entry has windows attributes.
      */
     public void setHasWindowsAttributes(final boolean hasWindowsAttributes) {
@@ -625,8 +628,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Sets the last modified date using NTFS time (100 nanosecond
-     * units since 1 January 1601)
+     * Sets the last modified date using NTFS time (100 nanosecond units since 1 January 1601)
+     *
      * @param ntfsLastModifiedDate the last modified date
      */
     public void setLastModifiedDate(final long ntfsLastModifiedDate) {
@@ -666,6 +669,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Sets the windows attributes.
+     *
      * @param windowsAttributes the windows attributes
      */
     public void setWindowsAttributes(final int windowsAttributes) {

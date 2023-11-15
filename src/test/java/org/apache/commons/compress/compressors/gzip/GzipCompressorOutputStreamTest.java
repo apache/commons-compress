@@ -43,7 +43,8 @@ public class GzipCompressorOutputStreamTest {
         assertEquals(parameters.getFilename(), parameters.getFileName());
         parameters.setFileName(sourceFile);
         assertEquals(parameters.getFilename(), parameters.getFileName());
-        try (OutputStream fos = Files.newOutputStream(targetFile); GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters)) {
+        try (OutputStream fos = Files.newOutputStream(targetFile);
+                GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters)) {
             Files.copy(tempSourceFile, gos);
         }
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- package org.apache.commons.compress.archivers.zip;
+package org.apache.commons.compress.archivers.zip;
 
 /**
  * Provides information about a scatter compression run.
@@ -34,6 +34,7 @@ public class ScatterStatistics {
 
     /**
      * The number of milliseconds elapsed in the parallel compression phase
+     *
      * @return The number of milliseconds elapsed
      */
     public long getCompressionElapsed() {
@@ -42,6 +43,7 @@ public class ScatterStatistics {
 
     /**
      * The number of milliseconds elapsed in merging the results of the parallel compression, the IO phase
+     *
      * @return The number of milliseconds elapsed
      */
     public long getMergingElapsed() {

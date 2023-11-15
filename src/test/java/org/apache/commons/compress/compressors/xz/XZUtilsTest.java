@@ -116,9 +116,7 @@ public class XZUtilsTest {
 
     @Test
     public void testMatches() {
-        final byte[] data = {
-            (byte) 0xFD, '7', 'z', 'X', 'Z', '\0'
-        };
+        final byte[] data = { (byte) 0xFD, '7', 'z', 'X', 'Z', '\0' };
         assertFalse(XZUtils.matches(data, 5));
         assertTrue(XZUtils.matches(data, 6));
         assertTrue(XZUtils.matches(data, 7));

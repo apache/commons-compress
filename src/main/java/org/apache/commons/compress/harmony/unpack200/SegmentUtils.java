@@ -26,12 +26,11 @@ public final class SegmentUtils {
     }
 
     /**
-     * Count the number of arguments in the descriptor. Each long or double counts as widthOfLongsAndDoubles; all other
-     * arguments count as 1.
+     * Count the number of arguments in the descriptor. Each long or double counts as widthOfLongsAndDoubles; all other arguments count as 1.
      *
-     * @param descriptor String for which arguments are counted
-     * @param widthOfLongsAndDoubles int increment to apply for longs doubles. This is typically 1 when counting
-     *        arguments alone, or 2 when counting arguments for invokeinterface.
+     * @param descriptor             String for which arguments are counted
+     * @param widthOfLongsAndDoubles int increment to apply for longs doubles. This is typically 1 when counting arguments alone, or 2 when counting arguments
+     *                               for invokeinterface.
      * @return integer count
      */
     protected static int countArgs(final String descriptor, final int widthOfLongsAndDoubles) {

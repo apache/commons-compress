@@ -31,14 +31,14 @@ import org.apache.commons.compress.harmony.pack200.AttributeDefinitionBands.Attr
 import org.objectweb.asm.Label;
 
 /**
- * Sets of bands relating to a non-predefined attribute that has had a layout definition given to pack200 (e.g. via one
- * of the -C, -M, -F or -D command line options)
+ * Sets of bands relating to a non-predefined attribute that has had a layout definition given to pack200 (e.g. via one of the -C, -M, -F or -D command line
+ * options)
  */
 public class NewAttributeBands extends BandSet {
 
     /**
-     * An AttributeLayoutElement is a part of an attribute layout and has one or more bands associated with it, which
-     * transmit the AttributeElement data for successive Attributes of this type.
+     * An AttributeLayoutElement is a part of an attribute layout and has one or more bands associated with it, which transmit the AttributeElement data for
+     * successive Attributes of this type.
      */
     public interface AttributeLayoutElement {
 
@@ -49,6 +49,7 @@ public class NewAttributeBands extends BandSet {
         void renumberBci(IntList bciRenumbering, Map<Label, Integer> labelsToOffsets);
 
     }
+
     public class Call extends LayoutElement {
 
         private final int callableIndex;
@@ -91,6 +92,7 @@ public class NewAttributeBands extends BandSet {
             }
         }
     }
+
     public class Callable implements AttributeLayoutElement {
 
         private final List<LayoutElement> body;
@@ -147,6 +149,7 @@ public class NewAttributeBands extends BandSet {
             this.backwardsCallableIndex = backwardsCallableIndex;
         }
     }
+
     public class Integral extends LayoutElement {
 
         private final String tag;
@@ -256,14 +259,14 @@ public class NewAttributeBands extends BandSet {
                 if (label instanceof Label) {
                     band.remove(i);
                     final Integer bytecodeIndex = labelsToOffsets.get(label);
-                    final Integer renumberedOffset = Integer
-                        .valueOf(bciRenumbering.get(bytecodeIndex.intValue()) - ((Integer) relative.get(i)).intValue());
+                    final Integer renumberedOffset = Integer.valueOf(bciRenumbering.get(bytecodeIndex.intValue()) - ((Integer) relative.get(i)).intValue());
                     band.add(i, renumberedOffset);
                 }
             }
         }
 
     }
+
     public abstract class LayoutElement implements AttributeLayoutElement {
 
         protected int getLength(final char uint_type) {
@@ -523,8 +526,7 @@ public class NewAttributeBands extends BandSet {
     // used when parsing
     private Integral lastPIntegral;
 
-    public NewAttributeBands(final int effort, final CpBands cpBands, final SegmentHeader header,
-        final AttributeDefinition def) throws IOException {
+    public NewAttributeBands(final int effort, final CpBands cpBands, final SegmentHeader header, final AttributeDefinition def) throws IOException {
         super(effort, header);
         this.def = def;
         this.cpBands = cpBands;
@@ -556,7 +558,7 @@ public class NewAttributeBands extends BandSet {
             return Codec.BCI5;
         }
         if (layoutElement.indexOf('S') >= 0 && layoutElement.indexOf("KS") < 0 //$NON-NLS-1$
-            && layoutElement.indexOf("RS") < 0) { //$NON-NLS-1$
+                && layoutElement.indexOf("RS") < 0) { //$NON-NLS-1$
             return Codec.SIGNED5;
         }
         if (layoutElement.indexOf('B') >= 0) {
@@ -570,8 +572,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Utility method to get the contents of the given stream, up to the next {@code ]},
-     * (ignoring pairs of brackets {@code [} and {@code ]})
+     * Utility method to get the contents of the given stream, up to the next {@code ]}, (ignoring pairs of brackets {@code [} and {@code ]})
      *
      * @param reader
      * @return
@@ -583,9 +584,9 @@ public class NewAttributeBands extends BandSet {
         while (foundBracket != 0) {
             final int read = reader.read();
             if (read == -1) {
-            	break;
+                break;
             }
-			final char c = (char) read;
+            final char c = (char) read;
             if (c == ']') {
                 foundBracket++;
             }
@@ -687,10 +688,10 @@ public class NewAttributeBands extends BandSet {
         case 'H':
         case 'I':
         case 'V':
-            return new Integral(new String(new char[] {(char) nextChar}));
+            return new Integral(new String(new char[] { (char) nextChar }));
         case 'S':
         case 'F':
-            return new Integral(new String(new char[] {(char) nextChar, (char) reader.read()}));
+            return new Integral(new String(new char[] { (char) nextChar, (char) reader.read() }));
         case 'P':
             reader.mark(1);
             if (reader.read() != 'O') {
@@ -708,7 +709,7 @@ public class NewAttributeBands extends BandSet {
             }
             return new Integral("OS" + (char) reader.read(), lastPIntegral);
 
-            // Replication
+        // Replication
         case 'N':
             final char uint_type = (char) reader.read();
             reader.read(); // '['
@@ -827,8 +828,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Utility method to get the contents of the given stream, up to the next ']', (ignoring pairs of brackets '[' and
-     * ']')
+     * Utility method to get the contents of the given stream, up to the next ']', (ignoring pairs of brackets '[' and ']')
      *
      * @param reader
      * @return
@@ -840,9 +840,9 @@ public class NewAttributeBands extends BandSet {
         while (foundBracket != 0) {
             final int read = reader.read();
             if (read == -1) {
-            	break;
+                break;
             }
-			final char c = (char) read;
+            final char c = (char) read;
             if (c == ']') {
                 foundBracket++;
             }
@@ -859,7 +859,7 @@ public class NewAttributeBands extends BandSet {
     /**
      * Renumber any bytecode indexes or offsets as described in section 5.5.2 of the pack200 specification
      *
-     * @param bciRenumbering TODO
+     * @param bciRenumbering  TODO
      * @param labelsToOffsets TODO
      */
     public void renumberBci(final IntList bciRenumbering, final Map<Label, Integer> labelsToOffsets) {
@@ -898,8 +898,7 @@ public class NewAttributeBands extends BandSet {
         backwardsCallCounts = new int[backwardsCallableIndex];
     }
 
-    private void resolveCallsForElement(final int i, final Callable currentCallable,
-        final LayoutElement layoutElement) {
+    private void resolveCallsForElement(final int i, final Callable currentCallable, final LayoutElement layoutElement) {
         if (layoutElement instanceof Call) {
             final Call call = (Call) layoutElement;
             int index = call.callableIndex;
