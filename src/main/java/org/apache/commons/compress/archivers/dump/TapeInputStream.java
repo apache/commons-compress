@@ -311,6 +311,9 @@ final class TapeInputStream extends FilterInputStream {
                 + " records found, must be at least 1");
         }
         blockSize = RECORD_SIZE * recsPerBlock;
+        if (blockSize < 1) {
+            throw new IOException("Block size " + blockSize + " cannot be negative");
+        }
 
         // save first block in case we need it again
         final byte[] oldBuffer = blockBuffer;
