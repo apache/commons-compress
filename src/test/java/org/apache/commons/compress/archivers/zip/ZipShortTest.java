@@ -37,7 +37,6 @@ public class ZipShortTest {
         assertEquals(s1.getValue(), s2.getValue());
     }
 
-
     /**
      * Test the contract of the equals method.
      */
@@ -58,13 +57,12 @@ public class ZipShortTest {
         assertNotEquals(zs, Integer.valueOf(0x1234), "non ZipShort handling");
     }
 
-
     /**
      * Test conversion from bytes.
      */
     @Test
     public void testFromBytes() {
-        final byte[] val = {0x34, 0x12};
+        final byte[] val = { 0x34, 0x12 };
         final ZipShort zs = new ZipShort(val);
         assertEquals(0x1234, zs.getValue(), "value from bytes");
     }
@@ -85,7 +83,7 @@ public class ZipShortTest {
      */
     @Test
     public void testSign() {
-        final ZipShort zs = new ZipShort(new byte[] {(byte) 0xFF, (byte) 0xFF});
+        final ZipShort zs = new ZipShort(new byte[] { (byte) 0xFF, (byte) 0xFF });
         assertEquals(0x0000FFFF, zs.getValue());
     }
 

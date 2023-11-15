@@ -72,7 +72,7 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
     public void testConstructorThrowsOnNonSplitZipFiles() throws IOException {
         final List<SeekableByteChannel> channels = new ArrayList<>();
         final File file = getFile("COMPRESS-189.zip");
-        try (final SeekableByteChannel byteChannel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
+        try (SeekableByteChannel byteChannel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
             channels.add(byteChannel);
             assertThrows(IOException.class, () -> new ZipSplitReadOnlySeekableByteChannel(channels));
         }
@@ -124,8 +124,8 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
         final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
 
         try (SeekableByteChannel firstChannel = Files.newByteChannel(file1.toPath(), StandardOpenOption.READ);
-                final SeekableByteChannel secondChannel = Files.newByteChannel(file2.toPath(), StandardOpenOption.READ);
-                final SeekableByteChannel lastChannel = Files.newByteChannel(lastFile.toPath(), StandardOpenOption.READ)) {
+                SeekableByteChannel secondChannel = Files.newByteChannel(file2.toPath(), StandardOpenOption.READ);
+                SeekableByteChannel lastChannel = Files.newByteChannel(lastFile.toPath(), StandardOpenOption.READ)) {
 
             final List<SeekableByteChannel> channels = new ArrayList<>();
             channels.add(firstChannel);
@@ -144,7 +144,7 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
     @Test
     public void testForOrderedSeekableByteChannelsReturnsIdentityForSingleElement() throws IOException {
         try (SeekableByteChannel emptyChannel = new SeekableInMemoryByteChannel(ByteUtils.EMPTY_BYTE_ARRAY);
-                final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(emptyChannel)) {
+                SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(emptyChannel)) {
             assertSame(emptyChannel, channel);
         }
     }

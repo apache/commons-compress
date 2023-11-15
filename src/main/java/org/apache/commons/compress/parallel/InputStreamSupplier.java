@@ -24,9 +24,8 @@ import java.io.InputStream;
 /**
  * Supplies input streams.
  *
- * Implementations are required to support thread-handover. While an instance will
- * not be accessed concurrently by multiple threads, it will be called by
- * a different thread than it was created on.
+ * Implementations are required to support thread-handover. While an instance will not be accessed concurrently by multiple threads, it will be called by a
+ * different thread than it was created on.
  *
  * @since 1.10
  */

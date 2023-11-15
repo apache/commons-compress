@@ -90,8 +90,7 @@ final class AES256SHA256Decoder extends AbstractCoder {
             if (numCyclesPower == 0x3f) {
                 aesKeyBytes = new byte[32];
                 System.arraycopy(salt, 0, aesKeyBytes, 0, saltSize);
-                System.arraycopy(passwordBytes, 0, aesKeyBytes, saltSize,
-                                 Math.min(passwordBytes.length, aesKeyBytes.length - saltSize));
+                System.arraycopy(passwordBytes, 0, aesKeyBytes, saltSize, Math.min(passwordBytes.length, aesKeyBytes.length - saltSize));
             } else {
                 aesKeyBytes = sha256Password(passwordBytes, numCyclesPower, salt);
             }
@@ -104,10 +103,9 @@ final class AES256SHA256Decoder extends AbstractCoder {
                 isInitialized = true;
                 return cipherInputStream;
             } catch (final GeneralSecurityException generalSecurityException) {
-                throw new IllegalStateException(
-                    "Decryption error (do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
-                    generalSecurityException);
-                }
+                throw new IllegalStateException("Decryption error (do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
+                        generalSecurityException);
+            }
         }
 
         @SuppressWarnings("resource") // Closed in close()
@@ -237,8 +235,8 @@ final class AES256SHA256Decoder extends AbstractCoder {
     }
 
     @Override
-    InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-            final Coder coder, final byte[] passwordBytes, final int maxMemoryLimitInKb) {
+    InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength, final Coder coder, final byte[] passwordBytes,
+            final int maxMemoryLimitInKb) {
         return new AES256SHA256DecoderInputStream(in, coder, archiveName, passwordBytes);
     }
 

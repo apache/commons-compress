@@ -29,14 +29,10 @@ public class ParametersTest {
         return Parameters.builder(windowSize).build();
     }
 
-    private static Parameters newParameters(final int windowSize, final int minBackReferenceLength, final int maxBackReferenceLength,
-        final int maxOffset, final int maxLiteralLength) {
-        return Parameters.builder(windowSize)
-            .withMinBackReferenceLength(minBackReferenceLength)
-            .withMaxBackReferenceLength(maxBackReferenceLength)
-            .withMaxOffset(maxOffset)
-            .withMaxLiteralLength(maxLiteralLength)
-            .build();
+    private static Parameters newParameters(final int windowSize, final int minBackReferenceLength, final int maxBackReferenceLength, final int maxOffset,
+            final int maxLiteralLength) {
+        return Parameters.builder(windowSize).withMinBackReferenceLength(minBackReferenceLength).withMaxBackReferenceLength(maxBackReferenceLength)
+                .withMaxOffset(maxOffset).withMaxLiteralLength(maxLiteralLength).build();
     }
 
     @Test
@@ -73,12 +69,8 @@ public class ParametersTest {
 
     @Test
     public void testMaxBackReferenceLengthIsMinBackReferenceLengthWhenSmallerThanMinBackReferenceLengthReversedInvocationOrder() {
-        final Parameters p = Parameters.builder(128)
-            .withMaxBackReferenceLength(2)
-            .withMinBackReferenceLength(2)
-            .withMaxOffset(4)
-            .withMaxLiteralLength(5)
-            .build();
+        final Parameters p = Parameters.builder(128).withMaxBackReferenceLength(2).withMinBackReferenceLength(2).withMaxOffset(4).withMaxLiteralLength(5)
+                .build();
         assertEquals(3, p.getMaxBackReferenceLength());
     }
 

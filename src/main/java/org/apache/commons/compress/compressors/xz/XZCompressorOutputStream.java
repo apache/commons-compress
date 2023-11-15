@@ -27,40 +27,35 @@ import org.tukaani.xz.XZOutputStream;
 
 /**
  * XZ compressor.
+ *
  * @since 1.4
  */
 public class XZCompressorOutputStream extends CompressorOutputStream {
     private final XZOutputStream out;
 
     /**
-     * Creates a new XZ compressor using the default LZMA2 options.
-     * This is equivalent to {@code XZCompressorOutputStream(outputStream, 6)}.
+     * Creates a new XZ compressor using the default LZMA2 options. This is equivalent to {@code XZCompressorOutputStream(outputStream, 6)}.
+     *
      * @param outputStream the stream to wrap
      * @throws IOException on error
      */
-    public XZCompressorOutputStream(final OutputStream outputStream)
-            throws IOException {
+    public XZCompressorOutputStream(final OutputStream outputStream) throws IOException {
         out = new XZOutputStream(outputStream, new LZMA2Options());
     }
 
     /**
      * Creates a new XZ compressor using the specified LZMA2 preset level.
      * <p>
-     * The presets 0-3 are fast presets with medium compression.
-     * The presets 4-6 are fairly slow presets with high compression.
-     * The default preset is 6.
+     * The presets 0-3 are fast presets with medium compression. The presets 4-6 are fairly slow presets with high compression. The default preset is 6.
      * <p>
-     * The presets 7-9 are like the preset 6 but use bigger dictionaries
-     * and have higher compressor and decompressor memory requirements.
-     * Unless the uncompressed size of the file exceeds 8&nbsp;MiB,
-     * 16&nbsp;MiB, or 32&nbsp;MiB, it is waste of memory to use the
-     * presets 7, 8, or 9, respectively.
+     * The presets 7-9 are like the preset 6 but use bigger dictionaries and have higher compressor and decompressor memory requirements. Unless the
+     * uncompressed size of the file exceeds 8&nbsp;MiB, 16&nbsp;MiB, or 32&nbsp;MiB, it is waste of memory to use the presets 7, 8, or 9, respectively.
+     *
      * @param outputStream the stream to wrap
-     * @param preset the preset
+     * @param preset       the preset
      * @throws IOException on error
      */
-    public XZCompressorOutputStream(final OutputStream outputStream, final int preset)
-            throws IOException {
+    public XZCompressorOutputStream(final OutputStream outputStream, final int preset) throws IOException {
         out = new XZOutputStream(outputStream, new LZMA2Options(preset));
     }
 
@@ -70,8 +65,8 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
     }
 
     /**
-     * Finishes compression without closing the underlying stream.
-     * No more data can be written to this stream after finishing.
+     * Finishes compression without closing the underlying stream. No more data can be written to this stream after finishing.
+     *
      * @throws IOException on error
      */
     public void finish() throws IOException {
@@ -79,10 +74,8 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
     }
 
     /**
-     * Flushes the encoder and calls {@code outputStream.flush()}.
-     * All buffered pending data will then be decompressible from
-     * the output stream. Calling this function very often may increase
-     * the compressed file size a lot.
+     * Flushes the encoder and calls {@code outputStream.flush()}. All buffered pending data will then be decompressible from the output stream. Calling this
+     * function very often may increase the compressed file size a lot.
      */
     @Override
     public void flush() throws IOException {

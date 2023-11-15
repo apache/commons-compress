@@ -22,8 +22,8 @@ package org.apache.commons.compress.compressors.pack200;
 import java.io.IOException;
 
 /**
- * The different modes the Pack200 streams can use to wrap input and
- * output.
+ * The different modes the Pack200 streams can use to wrap input and output.
+ *
  * @since 1.3
  */
 public enum Pack200Strategy {

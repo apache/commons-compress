@@ -20,8 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * This is an InputStream that always return 0,
- * this is used when reading the "holes" of a sparse file
+ * This is an InputStream that always return 0, this is used when reading the "holes" of a sparse file
  */
 final class TarArchiveSparseZeroInputStream extends InputStream {
 

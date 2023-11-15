@@ -33,8 +33,7 @@ import org.junit.jupiter.api.Test;
 public class EncryptedArchiveTest {
 
     @Test
-    public void testReadPasswordEncryptedEntryViaStream()
-        throws IOException {
+    public void testReadPasswordEncryptedEntryViaStream() throws IOException {
         final File file = getFile("password-encrypted.zip");
         try (ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(file.toPath()))) {
             final ZipArchiveEntry zae = zin.getNextZipEntry();
@@ -51,16 +50,14 @@ public class EncryptedArchiveTest {
     }
 
     @Test
-    public void testReadPasswordEncryptedEntryViaZipFile()
-        throws IOException {
+    public void testReadPasswordEncryptedEntryViaZipFile() throws IOException {
         final File file = getFile("password-encrypted.zip");
-        try (final ZipFile zf = new ZipFile(file)) {
+        try (ZipFile zf = new ZipFile(file)) {
             final ZipArchiveEntry zae = zf.getEntry("LICENSE.txt");
             assertTrue(zae.getGeneralPurposeBit().usesEncryption());
             assertFalse(zae.getGeneralPurposeBit().usesStrongEncryption());
             assertFalse(zf.canReadEntryData(zae));
-            final UnsupportedZipFeatureException ex = assertThrows(UnsupportedZipFeatureException.class, () -> zf.getInputStream(zae),
-                    "expected an exception");
+            final UnsupportedZipFeatureException ex = assertThrows(UnsupportedZipFeatureException.class, () -> zf.getInputStream(zae), "expected an exception");
             assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION, ex.getFeature());
         }
     }

@@ -135,11 +135,10 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      * Checks that an archive input stream can be read, and that the file data matches file sizes.
      *
      * @param inputStream
-     * @param expected list of expected entries or {@code null} if no check of names desired
+     * @param expected    list of expected entries or {@code null} if no check of names desired
      * @throws Exception
      */
-    protected void checkArchiveContent(final ArchiveInputStream<?> inputStream, final List<String> expected)
-            throws Exception {
+    protected void checkArchiveContent(final ArchiveInputStream<?> inputStream, final List<String> expected) throws Exception {
         checkArchiveContent(inputStream, expected, true);
     }
 
@@ -147,13 +146,12 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      * Checks that an archive input stream can be read, and that the file data matches file sizes.
      *
      * @param inputStream
-     * @param expected list of expected entries or {@code null} if no check of names desired
-     * @param cleanUp Cleans up resources if true
+     * @param expected    list of expected entries or {@code null} if no check of names desired
+     * @param cleanUp     Cleans up resources if true
      * @return returns the created result file if cleanUp = false, or null otherwise
      * @throws Exception
      */
-    protected File checkArchiveContent(final ArchiveInputStream<?> inputStream, final List<String> expected, final boolean cleanUp)
-            throws Exception {
+    protected File checkArchiveContent(final ArchiveInputStream<?> inputStream, final List<String> expected, final boolean cleanUp) throws Exception {
         final Path result = createTempDirectory("dir-result");
 
         try {
@@ -224,9 +222,8 @@ public abstract class AbstractTest extends AbstractTempDirTest {
     }
 
     /**
-     * Creates an archive of text-based files in several directories. The
-     * archive name is the factory identifier for the archiver, for example zip,
-     * tar, cpio, jar, ar. The archive is created as a temp file.
+     * Creates an archive of text-based files in several directories. The archive name is the factory identifier for the archiver, for example zip, tar, cpio,
+     * jar, ar. The archive is created as a temp file.
      *
      * The archive contains the following files:
      * <ul>
@@ -241,11 +238,9 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      * <li>test with spaces.txt</li>
      * </ul>
      *
-     * @param archiveName
-     *            the identifier of this archive
+     * @param archiveName the identifier of this archive
      * @return the newly created file
-     * @throws Exception
-     *             in case something goes wrong
+     * @throws Exception in case something goes wrong
      */
     protected Path createArchive(final String archiveName) throws Exception {
         final Path archivePath = createTempPath("test", "." + archiveName);
@@ -277,6 +272,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
 
     /**
      * Create an empty archive.
+     *
      * @param archiveName
      * @return the archive File
      * @throws Exception
@@ -315,8 +311,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
     }
 
     /**
-     * Override this method to change what is to be compared in the List.
-     * For example, size + name instead of just name.
+     * Override this method to change what is to be compared in the List. For example, size + name instead of just name.
      *
      * @param entry
      * @return returns the entry name

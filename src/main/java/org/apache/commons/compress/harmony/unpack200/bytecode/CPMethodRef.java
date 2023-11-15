@@ -28,6 +28,7 @@ public class CPMethodRef extends CPRef {
     public CPMethodRef(final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
         super(ConstantPoolEntry.CP_Methodref, className, descriptor, globalIndex);
     }
+
     private void generateHashCode() {
         hashCodeComputed = true;
         final int PRIME = 31;
@@ -39,7 +40,7 @@ public class CPMethodRef extends CPRef {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] {className, nameAndType};
+        return new ClassFileEntry[] { className, nameAndType };
     }
 
     @Override

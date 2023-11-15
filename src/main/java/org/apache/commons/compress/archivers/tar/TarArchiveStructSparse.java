@@ -24,12 +24,14 @@ import java.util.Objects;
  * This class represents struct sparse in a Tar archive.
  * <p>
  * Whereas, "struct sparse" is:
+ *
  * <pre>
  * struct sparse {
  * char offset[12];   // offset 0
  * char numbytes[12]; // offset 12
  * };
  * </pre>
+ *
  * @since 1.20
  */
 public final class TarArchiveStructSparse {
@@ -56,8 +58,7 @@ public final class TarArchiveStructSparse {
             return false;
         }
         final TarArchiveStructSparse that = (TarArchiveStructSparse) o;
-        return offset == that.offset &&
-                numbytes == that.numbytes;
+        return offset == that.offset && numbytes == that.numbytes;
     }
 
     public long getNumbytes() {
@@ -75,9 +76,6 @@ public final class TarArchiveStructSparse {
 
     @Override
     public String toString() {
-        return "TarArchiveStructSparse{" +
-                "offset=" + offset +
-                ", numbytes=" + numbytes +
-                '}';
+        return "TarArchiveStructSparse{" + "offset=" + offset + ", numbytes=" + numbytes + '}';
     }
 }

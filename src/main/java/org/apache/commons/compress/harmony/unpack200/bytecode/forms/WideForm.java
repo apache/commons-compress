@@ -20,8 +20,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * This class implements the byte code form for the wide instruction. Unlike other instructions, it can take multiple
- * forms, depending on what is being widened.
+ * This class implements the byte code form for the wide instruction. Unlike other instructions, it can take multiple forms, depending on what is being widened.
  */
 public class WideForm extends VariableInstructionForm {
 
@@ -32,15 +31,12 @@ public class WideForm extends VariableInstructionForm {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#setByteCodeOperands(org.apache.commons.
-     * compress.harmony.unpack200.bytecode.ByteCode,
-     * org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#setByteCodeOperands(org.apache.commons.
+     * compress.harmony.unpack200.bytecode.ByteCode, org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
      * org.apache.commons.compress.harmony.unpack200.SegmentConstantPool)
      */
     @Override
-    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager,
-        final int codeLength) {
+    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) {
         final int instruction = operandManager.nextWideByteCode();
         if (instruction == 132) {
             setByteCodeOperandsFormat2(instruction, byteCode, operandManager, codeLength);
@@ -50,16 +46,14 @@ public class WideForm extends VariableInstructionForm {
     }
 
     /**
-     * This method sets the rewrite array for the bytecode using Format 1 of the JVM spec: an opcode and two index
-     * bytes. This is used for ?load/?store/ret
+     * This method sets the rewrite array for the bytecode using Format 1 of the JVM spec: an opcode and two index bytes. This is used for ?load/?store/ret
      *
-     * @param instruction should be 132
-     * @param byteCode the byte code whose rewrite array should be updated
+     * @param instruction    should be 132
+     * @param byteCode       the byte code whose rewrite array should be updated
      * @param operandManager the source of the operands
-     * @param codeLength ignored
+     * @param codeLength     ignored
      */
-    protected void setByteCodeOperandsFormat1(final int instruction, final ByteCode byteCode,
-        final OperandManager operandManager, final int codeLength) {
+    protected void setByteCodeOperandsFormat1(final int instruction, final ByteCode byteCode, final OperandManager operandManager, final int codeLength) {
 
         // Even though this code is really similar to the
         // code for setByteCodeOperandsFormat2, I've left it
@@ -94,16 +88,15 @@ public class WideForm extends VariableInstructionForm {
     }
 
     /**
-     * This method sets the rewrite array for the bytecode using Format 2 of the JVM spec: an opcode, two index bytes,
-     * and two constant bytes. This is used for iinc.
+     * This method sets the rewrite array for the bytecode using Format 2 of the JVM spec: an opcode, two index bytes, and two constant bytes. This is used for
+     * iinc.
      *
-     * @param instruction int should be 132
-     * @param byteCode ByteCode whose rewrite array should be updated
+     * @param instruction    int should be 132
+     * @param byteCode       ByteCode whose rewrite array should be updated
      * @param operandManager OperandManager source of the operands
-     * @param codeLength ignored
+     * @param codeLength     ignored
      */
-    protected void setByteCodeOperandsFormat2(final int instruction, final ByteCode byteCode,
-        final OperandManager operandManager, final int codeLength) {
+    protected void setByteCodeOperandsFormat2(final int instruction, final ByteCode byteCode, final OperandManager operandManager, final int codeLength) {
 
         final int local = operandManager.nextLocal();
         final int constWord = operandManager.nextShort();

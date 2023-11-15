@@ -26,6 +26,7 @@ import org.apache.commons.compress.compressors.lzw.LZWInputStream;
 
 /**
  * Input stream that decompresses ZIP method 1 (unshrinking). A variation of the LZW algorithm, with some twists.
+ *
  * @NotThreadSafe
  * @since 1.7
  */
@@ -39,7 +40,7 @@ final class UnshrinkingInputStream extends LZWInputStream {
      *
      * @param inputStream
      */
-    public UnshrinkingInputStream(final InputStream inputStream) {
+    UnshrinkingInputStream(final InputStream inputStream) {
         super(inputStream, ByteOrder.LITTLE_ENDIAN);
         setClearCode(DEFAULT_CODE_SIZE);
         initializeTables(MAX_CODE_SIZE);
@@ -67,16 +68,16 @@ final class UnshrinkingInputStream extends LZWInputStream {
     @Override
     protected int decompressNextSymbol() throws IOException {
         //
-        //                   table entry    table entry
-        //                  _____________   _____
-        //    table entry  /             \ /     \
-        //    ____________/               \       \
-        //   /           / \             / \       \
-        //  +---+---+---+---+---+---+---+---+---+---+
-        //  | . | . | . | . | . | . | . | . | . | . |
-        //  +---+---+---+---+---+---+---+---+---+---+
-        //  |<--------->|<------------->|<----->|<->|
-        //     symbol        symbol      symbol  symbol
+        // table entry table entry
+        // _____________ _____
+        // table entry / \ / \
+        // ____________/ \ \
+        // / / \ / \ \
+        // +---+---+---+---+---+---+---+---+---+---+
+        // | . | . | . | . | . | . | . | . | . | . |
+        // +---+---+---+---+---+---+---+---+---+---+
+        // |<--------->|<------------->|<----->|<->|
+        // symbol symbol symbol symbol
         //
         final int code = readNextCode();
         if (code < 0) {

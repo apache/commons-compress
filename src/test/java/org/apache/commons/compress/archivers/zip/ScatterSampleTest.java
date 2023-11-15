@@ -34,10 +34,10 @@ import org.junit.jupiter.api.Test;
 public class ScatterSampleTest extends AbstractTempDirTest {
 
     private void checkFile(final File result) throws IOException {
-        try (final ZipFile zipFile = new ZipFile(result)) {
+        try (ZipFile zipFile = new ZipFile(result)) {
             final ZipArchiveEntry archiveEntry1 = zipFile.getEntries().nextElement();
             assertEquals("test1.xml", archiveEntry1.getName());
-            try (final InputStream inputStream = zipFile.getInputStream(archiveEntry1)) {
+            try (InputStream inputStream = zipFile.getInputStream(archiveEntry1)) {
                 final byte[] b = new byte[6];
                 final int i = IOUtils.readFully(inputStream, b);
                 assertEquals(5, i);
@@ -55,7 +55,7 @@ public class ScatterSampleTest extends AbstractTempDirTest {
         final InputStreamSupplier supp = () -> new ByteArrayInputStream("Hello".getBytes());
 
         scatterSample.addEntry(archiveEntry, supp);
-        try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(result)) {
+        try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(result)) {
             scatterSample.writeTo(zipArchiveOutputStream);
         }
     }

@@ -47,8 +47,7 @@ public final class CpioTest extends AbstractTest {
         final File file2 = getFile("test2.xml");
 
         try (OutputStream outputStream = Files.newOutputStream(output.toPath());
-                final ArchiveOutputStream<CpioArchiveEntry> archiveOutputStream = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("cpio",
-                        outputStream)) {
+                ArchiveOutputStream<CpioArchiveEntry> archiveOutputStream = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("cpio", outputStream)) {
             archiveOutputStream.putArchiveEntry(new CpioArchiveEntry("test1.xml", file1.length()));
             Files.copy(file1.toPath(), archiveOutputStream);
             archiveOutputStream.closeArchiveEntry();

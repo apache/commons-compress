@@ -47,7 +47,7 @@ public final class ArTest extends AbstractTest {
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
 
-        try (final OutputStream out = Files.newOutputStream(output.toPath());
+        try (OutputStream out = Files.newOutputStream(output.toPath());
                 ArArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out)) {
             os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
             Files.copy(file1.toPath(), os);
@@ -158,8 +158,8 @@ public final class ArTest extends AbstractTest {
         }
 
         // UnArArchive Operation
-        try (final InputStream is = Files.newInputStream(output.toPath());
-                final ArchiveInputStream<ArArchiveEntry> in = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is))) {
+        try (InputStream is = Files.newInputStream(output.toPath());
+                ArchiveInputStream<ArArchiveEntry> in = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is))) {
             final ArArchiveEntry entry = in.getNextEntry();
 
             final File target = newTempFile(entry.getName());

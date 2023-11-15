@@ -21,8 +21,7 @@ package org.apache.commons.compress.archivers.tar;
 /**
  * This interface contains all the definitions used in the package.
  *
- * For tar formats (FORMAT_OLDGNU, FORMAT_POSIX, etc.) see GNU tar
- * <I>tar.h</I> type <I>enum archive_format</I>
+ * For tar formats (FORMAT_OLDGNU, FORMAT_POSIX, etc.) see GNU tar <I>tar.h</I> type <I>enum archive_format</I>
  */
 // CheckStyle:InterfaceIsTypeCheck OFF (bc)
 public interface TarConstants {
@@ -224,8 +223,7 @@ public interface TarConstants {
     int ISEXTENDEDLEN_GNU_SPARSE = 1;
 
     /**
-     * LF_ constants represent the "link flag" of an entry, or more commonly, the "entry type". This is the "old way" of
-     * indicating a normal file.
+     * LF_ constants represent the "link flag" of an entry, or more commonly, the "entry type". This is the "old way" of indicating a normal file.
      */
     byte LF_OLDNORM = 0;
 
@@ -289,6 +287,7 @@ public interface TarConstants {
 
     /**
      * Sparse file type.
+     *
      * @since 1.1.1
      */
     byte LF_GNUTYPE_SPARSE = (byte) 'S';
@@ -297,6 +296,7 @@ public interface TarConstants {
 
     /**
      * Identifies the entry as a Pax extended header.
+     *
      * @since 1.1
      */
     byte LF_PAX_EXTENDED_HEADER_LC = (byte) 'x';
@@ -341,7 +341,7 @@ public interface TarConstants {
     /**
      * One of two possible GNU versions
      */
-    String VERSION_GNU_ZERO  = "0\0";
+    String VERSION_GNU_ZERO = "0\0";
 
     /**
      * The magic tag representing an Ant tar archive.
@@ -365,8 +365,8 @@ public interface TarConstants {
     String GNU_LONGLINK = "././@LongLink"; // TODO rename as LONGLINK_GNU ?
 
     /**
-     * The magix string used in the last four bytes of the header to
-     * identify the xstar format.
+     * The magix string used in the last four bytes of the header to identify the xstar format.
+     *
      * @since 1.11
      */
     String MAGIC_XSTAR = "tar\0";
@@ -381,12 +381,14 @@ public interface TarConstants {
 
     /**
      * Offset inside the header for the xstar magic bytes.
+     *
      * @since 1.11
      */
     int XSTAR_MAGIC_OFFSET = 508;
 
     /**
      * Length of the XSTAR magic.
+     *
      * @since 1.11
      */
     int XSTAR_MAGIC_LEN = 4;

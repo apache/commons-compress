@@ -29,10 +29,13 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 /**
  * Simple command line application that lists the contents of a ZIP archive.
  *
- * <p>The name of the archive must be given as a command line argument.</p>
+ * <p>
+ * The name of the archive must be given as a command line argument.
+ * </p>
  *
- * <p>Optional command line arguments specify the encoding to assume
- * and whether to use ZipFile or ZipArchiveInputStream.</p>
+ * <p>
+ * Optional command line arguments specify the encoding to assume and whether to use ZipFile or ZipArchiveInputStream.
+ * </p>
  */
 public final class Lister {
     private static final class CommandLine {
@@ -43,8 +46,7 @@ public final class Lister {
         String dir;
     }
 
-    private static void extract(final String dir, final ZipArchiveEntry entry,
-                                final InputStream is) throws IOException {
+    private static void extract(final String dir, final ZipArchiveEntry entry, final InputStream is) throws IOException {
         final File f = new File(dir, entry.getName());
         if (!f.getParentFile().exists()) {
             f.getParentFile().mkdirs();
@@ -65,12 +67,8 @@ public final class Lister {
         }
         if (cl.useStream) {
             try (BufferedInputStream fs = new BufferedInputStream(Files.newInputStream(f.toPath()))) {
-                final ZipArchiveInputStream zs =
-                        new ZipArchiveInputStream(fs, cl.encoding, true,
-                                cl.allowStoredEntriesWithDataDescriptor);
-                for (ArchiveEntry entry = zs.getNextEntry();
-                     entry != null;
-                     entry = zs.getNextEntry()) {
+                final ZipArchiveInputStream zs = new ZipArchiveInputStream(fs, cl.encoding, true, cl.allowStoredEntriesWithDataDescriptor);
+                for (ArchiveEntry entry = zs.getNextEntry(); entry != null; entry = zs.getNextEntry()) {
                     final ZipArchiveEntry ze = (ZipArchiveEntry) entry;
                     list(ze);
                     if (cl.dir != null) {
@@ -80,8 +78,7 @@ public final class Lister {
             }
         } else {
             try (ZipFile zf = new ZipFile(f, cl.encoding)) {
-                for (final Enumeration<ZipArchiveEntry> entries = zf.getEntries();
-                     entries.hasMoreElements(); ) {
+                for (final Enumeration<ZipArchiveEntry> entries = zf.getEntries(); entries.hasMoreElements();) {
                     final ZipArchiveEntry ze = entries.nextElement();
                     list(ze);
                     if (cl.dir != null) {
@@ -133,8 +130,7 @@ public final class Lister {
     }
 
     private static void usage() {
-        System.err.println("lister [-enc encoding] [-stream] [-file]"
-                           + " [+storeddd] [-extract dir] archive");
+        System.err.println("lister [-enc encoding] [-stream] [-file]" + " [+storeddd] [-extract dir] archive");
         System.exit(1);
     }
 }

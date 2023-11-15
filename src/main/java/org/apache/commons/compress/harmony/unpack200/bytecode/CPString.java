@@ -46,7 +46,7 @@ public class CPString extends CPConstant {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] {name};
+        return new ClassFileEntry[] { name };
     }
 
     @Override
@@ -56,6 +56,7 @@ public class CPString extends CPConstant {
         }
         return cachedHashCode;
     }
+
     /**
      * Allows the constant pool entries to resolve their nested entries
      *

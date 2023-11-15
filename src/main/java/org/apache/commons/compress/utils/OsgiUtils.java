@@ -49,6 +49,7 @@ public class OsgiUtils {
 
     /**
      * Tests if Commons Compress running as an OSGi bundle?
+     *
      * @return true if Commons Compress running as an OSGi bundle.
      */
     public static boolean isRunningInOsgiEnvironment() {

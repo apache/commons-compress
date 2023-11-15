@@ -30,20 +30,22 @@ public class SkipShieldingInputStreamTest {
     @Test
     public void testSkipDelegatesToRead() throws IOException {
         try (InputStream i = new SkipShieldingInputStream(new InputStream() {
-                @Override
-                public int read() {
-                    return -1;
-                }
-                @Override
-                public int read(byte[] b, int off, int len) {
-                    return len;
-                }
-                @Override
-                public long skip(long n) {
-                    fail("skip invoked");
-                    return -1;
-                }
-            })) {
+            @Override
+            public int read() {
+                return -1;
+            }
+
+            @Override
+            public int read(byte[] b, int off, int len) {
+                return len;
+            }
+
+            @Override
+            public long skip(long n) {
+                fail("skip invoked");
+                return -1;
+            }
+        })) {
             assertEquals(100, i.skip(100));
         }
     }
@@ -51,20 +53,22 @@ public class SkipShieldingInputStreamTest {
     @Test
     public void testSkipHasAnUpperBoundOnRead() throws IOException {
         try (InputStream i = new SkipShieldingInputStream(new InputStream() {
-                @Override
-                public int read() {
-                    return -1;
-                }
-                @Override
-                public int read(byte[] b, int off, int len) {
-                    return len;
-                }
-                @Override
-                public long skip(long n) {
-                    fail("skip invoked");
-                    return -1;
-                }
-            })) {
+            @Override
+            public int read() {
+                return -1;
+            }
+
+            @Override
+            public int read(byte[] b, int off, int len) {
+                return len;
+            }
+
+            @Override
+            public long skip(long n) {
+                fail("skip invoked");
+                return -1;
+            }
+        })) {
             assertTrue(Integer.MAX_VALUE > i.skip(Long.MAX_VALUE));
         }
     }
@@ -72,21 +76,23 @@ public class SkipShieldingInputStreamTest {
     @Test
     public void testSkipSwallowsNegativeArguments() throws IOException {
         try (InputStream i = new SkipShieldingInputStream(new InputStream() {
-                @Override
-                public int read() {
-                    return -1;
-                }
-                @Override
-                public int read(byte[] b, int off, int len) {
-                    fail("read invoked");
-                    return len;
-                }
-                @Override
-                public long skip(long n) {
-                    fail("skip invoked");
-                    return -1;
-                }
-            })) {
+            @Override
+            public int read() {
+                return -1;
+            }
+
+            @Override
+            public int read(byte[] b, int off, int len) {
+                fail("read invoked");
+                return len;
+            }
+
+            @Override
+            public long skip(long n) {
+                fail("skip invoked");
+                return -1;
+            }
+        })) {
             assertEquals(0, i.skip(Long.MIN_VALUE));
         }
     }

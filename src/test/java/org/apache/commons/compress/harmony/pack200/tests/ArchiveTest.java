@@ -253,7 +253,7 @@ public class ArchiveTest extends AbstractTempDirTest {
         final File inputFile = path.toFile();
         try (JarFile in = new JarFile(inputFile);
                 FileOutputStream out = new FileOutputStream(file)) {
-//		System.out.println("packing " + children[i]);
+            // System.out.println("packing " + children[i]);
             new Archive(in, out, null).pack();
         }
         // unpack and compare

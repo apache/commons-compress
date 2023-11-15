@@ -25,26 +25,27 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 
 /**
- * Archive output stream implementations are expected to override the
- * {@link #write(byte[], int, int)} method to improve performance.
- * They should also override {@link #close()} to ensure that any necessary
- * trailers are added.
+ * Archive output stream implementations are expected to override the {@link #write(byte[], int, int)} method to improve performance. They should also override
+ * {@link #close()} to ensure that any necessary trailers are added.
  *
- * <p>The normal sequence of calls when working with ArchiveOutputStreams is:</p>
+ * <p>
+ * The normal sequence of calls when working with ArchiveOutputStreams is:
+ * </p>
  * <ul>
- *   <li>Create ArchiveOutputStream object,</li>
- *   <li>optionally write SFX header (Zip only),</li>
- *   <li>repeat as needed:
- *     <ul>
- *       <li>{@link #putArchiveEntry(ArchiveEntry)} (writes entry header),
- *       <li>{@link #write(byte[])} (writes entry data, as often as needed),
- *       <li>{@link #closeArchiveEntry()} (closes entry),
- *     </ul>
- *   </li>
- *   <li> {@link #finish()} (ends the addition of entries),</li>
- *   <li> optionally write additional data, provided format supports it,</li>
- *   <li>{@link #close()}.</li>
+ * <li>Create ArchiveOutputStream object,</li>
+ * <li>optionally write SFX header (Zip only),</li>
+ * <li>repeat as needed:
+ * <ul>
+ * <li>{@link #putArchiveEntry(ArchiveEntry)} (writes entry header),
+ * <li>{@link #write(byte[])} (writes entry data, as often as needed),
+ * <li>{@link #closeArchiveEntry()} (closes entry),
  * </ul>
+ * </li>
+ * <li>{@link #finish()} (ends the addition of entries),</li>
+ * <li>optionally write additional data, provided format supports it,</li>
+ * <li>{@link #close()}.</li>
+ * </ul>
+ *
  * @param <E> The type of {@link ArchiveEntry} consumed.
  */
 public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends OutputStream {
@@ -60,11 +61,11 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Output
     /**
      * Whether this stream is able to write the given entry.
      *
-     * <p>Some archive formats support variants or details that are
-     * not supported (yet).</p>
+     * <p>
+     * Some archive formats support variants or details that are not supported (yet).
+     * </p>
      *
-     * @param archiveEntry
-     *            the entry to test
+     * @param archiveEntry the entry to test
      * @return This implementation always returns true.
      * @since 1.1
      */
@@ -73,15 +74,14 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Output
     }
 
     /**
-     * Closes the archive entry, writing any trailer information that may
-     * be required.
+     * Closes the archive entry, writing any trailer information that may be required.
+     *
      * @throws IOException if an I/O error occurs
      */
     public abstract void closeArchiveEntry() throws IOException;
 
     /**
-     * Increments the counter of already written bytes.
-     * Doesn't increment if EOF has been hit ({@code written == -1}).
+     * Increments the counter of already written bytes. Doesn't increment if EOF has been hit ({@code written == -1}).
      *
      * @param written the number of bytes written
      */
@@ -90,8 +90,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Output
     }
 
     /**
-     * Increments the counter of already written bytes.
-     * Doesn't increment if EOF has been hit ({@code written == -1}).
+     * Increments the counter of already written bytes. Doesn't increment if EOF has been hit ({@code written == -1}).
      *
      * @param written the number of bytes written
      * @since 1.1
@@ -118,14 +117,17 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Output
      * <p>
      * The default implementation calls simply delegates as:
      * </p>
-     * <pre>return createArchiveEntry(inputFile.toFile(), entryName);</pre>
+     *
+     * <pre>
+     * return createArchiveEntry(inputFile.toFile(), entryName);
+     * </pre>
      * <p>
      * Subclasses should override this method.
      * </p>
      *
      * @param inputPath the file to create the entry from
      * @param entryName name to use for the entry
-     * @param options options indicating how symbolic links are handled.
+     * @param options   options indicating how symbolic links are handled.
      * @return the ArchiveEntry set up with details from the file
      *
      * @throws IOException if an I/O error occurs
@@ -136,8 +138,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Output
     }
 
     /**
-     * Finishes the addition of entries to this stream, without closing it.
-     * Additional data can be written, if the format supports it.
+     * Finishes the addition of entries to this stream, without closing it. Additional data can be written, if the format supports it.
      *
      * @throws IOException if the user forgets to close the entry.
      */
@@ -157,8 +158,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Output
      * Gets the current number of bytes written to this stream.
      *
      * @return the number of written bytes
-     * @deprecated this method may yield wrong results for large
-     * archives, use #getBytesWritten instead
+     * @deprecated this method may yield wrong results for large archives, use #getBytesWritten instead
      */
     @Deprecated
     public int getCount() {
@@ -166,9 +166,8 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Output
     }
 
     /**
-     * Writes the headers for an archive entry to the output stream.
-     * The caller must then write the content to the stream and call
-     * {@link #closeArchiveEntry()} to complete the process.
+     * Writes the headers for an archive entry to the output stream. The caller must then write the content to the stream and call {@link #closeArchiveEntry()}
+     * to complete the process.
      *
      * @param entry describes the entry
      * @throws IOException if an I/O error occurs
@@ -178,10 +177,11 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Output
     /**
      * Writes a byte to the current archive entry.
      *
-     * <p>This method simply calls {@code write( byte[], 0, 1 )}.
+     * <p>
+     * This method simply calls {@code write( byte[], 0, 1 )}.
      *
-     * <p>MUST be overridden if the {@link #write(byte[], int, int)} method
-     * is not overridden; may be overridden otherwise.
+     * <p>
+     * MUST be overridden if the {@link #write(byte[], int, int)} method is not overridden; may be overridden otherwise.
      *
      * @param b The byte to be written.
      * @throws IOException on error

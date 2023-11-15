@@ -35,8 +35,8 @@ public abstract class ConstantPoolEntry extends ClassFileEntry {
     public static final byte CP_Integer = 3;
 
     /*
-     * class MemberRef extends ConstantPoolEntry { private int index; Class(String name) { super(CP_Class); index =
-     * pool.indexOf(name); } void writeBody(DataOutputStream dos) throws IOException { dos.writeShort(index); } }
+     * class MemberRef extends ConstantPoolEntry { private int index; Class(String name) { super(CP_Class); index = pool.indexOf(name); } void
+     * writeBody(DataOutputStream dos) throws IOException { dos.writeShort(index); } }
      */
 
     public static final byte CP_InterfaceMethodref = 11;

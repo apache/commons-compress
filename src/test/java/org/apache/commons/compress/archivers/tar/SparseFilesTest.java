@@ -337,8 +337,8 @@ public class SparseFilesTest extends AbstractTest {
     @DisabledOnOs(OS.WINDOWS)
     public void testTarFileExtractOldGNU() throws IOException, InterruptedException {
         final File file = getFile("oldgnu_sparse.tar");
-        try (final InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile");
-                final TarFile tarFile = new TarFile(file)) {
+        try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile");
+                TarFile tarFile = new TarFile(file)) {
             final TarArchiveEntry entry = tarFile.getEntries().get(0);
             try (InputStream tarInput = tarFile.getInputStream(entry)) {
                 assertArrayEquals(IOUtils.toByteArray(tarInput), IOUtils.toByteArray(sparseFileInputStream));
@@ -355,7 +355,7 @@ public class SparseFilesTest extends AbstractTest {
         assumeFalse(getTarBinaryHelp().startsWith("tar (GNU tar) 1.28"), "This test should be ignored if GNU tar is version 1.28");
 
         final File file = getFile("pax_gnu_sparse.tar");
-        try (final TarFile paxGnu = new TarFile(file)) {
+        try (TarFile paxGnu = new TarFile(file)) {
             final List<TarArchiveEntry> entries = paxGnu.getEntries();
 
             TarArchiveEntry entry = entries.get(0);
@@ -421,7 +421,7 @@ public class SparseFilesTest extends AbstractTest {
     @Test
     public void testTarFileOldGNU() throws Throwable {
         final File file = getFile("oldgnu_sparse.tar");
-        try (final TarFile tarFile = new TarFile(file)) {
+        try (TarFile tarFile = new TarFile(file)) {
             final TarArchiveEntry ae = tarFile.getEntries().get(0);
             assertEquals("sparsefile", ae.getName());
             assertEquals(TarConstants.LF_GNUTYPE_SPARSE, ae.getLinkFlag());
@@ -461,7 +461,7 @@ public class SparseFilesTest extends AbstractTest {
     @Test
     public void testTarFilePaxGNU() throws IOException {
         final File file = getFile("pax_gnu_sparse.tar");
-        try (final TarFile tarFile = new TarFile(file)) {
+        try (TarFile tarFile = new TarFile(file)) {
             final List<TarArchiveEntry> entries = tarFile.getEntries();
             assertPaxGNUEntry(entries.get(0), "0.0");
             assertPaxGNUEntry(entries.get(1), "0.1");

@@ -28,9 +28,10 @@ import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 
 /**
- * <p>Generic LZW implementation. It is used internally for
- * the Z decompressor and the Unshrinking Zip file compression method,
- * but may be useful for third-party projects in implementing their own LZW variations.</p>
+ * <p>
+ * Generic LZW implementation. It is used internally for the Z decompressor and the Unshrinking Zip file compression method, but may be useful for third-party
+ * projects in implementing their own LZW variations.
+ * </p>
  *
  * @NotThreadSafe
  * @since 1.10
@@ -58,19 +59,19 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
 
     /**
      * Add a new entry to the dictionary.
+     *
      * @param previousCode the previous code
-     * @param character the next character to append
+     * @param character    the next character to append
      * @return the new code
      * @throws IOException on error
      */
-    protected abstract int addEntry(int previousCode, byte character)
-        throws IOException;
+    protected abstract int addEntry(int previousCode, byte character) throws IOException;
 
     /**
-     * Adds a new entry if the maximum table size hasn't been exceeded
-     * and returns the new index.
+     * Adds a new entry if the maximum table size hasn't been exceeded and returns the new index.
+     *
      * @param previousCode the previous code
-     * @param character the character to append
+     * @param character    the character to append
      * @param maxTableSize the maximum table size
      * @return the new code or -1 if maxTableSize has been reached already
      */
@@ -85,8 +86,8 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
 
     /**
      * Add entry for repeat of previousCode we haven't added, yet.
-     * @return new code for a repeat of the previous code or -1 if
-     * maxTableSize has been reached already
+     *
+     * @return new code for a repeat of the previous code or -1 if maxTableSize has been reached already
      * @throws IOException on error
      */
     protected int addRepeatOfPreviousCode() throws IOException {
@@ -104,21 +105,21 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
 
     /**
      * Read the next code and expand it.
+     *
      * @return the expanded next code, negative on EOF
      * @throws IOException on error
      */
     protected abstract int decompressNextSymbol() throws IOException;
 
     /**
-     * Expands the entry with index code to the output stack and may
-     * create a new entry
-     * @param code the code
+     * Expands the entry with index code to the output stack and may create a new entry
+     *
+     * @param code                 the code
      * @param addedUnfinishedEntry whether unfinished entries have been added
      * @return the new location of the output stack
      * @throws IOException on error
      */
-    protected int expandCodeToOutputStack(final int code, final boolean addedUnfinishedEntry)
-        throws IOException {
+    protected int expandCodeToOutputStack(final int code, final boolean addedUnfinishedEntry) throws IOException {
         for (int entry = code; entry >= 0; entry = prefixes[entry]) {
             outputStack[--outputStackLocation] = characters[entry];
         }
@@ -188,25 +189,22 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     }
 
     /**
-     * Initializes the arrays based on the maximum code size.
-     * First checks that the estimated memory usage is below memoryLimitInKb
+     * Initializes the arrays based on the maximum code size. First checks that the estimated memory usage is below memoryLimitInKb
      *
-     * @param maxCodeSize maximum code size
+     * @param maxCodeSize     maximum code size
      * @param memoryLimitInKb maximum allowed estimated memory usage in Kb
-     * @throws MemoryLimitException if estimated memory usage is greater than memoryLimitInKb
+     * @throws MemoryLimitException     if estimated memory usage is greater than memoryLimitInKb
      * @throws IllegalArgumentException if {@code maxCodeSize} is not bigger than 0
      */
-    protected void initializeTables(final int maxCodeSize, final int memoryLimitInKb)
-            throws MemoryLimitException {
+    protected void initializeTables(final int maxCodeSize, final int memoryLimitInKb) throws MemoryLimitException {
         if (maxCodeSize <= 0) {
-            throw new IllegalArgumentException("maxCodeSize is " + maxCodeSize
-                + ", must be bigger than 0");
+            throw new IllegalArgumentException("maxCodeSize is " + maxCodeSize + ", must be bigger than 0");
         }
 
         if (memoryLimitInKb > -1) {
             final int maxTableSize = 1 << maxCodeSize;
-            //account for potential overflow
-            final long memoryUsageInBytes = (long) maxTableSize * 6; //(4 (prefixes) + 1 (characters) +1 (outputStack))
+            // account for potential overflow
+            final long memoryUsageInBytes = (long) maxTableSize * 6; // (4 (prefixes) + 1 (characters) +1 (outputStack))
             final long memoryUsageInKb = memoryUsageInBytes >> 10;
 
             if (memoryUsageInKb > memoryLimitInKb) {
@@ -259,6 +257,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
 
     /**
      * Reads the next code from the stream.
+     *
      * @return the next code
      * @throws IOException on error
      */
@@ -279,6 +278,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
 
     /**
      * Sets the clear code based on the code size.
+     *
      * @param codeSize code size
      */
     protected void setClearCode(final int codeSize) {

@@ -56,7 +56,7 @@ public class SegmentTest extends AbstractTempDirTest {
             final InputStream expected = jarFile2.getInputStream(entry2);
 
             try (BufferedReader reader1 = new BufferedReader(new InputStreamReader(ours));
-                    final BufferedReader reader2 = new BufferedReader(new InputStreamReader(expected))) {
+                    BufferedReader reader2 = new BufferedReader(new InputStreamReader(expected))) {
                 String line1 = reader1.readLine();
                 String line2 = reader2.readLine();
                 int i = 1;

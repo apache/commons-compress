@@ -37,48 +37,38 @@ public class LZ77CompressorTest {
     static {
         /*
          * Example from "An Explanation of the Deflate Algorithm" by "Antaeus Feldspar".
+         *
          * @see "http://zlib.net/feldspar.html"
          */
         BLA = "Blah blah blah blah blah!".getBytes(US_ASCII);
 
         /*
-         * Example from Wikipedia article about LZSS.
-         * Note the example uses indices instead of offsets.
+         * Example from Wikipedia article about LZSS. Note the example uses indices instead of offsets.
+         *
          * @see "https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Storer%E2%80%93Szymanski"
          */
-        SAM = ("I am Sam\n"
-               + "\n"
-               + "Sam I am\n"
-               + "\n"
-               + "That Sam-I-am!\n"
-               + "That Sam-I-am!\n"
-               + "I do not like\n"
-               + "that Sam-I-am!\n"
-               + "\n"
-               + "Do you like green eggs and ham?\n"
-               + "\n"
-               + "I do not like them, Sam-I-am.\n"
-               + "I do not like green eggs and ham.").getBytes(US_ASCII);
+        SAM = ("I am Sam\n" + "\n" + "Sam I am\n" + "\n" + "That Sam-I-am!\n" + "That Sam-I-am!\n" + "I do not like\n" + "that Sam-I-am!\n" + "\n"
+                + "Do you like green eggs and ham?\n" + "\n" + "I do not like them, Sam-I-am.\n" + "I do not like green eggs and ham.").getBytes(US_ASCII);
         ONE_TO_TEN = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     }
 
-    private static final void assertBackReference(final int expectedOffset, final int expectedLength, final LZ77Compressor.Block block) {
+    private static void assertBackReference(final int expectedOffset, final int expectedLength, final LZ77Compressor.Block block) {
         assertEquals(LZ77Compressor.BackReference.class, block.getClass());
         final LZ77Compressor.BackReference b = (LZ77Compressor.BackReference) block;
         assertEquals(expectedOffset, b.getOffset());
         assertEquals(expectedLength, b.getLength());
     }
 
-    private static final void assertLiteralBlock(final byte[] expectedContent, final LZ77Compressor.Block block) {
+    private static void assertLiteralBlock(final byte[] expectedContent, final LZ77Compressor.Block block) {
         assertEquals(LZ77Compressor.LiteralBlock.class, block.getClass());
         assertArrayEquals(expectedContent, ((LZ77Compressor.LiteralBlock) block).getData());
     }
 
-    private static final void assertLiteralBlock(final String expectedContent, final LZ77Compressor.Block block) {
+    private static void assertLiteralBlock(final String expectedContent, final LZ77Compressor.Block block) {
         assertLiteralBlock(expectedContent.getBytes(US_ASCII), block);
     }
 
-    private static final void assertSize(final int expectedSize, final List<LZ77Compressor.Block> blocks) {
+    private static void assertSize(final int expectedSize, final List<LZ77Compressor.Block> blocks) {
         assertEquals(expectedSize, blocks.size());
         assertEquals(LZ77Compressor.Block.BlockType.EOD, blocks.get(expectedSize - 1).getType());
     }
@@ -87,18 +77,13 @@ public class LZ77CompressorTest {
         return Parameters.builder(windowSize).build();
     }
 
-    private static Parameters newParameters(final int windowSize, final int minBackReferenceLength, final int maxBackReferenceLength,
-        final int maxOffset, final int maxLiteralLength) {
-        return Parameters.builder(windowSize)
-            .withMinBackReferenceLength(minBackReferenceLength)
-            .withMaxBackReferenceLength(maxBackReferenceLength)
-            .withMaxOffset(maxOffset)
-            .withMaxLiteralLength(maxLiteralLength)
-            .tunedForCompressionRatio()
-            .build();
+    private static Parameters newParameters(final int windowSize, final int minBackReferenceLength, final int maxBackReferenceLength, final int maxOffset,
+            final int maxLiteralLength) {
+        return Parameters.builder(windowSize).withMinBackReferenceLength(minBackReferenceLength).withMaxBackReferenceLength(maxBackReferenceLength)
+                .withMaxOffset(maxOffset).withMaxLiteralLength(maxLiteralLength).tunedForCompressionRatio().build();
     }
 
-    private static final byte[][] stagger(final byte[] data) {
+    private static byte[][] stagger(final byte[] data) {
         final byte[][] r = new byte[data.length][1];
         for (int i = 0; i < data.length; i++) {
             r[i][0] = data[i];
@@ -109,16 +94,14 @@ public class LZ77CompressorTest {
     private List<LZ77Compressor.Block> compress(final Parameters params, final byte[]... chunks) throws IOException {
         final List<LZ77Compressor.Block> blocks = new ArrayList<>();
         final LZ77Compressor c = new LZ77Compressor(params, block -> {
-            //System.err.println(block);
+            // System.err.println(block);
             if (block instanceof LZ77Compressor.LiteralBlock) {
                 // replace with a real copy of data so tests
                 // can see the results as they've been when
                 // the callback has been called
                 final LZ77Compressor.LiteralBlock b = (LZ77Compressor.LiteralBlock) block;
                 final int len = b.getLength();
-                block = new LZ77Compressor.LiteralBlock(
-                    Arrays.copyOfRange(b.getData(), b.getOffset(), b.getOffset() + len),
-                    0, len);
+                block = new LZ77Compressor.LiteralBlock(Arrays.copyOfRange(b.getData(), b.getOffset(), b.getOffset() + len), 0, len);
             }
             blocks.add(block);
         });
@@ -141,8 +124,7 @@ public class LZ77CompressorTest {
     }
 
     @Test
-    public void testBlaExampleWithFullArrayAvailableForCompression()
-        throws IOException {
+    public void testBlaExampleWithFullArrayAvailableForCompression() throws IOException {
         final List<LZ77Compressor.Block> blocks = compress(newParameters(128), BLA);
         assertSize(4, blocks);
         assertLiteralBlock("Blah b", blocks.get(0));
@@ -154,16 +136,14 @@ public class LZ77CompressorTest {
     public void testBlaExampleWithPrefill() throws IOException {
         final List<LZ77Compressor.Block> blocks = new ArrayList<>();
         final LZ77Compressor c = new LZ77Compressor(newParameters(128), block -> {
-            //System.err.println(block);
+            // System.err.println(block);
             if (block instanceof LZ77Compressor.LiteralBlock) {
                 // replace with a real copy of data so tests
                 // can see the results as they've been when
                 // the callback has been called
                 final LZ77Compressor.LiteralBlock b = (LZ77Compressor.LiteralBlock) block;
                 final int len = b.getLength();
-                block = new LZ77Compressor.LiteralBlock(
-                    Arrays.copyOfRange(b.getData(), b.getOffset(), b.getOffset() + len),
-                    0, len);
+                block = new LZ77Compressor.LiteralBlock(Arrays.copyOfRange(b.getData(), b.getOffset(), b.getOffset() + len), 0, len);
             }
             blocks.add(block);
         });
@@ -179,16 +159,14 @@ public class LZ77CompressorTest {
     public void testBlaExampleWithPrefillBiggerThanWindowSize() throws IOException {
         final List<LZ77Compressor.Block> blocks = new ArrayList<>();
         final LZ77Compressor c = new LZ77Compressor(newParameters(4), block -> {
-            //System.err.println(block);
+            // System.err.println(block);
             if (block instanceof LZ77Compressor.LiteralBlock) {
                 // replace with a real copy of data so tests
                 // can see the results as they've been when
                 // the callback has been called
                 final LZ77Compressor.LiteralBlock b = (LZ77Compressor.LiteralBlock) block;
                 final int len = b.getLength();
-                block = new LZ77Compressor.LiteralBlock(
-                    Arrays.copyOfRange(b.getData(), b.getOffset(), b.getOffset() + len),
-                    0, len);
+                block = new LZ77Compressor.LiteralBlock(Arrays.copyOfRange(b.getData(), b.getOffset(), b.getOffset() + len), 0, len);
             }
             blocks.add(block);
         });
@@ -219,16 +197,14 @@ public class LZ77CompressorTest {
     public void testBlaExampleWithShortPrefill() throws IOException {
         final List<LZ77Compressor.Block> blocks = new ArrayList<>();
         final LZ77Compressor c = new LZ77Compressor(newParameters(128), block -> {
-            //System.err.println(block);
+            // System.err.println(block);
             if (block instanceof LZ77Compressor.LiteralBlock) {
                 // replace with a real copy of data so tests
                 // can see the results as they've been when
                 // the callback has been called
                 final LZ77Compressor.LiteralBlock b = (LZ77Compressor.LiteralBlock) block;
                 final int len = b.getLength();
-                block = new LZ77Compressor.LiteralBlock(
-                    Arrays.copyOfRange(b.getData(), b.getOffset(), b.getOffset() + len),
-                    0, len);
+                block = new LZ77Compressor.LiteralBlock(Arrays.copyOfRange(b.getData(), b.getOffset(), b.getOffset() + len), 0, len);
             }
             blocks.add(block);
         });
@@ -257,14 +233,16 @@ public class LZ77CompressorTest {
 
     @Test
     public void testCantPrefillAfterCompress() throws IOException {
-        final LZ77Compressor c = new LZ77Compressor(newParameters(128), block -> {});
+        final LZ77Compressor c = new LZ77Compressor(newParameters(128), block -> {
+        });
         c.compress(Arrays.copyOfRange(BLA, 0, 2));
         assertThrows(IllegalStateException.class, () -> c.prefill(Arrays.copyOfRange(BLA, 2, 4)));
     }
 
     @Test
     public void testCantPrefillTwice() {
-        final LZ77Compressor c = new LZ77Compressor(newParameters(128), block -> {});
+        final LZ77Compressor c = new LZ77Compressor(newParameters(128), block -> {
+        });
         c.prefill(Arrays.copyOfRange(BLA, 0, 2));
         assertThrows(IllegalStateException.class, () -> c.prefill(Arrays.copyOfRange(BLA, 2, 4)));
     }

@@ -23,9 +23,10 @@ import java.util.Arrays;
 /**
  * Wrapper for extra field data that doesn't conform to the recommended format of header-tag + size + data.
  *
- * <p>The header-id is artificial (and not listed as a known ID in <a
- * href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">APPNOTE.TXT</a>).  Since it isn't used anywhere
- * except to satisfy the ZipExtraField contract it shouldn't matter anyway.</p>
+ * <p>
+ * The header-id is artificial (and not listed as a known ID in <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">APPNOTE.TXT</a>). Since it
+ * isn't used anywhere except to satisfy the ZipExtraField contract it shouldn't matter anyway.
+ * </p>
  *
  * @since 1.1
  * @NotThreadSafe
@@ -43,8 +44,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
      */
     @Override
     public byte[] getCentralDirectoryData() {
-        return centralDirectoryData == null
-            ? getLocalFileDataData() : ZipUtil.copy(centralDirectoryData);
+        return centralDirectoryData == null ? getLocalFileDataData() : ZipUtil.copy(centralDirectoryData);
     }
 
     /**
@@ -54,9 +54,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
      */
     @Override
     public ZipShort getCentralDirectoryLength() {
-        return centralDirectoryData == null
-            ? getLocalFileDataLength()
-            : new ZipShort(centralDirectoryData.length);
+        return centralDirectoryData == null ? getLocalFileDataLength() : new ZipShort(centralDirectoryData.length);
     }
 
     /**
@@ -97,8 +95,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
      * @param length the length of data
      */
     @Override
-    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset,
-                                              final int length) {
+    public void parseFromCentralDirectoryData(final byte[] buffer, final int offset, final int length) {
         centralDirectoryData = Arrays.copyOfRange(buffer, offset, offset + length);
         if (localFileData == null) {
             parseFromLocalFileData(buffer, offset, length);

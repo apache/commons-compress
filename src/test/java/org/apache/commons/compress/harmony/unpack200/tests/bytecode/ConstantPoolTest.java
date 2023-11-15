@@ -38,13 +38,11 @@ public class ConstantPoolTest {
 
     @Test
     public void testDuplicateField() {
-        final CPMember cp1 = new CPMember(new CPUTF8("name", 1), new CPUTF8("I", 2),
-                0, null);
+        final CPMember cp1 = new CPMember(new CPUTF8("name", 1), new CPUTF8("I", 2), 0, null);
         pool.add(cp1);
         pool.addNestedEntries();
         assertEquals(2, pool.size());
-        final CPMember cp2 = new CPMember(new CPUTF8("name", 1), new CPUTF8("I", 2),
-                0, null);
+        final CPMember cp2 = new CPMember(new CPUTF8("name", 1), new CPUTF8("I", 2), 0, null);
         pool.add(cp2);
         pool.addNestedEntries();
         assertEquals(2, pool.size());

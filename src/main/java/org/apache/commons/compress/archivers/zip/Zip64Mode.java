@@ -26,31 +26,26 @@ package org.apache.commons.compress.archivers.zip;
  */
 public enum Zip64Mode {
     /**
-     * Use Zip64 extensions for all entries, even if it is clear it is
-     * not required.
+     * Use Zip64 extensions for all entries, even if it is clear it is not required.
      */
     Always,
     /**
      * Don't use Zip64 extensions for any entries.
      *
-     * <p>This will cause a {@link Zip64RequiredException} to be
-     * thrown if {@link ZipArchiveOutputStream} detects it needs Zip64
-     * support.</p>
+     * <p>
+     * This will cause a {@link Zip64RequiredException} to be thrown if {@link ZipArchiveOutputStream} detects it needs Zip64 support.
+     * </p>
      */
     Never,
     /**
-     * Use Zip64 extensions for all entries where they are required,
-     * don't use them for entries that clearly don't require them.
+     * Use Zip64 extensions for all entries where they are required, don't use them for entries that clearly don't require them.
      */
     AsNeeded,
     /**
-     * Always use Zip64 extensions for LFH and central directory as
-     * {@link Zip64Mode#Always} did, and at the meantime encode
-     * the relative offset of LFH and disk number start as needed in
-     * CFH as {@link Zip64Mode#AsNeeded} did.
+     * Always use Zip64 extensions for LFH and central directory as {@link Zip64Mode#Always} did, and at the meantime encode the relative offset of LFH and disk
+     * number start as needed in CFH as {@link Zip64Mode#AsNeeded} did.
      * <p>
-     * This is a compromise for some libraries including 7z and
-     * Expand-Archive Powershell utility(and likely Excel).
+     * This is a compromise for some libraries including 7z and Expand-Archive Powershell utility(and likely Excel).
      */
     AlwaysWithCompatibility
 }

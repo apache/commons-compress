@@ -22,6 +22,7 @@ import org.apache.commons.compress.utils.OsgiUtils;
 
 /**
  * Utility code for the Brotli compression format.
+ *
  * @ThreadSafe
  * @since 1.14
  */
@@ -43,7 +44,6 @@ public class BrotliUtils {
         return cachedBrotliAvailability;
     }
 
-
     private static boolean internalIsBrotliCompressionAvailable() {
         try {
             Class.forName("org.brotli.dec.BrotliInputStream");
@@ -55,6 +55,7 @@ public class BrotliUtils {
 
     /**
      * Are the classes required to support Brotli compression available?
+     *
      * @return true if the classes required to support Brotli compression are available
      */
     public static boolean isBrotliCompressionAvailable() {
@@ -68,7 +69,10 @@ public class BrotliUtils {
     /**
      * Whether to cache the result of the Brotli for Java check.
      *
-     * <p>This defaults to {@code false} in an OSGi environment and {@code true} otherwise.</p>
+     * <p>
+     * This defaults to {@code false} in an OSGi environment and {@code true} otherwise.
+     * </p>
+     *
      * @param doCache whether to cache the result
      */
     public static void setCacheBrotliAvailablity(final boolean doCache) {
@@ -76,8 +80,7 @@ public class BrotliUtils {
             cachedBrotliAvailability = CachedAvailability.DONT_CACHE;
         } else if (cachedBrotliAvailability == CachedAvailability.DONT_CACHE) {
             final boolean hasBrotli = internalIsBrotliCompressionAvailable();
-            cachedBrotliAvailability = hasBrotli ? CachedAvailability.CACHED_AVAILABLE
-                : CachedAvailability.CACHED_UNAVAILABLE;
+            cachedBrotliAvailability = hasBrotli ? CachedAvailability.CACHED_AVAILABLE : CachedAvailability.CACHED_UNAVAILABLE;
         }
     }
 

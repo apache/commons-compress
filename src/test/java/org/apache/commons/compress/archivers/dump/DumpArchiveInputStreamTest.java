@@ -36,7 +36,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
 
     @Test
     public void testConsumesArchiveCompletely() throws Exception {
-        try (final InputStream is = DumpArchiveInputStreamTest.class.getResourceAsStream("/archive_with_trailer.dump");
+        try (InputStream is = DumpArchiveInputStreamTest.class.getResourceAsStream("/archive_with_trailer.dump");
                 DumpArchiveInputStream dump = new DumpArchiveInputStream(is)) {
             while (dump.getNextDumpEntry() != null) {
                 // just consume the archive
@@ -52,7 +52,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
     public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.dump");
-             DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
+                DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
@@ -63,8 +63,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
     @Test
     public void testNotADumpArchive() throws Exception {
         try (InputStream is = newInputStream("bla.zip")) {
-            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(),
-                    "expected an exception");
+            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(), "expected an exception");
             assertTrue(ex.getCause() instanceof ShortFileException);
         }
     }
@@ -72,8 +71,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
     @Test
     public void testNotADumpArchiveButBigEnough() throws Exception {
         try (InputStream is = newInputStream("zip64support.tar.bz2")) {
-            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(),
-                    "expected an exception");
+            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(), "expected an exception");
             assertInstanceOf(UnrecognizedFormatException.class, ex.getCause());
         }
     }
@@ -81,7 +79,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
     @Test
     public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (InputStream in = newInputStream("bla.dump");
-             DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
+                DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());

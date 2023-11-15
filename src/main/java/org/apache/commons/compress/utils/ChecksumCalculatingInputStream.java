@@ -38,6 +38,7 @@ public class ChecksumCalculatingInputStream extends FilterInputStream {
 
     /**
      * Returns the calculated checksum.
+     *
      * @return the calculated checksum.
      */
     public long getValue() {
@@ -46,9 +47,8 @@ public class ChecksumCalculatingInputStream extends FilterInputStream {
 
     /**
      * Reads a single byte from the stream
-     * @throws IOException if the underlying stream throws or the
-     * stream is exhausted and the Checksum doesn't match the expected
-     * value
+     *
+     * @throws IOException if the underlying stream throws or the stream is exhausted and the Checksum doesn't match the expected value
      */
     @Override
     public int read() throws IOException {
@@ -61,9 +61,8 @@ public class ChecksumCalculatingInputStream extends FilterInputStream {
 
     /**
      * Reads from the stream into a byte array.
-     * @throws IOException if the underlying stream throws or the
-     * stream is exhausted and the Checksum doesn't match the expected
-     * value
+     *
+     * @throws IOException if the underlying stream throws or the stream is exhausted and the Checksum doesn't match the expected value
      */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {

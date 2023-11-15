@@ -131,7 +131,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
         final File file1 = getFile("test.txt");
-        try (final InputStream inputStream = Files.newInputStream(input);
+        try (InputStream inputStream = Files.newInputStream(input);
                 ZipArchiveInputStream ais = createArchiveInputStream(archiverName, inputStream);
                 OutputStream outputStream = Files.newOutputStream(result.toPath());
                 ZipArchiveOutputStream out = createArchiveOutputStream(archiverName, outputStream);
@@ -528,7 +528,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     public void testDeleteFileCpio2(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
-        try (final InputStream inputStream = Files.newInputStream(input);
+        try (InputStream inputStream = Files.newInputStream(input);
                 ArchiveInputStream<E> ais = createArchiveInputStream(archiverName, inputStream);
                 OutputStream outputStream = Files.newOutputStream(result.toPath());
                 ArchiveOutputStream<E> out = createArchiveOutputStream(archiverName, outputStream)) {

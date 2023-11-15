@@ -28,7 +28,9 @@ import org.apache.commons.compress.utils.ByteUtils;
 /**
  * CompressorOutputStream for the LZ4 frame format.
  *
- * <p>Based on the "spec" in the version "1.5.1 (31/03/2015)"</p>
+ * <p>
+ * Based on the "spec" in the version "1.5.1 (31/03/2015)"
+ * </p>
  *
  * @see <a href="http://lz4.github.io/lz4/lz4_Frame_format.html">LZ4 Frame Format Description</a>
  * @since 1.14
@@ -50,13 +52,16 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
         M4(4096 * 1024, 7);
 
         private final int size, index;
+
         BlockSize(final int size, final int index) {
             this.size = size;
             this.index = index;
         }
+
         int getIndex() {
             return index;
         }
+
         int getSize() {
             return size;
         }
@@ -67,10 +72,11 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
      */
     public static class Parameters {
         /**
-         * The default parameters of 4M block size, enabled content
-         * checksum, disabled block checksums and independent blocks.
+         * The default parameters of 4M block size, enabled content checksum, disabled block checksums and independent blocks.
          *
-         * <p>This matches the defaults of the lz4 command line utility.</p>
+         * <p>
+         * This matches the defaults of the lz4 command line utility.
+         * </p>
          */
         public static final Parameters DEFAULT = new Parameters(BlockSize.M4, true, false, false);
         private final BlockSize blockSize;
@@ -79,48 +85,39 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
         private final org.apache.commons.compress.compressors.lz77support.Parameters lz77params;
 
         /**
-         * Sets up custom a custom block size for the LZ4 stream but
-         * otherwise uses the defaults of enabled content checksum,
-         * disabled block checksums and independent blocks.
+         * Sets up custom a custom block size for the LZ4 stream but otherwise uses the defaults of enabled content checksum, disabled block checksums and
+         * independent blocks.
+         *
          * @param blockSize the size of a single block.
          */
         public Parameters(final BlockSize blockSize) {
             this(blockSize, true, false, false);
         }
+
         /**
          * Sets up custom parameters for the LZ4 stream.
-         * @param blockSize the size of a single block.
+         *
+         * @param blockSize           the size of a single block.
          * @param withContentChecksum whether to write a content checksum
-         * @param withBlockChecksum whether to write a block checksum.
-         * Note that block checksums are not supported by the lz4
-         * command line utility
-         * @param withBlockDependency whether a block may depend on
-         * the content of a previous block. Enabling this may improve
-         * compression ratio but makes it impossible to decompress the
-         * output in parallel.
+         * @param withBlockChecksum   whether to write a block checksum. Note that block checksums are not supported by the lz4 command line utility
+         * @param withBlockDependency whether a block may depend on the content of a previous block. Enabling this may improve compression ratio but makes it
+         *                            impossible to decompress the output in parallel.
          */
-        public Parameters(final BlockSize blockSize, final boolean withContentChecksum, final boolean withBlockChecksum,
-            final boolean withBlockDependency) {
-            this(blockSize, withContentChecksum, withBlockChecksum, withBlockDependency,
-                 BlockLZ4CompressorOutputStream.createParameterBuilder().build());
+        public Parameters(final BlockSize blockSize, final boolean withContentChecksum, final boolean withBlockChecksum, final boolean withBlockDependency) {
+            this(blockSize, withContentChecksum, withBlockChecksum, withBlockDependency, BlockLZ4CompressorOutputStream.createParameterBuilder().build());
         }
+
         /**
          * Sets up custom parameters for the LZ4 stream.
-         * @param blockSize the size of a single block.
+         *
+         * @param blockSize           the size of a single block.
          * @param withContentChecksum whether to write a content checksum
-         * @param withBlockChecksum whether to write a block checksum.
-         * Note that block checksums are not supported by the lz4
-         * command line utility
-         * @param withBlockDependency whether a block may depend on
-         * the content of a previous block. Enabling this may improve
-         * compression ratio but makes it impossible to decompress the
-         * output in parallel.
-         * @param lz77params parameters used to fine-tune compression,
-         * in particular to balance compression ratio vs compression
-         * speed.
+         * @param withBlockChecksum   whether to write a block checksum. Note that block checksums are not supported by the lz4 command line utility
+         * @param withBlockDependency whether a block may depend on the content of a previous block. Enabling this may improve compression ratio but makes it
+         *                            impossible to decompress the output in parallel.
+         * @param lz77params          parameters used to fine-tune compression, in particular to balance compression ratio vs compression speed.
          */
-        public Parameters(final BlockSize blockSize, final boolean withContentChecksum, final boolean withBlockChecksum,
-                final boolean withBlockDependency,
+        public Parameters(final BlockSize blockSize, final boolean withContentChecksum, final boolean withBlockChecksum, final boolean withBlockDependency,
                 final org.apache.commons.compress.compressors.lz77support.Parameters lz77params) {
             this.blockSize = blockSize;
             this.withContentChecksum = withContentChecksum;
@@ -130,23 +127,20 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
         }
 
         /**
-         * Sets up custom a custom block size for the LZ4 stream but
-         * otherwise uses the defaults of enabled content checksum,
-         * disabled block checksums and independent blocks.
-         * @param blockSize the size of a single block.
-         * @param lz77params parameters used to fine-tune compression,
-         * in particular to balance compression ratio vs compression
-         * speed.
+         * Sets up custom a custom block size for the LZ4 stream but otherwise uses the defaults of enabled content checksum, disabled block checksums and
+         * independent blocks.
+         *
+         * @param blockSize  the size of a single block.
+         * @param lz77params parameters used to fine-tune compression, in particular to balance compression ratio vs compression speed.
          */
-        public Parameters(final BlockSize blockSize,
-            final org.apache.commons.compress.compressors.lz77support.Parameters lz77params) {
+        public Parameters(final BlockSize blockSize, final org.apache.commons.compress.compressors.lz77support.Parameters lz77params) {
             this(blockSize, true, false, false, lz77params);
         }
 
         @Override
         public String toString() {
-            return "LZ4 Parameters with BlockSize " + blockSize + ", withContentChecksum " + withContentChecksum
-                + ", withBlockChecksum " + withBlockChecksum + ", withBlockDependency " + withBlockDependency;
+            return "LZ4 Parameters with BlockSize " + blockSize + ", withContentChecksum " + withContentChecksum + ", withBlockChecksum " + withBlockChecksum
+                    + ", withBlockDependency " + withBlockDependency;
         }
     }
 
@@ -171,8 +165,8 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
     private int currentIndex;
 
     /**
-     * Constructs a new output stream that compresses data using the
-     * LZ4 frame format using the default block size of 4MB.
+     * Constructs a new output stream that compresses data using the LZ4 frame format using the default block size of 4MB.
+     *
      * @param out the OutputStream to which to write the compressed data
      * @throws IOException if writing the signature fails
      */
@@ -181,9 +175,9 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
     }
 
     /**
-     * Constructs a new output stream that compresses data using the
-     * LZ4 frame format using the given block size.
-     * @param out the OutputStream to which to write the compressed data
+     * Constructs a new output stream that compresses data using the LZ4 frame format using the given block size.
+     *
+     * @param out    the OutputStream to which to write the compressed data
      * @param params the parameters to use
      * @throws IOException if writing the signature fails
      */
@@ -194,9 +188,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
         blockHash = params.withBlockChecksum ? new XXHash32() : null;
         out.write(FramedLZ4CompressorInputStream.LZ4_SIGNATURE);
         writeFrameDescriptor();
-        blockDependencyBuffer = params.withBlockDependency
-            ? new byte[BlockLZ4CompressorInputStream.WINDOW_SIZE]
-            : null;
+        blockDependencyBuffer = params.withBlockDependency ? new byte[BlockLZ4CompressorInputStream.WINDOW_SIZE] : null;
     }
 
     private void appendToBlockDependencyBuffer(final byte[] b, final int off, int len) {
@@ -209,8 +201,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
             }
             // append new data
             System.arraycopy(b, off, blockDependencyBuffer, keep, len);
-            collectedBlockDependencyBytes = Math.min(collectedBlockDependencyBytes + len,
-                blockDependencyBuffer.length);
+            collectedBlockDependencyBytes = Math.min(collectedBlockDependencyBytes + len, blockDependencyBuffer.length);
         }
     }
 
@@ -224,8 +215,8 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
     }
 
     /**
-     * Compresses all blockDataRemaining data and writes it to the stream,
- doesn't close the underlying stream.
+     * Compresses all blockDataRemaining data and writes it to the stream, doesn't close the underlying stream.
+     *
      * @throws IOException if an error occurs
      */
     public void finish() throws IOException {
@@ -244,8 +235,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (BlockLZ4CompressorOutputStream o = new BlockLZ4CompressorOutputStream(baos, params.lz77params)) {
             if (withBlockDependency) {
-                o.prefill(blockDependencyBuffer, blockDependencyBuffer.length - collectedBlockDependencyBytes,
-                    collectedBlockDependencyBytes);
+                o.prefill(blockDependencyBuffer, blockDependencyBuffer.length - collectedBlockDependencyBytes, collectedBlockDependencyBytes);
             }
             o.write(blockData, 0, currentIndex);
         }
@@ -254,8 +244,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
         }
         final byte[] b = baos.toByteArray();
         if (b.length > currentIndex) { // compression increased size, maybe beyond blocksize
-            ByteUtils.toLittleEndian(out, currentIndex | FramedLZ4CompressorInputStream.UNCOMPRESSED_FLAG_MASK,
-                4);
+            ByteUtils.toLittleEndian(out, currentIndex | FramedLZ4CompressorInputStream.UNCOMPRESSED_FLAG_MASK, 4);
             out.write(blockData, 0, currentIndex);
             if (params.withBlockChecksum) {
                 blockHash.update(blockData, 0, currentIndex);
@@ -328,4 +317,3 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
     }
 
 }
-

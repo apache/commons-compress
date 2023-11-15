@@ -22,8 +22,7 @@ import java.io.InputStream;
 import java.util.zip.Checksum;
 
 /**
- * Verifies the checksum of the data read once the stream is
- * exhausted.
+ * Verifies the checksum of the data read once the stream is exhausted.
  *
  * @NotThreadSafe
  * @since 1.7
@@ -37,13 +36,12 @@ public class ChecksumVerifyingInputStream extends FilterInputStream {
     /**
      * Constructs a new instance.
      *
-     * @param checksum Checksum implementation.
-     * @param in the stream to wrap
-     * @param size the of the stream's content
+     * @param checksum         Checksum implementation.
+     * @param in               the stream to wrap
+     * @param size             the of the stream's content
      * @param expectedChecksum the expected checksum
      */
-    public ChecksumVerifyingInputStream(final Checksum checksum, final InputStream in,
-                                        final long size, final long expectedChecksum) {
+    public ChecksumVerifyingInputStream(final Checksum checksum, final InputStream in, final long size, final long expectedChecksum) {
         super(in);
         this.checksum = checksum;
         this.expectedChecksum = expectedChecksum;
@@ -60,9 +58,8 @@ public class ChecksumVerifyingInputStream extends FilterInputStream {
 
     /**
      * Reads a single byte from the stream
-     * @throws IOException if the underlying stream throws or the
-     * stream is exhausted and the Checksum doesn't match the expected
-     * value
+     *
+     * @throws IOException if the underlying stream throws or the stream is exhausted and the Checksum doesn't match the expected value
      */
     @Override
     public int read() throws IOException {
@@ -80,9 +77,8 @@ public class ChecksumVerifyingInputStream extends FilterInputStream {
 
     /**
      * Reads from the stream into a byte array.
-     * @throws IOException if the underlying stream throws or the
-     * stream is exhausted and the Checksum doesn't match the expected
-     * value
+     *
+     * @throws IOException if the underlying stream throws or the stream is exhausted and the Checksum doesn't match the expected value
      */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {

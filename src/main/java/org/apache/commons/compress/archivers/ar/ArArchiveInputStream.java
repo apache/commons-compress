@@ -53,17 +53,18 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     private static final int LENGTH_OFFSET = FILE_MODE_OFFSET + FILE_MODE_LEN;
     private static final int LENGTH_LEN = 10;
     static final String BSD_LONGNAME_PREFIX = "#1/";
-    private static final int BSD_LONGNAME_PREFIX_LEN =
-        BSD_LONGNAME_PREFIX.length();
+    private static final int BSD_LONGNAME_PREFIX_LEN = BSD_LONGNAME_PREFIX.length();
     private static final Pattern BSD_LONGNAME_PATTERN = Pattern.compile("^" + BSD_LONGNAME_PREFIX + "\\d+");
     private static final String GNU_STRING_TABLE_NAME = "//";
     private static final Pattern GNU_LONGNAME_PATTERN = Pattern.compile("^/\\d+");
 
     /**
-     * Does the name look like it is a long name (or a name containing
-     * spaces) as encoded by BSD ar?
+     * Does the name look like it is a long name (or a name containing spaces) as encoded by BSD ar?
      *
-     * <p>From the FreeBSD ar(5) man page:</p>
+     * <p>
+     * From the FreeBSD ar(5) man page:
+     * </p>
+     *
      * <pre>
      * BSD   In the BSD variant, names that are shorter than 16
      *       characters and without embedded spaces are stored
@@ -86,44 +87,38 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     }
 
     /**
-     * Is this the name of the "Archive String Table" as used by
-     * SVR4/GNU to store long file names?
+     * Is this the name of the "Archive String Table" as used by SVR4/GNU to store long file names?
      *
-     * <p>GNU ar stores multiple extended file names in the data section
-     * of a file with the name "//", this record is referred to by
-     * future headers.</p>
+     * <p>
+     * GNU ar stores multiple extended file names in the data section of a file with the name "//", this record is referred to by future headers.
+     * </p>
      *
-     * <p>A header references an extended file name by storing a "/"
-     * followed by a decimal offset to the start of the file name in
-     * the extended file name data section.</p>
+     * <p>
+     * A header references an extended file name by storing a "/" followed by a decimal offset to the start of the file name in the extended file name data
+     * section.
+     * </p>
      *
-     * <p>The format of the "//" file itself is simply a list of the
-     * long file names, each separated by one or more LF
-     * characters. Note that the decimal offsets are number of
-     * characters, not line or string number within the "//" file.</p>
+     * <p>
+     * The format of the "//" file itself is simply a list of the long file names, each separated by one or more LF characters. Note that the decimal offsets
+     * are number of characters, not line or string number within the "//" file.
+     * </p>
      */
     private static boolean isGNUStringTable(final String name) {
         return GNU_STRING_TABLE_NAME.equals(name);
     }
 
     /**
-     * Checks if the signature matches ASCII "!&lt;arch&gt;" followed by a single LF
-     * control character
+     * Checks if the signature matches ASCII "!&lt;arch&gt;" followed by a single LF control character
      *
-     * @param signature
-     *            the bytes to check
-     * @param length
-     *            the number of bytes to check
+     * @param signature the bytes to check
+     * @param length    the number of bytes to check
      * @return true, if this stream is an Ar archive stream, false otherwise
      */
     public static boolean matches(final byte[] signature, final int length) {
         // 3c21 7261 6863 0a3e
 
-        return length >= 8 && signature[0] == 0x21 &&
-                signature[1] == 0x3c && signature[2] == 0x61 &&
-                signature[3] == 0x72 && signature[4] == 0x63 &&
-                signature[5] == 0x68 && signature[6] == 0x3e &&
-                signature[7] == 0x0a;
+        return length >= 8 && signature[0] == 0x21 && signature[1] == 0x3c && signature[2] == 0x61 && signature[3] == 0x72 && signature[4] == 0x63
+                && signature[5] == 0x68 && signature[6] == 0x3e && signature[7] == 0x0a;
     }
 
     private final InputStream input;
@@ -133,8 +128,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     private boolean closed;
 
     /*
-     * If getNextEntry has been called, the entry metadata is stored in
-     * currentEntry.
+     * If getNextEntry has been called, the entry metadata is stored in currentEntry.
      */
     private ArArchiveEntry currentEntry;
 
@@ -142,20 +136,17 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     private byte[] namebuffer;
 
     /**
-     * The offset where the current entry started. -1 if no entry has been
-     * called
+     * The offset where the current entry started. -1 if no entry has been called
      */
     private long entryOffset = -1;
 
     /** cached buffer for meta data - must only be used locally in the class (COMPRESS-172 - reduce garbage collection). */
-    private final byte[] metaData =
-        new byte[NAME_LEN + LAST_MODIFIED_LEN + USER_ID_LEN + GROUP_ID_LEN + FILE_MODE_LEN + LENGTH_LEN];
+    private final byte[] metaData = new byte[NAME_LEN + LAST_MODIFIED_LEN + USER_ID_LEN + GROUP_ID_LEN + FILE_MODE_LEN + LENGTH_LEN];
 
     /**
      * Constructs an Ar input stream with the referenced stream
      *
-     * @param inputStream
-     *            the ar input stream
+     * @param inputStream the ar input stream
      */
     public ArArchiveInputStream(final InputStream inputStream) {
         this.input = inputStream;
@@ -200,8 +191,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     }
 
     /**
-     * Reads the real name from the current stream assuming the very
-     * first bytes to be read are the real file name.
+     * Reads the real name from the current stream assuming the very first bytes to be read are the real file name.
      *
      * @see #isBSDLongName
      *
@@ -240,7 +230,8 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
                 // Avoid array errors
                 if (i == 0) {
                     break;
-                } else if (namebuffer[i - 1] == '/') {
+                }
+                if (namebuffer[i - 1] == '/') {
                     i--; // drop trailing /
                 }
 
@@ -258,8 +249,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * Returns the next AR entry in this stream.
      *
      * @return the next AR entry.
-     * @throws IOException
-     *             if the entry could not be read
+     * @throws IOException if the entry could not be read
      * @deprecated Use {@link #getNextEntry()}.
      */
     @Deprecated
@@ -358,10 +348,8 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         }
 
         try {
-            currentEntry = new ArArchiveEntry(temp, len,
-                    asInt(metaData, USER_ID_OFFSET, USER_ID_LEN, true),
-                    asInt(metaData, GROUP_ID_OFFSET, GROUP_ID_LEN, true),
-                    asInt(metaData, FILE_MODE_OFFSET, FILE_MODE_LEN, 8),
+            currentEntry = new ArArchiveEntry(temp, len, asInt(metaData, USER_ID_OFFSET, USER_ID_LEN, true),
+                    asInt(metaData, GROUP_ID_OFFSET, GROUP_ID_LEN, true), asInt(metaData, FILE_MODE_OFFSET, FILE_MODE_LEN, 8),
                     asLong(metaData, LAST_MODIFIED_OFFSET, LAST_MODIFIED_LEN));
             return currentEntry;
         } catch (final NumberFormatException ex) {
@@ -372,8 +360,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.apache.commons.compress.archivers.ArchiveInputStream#getNextEntry()
+     * @see org.apache.commons.compress.archivers.ArchiveInputStream#getNextEntry()
      */
     @Override
     public ArArchiveEntry getNextEntry() throws IOException {
@@ -381,8 +368,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     }
 
     /**
-     * Does the name look like it is a long name (or a name containing
-     * spaces) as encoded by SVR4/GNU ar?
+     * Does the name look like it is a long name (or a name containing spaces) as encoded by SVR4/GNU ar?
      *
      * @see #isGNUStringTable
      */
@@ -429,9 +415,8 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         namebuffer = IOUtils.readRange(input, bufflen);
         final int read = namebuffer.length;
         trackReadBytes(read);
-        if (read != bufflen){
-            throw new IOException("Failed to read complete // record: expected="
-                                  + bufflen + " read=" + read);
+        if (read != bufflen) {
+            throw new IOException("Failed to read complete // record: expected=" + bufflen + " read=" + read);
         }
         return new ArArchiveEntry(GNU_STRING_TABLE_NAME, bufflen);
     }

@@ -27,6 +27,7 @@ import org.apache.commons.compress.compressors.FileNameUtil;
 
 /**
  * Utility code for the gzip compression format.
+ *
  * @ThreadSafe
  */
 public class GzipUtils {
@@ -37,8 +38,7 @@ public class GzipUtils {
         // using LinkedHashMap so .tgz is preferred over .taz as
         // compressed extension of .tar as FileNameUtil will use the
         // first one found
-        final Map<String, String> uncompressSuffix =
-            new LinkedHashMap<>();
+        final Map<String, String> uncompressSuffix = new LinkedHashMap<>();
         uncompressSuffix.put(".tgz", ".tar");
         uncompressSuffix.put(".taz", ".tar");
         uncompressSuffix.put(".svgz", ".svg");
@@ -59,12 +59,9 @@ public class GzipUtils {
     static final Charset GZIP_ENCODING = StandardCharsets.ISO_8859_1;
 
     /**
-     * Maps the given file name to the name that the file should have after
-     * compression with gzip. Common file types with custom suffixes for
-     * compressed versions are automatically detected and correctly mapped.
-     * For example the name "package.tar" is mapped to "package.tgz". If no
-     * custom mapping is applicable, then the default ".gz" suffix is appended
-     * to the file name.
+     * Maps the given file name to the name that the file should have after compression with gzip. Common file types with custom suffixes for compressed
+     * versions are automatically detected and correctly mapped. For example the name "package.tar" is mapped to "package.tgz". If no custom mapping is
+     * applicable, then the default ".gz" suffix is appended to the file name.
      *
      * @param fileName name of a file
      * @return name of the corresponding compressed file
@@ -76,12 +73,9 @@ public class GzipUtils {
     }
 
     /**
-     * Maps the given file name to the name that the file should have after
-     * compression with gzip. Common file types with custom suffixes for
-     * compressed versions are automatically detected and correctly mapped.
-     * For example the name "package.tar" is mapped to "package.tgz". If no
-     * custom mapping is applicable, then the default ".gz" suffix is appended
-     * to the file name.
+     * Maps the given file name to the name that the file should have after compression with gzip. Common file types with custom suffixes for compressed
+     * versions are automatically detected and correctly mapped. For example the name "package.tar" is mapped to "package.tgz". If no custom mapping is
+     * applicable, then the default ".gz" suffix is appended to the file name.
      *
      * @param fileName name of a file
      * @return name of the corresponding compressed file
@@ -92,14 +86,10 @@ public class GzipUtils {
     }
 
     /**
-     * Maps the given name of a gzip-compressed file to the name that the
-     * file should have after uncompression. Commonly used file type specific
-     * suffixes like ".tgz" or ".svgz" are automatically detected and
-     * correctly mapped. For example the name "package.tgz" is mapped to
-     * "package.tar". And any file names with the generic ".gz" suffix
-     * (or any other generic gzip suffix) is mapped to a name without that
-     * suffix. If no gzip suffix is detected, then the file name is returned
-     * unmapped.
+     * Maps the given name of a gzip-compressed file to the name that the file should have after uncompression. Commonly used file type specific suffixes like
+     * ".tgz" or ".svgz" are automatically detected and correctly mapped. For example the name "package.tgz" is mapped to "package.tar". And any file names with
+     * the generic ".gz" suffix (or any other generic gzip suffix) is mapped to a name without that suffix. If no gzip suffix is detected, then the file name is
+     * returned unmapped.
      *
      * @param fileName name of a file
      * @return name of the corresponding uncompressed file
@@ -111,14 +101,10 @@ public class GzipUtils {
     }
 
     /**
-     * Maps the given name of a gzip-compressed file to the name that the
-     * file should have after uncompression. Commonly used file type specific
-     * suffixes like ".tgz" or ".svgz" are automatically detected and
-     * correctly mapped. For example the name "package.tgz" is mapped to
-     * "package.tar". And any file names with the generic ".gz" suffix
-     * (or any other generic gzip suffix) is mapped to a name without that
-     * suffix. If no gzip suffix is detected, then the file name is returned
-     * unmapped.
+     * Maps the given name of a gzip-compressed file to the name that the file should have after uncompression. Commonly used file type specific suffixes like
+     * ".tgz" or ".svgz" are automatically detected and correctly mapped. For example the name "package.tgz" is mapped to "package.tar". And any file names with
+     * the generic ".gz" suffix (or any other generic gzip suffix) is mapped to a name without that suffix. If no gzip suffix is detected, then the file name is
+     * returned unmapped.
      *
      * @param fileName name of a file
      * @return name of the corresponding uncompressed file
@@ -132,8 +118,7 @@ public class GzipUtils {
      * Detects common gzip suffixes in the given file name.
      *
      * @param fileName name of a file
-     * @return {@code true} if the file name has a common gzip suffix,
-     *         {@code false} otherwise
+     * @return {@code true} if the file name has a common gzip suffix, {@code false} otherwise
      * @deprecated Use {@link #isCompressedFileName(String)}.
      */
     @Deprecated
@@ -145,8 +130,7 @@ public class GzipUtils {
      * Detects common gzip suffixes in the given file name.
      *
      * @param fileName name of a file
-     * @return {@code true} if the file name has a common gzip suffix,
-     *         {@code false} otherwise
+     * @return {@code true} if the file name has a common gzip suffix, {@code false} otherwise
      * @since 1.25.0
      */
     public static boolean isCompressedFileName(final String fileName) {

@@ -30,71 +30,57 @@ import org.tukaani.xz.LZMAInputStream;
 
 /**
  * LZMA decompressor.
+ *
  * @since 1.6
  */
-public class LZMACompressorInputStream extends CompressorInputStream
-    implements InputStreamStatistics {
+public class LZMACompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
     /**
      * Checks if the signature matches what is expected for an LZMA file.
      *
-     * @param signature
-     *            the bytes to check
-     * @param length
-     *            the number of bytes to check
+     * @param signature the bytes to check
+     * @param length    the number of bytes to check
      * @return true, if this stream is an LZMA compressed stream, false otherwise
      *
      * @since 1.10
      */
     public static boolean matches(final byte[] signature, final int length) {
-        return signature != null && length >= 3 &&
-                signature[0] == 0x5d && signature[1] == 0 &&
-                signature[2] == 0;
+        return signature != null && length >= 3 && signature[0] == 0x5d && signature[1] == 0 && signature[2] == 0;
     }
+
     private final CountingInputStream countingStream;
 
     private final InputStream in;
 
     /**
-     * Creates a new input stream that decompresses LZMA-compressed data
-     * from the specified input stream.
+     * Creates a new input stream that decompresses LZMA-compressed data from the specified input stream.
      *
-     * @param       inputStream where to read the compressed data
+     * @param inputStream where to read the compressed data
      *
-     * @throws      IOException if the input is not in the .lzma format,
-     *                          the input is corrupt or truncated, the .lzma
-     *                          headers specify sizes that are not supported
-     *                          by this implementation, or the underlying
-     *                          {@code inputStream} throws an exception
+     * @throws IOException if the input is not in the .lzma format, the input is corrupt or truncated, the .lzma headers specify sizes that are not supported by
+     *                     this implementation, or the underlying {@code inputStream} throws an exception
      */
-    public LZMACompressorInputStream(final InputStream inputStream)
-            throws IOException {
+    public LZMACompressorInputStream(final InputStream inputStream) throws IOException {
         in = new LZMAInputStream(countingStream = new CountingInputStream(inputStream), -1);
     }
 
     /**
-     * Creates a new input stream that decompresses LZMA-compressed data
-     * from the specified input stream.
+     * Creates a new input stream that decompresses LZMA-compressed data from the specified input stream.
      *
-     * @param       inputStream where to read the compressed data
+     * @param inputStream     where to read the compressed data
      *
-     * @param       memoryLimitInKb calculated memory use threshold.  Throws MemoryLimitException
-     *                            if calculate memory use is above this threshold
+     * @param memoryLimitInKb calculated memory use threshold. Throws MemoryLimitException if calculate memory use is above this threshold
      *
-     * @throws      IOException if the input is not in the .lzma format,
-     *                          the input is corrupt or truncated, the .lzma
-     *                          headers specify sizes that are not supported
-     *                          by this implementation, or the underlying
-     *                          {@code inputStream} throws an exception
+     * @throws IOException if the input is not in the .lzma format, the input is corrupt or truncated, the .lzma headers specify sizes that are not supported by
+     *                     this implementation, or the underlying {@code inputStream} throws an exception
      *
      * @since 1.14
      */
-    public LZMACompressorInputStream(final InputStream inputStream, final int memoryLimitInKb)
-            throws IOException {
+    public LZMACompressorInputStream(final InputStream inputStream, final int memoryLimitInKb) throws IOException {
         try {
             in = new LZMAInputStream(countingStream = new CountingInputStream(inputStream), memoryLimitInKb);
         } catch (final org.tukaani.xz.MemoryLimitException e) {
-            //convert to commons-compress exception
+            // convert to commons-compress exception
             throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), e);
         }
     }

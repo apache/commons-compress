@@ -27,12 +27,12 @@ import java.util.zip.ZipException;
 /**
  * Base class for all PKWare strong crypto extra headers.
  *
- * <p>This base class acts as a marker so you know you can ignore all
- * extra fields that extend this class if you are not interested in
- * the meta data of PKWare strong encryption.</p>
+ * <p>
+ * This base class acts as a marker so you know you can ignore all extra fields that extend this class if you are not interested in the meta data of PKWare
+ * strong encryption.
+ * </p>
  *
- * <b>Algorithm IDs</b> - integer identifier of the encryption algorithm from
- * the following range
+ * <b>Algorithm IDs</b> - integer identifier of the encryption algorithm from the following range
  *
  * <ul>
  * <li>0x6601 - DES</li>
@@ -49,8 +49,7 @@ import java.util.zip.ZipException;
  * <li>0xFFFF - Unknown algorithm</li>
  * </ul>
  *
- * <b>Hash Algorithms</b> - integer identifier of the hash algorithm from the
- * following range
+ * <b>Hash Algorithms</b> - integer identifier of the hash algorithm from the following range
  *
  * <ul>
  * <li>0x0000 - none</li>
@@ -73,15 +72,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      * @since 1.11
      */
     public enum EncryptionAlgorithm {
-        DES(0x6601),
-        RC2pre52(0x6602),
-        TripleDES168(0x6603),
-        TripleDES192(0x6609),
-        AES128(0x660E),
-        AES192(0x660F),
-        AES256(0x6610),
-        RC2(0x6702),
-        RC4(0x6801),
+        DES(0x6601), RC2pre52(0x6602), TripleDES168(0x6603), TripleDES192(0x6609), AES128(0x660E), AES192(0x660F), AES256(0x6610), RC2(0x6702), RC4(0x6801),
         UNKNOWN(0xFFFF);
 
         private static final Map<Integer, EncryptionAlgorithm> codeToEnum;
@@ -95,11 +86,10 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         }
 
         /**
-         * Returns the EncryptionAlgorithm for the given code or null if the
-         * method is not known.
+         * Returns the EncryptionAlgorithm for the given code or null if the method is not known.
+         *
          * @param code the code of the algorithm
-         * @return the EncryptionAlgorithm for the given code or null
-         * if the method is not known
+         * @return the EncryptionAlgorithm for the given code or null if the method is not known
          */
         public static EncryptionAlgorithm getAlgorithmByCode(final int code) {
             return codeToEnum.get(code);
@@ -130,14 +120,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      * @since 1.11
      */
     public enum HashAlgorithm {
-        NONE(0),
-        CRC32(1),
-        MD5(0x8003),
-        SHA1(0x8004),
-        RIPEND160(0x8007),
-        SHA256(0x800C),
-        SHA384(0x800D),
-        SHA512(0x800E);
+        NONE(0), CRC32(1), MD5(0x8003), SHA1(0x8004), RIPEND160(0x8007), SHA256(0x800C), SHA384(0x800D), SHA512(0x800E);
 
         private static final Map<Integer, HashAlgorithm> codeToEnum;
 
@@ -150,11 +133,10 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         }
 
         /**
-         * Returns the HashAlgorithm for the given code or null if the method is
-         * not known.
+         * Returns the HashAlgorithm for the given code or null if the method is not known.
+         *
          * @param code the code of the algorithm
-         * @return the HashAlgorithm for the given code or null
-         * if the method is not known
+         * @return the HashAlgorithm for the given code or null if the method is not known
          */
         public static HashAlgorithm getAlgorithmByCode(final int code) {
             return codeToEnum.get(code);
@@ -178,17 +160,16 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
             return code;
         }
     }
+
     private final ZipShort headerId;
 
     /**
-     * Extra field data in local file data - without Header-ID or length
-     * specifier.
+     * Extra field data in local file data - without Header-ID or length specifier.
      */
     private byte[] localData;
 
     /**
-     * Extra field data in central directory - without Header-ID or length
-     * specifier.
+     * Extra field data in central directory - without Header-ID or length specifier.
      */
     private byte[] centralData;
 
@@ -196,11 +177,9 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         this.headerId = headerId;
     }
 
-    protected final void assertMinimalLength(final int minimum, final int length)
-        throws ZipException {
+    protected final void assertMinimalLength(final int minimum, final int length) throws ZipException {
         if (length < minimum) {
-            throw new ZipException(getClass().getName() + " is too short, only "
-                + length + " bytes, expected at least " + minimum);
+            throw new ZipException(getClass().getName() + " is too short, only " + length + " bytes, expected at least " + minimum);
         }
     }
 
@@ -218,8 +197,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     }
 
     /**
-     * Gets the central data length. If there is no central data, get the local
-     * file data length.
+     * Gets the central data length. If there is no central data, get the local file data length.
      *
      * @return the central data length
      */
@@ -262,17 +240,13 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     }
 
     /**
-     * @param data
-     *            the array of bytes.
-     * @param offset
-     *            the source location in the data array.
-     * @param length
-     *            the number of bytes to use in the data array.
+     * @param data   the array of bytes.
+     * @param offset the source location in the data array.
+     * @param length the number of bytes to use in the data array.
      * @see ZipExtraField#parseFromCentralDirectoryData(byte[], int, int)
      */
     @Override
-    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length)
-        throws ZipException {
+    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length) throws ZipException {
         final byte[] tmp = Arrays.copyOfRange(data, offset, offset + length);
         setCentralDirectoryData(tmp);
         if (localData == null) {
@@ -281,36 +255,29 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     }
 
     /**
-     * @param data
-     *            the array of bytes.
-     * @param offset
-     *            the source location in the data array.
-     * @param length
-     *            the number of bytes to use in the data array.
+     * @param data   the array of bytes.
+     * @param offset the source location in the data array.
+     * @param length the number of bytes to use in the data array.
      * @see ZipExtraField#parseFromLocalFileData(byte[], int, int)
      */
     @Override
-    public void parseFromLocalFileData(final byte[] data, final int offset, final int length)
-        throws ZipException {
+    public void parseFromLocalFileData(final byte[] data, final int offset, final int length) throws ZipException {
         setLocalFileDataData(Arrays.copyOfRange(data, offset, offset + length));
     }
 
     /**
      * Sets the extra field data in central directory.
      *
-     * @param data
-     *            the data to use
+     * @param data the data to use
      */
     public void setCentralDirectoryData(final byte[] data) {
         centralData = ZipUtil.copy(data);
     }
 
     /**
-     * Sets the extra field data in the local file data - without Header-ID or
-     * length specifier.
+     * Sets the extra field data in the local file data - without Header-ID or length specifier.
      *
-     * @param data
-     *            the field data to use
+     * @param data the field data to use
      */
     public void setLocalFileDataData(final byte[] data) {
         localData = ZipUtil.copy(data);

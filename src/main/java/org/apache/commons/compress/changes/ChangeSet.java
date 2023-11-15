@@ -139,7 +139,7 @@ public final class ChangeSet<E extends ArchiveEntry> {
 
     /**
      * Gets the list of changes as a copy. Changes on this set are not reflected on this ChangeSet and vice versa.
-     * 
+     *
      * @return the changes as a copy
      */
     Set<Change<E>> getChanges() {

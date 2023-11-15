@@ -33,7 +33,7 @@ public class Deflate64BugsTest {
             final Enumeration<ZipArchiveEntry> entries = zfile.getEntries();
             while (entries.hasMoreElements()) {
                 final ZipArchiveEntry e = entries.nextElement();
-                final byte [] buf = new byte [1024 * 8];
+                final byte[] buf = new byte[1024 * 8];
                 try (InputStream is = zfile.getInputStream(e)) {
                     while (true) {
                         final int read = is.read(buf);

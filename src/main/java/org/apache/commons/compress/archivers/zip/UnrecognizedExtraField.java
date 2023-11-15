@@ -21,11 +21,12 @@ package org.apache.commons.compress.archivers.zip;
 import java.util.Arrays;
 
 /**
- * Simple placeholder for all those extra fields we don't want to deal
- * with.
+ * Simple placeholder for all those extra fields we don't want to deal with.
  *
- * <p>Assumes local file data and central directory entries are
- * identical - unless told the opposite.</p>
+ * <p>
+ * Assumes local file data and central directory entries are identical - unless told the opposite.
+ * </p>
+ *
  * @NotThreadSafe
  */
 public class UnrecognizedExtraField implements ZipExtraField {
@@ -36,19 +37,18 @@ public class UnrecognizedExtraField implements ZipExtraField {
     private ZipShort headerId;
 
     /**
-     * Extra field data in local file data - without
-     * Header-ID or length specifier.
+     * Extra field data in local file data - without Header-ID or length specifier.
      */
     private byte[] localData;
 
     /**
-     * Extra field data in central directory - without
-     * Header-ID or length specifier.
+     * Extra field data in central directory - without Header-ID or length specifier.
      */
     private byte[] centralData;
 
     /**
      * Gets the central data.
+     *
      * @return the central data if present, else return the local file data
      */
     @Override
@@ -60,8 +60,8 @@ public class UnrecognizedExtraField implements ZipExtraField {
     }
 
     /**
-     * Gets the central data length.
-     * If there is no central data, get the local file data length.
+     * Gets the central data length. If there is no central data, get the local file data length.
+     *
      * @return the central data length
      */
     @Override
@@ -74,6 +74,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
 
     /**
      * Gets the header id.
+     *
      * @return the header id
      */
     @Override
@@ -83,6 +84,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
 
     /**
      * Gets the local data.
+     *
      * @return the local data
      */
     @Override
@@ -92,6 +94,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
 
     /**
      * Gets the length of the local data.
+     *
      * @return the length of the local data
      */
     @Override
@@ -100,14 +103,13 @@ public class UnrecognizedExtraField implements ZipExtraField {
     }
 
     /**
-     * @param data the array of bytes.
+     * @param data   the array of bytes.
      * @param offset the source location in the data array.
      * @param length the number of bytes to use in the data array.
      * @see ZipExtraField#parseFromCentralDirectoryData(byte[], int, int)
      */
     @Override
-    public void parseFromCentralDirectoryData(final byte[] data, final int offset,
-                                              final int length) {
+    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length) {
         final byte[] tmp = Arrays.copyOfRange(data, offset, offset + length);
         setCentralDirectoryData(tmp);
         if (localData == null) {
@@ -116,7 +118,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     }
 
     /**
-     * @param data the array of bytes.
+     * @param data   the array of bytes.
      * @param offset the source location in the data array.
      * @param length the number of bytes to use in the data array.
      * @see ZipExtraField#parseFromLocalFileData(byte[], int, int)
@@ -128,6 +130,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
 
     /**
      * Sets the extra field data in central directory.
+     *
      * @param data the data to use
      */
     public void setCentralDirectoryData(final byte[] data) {
@@ -136,6 +139,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
 
     /**
      * Sets the header id.
+     *
      * @param headerId the header id to use
      */
     public void setHeaderId(final ZipShort headerId) {
@@ -143,8 +147,8 @@ public class UnrecognizedExtraField implements ZipExtraField {
     }
 
     /**
-     * Sets the extra field data in the local file data -
-     * without Header-ID or length specifier.
+     * Sets the extra field data in the local file data - without Header-ID or length specifier.
+     *
      * @param data the field data to use
      */
     public void setLocalFileDataData(final byte[] data) {

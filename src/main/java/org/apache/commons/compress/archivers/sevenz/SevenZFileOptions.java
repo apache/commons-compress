@@ -39,16 +39,15 @@ public class SevenZFileOptions {
          * @return configured {@link SevenZFileOptions}.
          */
         public SevenZFileOptions build() {
-            return new SevenZFileOptions(maxMemoryLimitInKb, useDefaultNameForUnnamedEntries,
-                tryToRecoverBrokenArchives);
+            return new SevenZFileOptions(maxMemoryLimitInKb, useDefaultNameForUnnamedEntries, tryToRecoverBrokenArchives);
         }
 
         /**
-         * Sets the maximum amount of memory to use for parsing the
-         * archive and during extraction.
+         * Sets the maximum amount of memory to use for parsing the archive and during extraction.
          *
-         * <p>Not all codecs will honor this setting. Currently only LZMA
-         * and LZMA2 are supported.</p>
+         * <p>
+         * Not all codecs will honor this setting. Currently only LZMA and LZMA2 are supported.
+         * </p>
          *
          * @param maxMemoryLimitInKb limit of the maximum amount of memory to use
          * @return the reconfigured builder
@@ -59,17 +58,14 @@ public class SevenZFileOptions {
         }
 
         /**
-         * Sets whether {@link SevenZFile} will try to revover broken archives where the CRC of the file's metadata is
-         * 0.
+         * Sets whether {@link SevenZFile} will try to revover broken archives where the CRC of the file's metadata is 0.
          * <p>
-         * This special kind of broken archive is encountered when mutli volume archives are closed prematurely. If
-         * you enable this option SevenZFile will trust data that looks as if it could contain metadata of an archive
-         * and allocate big amounts of memory. It is strongly recommended to not enable this option without setting
-         * {@link #withMaxMemoryLimitInKb} at the same time.
+         * This special kind of broken archive is encountered when mutli volume archives are closed prematurely. If you enable this option SevenZFile will trust
+         * data that looks as if it could contain metadata of an archive and allocate big amounts of memory. It is strongly recommended to not enable this
+         * option without setting {@link #withMaxMemoryLimitInKb} at the same time.
          * </p>
          *
-         * @param tryToRecoverBrokenArchives if true SevenZFile will try to recover archives that are broken in the
-         * specific way
+         * @param tryToRecoverBrokenArchives if true SevenZFile will try to recover archives that are broken in the specific way
          * @return the reconfigured builder
          * @since 1.21
          */
@@ -79,11 +75,9 @@ public class SevenZFileOptions {
         }
 
         /**
-         * Sets whether entries without a name should get their names
-         * set to the archive's default file name.
+         * Sets whether entries without a name should get their names set to the archive's default file name.
          *
-         * @param useDefaultNameForUnnamedEntries if true the name of
-         * unnamed entries will be set to the archive's default name
+         * @param useDefaultNameForUnnamedEntries if true the name of unnamed entries will be set to the archive's default name
          * @return the reconfigured builder
          */
         public Builder withUseDefaultNameForUnnamedEntries(final boolean useDefaultNameForUnnamedEntries) {
@@ -91,6 +85,7 @@ public class SevenZFileOptions {
             return this;
         }
     }
+
     private static final int DEFAUL_MEMORY_LIMIT_IN_KB = Integer.MAX_VALUE;
     private static final boolean DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES = false;
 
@@ -99,15 +94,16 @@ public class SevenZFileOptions {
      * The default options.
      *
      * <ul>
-     *   <li>no memory limit</li>
-     *   <li>don't modify the name of unnamed entries</li>
+     * <li>no memory limit</li>
+     * <li>don't modify the name of unnamed entries</li>
      * </ul>
      */
-    public static final SevenZFileOptions DEFAULT = new SevenZFileOptions(DEFAUL_MEMORY_LIMIT_IN_KB,
-        DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES,
-        DEFAULT_TRY_TO_RECOVER_BROKEN_ARCHIVES);
+    public static final SevenZFileOptions DEFAULT = new SevenZFileOptions(DEFAUL_MEMORY_LIMIT_IN_KB, DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES,
+            DEFAULT_TRY_TO_RECOVER_BROKEN_ARCHIVES);
+
     /**
      * Obtains a builder for SevenZFileOptions.
+     *
      * @return a builder for SevenZFileOptions.
      */
     public static Builder builder() {
@@ -120,19 +116,18 @@ public class SevenZFileOptions {
 
     private final boolean tryToRecoverBrokenArchives;
 
-    private SevenZFileOptions(final int maxMemoryLimitInKb, final boolean useDefaultNameForUnnamedEntries,
-        final boolean tryToRecoverBrokenArchives) {
+    private SevenZFileOptions(final int maxMemoryLimitInKb, final boolean useDefaultNameForUnnamedEntries, final boolean tryToRecoverBrokenArchives) {
         this.maxMemoryLimitInKb = maxMemoryLimitInKb;
         this.useDefaultNameForUnnamedEntries = useDefaultNameForUnnamedEntries;
         this.tryToRecoverBrokenArchives = tryToRecoverBrokenArchives;
     }
 
     /**
-     * Gets the maximum amount of memory to use for parsing the
-     * archive and during extraction.
+     * Gets the maximum amount of memory to use for parsing the archive and during extraction.
      *
-     * <p>Not all codecs will honor this setting. Currently only LZMA
-     * and LZMA2 are supported.</p>
+     * <p>
+     * Not all codecs will honor this setting. Currently only LZMA and LZMA2 are supported.
+     * </p>
      *
      * @return the maximum amount of memory to use for extraction
      */
@@ -142,6 +137,7 @@ public class SevenZFileOptions {
 
     /**
      * Whether {@link SevenZFile} shall try to recover from a certain type of broken archive.
+     *
      * @return whether SevenZFile shall try to recover from a certain type of broken archive.
      * @since 1.21
      */
@@ -150,10 +146,9 @@ public class SevenZFileOptions {
     }
 
     /**
-     * Gets whether entries without a name should get their names set
-     * to the archive's default file name.
-     * @return whether entries without a name should get their names
-     * set to the archive's default file name
+     * Gets whether entries without a name should get their names set to the archive's default file name.
+     *
+     * @return whether entries without a name should get their names set to the archive's default file name
      */
     public boolean getUseDefaultNameForUnnamedEntries() {
         return useDefaultNameForUnnamedEntries;

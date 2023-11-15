@@ -30,8 +30,8 @@ import org.apache.commons.compress.utils.ExactMath;
 import org.objectweb.asm.ClassReader;
 
 /**
- * Bands containing information about files in the pack200 archive and the file contents for non-class-files.
- * Corresponds to the {@code file_bands} set of bands described in the specification.
+ * Bands containing information about files in the pack200 archive and the file contents for non-class-files. Corresponds to the {@code file_bands} set of bands
+ * described in the specification.
  */
 public class FileBands extends BandSet {
 
@@ -45,8 +45,7 @@ public class FileBands extends BandSet {
     private final PackingOptions options;
     private final CpBands cpBands;
 
-    public FileBands(final CpBands cpBands, final SegmentHeader segmentHeader, final PackingOptions options,
-        final SegmentUnit segmentUnit, final int effort) {
+    public FileBands(final CpBands cpBands, final SegmentHeader segmentHeader, final PackingOptions options, final SegmentUnit segmentUnit, final int effort) {
         super(effort, segmentHeader);
         fileList = segmentUnit.getFileList();
         this.options = options;
@@ -105,8 +104,8 @@ public class FileBands extends BandSet {
     }
 
     /**
-     * All input classes for the segment have now been read in, so this method is called so that this class can
-     * calculate/complete anything it could not do while classes were being read.
+     * All input classes for the segment have now been read in, so this method is called so that this class can calculate/complete anything it could not do
+     * while classes were being read.
      */
     public void finaliseBands() {
         file_name = new int[fileName.length];
@@ -145,8 +144,7 @@ public class FileBands extends BandSet {
         out.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length + " bytes from file_name[" + file_name.length + "]");
 
-        encodedBand = encodeFlags("file_size", file_size, Codec.UNSIGNED5, Codec.UNSIGNED5,
-            segmentHeader.have_file_size_hi());
+        encodedBand = encodeFlags("file_size", file_size, Codec.UNSIGNED5, Codec.UNSIGNED5, segmentHeader.have_file_size_hi());
         out.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length + " bytes from file_size[" + file_size.length + "]");
 

@@ -47,21 +47,15 @@ public class OsgiITest {
 
     @Configuration
     public Option[] config() {
-        return new Option[] {
-            systemProperty("pax.exam.osgi.unresolved.fail").value("true"),
-            systemProperty("org.ops4j.pax.url.mvn.useFallbackRepositories").value("false"),
-            systemProperty("org.ops4j.pax.url.mvn.repositories").value("https://repo.maven.apache.org/maven2"),
-            mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.scr")
-                .version("2.0.14"),
-            mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.configadmin")
-                .version("1.8.16"),
-            composite(systemProperty("pax.exam.invoker").value("junit"),
-                      bundle("link:classpath:META-INF/links/org.ops4j.pax.tipi.junit.link"),
-                      bundle("link:classpath:META-INF/links/org.ops4j.pax.exam.invoker.junit.link"),
-                      mavenBundle().groupId("org.apache.servicemix.bundles")
-                          .artifactId("org.apache.servicemix.bundles.hamcrest").version("1.3_1")),
-            bundle("reference:file:target/classes/").start()
-       };
+        return new Option[] { systemProperty("pax.exam.osgi.unresolved.fail").value("true"),
+                systemProperty("org.ops4j.pax.url.mvn.useFallbackRepositories").value("false"),
+                systemProperty("org.ops4j.pax.url.mvn.repositories").value("https://repo.maven.apache.org/maven2"),
+                mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.scr").version("2.0.14"),
+                mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.configadmin").version("1.8.16"),
+                composite(systemProperty("pax.exam.invoker").value("junit"), bundle("link:classpath:META-INF/links/org.ops4j.pax.tipi.junit.link"),
+                        bundle("link:classpath:META-INF/links/org.ops4j.pax.exam.invoker.junit.link"),
+                        mavenBundle().groupId("org.apache.servicemix.bundles").artifactId("org.apache.servicemix.bundles.hamcrest").version("1.3_1")),
+                bundle("reference:file:target/classes/").start() };
     }
 
     private Bundle loadBundle() {

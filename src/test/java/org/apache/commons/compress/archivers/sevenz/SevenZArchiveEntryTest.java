@@ -122,5 +122,4 @@ public class SevenZArchiveEntryTest {
         assertThrows(UnsupportedOperationException.class, () -> new SevenZArchiveEntry().getLastModifiedDate());
     }
 
-
 }

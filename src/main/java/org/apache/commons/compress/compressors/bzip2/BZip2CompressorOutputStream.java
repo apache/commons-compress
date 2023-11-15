@@ -28,26 +28,26 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * An output stream that compresses into the BZip2 format into another stream.
  *
  * <p>
- * The compression requires large amounts of memory. Thus you should call the
- * {@link #close() close()} method as soon as possible, to force
+ * The compression requires large amounts of memory. Thus you should call the {@link #close() close()} method as soon as possible, to force
  * {@code BZip2CompressorOutputStream} to release the allocated memory.
  * </p>
  *
- * <p> You can shrink the amount of allocated memory and maybe raise
- * the compression speed by choosing a lower blocksize, which in turn
- * may cause a lower compression ratio. You can avoid unnecessary
- * memory allocation by avoiding using a blocksize which is bigger
- * than the size of the input.  </p>
+ * <p>
+ * You can shrink the amount of allocated memory and maybe raise the compression speed by choosing a lower blocksize, which in turn may cause a lower
+ * compression ratio. You can avoid unnecessary memory allocation by avoiding using a blocksize which is bigger than the size of the input.
+ * </p>
  *
- * <p> You can compute the memory usage for compressing by the
- * following formula: </p>
+ * <p>
+ * You can compute the memory usage for compressing by the following formula:
+ * </p>
  *
  * <pre>
  * &lt;code&gt;400k + (9 * blocksize)&lt;/code&gt;.
  * </pre>
  *
- * <p> To get the memory required for decompression by {@link
- * BZip2CompressorInputStream} use </p>
+ * <p>
+ * To get the memory required for decompression by {@link BZip2CompressorInputStream} use
+ * </p>
  *
  * <pre>
  * &lt;code&gt;65k + (5 * blocksize)&lt;/code&gt;.
@@ -59,8 +59,10 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * <th colspan="3">Memory usage by blocksize</th>
  * </tr>
  * <tr>
- * <th style="text-align: right">Blocksize</th> <th style="text-align: right">Compression<br>
- * memory usage</th> <th style="text-align: right">Decompression<br>
+ * <th style="text-align: right">Blocksize</th>
+ * <th style="text-align: right">Compression<br>
+ * memory usage</th>
+ * <th style="text-align: right">Decompression<br>
  * memory usage</th>
  * </tr>
  * <tr>
@@ -111,8 +113,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * </table>
  *
  * <p>
- * For decompression {@code BZip2CompressorInputStream} allocates less memory if the
- * bzipped input is smaller than one block.
+ * For decompression {@code BZip2CompressorInputStream} allocates less memory if the bzipped input is smaller than one block.
  * </p>
  *
  * <p>
@@ -122,10 +123,10 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * <p>
  * TODO: Update to BZip2 1.0.1
  * </p>
+ *
  * @NotThreadSafe
  */
-public class BZip2CompressorOutputStream extends CompressorOutputStream
-    implements BZip2Constants {
+public class BZip2CompressorOutputStream extends CompressorOutputStream implements BZip2Constants {
 
     static final class Data {
 
@@ -156,12 +157,13 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         // ------------
         // 333408 byte
 
-        /* holds the RLEd block of original data starting at index 1.
-         * After sorting the last byte added to the buffer is at index
-         * 0. */
+        /*
+         * holds the RLEd block of original data starting at index 1. After sorting the last byte added to the buffer is at index 0.
+         */
         final byte[] block; // 900021 byte
-        /* maps index in Burrows-Wheeler transformed block => index of
-         * byte in original block */
+        /*
+         * maps index in Burrows-Wheeler transformed block => index of byte in original block
+         */
         final int[] fmap; // 3600000 byte
         final char[] sfmap; // 3600000 byte
         // ------------
@@ -171,8 +173,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         /**
          * Index of original line in Burrows-Wheeler table.
          *
-         * <p>This is the index in fmap that points to the last byte
-         * of the original data.</p>
+         * <p>
+         * This is the index in fmap that points to the last byte of the original data.
+         * </p>
          */
         int origPtr;
 
@@ -201,23 +204,16 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     /**
      * Chooses a blocksize based on the given length of the data to compress.
      *
-     * @return The blocksize, between {@link #MIN_BLOCKSIZE} and
-     *         {@link #MAX_BLOCKSIZE} both inclusive. For a negative
-     *         {@code inputLength} this method returns {@code MAX_BLOCKSIZE}
-     *         always.
+     * @return The blocksize, between {@link #MIN_BLOCKSIZE} and {@link #MAX_BLOCKSIZE} both inclusive. For a negative {@code inputLength} this method returns
+     *         {@code MAX_BLOCKSIZE} always.
      *
-     * @param inputLength
-     *            The length of the data which will be compressed by
-     *            {@code BZip2CompressorOutputStream}.
+     * @param inputLength The length of the data which will be compressed by {@code BZip2CompressorOutputStream}.
      */
     public static int chooseBlockSize(final long inputLength) {
-        return inputLength > 0 ? (int) Math
-            .min(inputLength / 132000 + 1, 9) : MAX_BLOCKSIZE;
+        return inputLength > 0 ? (int) Math.min(inputLength / 132000 + 1, 9) : MAX_BLOCKSIZE;
     }
 
-    private static void hbAssignCodes(final int[] code, final byte[] length,
-                                      final int minLen, final int maxLen,
-                                      final int alphaSize) {
+    private static void hbAssignCodes(final int[] code, final byte[] length, final int minLen, final int maxLen, final int alphaSize) {
         int vec = 0;
         for (int n = minLen; n <= maxLen; n++) {
             for (int i = 0; i < alphaSize; i++) {
@@ -230,12 +226,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         }
     }
 
-    private static void hbMakeCodeLengths(final byte[] len, final int[] freq,
-                                          final Data dat, final int alphaSize,
-                                          final int maxLen) {
+    private static void hbMakeCodeLengths(final byte[] len, final int[] freq, final Data dat, final int alphaSize, final int maxLen) {
         /*
-         * Nodes and heap entries run from 1. Entry 0 for both the heap and
-         * nodes is a sentinel.
+         * Nodes and heap entries run from 1. Entry 0 for both the heap and nodes is a sentinel.
          */
         final int[] heap = dat.heap;
         final int[] weight = dat.weight;
@@ -284,8 +277,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                         break;
                     }
 
-                    if (yy < nHeap
-                        && weight[heap[yy + 1]] < weight[heap[yy]]) {
+                    if (yy < nHeap && weight[heap[yy + 1]] < weight[heap[yy]]) {
                         yy++;
                     }
 
@@ -314,8 +306,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                         break;
                     }
 
-                    if (yy < nHeap
-                        && weight[heap[yy + 1]] < weight[heap[yy]]) {
+                    if (yy < nHeap && weight[heap[yy + 1]] < weight[heap[yy]]) {
                         yy++;
                     }
 
@@ -333,9 +324,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
                 final int weight_n1 = weight[n1];
                 final int weight_n2 = weight[n2];
-                weight[nNodes] = (weight_n1 & 0xffffff00)
-                                  + (weight_n2 & 0xffffff00)
-                    | 1 + Math.max(weight_n1 & 0x000000ff, weight_n2 & 0x000000ff);
+                weight[nNodes] = (weight_n1 & 0xffffff00) + (weight_n2 & 0xffffff00) | 1 + Math.max(weight_n1 & 0x000000ff, weight_n2 & 0x000000ff);
 
                 parent[nNodes] = -1;
                 nHeap++;
@@ -377,13 +366,13 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             }
         }
     }
+
     /**
      * Index of the last char in the block, so the block size == last + 1.
      */
     private int last;
     /**
-     * Always: in the range 0 .. 9. The current block size is 100000 * this
-     * number.
+     * Always: in the range 0 .. 9. The current block size is 100000 * this number.
      */
     private final int blockSize100k;
 
@@ -416,33 +405,24 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     /**
      * Constructs a new {@code BZip2CompressorOutputStream} with a blocksize of 900k.
      *
-     * @param out
-     *            the destination stream.
+     * @param out the destination stream.
      *
-     * @throws IOException
-     *             if an I/O error occurs in the specified stream.
-     * @throws NullPointerException
-     *             if {@code out == null}.
+     * @throws IOException          if an I/O error occurs in the specified stream.
+     * @throws NullPointerException if {@code out == null}.
      */
-    public BZip2CompressorOutputStream(final OutputStream out)
-        throws IOException {
+    public BZip2CompressorOutputStream(final OutputStream out) throws IOException {
         this(out, MAX_BLOCKSIZE);
     }
 
     /**
      * Constructs a new {@code BZip2CompressorOutputStream} with specified blocksize.
      *
-     * @param out
-     *            the destination stream.
-     * @param blockSize
-     *            the blockSize as 100k units.
+     * @param out       the destination stream.
+     * @param blockSize the blockSize as 100k units.
      *
-     * @throws IOException
-     *             if an I/O error occurs in the specified stream.
-     * @throws IllegalArgumentException
-     *             if {@code (blockSize &lt; 1) || (blockSize &gt; 9)}.
-     * @throws NullPointerException
-     *             if {@code out == null}.
+     * @throws IOException              if an I/O error occurs in the specified stream.
+     * @throws IllegalArgumentException if {@code (blockSize &lt; 1) || (blockSize &gt; 9)}.
+     * @throws NullPointerException     if {@code out == null}.
      *
      * @see #MIN_BLOCKSIZE
      * @see #MAX_BLOCKSIZE
@@ -466,7 +446,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     private void blockSort() {
         blockSorter.blockSort(data, last);
     }
-
 
     private void bsFinishedWithStream() throws IOException {
         while (this.bsLive > 0) {
@@ -526,15 +505,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         blockSort();
 
         /*
-         * A 6-byte block header, the value chosen arbitrarily as 0x314159265359
-         * :-). A 32 bit value does not really give a strong enough guarantee
-         * that the value will not appear by chance in the compressed
-         * data stream. Worst-case probability of this event, for a 900k block,
-         * is about 2.0e-3 for 32 bits, 1.0e-5 for 40 bits and 4.0e-8 for 48
-         * bits. For a compressed file of size 100Gb -- about 100000 blocks --
-         * only a 48-bit marker will do. NB: normal compression/ decompression
-         * doesn't rely on these statistical properties. They are only important
-         * when trying to recover blocks from damaged files.
+         * A 6-byte block header, the value chosen arbitrarily as 0x314159265359 :-). A 32 bit value does not really give a strong enough guarantee that the
+         * value will not appear by chance in the compressed data stream. Worst-case probability of this event, for a 900k block, is about 2.0e-3 for 32 bits,
+         * 1.0e-5 for 40 bits and 4.0e-8 for 48 bits. For a compressed file of size 100Gb -- about 100000 blocks -- only a 48-bit marker will do. NB: normal
+         * compression/ decompression doesn't rely on these statistical properties. They are only important when trying to recover blocks from damaged files.
          */
         bsPutUByte(0x31);
         bsPutUByte(0x41);
@@ -555,10 +529,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
     private void endCompression() throws IOException {
         /*
-         * Now another magic 48-bit number, 0x177245385090, to indicate the end
-         * of the last block. (sqrt(pi), if you want to know. I did want to use
-         * e, but it contains too much repetition -- 27 18 28 18 28 46 -- for me
-         * to feel statistically comfortable. Call me paranoid.)
+         * Now another magic 48-bit number, 0x177245385090, to indicate the end of the last block. (sqrt(pi), if you want to know. I did want to use e, but it
+         * contains too much repetition -- 27 18 28 18 28 46 -- for me to feel statistically comfortable. Call me paranoid.)
          */
         bsPutUByte(0x17);
         bsPutUByte(0x72);
@@ -598,9 +570,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     /*
-     * Performs Move-To-Front on the Burrows-Wheeler transformed
-     * buffer, storing the MTFed data in data.sfmap in RUNA/RUNB
-     * run-length-encoded form.
+     * Performs Move-To-Front on the Burrows-Wheeler transformed buffer, storing the MTFed data in data.sfmap in RUNA/RUNB run-length-encoded form.
      *
      * <p>Keeps track of byte frequencies in data.mtfFreq at the same time.</p>
      */
@@ -705,6 +675,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
     /**
      * Returns the blocksize parameter specified at construction time.
+     *
      * @return the blocksize parameter specified at construction time
      */
     public final int getBlockSize() {
@@ -712,9 +683,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     /**
-     * Writes magic bytes like BZ on the first position of the stream
-     * and bytes indicating the file-format, which is
-     * huffmanized, followed by a digit indicating blockSize100k.
+     * Writes magic bytes like BZ on the first position of the stream and bytes indicating the file-format, which is huffmanized, followed by a digit indicating
+     * blockSize100k.
+     *
      * @throws IOException if the magic bytes could not been written
      */
     private void init() throws IOException {
@@ -764,8 +735,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
 
         /* Decide how many coding tables to use */
         // assert (this.nMTF > 0) : this.nMTF;
-        final int nGroups = this.nMTF < 200 ? 2 : this.nMTF < 600 ? 3
-            : this.nMTF < 1200 ? 4 : this.nMTF < 2400 ? 5 : 6;
+        final int nGroups = this.nMTF < 200 ? 2 : this.nMTF < 600 ? 3 : this.nMTF < 1200 ? 4 : this.nMTF < 2400 ? 5 : 6;
 
         /* Generate an initial set of coding tables */
         sendMTFValues0(nGroups, alphaSize);
@@ -810,8 +780,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                 aFreq += mtfFreq[++ge];
             }
 
-            if (ge > gs && nPart != nGroups && nPart != 1
-                && (nGroups - nPart & 1) != 0) {
+            if (ge > gs && nPart != nGroups && nPart != 1 && (nGroups - nPart & 1) != 0) {
                 aFreq -= mtfFreq[ge--];
             }
 
@@ -908,8 +877,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
                 }
 
                 /*
-                 * Find the coding table which is best for this group, and
-                 * record its identity in the selector table.
+                 * Find the coding table which is best for this group, and record its identity in the selector table.
                  */
                 int bt = -1;
                 for (int t = nGroups, bc = 999999999; --t >= 0;) {
@@ -1043,8 +1011,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         this.bsLive = bsLiveShadow;
     }
 
-    private void sendMTFValues5(final int nGroups, final int nSelectors)
-        throws IOException {
+    private void sendMTFValues5(final int nGroups, final int nSelectors) throws IOException {
         bsW(3, nGroups);
         bsW(15, nSelectors);
 
@@ -1080,8 +1047,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
         this.bsLive = bsLiveShadow;
     }
 
-    private void sendMTFValues6(final int nGroups, final int alphaSize)
-        throws IOException {
+    private void sendMTFValues6(final int nGroups, final int alphaSize) throws IOException {
         final byte[][] len = this.data.sendMTFValues_len;
         final OutputStream outShadow = this.out;
 
@@ -1192,8 +1158,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     @Override
-    public void write(final byte[] buf, int offs, final int len)
-        throws IOException {
+    public void write(final byte[] buf, int offs, final int len) throws IOException {
         if (offs < 0) {
             throw new IndexOutOfBoundsException("offs(" + offs + ") < 0.");
         }
@@ -1201,9 +1166,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
             throw new IndexOutOfBoundsException("len(" + len + ") < 0.");
         }
         if (offs + len > buf.length) {
-            throw new IndexOutOfBoundsException("offs(" + offs + ") + len("
-                                                + len + ") > buf.length("
-                                                + buf.length + ").");
+            throw new IndexOutOfBoundsException("offs(" + offs + ") + len(" + len + ") > buf.length(" + buf.length + ").");
         }
         if (closed) {
             throw new IOException("Stream closed");
@@ -1223,8 +1186,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     /**
-     * Keeps track of the last bytes written and implicitly performs
-     * run-length encoding as the first step of the bzip2 algorithm.
+     * Keeps track of the last bytes written and implicitly performs run-length encoding as the first step of the bzip2 algorithm.
      */
     private void write0(int b) throws IOException {
         if (this.currentChar != -1) {
@@ -1248,17 +1210,17 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream
     }
 
     /**
-     * Writes the current byte to the buffer, run-length encoding it
-     * if it has been repeated at least four times (the first step
-     * RLEs sequences of four identical bytes).
+     * Writes the current byte to the buffer, run-length encoding it if it has been repeated at least four times (the first step RLEs sequences of four
+     * identical bytes).
      *
-     * <p>Flushes the current block before writing data if it is
-     * full.</p>
+     * <p>
+     * Flushes the current block before writing data if it is full.
+     * </p>
      *
-     * <p>"write to the buffer" means adding to data.buffer starting
-     * two steps "after" this.last - initially starting at index 1
-     * (not 0) - and updating this.last to point to the last index
-     * written minus 1.</p>
+     * <p>
+     * "write to the buffer" means adding to data.buffer starting two steps "after" this.last - initially starting at index 1 (not 0) - and updating this.last
+     * to point to the last index written minus 1.
+     * </p>
      */
     private void writeRun() throws IOException {
         final int lastShadow = this.last;

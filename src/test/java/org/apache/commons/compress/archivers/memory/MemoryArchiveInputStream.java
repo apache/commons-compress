@@ -28,7 +28,7 @@ public final class MemoryArchiveInputStream extends ArchiveInputStream<MemoryArc
     private final String[] content;
     private int p;
 
-    public MemoryArchiveInputStream( final String[][] pFiles ) {
+    public MemoryArchiveInputStream(final String[][] pFiles) {
         final int pFilesLength = pFiles.length;
         fileNames = new String[pFilesLength];
         content = new String[pFilesLength];

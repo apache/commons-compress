@@ -27,7 +27,7 @@ import java.util.List;
 public class NewAttribute extends BCIRenumberedAttribute {
 
     // Bytecode-related value (either a bytecode index or a length)
-    private static abstract class AbstractBcValue {
+    private abstract static class AbstractBcValue {
 
         int actualValue;
 
@@ -36,28 +36,31 @@ public class NewAttribute extends BCIRenumberedAttribute {
         }
 
     }
+
     private static final class BCIndex extends AbstractBcValue {
 
         private final int index;
 
-        public BCIndex(final int index) {
+        BCIndex(final int index) {
             this.index = index;
         }
     }
+
     private static final class BCLength extends AbstractBcValue {
 
         private final int length;
 
-        public BCLength(final int length) {
+        BCLength(final int length) {
             this.length = length;
         }
     }
+
     private static final class BCOffset extends AbstractBcValue {
 
         private final int offset;
         private int index;
 
-        public BCOffset(final int offset) {
+        BCOffset(final int offset) {
             this.offset = offset;
         }
 

@@ -26,26 +26,16 @@ public class DumpArchiveUtilTest {
 
     @Test
     public void testConvert16() {
-        assertEquals(0xABCD,
-                     DumpArchiveUtil.convert16(new byte[] {
-                             (byte) 0xCD, (byte) 0xAB
-                         }, 0));
+        assertEquals(0xABCD, DumpArchiveUtil.convert16(new byte[] { (byte) 0xCD, (byte) 0xAB }, 0));
     }
 
     @Test
     public void testConvert32() {
-        assertEquals(0xABCDEF01,
-                     DumpArchiveUtil.convert32(new byte[] {
-                             1, (byte) 0xEF, (byte) 0xCD, (byte) 0xAB
-                         }, 0));
+        assertEquals(0xABCDEF01, DumpArchiveUtil.convert32(new byte[] { 1, (byte) 0xEF, (byte) 0xCD, (byte) 0xAB }, 0));
     }
 
     @Test
     public void testConvert64() {
-        assertEquals(0xABCDEF0123456780L,
-                     DumpArchiveUtil.convert64(new byte[] {
-                             (byte) 0x80, 0x67, 0x45, 0x23, 1, (byte) 0xEF,
-                             (byte) 0xCD, (byte) 0xAB
-                         }, 0));
+        assertEquals(0xABCDEF0123456780L, DumpArchiveUtil.convert64(new byte[] { (byte) 0x80, 0x67, 0x45, 0x23, 1, (byte) 0xEF, (byte) 0xCD, (byte) 0xAB }, 0));
     }
 }

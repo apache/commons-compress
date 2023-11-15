@@ -38,8 +38,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.junit.jupiter.api.Test;
 
 /**
- * Check that the different write methods create the same output.
- * TODO perform the same checks for reads.
+ * Check that the different write methods create the same output. TODO perform the same checks for reads.
  */
 public class IOMethodsTest extends AbstractTest {
 

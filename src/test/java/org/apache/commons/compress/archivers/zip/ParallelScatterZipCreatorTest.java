@@ -111,7 +111,7 @@ public class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
             final Enumeration<ZipArchiveEntry> entriesInPhysicalOrder = zf.getEntriesInPhysicalOrder();
             while (entriesInPhysicalOrder.hasMoreElements()) {
                 final ZipArchiveEntry zipArchiveEntry = entriesInPhysicalOrder.nextElement();
-                try (final InputStream inputStream = zf.getInputStream(zipArchiveEntry)) {
+                try (InputStream inputStream = zf.getInputStream(zipArchiveEntry)) {
                     final byte[] actual = IOUtils.toByteArray(inputStream);
                     final byte[] expected = entries.remove(zipArchiveEntry.getName());
                     assertArrayEquals(expected, actual, "For " + zipArchiveEntry.getName());
@@ -324,7 +324,7 @@ public class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
             final InputStreamSupplier iss = () -> {
                 try {
                     return Files.newInputStream(file.toPath());
-                } catch (final IOException e) {
+                } catch (IOException e) {
                     return null;
                 }
             };

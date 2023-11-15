@@ -89,8 +89,8 @@ public final class ZipTest extends AbstractTest {
 
     private void assertSameFileContents(final File expectedFile, final File actualFile) throws IOException {
         final int size = (int) Math.max(expectedFile.length(), actualFile.length());
-        try (final ZipFile expected = new ZipFile(expectedFile);
-                final ZipFile actual = new ZipFile(actualFile)) {
+        try (ZipFile expected = new ZipFile(expectedFile);
+                ZipFile actual = new ZipFile(actualFile)) {
             final byte[] expectedBuf = new byte[size];
             final byte[] actualBuf = new byte[size];
 
@@ -111,8 +111,8 @@ public final class ZipTest extends AbstractTest {
                 assertEquals(expectedElement.getExternalAttributes(), actualElement.getExternalAttributes());
                 assertEquals(expectedElement.getInternalAttributes(), actualElement.getInternalAttributes());
 
-                try (final InputStream actualIs = actual.getInputStream(actualElement);
-                        final InputStream expectedIs = expected.getInputStream(expectedElement)) {
+                try (InputStream actualIs = actual.getInputStream(actualElement);
+                        InputStream expectedIs = expected.getInputStream(expectedElement)) {
                     IOUtils.readFully(expectedIs, expectedBuf);
                     IOUtils.readFully(actualIs, actualBuf);
                 }
@@ -150,7 +150,7 @@ public final class ZipTest extends AbstractTest {
 
     private File createReferenceFile(final Zip64Mode zipMode, final String prefix) throws IOException {
         final File reference = createTempFile(prefix, ".zip");
-        try (final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(reference)) {
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(reference)) {
             zos.setUseZip64(zipMode);
             createFirstEntry(zos);
             createSecondEntry(zos);
@@ -167,7 +167,7 @@ public final class ZipTest extends AbstractTest {
         final File directoryToZip = getFilesToZip();
         final File outputZipFile = newTempFile("splitZip.zip");
         final long splitSize = 100 * 1024L; /* 100 KB */
-        try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
+        try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
             addFilesToZip(zipArchiveOutputStream, directoryToZip);
         }
     }
@@ -251,14 +251,14 @@ public final class ZipTest extends AbstractTest {
         final File directoryToZip = getFilesToZip();
         final File outputZipFile = newTempFile("splitZip.zip");
         final long splitSize = 100 * 1024L; /* 100 KB */
-        try (final ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
+        try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
 
             // create a file that has the same name of one of the created split segments
             final File sameNameFile = newTempFile("splitZip.z01");
             sameNameFile.createNewFile();
 
             assertThrows(IOException.class, () -> addFilesToZip(zipArchiveOutputStream, directoryToZip));
-        } catch (final Exception e) {
+        } catch (Exception e) {
             // Ignore:
             // java.io.IOException: This archive contains unclosed entries.
             // at org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.finish(ZipArchiveOutputStream.java:563)
@@ -289,21 +289,21 @@ public final class ZipTest extends AbstractTest {
         final File reference = createReferenceFile(Zip64Mode.Never, "expected.");
 
         final File file1 = createTempFile("src1.", ".zip");
-        try (final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(file1)) {
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(file1)) {
             zos.setUseZip64(Zip64Mode.Never);
             createFirstEntry(zos).close();
         }
 
         final File file2 = createTempFile("src2.", ".zip");
-        try (final ZipArchiveOutputStream zos1 = new ZipArchiveOutputStream(file2)) {
+        try (ZipArchiveOutputStream zos1 = new ZipArchiveOutputStream(file2)) {
             zos1.setUseZip64(Zip64Mode.Never);
             createSecondEntry(zos1).close();
         }
 
-        try (final ZipFile zipFile1 = new ZipFile(file1);
-                final ZipFile zipFile2 = new ZipFile(file2)) {
+        try (ZipFile zipFile1 = new ZipFile(file1);
+                ZipFile zipFile2 = new ZipFile(file2)) {
             final File fileResult = createTempFile("file-actual.", ".zip");
-            try (final ZipArchiveOutputStream zos2 = new ZipArchiveOutputStream(fileResult)) {
+            try (ZipArchiveOutputStream zos2 = new ZipArchiveOutputStream(fileResult)) {
                 zipFile1.copyRawEntries(zos2, allFilesPredicate);
                 zipFile2.copyRawEntries(zos2, allFilesPredicate);
             }
@@ -318,20 +318,20 @@ public final class ZipTest extends AbstractTest {
     public void testCopyRawZip64EntryFromFile() throws IOException {
 
         final File reference = createTempFile("z64reference.", ".zip");
-        try (final ZipArchiveOutputStream zos1 = new ZipArchiveOutputStream(reference)) {
+        try (ZipArchiveOutputStream zos1 = new ZipArchiveOutputStream(reference)) {
             zos1.setUseZip64(Zip64Mode.Always);
             createFirstEntry(zos1);
         }
 
         final File file1 = createTempFile("zip64src.", ".zip");
-        try (final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(file1)) {
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(file1)) {
             zos.setUseZip64(Zip64Mode.Always);
             createFirstEntry(zos).close();
         }
 
         final File fileResult = createTempFile("file-actual.", ".zip");
-        try (final ZipFile zipFile1 = new ZipFile(file1)) {
-            try (final ZipArchiveOutputStream zos2 = new ZipArchiveOutputStream(fileResult)) {
+        try (ZipFile zipFile1 = new ZipFile(file1)) {
+            try (ZipArchiveOutputStream zos2 = new ZipArchiveOutputStream(fileResult)) {
                 zos2.setUseZip64(Zip64Mode.Always);
                 zipFile1.copyRawEntries(zos2, allFilesPredicate);
             }
@@ -440,15 +440,15 @@ public final class ZipTest extends AbstractTest {
         final Map<String, List<List<Long>>> actualStatistics = new HashMap<>();
 
         // stream access
-        try (final InputStream fis = Files.newInputStream(input.toPath());
-                final ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fis)) {
+        try (InputStream fis = Files.newInputStream(input.toPath());
+                ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fis)) {
             for (ArchiveEntry entry; (entry = in.getNextEntry()) != null;) {
                 readStream(in, entry, actualStatistics);
             }
         }
 
         // file access
-        try (final ZipFile zf = new ZipFile(input)) {
+        try (ZipFile zf = new ZipFile(input)) {
             final Enumeration<ZipArchiveEntry> entries = zf.getEntries();
             while (entries.hasMoreElements()) {
                 final ZipArchiveEntry zae = entries.nextElement();
@@ -526,7 +526,7 @@ public final class ZipTest extends AbstractTest {
         final List<String> results = new ArrayList<>();
         final List<ZipException> expectedExceptions = new ArrayList<>();
 
-        try (final InputStream fis = Files.newInputStream(input.toPath());
+        try (InputStream fis = Files.newInputStream(input.toPath());
                 ZipArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fis)) {
 
             ZipArchiveEntry entry;
@@ -539,7 +539,7 @@ public final class ZipTest extends AbstractTest {
                     while ((nestedEntry = nestedIn.getNextEntry()) != null) {
                         results.add(nestedEntry.getName());
                     }
-                } catch (final ZipException ex) {
+                } catch (ZipException ex) {
                     // expected since you cannot create a final ArchiveInputStream from test3.xml
                     expectedExceptions.add(ex);
                 }
@@ -580,7 +580,7 @@ public final class ZipTest extends AbstractTest {
         al.add("test1.xml");
         al.add("test2.xml");
         try (InputStream fis = Files.newInputStream(input.toPath());
-                final ZipArchiveInputStream inputStream = new ZipArchiveInputStream(fis)) {
+                ZipArchiveInputStream inputStream = new ZipArchiveInputStream(fis)) {
             checkArchiveContent(inputStream, al);
         }
     }
@@ -590,7 +590,7 @@ public final class ZipTest extends AbstractTest {
      */
     @Test
     public void testTokenizationCompressionMethod() throws IOException {
-        try (final ZipFile moby = new ZipFile(getFile("moby.zip"))) {
+        try (ZipFile moby = new ZipFile(getFile("moby.zip"))) {
             final ZipArchiveEntry entry = moby.getEntry("README");
             assertEquals(ZipMethod.TOKENIZATION.getCode(), entry.getMethod(), "method");
             assertFalse(moby.canReadEntryData(entry));
@@ -600,7 +600,7 @@ public final class ZipTest extends AbstractTest {
     @Test
     public void testUnixModeInAddRaw() throws IOException {
         final File file1 = createTempFile("unixModeBits.", ".zip");
-        try (final ZipArchiveOutputStream zos = new ZipArchiveOutputStream(file1)) {
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(file1)) {
             final ZipArchiveEntry archiveEntry = new ZipArchiveEntry("fred");
             archiveEntry.setUnixMode(0664);
             archiveEntry.setMethod(ZipEntry.STORED);
@@ -608,7 +608,7 @@ public final class ZipTest extends AbstractTest {
             archiveEntry.setCompressedSize(3);
             zos.addRawArchiveEntry(archiveEntry, new ByteArrayInputStream("fud".getBytes()));
         }
-        try (final ZipFile zf1 = new ZipFile(file1)) {
+        try (ZipFile zf1 = new ZipFile(file1)) {
             final ZipArchiveEntry fred = zf1.getEntry("fred");
             assertEquals(0664, fred.getUnixMode());
         }
@@ -626,7 +626,7 @@ public final class ZipTest extends AbstractTest {
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
 
-        try (final OutputStream out = Files.newOutputStream(output.toPath())) {
+        try (OutputStream out = Files.newOutputStream(output.toPath())) {
             try (ArchiveOutputStream<ZipArchiveEntry> os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("zip", out)) {
                 os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
                 Files.copy(file1.toPath(), os);
@@ -641,7 +641,7 @@ public final class ZipTest extends AbstractTest {
         // Unarchive the same
         final List<File> results = new ArrayList<>();
 
-        try (final InputStream fileInputStream = Files.newInputStream(output.toPath())) {
+        try (InputStream fileInputStream = Files.newInputStream(output.toPath())) {
             try (ArchiveInputStream<ZipArchiveEntry> archiveInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fileInputStream)) {
                 ZipArchiveEntry entry;
                 while ((entry = archiveInputStream.getNextEntry()) != null) {
@@ -737,8 +737,8 @@ public final class ZipTest extends AbstractTest {
     @Test
     public void testZipUnarchive() throws Exception {
         final File input = getFile("bla.zip");
-        try (final InputStream is = Files.newInputStream(input.toPath());
-                final ArchiveInputStream<ZipArchiveEntry> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", is)) {
+        try (InputStream is = Files.newInputStream(input.toPath());
+                ArchiveInputStream<ZipArchiveEntry> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", is)) {
             final ZipArchiveEntry entry = in.getNextEntry();
             Files.copy(in, newTempFile(entry.getName()).toPath());
         }

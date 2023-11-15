@@ -33,7 +33,7 @@ public class SegmentHeader {
     /**
      * The magic header for a Pack200 Segment is 0xCAFED00D. I wonder where they get their inspiration from ...
      */
-    private static final int[] magic = {0xCA, 0xFE, 0xD0, 0x0D};
+    private static final int[] magic = { 0xCA, 0xFE, 0xD0, 0x0D };
 
     private int archiveMajor;
 
@@ -98,33 +98,30 @@ public class SegmentHeader {
     /**
      * Decode a scalar from the band file. A scalar is like a band, but does not perform any band code switching.
      *
-     * @param name the name of the scalar (primarily for logging/debugging purposes)
-     * @param in the input stream to read from
+     * @param name  the name of the scalar (primarily for logging/debugging purposes)
+     * @param in    the input stream to read from
      * @param codec the codec for this scalar
      * @return the decoded value
-     * @throws IOException if there is a problem reading from the underlying input stream
+     * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
-    private int decodeScalar(final String name, final InputStream in, final BHSDCodec codec)
-        throws IOException, Pack200Exception {
+    private int decodeScalar(final String name, final InputStream in, final BHSDCodec codec) throws IOException, Pack200Exception {
         final int ret = codec.decode(in);
         segment.log(Segment.LOG_LEVEL_VERBOSE, "Parsed #" + name + " as " + ret);
         return ret;
     }
 
     /**
-     * Decode a number of scalars from the band file. A scalar is like a band, but does not perform any band code
-     * switching.
+     * Decode a number of scalars from the band file. A scalar is like a band, but does not perform any band code switching.
      *
-     * @param name the name of the scalar (primarily for logging/debugging purposes)
-     * @param in the input stream to read from
+     * @param name  the name of the scalar (primarily for logging/debugging purposes)
+     * @param in    the input stream to read from
      * @param codec the codec for this scalar
      * @return an array of decoded {@code long[]} values
-     * @throws IOException if there is a problem reading from the underlying input stream
+     * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
-    private int[] decodeScalar(final String name, final InputStream in, final BHSDCodec codec, final int n)
-        throws IOException, Pack200Exception {
+    private int[] decodeScalar(final String name, final InputStream in, final BHSDCodec codec, final int n) throws IOException, Pack200Exception {
         segment.log(Segment.LOG_LEVEL_VERBOSE, "Parsed #" + name + " (" + n + ")");
         return codec.decodeInts(n, in);
     }
@@ -146,11 +143,11 @@ public class SegmentHeader {
     }
 
     /**
-     * Obtain the band headers data as an input stream. If no band headers are present, this will return an empty input
-     * stream to prevent any further reads taking place.
+     * Obtain the band headers data as an input stream. If no band headers are present, this will return an empty input stream to prevent any further reads
+     * taking place.
      *
-     * Note that as a stream, data consumed from this input stream can't be re-used. Data is only read from this stream
-     * if the encoding is such that additional information needs to be decoded from the stream itself.
+     * Note that as a stream, data consumed from this input stream can't be re-used. Data is only read from this stream if the encoding is such that additional
+     * information needs to be decoded from the stream itself.
      *
      * @return the band headers input stream
      */
@@ -244,8 +241,7 @@ public class SegmentHeader {
 
     private void parseArchiveFileCounts(final InputStream in) throws IOException, Pack200Exception {
         if (options.hasArchiveFileCounts()) {
-            setArchiveSize((long) decodeScalar("archive_size_hi", in, Codec.UNSIGNED5) << 32 |
-                decodeScalar("archive_size_lo", in, Codec.UNSIGNED5));
+            setArchiveSize((long) decodeScalar("archive_size_hi", in, Codec.UNSIGNED5) << 32 | decodeScalar("archive_size_lo", in, Codec.UNSIGNED5));
             archiveSizeOffset = in.available();
             setSegmentsRemaining(decodeScalar("archive_next_count", in, Codec.UNSIGNED5));
             setArchiveModtime(decodeScalar("archive_modtime", in, Codec.UNSIGNED5));
@@ -310,10 +306,10 @@ public class SegmentHeader {
     }
 
     /**
-     * Completely reads in a byte array, akin to the implementation in {@link java.lang.DataInputStream}. TODO Refactor
-     * out into a separate InputStream handling class
+     * Completely reads in a byte array, akin to the implementation in {@link java.lang.DataInputStream}. TODO Refactor out into a separate InputStream handling
+     * class
      *
-     * @param in the input stream to read from
+     * @param in   the input stream to read from
      * @param data the byte array to read into
      * @throws IOException if a problem occurs during reading from the underlying stream
      */
