@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Test;
  */
 public class XZCompressorOutputStreamTest {
 
-
     @Test
     public void testWrite() throws IOException {
 
@@ -42,12 +41,10 @@ public class XZCompressorOutputStreamTest {
             xZCompressorOutputStream.write(4590);
         }
 
-        try (XZCompressorInputStream xZCompressorInputStream =
-            new XZCompressorInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()))) {
+        try (XZCompressorInputStream xZCompressorInputStream = new XZCompressorInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()))) {
             assertEquals(4590 % 256, xZCompressorInputStream.read());
             assertEquals(-1, xZCompressorInputStream.read());
         }
     }
-
 
 }

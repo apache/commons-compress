@@ -58,8 +58,8 @@ public class ArchiveUtilsTest extends AbstractTest {
 
     @Test
     public void testCompareAscii() {
-        final byte[] buffer1 = {'a', 'b', 'c'};
-        final byte[] buffer2 = {'d', 'e', 'f', 0};
+        final byte[] buffer1 = { 'a', 'b', 'c' };
+        final byte[] buffer2 = { 'd', 'e', 'f', 0 };
         assertTrue(ArchiveUtils.matchAsciiBuffer("abc", buffer1));
         assertFalse(ArchiveUtils.matchAsciiBuffer("abc\0", buffer1));
         assertTrue(ArchiveUtils.matchAsciiBuffer("def\0", buffer2));
@@ -68,9 +68,9 @@ public class ArchiveUtilsTest extends AbstractTest {
 
     @Test
     public void testCompareBA() {
-        final byte[] buffer1 = {1, 2, 3};
-        final byte[] buffer2 = {1, 2, 3, 0};
-        final byte[] buffer3 = {1, 2, 3};
+        final byte[] buffer1 = { 1, 2, 3 };
+        final byte[] buffer2 = { 1, 2, 3, 0 };
+        final byte[] buffer3 = { 1, 2, 3 };
         assertTrue(ArchiveUtils.isEqual(buffer1, buffer2, true));
         assertFalse(ArchiveUtils.isEqual(buffer1, buffer2, false));
         assertFalse(ArchiveUtils.isEqual(buffer1, buffer2));
@@ -126,7 +126,7 @@ public class ArchiveUtilsTest extends AbstractTest {
     @Test
     public void testToAsciiBytes() {
         final byte[] byteArray = ArchiveUtils.toAsciiBytes("SOCKET");
-        assertArrayEquals(new byte[] {(byte) 83, (byte) 79, (byte) 67, (byte) 75, (byte) 69, (byte) 84}, byteArray);
+        assertArrayEquals(new byte[] { (byte) 83, (byte) 79, (byte) 67, (byte) 75, (byte) 69, (byte) 84 }, byteArray);
         assertFalse(ArchiveUtils.isEqualWithNull(byteArray, 0, 46, byteArray, 63, 0));
     }
 

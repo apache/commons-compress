@@ -52,7 +52,7 @@ public final class Pack200Test extends AbstractTest {
         final File file2 = getFile("test2.xml");
 
         try (OutputStream out = new Pack200CompressorOutputStream(Files.newOutputStream(output.toPath()), mode);
-             JarArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("jar", out)) {
+                JarArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("jar", out)) {
 
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
             Files.copy(file1.toPath(), os);
@@ -64,7 +64,7 @@ public final class Pack200Test extends AbstractTest {
         }
 
         try (InputStream is = new Pack200CompressorInputStream(output);
-            final ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
+                ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
             final List<String> files = new ArrayList<>();
             files.add("testdata/test1.xml");
             files.add("testdata/test2.xml");
@@ -72,13 +72,11 @@ public final class Pack200Test extends AbstractTest {
         }
     }
 
-    private void jarUnarchiveAll(final boolean useFile, final Pack200Strategy mode)
-        throws Exception {
+    private void jarUnarchiveAll(final boolean useFile, final Pack200Strategy mode) throws Exception {
         final File input = getFile("bla.pack");
-        try (
-            InputStream is = useFile ? new Pack200CompressorInputStream(input, mode)
+        try (InputStream is = useFile ? new Pack200CompressorInputStream(input, mode)
                 : new Pack200CompressorInputStream(Files.newInputStream(input.toPath()), mode);
-            ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
+                ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
 
             ArchiveEntry entry = in.getNextEntry();
             while (entry != null) {
@@ -98,7 +96,7 @@ public final class Pack200Test extends AbstractTest {
     private void multiByteReadConsistentlyReturnsMinusOneAtEof(final Pack200Strategy s) throws Exception {
         final File input = getFile("bla.pack");
         final byte[] buf = new byte[2];
-        try (final Pack200CompressorInputStream in = new Pack200CompressorInputStream(input, s)) {
+        try (Pack200CompressorInputStream in = new Pack200CompressorInputStream(input, s)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read(buf));
             assertEquals(-1, in.read(buf));
@@ -107,7 +105,7 @@ public final class Pack200Test extends AbstractTest {
 
     private void singleByteReadConsistentlyReturnsMinusOneAtEof(final Pack200Strategy s) throws Exception {
         final File input = getFile("bla.pack");
-        try (final Pack200CompressorInputStream in = new Pack200CompressorInputStream(input, s)) {
+        try (Pack200CompressorInputStream in = new Pack200CompressorInputStream(input, s)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
@@ -136,8 +134,7 @@ public final class Pack200Test extends AbstractTest {
     public void testInputStreamMethods() throws Exception {
         final Map<String, String> m = new HashMap<>();
         m.put("foo", "bar");
-        try (InputStream is = new Pack200CompressorInputStream(newInputStream("bla.jar"),
-                m)) {
+        try (InputStream is = new Pack200CompressorInputStream(newInputStream("bla.jar"), m)) {
             // packed file is a jar, which is a ZIP, so it starts with
             // a local file header
             assertTrue(is.markSupported());
@@ -201,9 +198,9 @@ public final class Pack200Test extends AbstractTest {
         final Map<String, String> m = new HashMap<>();
         m.put("foo", "bar");
         try (OutputStream out = Files.newOutputStream(output.toPath());
-             OutputStream os = new Pack200CompressorOutputStream(out, m)) {
+                OutputStream os = new Pack200CompressorOutputStream(out, m)) {
             os.write(1);
-            os.write(new byte[] {2, 3});
+            os.write(new byte[] { 2, 3 });
         }
     }
 

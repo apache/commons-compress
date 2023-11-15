@@ -37,14 +37,13 @@ public class TestCompressorStreamProvider implements CompressorStreamProvider {
     }
 
     @Override
-    public CompressorInputStream createCompressorInputStream(final String name, final InputStream in,
-            final boolean decompressConcatenated) throws CompressorException {
+    public CompressorInputStream createCompressorInputStream(final String name, final InputStream in, final boolean decompressConcatenated)
+            throws CompressorException {
         throw new InvocationConfirmationException(name);
     }
 
     @Override
-    public CompressorOutputStream createCompressorOutputStream(final String name, final OutputStream out)
-            throws CompressorException {
+    public CompressorOutputStream createCompressorOutputStream(final String name, final OutputStream out) throws CompressorException {
         throw new InvocationConfirmationException(name);
     }
 

@@ -35,8 +35,8 @@ public class BZip2NSelectorsOverflowTest extends AbstractTest {
     @Test
     public void testShouldDecompressBlockWithNSelectorOverflow() throws Exception {
         final File toDecompress = getFile("lbzip2_32767.bz2");
-        try (final InputStream is = Files.newInputStream(toDecompress.toPath());
-             final BZip2CompressorInputStream in = new BZip2CompressorInputStream(is)) {
+        try (InputStream is = Files.newInputStream(toDecompress.toPath());
+                BZip2CompressorInputStream in = new BZip2CompressorInputStream(is)) {
             int l = 0;
             while (in.read() != -1) {
                 l++;

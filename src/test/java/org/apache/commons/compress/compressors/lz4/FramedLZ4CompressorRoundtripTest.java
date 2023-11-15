@@ -39,24 +39,19 @@ import org.junit.jupiter.params.provider.MethodSource;
 public final class FramedLZ4CompressorRoundtripTest extends AbstractTest {
 
     public static Stream<Arguments> factory() {
-        return Stream.of(
-                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64)),
+        return Stream.of(Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64)),
                 Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K256)),
                 Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M1)),
                 Arguments.of(FramedLZ4CompressorOutputStream.Parameters.DEFAULT),
                 // default without content checksum
-                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4,
-                    false, false, false)),
+                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4, false, false, false)),
                 // default with block checksum
-                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4,
-                    true, true, false)),
+                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4, true, true, false)),
                 // small blocksize (so we get enough blocks) and enabled block dependency, otherwise defaults
-                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64,
-                    true, false, true)),
+                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, true)),
                 // default, tuned for speed
-                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4,
-                    true, false, false, BlockLZ4CompressorOutputStream.createParameterBuilder()
-                        .tunedForSpeed().build())));
+                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4, true, false, false,
+                        BlockLZ4CompressorOutputStream.createParameterBuilder().tunedForSpeed().build())));
     }
 
     @ParameterizedTest
@@ -75,7 +70,7 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTest {
     // yields no compression at all
     @ParameterizedTest
     @MethodSource("factory")
-   public void gzippedLoremIpsumRoundtrip(final FramedLZ4CompressorOutputStream.Parameters params) throws IOException {
+    public void gzippedLoremIpsumRoundtrip(final FramedLZ4CompressorOutputStream.Parameters params) throws IOException {
         roundTripTest("lorem-ipsum.txt.gz", params);
     }
 

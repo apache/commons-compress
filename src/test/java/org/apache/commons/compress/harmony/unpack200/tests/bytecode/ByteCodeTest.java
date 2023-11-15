@@ -28,11 +28,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class ByteCodeTest {
 
     static Stream<Arguments> byteCode() {
-        return Stream.of(
-                Arguments.of(0, "nop"),
-                Arguments.of(-79, "return"),
-                Arguments.of(177, "return")
-        );
+        return Stream.of(Arguments.of(0, "nop"), Arguments.of(-79, "return"), Arguments.of(177, "return"));
     }
 
     @ParameterizedTest

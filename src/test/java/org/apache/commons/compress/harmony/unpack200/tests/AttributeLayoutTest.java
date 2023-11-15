@@ -45,21 +45,11 @@ public class AttributeLayoutTest {
 
         @Override
         public SegmentConstantPool getConstantPool() {
-            final ClassFileEntry[][] data = {
-                    {}, // ALL
-                    { entry("Zero"), entry("One"), entry("Two"),
-                            entry("Three"), entry("Four"), entry("Five"),
-                            entry("Six"), entry("Seven"), entry("Eight"),
+            final ClassFileEntry[][] data = { {}, // ALL
+                    { entry("Zero"), entry("One"), entry("Two"), entry("Three"), entry("Four"), entry("Five"), entry("Six"), entry("Seven"), entry("Eight"),
                             entry("Nine") }, // UTF-8
-                    {},
-                    {},
-                    {},
-                    {},
-                    {},
-                    {},
-                    { entry("Eins"), entry("Zwei"), entry("Drei"),
-                            entry("Vier"), entry("Funf"), entry("Sechs"),
-                            entry("Sieben"), entry("Acht"), entry("Neun") }, // Signature
+                    {}, {}, {}, {}, {}, {}, { entry("Eins"), entry("Zwei"), entry("Drei"), entry("Vier"), entry("Funf"), entry("Sechs"), entry("Sieben"),
+                            entry("Acht"), entry("Neun") }, // Signature
             };
             return new SegmentConstantPool(null) {
 
@@ -76,32 +66,21 @@ public class AttributeLayoutTest {
     }
 
     static Stream<Arguments> badData() {
-        return Stream.of(
-                Arguments.of(null, AttributeLayout.CONTEXT_CLASS, ""),
-                Arguments.of("", AttributeLayout.CONTEXT_CLASS, ""),
-                Arguments.of("name", -1, ""),
-                Arguments.of("name", 1234, "")
-        );
+        return Stream.of(Arguments.of(null, AttributeLayout.CONTEXT_CLASS, ""), Arguments.of("", AttributeLayout.CONTEXT_CLASS, ""),
+                Arguments.of("name", -1, ""), Arguments.of("name", 1234, ""));
     }
 
     static Stream<Arguments> codec() {
-        return Stream.of(
-                Arguments.of("O", AttributeLayout.CONTEXT_CLASS, "HOBS", Codec.BRANCH5),
-                Arguments.of("P", AttributeLayout.CONTEXT_METHOD, "PIN", Codec.BCI5),
-                Arguments.of("S", AttributeLayout.CONTEXT_FIELD, "HS", Codec.SIGNED5),
+        return Stream.of(Arguments.of("O", AttributeLayout.CONTEXT_CLASS, "HOBS", Codec.BRANCH5),
+                Arguments.of("P", AttributeLayout.CONTEXT_METHOD, "PIN", Codec.BCI5), Arguments.of("S", AttributeLayout.CONTEXT_FIELD, "HS", Codec.SIGNED5),
                 Arguments.of("RS", AttributeLayout.CONTEXT_CODE, "RRRS", Codec.UNSIGNED5),
                 Arguments.of("KS", AttributeLayout.CONTEXT_CLASS, "RKS", Codec.UNSIGNED5),
-                Arguments.of("B", AttributeLayout.CONTEXT_CLASS, "TRKSB", Codec.BYTE1)
-        );
+                Arguments.of("B", AttributeLayout.CONTEXT_CLASS, "TRKSB", Codec.BYTE1));
     }
 
     static Stream<Arguments> okData() {
-        return Stream.of(
-                Arguments.of("name", AttributeLayout.CONTEXT_CLASS, ""),
-                Arguments.of("name", AttributeLayout.CONTEXT_METHOD, ""),
-                Arguments.of("name", AttributeLayout.CONTEXT_FIELD, ""),
-                Arguments.of("name", AttributeLayout.CONTEXT_CODE, "")
-        );
+        return Stream.of(Arguments.of("name", AttributeLayout.CONTEXT_CLASS, ""), Arguments.of("name", AttributeLayout.CONTEXT_METHOD, ""),
+                Arguments.of("name", AttributeLayout.CONTEXT_FIELD, ""), Arguments.of("name", AttributeLayout.CONTEXT_CODE, ""));
     }
 
     @ParameterizedTest
@@ -119,8 +98,7 @@ public class AttributeLayoutTest {
 
     @Test
     public void testLayoutRS() throws Pack200Exception {
-        final AttributeLayout layout = new AttributeLayout("RS",
-                AttributeLayout.CONTEXT_CLASS, "RS", 1);
+        final AttributeLayout layout = new AttributeLayout("RS", AttributeLayout.CONTEXT_CLASS, "RS", 1);
         final Segment segment = new TestSegment();
         assertNull(layout.getValue(-1, segment.getConstantPool()));
         assertEquals("Eins", ((CPUTF8) layout.getValue(0, segment.getConstantPool())).underlyingString());
@@ -129,8 +107,7 @@ public class AttributeLayoutTest {
 
     @Test
     public void testLayoutRSN() throws Pack200Exception {
-        final AttributeLayout layout = new AttributeLayout("RSN",
-                AttributeLayout.CONTEXT_CLASS, "RSN", 1);
+        final AttributeLayout layout = new AttributeLayout("RSN", AttributeLayout.CONTEXT_CLASS, "RSN", 1);
         final Segment segment = new TestSegment();
         assertNull(layout.getValue(0, segment.getConstantPool()));
         assertEquals("Eins", ((CPUTF8) layout.getValue(1, segment.getConstantPool())).underlyingString());
@@ -139,8 +116,7 @@ public class AttributeLayoutTest {
 
     @Test
     public void testLayoutRU() throws Pack200Exception {
-        final AttributeLayout layout = new AttributeLayout("RU",
-                AttributeLayout.CONTEXT_CLASS, "RU", 1);
+        final AttributeLayout layout = new AttributeLayout("RU", AttributeLayout.CONTEXT_CLASS, "RU", 1);
         final Segment segment = new TestSegment();
         assertNull(layout.getValue(-1, segment.getConstantPool()));
         assertEquals("Zero", ((CPUTF8) layout.getValue(0, segment.getConstantPool())).underlyingString());
@@ -149,8 +125,7 @@ public class AttributeLayoutTest {
 
     @Test
     public void testLayoutRUN() throws Pack200Exception {
-        final AttributeLayout layout = new AttributeLayout("RUN",
-                AttributeLayout.CONTEXT_CLASS, "RUN", 1);
+        final AttributeLayout layout = new AttributeLayout("RUN", AttributeLayout.CONTEXT_CLASS, "RUN", 1);
         final Segment segment = new TestSegment();
         assertNull(layout.getValue(0, segment.getConstantPool()));
         assertEquals("Zero", ((CPUTF8) layout.getValue(1, segment.getConstantPool())).underlyingString());

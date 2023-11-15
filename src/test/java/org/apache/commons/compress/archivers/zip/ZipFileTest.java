@@ -142,8 +142,8 @@ public class ZipFileTest extends AbstractTest {
     private void assertFileEqualsToEntry(final File fileToCompare, final ZipArchiveEntry entry, final ZipFile zipFile) throws IOException {
         final byte[] buffer = new byte[10240];
         final File tempFile = createTempFile("temp", "txt");
-        try (final OutputStream outputStream = Files.newOutputStream(tempFile.toPath());
-                final InputStream inputStream = zipFile.getInputStream(entry)) {
+        try (OutputStream outputStream = Files.newOutputStream(tempFile.toPath());
+                InputStream inputStream = zipFile.getInputStream(entry)) {
             int readLen;
             while ((readLen = inputStream.read(buffer)) > 0) {
                 outputStream.write(buffer, 0, readLen);
@@ -280,7 +280,7 @@ public class ZipFileTest extends AbstractTest {
 
         final Map<String, byte[]> content = new HashMap<>();
         for (final ZipArchiveEntry entry : Collections.list(zf.getEntries())) {
-            try (final InputStream inputStream = zf.getInputStream(entry)) {
+            try (InputStream inputStream = zf.getInputStream(entry)) {
                 content.put(entry.getName(), IOUtils.toByteArray(inputStream));
             }
         }
@@ -308,7 +308,7 @@ public class ZipFileTest extends AbstractTest {
         try (InputStream fis = newInputStream("mixed.zip")) {
             data = IOUtils.toByteArray(fis);
         }
-        try (final SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(data)) {
+        try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(data)) {
             zf = new ZipFile(channel, CharsetNames.UTF_8);
 
             final Map<String, byte[]> content = new HashMap<>();
@@ -525,7 +525,7 @@ public class ZipFileTest extends AbstractTest {
     @Test
     public void testExtractFileLiesAcrossSplitZipSegmentsCreatedByWinrar() throws Exception {
         final File lastFile = getFile("COMPRESS-477/split_zip_created_by_winrar/split_zip_created_by_winrar.zip");
-        try (final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile)) {
+        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile)) {
             zf = new ZipFile(channel);
 
             // the compressed content of ZipArchiveInputStream.java lies between .z01 and .z02
@@ -538,7 +538,7 @@ public class ZipFileTest extends AbstractTest {
     @Test
     public void testExtractFileLiesAcrossSplitZipSegmentsCreatedByZip() throws Exception {
         final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
-        try (final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile)) {
+        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile)) {
             zf = new ZipFile(channel);
 
             // the compressed content of UnsupportedCompressionAlgorithmException.java lies between .z01 and .z02
@@ -557,7 +557,7 @@ public class ZipFileTest extends AbstractTest {
     @Test
     public void testExtractFileLiesAcrossSplitZipSegmentsCreatedByZipOfZip64() throws Exception {
         final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip_zip64.zip");
-        try (final SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile)) {
+        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile)) {
             zf = new ZipFile(channel);
 
             // the compressed content of UnsupportedCompressionAlgorithmException.java lies between .z01 and .z02

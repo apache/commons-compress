@@ -53,11 +53,7 @@ public class ParameterizedArchiverTest extends AbstractTest {
     // and reading logic would be different as well - see
     // SevenZArchiverTest class
     public static Stream<Arguments> data() {
-        return Stream.of(
-                Arguments.of("tar"),
-                Arguments.of("cpio"),
-                Arguments.of("zip")
-        );
+        return Stream.of(Arguments.of("tar"), Arguments.of("cpio"), Arguments.of("zip"));
     }
 
     private File target;
@@ -68,7 +64,7 @@ public class ParameterizedArchiverTest extends AbstractTest {
         // TODO How to parameterize a BeforeEach method?
         setUp(format);
         try (OutputStream os = Files.newOutputStream(target.toPath());
-             ArchiveOutputStream<?> aos = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, os)) {
+                ArchiveOutputStream<?> aos = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, os)) {
             new Archiver().create(aos, getTempDirFile());
         }
         verifyContent(format);
@@ -80,8 +76,7 @@ public class ParameterizedArchiverTest extends AbstractTest {
         assertTrue(entry.isDirectory(), expectedName + " is not a directory");
     }
 
-    private void assertHelloWorld(final String expectedName, final String suffix, final ArchiveEntry entry, final InputStream is)
-        throws IOException {
+    private void assertHelloWorld(final String expectedName, final String suffix, final ArchiveEntry entry, final InputStream is) throws IOException {
         assertNotNull(entry, () -> expectedName + " does not exists");
         assertEquals(expectedName, entry.getName());
         assertFalse(entry.isDirectory(), expectedName + " is a directory");
@@ -95,8 +90,8 @@ public class ParameterizedArchiverTest extends AbstractTest {
     public void channelVersion(final String format) throws Exception {
         // TODO How to parameterize a BeforeEach method?
         setUp(format);
-        try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE,
-            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+        try (SeekableByteChannel c = FileChannel.open(target.toPath(), StandardOpenOption.WRITE, StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING)) {
             new Archiver().create(format, c, getTempDirFile());
         }
         verifyContent(format);
@@ -136,8 +131,8 @@ public class ParameterizedArchiverTest extends AbstractTest {
 
     private void verifyContent(final String format) throws IOException, ArchiveException {
         try (InputStream is = Files.newInputStream(target.toPath());
-             BufferedInputStream bis = new BufferedInputStream(is);
-             ArchiveInputStream<?> ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, bis)) {
+                BufferedInputStream bis = new BufferedInputStream(is);
+                ArchiveInputStream<?> ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, bis)) {
             assertDir("a", ais.getNextEntry());
             assertDir("a/b", ais.getNextEntry());
             final ArchiveEntry n = ais.getNextEntry();

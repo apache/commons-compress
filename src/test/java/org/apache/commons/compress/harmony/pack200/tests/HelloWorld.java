@@ -24,6 +24,7 @@ public class HelloWorld {
     public static void main(final String[] args) {
         System.out.println("Hello world");
     }
+
     int i = 97, j = 42, k = 12345;
     float f = 3.142f, g = 2.718f;
     long l = 299792458;

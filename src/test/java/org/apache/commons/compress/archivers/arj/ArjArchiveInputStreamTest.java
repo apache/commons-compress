@@ -45,7 +45,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
         expected.append("<empty/>\n");
 
         final StringBuilder result = new StringBuilder();
-        try (final ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
+        try (ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
             ArjArchiveEntry entry;
 
             while ((entry = in.getNextEntry()) != null) {
@@ -76,7 +76,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.arj");
-             ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
+                ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
@@ -86,7 +86,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
 
     @Test
     public void testReadingOfAttributesDosVersion() throws Exception {
-        try (final ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
+        try (ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
             final ArjArchiveEntry entry = in.getNextEntry();
             assertEquals("test1.xml", entry.getName());
             assertEquals(30, entry.getSize());
@@ -100,7 +100,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
 
     @Test
     public void testReadingOfAttributesUnixVersion() throws Exception {
-        try (final ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.unix.arj"))) {
+        try (ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.unix.arj"))) {
             final ArjArchiveEntry entry = in.getNextEntry();
             assertEquals("test1.xml", entry.getName());
             assertEquals(30, entry.getSize());
@@ -115,7 +115,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     @Test
     public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (InputStream in = newInputStream("bla.arj");
-             ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
+                ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
             final ArchiveEntry e = archive.getNextEntry();
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());

@@ -37,11 +37,14 @@ import java.util.List;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+// @formatter:off
 /**
  * Initially based on <a href=
- * "https://github.com/frugalmechanic/fm-common/blob/master/jvm/src/test/scala/fm/common/TestMultiReadOnlySeekableByteChannel.scala">TestMultiReadOnlySeekableByteChannel.scala</a>
+ * "https://github.com/frugalmechanic/fm-common/blob/master/jvm/src/test/scala/fm/common/TestMultiReadOnlySeekableByteChannel.scala">
+ * TestMultiReadOnlySeekableByteChannel.scala</a>
  * by Tim Underwood.
  */
+//@formatter:on
 public class MultiReadOnlySeekableByteChannelTest {
 
     private static final class ThrowingSeekableByteChannel implements SeekableByteChannel {

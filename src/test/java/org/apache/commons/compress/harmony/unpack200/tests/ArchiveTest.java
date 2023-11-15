@@ -55,7 +55,7 @@ public class ArchiveTest extends AbstractTempDirTest {
         if (in != null) {
             try {
                 in.close();
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -63,7 +63,7 @@ public class ArchiveTest extends AbstractTempDirTest {
             if (out != null) {
                 out.close();
             }
-        } catch (final IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -181,7 +181,7 @@ public class ArchiveTest extends AbstractTempDirTest {
         final File original = new File(Archive.class.getResource("/pack200/sql.pack.gz").toURI());
         final File copy = createTempFile("sqlcopy", ".pack.gz");
         try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(original));
-                final BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(copy))) {
+                BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(copy))) {
             final byte[] bytes = new byte[256];
             int read = inputStream.read(bytes);
             while (read > 0) {

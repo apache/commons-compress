@@ -40,7 +40,7 @@ public class SevenZNativeHeapTest extends AbstractTest {
 
         final AtomicBoolean isEnded = new AtomicBoolean();
 
-        public DelegatingDeflater(final Deflater deflater) {
+        DelegatingDeflater(final Deflater deflater) {
             this.deflater = deflater;
         }
 
@@ -140,7 +140,6 @@ public class SevenZNativeHeapTest extends AbstractTest {
             deflater.setStrategy(strategy);
         }
 
-
     }
 
     private static final class DelegatingInflater extends Inflater {
@@ -148,7 +147,8 @@ public class SevenZNativeHeapTest extends AbstractTest {
         private final Inflater inflater;
 
         final AtomicBoolean isEnded = new AtomicBoolean();
-        public DelegatingInflater(final Inflater inflater) {
+
+        DelegatingInflater(final Inflater inflater) {
             this.inflater = inflater;
         }
 
@@ -244,8 +244,7 @@ public class SevenZNativeHeapTest extends AbstractTest {
     public void testEndDeflaterOnCloseStream() throws Exception {
         final Coders.DeflateDecoder deflateDecoder = new DeflateDecoder();
         final DelegatingDeflater delegatingDeflater;
-        try (final DeflateDecoderOutputStream outputStream = (DeflateDecoderOutputStream) deflateDecoder
-            .encode(new ByteArrayOutputStream(), 9)) {
+        try (DeflateDecoderOutputStream outputStream = (DeflateDecoderOutputStream) deflateDecoder.encode(new ByteArrayOutputStream(), 9)) {
             delegatingDeflater = new DelegatingDeflater(outputStream.deflater);
             outputStream.deflater = delegatingDeflater;
         }
@@ -257,8 +256,8 @@ public class SevenZNativeHeapTest extends AbstractTest {
     public void testEndInflaterOnCloseStream() throws Exception {
         final Coders.DeflateDecoder deflateDecoder = new DeflateDecoder();
         final DelegatingInflater delegatingInflater;
-        try (final DeflateDecoderInputStream inputStream = (DeflateDecoderInputStream) deflateDecoder.decode("dummy",
-            new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 0, null, null, Integer.MAX_VALUE)) {
+        try (DeflateDecoderInputStream inputStream = (DeflateDecoderInputStream) deflateDecoder.decode("dummy",
+                new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 0, null, null, Integer.MAX_VALUE)) {
             delegatingInflater = new DelegatingInflater(inputStream.inflater);
             inputStream.inflater = delegatingInflater;
         }

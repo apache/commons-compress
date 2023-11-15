@@ -30,6 +30,7 @@ public class CoverageTest {
         final LocalFileHeader lfh = new LocalFileHeader();
         assertNotNull(lfh.toString());
     }
+
     @Test
     public void testHeaderInstances() {
         assertNotNull(new LocalFileHeader.FileTypes());
@@ -37,6 +38,7 @@ public class CoverageTest {
         assertNotNull(new LocalFileHeader.Flags());
         assertNotNull(new MainHeader.Flags());
     }
+
     @Test
     public void testHostOsInstance() {
         final HostOs hostOs = new HostOs();

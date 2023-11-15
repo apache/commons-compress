@@ -22,14 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-
 /**
  * Unit tests for class {@link Folder}.
  *
  * @see Folder
  */
 public class FolderTest {
-
 
     @Test
     public void testFindBindPairForInStream() {
@@ -44,7 +42,6 @@ public class FolderTest {
 
     }
 
-
     @Test
     public void testGetUnpackSizeForCoderOne() {
 
@@ -56,7 +53,6 @@ public class FolderTest {
         assertEquals(0L, folder.getUnpackSizeForCoder(coder));
 
     }
-
 
     @Test
     public void testGetUnpackSizeOne() {
@@ -73,7 +69,6 @@ public class FolderTest {
 
     }
 
-
     @Test
     public void testGetUnpackSizeTwo() {
 
@@ -82,6 +77,5 @@ public class FolderTest {
         assertEquals(0L, folder.getUnpackSize());
 
     }
-
 
 }

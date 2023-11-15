@@ -463,11 +463,21 @@ public class SevenZFileTest extends AbstractTest {
     @Test
     public void testRandomAccessTogetherWithSequentialAccess() throws Exception {
         try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"))) {
-            final String testTxtContents = "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
-                    + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
-                    + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
-                    + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011";
-            final String filesTxtContents = "0xxxxxxxxx10xxxxxxxx20xxxxxxxx30xxxxxxxx40xxxxxxxx50xxxxxxxx60xxxxxxxx70xxxxxxxx80xxxxxxxx90xxxxxxxx100xxxxxxx110xxxxxxx120xxxxxxx130xxxxxxx -> 0yyyyyyyyy10yyyyyyyy20yyyyyyyy30yyyyyyyy40yyyyyyyy50yyyyyyyy60yyyyyyyy70yyyyyyyy80yyyyyyyy90yyyyyyyy100yyyyyyy110yyyyyyy120yyyyyyy130yyyyyyy\n";
+            // @formatter:off
+            final String testTxtContents = "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011";
+            final String filesTxtContents = "0xxxxxxxxx10xxxxxxxx20xxxxxxxx30xxxxxxxx40xxxxxxxx50xxxxxxxx60xxxxxxxx70xxxxxxxx80xxxxxxxx90xxxxxxxx100"
+                    + "xxxxxxx110xxxxxxx120xxxxxxx130xxxxxxx -> 0yyyyyyyyy10yyyyyyyy20yyyyyyyy30yyyyyyyy40yyyyyyyy50yyyyyyyy60yyyyyyyy70yyyyyyyy80"
+                    + "yyyyyyyy90yyyyyyyy100yyyyyyy110yyyyyyy120yyyyyyy130yyyyyyy\n";
+            // @formatter:off
             int off;
             byte[] contents;
 
@@ -787,7 +797,7 @@ public class SevenZFileTest extends AbstractTest {
 
     @Test
     public void testRetrieveInputStreamForAllEntriesWithoutCRCMultipleTimes() throws IOException {
-        try (final SevenZOutputFile out = new SevenZOutputFile(newTempFile("test.7z"))) {
+        try (SevenZOutputFile out = new SevenZOutputFile(newTempFile("test.7z"))) {
             final Path inputFile = Files.createTempFile("SevenZTestTemp", "");
 
             final SevenZArchiveEntry entry = out.createArchiveEntry(inputFile.toFile(), "test.txt");
@@ -809,7 +819,7 @@ public class SevenZFileTest extends AbstractTest {
 
     @Test
     public void testRetrieveInputStreamForShuffledEntries() throws IOException {
-        try (final SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-348.7z"))) {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-348.7z"))) {
             final List<SevenZArchiveEntry> entries = (List<SevenZArchiveEntry>) sevenZFile.getEntries();
             Collections.shuffle(entries);
             for (final SevenZArchiveEntry entry : entries) {
@@ -820,7 +830,7 @@ public class SevenZFileTest extends AbstractTest {
 
     @Test
     public void testSevenZWithEOS() throws IOException {
-        try (final SevenZFile sevenZFile = new SevenZFile(getFile("lzma-with-eos.7z"))) {
+        try (SevenZFile sevenZFile = new SevenZFile(getFile("lzma-with-eos.7z"))) {
             final List<SevenZArchiveEntry> entries = (List<SevenZArchiveEntry>) sevenZFile.getEntries();
             for (final SevenZArchiveEntry entry : entries) {
                 read(sevenZFile, entry);

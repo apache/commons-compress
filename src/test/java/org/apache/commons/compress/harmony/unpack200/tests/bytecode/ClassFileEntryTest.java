@@ -32,8 +32,7 @@ import org.junit.jupiter.api.Test;
 
 public class ClassFileEntryTest {
 
-    private void checkEquality(final Object equal1, final Object equal2, final String toString,
-            final Object unequal) {
+    private void checkEquality(final Object equal1, final Object equal2, final String toString, final Object unequal) {
         assertEquals(equal1, equal2);
         assertEquals(equal1.hashCode(), equal2.hashCode());
         assertTrue(equal1.toString().indexOf(toString) >= 0);
@@ -53,14 +52,10 @@ public class ClassFileEntryTest {
 
     @Test
     public void testCPField() {
-        final CPMember cp1 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("I", 4),
-                0, null);
-        final CPMember cp2 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("I", 4),
-                0, null);
-        final CPMember cp3 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("Z", 5),
-                0, null);
-        final CPMember cp4 = new CPMember(new CPUTF8("GName", 6), new CPUTF8("I", 4),
-                0, null);
+        final CPMember cp1 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("I", 4), 0, null);
+        final CPMember cp2 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("I", 4), 0, null);
+        final CPMember cp3 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("Z", 5), 0, null);
+        final CPMember cp4 = new CPMember(new CPUTF8("GName", 6), new CPUTF8("I", 4), 0, null);
         checkEquality(cp1, cp2, "Name", cp3); //$NON-NLS-1$
         checkEquality(cp1, cp2, "I", cp4); //$NON-NLS-1$
     }
@@ -99,12 +94,9 @@ public class ClassFileEntryTest {
 
     @Test
     public void testSourceAttribute() {
-        final SourceFileAttribute sfa1 = new SourceFileAttribute(new CPUTF8(
-                "Thing.java", 1)); //$NON-NLS-1$
-        final SourceFileAttribute sfa2 = new SourceFileAttribute(new CPUTF8(
-                "Thing.java", 1)); //$NON-NLS-1$
-        final SourceFileAttribute sfa3 = new SourceFileAttribute(new CPUTF8(
-                "OtherThing.java", 2)); //$NON-NLS-1$
+        final SourceFileAttribute sfa1 = new SourceFileAttribute(new CPUTF8("Thing.java", 1)); //$NON-NLS-1$
+        final SourceFileAttribute sfa2 = new SourceFileAttribute(new CPUTF8("Thing.java", 1)); //$NON-NLS-1$
+        final SourceFileAttribute sfa3 = new SourceFileAttribute(new CPUTF8("OtherThing.java", 2)); //$NON-NLS-1$
         checkEquality(sfa1, sfa2, "Thing.java", sfa3); //$NON-NLS-1$
     }
 

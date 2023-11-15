@@ -49,7 +49,6 @@ public final class JarTest extends AbstractTest {
         }
     }
 
-
     @Test
     public void testJarUnarchive() throws Exception {
         final File input = getFile("bla.jar");
@@ -77,7 +76,7 @@ public final class JarTest extends AbstractTest {
     public void testJarUnarchiveAll() throws Exception {
         final File input = getFile("bla.jar");
         try (InputStream is = Files.newInputStream(input.toPath());
-                final ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
+                ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
 
             ArchiveEntry entry = in.getNextEntry();
             while (entry != null) {

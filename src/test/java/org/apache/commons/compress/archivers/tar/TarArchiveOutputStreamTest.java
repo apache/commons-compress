@@ -156,11 +156,11 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     public void testCount() throws Exception {
         final File f = createTempFile("commons-compress-tarcount", ".tar");
         try (OutputStream fos = Files.newOutputStream(f.toPath());
-                final ArchiveOutputStream<ArchiveEntry> tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, fos)) {
+                ArchiveOutputStream<ArchiveEntry> tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, fos)) {
             final File file1 = getFile("test1.xml");
             final TarArchiveEntry sEntry = new TarArchiveEntry(file1, file1.getName());
             tarOut.putArchiveEntry(sEntry);
-            try (final InputStream in = Files.newInputStream(file1.toPath())) {
+            try (InputStream in = Files.newInputStream(file1.toPath())) {
                 final byte[] buf = new byte[8192];
                 int read = 0;
                 while ((read = in.read(buf)) > 0) {
@@ -180,7 +180,10 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
      */
     @Test
     public void testLongNameMd5Hash() throws Exception {
-        final String longFileName = "a/considerably/longer/file/name/which/forces/use/of/the/long/link/header/which/appears/to/always/use/the/current/time/as/modification/date";
+        // @formatter:off
+        final String longFileName =
+            "a/considerably/longer/file/name/which/forces/use/of/the/long/link/header/which/appears/to/always/use/the/current/time/as/modification/date";
+        // @formatter:on
         final Date modificationDate = new Date();
 
         final byte[] archive1 = createTarArchiveContainingOneDirectory(longFileName, modificationDate);

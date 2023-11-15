@@ -36,7 +36,7 @@ public class CpioArchiveTest {
 
     public static Stream<Arguments> factory() {
         return Stream.of(Arguments.of(CpioConstants.FORMAT_NEW), Arguments.of(CpioConstants.FORMAT_NEW_CRC), Arguments.of(CpioConstants.FORMAT_OLD_ASCII),
-            Arguments.of(CpioConstants.FORMAT_OLD_BINARY));
+                Arguments.of(CpioConstants.FORMAT_OLD_BINARY));
     }
 
     @ParameterizedTest

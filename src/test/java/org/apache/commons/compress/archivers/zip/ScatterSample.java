@@ -34,12 +34,11 @@ public class ScatterSample {
         if (zipArchiveEntry.isDirectory() && !zipArchiveEntry.isUnixSymlink()) {
             dirs.addArchiveEntry(ZipArchiveEntryRequest.createZipArchiveEntryRequest(zipArchiveEntry, streamSupplier));
         } else {
-            scatterZipCreator.addArchiveEntry( zipArchiveEntry, streamSupplier);
+            scatterZipCreator.addArchiveEntry(zipArchiveEntry, streamSupplier);
         }
     }
 
-    public void writeTo(final ZipArchiveOutputStream zipArchiveOutputStream)
-            throws IOException, ExecutionException, InterruptedException {
+    public void writeTo(final ZipArchiveOutputStream zipArchiveOutputStream) throws IOException, ExecutionException, InterruptedException {
         dirs.writeTo(zipArchiveOutputStream);
         dirs.close();
         scatterZipCreator.writeTo(zipArchiveOutputStream);
