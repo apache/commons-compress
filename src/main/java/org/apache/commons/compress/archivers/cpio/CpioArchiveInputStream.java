@@ -408,7 +408,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         final byte[] tmpBuffer = readRange(length);
         try {
             return Long.parseLong(ArchiveUtils.toAsciiString(tmpBuffer), radix);
-        } catch(NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
             throw new IOException("Unable to parse long value from bytes", ex);
         }
     }
