@@ -168,6 +168,22 @@ public abstract class StreamCompressor implements Closeable {
         return new SeekableByteChannelCompressor(deflater, os);
     }
 
+    /**
+     * Create a stream compressor with the given compression level that
+     * pretends to have written `count` bytes. Used by {@link ZipFile#append()}.
+     *
+     * @param os       The SeekableByteChannel to receive output
+     * @param deflater The deflater to use for the compressor
+     * @param count    The count to initialize
+     * @return A stream compressor
+     * @since 1.26
+     */
+    static StreamCompressor create(final SeekableByteChannel os, final Deflater deflater, final long count) {
+        StreamCompressor sc = create(os, deflater);
+        sc.totalWrittenToOutputStream = count;
+        return sc;
+    }
+
     private final Deflater def;
 
     private final CRC32 crc = new CRC32();

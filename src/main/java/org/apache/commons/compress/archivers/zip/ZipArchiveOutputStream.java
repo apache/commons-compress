@@ -489,6 +489,42 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
+     * Creates a ZIP OutputStream from an existing Path, initializing previously read entries
+     * and trimming it just before the central directory (so that it can be regenerated).
+     *
+     * @param file    the file to ZIP to
+     * @param entries entries in the ZIP's central directory
+     * @param centralDirectoryStartOffset  start offset of the central directory
+     * @throws IOException on error
+     * @since 1.26
+     */
+    ZipArchiveOutputStream(final Path file, final List<ZipArchiveEntry> entries,
+                           final long centralDirectoryStartOffset) throws IOException {
+        def = new Deflater(level, true);
+        OutputStream outputStream = null;
+        SeekableByteChannel channel = null;
+        StreamCompressor streamCompressor;
+        try {
+            channel = Files.newByteChannel(file,
+                    EnumSet.of(StandardOpenOption.WRITE, StandardOpenOption.READ));
+            channel.truncate(centralDirectoryStartOffset);
+            channel.position(centralDirectoryStartOffset);
+            streamCompressor = StreamCompressor.create(channel, def, centralDirectoryStartOffset); // NOSONAR
+        } catch (final IOException e) { // NOSONAR
+            IOUtils.closeQuietly(channel);
+            throw e;
+        }
+        this.outputStream = outputStream;
+        this.channel = channel;
+        this.streamCompressor = streamCompressor;
+        this.isSplitZip = false;
+        this.entries.addAll(entries);
+        for (ZipArchiveEntry entry : entries) {
+            metaData.put(entry, new EntryMetaData(entry.getLocalHeaderOffset(), usesDataDescriptor(entry.getMethod(), false)));
+        }
+    }
+
+    /**
      * Creates a new ZIP OutputStream writing to a SeekableByteChannel.
      *
      * <p>

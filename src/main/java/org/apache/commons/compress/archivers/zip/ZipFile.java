@@ -714,6 +714,21 @@ public class ZipFile implements Closeable {
     }
 
     /**
+     * Converts this archive to a ZipArchiveOutputStream that retains
+     * its contents. The archive gets closed and the resulting output
+     * stream should be used from here on.
+     *
+     * @throws IOException if creating the output stream fails
+     */
+    public ZipArchiveOutputStream append() throws IOException {
+        ZipArchiveOutputStream os = new ZipArchiveOutputStream(new File(archiveName).toPath(),
+                                                               entries,
+                                                               centralDirectoryStartOffset);
+        this.close();
+        return os;
+    }
+
+    /**
      * Transfer selected entries from this ZIP file to a given #ZipArchiveOutputStream. Compression and all other attributes will be as in this file.
      * <p>
      * This method transfers entries based on the central directory of the ZIP file.
