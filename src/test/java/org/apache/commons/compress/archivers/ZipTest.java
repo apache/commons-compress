@@ -661,6 +661,56 @@ public final class ZipTest extends AbstractTest {
     }
 
     /**
+     * Archives a file, closes the archive, then appends to it a second one and unarchives it again. If the file length of result and source is the same, it looks like the operations have worked
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testZipArchiveAppend() throws Exception {
+        // Archive
+        final File output = newTempFile("bla.zip");
+        final File file1 = getFile("test1.xml");
+        final File file2 = getFile("test2.xml");
+
+        System.out.println("Testing file: " + output);
+
+        try (OutputStream out = Files.newOutputStream(output.toPath())) {
+            try (ArchiveOutputStream<ZipArchiveEntry> os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("zip", out)) {
+                os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
+                Files.copy(file1.toPath(), os);
+                os.closeArchiveEntry();
+            }
+        }
+
+        try (ArchiveOutputStream<ZipArchiveEntry> os = new ZipFile(output).append()) {
+            os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
+            Files.copy(file2.toPath(), os);
+            os.closeArchiveEntry();
+        }
+
+        // Unarchive the same
+        final List<File> results = new ArrayList<>();
+
+        try (InputStream fileInputStream = Files.newInputStream(output.toPath())) {
+            try (ArchiveInputStream<ZipArchiveEntry> archiveInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fileInputStream)) {
+                ZipArchiveEntry entry;
+                while ((entry = archiveInputStream.getNextEntry()) != null) {
+                    final File outfile = new File(tempResultDir.getCanonicalPath() + "/result/" + entry.getName());
+                    outfile.getParentFile().mkdirs();
+                    Files.copy(archiveInputStream, outfile.toPath());
+                    results.add(outfile);
+                }
+            }
+        }
+
+        assertEquals(results.size(), 2);
+        File result = results.get(0);
+        assertEquals(file1.length(), result.length());
+        result = results.get(1);
+        assertEquals(file2.length(), result.length());
+    }
+
+    /**
      * Archives 2 files and unarchives it again. If the file contents of result and source is the same, it looks like the operations have worked
      *
      * @throws Exception
