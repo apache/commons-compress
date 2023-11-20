@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.apache.commons.codec.digest.PureJavaCrc32C;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.compressors.lz77support.Parameters;
 import org.apache.commons.compress.utils.ByteUtils;
