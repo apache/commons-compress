@@ -41,12 +41,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 /**
  * Tests for unpack200 support for non-predefined attributes
  */
-public class NewAttributeBandsTest extends AbstractBandsTestCase {
+public class NewAttributeBandsTest extends AbstractBandsTest {
 
-    private class MockNewAttributeBands extends NewAttributeBands {
+    private final class MockNewAttributeBands extends NewAttributeBands {
 
-        public MockNewAttributeBands(final Segment segment, final AttributeLayout layout)
-                throws IOException {
+        MockNewAttributeBands(final Segment segment, final AttributeLayout layout) throws IOException {
             super(segment, layout);
         }
 
@@ -57,22 +56,17 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
 
     @Test
     public void testEmptyLayout() throws IOException, Pack200Exception {
-        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
-                new MockSegment(), new AttributeLayout("test",
-                        AttributeLayout.CONTEXT_CLASS, "", 25));
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(new MockSegment(),
+                new AttributeLayout("test", AttributeLayout.CONTEXT_CLASS, "", 25));
         final List<?> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(0, layoutElements.size());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {
-            "B", "FB", "SB", "H", "FH", "SH", "I", "FI", "SI", "PB", "OB",
-            "OSB", "POB", "PH", "OH", "OSH", "POH", "PI", "OI", "OSI", "POI"
-    })
+    @ValueSource(strings = { "B", "FB", "SB", "H", "FH", "SH", "I", "FI", "SI", "PB", "OB", "OSB", "POB", "PH", "OH", "OSH", "POH", "PI", "OI", "OSI", "POI" })
     public void testIntegralLayout(final String layoutStr) throws IOException, Pack200Exception {
-        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
-                new MockSegment(), new AttributeLayout("test",
-                        AttributeLayout.CONTEXT_CLASS, layoutStr, 25));
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(new MockSegment(),
+                new AttributeLayout("test", AttributeLayout.CONTEXT_CLASS, layoutStr, 25));
         final List layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         final Integral element = (Integral) layoutElements.get(0);
@@ -80,12 +74,9 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
     }
 
     @Test
-    public void testLayoutWithBackwardsCall() throws IOException,
-            Pack200Exception {
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
-                new MockSegment(), new AttributeLayout("test",
-                        AttributeLayout.CONTEXT_METHOD, "[NH[(1)]][KIH][(-1)]",
-                        20));
+    public void testLayoutWithBackwardsCall() throws IOException, Pack200Exception {
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(new MockSegment(),
+                new AttributeLayout("test", AttributeLayout.CONTEXT_METHOD, "[NH[(1)]][KIH][(-1)]", 20));
         List layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(3, layoutElements.size());
         Callable firstCallable = (Callable) layoutElements.get(0);
@@ -100,8 +91,7 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
         assertFalse(thirdCallable.isBackwardsCallable());
 
         newAttributeBands = new MockNewAttributeBands(new MockSegment(),
-                new AttributeLayout("test", AttributeLayout.CONTEXT_METHOD,
-                        "[NH[(1)]][KIH][(-2)]", 20));
+                new AttributeLayout("test", AttributeLayout.CONTEXT_METHOD, "[NH[(1)]][KIH][(-2)]", 20));
         layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(3, layoutElements.size());
         firstCallable = (Callable) layoutElements.get(0);
@@ -116,8 +106,7 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
         assertFalse(thirdCallable.isBackwardsCallable());
 
         newAttributeBands = new MockNewAttributeBands(new MockSegment(),
-                new AttributeLayout("test", AttributeLayout.CONTEXT_METHOD,
-                        "[NH[(1)]][KIH][(0)]", 20));
+                new AttributeLayout("test", AttributeLayout.CONTEXT_METHOD, "[NH[(1)]][KIH][(0)]", 20));
         layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(3, layoutElements.size());
         firstCallable = (Callable) layoutElements.get(0);
@@ -135,13 +124,11 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
 
     @Test
     public void testLayoutWithCalls() throws IOException, Pack200Exception {
-        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
-                new MockSegment(),
-                new AttributeLayout(
-                        "test",
-                        AttributeLayout.CONTEXT_FIELD,
-                        "[NH[(1)]][RSH NH[RUH(1)]][TB(66,67,73,83,90)[KIH](68)[KDH](70)[KFH](74)[KJH](99)[RSH](101)[RSH RUH](115)[RUH](91)[NH[(0)]](64)[RSH[RUH(0)]]()[]]",
-                        26));
+        // @formatter:off
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(new MockSegment(), new AttributeLayout("test", AttributeLayout.CONTEXT_FIELD,
+            "[NH[(1)]][RSH NH[RUH(1)]][TB(66,67,73,83,90)[KIH](68)[KDH](70)[KFH](74)[KJH](99)[RSH](101)[RSH RUH](115)[RUH](91)[NH[(0)]](64)[RSH[RUH(0)]]()[]]",
+            26));
+        // @formatter:on
         final List layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(3, layoutElements.size());
         final Callable firstCallable = (Callable) layoutElements.get(0);
@@ -161,14 +148,10 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {
-            "KIB", "KIH", "KII", "KINH", "KJH", "KDH", "KSH", "KQH", "RCH",
-            "RSH", "RDH", "RFH", "RMH", "RIH", "RUH", "RQH", "RQNH", "RQNI"
-    })
+    @ValueSource(strings = { "KIB", "KIH", "KII", "KINH", "KJH", "KDH", "KSH", "KQH", "RCH", "RSH", "RDH", "RFH", "RMH", "RIH", "RUH", "RQH", "RQNH", "RQNI" })
     public void testReferenceLayouts(final String layout) throws IOException, Pack200Exception {
-        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
-                new MockSegment(), new AttributeLayout("test",
-                        AttributeLayout.CONTEXT_CODE, layout, 26));
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(new MockSegment(),
+                new AttributeLayout("test", AttributeLayout.CONTEXT_CODE, layout, 26));
         final List layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         final Reference element = (Reference) layoutElements.get(0);
@@ -177,9 +160,8 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
 
     @Test
     public void testReplicationLayout() throws IOException, Pack200Exception {
-        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
-                new MockSegment(), new AttributeLayout("test",
-                        AttributeLayout.CONTEXT_CLASS, "NH[PHOHRUHRSHH]", 25));
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(new MockSegment(),
+                new AttributeLayout("test", AttributeLayout.CONTEXT_CLASS, "NH[PHOHRUHRSHH]", 25));
         final List layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         final Replication element = (Replication) layoutElements.get(0);
@@ -201,10 +183,8 @@ public class NewAttributeBandsTest extends AbstractBandsTestCase {
 
     @Test
     public void testUnionLayout() throws IOException, Pack200Exception {
-        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
-                new MockSegment(), new AttributeLayout("test",
-                        AttributeLayout.CONTEXT_CODE,
-                        "TB(55)[FH](23)[]()[RSH]", 26));
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(new MockSegment(),
+                new AttributeLayout("test", AttributeLayout.CONTEXT_CODE, "TB(55)[FH](23)[]()[RSH]", 26));
         final List layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         final Union element = (Union) layoutElements.get(0);

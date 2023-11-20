@@ -22,25 +22,25 @@ package org.apache.commons.compress.compressors.pack200;
 import java.io.IOException;
 
 /**
- * The different modes the Pack200 streams can use to wrap input and
- * output.
+ * The different modes the Pack200 streams can use to wrap input and output.
+ *
  * @since 1.3
  */
 public enum Pack200Strategy {
     /** Cache output in memory */
     IN_MEMORY() {
         @Override
-        StreamBridge newStreamBridge() {
+        AbstractStreamBridge newStreamBridge() {
             return new InMemoryCachingStreamBridge();
         }
     },
     /** Cache output in a temporary file */
     TEMP_FILE() {
         @Override
-        StreamBridge newStreamBridge() throws IOException {
+        AbstractStreamBridge newStreamBridge() throws IOException {
             return new TempFileCachingStreamBridge();
         }
     };
 
-    abstract StreamBridge newStreamBridge() throws IOException;
+    abstract AbstractStreamBridge newStreamBridge() throws IOException;
 }

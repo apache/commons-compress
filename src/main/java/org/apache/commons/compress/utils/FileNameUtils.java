@@ -22,6 +22,7 @@ import java.nio.file.Path;
 
 /**
  * Generic file name utilities.
+ *
  * @since 1.20
  */
 public class FileNameUtils {
@@ -37,13 +38,13 @@ public class FileNameUtils {
     }
 
     /**
-     * Gets the basename (i.e. the part up to and not including the
-     * last ".") of the last path segment of a filename.
-     * <p>Will return the file name itself if it doesn't contain any
-     * dots. All leading directories of the {@code filename} parameter
-     * are skipped.</p>
-     * @return the basename of filename
-     * @param path the path of the file to obtain the basename of.
+     * Gets the base name (i.e. the part up to and not including the last ".") of the last path segment of a file name.
+     * <p>
+     * Will return the file name itself if it doesn't contain any dots. All leading directories of the {@code file name} parameter are skipped.
+     * </p>
+     *
+     * @return the base name of file name
+     * @param path the path of the file to obtain the base name of.
      * @since 1.22
      */
     public static String getBaseName(final Path path) {
@@ -55,30 +56,30 @@ public class FileNameUtils {
     }
 
     /**
-     * Gets the basename (i.e. the part up to and not including the
-     * last ".") of the last path segment of a filename.
+     * Gets the base name (i.e. the part up to and not including the last ".") of the last path segment of a file name.
      *
-     * <p>Will return the file name itself if it doesn't contain any
-     * dots. All leading directories of the {@code filename} parameter
-     * are skipped.</p>
+     * <p>
+     * Will return the file name itself if it doesn't contain any dots. All leading directories of the {@code file name} parameter are skipped.
+     * </p>
      *
-     * @return the basename of filename
-     * @param filename the name of the file to obtain the basename of.
+     * @return the base name of file name
+     * @param fileName the name of the file to obtain the base name of.
      */
-    public static String getBaseName(final String filename) {
-        if (filename == null) {
+    public static String getBaseName(final String fileName) {
+        if (fileName == null) {
             return null;
         }
-        return fileNameToBaseName(new File(filename).getName());
+        return fileNameToBaseName(new File(fileName).getName());
     }
 
     /**
      * Gets the extension (i.e. the part after the last ".") of a file.
-     * <p>Will return an empty string if the file name doesn't contain
-     * any dots. Only the last segment of a the file name is consulted
-     * - i.e. all leading directories of the {@code filename}
-     * parameter are skipped.</p>
-     * @return the extension of filename
+     * <p>
+     * Will return an empty string if the file name doesn't contain any dots. Only the last segment of a the file name is consulted - i.e. all leading
+     * directories of the {@code file name} parameter are skipped.
+     * </p>
+     *
+     * @return the extension of file name
      * @param path the path of the file to obtain the extension of.
      * @since 1.22
      */
@@ -93,18 +94,18 @@ public class FileNameUtils {
     /**
      * Gets the extension (i.e. the part after the last ".") of a file.
      *
-     * <p>Will return an empty string if the file name doesn't contain
-     * any dots. Only the last segment of a the file name is consulted
-     * - i.e. all leading directories of the {@code filename}
-     * parameter are skipped.</p>
+     * <p>
+     * Will return an empty string if the file name doesn't contain any dots. Only the last segment of a the file name is consulted - i.e. all leading
+     * directories of the {@code fileName} parameter are skipped.
+     * </p>
      *
-     * @return the extension of filename
-     * @param filename the name of the file to obtain the extension of.
+     * @return the extension of file name
+     * @param fileName the name of the file to obtain the extension of.
      */
-    public static String getExtension(final String filename) {
-        if (filename == null) {
+    public static String getExtension(final String fileName) {
+        if (fileName == null) {
             return null;
         }
-        return fileNameToExtension(new File(filename).getName());
+        return fileNameToExtension(new File(fileName).getName());
     }
 }

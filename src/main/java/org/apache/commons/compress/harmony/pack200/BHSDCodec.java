@@ -26,44 +26,37 @@ import java.util.List;
 import org.apache.commons.compress.utils.ExactMath;
 
 /**
- * A BHSD codec is a means of encoding integer values as a sequence of bytes or vice versa using a specified "BHSD"
- * encoding mechanism. It uses a variable-length encoding and a modified sign representation such that small numbers are
- * represented as a single byte, whilst larger numbers take more bytes to encode. The number may be signed or unsigned;
- * if it is unsigned, it can be weighted towards positive numbers or equally distributed using a one's complement. The
- * Codec also supports delta coding, where a sequence of numbers is represented as a series of first-order differences.
- * So a delta encoding of the integers [1..10] would be represented as a sequence of 10x1s. This allows the absolute
- * value of a coded integer to fall outside of the 'small number' range, whilst still being encoded as a single byte.
+ * A BHSD codec is a means of encoding integer values as a sequence of bytes or vice versa using a specified "BHSD" encoding mechanism. It uses a
+ * variable-length encoding and a modified sign representation such that small numbers are represented as a single byte, whilst larger numbers take more bytes
+ * to encode. The number may be signed or unsigned; if it is unsigned, it can be weighted towards positive numbers or equally distributed using a one's
+ * complement. The Codec also supports delta coding, where a sequence of numbers is represented as a series of first-order differences. So a delta encoding of
+ * the integers [1..10] would be represented as a sequence of 10x1s. This allows the absolute value of a coded integer to fall outside of the 'small number'
+ * range, whilst still being encoded as a single byte.
  *
  * A BHSD codec is configured with four parameters:
  * <dl>
  * <dt>B</dt>
- * <dd>The maximum number of bytes that each value is encoded as. B must be a value between [1..5]. For a pass-through
- * coding (where each byte is encoded as itself, aka {@link #BYTE1}, B is 1 (each byte takes a maximum of 1 byte).</dd>
+ * <dd>The maximum number of bytes that each value is encoded as. B must be a value between [1..5]. For a pass-through coding (where each byte is encoded as
+ * itself, aka {@link #BYTE1}, B is 1 (each byte takes a maximum of 1 byte).</dd>
  * <dt>H</dt>
- * <dd>The radix of the integer. Values are defined as a sequence of values, where value {@code n} is multiplied by
- * {@code H^<sup>n</sup>}. So the number 1234 may be represented as the sequence 4 3 2 1 with a radix (H) of 10.
- * Note that other permutations are also possible; 43 2 1 will also encode 1234. The co-parameter L is defined as 256-H.
- * This is important because only the last value in a sequence may be &lt; L; all prior values must be &gt; L.</dd>
+ * <dd>The radix of the integer. Values are defined as a sequence of values, where value {@code n} is multiplied by {@code H^<sup>n</sup>}. So the number 1234
+ * may be represented as the sequence 4 3 2 1 with a radix (H) of 10. Note that other permutations are also possible; 43 2 1 will also encode 1234. The
+ * co-parameter L is defined as 256-H. This is important because only the last value in a sequence may be &lt; L; all prior values must be &gt; L.</dd>
  * <dt>S</dt>
- * <dd>Whether the codec represents signed values (or not). This may have 3 values; 0 (unsigned), 1 (signed, one's
- * complement) or 2 (signed, two's complement)</dd>
+ * <dd>Whether the codec represents signed values (or not). This may have 3 values; 0 (unsigned), 1 (signed, one's complement) or 2 (signed, two's
+ * complement)</dd>
  * <dt>D</dt>
- * <dd>Whether the codec represents a delta encoding. This may be 0 (no delta) or 1 (delta encoding). A delta encoding
- * of 1 indicates that values are cumulative; a sequence of {@code 1 1 1 1 1} will represent the sequence
- * {@code 1 2 3 4 5}. For this reason, the codec supports two variants of decode; one
- * {@link #decode(InputStream, long) with} and one {@link #decode(InputStream) without} a {@code last} parameter.
- * If the codec is a non-delta encoding, then the value is ignored if passed. If the codec is a delta encoding, it is a
- * run-time error to call the value without the extra parameter, and the previous value should be returned. (It was
- * designed this way to support multi-threaded access without requiring a new instance of the Codec to be cloned for
- * each use.)
- * </dd>
+ * <dd>Whether the codec represents a delta encoding. This may be 0 (no delta) or 1 (delta encoding). A delta encoding of 1 indicates that values are
+ * cumulative; a sequence of {@code 1 1 1 1 1} will represent the sequence {@code 1 2 3 4 5}. For this reason, the codec supports two variants of decode; one
+ * {@link #decode(InputStream, long) with} and one {@link #decode(InputStream) without} a {@code last} parameter. If the codec is a non-delta encoding, then the
+ * value is ignored if passed. If the codec is a delta encoding, it is a run-time error to call the value without the extra parameter, and the previous value
+ * should be returned. (It was designed this way to support multi-threaded access without requiring a new instance of the Codec to be cloned for each use.)</dd>
  * </dl>
  *
- * Codecs are notated as (B,H,S,D) and either D or S,D may be omitted if zero. Thus {@link #BYTE1} is denoted
- * (1,256,0,0) or (1,256). The {@link #toString()} method prints out the condensed form of the encoding. Often, the last
- * character in the name ({@link #BYTE1}, {@link #UNSIGNED5}) gives a clue as to the B value. Those that start with U
- * ({@link #UDELTA5}, {@link #UNSIGNED5}) are unsigned; otherwise, in most cases, they are signed. The presence of the
- * word Delta ({@link #DELTA5}, {@link #UDELTA5}) indicates a delta encoding is used.
+ * Codecs are notated as (B,H,S,D) and either D or S,D may be omitted if zero. Thus {@link #BYTE1} is denoted (1,256,0,0) or (1,256). The {@link #toString()}
+ * method prints out the condensed form of the encoding. Often, the last character in the name ({@link #BYTE1}, {@link #UNSIGNED5}) gives a clue as to the B
+ * value. Those that start with U ({@link #UDELTA5}, {@link #UNSIGNED5}) are unsigned; otherwise, in most cases, they are signed. The presence of the word Delta
+ * ({@link #DELTA5}, {@link #UDELTA5}) indicates a delta encoding is used.
  */
 public final class BHSDCodec extends Codec {
 
@@ -118,8 +111,7 @@ public final class BHSDCodec extends Codec {
      *
      * @param b the maximum number of bytes that a value can be encoded as [1..5]
      * @param h the radix of the encoding [1..256]
-     * @param s whether the encoding represents signed numbers (s=0 is unsigned; s=1 is signed with 1s complement; s=2
-     *        is signed with ?)
+     * @param s whether the encoding represents signed numbers (s=0 is unsigned; s=1 is signed with 1s complement; s=2 is signed with ?)
      */
     public BHSDCodec(final int b, final int h, final int s) {
         this(b, h, s, 0);
@@ -130,8 +122,7 @@ public final class BHSDCodec extends Codec {
      *
      * @param b the maximum number of bytes that a value can be encoded as [1..5]
      * @param h the radix of the encoding [1..256]
-     * @param s whether the encoding represents signed numbers (s=0 is unsigned; s=1 is signed with 1s complement; s=2
-     *        is signed with ?)
+     * @param s whether the encoding represents signed numbers (s=0 is unsigned; s=1 is signed with 1s complement; s=2 is signed with ?)
      * @param d whether this is a delta encoding (d=0 is non-delta; d=1 is delta)
      */
     public BHSDCodec(final int b, final int h, final int s, final int d) {
@@ -186,12 +177,12 @@ public final class BHSDCodec extends Codec {
             result = cardinality() / 2 - 1;
             break;
         case 2:
-            result = (3L * cardinality()) / 4 - 1;
+            result = 3L * cardinality() / 4 - 1;
             break;
         default:
             throw new Error("Unknown s value");
         }
-        return Math.min((s == 0 ? ((long) Integer.MAX_VALUE) << 1 : Integer.MAX_VALUE) - 1, result);
+        return Math.min((s == 0 ? (long) Integer.MAX_VALUE << 1 : Integer.MAX_VALUE) - 1, result);
     }
 
     private long calculateSmallest() {
@@ -243,7 +234,7 @@ public final class BHSDCodec extends Codec {
         }
 
         if (isSigned()) {
-            final int u = ((1 << s) - 1);
+            final int u = (1 << s) - 1;
             if ((z & u) == u) {
                 z = z >>> s ^ -1L;
             } else {
@@ -254,7 +245,7 @@ public final class BHSDCodec extends Codec {
         // in for now for readability
         // if (isSigned()) {
         // long u = z;
-        // long twoPowS = (long)Math.pow(2, s);
+        // long twoPowS = (long) Math.pow(2, s);
         // double twoPowSMinusOne = twoPowS-1;
         // if (u % twoPowS < twoPowSMinusOne) {
         // if (cardinality < Math.pow(2, 32)) {
@@ -295,8 +286,7 @@ public final class BHSDCodec extends Codec {
     }
 
     @Override
-    public int[] decodeInts(final int n, final InputStream in, final int firstValue)
-        throws IOException, Pack200Exception {
+    public int[] decodeInts(final int n, final InputStream in, final int firstValue) throws IOException, Pack200Exception {
         final int[] band = super.decodeInts(n, in, firstValue);
         if (isDelta()) {
             for (int i = 0; i < band.length; i++) {

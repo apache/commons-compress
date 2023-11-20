@@ -31,14 +31,14 @@ import java.util.TreeSet;
  */
 public class IcBands extends BandSet {
 
-    class IcTuple implements Comparable<IcTuple> {
+    static class IcTuple implements Comparable<IcTuple> {
 
         protected CPClass C; // this class
         protected int F; // flags
         protected CPClass C2; // outer class
         protected CPUTF8 N; // name
 
-        public IcTuple(final CPClass C, final int F, final CPClass C2, final CPUTF8 N) {
+        IcTuple(final CPClass C, final int F, final CPClass C2, final CPUTF8 N) {
             this.C = C;
             this.F = F;
             this.C2 = C2;
@@ -54,8 +54,7 @@ public class IcBands extends BandSet {
         public boolean equals(final Object o) {
             if (o instanceof IcTuple) {
                 final IcTuple icT = (IcTuple) o;
-                return C.equals(icT.C) && F == icT.F && (Objects.equals(C2, icT.C2))
-                    && (Objects.equals(N, icT.N));
+                return C.equals(icT.C) && F == icT.F && Objects.equals(C2, icT.C2) && Objects.equals(N, icT.N);
             }
             return false;
         }
@@ -72,9 +71,10 @@ public class IcBands extends BandSet {
         }
 
     }
+
     private final Set<IcTuple> innerClasses = new TreeSet<>();
     private final CpBands cpBands;
-    private int bit16Count = 0;
+    private int bit16Count;
 
     private final Map<String, List<IcTuple>> outerToInner = new HashMap<>();
 
@@ -90,9 +90,8 @@ public class IcBands extends BandSet {
                 addToMap(outerName, innerClass);
                 innerClasses.add(innerClass);
             } else {
-                flags |= (1 << 16);
-                final IcTuple icTuple = new IcTuple(cpBands.getCPClass(name), flags, cpBands.getCPClass(outerName),
-                    cpBands.getCPUtf8(innerName));
+                flags |= 1 << 16;
+                final IcTuple icTuple = new IcTuple(cpBands.getCPClass(name), flags, cpBands.getCPClass(outerName), cpBands.getCPUtf8(innerName));
                 final boolean added = innerClasses.add(icTuple);
                 if (added) {
                     bit16Count++;
@@ -111,20 +110,19 @@ public class IcBands extends BandSet {
         if (tuples == null) {
             tuples = new ArrayList<>();
             outerToInner.put(outerName, tuples);
-            tuples.add(icTuple);
         } else {
             for (final IcTuple tuple : tuples) {
                 if (icTuple.equals(tuple)) {
                     return;
                 }
             }
-            tuples.add(icTuple);
         }
+        tuples.add(icTuple);
     }
 
     /**
-     * All input classes for the segment have now been read in, so this method is called so that this class can
-     * calculate/complete anything it could not do while classes were being read.
+     * All input classes for the segment have now been read in, so this method is called so that this class can calculate/complete anything it could not do
+     * while classes were being read.
      */
     public void finaliseBands() {
         segmentHeader.setIc_count(innerClasses.size());
@@ -166,7 +164,7 @@ public class IcBands extends BandSet {
             final IcTuple icTuple = innerClassesList.get(i);
             ic_this_class[i] = icTuple.C.getIndex();
             ic_flags[i] = icTuple.F;
-            if ((icTuple.F & (1 << 16)) != 0) {
+            if ((icTuple.F & 1 << 16) != 0) {
                 ic_outer_class[index2] = icTuple.C2 == null ? 0 : icTuple.C2.getIndex() + 1;
                 ic_name[index2] = icTuple.N == null ? 0 : icTuple.N.getIndex() + 1;
                 index2++;

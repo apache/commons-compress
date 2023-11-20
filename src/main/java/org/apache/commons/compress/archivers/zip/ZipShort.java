@@ -21,13 +21,14 @@ import java.io.Serializable;
 import org.apache.commons.compress.utils.ByteUtils;
 
 /**
- * Utility class that represents a two byte integer with conversion
- * rules for the little endian byte order of ZIP files.
+ * Utility class that represents a two byte integer with conversion rules for the little endian byte order of ZIP files.
+ *
  * @Immutable
  */
 public final class ZipShort implements Cloneable, Serializable {
     /**
      * ZipShort with a value of 0.
+     *
      * @since 1.14
      */
     public static final ZipShort ZERO = new ZipShort(0);
@@ -35,7 +36,8 @@ public final class ZipShort implements Cloneable, Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Get value as two bytes in big endian byte order.
+     * Gets value as two bytes in big endian byte order.
+     *
      * @param value the Java int to convert to bytes
      * @return the converted int as a byte array in big endian byte order
      */
@@ -47,6 +49,7 @@ public final class ZipShort implements Cloneable, Serializable {
 
     /**
      * Helper method to get the value as a java int from a two-byte array
+     *
      * @param bytes the array of bytes
      * @return the corresponding java int value
      */
@@ -56,7 +59,8 @@ public final class ZipShort implements Cloneable, Serializable {
 
     /**
      * Helper method to get the value as a java int from two bytes starting at given array offset
-     * @param bytes the array of bytes
+     *
+     * @param bytes  the array of bytes
      * @param offset the offset to start
      * @return the corresponding java int value
      */
@@ -66,11 +70,10 @@ public final class ZipShort implements Cloneable, Serializable {
 
     /**
      * put the value as two bytes in big endian byte order.
-     * @param value the Java int to convert to bytes
-     * @param buf the output buffer
-     * @param  offset
-     *         The offset within the output buffer of the first byte to be written.
-     *         must be non-negative and no larger than {@code buf.length-2}
+     *
+     * @param value  the Java int to convert to bytes
+     * @param buf    the output buffer
+     * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length-2}
      */
     public static void putShort(final int value, final byte[] buf, final int offset) {
         ByteUtils.toLittleEndian(buf, value, offset, 2);
@@ -80,6 +83,7 @@ public final class ZipShort implements Cloneable, Serializable {
 
     /**
      * Create instance from bytes.
+     *
      * @param bytes the bytes to store as a ZipShort
      */
     public ZipShort(final byte[] bytes) {
@@ -88,7 +92,8 @@ public final class ZipShort implements Cloneable, Serializable {
 
     /**
      * Create instance from the two bytes starting at offset.
-     * @param bytes the bytes to store as a ZipShort
+     *
+     * @param bytes  the bytes to store as a ZipShort
      * @param offset the offset to start
      */
     public ZipShort(final byte[] bytes, final int offset) {
@@ -97,6 +102,7 @@ public final class ZipShort implements Cloneable, Serializable {
 
     /**
      * Create instance from a number.
+     *
      * @param value the int to store as a ZipShort
      */
     public ZipShort(final int value) {
@@ -109,12 +115,13 @@ public final class ZipShort implements Cloneable, Serializable {
             return super.clone();
         } catch (final CloneNotSupportedException cnfe) {
             // impossible
-            throw new UnsupportedOperationException(cnfe); //NOSONAR
+            throw new UnsupportedOperationException(cnfe); // NOSONAR
         }
     }
 
     /**
      * Override to make two instances with same value equal.
+     *
      * @param o an object to compare
      * @return true if the objects are equal
      */
@@ -127,7 +134,8 @@ public final class ZipShort implements Cloneable, Serializable {
     }
 
     /**
-     * Get value as two bytes in big endian byte order.
+     * Gets value as two bytes in big endian byte order.
+     *
      * @return the value as a two byte array in big endian byte order
      */
     public byte[] getBytes() {
@@ -137,7 +145,8 @@ public final class ZipShort implements Cloneable, Serializable {
     }
 
     /**
-     * Get value as Java int.
+     * Gets value as Java int.
+     *
      * @return value as a Java int
      */
     public int getValue() {
@@ -146,6 +155,7 @@ public final class ZipShort implements Cloneable, Serializable {
 
     /**
      * Override to make two instances with same value equal.
+     *
      * @return the value stored in the ZipShort
      */
     @Override

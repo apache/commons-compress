@@ -22,63 +22,59 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Enumeration;
 
-import org.apache.commons.compress.AbstractTestCase;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class ZipFileIgnoringLocalFileHeaderTest {
 
     private static ZipFile openZipWithoutLFH(final String fileName) throws IOException {
-        return new ZipFile(AbstractTestCase.getFile(fileName), ZipEncodingHelper.UTF8, true, true);
+        return new ZipFile(AbstractTest.getFile(fileName), CharsetNames.UTF_8, true, true);
     }
 
+    @TempDir
     private File dir;
 
     @Test
-    public void getEntryWorks() throws IOException {
-        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
-            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
-            assertEquals(610, ze.getSize());
-        }
-    }
-
-    @Test
-    public void getRawInputStreamReturnsNotNull() throws IOException {
-        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
-            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
-            assertNotNull(zf.getRawInputStream(ze));
-        }
-    }
-
-    @BeforeEach
-    public void setUp() throws Exception {
-        dir = AbstractTestCase.mkdir("dir");
-    }
-
-    @AfterEach
-    public void tearDown() {
-        AbstractTestCase.rmdir(dir);
-    }
-
-    @Test
     public void testDuplicateEntry() throws Exception {
-        try (final ZipFile zf = openZipWithoutLFH("COMPRESS-227.zip")) {
+        try (ZipFile zf = openZipWithoutLFH("COMPRESS-227.zip")) {
             int numberOfEntries = 0;
             for (final ZipArchiveEntry entry : zf.getEntries("test1.txt")) {
                 numberOfEntries++;
-                assertNotNull(zf.getInputStream(entry));
+                try (InputStream inputStream = zf.getInputStream(entry)) {
+                    assertNotNull(inputStream);
+                }
             }
             assertEquals(2, numberOfEntries);
         }
     }
 
     @Test
+    public void testGetEntryWorks() throws IOException {
+        try (ZipFile zf = openZipWithoutLFH("bla.zip")) {
+            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
+            assertEquals(610, ze.getSize());
+        }
+    }
+
+    @Test
+    public void testGetRawInputStreamReturnsNotNull() throws IOException {
+        try (ZipFile zf = openZipWithoutLFH("bla.zip")) {
+            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
+            try (InputStream rawInputStream = zf.getRawInputStream(ze)) {
+                assertNotNull(rawInputStream);
+            }
+        }
+    }
+
+    @Test
     public void testPhysicalOrder() throws IOException {
-        try (final ZipFile zf = openZipWithoutLFH("ordertest.zip")) {
+        try (ZipFile zf = openZipWithoutLFH("ordertest.zip")) {
             final Enumeration<ZipArchiveEntry> e = zf.getEntriesInPhysicalOrder();
             ZipArchiveEntry ze;
             do {
@@ -90,14 +86,17 @@ public class ZipFileIgnoringLocalFileHeaderTest {
 
     /**
      * Simple unarchive test. Asserts nothing.
+     *
      * @throws Exception
      */
     @Test
     public void testZipUnarchive() throws Exception {
-        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
+        try (ZipFile zf = openZipWithoutLFH("bla.zip")) {
             for (final Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements();) {
                 final ZipArchiveEntry entry = e.nextElement();
-                Files.copy(zf.getInputStream(entry), new File(dir, entry.getName()).toPath());
+                try (InputStream inputStream = zf.getInputStream(entry)) {
+                    Files.copy(inputStream, new File(dir, entry.getName()).toPath());
+                }
             }
         }
     }

@@ -25,7 +25,9 @@ import java.util.Date;
  */
 public interface ArchiveEntry {
 
-    /** Special value indicating that the size is unknown */
+    /**
+     * Special value {@value} indicating that the size is unknown.
+     */
     long SIZE_UNKNOWN = -1;
 
     /**
@@ -39,7 +41,9 @@ public interface ArchiveEntry {
     /**
      * Gets the name of the entry in this archive. May refer to a file or directory or other item.
      *
-     * <p>This method returns the raw name as it is stored inside of the archive.</p>
+     * <p>
+     * This method returns the raw name as it is stored inside of the archive.
+     * </p>
      *
      * @return The name of this entry in the archive.
      */
@@ -53,7 +57,7 @@ public interface ArchiveEntry {
     long getSize();
 
     /**
-     * Returns true if this entry refers to a directory.
+     * Tests whether this entry refers to a directory (true).
      *
      * @return true if this entry refers to a directory.
      */

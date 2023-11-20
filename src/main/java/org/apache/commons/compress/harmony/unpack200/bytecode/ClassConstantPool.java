@@ -89,7 +89,7 @@ public class ClassConstantPool {
                 final ClassFileEntry[] entryChildren = entry.getNestedClassFileEntries();
                 children.addAll(Arrays.asList(entryChildren));
 
-                final boolean isAtStart = (entry instanceof ByteCode) && ((ByteCode) entry).nestedMustStartClassPool();
+                final boolean isAtStart = entry instanceof ByteCode && ((ByteCode) entry).nestedMustStartClassPool();
 
                 if (isAtStart) {
                     mustStartClassPool.addAll(Arrays.asList(entryChildren));
@@ -134,7 +134,7 @@ public class ClassConstantPool {
         if (null == indexCache) {
             throw new IllegalStateException("Index cache is not initialized!");
         }
-        final Integer entryIndex = (indexCache.get(entry));
+        final Integer entryIndex = indexCache.get(entry);
         // If the entry isn't found, answer -1, otherwise answer the entry.
         if (entryIndex != null) {
             return entryIndex.intValue() + 1;
@@ -143,12 +143,9 @@ public class ClassConstantPool {
     }
 
     private void initialSort() {
-        final TreeSet<ClassFileEntry> inCpAll = new TreeSet<>(
-                Comparator.comparingInt(arg0 -> ((ConstantPoolEntry) arg0).getGlobalIndex()));
-        final TreeSet<ClassFileEntry> cpUtf8sNotInCpAll = new TreeSet<>(
-                Comparator.comparing(arg0 -> ((CPUTF8) arg0).underlyingString()));
-        final TreeSet<ClassFileEntry> cpClassesNotInCpAll = new TreeSet<>(
-                Comparator.comparing(arg0 -> ((CPClass) arg0).getName()));
+        final TreeSet<ClassFileEntry> inCpAll = new TreeSet<>(Comparator.comparingInt(arg0 -> ((ConstantPoolEntry) arg0).getGlobalIndex()));
+        final TreeSet<ClassFileEntry> cpUtf8sNotInCpAll = new TreeSet<>(Comparator.comparing(arg0 -> ((CPUTF8) arg0).underlyingString()));
+        final TreeSet<ClassFileEntry> cpClassesNotInCpAll = new TreeSet<>(Comparator.comparing(arg0 -> ((CPClass) arg0).getName()));
 
         for (final ClassFileEntry entry2 : entries) {
             final ConstantPoolEntry entry = (ConstantPoolEntry) entry2;

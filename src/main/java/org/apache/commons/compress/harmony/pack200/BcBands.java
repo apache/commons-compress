@@ -63,7 +63,7 @@ public class BcBands extends BandSet {
 
     private final List<CPMethodOrField> bcMethodRef = new ArrayList<>();
     private final List<CPMethodOrField> bcIMethodRef = new ArrayList<>();
-    
+
     // Integers and CPMethodOrField
     private List bcThisField = new ArrayList<>();
 
@@ -80,6 +80,7 @@ public class BcBands extends BandSet {
     private int byteCodeOffset;
     private int renumberedOffset;
     private final IntList bcLabelRelativeOffsets = new IntList();
+
     public BcBands(final CpBands cpBands, final Segment segment, final int effort) {
         super(effort, segment.getSegmentHeader());
         this.cpBands = cpBands;
@@ -87,8 +88,8 @@ public class BcBands extends BandSet {
     }
 
     /**
-     * All input classes for the segment have now been read in, so this method is called so that this class can
-     * calculate/complete anything it could not do while classes were being read.
+     * All input classes for the segment have now been read in, so this method is called so that this class can calculate/complete anything it could not do
+     * while classes were being read.
      */
     public void finaliseBands() {
         bcThisField = getIndexInClass(bcThisField);
@@ -237,8 +238,7 @@ public class BcBands extends BandSet {
                     bcLabel.remove(i);
                     final Integer offset = labelsToOffsets.get(label);
                     final int relativeOffset = bcLabelRelativeOffsets.get(i);
-                    bcLabel.add(i,
-                        Integer.valueOf(bciRenumbering.get(offset.intValue()) - bciRenumbering.get(relativeOffset)));
+                    bcLabel.add(i, Integer.valueOf(bciRenumbering.get(offset.intValue()) - bciRenumbering.get(relativeOffset)));
                 }
             }
             bcCodes.add(endMarker);
@@ -254,7 +254,7 @@ public class BcBands extends BandSet {
         byteCodeOffset += 3;
         updateRenumbering();
         boolean aload_0 = false;
-        if (bcCodes.size() > 0 && (bcCodes.get(bcCodes.size() - 1)) == ALOAD_0) {
+        if (bcCodes.size() > 0 && bcCodes.get(bcCodes.size() - 1) == ALOAD_0) {
             bcCodes.remove(bcCodes.size() - 1);
             aload_0 = true;
         }
@@ -388,7 +388,7 @@ public class BcBands extends BandSet {
             bcLabel.add(labels[i]);
             bcLabelRelativeOffsets.add(byteCodeOffset);
         }
-        final int padding = (byteCodeOffset + 1) % 4 == 0 ? 0 : 4 - ((byteCodeOffset + 1) % 4);
+        final int padding = (byteCodeOffset + 1) % 4 == 0 ? 0 : 4 - (byteCodeOffset + 1) % 4;
         byteCodeOffset += 1 + padding + 8 + 8 * keys.length;
         updateRenumbering();
     }
@@ -400,7 +400,7 @@ public class BcBands extends BandSet {
         case 183: // invokespecial
         case 184: // invokestatic
             boolean aload_0 = false;
-            if (bcCodes.size() > 0 && (bcCodes.get(bcCodes.size() - 1)) == (ALOAD_0)) {
+            if (bcCodes.size() > 0 && bcCodes.get(bcCodes.size() - 1) == ALOAD_0) {
                 bcCodes.remove(bcCodes.size() - 1);
                 aload_0 = true;
                 opcode += 7;
@@ -470,8 +470,8 @@ public class BcBands extends BandSet {
             bcLabel.add(labels[i]);
             bcLabelRelativeOffsets.add(byteCodeOffset);
         }
-        final int padding = byteCodeOffset % 4 == 0 ? 0 : 4 - (byteCodeOffset % 4);
-        byteCodeOffset += (padding + 12 + 4 * labels.length);
+        final int padding = byteCodeOffset % 4 == 0 ? 0 : 4 - byteCodeOffset % 4;
+        byteCodeOffset += padding + 12 + 4 * labels.length;
         updateRenumbering();
     }
 

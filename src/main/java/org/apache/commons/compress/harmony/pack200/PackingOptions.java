@@ -16,10 +16,12 @@
  */
 package org.apache.commons.compress.harmony.pack200;
 
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.objectweb.asm.Attribute;
 
@@ -73,8 +75,9 @@ public class PackingOptions {
     private void addOrUpdateAttributeActions(final List<Attribute> prototypes, final Map<String, String> attributeActions, final int tag) {
         if (attributeActions != null && attributeActions.size() > 0) {
             NewAttribute newAttribute;
-            for (final String name : attributeActions.keySet()) {
-                final String action = attributeActions.get(name);
+            for (final Entry<String, String> entry : attributeActions.entrySet()) {
+                final String name = entry.getKey();
+                final String action = entry.getValue();
                 boolean prototypeExists = false;
                 for (final Object prototype : prototypes) {
                     newAttribute = (NewAttribute) prototype;
@@ -103,13 +106,12 @@ public class PackingOptions {
     }
 
     /**
-     * Tell the compressor to pass the file with the given name, or if the name is a directory name all files under that
-     * directory will be passed.
+     * Tell the compressor to pass the file with the given name, or if the name is a directory name all files under that directory will be passed.
      *
      * @param passFileName the file name
      */
     public void addPassFile(String passFileName) {
-        String fileSeparator = System.getProperty("file.separator");
+        String fileSeparator = FileSystems.getDefault().getSeparator();
         if (fileSeparator.equals("\\")) {
             // Need to escape backslashes for replaceAll(), which uses regex
             fileSeparator += "\\";
@@ -266,9 +268,8 @@ public class PackingOptions {
     }
 
     /**
-     * Sets strip debug attributes. If true, all debug attributes (i.e. LineNumberTable, SourceFile, LocalVariableTable and
-     * LocalVariableTypeTable attributes) are stripped when reading the input class files and not included in the output
-     * archive.
+     * Sets strip debug attributes. If true, all debug attributes (i.e. LineNumberTable, SourceFile, LocalVariableTable and LocalVariableTypeTable attributes)
+     * are stripped when reading the input class files and not included in the output archive.
      *
      * @param stripDebug If true, all debug attributes.
      */

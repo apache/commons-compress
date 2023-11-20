@@ -18,6 +18,7 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * Usage: archive-name [list]
@@ -80,7 +81,7 @@ public class CLI {
         if (args.length < 2) {
             return Mode.LIST;
         }
-        return Enum.valueOf(Mode.class, args[1].toUpperCase());
+        return Enum.valueOf(Mode.class, args[1].toUpperCase(Locale.ROOT));
     }
 
     public static void main(final String[] args) throws Exception {
@@ -94,7 +95,7 @@ public class CLI {
         if (!f.isFile()) {
             System.err.println(f + " doesn't exist or is a directory");
         }
-        try (final SevenZFile archive = new SevenZFile(f)) {
+        try (SevenZFile archive = new SevenZFile(f)) {
             SevenZArchiveEntry ae;
             while ((ae = archive.getNextEntry()) != null) {
                 mode.takeAction(archive, ae);

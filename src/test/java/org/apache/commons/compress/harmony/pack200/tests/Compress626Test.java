@@ -34,21 +34,19 @@ import org.junit.jupiter.api.Test;
 
 public class Compress626Test {
 
-	@Test
-	public void test() throws Exception {
-		final CPUTF8 name = new CPUTF8("");
-		final CPUTF8 layout = new CPUTF8("[");
-		assertDoesNotThrow(
-				() -> new NewAttributeBands(1, null, null, new AttributeDefinitionBands.AttributeDefinition(35,
-						AttributeDefinitionBands.CONTEXT_CLASS, name, layout)));
-	}
+    @Test
+    public void test() throws Exception {
+        final CPUTF8 name = new CPUTF8("");
+        final CPUTF8 layout = new CPUTF8("[");
+        assertDoesNotThrow(() -> new NewAttributeBands(1, null, null,
+                new AttributeDefinitionBands.AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout)));
+    }
 
-	@Test
-	public void testJar() throws IOException {
-		try (InputStream inputStream = Files.newInputStream(
-				Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-626/compress-626-pack200.jar"));
-				JarOutputStream out = new JarOutputStream(NullOutputStream.NULL_OUTPUT_STREAM);) {
-			Pack200.newUnpacker().unpack(inputStream, out);
-		}
-	}
+    @Test
+    public void testJar() throws IOException {
+        try (InputStream inputStream = Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-626/compress-626-pack200.jar"));
+                JarOutputStream out = new JarOutputStream(NullOutputStream.NULL_OUTPUT_STREAM);) {
+            Pack200.newUnpacker().unpack(inputStream, out);
+        }
+    }
 }

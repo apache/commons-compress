@@ -23,8 +23,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * This class is used to determine which init method should be called, based on the last class which was sent a
- * constructor message.
+ * This class is used to determine which init method should be called, based on the last class which was sent a constructor message.
  */
 public class NewInitMethodRefForm extends InitMethodReferenceForm {
 
@@ -38,12 +37,10 @@ public class NewInitMethodRefForm extends InitMethodReferenceForm {
     }
 
     @Override
-    protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset)
-        throws Pack200Exception {
+    protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset) throws Pack200Exception {
         final SegmentConstantPool globalPool = operandManager.globalConstantPool();
-        ClassFileEntry[] nested = new ClassFileEntry[] {
-            globalPool.getInitMethodPoolEntry(SegmentConstantPool.CP_METHOD, offset, context(operandManager))};
+        final ClassFileEntry[] nested = { globalPool.getInitMethodPoolEntry(SegmentConstantPool.CP_METHOD, offset, context(operandManager)) };
         byteCode.setNested(nested);
-        byteCode.setNestedPositions(new int[][] {{0, 2}});
+        byteCode.setNestedPositions(new int[][] { { 0, 2 } });
     }
 }

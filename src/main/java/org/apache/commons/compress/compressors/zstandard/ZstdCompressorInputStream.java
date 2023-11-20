@@ -17,7 +17,6 @@
 
 package org.apache.commons.compress.compressors.zstandard;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -30,13 +29,12 @@ import com.github.luben.zstd.BufferPool;
 import com.github.luben.zstd.ZstdInputStream;
 
 /**
- * {@link CompressorInputStream} implementation to decode Zstandard encoded stream.
- * Library relies on <a href="https://github.com/luben/zstd-jni/">Zstandard JNI</a>
+ * {@link CompressorInputStream} implementation to decode Zstandard encoded stream. Library relies on <a href="https://github.com/luben/zstd-jni/">Zstandard
+ * JNI</a>
  *
  * @since 1.16
  */
-public class ZstdCompressorInputStream extends CompressorInputStream
-    implements InputStreamStatistics {
+public class ZstdCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
     private final CountingInputStream countingStream;
     private final ZstdInputStream decIS;
@@ -46,15 +44,11 @@ public class ZstdCompressorInputStream extends CompressorInputStream
     }
 
     /**
-     * Creates a new input stream that decompresses zstd-compressed data from
-     * the specific input stream
+     * Creates a new input stream that decompresses zstd-compressed data from the specific input stream
      *
-     * @param in the input stream of compressed data
-     * @param bufferPool a configuration of zstd-jni that allows users to customize
-     *                   how buffers are recycled. Either a
-     *                   {@link com.github.luben.zstd.NoPool} or a
-     *                   {@link com.github.luben.zstd.RecyclingBufferPool} is
-     *                   allowed here.
+     * @param in         the input stream of compressed data
+     * @param bufferPool a configuration of zstd-jni that allows users to customize how buffers are recycled. Either a {@link com.github.luben.zstd.NoPool} or a
+     *                   {@link com.github.luben.zstd.RecyclingBufferPool} is allowed here.
      * @throws IOException if an IO error occurs.
      */
     public ZstdCompressorInputStream(final InputStream in, final BufferPool bufferPool) throws IOException {
@@ -80,8 +74,8 @@ public class ZstdCompressorInputStream extends CompressorInputStream
     }
 
     @Override
-    public synchronized void mark(final int readlimit) {
-        decIS.mark(readlimit);
+    public synchronized void mark(final int readLimit) {
+        decIS.mark(readLimit);
     }
 
     @Override

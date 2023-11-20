@@ -30,14 +30,11 @@ public class LookupSwitchForm extends SwitchForm {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.apache.commons.compress.harmony.unpack200.bytecode.forms.SwitchForm#setByteCodeOperands(org.apache.commons.
-     * compress.harmony.unpack200.bytecode.ByteCode,
-     * org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager, int)
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.forms.SwitchForm#setByteCodeOperands(org.apache.commons.
+     * compress.harmony.unpack200.bytecode.ByteCode, org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager, int)
      */
     @Override
-    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager,
-        final int codeLength) {
+    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) {
         final int caseCount = operandManager.nextCaseCount();
         final int defaultPc = operandManager.nextLabel();
         final int[] caseValues = new int[caseCount];
@@ -62,10 +59,10 @@ public class LookupSwitchForm extends SwitchForm {
         // First, there's the bytecode. Then there are 0-3
         // bytes of padding so that the first (default)
         // label is on a 4-byte offset.
-        final int padLength = 3 - (codeLength % 4);
+        final int padLength = 3 - codeLength % 4;
         final int rewriteSize = 1 + padLength + 4 // defaultbytes
-            + 4 // npairs
-            + (4 * caseValues.length) + (4 * casePcs.length);
+                + 4 // npairs
+                + 4 * caseValues.length + 4 * casePcs.length;
 
         final int[] newRewrite = new int[rewriteSize];
         int rewriteIndex = 0;

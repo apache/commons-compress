@@ -33,10 +33,8 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 
 /**
- * Compressed output stream using the gzip format. This implementation improves
- * over the standard {@link GZIPOutputStream} class by allowing
- * the configuration of the compression level and the header metadata (file name,
- * comment, modification time, operating system and extra flags).
+ * Compressed output stream using the gzip format. This implementation improves over the standard {@link GZIPOutputStream} class by allowing the configuration
+ * of the compression level and the header metadata (file name, comment, modification time, operating system and extra flags).
  *
  * @see <a href="https://tools.ietf.org/html/rfc1952">GZIP File Format Specification</a>
  */
@@ -65,6 +63,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
 
     /**
      * Creates a gzip compressed output stream with the default parameters.
+     *
      * @param out the stream to compress to
      * @throws IOException if writing fails
      */
@@ -74,7 +73,8 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
 
     /**
      * Creates a gzip compressed output stream with the specified parameters.
-     * @param out the stream to compress to
+     *
+     * @param out        the stream to compress to
      * @param parameters the parameters to use
      * @throws IOException if writing fails
      *
@@ -194,14 +194,14 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     }
 
     private void writeHeader(final GzipParameters parameters) throws IOException {
-        final String filename = parameters.getFilename();
+        final String fileName = parameters.getFileName();
         final String comment = parameters.getComment();
 
         final ByteBuffer buffer = ByteBuffer.allocate(10);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putShort((short) GZIPInputStream.GZIP_MAGIC);
         buffer.put((byte) Deflater.DEFLATED); // compression method (8: deflate)
-        buffer.put((byte) ((filename != null ? FNAME : 0) | (comment != null ? FCOMMENT : 0))); // flags
+        buffer.put((byte) ((fileName != null ? FNAME : 0) | (comment != null ? FCOMMENT : 0))); // flags
         buffer.putInt((int) (parameters.getModificationTime() / 1000));
 
         // extra flags
@@ -218,8 +218,8 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
 
         out.write(buffer.array());
 
-        if (filename != null) {
-            out.write(getBytes(filename));
+        if (fileName != null) {
+            out.write(getBytes(fileName));
             out.write(0);
         }
 

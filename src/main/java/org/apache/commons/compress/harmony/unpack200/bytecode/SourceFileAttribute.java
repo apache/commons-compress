@@ -26,9 +26,11 @@ import java.util.Objects;
 public class SourceFileAttribute extends Attribute {
 
     private static CPUTF8 attributeName;
+
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
+
     private final CPUTF8 name;
 
     private int nameIndex;
@@ -63,14 +65,14 @@ public class SourceFileAttribute extends Attribute {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] {getAttributeName(), name};
+        return new ClassFileEntry[] { getAttributeName(), name };
     }
 
     @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = super.hashCode();
-        result = PRIME * result + ((name == null) ? 0 : name.hashCode());
+        result = PRIME * result + (name == null ? 0 : name.hashCode());
         return result;
     }
 

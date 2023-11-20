@@ -22,8 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Annotations class file attribute, either a RuntimeVisibleAnnotations attribute or a RuntimeInvisibleAnnotations
- * attribute.
+ * Annotations class file attribute, either a RuntimeVisibleAnnotations attribute or a RuntimeInvisibleAnnotations attribute.
  */
 public class RuntimeVisibleorInvisibleAnnotationsAttribute extends AnnotationsAttribute {
 

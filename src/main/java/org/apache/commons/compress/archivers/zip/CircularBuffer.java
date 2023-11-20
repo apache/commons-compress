@@ -24,7 +24,7 @@ package org.apache.commons.compress.archivers.zip;
  *
  * @since 1.7
  */
-class CircularBuffer {
+final class CircularBuffer {
 
     /** Size of the buffer */
     private final int size;

@@ -47,16 +47,16 @@ public abstract class ByteCodeForm {
         byteCodeArray[13] = new NoArgumentForm(13, "fconst_2");
         byteCodeArray[14] = new NoArgumentForm(14, "dconst_0");
         byteCodeArray[15] = new NoArgumentForm(15, "dconst_1");
-        byteCodeArray[16] = new ByteForm(16, "bipush", new int[] {16, -1});
-        byteCodeArray[17] = new ShortForm(17, "sipush", new int[] {17, -1, -1});
-        byteCodeArray[18] = new StringRefForm(18, "ldc", new int[] {18, -1});
-        byteCodeArray[19] = new StringRefForm(19, "ldc_w", new int[] {19, -1, -1}, WIDENED);
-        byteCodeArray[20] = new LongForm(20, "ldc2_w", new int[] {20, -1, -1});
-        byteCodeArray[21] = new LocalForm(21, "iload", new int[] {21, -1});
-        byteCodeArray[22] = new LocalForm(22, "lload", new int[] {22, -1});
-        byteCodeArray[23] = new LocalForm(23, "fload", new int[] {23, -1});
-        byteCodeArray[24] = new LocalForm(24, "dload", new int[] {24, -1});
-        byteCodeArray[25] = new LocalForm(25, "aload", new int[] {25, -1});
+        byteCodeArray[16] = new ByteForm(16, "bipush", new int[] { 16, -1 });
+        byteCodeArray[17] = new ShortForm(17, "sipush", new int[] { 17, -1, -1 });
+        byteCodeArray[18] = new StringRefForm(18, "ldc", new int[] { 18, -1 });
+        byteCodeArray[19] = new StringRefForm(19, "ldc_w", new int[] { 19, -1, -1 }, WIDENED);
+        byteCodeArray[20] = new LongForm(20, "ldc2_w", new int[] { 20, -1, -1 });
+        byteCodeArray[21] = new LocalForm(21, "iload", new int[] { 21, -1 });
+        byteCodeArray[22] = new LocalForm(22, "lload", new int[] { 22, -1 });
+        byteCodeArray[23] = new LocalForm(23, "fload", new int[] { 23, -1 });
+        byteCodeArray[24] = new LocalForm(24, "dload", new int[] { 24, -1 });
+        byteCodeArray[25] = new LocalForm(25, "aload", new int[] { 25, -1 });
         byteCodeArray[26] = new NoArgumentForm(26, "iload_0");
         byteCodeArray[27] = new NoArgumentForm(27, "iload_1");
         byteCodeArray[28] = new NoArgumentForm(28, "iload_2");
@@ -85,11 +85,11 @@ public abstract class ByteCodeForm {
         byteCodeArray[51] = new NoArgumentForm(51, "baload");
         byteCodeArray[52] = new NoArgumentForm(52, "caload");
         byteCodeArray[53] = new NoArgumentForm(53, "saload");
-        byteCodeArray[54] = new LocalForm(54, "istore", new int[] {54, -1});
-        byteCodeArray[55] = new LocalForm(55, "lstore", new int[] {55, -1});
-        byteCodeArray[56] = new LocalForm(56, "fstore", new int[] {56, -1});
-        byteCodeArray[57] = new LocalForm(57, "dstore", new int[] {57, -1});
-        byteCodeArray[58] = new LocalForm(58, "astore", new int[] {58, -1});
+        byteCodeArray[54] = new LocalForm(54, "istore", new int[] { 54, -1 });
+        byteCodeArray[55] = new LocalForm(55, "lstore", new int[] { 55, -1 });
+        byteCodeArray[56] = new LocalForm(56, "fstore", new int[] { 56, -1 });
+        byteCodeArray[57] = new LocalForm(57, "dstore", new int[] { 57, -1 });
+        byteCodeArray[58] = new LocalForm(58, "astore", new int[] { 58, -1 });
         byteCodeArray[59] = new NoArgumentForm(59, "istore_0");
         byteCodeArray[60] = new NoArgumentForm(60, "istore_1");
         byteCodeArray[61] = new NoArgumentForm(61, "istore_2");
@@ -163,7 +163,7 @@ public abstract class ByteCodeForm {
         byteCodeArray[129] = new NoArgumentForm(129, "lor");
         byteCodeArray[130] = new NoArgumentForm(130, "ixor");
         byteCodeArray[131] = new NoArgumentForm(131, "lxor");
-        byteCodeArray[132] = new IincForm(132, "iinc", new int[] {132, -1, -1});
+        byteCodeArray[132] = new IincForm(132, "iinc", new int[] { 132, -1, -1 });
         byteCodeArray[133] = new NoArgumentForm(133, "i2l");
         byteCodeArray[134] = new NoArgumentForm(134, "i2f");
         byteCodeArray[135] = new NoArgumentForm(135, "i2d");
@@ -184,23 +184,23 @@ public abstract class ByteCodeForm {
         byteCodeArray[150] = new NoArgumentForm(150, "fcmpg");
         byteCodeArray[151] = new NoArgumentForm(151, "dcmpl");
         byteCodeArray[152] = new NoArgumentForm(152, "dcmpg");
-        byteCodeArray[153] = new LabelForm(153, "ifeq", new int[] {153, -1, -1});
-        byteCodeArray[154] = new LabelForm(154, "ifne", new int[] {154, -1, -1});
-        byteCodeArray[155] = new LabelForm(155, "iflt", new int[] {155, -1, -1});
-        byteCodeArray[156] = new LabelForm(156, "ifge", new int[] {156, -1, -1});
-        byteCodeArray[157] = new LabelForm(157, "ifgt", new int[] {157, -1, -1});
-        byteCodeArray[158] = new LabelForm(158, "ifle", new int[] {158, -1, -1});
-        byteCodeArray[159] = new LabelForm(159, "if_icmpeq", new int[] {159, -1, -1});
-        byteCodeArray[160] = new LabelForm(160, "if_icmpne", new int[] {160, -1, -1});
-        byteCodeArray[161] = new LabelForm(161, "if_icmplt", new int[] {161, -1, -1});
-        byteCodeArray[162] = new LabelForm(162, "if_icmpge", new int[] {162, -1, -1});
-        byteCodeArray[163] = new LabelForm(163, "if_icmpgt", new int[] {163, -1, -1});
-        byteCodeArray[164] = new LabelForm(164, "if_icmple", new int[] {164, -1, -1});
-        byteCodeArray[165] = new LabelForm(165, "if_acmpeq", new int[] {165, -1, -1});
-        byteCodeArray[166] = new LabelForm(166, "if_acmpne", new int[] {166, -1, -1});
-        byteCodeArray[167] = new LabelForm(167, "goto", new int[] {167, -1, -1});
-        byteCodeArray[168] = new LabelForm(168, "jsr", new int[] {168, -1, -1});
-        byteCodeArray[169] = new LocalForm(169, "ret", new int[] {169, -1});
+        byteCodeArray[153] = new LabelForm(153, "ifeq", new int[] { 153, -1, -1 });
+        byteCodeArray[154] = new LabelForm(154, "ifne", new int[] { 154, -1, -1 });
+        byteCodeArray[155] = new LabelForm(155, "iflt", new int[] { 155, -1, -1 });
+        byteCodeArray[156] = new LabelForm(156, "ifge", new int[] { 156, -1, -1 });
+        byteCodeArray[157] = new LabelForm(157, "ifgt", new int[] { 157, -1, -1 });
+        byteCodeArray[158] = new LabelForm(158, "ifle", new int[] { 158, -1, -1 });
+        byteCodeArray[159] = new LabelForm(159, "if_icmpeq", new int[] { 159, -1, -1 });
+        byteCodeArray[160] = new LabelForm(160, "if_icmpne", new int[] { 160, -1, -1 });
+        byteCodeArray[161] = new LabelForm(161, "if_icmplt", new int[] { 161, -1, -1 });
+        byteCodeArray[162] = new LabelForm(162, "if_icmpge", new int[] { 162, -1, -1 });
+        byteCodeArray[163] = new LabelForm(163, "if_icmpgt", new int[] { 163, -1, -1 });
+        byteCodeArray[164] = new LabelForm(164, "if_icmple", new int[] { 164, -1, -1 });
+        byteCodeArray[165] = new LabelForm(165, "if_acmpeq", new int[] { 165, -1, -1 });
+        byteCodeArray[166] = new LabelForm(166, "if_acmpne", new int[] { 166, -1, -1 });
+        byteCodeArray[167] = new LabelForm(167, "goto", new int[] { 167, -1, -1 });
+        byteCodeArray[168] = new LabelForm(168, "jsr", new int[] { 168, -1, -1 });
+        byteCodeArray[169] = new LocalForm(169, "ret", new int[] { 169, -1 });
         byteCodeArray[170] = new TableSwitchForm(170, "tableswitch");
         byteCodeArray[171] = new LookupSwitchForm(171, "lookupswitch");
         byteCodeArray[172] = new NoArgumentForm(172, "ireturn");
@@ -209,70 +209,70 @@ public abstract class ByteCodeForm {
         byteCodeArray[175] = new NoArgumentForm(175, "dreturn");
         byteCodeArray[176] = new NoArgumentForm(176, "areturn");
         byteCodeArray[177] = new NoArgumentForm(177, "return");
-        byteCodeArray[178] = new FieldRefForm(178, "getstatic", new int[] {178, -1, -1});
-        byteCodeArray[179] = new FieldRefForm(179, "putstatic", new int[] {179, -1, -1});
-        byteCodeArray[180] = new FieldRefForm(180, "getfield", new int[] {180, -1, -1});
-        byteCodeArray[181] = new FieldRefForm(181, "putfield", new int[] {181, -1, -1});
-        byteCodeArray[182] = new MethodRefForm(182, "invokevirtual", new int[] {182, -1, -1});
-        byteCodeArray[183] = new MethodRefForm(183, "invokespecial", new int[] {183, -1, -1});
-        byteCodeArray[184] = new MethodRefForm(184, "invokestatic", new int[] {184, -1, -1});
-        byteCodeArray[185] = new IMethodRefForm(185, "invokeinterface", new int[] {185, -1, -1, /* count */-1, 0});
+        byteCodeArray[178] = new FieldRefForm(178, "getstatic", new int[] { 178, -1, -1 });
+        byteCodeArray[179] = new FieldRefForm(179, "putstatic", new int[] { 179, -1, -1 });
+        byteCodeArray[180] = new FieldRefForm(180, "getfield", new int[] { 180, -1, -1 });
+        byteCodeArray[181] = new FieldRefForm(181, "putfield", new int[] { 181, -1, -1 });
+        byteCodeArray[182] = new MethodRefForm(182, "invokevirtual", new int[] { 182, -1, -1 });
+        byteCodeArray[183] = new MethodRefForm(183, "invokespecial", new int[] { 183, -1, -1 });
+        byteCodeArray[184] = new MethodRefForm(184, "invokestatic", new int[] { 184, -1, -1 });
+        byteCodeArray[185] = new IMethodRefForm(185, "invokeinterface", new int[] { 185, -1, -1, /* count */-1, 0 });
         byteCodeArray[186] = new NoArgumentForm(186, "xxxunusedxxx");
-        byteCodeArray[187] = new NewClassRefForm(187, "new", new int[] {187, -1, -1});
-        byteCodeArray[188] = new ByteForm(188, "newarray", new int[] {188, -1});
-        byteCodeArray[189] = new ClassRefForm(189, "anewarray", new int[] {189, -1, -1});
+        byteCodeArray[187] = new NewClassRefForm(187, "new", new int[] { 187, -1, -1 });
+        byteCodeArray[188] = new ByteForm(188, "newarray", new int[] { 188, -1 });
+        byteCodeArray[189] = new ClassRefForm(189, "anewarray", new int[] { 189, -1, -1 });
         byteCodeArray[190] = new NoArgumentForm(190, "arraylength");
         byteCodeArray[191] = new NoArgumentForm(191, "athrow");
-        byteCodeArray[192] = new ClassRefForm(192, "checkcast", new int[] {192, -1, -1});
-        byteCodeArray[193] = new ClassRefForm(193, "instanceof", new int[] {193, -1, -1});
+        byteCodeArray[192] = new ClassRefForm(192, "checkcast", new int[] { 192, -1, -1 });
+        byteCodeArray[193] = new ClassRefForm(193, "instanceof", new int[] { 193, -1, -1 });
         byteCodeArray[194] = new NoArgumentForm(194, "monitorenter");
         byteCodeArray[195] = new NoArgumentForm(195, "monitorexit");
         byteCodeArray[196] = new WideForm(196, "wide");
-        byteCodeArray[197] = new MultiANewArrayForm(197, "multianewarray", new int[] {197, -1, -1, -1});
-        byteCodeArray[198] = new LabelForm(198, "ifnull", new int[] {198, -1, -1});
-        byteCodeArray[199] = new LabelForm(199, "ifnonnull", new int[] {199, -1, -1});
-        byteCodeArray[200] = new LabelForm(200, "goto_w", new int[] {200, -1, -1, -1, -1}, WIDENED);
-        byteCodeArray[201] = new LabelForm(201, "jsr_w", new int[] {201, -1, -1, -1, -1}, WIDENED);
+        byteCodeArray[197] = new MultiANewArrayForm(197, "multianewarray", new int[] { 197, -1, -1, -1 });
+        byteCodeArray[198] = new LabelForm(198, "ifnull", new int[] { 198, -1, -1 });
+        byteCodeArray[199] = new LabelForm(199, "ifnonnull", new int[] { 199, -1, -1 });
+        byteCodeArray[200] = new LabelForm(200, "goto_w", new int[] { 200, -1, -1, -1, -1 }, WIDENED);
+        byteCodeArray[201] = new LabelForm(201, "jsr_w", new int[] { 201, -1, -1, -1, -1 }, WIDENED);
 
         // Extra ones defined by pack200
-        byteCodeArray[202] = new ThisFieldRefForm(202, "getstatic_this", new int[] {178, -1, -1});
-        byteCodeArray[203] = new ThisFieldRefForm(203, "putstatic_this", new int[] {179, -1, -1});
-        byteCodeArray[204] = new ThisFieldRefForm(204, "getfield_this", new int[] {180, -1, -1});
-        byteCodeArray[205] = new ThisFieldRefForm(205, "putfield_this", new int[] {181, -1, -1});
-        byteCodeArray[206] = new ThisMethodRefForm(206, "invokevirtual_this", new int[] {182, -1, -1});
-        byteCodeArray[207] = new ThisMethodRefForm(207, "invokespecial_this", new int[] {183, -1, -1});
-        byteCodeArray[208] = new ThisMethodRefForm(208, "invokestatic_this", new int[] {184, -1, -1});
-        byteCodeArray[209] = new ThisFieldRefForm(209, "aload_0_getstatic_this", new int[] {42, 178, -1, -1});
-        byteCodeArray[210] = new ThisFieldRefForm(210, "aload_0_putstatic_this", new int[] {42, 179, -1, -1});
-        byteCodeArray[211] = new ThisFieldRefForm(211, "aload_0_getfield_this", new int[] {42, 180, -1, -1});
-        byteCodeArray[212] = new ThisFieldRefForm(212, "aload_0_putfield_this", new int[] {42, 181, -1, -1});
-        byteCodeArray[213] = new ThisMethodRefForm(213, "aload_0_invokevirtual_this", new int[] {42, 182, -1, -1});
-        byteCodeArray[214] = new ThisMethodRefForm(214, "aload_0_invokespecial_this", new int[] {42, 183, -1, -1});
-        byteCodeArray[215] = new ThisMethodRefForm(215, "aload_0_invokestatic_this", new int[] {42, 184, -1, -1});
-        byteCodeArray[216] = new SuperFieldRefForm(216, "getstatic_super", new int[] {178, -1, -1});
-        byteCodeArray[217] = new SuperFieldRefForm(217, "putstatic_super", new int[] {179, -1, -1});
-        byteCodeArray[218] = new SuperFieldRefForm(218, "getfield_super", new int[] {180, -1, -1});
-        byteCodeArray[219] = new SuperFieldRefForm(219, "putfield_super", new int[] {181, -1, -1});
-        byteCodeArray[220] = new SuperMethodRefForm(220, "invokevirtual_super", new int[] {182, -1, -1});
-        byteCodeArray[221] = new SuperMethodRefForm(221, "invokespecial_super", new int[] {183, -1, -1});
-        byteCodeArray[222] = new SuperMethodRefForm(222, "invokestatic_super", new int[] {184, -1, -1});
-        byteCodeArray[223] = new SuperFieldRefForm(223, "aload_0_getstatic_super", new int[] {42, 178, -1, -1});
-        byteCodeArray[224] = new SuperFieldRefForm(224, "aload_0_putstatic_super", new int[] {42, 179, -1, -1});
-        byteCodeArray[225] = new SuperFieldRefForm(225, "aload_0_getfield_super", new int[] {42, 180, -1, -1});
-        byteCodeArray[226] = new SuperFieldRefForm(226, "aload_0_putfield_super", new int[] {42, 181, -1, -1});
-        byteCodeArray[227] = new SuperMethodRefForm(227, "aload_0_invokevirtual_super", new int[] {42, 182, -1, -1});
-        byteCodeArray[228] = new SuperMethodRefForm(228, "aload_0_invokespecial_super", new int[] {42, 183, -1, -1});
-        byteCodeArray[229] = new SuperMethodRefForm(229, "aload_0_invokestatic_super", new int[] {42, 184, -1, -1});
-        byteCodeArray[230] = new ThisInitMethodRefForm(230, "invokespecial_this_init", new int[] {183, -1, -1});
-        byteCodeArray[231] = new SuperInitMethodRefForm(231, "invokespecial_super_init", new int[] {183, -1, -1});
-        byteCodeArray[232] = new NewInitMethodRefForm(232, "invokespecial_new_init", new int[] {183, -1, -1});
-        byteCodeArray[233] = new NarrowClassRefForm(233, "cldc", new int[] {18, -1});
-        byteCodeArray[234] = new IntRefForm(234, "ildc", new int[] {18, -1});
-        byteCodeArray[235] = new FloatRefForm(235, "fldc", new int[] {18, -1});
-        byteCodeArray[236] = new NarrowClassRefForm(236, "cldc_w", new int[] {19, -1, -1}, WIDENED);
-        byteCodeArray[237] = new IntRefForm(237, "ildc_w", new int[] {19, -1, -1}, WIDENED);
-        byteCodeArray[238] = new FloatRefForm(238, "fldc_w", new int[] {19, -1, -1}, WIDENED);
-        byteCodeArray[239] = new DoubleForm(239, "dldc2_w", new int[] {20, -1, -1});
+        byteCodeArray[202] = new ThisFieldRefForm(202, "getstatic_this", new int[] { 178, -1, -1 });
+        byteCodeArray[203] = new ThisFieldRefForm(203, "putstatic_this", new int[] { 179, -1, -1 });
+        byteCodeArray[204] = new ThisFieldRefForm(204, "getfield_this", new int[] { 180, -1, -1 });
+        byteCodeArray[205] = new ThisFieldRefForm(205, "putfield_this", new int[] { 181, -1, -1 });
+        byteCodeArray[206] = new ThisMethodRefForm(206, "invokevirtual_this", new int[] { 182, -1, -1 });
+        byteCodeArray[207] = new ThisMethodRefForm(207, "invokespecial_this", new int[] { 183, -1, -1 });
+        byteCodeArray[208] = new ThisMethodRefForm(208, "invokestatic_this", new int[] { 184, -1, -1 });
+        byteCodeArray[209] = new ThisFieldRefForm(209, "aload_0_getstatic_this", new int[] { 42, 178, -1, -1 });
+        byteCodeArray[210] = new ThisFieldRefForm(210, "aload_0_putstatic_this", new int[] { 42, 179, -1, -1 });
+        byteCodeArray[211] = new ThisFieldRefForm(211, "aload_0_getfield_this", new int[] { 42, 180, -1, -1 });
+        byteCodeArray[212] = new ThisFieldRefForm(212, "aload_0_putfield_this", new int[] { 42, 181, -1, -1 });
+        byteCodeArray[213] = new ThisMethodRefForm(213, "aload_0_invokevirtual_this", new int[] { 42, 182, -1, -1 });
+        byteCodeArray[214] = new ThisMethodRefForm(214, "aload_0_invokespecial_this", new int[] { 42, 183, -1, -1 });
+        byteCodeArray[215] = new ThisMethodRefForm(215, "aload_0_invokestatic_this", new int[] { 42, 184, -1, -1 });
+        byteCodeArray[216] = new SuperFieldRefForm(216, "getstatic_super", new int[] { 178, -1, -1 });
+        byteCodeArray[217] = new SuperFieldRefForm(217, "putstatic_super", new int[] { 179, -1, -1 });
+        byteCodeArray[218] = new SuperFieldRefForm(218, "getfield_super", new int[] { 180, -1, -1 });
+        byteCodeArray[219] = new SuperFieldRefForm(219, "putfield_super", new int[] { 181, -1, -1 });
+        byteCodeArray[220] = new SuperMethodRefForm(220, "invokevirtual_super", new int[] { 182, -1, -1 });
+        byteCodeArray[221] = new SuperMethodRefForm(221, "invokespecial_super", new int[] { 183, -1, -1 });
+        byteCodeArray[222] = new SuperMethodRefForm(222, "invokestatic_super", new int[] { 184, -1, -1 });
+        byteCodeArray[223] = new SuperFieldRefForm(223, "aload_0_getstatic_super", new int[] { 42, 178, -1, -1 });
+        byteCodeArray[224] = new SuperFieldRefForm(224, "aload_0_putstatic_super", new int[] { 42, 179, -1, -1 });
+        byteCodeArray[225] = new SuperFieldRefForm(225, "aload_0_getfield_super", new int[] { 42, 180, -1, -1 });
+        byteCodeArray[226] = new SuperFieldRefForm(226, "aload_0_putfield_super", new int[] { 42, 181, -1, -1 });
+        byteCodeArray[227] = new SuperMethodRefForm(227, "aload_0_invokevirtual_super", new int[] { 42, 182, -1, -1 });
+        byteCodeArray[228] = new SuperMethodRefForm(228, "aload_0_invokespecial_super", new int[] { 42, 183, -1, -1 });
+        byteCodeArray[229] = new SuperMethodRefForm(229, "aload_0_invokestatic_super", new int[] { 42, 184, -1, -1 });
+        byteCodeArray[230] = new ThisInitMethodRefForm(230, "invokespecial_this_init", new int[] { 183, -1, -1 });
+        byteCodeArray[231] = new SuperInitMethodRefForm(231, "invokespecial_super_init", new int[] { 183, -1, -1 });
+        byteCodeArray[232] = new NewInitMethodRefForm(232, "invokespecial_new_init", new int[] { 183, -1, -1 });
+        byteCodeArray[233] = new NarrowClassRefForm(233, "cldc", new int[] { 18, -1 });
+        byteCodeArray[234] = new IntRefForm(234, "ildc", new int[] { 18, -1 });
+        byteCodeArray[235] = new FloatRefForm(235, "fldc", new int[] { 18, -1 });
+        byteCodeArray[236] = new NarrowClassRefForm(236, "cldc_w", new int[] { 19, -1, -1 }, WIDENED);
+        byteCodeArray[237] = new IntRefForm(237, "ildc_w", new int[] { 19, -1, -1 }, WIDENED);
+        byteCodeArray[238] = new FloatRefForm(238, "fldc_w", new int[] { 19, -1, -1 }, WIDENED);
+        byteCodeArray[239] = new DoubleForm(239, "dldc2_w", new int[] { 20, -1, -1 });
 
         // Reserved bytecodes
         byteCodeArray[254] = new NoArgumentForm(254, "impdep1");
@@ -294,6 +294,7 @@ public abstract class ByteCodeForm {
     public static ByteCodeForm get(final int opcode) {
         return byteCodeArray[opcode];
     }
+
     private final int opcode;
     private final String name;
     private final int[] rewrite;
@@ -305,19 +306,18 @@ public abstract class ByteCodeForm {
      * Answer a new instance of this class with the specified opcode and name. Assume no rewrite.
      *
      * @param opcode int corresponding to the opcode's value
-     * @param name String printable name of the opcode
+     * @param name   String printable name of the opcode
      */
     public ByteCodeForm(final int opcode, final String name) {
-        this(opcode, name, new int[] {opcode});
+        this(opcode, name, new int[] { opcode });
     }
 
     /**
      * Answer a new instance of this class with the specified opcode, name, operandType and rewrite
      *
-     * @param opcode int corresponding to the opcode's value
-     * @param name String printable name of the opcode
-     * @param rewrite int[] Array of ints. Operand positions (which will later be rewritten in ByteCodes) are indicated
-     *        by -1.
+     * @param opcode  int corresponding to the opcode's value
+     * @param name    String printable name of the opcode
+     * @param rewrite int[] Array of ints. Operand positions (which will later be rewritten in ByteCodes) are indicated by -1.
      */
     public ByteCodeForm(final int opcode, final String name, final int[] rewrite) {
         this.opcode = opcode;
@@ -374,12 +374,11 @@ public abstract class ByteCodeForm {
     /**
      * The ByteCodeForm knows how to fix up a bytecode if it needs to be fixed up because it holds a Label bytecode.
      *
-     * @param byteCode a ByteCode to be fixed up
+     * @param byteCode      a ByteCode to be fixed up
      * @param codeAttribute a CodeAttribute used to determine how the ByteCode should be fixed up.
      */
     public void fixUpByteCodeTargets(final ByteCode byteCode, final CodeAttribute codeAttribute) {
         // Most ByteCodeForms don't have any fixing up to do.
-        return;
     }
 
     public String getName() {
@@ -399,19 +398,18 @@ public abstract class ByteCodeForm {
     }
 
     /**
-     * This method will answer true if the receiver is a multi-bytecode instruction (such as aload0_putfield_super);
-     * otherwise, it will answer false.
+     * This method will answer true if the receiver is a multi-bytecode instruction (such as aload0_putfield_super); otherwise, it will answer false.
      *
      * @return boolean true if multibytecode, false otherwise
      */
     public boolean hasMultipleByteCodes() {
         // Currently, all multi-bytecode instructions
         // begin with aload_0, so this is how we test.
-        if ((rewrite.length > 1) && (rewrite[0] == 42)) {
+        if (rewrite.length > 1 && rewrite[0] == 42) {
             // If there's an instruction (not a negative
             // number, which is an operand) after the
             // aload_0, it's a multibytecode instruction.
-            return (rewrite[1] > 0);
+            return rewrite[1] > 0;
         }
         return false;
     }
@@ -429,13 +427,12 @@ public abstract class ByteCodeForm {
     }
 
     /**
-     * When passed a byteCode, an OperandTable and a SegmentConstantPool, this method will set the rewrite of the
-     * byteCode appropriately.
+     * When passed a byteCode, an OperandTable and a SegmentConstantPool, this method will set the rewrite of the byteCode appropriately.
      *
-     * @param byteCode ByteCode to be updated (!)
+     * @param byteCode       ByteCode to be updated (!)
      * @param operandManager OperandTable from which to draw info
-     * @param codeLength Length of bytes (excluding this bytecode) from the beginning of the method. Used in calculating
-     *        padding for some variable-length bytecodes (such as lookupswitch, tableswitch).
+     * @param codeLength     Length of bytes (excluding this bytecode) from the beginning of the method. Used in calculating padding for some variable-length
+     *                       bytecodes (such as lookupswitch, tableswitch).
      */
     public abstract void setByteCodeOperands(ByteCode byteCode, OperandManager operandManager, int codeLength);
 

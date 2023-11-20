@@ -18,17 +18,20 @@
  */
 package org.apache.commons.compress.compressors.z;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.nio.file.Files;
 import java.util.Collections;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -40,8 +43,38 @@ import org.junit.jupiter.api.Test;
 public class ZCompressorInputStreamTest {
 
     @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.tar.Z");
+    public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() {
+        final SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration());
+        assertThrows(IOException.class, () -> new ZCompressorInputStream(sequenceInputStream));
+    }
+
+    @Test
+    public void testInvalidMaxCodeSize() throws IOException {
+        final byte[] bytes = AbstractTest.readAllBytes("bla.tar.Z");
+
+        // @formatter:off
+        final IntStream[] invalid = {
+            IntStream.range(Byte.MIN_VALUE, -120),
+            IntStream.range(-97, -88),
+            IntStream.range(-65, -56),
+            IntStream.range(-33, -24),
+            IntStream.range(-1, 8),
+            IntStream.range(31, 40),
+            IntStream.range(63, 72),
+            IntStream.range(95, 104),
+            IntStream.range(127, 127)
+            };
+        // @formatter:on
+
+        Stream.of(invalid).forEach(ints -> ints.forEach(i -> {
+            bytes[2] = (byte) i;
+            assertThrows(IllegalArgumentException.class, () -> new ZCompressorInputStream(new ByteArrayInputStream(bytes), 1024 * 1024), () -> "value=" + i);
+        }));
+    }
+
+    @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = AbstractTest.getFile("bla.tar.Z");
         final byte[] buf = new byte[2];
         try (InputStream is = Files.newInputStream(input.toPath());
                 ZCompressorInputStream in = new ZCompressorInputStream(is)) {
@@ -52,20 +85,14 @@ public class ZCompressorInputStreamTest {
     }
 
     @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.tar.Z");
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+        final File input = AbstractTest.getFile("bla.tar.Z");
         try (InputStream is = Files.newInputStream(input.toPath());
                 ZCompressorInputStream in = new ZCompressorInputStream(is)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
         }
-    }
-
-    @Test
-    public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() {
-        final SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration());
-        assertThrows(IOException.class, () -> new ZCompressorInputStream(sequenceInputStream));
     }
 
 }

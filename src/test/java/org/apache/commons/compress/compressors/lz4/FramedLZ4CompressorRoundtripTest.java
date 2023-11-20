@@ -26,35 +26,32 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Random;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.utils.IOUtils;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
+public final class FramedLZ4CompressorRoundtripTest extends AbstractTest {
 
     public static Stream<Arguments> factory() {
-        return Stream.of(
-                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64)),
+        return Stream.of(Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64)),
                 Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K256)),
                 Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M1)),
                 Arguments.of(FramedLZ4CompressorOutputStream.Parameters.DEFAULT),
                 // default without content checksum
-                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4,
-                    false, false, false)),
+                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4, false, false, false)),
                 // default with block checksum
-                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4,
-                    true, true, false)),
+                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4, true, true, false)),
                 // small blocksize (so we get enough blocks) and enabled block dependency, otherwise defaults
-                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64,
-                    true, false, true)),
+                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, true)),
                 // default, tuned for speed
-                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4,
-                    true, false, false, BlockLZ4CompressorOutputStream.createParameterBuilder()
-                        .tunedForSpeed().build())));
+                Arguments.of(new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.M4, true, false, false,
+                        BlockLZ4CompressorOutputStream.createParameterBuilder().tunedForSpeed().build())));
     }
 
     @ParameterizedTest
@@ -73,14 +70,14 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
     // yields no compression at all
     @ParameterizedTest
     @MethodSource("factory")
-   public void gzippedLoremIpsumRoundtrip(final FramedLZ4CompressorOutputStream.Parameters params) throws IOException {
+    public void gzippedLoremIpsumRoundtrip(final FramedLZ4CompressorOutputStream.Parameters params) throws IOException {
         roundTripTest("lorem-ipsum.txt.gz", params);
     }
 
     private void roundTripTest(final String testFile, final FramedLZ4CompressorOutputStream.Parameters params) throws IOException {
         final File input = getFile(testFile);
         long start = System.currentTimeMillis();
-        final File outputSz = new File(dir, input.getName() + ".framed.lz4");
+        final File outputSz = newTempFile(input.getName() + ".framed.lz4");
         byte[] expected;
         try (InputStream is = Files.newInputStream(input.toPath())) {
             expected = IOUtils.toByteArray(is);
@@ -100,4 +97,17 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTestCase {
         // System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
+    @Test
+    public void test64KMultipleBlocks() throws IOException {
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        final byte[] expected = new byte[98304];
+        new Random(0).nextBytes(expected);
+        try (FramedLZ4CompressorOutputStream compressor = new FramedLZ4CompressorOutputStream(buffer,
+                new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
+            compressor.write(expected);
+        }
+        try (FramedLZ4CompressorInputStream sis = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(buffer.toByteArray()))) {
+            assertArrayEquals(expected, IOUtils.toByteArray(sis));
+        }
+    }
 }

@@ -46,7 +46,7 @@ public class BHSDCodecTest {
     @Test
     public void testDeltaEncodings() throws IOException, Pack200Exception {
         final Codec c = Codec.UDELTA5;
-        final int[] sequence = {0, 2, 4, 2, 2, 4};
+        final int[] sequence = { 0, 2, 4, 2, 2, 4 };
         final byte[] encoded = c.encode(sequence);
         final int[] decoded = c.decodeInts(6, new ByteArrayInputStream(encoded));
         for (int i = 0; i < decoded.length; i++) {
@@ -75,21 +75,18 @@ public class BHSDCodecTest {
                 final byte[] encoded = codec.encode((int) j, 0);
                 long decoded = 0;
                 try {
-                    decoded = codec.decode(
-                            new ByteArrayInputStream(encoded), 0);
-                } catch (final EOFException e) {
+                    decoded = codec.decode(new ByteArrayInputStream(encoded), 0);
+                } catch (EOFException e) {
                     System.out.println(e);
                 }
                 if (j != decoded) {
-                    fail("Failed with codec: " + i + ", " + codec
-                            + " expected: " + j + ", got: " + decoded);
+                    fail("Failed with codec: " + i + ", " + codec + " expected: " + j + ", got: " + decoded);
                 }
             }
         }
 
         // Test encode-decode with 0
-        assertEquals(0, codec.decode(new ByteArrayInputStream(codec.encode(
-                0, 0)), 0));
+        assertEquals(0, codec.decode(new ByteArrayInputStream(codec.encode(0, 0)), 0));
     }
 
 }

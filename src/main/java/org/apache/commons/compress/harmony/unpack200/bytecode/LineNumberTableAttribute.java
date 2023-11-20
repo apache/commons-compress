@@ -25,7 +25,7 @@ import java.io.IOException;
 public class LineNumberTableAttribute extends BCIRenumberedAttribute {
 
     private static CPUTF8 attributeName;
-    
+
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
@@ -34,8 +34,7 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
     private final int[] startPcs;
     private final int[] lineNumbers;
 
-    public LineNumberTableAttribute(final int lineNumberTableLength, final int[] startPcs,
-        final int[] lineNumbers) {
+    public LineNumberTableAttribute(final int lineNumberTableLength, final int[] startPcs, final int[] lineNumbers) {
         super(attributeName);
         this.lineNumberTableLength = lineNumberTableLength;
         this.startPcs = startPcs;
@@ -49,7 +48,7 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
 
     @Override
     protected int getLength() {
-        return 2 + (4 * lineNumberTableLength);
+        return 2 + 4 * lineNumberTableLength;
     }
 
     /*
@@ -59,7 +58,7 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
      */
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] {getAttributeName()};
+        return new ClassFileEntry[] { getAttributeName() };
     }
 
     @Override
@@ -70,9 +69,7 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#resolve(org.apache.commons.compress.harmony.
-     * unpack200.bytecode.ClassConstantPool)
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#resolve(org.apache.commons.compress.harmony. unpack200.bytecode.ClassConstantPool)
      */
     @Override
     protected void resolve(final ClassConstantPool pool) {

@@ -21,13 +21,15 @@ package org.apache.commons.compress.archivers.zip;
 /**
  * PKCS#7 Store for X.509 Certificates (0x0014).
  *
- * <p>This field MUST contain information about each of the certificates files may
- * be signed with. When the Central Directory Encryption feature is enabled for
- * a ZIP file, this record will appear in the Archive Extra Data Record,
- * otherwise it will appear in the first central directory record and will be
- * ignored in any other record.</p>
+ * <p>
+ * This field MUST contain information about each of the certificates files may be signed with. When the Central Directory Encryption feature is enabled for a
+ * ZIP file, this record will appear in the Archive Extra Data Record, otherwise it will appear in the first central directory record and will be ignored in any
+ * other record.
+ * </p>
  *
- * <p>Note: all fields stored in Intel low-byte/high-byte order.</p>
+ * <p>
+ * Note: all fields stored in Intel low-byte/high-byte order.
+ * </p>
  *
  * <pre>
  *         Value     Size     Description

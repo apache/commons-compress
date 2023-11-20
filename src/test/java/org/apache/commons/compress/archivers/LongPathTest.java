@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -44,10 +44,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * Test that can read various tar file examples.
  *
- * Files must be in resources/longpath, and there must be a file.txt containing
- * the list of files in the archives.
+ * Files must be in resources/longpath, and there must be a file.txt containing the list of files in the archives.
  */
-public class LongPathTest extends AbstractTestCase {
+public class LongPathTest extends AbstractTest {
 
     private static final ClassLoader CLASSLOADER = LongPathTest.class.getClassLoader();
     private static final File ARCDIR;
@@ -56,7 +55,7 @@ public class LongPathTest extends AbstractTestCase {
     static {
         try {
             ARCDIR = new File(CLASSLOADER.getResource("longpath").toURI());
-        } catch (final URISyntaxException e) {
+        } catch (URISyntaxException e) {
             throw new AssertionError(e);
         }
     }
@@ -105,7 +104,7 @@ public class LongPathTest extends AbstractTestCase {
             expected.add("META-INF/");
             expected.add("META-INF/MANIFEST.MF");
         }
-        try (ArchiveInputStream ais = factory.createArchiveInputStream(new BufferedInputStream(Files.newInputStream(file.toPath())))) {
+        try (ArchiveInputStream<?> ais = factory.createArchiveInputStream(new BufferedInputStream(Files.newInputStream(file.toPath())))) {
             // check if expected type recognized
             if (name.endsWith(".tar")) {
                 assertTrue(ais instanceof TarArchiveInputStream);
@@ -125,9 +124,11 @@ public class LongPathTest extends AbstractTestCase {
                 // CPIO does not store directories or directory names
                 expected.clear();
                 for (final String ent : FILELIST) {
-                    if (!ent.endsWith("/")) {// not a directory
+                    if (!ent.endsWith("/")) {
+                        // not a directory
                         final int lastSlash = ent.lastIndexOf('/');
-                        if (lastSlash >= 0) { // extract path name
+                        if (lastSlash >= 0) {
+                            // extract path name
                             expected.add(ent.substring(lastSlash + 1));
                         } else {
                             expected.add(ent);

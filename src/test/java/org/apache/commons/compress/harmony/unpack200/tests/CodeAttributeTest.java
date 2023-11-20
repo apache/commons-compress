@@ -39,18 +39,18 @@ import org.junit.jupiter.api.Test;
  */
 public class CodeAttributeTest {
 
-	public class MockCodeAttribute extends CodeAttribute {
+    public class MockCodeAttribute extends CodeAttribute {
 
-		public MockCodeAttribute(final int maxStack, final int maxLocals, final byte[] codePacked, final Segment segment,
-				final OperandManager operandManager, final List<ExceptionTableEntry> exceptionTable) {
-			super(maxStack, maxLocals, codePacked, segment, operandManager, exceptionTable);
-		}
+        public MockCodeAttribute(final int maxStack, final int maxLocals, final byte[] codePacked, final Segment segment, final OperandManager operandManager,
+                final List<ExceptionTableEntry> exceptionTable) {
+            super(maxStack, maxLocals, codePacked, segment, operandManager, exceptionTable);
+        }
 
-		@Override
-		public int getLength() {
-			return super.getLength();
-		}
-	}
+        @Override
+        public int getLength() {
+            return super.getLength();
+        }
+    }
 
     public class MockCpBands extends CpBands {
 
@@ -117,8 +117,7 @@ public class CodeAttributeTest {
         }
 
         @Override
-        protected int matchSpecificPoolEntryIndex(final String[] nameArray,
-                final String compareString, final int desiredIndex) {
+        protected int matchSpecificPoolEntryIndex(final String[] nameArray, final String compareString, final int desiredIndex) {
             return 1;
         }
     }
@@ -152,11 +151,10 @@ public class CodeAttributeTest {
                 mixedByteArray, // codePacked
                 segment, // segment
                 operandManager, // operandManager
-                new ArrayList());
+                new ArrayList<>());
         assertEquals(29, attribute.getLength());
 
-        attribute.attributes.add(new LocalVariableTableAttribute(0, null, null,
-                null, null, null));
+        attribute.attributes.add(new LocalVariableTableAttribute(0, null, null, null, null, null));
         assertEquals(37, attribute.getLength());
     }
 
@@ -174,13 +172,11 @@ public class CodeAttributeTest {
                 new ArrayList<>());
         assertEquals(2, attribute.maxLocals);
         assertEquals(3, attribute.maxStack);
-        assertEquals("aload_0_putfield_this", attribute.byteCodes
-                .get(4).toString());
+        assertEquals("aload_0_putfield_this", attribute.byteCodes.get(4).toString());
 
-        final int expectedLabels[] = { 0, 1, 4, 5, 8, 9, 10, 13, 14 };
+        final int[] expectedLabels = { 0, 1, 4, 5, 8, 9, 10, 13, 14 };
         for (int index = 0; index < expectedLabels.length; index++) {
-            assertEquals(expectedLabels[index],
-                    attribute.byteCodeOffsets.get(index).intValue());
+            assertEquals(expectedLabels[index], attribute.byteCodeOffsets.get(index).intValue());
         }
     }
 
@@ -198,13 +194,11 @@ public class CodeAttributeTest {
                 new ArrayList<>());
         assertEquals(3, attribute.maxLocals);
         assertEquals(4, attribute.maxStack);
-        assertEquals("invokespecial_this", attribute.byteCodes
-                .get(3).toString());
+        assertEquals("invokespecial_this", attribute.byteCodes.get(3).toString());
 
-        final int expectedLabels[] = { 0, 1, 2, 4 };
+        final int[] expectedLabels = { 0, 1, 2, 4 };
         for (int index = 0; index < expectedLabels.length; index++) {
-            assertEquals(expectedLabels[index],
-                    attribute.byteCodeOffsets.get(index).intValue());
+            assertEquals(expectedLabels[index], attribute.byteCodeOffsets.get(index).intValue());
         }
     }
 

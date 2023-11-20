@@ -35,23 +35,19 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
- * The DumpArchiveInputStream reads a UNIX dump archive as an InputStream.
- * Methods are provided to position at each successive entry in
- * the archive, and the read each entry as a normal input stream
- * using read().
+ * The DumpArchiveInputStream reads a UNIX dump archive as an InputStream. Methods are provided to position at each successive entry in the archive, and the
+ * read each entry as a normal input stream using read().
  *
- * There doesn't seem to exist a hint on the encoding of string values
- * in any piece documentation.  Given the main purpose of dump/restore
- * is backing up a system it seems very likely the format uses the
- * current default encoding of the system.
+ * There doesn't seem to exist a hint on the encoding of string values in any piece documentation. Given the main purpose of dump/restore is backing up a system
+ * it seems very likely the format uses the current default encoding of the system.
  *
  * @NotThreadSafe
  */
-public class DumpArchiveInputStream extends ArchiveInputStream {
+public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry> {
     /**
-     * Look at the first few bytes of the file to decide if it's a dump
-     * archive. With 32 bytes we can look at the magic value, with a full
-     * 1k we can verify the checksum.
+     * Look at the first few bytes of the file to decide if it's a dump archive. With 32 bytes we can look at the magic value, with a full 1k we can verify the
+     * checksum.
+     *
      * @param buffer data to match
      * @param length length of data
      * @return whether the buffer seems to contain dump data
@@ -68,9 +64,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         // this will work in a pinch.
-        return DumpArchiveConstants.NFS_MAGIC == DumpArchiveUtil.convert32(buffer,
-            24);
+        return DumpArchiveConstants.NFS_MAGIC == DumpArchiveUtil.convert32(buffer, 24);
     }
+
     private final DumpArchiveSummary summary;
     private DumpArchiveEntry active;
     private boolean isClosed;
@@ -103,8 +99,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     final String encoding;
 
     /**
-     * Constructor using the platform's default encoding for file
-     * names.
+     * Constructor using the platform's default encoding for file names.
      *
      * @param is stream to read from
      * @throws ArchiveException on error
@@ -116,14 +111,12 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     /**
      * Constructor.
      *
-     * @param is stream to read from
-     * @param encoding the encoding to use for file names, use null
-     * for the platform's default encoding
+     * @param is       stream to read from
+     * @param encoding the encoding to use for file names, use null for the platform's default encoding
      * @since 1.6
      * @throws ArchiveException on error
      */
-    public DumpArchiveInputStream(final InputStream is, final String encoding)
-        throws ArchiveException {
+    public DumpArchiveInputStream(final InputStream is, final String encoding) throws ArchiveException {
         this.raw = new TapeInputStream(is);
         this.hasHitEOF = false;
         this.encoding = encoding;
@@ -159,14 +152,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
         // use priority based on queue to ensure parent directories are
         // released first.
-        queue = new PriorityQueue<>(10,
-                (p, q) -> {
-                    if (p.getOriginalName() == null || q.getOriginalName() == null) {
-                        return Integer.MAX_VALUE;
-                    }
+        queue = new PriorityQueue<>(10, (p, q) -> {
+            if (p.getOriginalName() == null || q.getOriginalName() == null) {
+                return Integer.MAX_VALUE;
+            }
 
-                    return p.getOriginalName().compareTo(q.getOriginalName());
-                });
+            return p.getOriginalName().compareTo(q.getOriginalName());
+        });
     }
 
     /**
@@ -192,10 +184,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     }
 
     /**
-     * Read the next entry.
+     * Reads the next entry.
+     *
      * @return the next entry
      * @throws IOException on error
+     * @deprecated Use {@link #getNextEntry()}.
      */
+    @Deprecated
     public DumpArchiveEntry getNextDumpEntry() throws IOException {
         return getNextEntry();
     }
@@ -220,8 +215,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
             // block by block. We may want to revisit this if
             // the unnecessary decompression time adds up.
             while (readIdx < active.getHeaderCount()) {
-                if (!active.isSparseRecord(readIdx++)
-                    && raw.skip(DumpArchiveConstants.TP_SIZE) == -1) {
+                if (!active.isSparseRecord(readIdx++) && raw.skip(DumpArchiveConstants.TP_SIZE) == -1) {
                     throw new EOFException();
                 }
             }
@@ -239,9 +233,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
             // skip any remaining segments for prior file.
             while (DumpArchiveConstants.SEGMENT_TYPE.ADDR == active.getHeaderType()) {
-                if (raw.skip((long) DumpArchiveConstants.TP_SIZE
-                             * (active.getHeaderCount()
-                                - active.getHeaderHoles())) == -1) {
+                if (raw.skip((long) DumpArchiveConstants.TP_SIZE * (active.getHeaderCount() - active.getHeaderHoles())) == -1) {
                     throw new EOFException();
                 }
 
@@ -294,10 +286,10 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     }
 
     /**
-     * Get full path for specified archive entry, or null if there's a gap.
+     * Gets full path for specified archive entry, or null if there's a gap.
      *
      * @param entry
-     * @return  full path for specified archive entry, or null if there's a gap.
+     * @return full path for specified archive entry, or null if there's a gap.
      */
     private String getPath(final DumpArchiveEntry entry) {
         // build the stack of elements. It's possible that we're
@@ -339,6 +331,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
     /**
      * Return the archive summary information.
+     *
      * @return the summary
      */
     public DumpArchiveSummary getSummary() {
@@ -348,9 +341,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     /**
      * Reads bytes from the current dump archive entry.
      *
-     * This method is aware of the boundaries of the current
-     * entry in the archive and will deal with them as if they
-     * were this stream's start and EOF.
+     * This method is aware of the boundaries of the current entry in the archive and will deal with them as if they were this stream's start and EOF.
      *
      * @param buf The buffer into which to place bytes read.
      * @param off The offset at which to place bytes read.
@@ -437,8 +428,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         // we don't do anything with this yet.
-        if (raw.skip((long) DumpArchiveConstants.TP_SIZE * active.getHeaderCount())
-            == -1) {
+        if (raw.skip((long) DumpArchiveConstants.TP_SIZE * active.getHeaderCount()) == -1) {
             throw new EOFException();
         }
         readIdx = active.getHeaderCount();
@@ -461,8 +451,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         // we don't do anything with this yet.
-        if (raw.skip((long) DumpArchiveConstants.TP_SIZE * active.getHeaderCount())
-            == -1) {
+        if (raw.skip((long) DumpArchiveConstants.TP_SIZE * active.getHeaderCount()) == -1) {
             throw new EOFException();
         }
         readIdx = active.getHeaderCount();
@@ -471,20 +460,17 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     /**
      * Read directory entry.
      */
-    private void readDirectoryEntry(DumpArchiveEntry entry)
-        throws IOException {
+    private void readDirectoryEntry(DumpArchiveEntry entry) throws IOException {
         long size = entry.getEntrySize();
         boolean first = true;
 
-        while (first ||
-                DumpArchiveConstants.SEGMENT_TYPE.ADDR == entry.getHeaderType()) {
+        while (first || DumpArchiveConstants.SEGMENT_TYPE.ADDR == entry.getHeaderType()) {
             // read the header that we just peeked at.
             if (!first) {
                 raw.readRecord();
             }
 
-            if (!names.containsKey(entry.getIno()) &&
-                    DumpArchiveConstants.SEGMENT_TYPE.INODE == entry.getHeaderType()) {
+            if (!names.containsKey(entry.getIno()) && DumpArchiveConstants.SEGMENT_TYPE.INODE == entry.getHeaderType()) {
                 pending.put(entry.getIno(), entry);
             }
 
@@ -501,8 +487,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
             int reclen = 0;
 
-            for (int i = 0; i < datalen - 8 && i < size - 8;
-                    i += reclen) {
+            for (int i = 0; i < datalen - 8 && i < size - 8; i += reclen) {
                 final int ino = DumpArchiveUtil.convert32(blockBuffer, i);
                 reclen = DumpArchiveUtil.convert16(blockBuffer, i + 4);
 
@@ -518,11 +503,8 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                 final Dirent d = new Dirent(ino, entry.getIno(), type, name);
 
                 /*
-                if ((type == 4) && names.containsKey(ino)) {
-                    System.out.println("we already have ino: " +
-                                       names.get(ino));
-                }
-                */
+                 * if ((type == 4) && names.containsKey(ino)) { System.out.println("we already have ino: " + names.get(ino)); }
+                 */
 
                 names.put(ino, d);
 

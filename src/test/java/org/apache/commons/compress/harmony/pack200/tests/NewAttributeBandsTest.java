@@ -52,11 +52,9 @@ import org.junit.jupiter.params.provider.ValueSource;
  */
 public class NewAttributeBandsTest {
 
-    private class MockNewAttributeBands extends NewAttributeBands {
+    private final class MockNewAttributeBands extends NewAttributeBands {
 
-        public MockNewAttributeBands(final int effort, final CpBands cpBands,
-                final SegmentHeader header, final AttributeDefinition def)
-                throws IOException {
+        MockNewAttributeBands(final int effort, final CpBands cpBands, final SegmentHeader header, final AttributeDefinition def) throws IOException {
             super(effort, cpBands, header, def);
         }
 
@@ -69,15 +67,11 @@ public class NewAttributeBandsTest {
     public void testAddAttributes() throws IOException, Pack200Exception {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         final CPUTF8 layout = new CPUTF8("B");
-        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
-                "B", new byte[] { 27 }, null, 0, null));
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
-                "B", new byte[] { 56 }, null, 0, null));
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
-                "B", new byte[] { 3 }, null, 0, null));
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
+                new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute", "B", new byte[] { 27 }, null, 0, null));
+        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute", "B", new byte[] { 56 }, null, 0, null));
+        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute", "B", new byte[] { 3 }, null, 0, null));
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         newAttributeBands.pack(out);
         // BYTE1 is used for B layouts, so we don't need to unpack to test the
@@ -90,20 +84,16 @@ public class NewAttributeBandsTest {
     }
 
     @Test
-    public void testAddAttributesWithReplicationLayout() throws IOException,
-            Pack200Exception {
+    public void testAddAttributesWithReplicationLayout() throws IOException, Pack200Exception {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         final CPUTF8 layout = new CPUTF8("NB[SH]");
-        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
-                "B", new byte[] { 1, 0, 100 }, null, 0, null));
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
+                new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute", "B", new byte[] { 1, 0, 100 }, null, 0, null));
         final short s = -50;
         final byte b1 = (byte) (s >>> 8);
         final byte b2 = (byte) s;
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
-                "B", new byte[] { 3, 0, 5, 0, 25, b1, b2 }, null, 0, null));
+        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute", "B", new byte[] { 3, 0, 5, 0, 25, b1, b2 }, null, 0, null));
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         newAttributeBands.pack(out);
         final byte[] bytes = out.toByteArray();
@@ -111,8 +101,7 @@ public class NewAttributeBandsTest {
         assertEquals(3, bytes[1]);
         final byte[] band = new byte[bytes.length - 2];
         System.arraycopy(bytes, 2, band, 0, band.length);
-        final int[] decoded = Codec.SIGNED5.decodeInts(4, new ByteArrayInputStream(
-                band));
+        final int[] decoded = Codec.SIGNED5.decodeInts(4, new ByteArrayInputStream(band));
         assertEquals(4, decoded.length);
         assertEquals(100, decoded[0]);
         assertEquals(5, decoded[1]);
@@ -124,24 +113,19 @@ public class NewAttributeBandsTest {
     public void testEmptyLayout() throws IOException {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         final CPUTF8 layout = new CPUTF8("");
-        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
+                new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
         final List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(0, layoutElements.size());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {
-            "B", "FB", "SB", "H", "FH", "SH", "I", "FI", "SI", "PB", "OB", "OSB",
-            "POB", "PH", "OH", "OSH", "POH", "PI", "OI", "OSI", "POI"
-    })
+    @ValueSource(strings = { "B", "FB", "SB", "H", "FH", "SH", "I", "FI", "SI", "PB", "OB", "OSB", "POB", "PH", "OH", "OSH", "POH", "PI", "OI", "OSI", "POI" })
     public void testIntegralLayouts(final String layoutStr) throws IOException {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         final CPUTF8 layout = new CPUTF8(layoutStr);
-        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
+                new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
         final List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         final Integral element = (Integral) layoutElements.get(0);
@@ -152,9 +136,8 @@ public class NewAttributeBandsTest {
     public void testLayoutWithBackwardsCalls() throws Exception {
         CPUTF8 name = new CPUTF8("TestAttribute");
         CPUTF8 layout = new CPUTF8("[NH[(1)]][KIH][(-1)]");
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
+                new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
         List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(3, layoutElements.size());
         Callable firstCallable = (Callable) layoutElements.get(0);
@@ -170,9 +153,7 @@ public class NewAttributeBandsTest {
 
         name = new CPUTF8("TestAttribute");
         layout = new CPUTF8("[NH[(1)]][KIH][(-2)]");
-        newAttributeBands = new MockNewAttributeBands(1, null, null,
-                new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        newAttributeBands = new MockNewAttributeBands(1, null, null, new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
         layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(3, layoutElements.size());
         firstCallable = (Callable) layoutElements.get(0);
@@ -188,9 +169,7 @@ public class NewAttributeBandsTest {
 
         name = new CPUTF8("TestAttribute");
         layout = new CPUTF8("[NH[(1)]][KIH][(0)]");
-        newAttributeBands = new MockNewAttributeBands(1, null, null,
-                new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        newAttributeBands = new MockNewAttributeBands(1, null, null, new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
         layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(3, layoutElements.size());
         firstCallable = (Callable) layoutElements.get(0);
@@ -208,11 +187,13 @@ public class NewAttributeBandsTest {
     @Test
     public void testLayoutWithCalls() throws IOException {
         final CPUTF8 name = new CPUTF8("TestAttribute");
+        // @formatter:off
         final CPUTF8 layout = new CPUTF8(
-                "[NH[(1)]][RSH NH[RUH(1)]][TB(66,67,73,83,90)[KIH](68)[KDH](70)[KFH](74)[KJH](99)[RSH](101)[RSH RUH](115)[RUH](91)[NH[(0)]](64)[RSH[RUH(0)]]()[]]");
-        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+          "[NH[(1)]][RSH NH[RUH(1)]][TB(66,67,73,83,90)[KIH](68)[KDH](70)[KFH](74)[KJH](99)[RSH](101)[RSH RUH](115)[RUH](91)[NH[(0)]](64)[RSH[RUH(0)]]()[]]"
+        );
+        // @formatter:on
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
+                new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
         final List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(3, layoutElements.size());
         final Callable firstCallable = (Callable) layoutElements.get(0);
@@ -232,16 +213,12 @@ public class NewAttributeBandsTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {
-            "KIB", "KIH", "KII", "KINH", "KJH", "KDH", "KSH", "KQH", "RCH",
-            "RSH", "RDH", "RFH", "RMH", "RIH", "RUH", "RQH", "RQNH", "RQNI"
-    })
+    @ValueSource(strings = { "KIB", "KIH", "KII", "KINH", "KJH", "KDH", "KSH", "KQH", "RCH", "RSH", "RDH", "RFH", "RMH", "RIH", "RUH", "RQH", "RQNH", "RQNI" })
     public void testReferenceLayouts(final String layoutStr) throws IOException {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         final CPUTF8 layout = new CPUTF8(layoutStr);
-        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
+                new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
         final List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         final Reference element = (Reference) layoutElements.get(0);
@@ -252,9 +229,8 @@ public class NewAttributeBandsTest {
     public void testReplicationLayouts() throws IOException {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         final CPUTF8 layout = new CPUTF8("NH[PHOHRUHRSHH]");
-        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
+                new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
         final List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         final Replication element = (Replication) layoutElements.get(0);
@@ -278,9 +254,8 @@ public class NewAttributeBandsTest {
     public void testUnionLayout() throws IOException {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         final CPUTF8 layout = new CPUTF8("TB(55)[FH](23)[]()[RSH]");
-        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
+                new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
         final List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         final Union element = (Union) layoutElements.get(0);

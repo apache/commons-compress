@@ -39,41 +39,36 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
 /**
  * Input stream that decompresses .gz files.
  *
- * <p>This supports decompressing concatenated .gz files which is important
- * when decompressing standalone .gz files.</p>
- *
  * <p>
- * {@link java.util.zip.GZIPInputStream} doesn't decompress concatenated .gz
- * files: it stops after the first member and silently ignores the rest.
- * It doesn't leave the read position to point to the beginning of the next
- * member, which makes it difficult workaround the lack of concatenation
- * support.
+ * This supports decompressing concatenated .gz files which is important when decompressing standalone .gz files.
  * </p>
  *
  * <p>
- * Instead of using {@code GZIPInputStream}, this class has its own .gz
- * container format decoder. The actual decompression is done with
+ * {@link java.util.zip.GZIPInputStream} doesn't decompress concatenated .gz files: it stops after the first member and silently ignores the rest. It doesn't
+ * leave the read position to point to the beginning of the next member, which makes it difficult workaround the lack of concatenation support.
+ * </p>
+ *
+ * <p>
+ * Instead of using {@code GZIPInputStream}, this class has its own .gz container format decoder. The actual decompression is done with
  * {@link java.util.zip.Inflater}.
  * </p>
  *
- * <p>If you use the constructor {@code GzipCompressorInputStream(in)}
- * or {@code GzipCompressorInputStream(in, false)} with some {@code
- * InputStream} {@code in} then {@link #read} will return -1 as soon
- * as the first internal member has been read completely. The stream
- * {@code in} will be positioned at the start of the second gzip
- * member if there is one.</p>
+ * <p>
+ * If you use the constructor {@code GzipCompressorInputStream(in)} or {@code GzipCompressorInputStream(in, false)} with some {@code
+ * InputStream} {@code in} then {@link #read} will return -1 as soon as the first internal member has been read completely. The stream {@code in} will be
+ * positioned at the start of the second gzip member if there is one.
+ * </p>
  *
- * <p>If you use the constructor {@code GzipCompressorInputStream(in,
- * true)} with some {@code InputStream} {@code in} then {@link #read}
- * will return -1 once the stream {@code in} has been exhausted. The
- * data read from a stream constructed this way will consist of the
- * concatenated data of all gzip members contained inside {@code
- * in}.</p>
+ * <p>
+ * If you use the constructor {@code GzipCompressorInputStream(in,
+ * true)} with some {@code InputStream} {@code in} then {@link #read} will return -1 once the stream {@code in} has been exhausted. The data read from a stream
+ * constructed this way will consist of the concatenated data of all gzip members contained inside {@code
+ * in}.
+ * </p>
  *
  * @see "https://tools.ietf.org/html/rfc1952"
  */
-public class GzipCompressorInputStream extends CompressorInputStream
-    implements InputStreamStatistics {
+public class GzipCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
     // Header flags
     // private static final int FTEXT = 0x01; // Uninteresting for us
@@ -88,7 +83,7 @@ public class GzipCompressorInputStream extends CompressorInputStream
      *
      * @param signature the bytes to check
      * @param length    the number of bytes to check
-     * @return          true if this is a .gz stream, false otherwise
+     * @return true if this is a .gz stream, false otherwise
      *
      * @since 1.1
      */
@@ -97,7 +92,7 @@ public class GzipCompressorInputStream extends CompressorInputStream
     }
 
     private static byte[] readToNull(final DataInput inData) throws IOException {
-        try (final ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             int b;
             while ((b = inData.readUnsignedByte()) != 0x00) { // NOPMD NOSONAR
                 bos.write(b);
@@ -136,46 +131,31 @@ public class GzipCompressorInputStream extends CompressorInputStream
     private final GzipParameters parameters = new GzipParameters();
 
     /**
-     * Constructs a new input stream that decompresses gzip-compressed data
-     * from the specified input stream.
+     * Constructs a new input stream that decompresses gzip-compressed data from the specified input stream.
      * <p>
-     * This is equivalent to
-     * {@code GzipCompressorInputStream(inputStream, false)} and thus
-     * will not decompress concatenated .gz files.
+     * This is equivalent to {@code GzipCompressorInputStream(inputStream, false)} and thus will not decompress concatenated .gz files.
      *
-     * @param inputStream  the InputStream from which this object should
-     *                     be created of
+     * @param inputStream the InputStream from which this object should be created of
      *
      * @throws IOException if the stream could not be created
      */
-    public GzipCompressorInputStream(final InputStream inputStream)
-            throws IOException {
+    public GzipCompressorInputStream(final InputStream inputStream) throws IOException {
         this(inputStream, false);
     }
 
     /**
-     * Constructs a new input stream that decompresses gzip-compressed data
-     * from the specified input stream.
+     * Constructs a new input stream that decompresses gzip-compressed data from the specified input stream.
      * <p>
-     * If {@code decompressConcatenated} is {@code false}:
-     * This decompressor might read more input than it will actually use.
-     * If {@code inputStream} supports {@code mark} and
-     * {@code reset}, then the input position will be adjusted
-     * so that it is right after the last byte of the compressed stream.
-     * If {@code mark} isn't supported, the input position will be
-     * undefined.
+     * If {@code decompressConcatenated} is {@code false}: This decompressor might read more input than it will actually use. If {@code inputStream} supports
+     * {@code mark} and {@code reset}, then the input position will be adjusted so that it is right after the last byte of the compressed stream. If
+     * {@code mark} isn't supported, the input position will be undefined.
      *
-     * @param inputStream  the InputStream from which this object should
-     *                     be created of
-     * @param decompressConcatenated
-     *                     if true, decompress until the end of the input;
-     *                     if false, stop after the first .gz member
+     * @param inputStream            the InputStream from which this object should be created of
+     * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first .gz member
      *
      * @throws IOException if the stream could not be created
      */
-    public GzipCompressorInputStream(final InputStream inputStream,
-                                     final boolean decompressConcatenated)
-            throws IOException {
+    public GzipCompressorInputStream(final InputStream inputStream, final boolean decompressConcatenated) throws IOException {
         countingStream = new CountingInputStream(inputStream);
         // Mark support is strictly needed for concatenated files only,
         // but it's simpler if it is always available.
@@ -215,8 +195,8 @@ public class GzipCompressorInputStream extends CompressorInputStream
     }
 
     /**
-     * Provides the stream's meta data - may change with each stream
-     * when decompressing concatenated streams.
+     * Provides the stream's meta data - may change with each stream when decompressing concatenated streams.
+     *
      * @return the stream's meta data
      * @since 1.8
      */
@@ -237,23 +217,19 @@ public class GzipCompressorInputStream extends CompressorInputStream
         }
 
         if (magic0 != 31 || in.read() != 139) {
-            throw new IOException(isFirstMember
-                                  ? "Input is not in the .gz format"
-                                  : "Garbage after a valid .gz stream");
+            throw new IOException(isFirstMember ? "Input is not in the .gz format" : "Garbage after a valid .gz stream");
         }
 
         // Parsing the rest of the header may throw EOFException.
         final DataInput inData = new DataInputStream(in);
         final int method = inData.readUnsignedByte();
         if (method != Deflater.DEFLATED) {
-            throw new IOException("Unsupported compression method "
-                                  + method + " in the .gz header");
+            throw new IOException("Unsupported compression method " + method + " in the .gz header");
         }
 
         final int flg = inData.readUnsignedByte();
         if ((flg & FRESERVED) != 0) {
-            throw new IOException(
-                    "Reserved flags are set in the .gz header");
+            throw new IOException("Reserved flags are set in the .gz header");
         }
 
         parameters.setModificationTime(ByteUtils.fromLittleEndian(inData, 4) * 1000);
@@ -285,7 +261,7 @@ public class GzipCompressorInputStream extends CompressorInputStream
 
         // Original file name
         if ((flg & FNAME) != 0) {
-            parameters.setFilename(new String(readToNull(inData), GzipUtils.GZIP_ENCODING));
+            parameters.setFileName(new String(readToNull(inData), GzipUtils.GZIP_ENCODING));
         }
 
         // Comment
@@ -375,16 +351,14 @@ public class GzipCompressorInputStream extends CompressorInputStream
                 final long crcStored = ByteUtils.fromLittleEndian(inData, 4);
 
                 if (crcStored != crc.getValue()) {
-                    throw new IOException("Gzip-compressed data is corrupt "
-                                          + "(CRC32 error)");
+                    throw new IOException("Gzip-compressed data is corrupt " + "(CRC32 error)");
                 }
 
                 // Uncompressed size modulo 2^32 (ISIZE in the spec)
                 final long isize = ByteUtils.fromLittleEndian(inData, 4);
 
                 if (isize != (inf.getBytesWritten() & 0xffffffffL)) {
-                    throw new IOException("Gzip-compressed data is corrupt"
-                                          + "(uncompressed size mismatch)");
+                    throw new IOException("Gzip-compressed data is corrupt" + "(uncompressed size mismatch)");
                 }
 
                 // See if this is the end of the file.

@@ -20,15 +20,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * SegmentHeader is the header band of a {@link Segment}. Corresponds to {@code segment_header} in the pack200
- * specification.
+ * SegmentHeader is the header band of a {@link Segment}. Corresponds to {@code segment_header} in the pack200 specification.
  */
 public class SegmentHeader extends BandSet {
 
     /**
      * Counter for major/minor class file numbers, so we can work out the default
      */
-    private static class Counter {
+    private static final class Counter {
 
         private final int[] objs = new int[8];
         private final int[] counts = new int[8];
@@ -64,7 +63,7 @@ public class SegmentHeader extends BandSet {
         }
     }
 
-    private static final int[] magic = {0xCA, 0xFE, 0xD0, 0x0D};
+    private static final int[] magic = { 0xCA, 0xFE, 0xD0, 0x0D };
     private static final int archive_minver = 7;
     private static final int archive_majver = 150;
 
@@ -128,37 +127,37 @@ public class SegmentHeader extends BandSet {
             archive_options |= 1;
         }
         if (cp_Int_count > 0 || cp_Float_count > 0 || cp_Long_count > 0 || cp_Double_count > 0) {
-            archive_options |= (1 << 1);
+            archive_options |= 1 << 1;
         }
         if (have_all_code_flags) {
-            archive_options |= (1 << 2);
+            archive_options |= 1 << 2;
         }
         if (file_count > 0) {
-            archive_options |= (1 << 4);
+            archive_options |= 1 << 4;
         }
         if (deflate_hint) {
-            archive_options |= (1 << 5);
+            archive_options |= 1 << 5;
         }
         if (have_file_modtime) {
-            archive_options |= (1 << 6);
+            archive_options |= 1 << 6;
         }
         if (have_file_options) {
-            archive_options |= (1 << 7);
+            archive_options |= 1 << 7;
         }
         if (have_file_size_hi) {
-            archive_options |= (1 << 8);
+            archive_options |= 1 << 8;
         }
         if (have_class_flags_hi) {
-            archive_options |= (1 << 9);
+            archive_options |= 1 << 9;
         }
         if (have_field_flags_hi) {
-            archive_options |= (1 << 10);
+            archive_options |= 1 << 10;
         }
         if (have_method_flags_hi) {
-            archive_options |= (1 << 11);
+            archive_options |= 1 << 11;
         }
         if (have_code_flags_hi) {
-            archive_options |= (1 << 12);
+            archive_options |= 1 << 12;
         }
     }
 
@@ -310,7 +309,7 @@ public class SegmentHeader extends BandSet {
     }
 
     private void writeArchiveFileCounts(final OutputStream out) throws IOException, Pack200Exception {
-        if ((archive_options & (1 << 4)) > 0) { // have_file_headers
+        if ((archive_options & 1 << 4) > 0) { // have_file_headers
             out.write(encodeScalar(archive_size_hi, Codec.UNSIGNED5));
             out.write(encodeScalar(archive_size_lo, Codec.UNSIGNED5));
             out.write(encodeScalar(archive_next_count, Codec.UNSIGNED5));
@@ -337,7 +336,7 @@ public class SegmentHeader extends BandSet {
 
     private void writeCpCounts(final OutputStream out) throws IOException, Pack200Exception {
         out.write(encodeScalar(cp_Utf8_count, Codec.UNSIGNED5));
-        if ((archive_options & (1 << 1)) != 0) { // have_cp_numbers
+        if ((archive_options & 1 << 1) != 0) { // have_cp_numbers
             out.write(encodeScalar(cp_Int_count, Codec.UNSIGNED5));
             out.write(encodeScalar(cp_Float_count, Codec.UNSIGNED5));
             out.write(encodeScalar(cp_Long_count, Codec.UNSIGNED5));

@@ -99,6 +99,7 @@ public class CpBands extends BandSet {
     private int fieldOffset;
     private int methodOffset;
     private int imethodOffset;
+
     public CpBands(final Segment segment) {
         super(segment);
     }
@@ -134,8 +135,7 @@ public class CpBands extends BandSet {
     }
 
     public CPFieldRef cpFieldValue(final int index) {
-        return new CPFieldRef(cpClassValue(cpFieldClassInts[index]), cpNameAndTypeValue(cpFieldDescriptorInts[index]),
-            index + fieldOffset);
+        return new CPFieldRef(cpClassValue(cpFieldClassInts[index]), cpNameAndTypeValue(cpFieldDescriptorInts[index]), index + fieldOffset);
     }
 
     public CPFloat cpFloatValue(final int index) {
@@ -149,8 +149,7 @@ public class CpBands extends BandSet {
     }
 
     public CPInterfaceMethodRef cpIMethodValue(final int index) {
-        return new CPInterfaceMethodRef(cpClassValue(cpIMethodClassInts[index]),
-            cpNameAndTypeValue(cpIMethodDescriptorInts[index]), index + imethodOffset);
+        return new CPInterfaceMethodRef(cpClassValue(cpIMethodClassInts[index]), cpNameAndTypeValue(cpIMethodDescriptorInts[index]), index + imethodOffset);
     }
 
     public CPInteger cpIntegerValue(final int index) {
@@ -174,8 +173,7 @@ public class CpBands extends BandSet {
     }
 
     public CPMethodRef cpMethodValue(final int index) {
-        return new CPMethodRef(cpClassValue(cpMethodClassInts[index]),
-            cpNameAndTypeValue(cpMethodDescriptorInts[index]), index + methodOffset);
+        return new CPMethodRef(cpClassValue(cpMethodClassInts[index]), cpNameAndTypeValue(cpMethodDescriptorInts[index]), index + methodOffset);
     }
 
     public CPNameAndType cpNameAndTypeValue(final int index) {
@@ -331,11 +329,10 @@ public class CpBands extends BandSet {
     }
 
     /**
-     * Parses the constant pool class names, using {@link #cpClassCount} to populate {@link #cpClass} from
-     * {@link #cpUTF8}.
+     * Parses the constant pool class names, using {@link #cpClassCount} to populate {@link #cpClass} from {@link #cpUTF8}.
      *
      * @param in the input stream to read from
-     * @throws IOException if a problem occurs during reading from the underlying stream
+     * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */
     private void parseCpClass(final InputStream in) throws IOException, Pack200Exception {
@@ -350,13 +347,12 @@ public class CpBands extends BandSet {
     }
 
     /**
-     * Parses the constant pool descriptor definitions, using {@link #cpDescriptorCount} to populate
-     * {@link #cpDescriptor}. For ease of use, the cpDescriptor is stored as a string of the form <i>name:type</i>,
-     * largely to make it easier for representing field and method descriptors (e.g.
+     * Parses the constant pool descriptor definitions, using {@link #cpDescriptorCount} to populate {@link #cpDescriptor}. For ease of use, the cpDescriptor is
+     * stored as a string of the form <i>name:type</i>, largely to make it easier for representing field and method descriptors (e.g.
      * {@code out:java.lang.PrintStream}) in a way that is compatible with passing String arrays.
      *
      * @param in the input stream to read from
-     * @throws IOException if a problem occurs during reading from the underlying stream
+     * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */
     private void parseCpDescriptor(final InputStream in) throws IOException, Pack200Exception {
@@ -381,11 +377,10 @@ public class CpBands extends BandSet {
     }
 
     /**
-     * Parses the constant pool field definitions, using {@link #cpFieldCount} to populate {@link #cpFieldClass} and
-     * {@link #cpFieldDescriptor}.
+     * Parses the constant pool field definitions, using {@link #cpFieldCount} to populate {@link #cpFieldClass} and {@link #cpFieldDescriptor}.
      *
      * @param in the input stream to read from
-     * @throws IOException if a problem occurs during reading from the underlying stream
+     * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */
     private void parseCpField(final InputStream in) throws IOException, Pack200Exception {
@@ -410,11 +405,11 @@ public class CpBands extends BandSet {
     }
 
     /**
-     * Parses the constant pool interface method definitions, using {@link #cpIMethodCount} to populate
-     * {@link #cpIMethodClass} and {@link #cpIMethodDescriptor}.
+     * Parses the constant pool interface method definitions, using {@link #cpIMethodCount} to populate {@link #cpIMethodClass} and
+     * {@link #cpIMethodDescriptor}.
      *
      * @param in the input stream to read from
-     * @throws IOException if a problem occurs during reading from the underlying stream
+     * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */
     private void parseCpIMethod(final InputStream in) throws IOException, Pack200Exception {
@@ -440,11 +435,10 @@ public class CpBands extends BandSet {
     }
 
     /**
-     * Parses the constant pool method definitions, using {@link #cpMethodCount} to populate {@link #cpMethodClass} and
-     * {@link #cpMethodDescriptor}.
+     * Parses the constant pool method definitions, using {@link #cpMethodCount} to populate {@link #cpMethodClass} and {@link #cpMethodDescriptor}.
      *
      * @param in the input stream to read from
-     * @throws IOException if a problem occurs during reading from the underlying stream
+     * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */
     private void parseCpMethod(final InputStream in) throws IOException, Pack200Exception {
@@ -460,16 +454,14 @@ public class CpBands extends BandSet {
     }
 
     /**
-     * Parses the constant pool signature classes, using {@link #cpSignatureCount} to populate {@link #cpSignature}. A
-     * signature form is akin to the bytecode representation of a class; Z for boolean, I for int, [ for array etc.
-     * However, although classes are started with L, the classname does not follow the form; instead, there is a
-     * separate array of classes. So an array corresponding to {@code public static void main(String args[])} has a
-     * form of {@code [L(V)} and a classes array of {@code [java.lang.String]}. The {@link #cpSignature} is a
-     * string representation identical to the bytecode equivalent {@code [Ljava/lang/String;(V)} TODO Check that
-     * the form is as above and update other types e.g. J
+     * Parses the constant pool signature classes, using {@link #cpSignatureCount} to populate {@link #cpSignature}. A signature form is akin to the bytecode
+     * representation of a class; Z for boolean, I for int, [ for array etc. However, although classes are started with L, the class name does not follow the
+     * form; instead, there is a separate array of classes. So an array corresponding to {@code public static void main(String args[])} has a form of
+     * {@code [L(V)} and a classes array of {@code [java.lang.String]}. The {@link #cpSignature} is a string representation identical to the bytecode equivalent
+     * {@code [Ljava/lang/String;(V)} TODO Check that the form is as above and update other types e.g. J
      *
      * @param in the input stream to read from
-     * @throws IOException if a problem occurs during reading from the underlying stream
+     * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */
     private void parseCpSignature(final InputStream in) throws IOException, Pack200Exception {
@@ -517,11 +509,10 @@ public class CpBands extends BandSet {
     }
 
     /**
-     * Parses the constant pool strings, using {@link #cpStringCount} to populate {@link #cpString} from indexes into
-     * {@link #cpUTF8}.
+     * Parses the constant pool strings, using {@link #cpStringCount} to populate {@link #cpString} from indexes into {@link #cpUTF8}.
      *
      * @param in the input stream to read from
-     * @throws IOException if a problem occurs during reading from the underlying stream
+     * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */
     private void parseCpString(final InputStream in) throws IOException, Pack200Exception {
@@ -578,12 +569,10 @@ public class CpBands extends BandSet {
             if (suffix[i - 1] == 0) {
                 // The big suffix stuff hasn't been tested, and I'll be
                 // surprised if it works first time w/o errors ...
-                cpUTF8[i] = lastString.substring(0, i > 1 ? prefix[i - 2] : 0)
-                    + new String(bigSuffixData[bigSuffixCount++]);
+                cpUTF8[i] = lastString.substring(0, i > 1 ? prefix[i - 2] : 0) + new String(bigSuffixData[bigSuffixCount++]);
                 mapUTF8.put(cpUTF8[i], Integer.valueOf(i));
             } else {
-                cpUTF8[i] = lastString.substring(0, i > 1 ? prefix[i - 2] : 0)
-                    + new String(data, charCount, suffix[i - 1]);
+                cpUTF8[i] = lastString.substring(0, i > 1 ? prefix[i - 2] : 0) + new String(data, charCount, suffix[i - 1]);
                 charCount += suffix[i - 1];
                 mapUTF8.put(cpUTF8[i], Integer.valueOf(i));
             }

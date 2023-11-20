@@ -27,14 +27,14 @@ import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.LZMAInputStream;
 import org.tukaani.xz.LZMAOutputStream;
 
-class LZMADecoder extends AbstractCoder {
+final class LZMADecoder extends AbstractCoder {
     LZMADecoder() {
         super(LZMA2Options.class, Number.class);
     }
 
     @Override
-    InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-            final Coder coder, final byte[] password, final int maxMemoryLimitInKb) throws IOException {
+    InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength, final Coder coder, final byte[] password,
+            final int maxMemoryLimitInKb) throws IOException {
         if (coder.properties == null) {
             throw new IOException("Missing LZMA properties");
         }
@@ -56,8 +56,7 @@ class LZMADecoder extends AbstractCoder {
     }
 
     @Override
-    OutputStream encode(final OutputStream out, final Object opts)
-        throws IOException {
+    OutputStream encode(final OutputStream out, final Object opts) throws IOException {
         // NOOP as LZMAOutputStream throws an exception in flush
         return new FlushShieldFilterOutputStream(new LZMAOutputStream(out, getOptions(opts), false));
     }

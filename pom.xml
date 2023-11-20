@@ -20,19 +20,19 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>58</version>
+    <version>64</version>
   </parent>
 
   <artifactId>commons-compress</artifactId>
-  <version>1.24.0-SNAPSHOT</version>
+  <version>1.25.1-SNAPSHOT </version>
   <name>Apache Commons Compress</name>
   <url>https://commons.apache.org/proper/commons-compress/</url>
   <inceptionYear>2002</inceptionYear> <!-- from NOTICE file -->
   <!-- The description is not indented to make it look better in the release notes -->
   <description>
 Apache Commons Compress defines an API for working with
-compression and archive formats.  These include: bzip2, gzip, pack200,
-lzma, xz, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
+compression and archive formats. These include bzip2, gzip, pack200,
+LZMA, XZ, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
 Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
   </description>
 
@@ -45,17 +45,14 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.jira.id>COMPRESS</commons.jira.id>
     <commons.jira.pid>12310904</commons.jira.pid>
     <!-- configuration bits for cutting a release candidate -->
-    <commons.release.version>${project.version}</commons.release.version>
+    <commons.release.version>1.25.0</commons.release.version>
+    <commons.release.next>1.25.1</commons.release.next>
+    <commons.bc.version>1.24.0</commons.bc.version>
     <commons.rc.version>RC1</commons.rc.version>
-    <!-- old version used by japicmp -->
-    <commons.bc.version>1.23.0</commons.bc.version>
     <mockito.version>4.11.0</mockito.version>
 
     <commons.release.isDistModule>true</commons.release.isDistModule>
     <commons.distSvnStagingUrl>scm:svn:https://dist.apache.org/repos/dist/dev/commons/${commons.componentid}</commons.distSvnStagingUrl>
-    <commons.releaseManagerName>Gary Gregory</commons.releaseManagerName>    
-    <commons.releaseManagerKey>86fdc7e2a11262cb</commons.releaseManagerKey>
-
     <commons.manifestlocation>${project.build.outputDirectory}/META-INF</commons.manifestlocation>
     <commons.manifestfile>${commons.manifestlocation}/MANIFEST.MF</commons.manifestfile>
     <commons.osgi.import>
@@ -64,6 +61,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       com.github.luben.zstd;resolution:=optional,
       org.objectweb.asm;resolution:=optional,
       javax.crypto.*;resolution:=optional,
+      org.apache.commons.commons-codec;resolution:=optional,
       *
     </commons.osgi.import>
 
@@ -76,8 +74,8 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <japicmp.skip>false</japicmp.skip>
 
     <pax.exam.version>4.13.5</pax.exam.version>
-    <slf4j.version>2.0.7</slf4j.version>
-    <asm.version>9.5</asm.version>
+    <slf4j.version>2.0.9</slf4j.version>
+    <asm.version>9.6</asm.version>
   </properties>
 
   <issueManagement>
@@ -105,7 +103,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>com.github.luben</groupId>
       <artifactId>zstd-jni</artifactId>
-      <version>1.5.5-4</version>
+      <version>1.5.5-10</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -118,6 +116,15 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <groupId>org.tukaani</groupId>
       <artifactId>xz</artifactId>
       <version>1.9</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <!-- For org.apache.commons.compress.compressors.snappy:
+           FramedSnappyCompressorInputStream
+           FramedSnappyCompressorOutputStream -->
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.16.0</version>
       <optional>true</optional>
     </dependency>
 
@@ -195,13 +202,13 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.13.0</version>
+      <version>2.15.0</version>
       <scope>test</scope>
     </dependency>    
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.12.0</version>
+      <version>3.13.0</version>
       <scope>test</scope>
     </dependency>    
 
@@ -325,7 +332,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
   </scm>
 
   <build>
-    <defaultGoal>clean verify apache-rat:check japicmp:cmp javadoc:javadoc</defaultGoal>
+    <defaultGoal>clean verify apache-rat:check checkstyle:check japicmp:cmp javadoc:javadoc</defaultGoal>
     <pluginManagement>
       <plugins>
         <!-- Override Javadoc config in parent pom to add JCIP tags -->
@@ -490,6 +497,17 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
             <pax.exam.karaf.version>${karaf.version}</pax.exam.karaf.version>
             <commons-compress.version>${project.version}</commons-compress.version>
           </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <configLocation>${basedir}/src/conf/checkstyle.xml</configLocation>
+          <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
+          <enableRulesSummary>false</enableRulesSummary>
+          <excludes>target/**</excludes>
         </configuration>
       </plugin>
     </plugins>

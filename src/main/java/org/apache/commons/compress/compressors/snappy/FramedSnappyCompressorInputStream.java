@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.util.Arrays;
 
+import org.apache.commons.codec.digest.PureJavaCrc32C;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
@@ -33,13 +34,14 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
 /**
  * CompressorInputStream for the framing Snappy format.
  *
- * <p>Based on the "spec" in the version "Last revised: 2013-10-25"</p>
+ * <p>
+ * Based on the "spec" in the version "Last revised: 2013-10-25"
+ * </p>
  *
  * @see <a href="https://github.com/google/snappy/blob/master/framing_format.txt">Snappy framing format description</a>
  * @since 1.7
  */
-public class FramedSnappyCompressorInputStream extends CompressorInputStream
-    implements InputStreamStatistics {
+public class FramedSnappyCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
     /**
      * package private for tests only.
@@ -55,20 +57,21 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
     private static final int MAX_SKIPPABLE_TYPE = 0xfd;
 
     // used by FramedSnappyCompressorOutputStream as well
-    static final byte[] SZ_SIGNATURE = { //NOSONAR
-        (byte) STREAM_IDENTIFIER_TYPE, // tag
-        6, 0, 0, // length
-        's', 'N', 'a', 'P', 'p', 'Y'
-    };
+    static final byte[] SZ_SIGNATURE = { // NOSONAR
+            (byte) STREAM_IDENTIFIER_TYPE, // tag
+            6, 0, 0, // length
+            's', 'N', 'a', 'P', 'p', 'Y' };
 
     /**
      * Checks if the signature matches what is expected for a .sz file.
      *
-     * <p>.sz files start with a chunk with tag 0xff and content sNaPpY.</p>
+     * <p>
+     * .sz files start with a chunk with tag 0xff and content sNaPpY.
+     * </p>
      *
      * @param signature the bytes to check
      * @param length    the number of bytes to check
-     * @return          true if this is a .sz stream, false otherwise
+     * @return true if this is a .sz stream, false otherwise
      */
     public static boolean matches(final byte[] signature, final int length) {
 
@@ -83,12 +86,13 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
 
         return Arrays.equals(shortenedSig, SZ_SIGNATURE);
     }
+
     static long unmask(long x) {
         // ugly, maybe we should just have used ints and deal with the
         // overflow
         x -= MASK_OFFSET;
         x &= 0xffffFFFFL;
-        return ((x >> 17) | (x << 15)) & 0xffffFFFFL;
+        return (x >> 17 | x << 15) & 0xffffFFFFL;
     }
 
     private long unreadBytes;
@@ -116,10 +120,10 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
     private final ByteUtils.ByteSupplier supplier = this::readOneByte;
 
     /**
-     * Constructs a new input stream that decompresses
-     * snappy-framed-compressed data from the specified input stream
-     * using the {@link FramedSnappyDialect#STANDARD} dialect.
-     * @param in  the InputStream from which to read the compressed data
+     * Constructs a new input stream that decompresses snappy-framed-compressed data from the specified input stream using the
+     * {@link FramedSnappyDialect#STANDARD} dialect.
+     *
+     * @param in the InputStream from which to read the compressed data
      * @throws IOException if reading fails
      */
     public FramedSnappyCompressorInputStream(final InputStream in) throws IOException {
@@ -127,32 +131,27 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
     }
 
     /**
-     * Constructs a new input stream that decompresses snappy-framed-compressed data
-     * from the specified input stream.
-     * @param in  the InputStream from which to read the compressed data
+     * Constructs a new input stream that decompresses snappy-framed-compressed data from the specified input stream.
+     *
+     * @param in      the InputStream from which to read the compressed data
      * @param dialect the dialect used by the compressed stream
      * @throws IOException if reading fails
      */
-    public FramedSnappyCompressorInputStream(final InputStream in,
-                                             final FramedSnappyDialect dialect)
-        throws IOException {
+    public FramedSnappyCompressorInputStream(final InputStream in, final FramedSnappyDialect dialect) throws IOException {
         this(in, SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE, dialect);
     }
 
     /**
-     * Constructs a new input stream that decompresses snappy-framed-compressed data
-     * from the specified input stream.
-     * @param in  the InputStream from which to read the compressed data
+     * Constructs a new input stream that decompresses snappy-framed-compressed data from the specified input stream.
+     *
+     * @param in        the InputStream from which to read the compressed data
      * @param blockSize the block size to use for the compressed stream
-     * @param dialect the dialect used by the compressed stream
-     * @throws IOException if reading fails
+     * @param dialect   the dialect used by the compressed stream
+     * @throws IOException              if reading fails
      * @throws IllegalArgumentException if blockSize is not bigger than 0
      * @since 1.14
      */
-    public FramedSnappyCompressorInputStream(final InputStream in,
-                                             final int blockSize,
-                                             final FramedSnappyDialect dialect)
-        throws IOException {
+    public FramedSnappyCompressorInputStream(final InputStream in, final int blockSize, final FramedSnappyDialect dialect) throws IOException {
         if (blockSize <= 0) {
             throw new IllegalArgumentException("blockSize must be bigger than 0");
         }
@@ -169,8 +168,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
     @Override
     public int available() throws IOException {
         if (inUncompressedChunk) {
-            return Math.min(uncompressedBytesRemaining,
-                            inputStream.available());
+            return Math.min(uncompressedBytesRemaining, inputStream.available());
         }
         if (currentCompressedChunk != null) {
             return currentCompressedChunk.available();
@@ -244,14 +242,11 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
             pushedBackBytes(1);
             readStreamIdentifier();
             readNextBlock();
-        } else if (type == PADDING_CHUNK_TYPE
-                   || (type > MAX_UNSKIPPABLE_TYPE && type <= MAX_SKIPPABLE_TYPE)) {
+        } else if (type == PADDING_CHUNK_TYPE || type > MAX_UNSKIPPABLE_TYPE && type <= MAX_SKIPPABLE_TYPE) {
             skipBlock();
             readNextBlock();
         } else if (type >= MIN_UNSKIPPABLE_TYPE && type <= MAX_UNSKIPPABLE_TYPE) {
-            throw new IOException("Unskippable chunk with type " + type
-                                  + " (hex " + Integer.toHexString(type) + ")"
-                                  + " detected.");
+            throw new IOException("Unskippable chunk with type " + type + " (hex " + Integer.toHexString(type) + ")" + " detected.");
         } else if (type == UNCOMPRESSED_CHUNK_TYPE) {
             inUncompressedChunk = true;
             uncompressedBytesRemaining = readSize() - 4 /* CRC */;
@@ -270,23 +265,19 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream
             } else {
                 expectedChecksum = -1;
             }
-            currentCompressedChunk =
-                new SnappyCompressorInputStream(new BoundedInputStream(inputStream, size), blockSize);
+            currentCompressedChunk = new SnappyCompressorInputStream(new BoundedInputStream(inputStream, size), blockSize);
             // constructor reads uncompressed size
             count(currentCompressedChunk.getBytesRead());
         } else {
             // impossible as all potential byte values have been covered
-            throw new IOException("Unknown chunk type " + type
-                                  + " detected.");
+            throw new IOException("Unknown chunk type " + type + " detected.");
         }
     }
 
     /**
      * Read from the current chunk into the given array.
      *
-     * @return -1 if there is no current chunk or the number of bytes
-     * read from the current chunk (which may be -1 if the end of the
-     * chunk is reached).
+     * @return -1 if there is no current chunk or the number of bytes read from the current chunk (which may be -1 if the end of the chunk is reached).
      */
     private int readOnce(final byte[] b, final int off, final int len) throws IOException {
         int read = -1;

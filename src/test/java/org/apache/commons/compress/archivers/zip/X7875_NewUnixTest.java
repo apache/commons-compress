@@ -18,7 +18,7 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.apache.commons.compress.AbstractTest.getFile;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -35,25 +35,20 @@ import org.junit.jupiter.api.Test;
 
 public class X7875_NewUnixTest {
 
-    private final static ZipShort X7875 = new ZipShort(0x7875);
+    private static final ZipShort X7875 = new ZipShort(0x7875);
 
-    private static byte[] trimTest(final byte[] b) { return X7875_NewUnix.trimLeadingZeroesForceMinLength(b); }
+    private static byte[] trimTest(final byte[] b) {
+        return X7875_NewUnix.trimLeadingZeroesForceMinLength(b);
+    }
 
     private X7875_NewUnix xf;
-
 
     @BeforeEach
     public void before() {
         xf = new X7875_NewUnix();
     }
 
-    private void parseReparse(
-            final long uid,
-            final long gid,
-            final byte[] expected,
-            final long expectedUID,
-            final long expectedGID
-    ) throws ZipException {
+    private void parseReparse(final long uid, final long gid, final byte[] expected, final long expectedUID, final long expectedGID) throws ZipException {
 
         // Initial local parse (init with garbage to avoid defaults causing test to pass).
         xf.setUID(54321);
@@ -73,17 +68,15 @@ public class X7875_NewUnixTest {
         byte[] result = xf.getLocalFileDataData();
         if (expected.length < 5) {
             // We never emit zero-length entries.
-            assertArrayEquals(new byte[]{1, 1, 0, 1, 0}, result);
+            assertArrayEquals(new byte[] { 1, 1, 0, 1, 0 }, result);
         } else {
             assertArrayEquals(expected, result);
         }
 
-
-
         // And now we re-parse:
         xf.parseFromLocalFileData(result, 0, result.length);
 
-        // Did uid/gid change from re-parse?  They shouldn't!
+        // Did uid/gid change from re-parse? They shouldn't!
         assertEquals(expectedUID, xf.getUID());
         assertEquals(expectedGID, xf.getGID());
 
@@ -94,7 +87,7 @@ public class X7875_NewUnixTest {
         // And now we re-parse:
         xf.parseFromCentralDirectoryData(result, 0, result.length);
 
-        // Did uid/gid change from 2nd re-parse?  They shouldn't!
+        // Did uid/gid change from 2nd re-parse? They shouldn't!
         assertEquals(expectedUID, xf.getUID());
         assertEquals(expectedGID, xf.getGID());
     }
@@ -119,28 +112,28 @@ public class X7875_NewUnixTest {
     public void testParseReparse() throws ZipException {
 
         // Version=1, Len=0, Len=0.
-        final byte[] ZERO_LEN = {1, 0, 0};
+        final byte[] ZERO_LEN = { 1, 0, 0 };
 
         // Version=1, Len=1, zero, Len=1, zero.
-        final byte[] ZERO_UID_GID = {1, 1, 0, 1, 0};
+        final byte[] ZERO_UID_GID = { 1, 1, 0, 1, 0 };
 
         // Version=1, Len=1, one, Len=1, one
-        final byte[] ONE_UID_GID = {1, 1, 1, 1, 1};
+        final byte[] ONE_UID_GID = { 1, 1, 1, 1, 1 };
 
         // Version=1, Len=2, one thousand, Len=2, one thousand
-        final byte[] ONE_THOUSAND_UID_GID = {1, 2, -24, 3, 2, -24, 3};
+        final byte[] ONE_THOUSAND_UID_GID = { 1, 2, -24, 3, 2, -24, 3 };
 
-        // (2^32 - 2).   I guess they avoid (2^32 - 1) since it's identical to -1 in
+        // (2^32 - 2). I guess they avoid (2^32 - 1) since it's identical to -1 in
         // two's complement, and -1 often has a special meaning.
-        final byte[] UNIX_MAX_UID_GID = {1, 4, -2, -1, -1, -1, 4, -2, -1, -1, -1};
+        final byte[] UNIX_MAX_UID_GID = { 1, 4, -2, -1, -1, -1, 4, -2, -1, -1, -1 };
 
         // Version=1, Len=5, 2^32, Len=5, 2^32 + 1
-        // Esoteric test:  can we handle 40 bit numbers?
-        final byte[] LENGTH_5 = {1, 5, 0, 0, 0, 0, 1, 5, 1, 0, 0, 0, 1};
+        // Esoteric test: can we handle 40 bit numbers?
+        final byte[] LENGTH_5 = { 1, 5, 0, 0, 0, 0, 1, 5, 1, 0, 0, 0, 1 };
 
         // Version=1, Len=8, 2^63 - 2, Len=8, 2^63 - 1
-        // Esoteric test:  can we handle 64-bit numbers?
-        final byte[] LENGTH_8 = {1, 8, -2, -1, -1, -1, -1, -1, -1, 127, 8, -1, -1, -1, -1, -1, -1, -1, 127};
+        // Esoteric test: can we handle 64-bit numbers?
+        final byte[] LENGTH_8 = { 1, 8, -2, -1, -1, -1, -1, -1, -1, 127, 8, -1, -1, -1, -1, -1, -1, -1, 127 };
 
         final long TWO_TO_32 = 0x100000000L;
         final long MAX = TWO_TO_32 - 2;
@@ -155,16 +148,16 @@ public class X7875_NewUnixTest {
         parseReparse(Long.MAX_VALUE - 1, Long.MAX_VALUE, LENGTH_8, Long.MAX_VALUE - 1, Long.MAX_VALUE);
 
         // We never emit this, but we should be able to parse it:
-        final byte[] SPURIOUS_ZEROES_1 = {1, 4, -1, 0, 0, 0, 4, -128, 0, 0, 0};
-        final byte[] EXPECTED_1 = {1, 1, -1, 1, -128};
+        final byte[] SPURIOUS_ZEROES_1 = { 1, 4, -1, 0, 0, 0, 4, -128, 0, 0, 0 };
+        final byte[] EXPECTED_1 = { 1, 1, -1, 1, -128 };
         xf.parseFromLocalFileData(SPURIOUS_ZEROES_1, 0, SPURIOUS_ZEROES_1.length);
 
         assertEquals(255, xf.getUID());
         assertEquals(128, xf.getGID());
         assertArrayEquals(EXPECTED_1, xf.getLocalFileDataData());
 
-        final byte[] SPURIOUS_ZEROES_2 = {1, 4, -1, -1, 0, 0, 4, 1, 2, 0, 0};
-        final byte[] EXPECTED_2 = {1, 2, -1, -1, 2, 1, 2};
+        final byte[] SPURIOUS_ZEROES_2 = { 1, 4, -1, -1, 0, 0, 4, 1, 2, 0, 0 };
+        final byte[] EXPECTED_2 = { 1, 2, -1, -1, 2, 1, 2 };
         xf.parseFromLocalFileData(SPURIOUS_ZEROES_2, 0, SPURIOUS_ZEROES_2.length);
 
         assertEquals(65535, xf.getUID());
@@ -210,21 +203,20 @@ public class X7875_NewUnixTest {
         }
     }
 
-
     @Test
     public void testTrimLeadingZeroesForceMinLength4() {
         final byte[] NULL = null;
         final byte[] EMPTY = ByteUtils.EMPTY_BYTE_ARRAY;
-        final byte[] ONE_ZERO = {0};
-        final byte[] TWO_ZEROES = {0, 0};
-        final byte[] FOUR_ZEROES = {0, 0, 0, 0};
-        final byte[] SEQUENCE = {1, 2, 3};
-        final byte[] SEQUENCE_LEADING_ZERO = {0, 1, 2, 3};
-        final byte[] SEQUENCE_LEADING_ZEROES = {0, 0, 0, 0, 0, 0, 0, 1, 2, 3};
-        final byte[] TRAILING_ZERO = {1, 2, 3, 0};
-        final byte[] PADDING_ZERO = {0, 1, 2, 3, 0};
-        final byte[] SEQUENCE6 = {1, 2, 3, 4, 5, 6};
-        final byte[] SEQUENCE6_LEADING_ZERO = {0, 1, 2, 3, 4, 5, 6};
+        final byte[] ONE_ZERO = { 0 };
+        final byte[] TWO_ZEROES = { 0, 0 };
+        final byte[] FOUR_ZEROES = { 0, 0, 0, 0 };
+        final byte[] SEQUENCE = { 1, 2, 3 };
+        final byte[] SEQUENCE_LEADING_ZERO = { 0, 1, 2, 3 };
+        final byte[] SEQUENCE_LEADING_ZEROES = { 0, 0, 0, 0, 0, 0, 0, 1, 2, 3 };
+        final byte[] TRAILING_ZERO = { 1, 2, 3, 0 };
+        final byte[] PADDING_ZERO = { 0, 1, 2, 3, 0 };
+        final byte[] SEQUENCE6 = { 1, 2, 3, 4, 5, 6 };
+        final byte[] SEQUENCE6_LEADING_ZERO = { 0, 1, 2, 3, 4, 5, 6 };
 
         assertSame(NULL, trimTest(NULL));
         assertArrayEquals(ONE_ZERO, trimTest(EMPTY));

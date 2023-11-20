@@ -39,6 +39,7 @@ final class ZipConstants {
 
     /**
      * ZIP specification version that introduced DEFLATE compression method.
+     *
      * @since 1.15
      */
     static final int DEFLATE_MIN_VERSION = 20;
@@ -50,17 +51,16 @@ final class ZipConstants {
     static final int ZIP64_MIN_VERSION = 45;
 
     /**
-     * Value stored in two-byte size and similar fields if ZIP64
-     * extensions are used.
+     * Value stored in two-byte size and similar fields if ZIP64 extensions are used.
      */
     static final int ZIP64_MAGIC_SHORT = 0xFFFF;
 
     /**
-     * Value stored in four-byte size and similar fields if ZIP64
-     * extensions are used.
+     * Value stored in four-byte size and similar fields if ZIP64 extensions are used.
      */
     static final long ZIP64_MAGIC = 0xFFFFFFFFL;
 
-    private ZipConstants() { }
+    private ZipConstants() {
+    }
 
 }

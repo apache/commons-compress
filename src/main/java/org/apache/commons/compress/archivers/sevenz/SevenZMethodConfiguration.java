@@ -21,17 +21,42 @@ import java.util.Objects;
 /**
  * Combines a SevenZMethod with configuration options for the method.
  *
- * <p>The exact type and interpretation of options depends on the
- * method being configured.  Currently supported are:</p>
+ * <p>
+ * The exact type and interpretation of options depends on the method being configured. Currently supported are:
+ * </p>
  *
  * <table>
  * <caption>Options</caption>
- * <tr><th>Method</th><th>Option Type</th><th>Description</th></tr>
- * <tr><td>BZIP2</td><td>Number</td><td>Block Size - an number between 1 and 9</td></tr>
- * <tr><td>DEFLATE</td><td>Number</td><td>Compression Level - an number between 1 and 9</td></tr>
- * <tr><td>LZMA2</td><td>Number</td><td>Dictionary Size - a number between 4096 and 768 MiB (768 &lt;&lt; 20)</td></tr>
- * <tr><td>LZMA2</td><td>org.tukaani.xz.LZMA2Options</td><td>Whole set of LZMA2 options.</td></tr>
- * <tr><td>DELTA_FILTER</td><td>Number</td><td>Delta Distance - a number between 1 and 256</td></tr>
+ * <tr>
+ * <th>Method</th>
+ * <th>Option Type</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>BZIP2</td>
+ * <td>Number</td>
+ * <td>Block Size - an number between 1 and 9</td>
+ * </tr>
+ * <tr>
+ * <td>DEFLATE</td>
+ * <td>Number</td>
+ * <td>Compression Level - an number between 1 and 9</td>
+ * </tr>
+ * <tr>
+ * <td>LZMA2</td>
+ * <td>Number</td>
+ * <td>Dictionary Size - a number between 4096 and 768 MiB (768 &lt;&lt; 20)</td>
+ * </tr>
+ * <tr>
+ * <td>LZMA2</td>
+ * <td>org.tukaani.xz.LZMA2Options</td>
+ * <td>Whole set of LZMA2 options.</td>
+ * </tr>
+ * <tr>
+ * <td>DELTA_FILTER</td>
+ * <td>Number</td>
+ * <td>Delta Distance - a number between 1 and 256</td>
+ * </tr>
  * </table>
  *
  * @Immutable
@@ -43,6 +68,7 @@ public class SevenZMethodConfiguration {
 
     /**
      * Doesn't configure any additional options.
+     *
      * @param method the method to use
      */
     public SevenZMethodConfiguration(final SevenZMethod method) {
@@ -51,7 +77,8 @@ public class SevenZMethodConfiguration {
 
     /**
      * Specifies and method plus configuration options.
-     * @param method the method to use
+     *
+     * @param method  the method to use
      * @param options the options to use
      * @throws IllegalArgumentException if the method doesn't understand the options specified.
      */
@@ -59,8 +86,7 @@ public class SevenZMethodConfiguration {
         this.method = method;
         this.options = options;
         if (options != null && !Coders.findByMethod(method).isOptionInstance(options)) {
-            throw new IllegalArgumentException("The " + method + " method doesn't support options of type "
-                                               + options.getClass());
+            throw new IllegalArgumentException("The " + method + " method doesn't support options of type " + options.getClass());
         }
     }
 
@@ -73,12 +99,12 @@ public class SevenZMethodConfiguration {
             return false;
         }
         final SevenZMethodConfiguration other = (SevenZMethodConfiguration) obj;
-        return Objects.equals(method, other.method)
-            && Objects.equals(options, other.options);
+        return Objects.equals(method, other.method) && Objects.equals(options, other.options);
     }
 
     /**
      * The specified method.
+     *
      * @return the method
      */
     public SevenZMethod getMethod() {
@@ -87,6 +113,7 @@ public class SevenZMethodConfiguration {
 
     /**
      * The specified options.
+     *
      * @return the options
      */
     public Object getOptions() {

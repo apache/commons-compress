@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class InnerClassesAttribute extends Attribute {
 
-    private static class InnerClassesEntry {
+    private static final class InnerClassesEntry {
 
         CPClass innerClassInfo;
         CPClass outerClassInfo;
@@ -37,8 +37,7 @@ public class InnerClassesAttribute extends Attribute {
         int innerNameIndex = -1;
         int innerClassAccessFlags = -1;
 
-        public InnerClassesEntry(final CPClass innerClass, final CPClass outerClass, final CPUTF8 innerName,
-            final int flags) {
+        InnerClassesEntry(final CPClass innerClass, final CPClass outerClass, final CPUTF8 innerName, final int flags) {
             this.innerClassInfo = innerClass;
             this.outerClassInfo = outerClass;
             this.innerClassName = innerName;
@@ -96,8 +95,7 @@ public class InnerClassesAttribute extends Attribute {
         nestedClassFileEntries.add(getAttributeName());
     }
 
-    public void addInnerClassesEntry(final CPClass innerClass, final CPClass outerClass, final CPUTF8 innerName,
-        final int flags) {
+    public void addInnerClassesEntry(final CPClass innerClass, final CPClass outerClass, final CPUTF8 innerName, final int flags) {
         if (innerClass != null) {
             nestedClassFileEntries.add(innerClass);
         }
@@ -144,7 +142,7 @@ public class InnerClassesAttribute extends Attribute {
 
     @Override
     protected int getLength() {
-        return 2 + ((2 + 2 + 2 + 2) * innerClasses.size());
+        return 2 + (2 + 2 + 2 + 2) * innerClasses.size();
     }
 
     @Override
@@ -156,7 +154,7 @@ public class InnerClassesAttribute extends Attribute {
     public int hashCode() {
         final int PRIME = 31;
         int result = super.hashCode();
-        result = PRIME * result + ((getAttributeName() == null) ? 0 : getAttributeName().hashCode());
+        result = PRIME * result + (getAttributeName() == null ? 0 : getAttributeName().hashCode());
         return result;
     }
 

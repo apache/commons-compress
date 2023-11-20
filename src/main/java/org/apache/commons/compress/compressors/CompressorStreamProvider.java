@@ -24,67 +24,47 @@ import java.io.OutputStream;
 import java.util.Set;
 
 /**
- * Creates Compressor {@link CompressorInputStream}s and
- * {@link CompressorOutputStream}s.
+ * Creates Compressor {@link CompressorInputStream}s and {@link CompressorOutputStream}s.
  *
  * @since 1.13
  */
 public interface CompressorStreamProvider {
 
     /**
-     * Creates a compressor input stream from a compressor name and an input
-     * stream.
+     * Creates a compressor input stream from a compressor name and an input stream.
      *
-     * @param name
-     *            of the compressor, i.e.
-     *            {@value org.apache.commons.compress.compressors.CompressorStreamFactory#GZIP},
-     *            {@value org.apache.commons.compress.compressors.CompressorStreamFactory#BZIP2},
-     *            {@value org.apache.commons.compress.compressors.CompressorStreamFactory#XZ},
-     *            {@value org.apache.commons.compress.compressors.CompressorStreamFactory#LZMA},
-     *            {@value org.apache.commons.compress.compressors.CompressorStreamFactory#PACK200},
-     *            {@value org.apache.commons.compress.compressors.CompressorStreamFactory#SNAPPY_RAW},
-     *            {@value org.apache.commons.compress.compressors.CompressorStreamFactory#SNAPPY_FRAMED},
-     *            {@value org.apache.commons.compress.compressors.CompressorStreamFactory#Z}
-     *            or
-     *            {@value org.apache.commons.compress.compressors.CompressorStreamFactory#DEFLATE}
-     * @param in
-     *            the input stream
-     * @param decompressUntilEOF
-     *            if true, decompress until the end of the input; if false, stop
-     *            after the first stream and leave the input position to point
-     *            to the next byte after the stream. This setting applies to the
-     *            gzip, bzip2 and xz formats only.
+     * @param name               of the compressor, i.e. {@value org.apache.commons.compress.compressors.CompressorStreamFactory#GZIP},
+     *                           {@value org.apache.commons.compress.compressors.CompressorStreamFactory#BZIP2},
+     *                           {@value org.apache.commons.compress.compressors.CompressorStreamFactory#XZ},
+     *                           {@value org.apache.commons.compress.compressors.CompressorStreamFactory#LZMA},
+     *                           {@value org.apache.commons.compress.compressors.CompressorStreamFactory#PACK200},
+     *                           {@value org.apache.commons.compress.compressors.CompressorStreamFactory#SNAPPY_RAW},
+     *                           {@value org.apache.commons.compress.compressors.CompressorStreamFactory#SNAPPY_FRAMED},
+     *                           {@value org.apache.commons.compress.compressors.CompressorStreamFactory#Z} or
+     *                           {@value org.apache.commons.compress.compressors.CompressorStreamFactory#DEFLATE}
+     * @param in                 the input stream
+     * @param decompressUntilEOF if true, decompress until the end of the input; if false, stop after the first stream and leave the input position to point to
+     *                           the next byte after the stream. This setting applies to the gzip, bzip2 and XZ formats only.
      * @return compressor input stream
-     * @throws CompressorException
-     *             if the compressor name is not known
-     * @throws IllegalArgumentException
-     *             if the name or input stream is null
+     * @throws CompressorException      if the compressor name is not known
+     * @throws IllegalArgumentException if the name or input stream is null
      */
-    CompressorInputStream createCompressorInputStream(final String name, final InputStream in,
-            final boolean decompressUntilEOF) throws CompressorException;
+    CompressorInputStream createCompressorInputStream(String name, InputStream in, boolean decompressUntilEOF) throws CompressorException;
 
     /**
-     * Creates a compressor output stream from a compressor name and an output
-     * stream.
+     * Creates a compressor output stream from a compressor name and an output stream.
      *
-     * @param name
-     *            the compressor name, i.e.
-     *            {@value org.apache.commons.compress.compressors.CompressorStreamFactory#GZIP},
-     *            {@value org.apache.commons.compress.compressors.CompressorStreamFactory#BZIP2},
-     *            {@value org.apache.commons.compress.compressors.CompressorStreamFactory#XZ},
-     *            {@value org.apache.commons.compress.compressors.CompressorStreamFactory#PACK200}
-     *            or
-     *            {@value org.apache.commons.compress.compressors.CompressorStreamFactory#DEFLATE}
-     * @param out
-     *            the output stream
+     * @param name the compressor name, i.e. {@value org.apache.commons.compress.compressors.CompressorStreamFactory#GZIP},
+     *             {@value org.apache.commons.compress.compressors.CompressorStreamFactory#BZIP2},
+     *             {@value org.apache.commons.compress.compressors.CompressorStreamFactory#XZ},
+     *             {@value org.apache.commons.compress.compressors.CompressorStreamFactory#PACK200} or
+     *             {@value org.apache.commons.compress.compressors.CompressorStreamFactory#DEFLATE}
+     * @param out  the output stream
      * @return the compressor output stream
-     * @throws CompressorException
-     *             if the archiver name is not known
-     * @throws IllegalArgumentException
-     *             if the archiver name or stream is null
+     * @throws CompressorException      if the archiver name is not known
+     * @throws IllegalArgumentException if the archiver name or stream is null
      */
-    CompressorOutputStream createCompressorOutputStream(final String name, final OutputStream out)
-            throws CompressorException;
+    CompressorOutputStream createCompressorOutputStream(String name, OutputStream out) throws CompressorException;
 
     /**
      * Gets all the input stream compressor names for this provider

@@ -33,22 +33,20 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
 /**
  * CompressorInputStream for the LZ4 frame format.
  *
- * <p>Based on the "spec" in the version "1.5.1 (31/03/2015)"</p>
+ * <p>
+ * Based on the "spec" in the version "1.5.1 (31/03/2015)"
+ * </p>
  *
  * @see <a href="http://lz4.github.io/lz4/lz4_Frame_format.html">LZ4 Frame Format Description</a>
  * @since 1.14
  * @NotThreadSafe
  */
-public class FramedLZ4CompressorInputStream extends CompressorInputStream
-    implements InputStreamStatistics {
+public class FramedLZ4CompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
     // used by FramedLZ4CompressorOutputStream as well
-    static final byte[] LZ4_SIGNATURE = { //NOSONAR
-        4, 0x22, 0x4d, 0x18
-    };
-    private static final byte[] SKIPPABLE_FRAME_TRAILER = {
-        0x2a, 0x4d, 0x18
-    };
+    static final byte[] LZ4_SIGNATURE = { // NOSONAR
+            4, 0x22, 0x4d, 0x18 };
+    private static final byte[] SKIPPABLE_FRAME_TRAILER = { 0x2a, 0x4d, 0x18 };
     private static final byte SKIPPABLE_FRAME_PREFIX_BYTE_MASK = 0x50;
 
     static final int VERSION_MASK = 0xC0;
@@ -75,11 +73,13 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
     /**
      * Checks if the signature matches what is expected for a .lz4 file.
      *
-     * <p>.lz4 files start with a four byte signature.</p>
+     * <p>
+     * .lz4 files start with a four byte signature.
+     * </p>
      *
      * @param signature the bytes to check
      * @param length    the number of bytes to check
-     * @return          true if this is a .sz stream, false otherwise
+     * @return true if this is a .sz stream, false otherwise
      */
     public static boolean matches(final byte[] signature, final int length) {
 
@@ -121,10 +121,9 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
     private byte[] blockDependencyBuffer;
 
     /**
-     * Creates a new input stream that decompresses streams compressed
-     * using the LZ4 frame format and stops after decompressing the
-     * first frame.
-     * @param in  the InputStream from which to read the compressed data
+     * Creates a new input stream that decompresses streams compressed using the LZ4 frame format and stops after decompressing the first frame.
+     *
+     * @param in the InputStream from which to read the compressed data
      * @throws IOException if reading fails
      */
     public FramedLZ4CompressorInputStream(final InputStream in) throws IOException {
@@ -132,13 +131,11 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
     }
 
     /**
-     * Creates a new input stream that decompresses streams compressed
-     * using the LZ4 frame format.
-     * @param in  the InputStream from which to read the compressed data
-     * @param decompressConcatenated if true, decompress until the end
-     *          of the input; if false, stop after the first LZ4 frame
-     *          and leave the input position to point to the next byte
-     *          after the frame stream
+     * Creates a new input stream that decompresses streams compressed using the LZ4 frame format.
+     *
+     * @param in                     the InputStream from which to read the compressed data
+     * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first LZ4 frame and leave the input position to
+     *                               point to the next byte after the frame stream
      * @throws IOException if reading fails
      */
     public FramedLZ4CompressorInputStream(final InputStream in, final boolean decompressConcatenated) throws IOException {
@@ -203,7 +200,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
         maybeFinishCurrentBlock();
         final long len = ByteUtils.fromLittleEndian(supplier, 4);
         final boolean uncompressed = (len & UNCOMPRESSED_FLAG_MASK) != 0;
-        final int realLen = (int) (len & (~UNCOMPRESSED_FLAG_MASK));
+        final int realLen = (int) (len & ~UNCOMPRESSED_FLAG_MASK);
         if (realLen == 0) {
             verifyContentChecksum();
             if (!decompressConcatenated) {
@@ -301,7 +298,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
         if (headerHash == -1) { // partial hash of header.
             throw new IOException("Premature end of stream while reading frame header checksum");
         }
-        final int expectedHash = (int) ((contentHash.getValue() >> 8) & 0xff);
+        final int expectedHash = (int) (contentHash.getValue() >> 8 & 0xff);
         contentHash.reset();
         if (headerHash != expectedHash) {
             throw new IOException("Frame header checksum mismatch");
@@ -357,12 +354,12 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream
     }
 
     /**
-     * Skips over the contents of a skippable frame as well as
-     * skippable frames following it.
+     * Skips over the contents of a skippable frame as well as skippable frames following it.
      *
-     * <p>It then tries to read four more bytes which are supposed to
-     * hold an LZ4 signature and returns the number of bytes read
-     * while storing the bytes in the given array.</p>
+     * <p>
+     * It then tries to read four more bytes which are supposed to hold an LZ4 signature and returns the number of bytes read while storing the bytes in the
+     * given array.
+     * </p>
      */
     private int skipSkippableFrame(final byte[] b) throws IOException {
         int read = 4;

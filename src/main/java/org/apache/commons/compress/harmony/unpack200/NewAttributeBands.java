@@ -41,20 +41,20 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.harmony.unpack200.bytecode.NewAttribute;
 
 /**
- * Set of bands relating to a non-predefined attribute
+ * Sets of bands relating to a non-predefined attribute
  */
 public class NewAttributeBands extends BandSet {
 
     /**
-     * An AttributeLayoutElement is a part of an attribute layout and has one or more bands associated with it, which
-     * transmit the AttributeElement data for successive Attributes of this type.
+     * An AttributeLayoutElement is a part of an attribute layout and has one or more bands associated with it, which transmit the AttributeElement data for
+     * successive Attributes of this type.
      */
     private interface AttributeLayoutElement {
 
         /**
          * Adds the band data for this element at the given index to the attribute.
          *
-         * @param index Index position to add the attribute.
+         * @param index     Index position to add the attribute.
          * @param attribute The attribute to add.
          */
         void addToAttribute(int index, NewAttribute attribute);
@@ -62,10 +62,10 @@ public class NewAttributeBands extends BandSet {
         /**
          * Read the bands associated with this part of the layout.
          *
-         * @param in TODO
+         * @param in    TODO
          * @param count TODO
          * @throws Pack200Exception Bad archive.
-         * @throws IOException If an I/O error occurs.
+         * @throws IOException      If an I/O error occurs.
          */
         void readBands(InputStream in, int count) throws IOException, Pack200Exception;
 
@@ -96,9 +96,8 @@ public class NewAttributeBands extends BandSet {
         @Override
         public void readBands(final InputStream in, final int count) {
             /*
-             * We don't read anything here, but we need to pass the extra count to the callable if it's a forwards call.
-             * For backwards callables the count is transmitted directly in the attribute bands and so it is added
-             * later.
+             * We don't read anything here, but we need to pass the extra count to the callable if it's a forwards call. For backwards callables the count is
+             * transmitted directly in the attribute bands and so it is added later.
              */
             if (callableIndex > 0) {
                 callable.addCount(count);
@@ -124,6 +123,7 @@ public class NewAttributeBands extends BandSet {
         private int count;
 
         private int index;
+
         public Callable(final List<LayoutElement> body) {
             this.body = body;
         }
@@ -138,8 +138,7 @@ public class NewAttributeBands extends BandSet {
         }
 
         /**
-         * Used by calls when adding band contents to attributes, so they don't have to keep track of the internal index
-         * of the callable.
+         * Used by calls when adding band contents to attributes, so they don't have to keep track of the internal index of the callable.
          *
          * @param attribute TODO
          */
@@ -214,7 +213,7 @@ public class NewAttributeBands extends BandSet {
                 attribute.addInteger(2, value);
             } else if (tag.equals("SH")) {
                 attribute.addInteger(2, (short) value);
-            } else if ((tag.equals("I") || tag.equals("FI")) || tag.equals("SI")) {
+            } else if (tag.equals("I") || tag.equals("FI") || tag.equals("SI")) {
                 attribute.addInteger(4, value);
             } else if (tag.equals("V") || tag.equals("FV") || tag.equals("SV")) {
                 // Don't add V's - they shouldn't be written out to the class
@@ -610,7 +609,7 @@ public class NewAttributeBands extends BandSet {
             return Codec.BCI5;
         }
         if (layoutElement.indexOf('S') >= 0 && layoutElement.indexOf("KS") < 0 //$NON-NLS-1$
-            && layoutElement.indexOf("RS") < 0) { //$NON-NLS-1$
+                && layoutElement.indexOf("RS") < 0) { //$NON-NLS-1$
             return Codec.SIGNED5;
         }
         if (layoutElement.indexOf('B') >= 0) {
@@ -620,15 +619,14 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Get one attribute at the given index from the various bands. The correct bands must have already been read in.
+     * Gets one attribute at the given index from the various bands. The correct bands must have already been read in.
      *
-     * @param index TODO
+     * @param index    TODO
      * @param elements TODO
      * @return attribute at the given index.
      */
     private Attribute getOneAttribute(final int index, final List<AttributeLayoutElement> elements) {
-        final NewAttribute attribute = new NewAttribute(segment.getCpBands().cpUTF8Value(attributeLayout.getName()),
-            attributeLayout.getIndex());
+        final NewAttribute attribute = new NewAttribute(segment.getCpBands().cpUTF8Value(attributeLayout.getName()), attributeLayout.getIndex());
         for (final AttributeLayoutElement element : elements) {
             element.addToAttribute(index, attribute);
         }
@@ -636,8 +634,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Utility method to get the contents of the given stream, up to the next {@code ]},
-     * (ignoring pairs of brackets {@code [} and {@code ]})
+     * Utility method to get the contents of the given stream, up to the next {@code ]}, (ignoring pairs of brackets {@code [} and {@code ]})
      *
      * @param stream
      * @return
@@ -649,9 +646,9 @@ public class NewAttributeBands extends BandSet {
         while (foundBracket != 0) {
             final int read = stream.read();
             if (read == -1) {
-            	break;
+                break;
             }
-			final char c = (char) read;
+            final char c = (char) read;
             if (c == ']') {
                 foundBracket++;
             }
@@ -666,13 +663,12 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Parse the bands relating to this AttributeLayout and return the correct class file attributes as a List of
-     * {@link Attribute}.
+     * Parse the bands relating to this AttributeLayout and return the correct class file attributes as a List of {@link Attribute}.
      *
-     * @param in parse source.
+     * @param in              parse source.
      * @param occurrenceCount TODO
      * @return Class file attributes as a List of {@link Attribute}.
-     * @throws IOException If an I/O error occurs.
+     * @throws IOException      If an I/O error occurs.
      * @throws Pack200Exception TODO
      */
     public List<Attribute> parseAttributes(final InputStream in, final int occurrenceCount) throws IOException, Pack200Exception {
@@ -688,7 +684,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Tokenise the layout into AttributeElements
+     * Tokenize the layout into AttributeElements
      *
      * @throws IOException If an I/O error occurs.
      */
@@ -754,10 +750,10 @@ public class NewAttributeBands extends BandSet {
         case 'H':
         case 'I':
         case 'V':
-            return new Integral(new String(new char[] {(char) nextChar}));
+            return new Integral(new String(new char[] { (char) nextChar }));
         case 'S':
         case 'F':
-            return new Integral(new String(new char[] {(char) nextChar, (char) stream.read()}));
+            return new Integral(new String(new char[] { (char) nextChar, (char) stream.read() }));
         case 'P':
             stream.mark(1);
             if (stream.read() != 'O') {
@@ -773,7 +769,7 @@ public class NewAttributeBands extends BandSet {
             }
             return new Integral("OS" + (char) stream.read());
 
-            // Replication
+        // Replication
         case 'N':
             final char uintType = (char) stream.read();
             stream.read(); // '['
@@ -834,7 +830,7 @@ public class NewAttributeBands extends BandSet {
         stream.read(); // '('
         final int next = stream.read();
         char ch = (char) next;
-        if (ch == ')'|| next == -1) {
+        if (ch == ')' || next == -1) {
             stream.reset();
             return null;
         }
@@ -876,7 +872,7 @@ public class NewAttributeBands extends BandSet {
         stream.mark(100);
         int i;
         int length = 0;
-        while ((i = (stream.read())) != -1 && Character.isDigit((char) i)) {
+        while ((i = stream.read()) != -1 && Character.isDigit((char) i)) {
             length++;
         }
         stream.reset();
@@ -892,8 +888,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Gets the contents of the given stream, up to the next {@code ]},
-     * (ignoring pairs of brackets {@code [} and {@code ]})
+     * Gets the contents of the given stream, up to the next {@code ]}, (ignoring pairs of brackets {@code [} and {@code ]})
      *
      * @param stream input stream.
      * @return the contents of the given stream.
@@ -905,9 +900,9 @@ public class NewAttributeBands extends BandSet {
         while (foundBracket != 0) {
             final int read = stream.read();
             if (read == -1) {
-            	break;
+                break;
             }
-			final char c = (char) read;
+            final char c = (char) read;
             if (c == ']') {
                 foundBracket++;
             }
@@ -985,11 +980,10 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Once the attribute bands have been read the callables can be informed about the number of times each is subject
-     * to a backwards call. This method is used to set this information.
+     * Once the attribute bands have been read the callables can be informed about the number of times each is subject to a backwards call. This method is used
+     * to set this information.
      *
-     * @param backwardsCalls one int for each backwards callable, which contains the number of times that callable is
-     *        subject to a backwards call.
+     * @param backwardsCalls one int for each backwards callable, which contains the number of times that callable is subject to a backwards call.
      * @throws IOException If an I/O error occurs.
      */
     public void setBackwardsCalls(final int[] backwardsCalls) throws IOException {

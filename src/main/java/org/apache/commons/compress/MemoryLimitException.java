@@ -21,10 +21,8 @@ package org.apache.commons.compress;
 import java.io.IOException;
 
 /**
- * If a stream checks for estimated memory allocation, and the estimate
- * goes above the memory limit, this is thrown.  This can also be thrown
- * if a stream tries to allocate a byte array that is larger than
- * the allowable limit.
+ * If a stream checks for estimated memory allocation, and the estimate goes above the memory limit, this is thrown. This can also be thrown if a stream tries
+ * to allocate a byte array that is larger than the allowable limit.
  *
  * @since 1.14
  */
@@ -33,10 +31,10 @@ public class MemoryLimitException extends IOException {
     private static final long serialVersionUID = 1L;
 
     private static String buildMessage(final long memoryNeededInKb, final int memoryLimitInKb) {
-        return memoryNeededInKb + " kb of memory would be needed; limit was "
-                + memoryLimitInKb + " kb. " +
-                "If the file is not corrupt, consider increasing the memory limit.";
+        return memoryNeededInKb + " kb of memory would be needed; limit was " + memoryLimitInKb + " kb. "
+                + "If the file is not corrupt, consider increasing the memory limit.";
     }
+
     /** long instead of int to account for overflow for corrupt files. */
     private final long memoryNeededInKb;
 

@@ -31,7 +31,7 @@ import org.apache.commons.compress.utils.IOUtils;
  *
  * @since 1.7
  */
-class BinaryTree {
+final class BinaryTree {
 
     /** Value in the array indicating an undefined node */
     private static final int UNDEFINED = -1;
@@ -44,8 +44,7 @@ class BinaryTree {
      */
     static BinaryTree decode(final InputStream inputStream, final int totalNumberOfValues) throws IOException {
         if (totalNumberOfValues < 0) {
-            throw new IllegalArgumentException("totalNumberOfValues must be bigger than 0, is "
-                + totalNumberOfValues);
+            throw new IllegalArgumentException("totalNumberOfValues must be bigger than 0, is " + totalNumberOfValues);
         }
         // the first byte contains the size of the structure minus one
         final int size = inputStream.read() + 1;
@@ -114,7 +113,7 @@ class BinaryTree {
             code = code + codeIncrement;
             if (sortedBitLengths[i] != lastBitLength) {
                 lastBitLength = sortedBitLengths[i];
-                codeIncrement = 1 << (16 - lastBitLength);
+                codeIncrement = 1 << 16 - lastBitLength;
             }
             codes[permutation[i]] = code;
         }
@@ -133,27 +132,25 @@ class BinaryTree {
     }
 
     /**
-     * The array representing the binary tree. The root is at index 0,
-     * the left children are at 2*i+1 and the right children at 2*i+2.
+     * The array representing the binary tree. The root is at index 0, the left children are at 2*i+1 and the right children at 2*i+2.
      */
     private final int[] tree;
 
-    public BinaryTree(final int depth) {
+    BinaryTree(final int depth) {
         if (depth < 0 || depth > 30) {
-            throw new IllegalArgumentException("depth must be bigger than 0 and not bigger than 30"
-                + " but is " + depth);
+            throw new IllegalArgumentException("depth must be bigger than 0 and not bigger than 30" + " but is " + depth);
         }
-        tree = new int[(int) ((1L << (depth + 1)) - 1)];
+        tree = new int[(int) ((1L << depth + 1) - 1)];
         Arrays.fill(tree, UNDEFINED);
     }
 
     /**
      * Adds a leaf to the tree.
      *
-     * @param node   the index of the node where the path is appended
-     * @param path   the path to the leaf (bits are parsed from the right to the left)
-     * @param depth  the number of nodes in the path
-     * @param value  the value of the leaf (must be positive)
+     * @param node  the index of the node where the path is appended
+     * @param path  the path to the leaf (bits are parsed from the right to the left)
+     * @param depth the number of nodes in the path
+     * @param value the value of the leaf (must be positive)
      */
     public void addLeaf(final int node, final int path, final int depth, final int value) {
         if (depth == 0) {
@@ -171,7 +168,6 @@ class BinaryTree {
             addLeaf(nextChild, path >>> 1, depth - 1, value);
         }
     }
-
 
     /**
      * Reads a value from the specified bit stream.

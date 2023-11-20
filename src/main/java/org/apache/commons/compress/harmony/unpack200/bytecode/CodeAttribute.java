@@ -26,9 +26,11 @@ import org.apache.commons.compress.harmony.unpack200.Segment;
 public class CodeAttribute extends BCIRenumberedAttribute {
 
     private static CPUTF8 attributeName;
+
     public static void setAttributeName(final CPUTF8 attributeName) {
         CodeAttribute.attributeName = attributeName;
     }
+
     public List<Attribute> attributes = new ArrayList<>();
     // instances
     public List<Integer> byteCodeOffsets = new ArrayList<>();
@@ -39,8 +41,8 @@ public class CodeAttribute extends BCIRenumberedAttribute {
 
     public int maxStack;
 
-    public CodeAttribute(final int maxStack, final int maxLocals, final byte[] codePacked, final Segment segment,
-        final OperandManager operandManager, final List<ExceptionTableEntry> exceptionTable) {
+    public CodeAttribute(final int maxStack, final int maxLocals, final byte[] codePacked, final Segment segment, final OperandManager operandManager,
+            final List<ExceptionTableEntry> exceptionTable) {
         super(attributeName);
         this.maxLocals = maxLocals;
         this.maxStack = maxStack;
@@ -68,7 +70,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
             // I've already added the first element (at 0) before
             // entering this loop, so make sure I don't add one
             // after the last element.
-            if (i < (codePacked.length - 1)) {
+            if (i < codePacked.length - 1) {
                 byteCodeOffsets.add(Integer.valueOf(lastBytecodePosition + byteCode.getLength()));
             }
             if (byteCode.getOpcode() == 0xC4) {

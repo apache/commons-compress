@@ -22,71 +22,64 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.changes.Change.ChangeType;
 
 /**
- * ChangeSet collects and performs changes to an archive.
- * Putting delete changes in this ChangeSet from multiple threads can
- * cause conflicts.
+ * ChangeSet collects and performs changes to an archive. Putting delete changes in this ChangeSet from multiple threads can cause conflicts.
  *
+ * @param <E> The ArchiveEntry type.
  * @NotThreadSafe
  */
-public final class ChangeSet {
+public final class ChangeSet<E extends ArchiveEntry> {
 
-    private final Set<Change> changes = new LinkedHashSet<>();
+    private final Set<Change<E>> changes = new LinkedHashSet<>();
 
     /**
      * Adds a new archive entry to the archive.
      *
-     * @param pEntry
-     *            the entry to add
-     * @param pInput
-     *            the datastream to add
+     * @param entry the entry to add
+     * @param input the data stream to add
      */
-    public void add(final ArchiveEntry pEntry, final InputStream pInput) {
-        this.add(pEntry, pInput, true);
+    public void add(final E entry, final InputStream input) {
+        this.add(entry, input, true);
     }
 
     /**
-     * Adds a new archive entry to the archive.
-     * If replace is set to true, this change will replace all other additions
-     * done in this ChangeSet and all existing entries in the original stream.
+     * Adds a new archive entry to the archive. If replace is set to true, this change will replace all other additions done in this ChangeSet and all existing
+     * entries in the original stream.
      *
-     * @param pEntry
-     *            the entry to add
-     * @param pInput
-     *            the datastream to add
-     * @param replace
-     *            indicates the this change should replace existing entries
+     * @param entry   the entry to add
+     * @param input   the data stream to add
+     * @param replace indicates the this change should replace existing entries
      */
-    public void add(final ArchiveEntry pEntry, final InputStream pInput, final boolean replace) {
-        addAddition(new Change(pEntry, pInput, replace));
+    public void add(final E entry, final InputStream input, final boolean replace) {
+        addAddition(new Change<>(entry, input, replace));
     }
 
     /**
      * Adds an addition change.
      *
-     * @param pChange
-     *            the change which should result in an addition
+     * @param addChange the change which should result in an addition
      */
-    private void addAddition(final Change pChange) {
-        if (Change.TYPE_ADD != pChange.type() ||
-            pChange.getInput() == null) {
+    @SuppressWarnings("resource") // InputStream is NOT allocated
+    private void addAddition(final Change<E> addChange) {
+        if (Change.ChangeType.ADD != addChange.getType() || addChange.getInputStream() == null) {
             return;
         }
 
         if (!changes.isEmpty()) {
-            for (final Iterator<Change> it = changes.iterator(); it.hasNext();) {
-                final Change change = it.next();
-                if (change.type() == Change.TYPE_ADD
-                        && change.getEntry() != null) {
+            for (final Iterator<Change<E>> it = changes.iterator(); it.hasNext();) {
+                final Change<E> change = it.next();
+                if (change.getType() == Change.ChangeType.ADD && change.getEntry() != null) {
                     final ArchiveEntry entry = change.getEntry();
 
-                    if (entry.equals(pChange.getEntry())) {
-                        if (pChange.isReplaceMode()) {
+                    if (entry.equals(addChange.getEntry())) {
+                        if (addChange.isReplaceMode()) {
                             it.remove();
-                            changes.add(pChange);
+                            changes.add(addChange);
                         }
                         // do not add this change
                         return;
@@ -94,70 +87,62 @@ public final class ChangeSet {
                 }
             }
         }
-        changes.add(pChange);
+        changes.add(addChange);
     }
 
     /**
      * Adds an delete change.
      *
-     * @param pChange
-     *            the change which should result in a deletion
+     * @param deleteChange the change which should result in a deletion
      */
-    private void addDeletion(final Change pChange) {
-        if ((Change.TYPE_DELETE != pChange.type() &&
-            Change.TYPE_DELETE_DIR != pChange.type()) ||
-            pChange.targetFile() == null) {
+    private void addDeletion(final Change<E> deleteChange) {
+        if (ChangeType.DELETE != deleteChange.getType() && ChangeType.DELETE_DIR != deleteChange.getType() || deleteChange.getTargetFileName() == null) {
             return;
         }
-        final String source = pChange.targetFile();
-
+        final String source = deleteChange.getTargetFileName();
+        final Pattern pattern = Pattern.compile(source + "/.*");
         if (source != null && !changes.isEmpty()) {
-            for (final Iterator<Change> it = changes.iterator(); it.hasNext();) {
-                final Change change = it.next();
-                if (change.type() == Change.TYPE_ADD
-                        && change.getEntry() != null) {
+            for (final Iterator<Change<E>> it = changes.iterator(); it.hasNext();) {
+                final Change<E> change = it.next();
+                if (change.getType() == ChangeType.ADD && change.getEntry() != null) {
                     final String target = change.getEntry().getName();
-
                     if (target == null) {
                         continue;
                     }
-
-                    if (Change.TYPE_DELETE == pChange.type() && source.equals(target) ||
-                            (Change.TYPE_DELETE_DIR == pChange.type() && target.matches(source + "/.*"))) {
+                    if (ChangeType.DELETE == deleteChange.getType() && source.equals(target)
+                            || ChangeType.DELETE_DIR == deleteChange.getType() && pattern.matcher(target).matches()) {
                         it.remove();
                     }
                 }
             }
         }
-        changes.add(pChange);
+        changes.add(deleteChange);
     }
 
     /**
      * Deletes the file with the file name from the archive.
      *
-     * @param fileName
-     *            the file name of the file to delete
+     * @param fileName the file name of the file to delete
      */
     public void delete(final String fileName) {
-        addDeletion(new Change(fileName, Change.TYPE_DELETE));
+        addDeletion(new Change<>(fileName, ChangeType.DELETE));
     }
 
     /**
      * Deletes the directory tree from the archive.
      *
-     * @param dirName
-     *            the name of the directory tree to delete
+     * @param dirName the name of the directory tree to delete
      */
     public void deleteDir(final String dirName) {
-        addDeletion(new Change(dirName, Change.TYPE_DELETE_DIR));
+        addDeletion(new Change<>(dirName, ChangeType.DELETE_DIR));
     }
 
     /**
-     * Returns the list of changes as a copy. Changes on this set
-     * are not reflected on this ChangeSet and vice versa.
+     * Gets the list of changes as a copy. Changes on this set are not reflected on this ChangeSet and vice versa.
+     *
      * @return the changes as a copy
      */
-    Set<Change> getChanges() {
+    Set<Change<E>> getChanges() {
         return new LinkedHashSet<>(changes);
     }
 }

@@ -19,9 +19,8 @@ package org.apache.commons.compress.archivers.zip;
 /**
  * Supplies {@link ZipArchiveEntryRequest}.
  *
- * Implementations are required to support thread-handover. While an instance will
- * not be accessed concurrently by multiple threads, it will be called by
- * a different thread than it was created on.
+ * Implementations are required to support thread-handover. While an instance will not be accessed concurrently by multiple threads, it will be called by a
+ * different thread than it was created on.
  *
  * @since 1.13
  */
@@ -29,6 +28,7 @@ public interface ZipArchiveEntryRequestSupplier {
 
     /**
      * Supply a {@link ZipArchiveEntryRequest} to be added to a parallel archive.
+     *
      * @return The {@link ZipArchiveEntryRequest} instance. Should never be null.
      */
     ZipArchiveEntryRequest get();

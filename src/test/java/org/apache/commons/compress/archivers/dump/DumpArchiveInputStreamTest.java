@@ -26,40 +26,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class DumpArchiveInputStreamTest extends AbstractTestCase {
-
-    @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        final byte[] buf = new byte[2];
-        try (InputStream in = newInputStream("bla.dump");
-             DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
-            IOUtils.toByteArray(archive);
-            assertEquals(-1, archive.read(buf));
-            assertEquals(-1, archive.read(buf));
-        }
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (InputStream in = newInputStream("bla.dump");
-             DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
-            IOUtils.toByteArray(archive);
-            assertEquals(-1, archive.read());
-            assertEquals(-1, archive.read());
-        }
-    }
+public class DumpArchiveInputStreamTest extends AbstractTest {
 
     @Test
     public void testConsumesArchiveCompletely() throws Exception {
-        try (final InputStream is = DumpArchiveInputStreamTest.class.getResourceAsStream("/archive_with_trailer.dump");
+        try (InputStream is = DumpArchiveInputStreamTest.class.getResourceAsStream("/archive_with_trailer.dump");
                 DumpArchiveInputStream dump = new DumpArchiveInputStream(is)) {
             while (dump.getNextDumpEntry() != null) {
                 // just consume the archive
@@ -72,10 +49,21 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
     }
 
     @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        final byte[] buf = new byte[2];
+        try (InputStream in = newInputStream("bla.dump");
+                DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
+            final ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read(buf));
+            assertEquals(-1, archive.read(buf));
+        }
+    }
+
+    @Test
     public void testNotADumpArchive() throws Exception {
         try (InputStream is = newInputStream("bla.zip")) {
-            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(),
-                    "expected an exception");
+            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(), "expected an exception");
             assertTrue(ex.getCause() instanceof ShortFileException);
         }
     }
@@ -83,9 +71,19 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
     @Test
     public void testNotADumpArchiveButBigEnough() throws Exception {
         try (InputStream is = newInputStream("zip64support.tar.bz2")) {
-            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(),
-                    "expected an exception");
+            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(), "expected an exception");
             assertInstanceOf(UnrecognizedFormatException.class, ex.getCause());
+        }
+    }
+
+    @Test
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        try (InputStream in = newInputStream("bla.dump");
+                DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
+            final ArchiveEntry e = archive.getNextEntry();
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read());
+            assertEquals(-1, archive.read());
         }
     }
 

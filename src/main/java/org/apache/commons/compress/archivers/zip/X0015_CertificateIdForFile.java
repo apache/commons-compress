@@ -23,12 +23,14 @@ import java.util.zip.ZipException;
 /**
  * X.509 Certificate ID and Signature for individual file (0x0015).
  *
- * <p>This field contains the information about which certificate in the PKCS#7
- * store was used to sign a particular file. It also contains the signature
- * data. This field can appear multiple times, but can only appear once per
- * certificate.</p>
+ * <p>
+ * This field contains the information about which certificate in the PKCS#7 store was used to sign a particular file. It also contains the signature data. This
+ * field can appear multiple times, but can only appear once per certificate.
+ * </p>
  *
- * <p>Note: all fields stored in Intel low-byte/high-byte order.</p>
+ * <p>
+ * Note: all fields stored in Intel low-byte/high-byte order.
+ * </p>
  *
  * <pre>
  *         Value     Size     Description
@@ -54,7 +56,8 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader {
     }
 
     /**
-     * Get hash algorithm.
+     * Gets hash algorithm.
+     *
      * @return the hash algorithm
      */
     public HashAlgorithm getHashAlgorithm() {
@@ -62,7 +65,8 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader {
     }
 
     /**
-     * Get record count.
+     * Gets record count.
+     *
      * @return the record count
      */
     public int getRecordCount() {
@@ -70,8 +74,7 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader {
     }
 
     @Override
-    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length)
-        throws ZipException {
+    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length) throws ZipException {
         assertMinimalLength(4, length);
         super.parseFromCentralDirectoryData(data, offset, length);
         this.rcount = ZipShort.getValue(data, offset);

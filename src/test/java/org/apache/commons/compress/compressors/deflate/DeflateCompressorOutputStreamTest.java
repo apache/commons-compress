@@ -28,9 +28,9 @@ import org.junit.jupiter.api.Test;
 public class DeflateCompressorOutputStreamTest {
 
     @Test
-    public void canReadASingleByteFlushAndFinish() throws IOException {
-        try (final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                final DeflateCompressorOutputStream cos = new DeflateCompressorOutputStream(bos)) {
+    public void testCanReadASingleByteFlushAndFinish() throws IOException {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                DeflateCompressorOutputStream cos = new DeflateCompressorOutputStream(bos)) {
             cos.write(99);
             cos.flush();
             cos.finish();

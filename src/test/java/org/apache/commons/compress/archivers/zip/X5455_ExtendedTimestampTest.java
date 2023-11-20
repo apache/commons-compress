@@ -16,9 +16,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
-import static org.apache.commons.compress.AbstractTestCase.mkdir;
-import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.ACCESS_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.CREATE_TIME_BIT;
 import static org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp.MODIFY_TIME_BIT;
@@ -43,29 +40,27 @@ import java.util.Enumeration;
 import java.util.TimeZone;
 import java.util.zip.ZipException;
 
+import org.apache.commons.compress.AbstractTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class X5455_ExtendedTimestampTest {
-    private final static ZipShort X5455 = new ZipShort(0x5455);
+    private static final ZipShort X5455 = new ZipShort(0x5455);
 
-    private final static ZipLong ZERO_TIME = new ZipLong(0);
-    private final static ZipLong MAX_TIME_SECONDS = new ZipLong(Integer.MAX_VALUE);
-    private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss Z");
+    private static final ZipLong ZERO_TIME = new ZipLong(0);
+    private static final ZipLong MAX_TIME_SECONDS = new ZipLong(Integer.MAX_VALUE);
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss Z");
 
     static {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
-
     /**
-     * InfoZIP seems to adjust the time stored inside the LFH and CD
-     * to GMT when writing ZIPs while java.util.zip.ZipEntry thinks it
-     * was in local time.
+     * InfoZIP seems to adjust the time stored inside the LFH and CD to GMT when writing ZIPs while java.util.zip.ZipEntry thinks it was in local time.
      *
-     * The archive read in {@link #testSampleFile} has been created
-     * with GMT-8, so we need to adjust for the difference.
+     * The archive read in {@link #testSampleFile} has been created with GMT-8, so we need to adjust for the difference.
      */
     private static Date adjustFromGMTToExpectedOffset(final Date from) {
         final Calendar cal = Calendar.getInstance();
@@ -78,13 +73,16 @@ public class X5455_ExtendedTimestampTest {
         return cal.getTime();
     }
 
-    private static boolean isFlagSet(final byte data, final byte flag) { return (data & flag) == flag; }
+    private static boolean isFlagSet(final byte data, final byte flag) {
+        return (data & flag) == flag;
+    }
 
     /**
      * The extended field (xf) we are testing.
      */
     private X5455_ExtendedTimestamp xf;
 
+    @TempDir
     private File tmpDir;
 
     @BeforeEach
@@ -92,16 +90,10 @@ public class X5455_ExtendedTimestampTest {
         xf = new X5455_ExtendedTimestamp();
     }
 
+    private void parseReparse(final byte providedFlags, final ZipLong time, final byte expectedFlags, final byte[] expectedLocal,
+            final byte[] almostExpectedCentral) throws ZipException {
 
-    private void parseReparse(
-            final byte providedFlags,
-            final ZipLong time,
-            final byte expectedFlags,
-            final byte[] expectedLocal,
-            final byte[] almostExpectedCentral
-    ) throws ZipException {
-
-        // We're responsible for expectedCentral's flags.  Too annoying to set in caller.
+        // We're responsible for expectedCentral's flags. Too annoying to set in caller.
         final byte[] expectedCentral = new byte[almostExpectedCentral.length];
         System.arraycopy(almostExpectedCentral, 0, expectedCentral, 0, almostExpectedCentral.length);
         expectedCentral[0] = expectedFlags;
@@ -148,28 +140,15 @@ public class X5455_ExtendedTimestampTest {
         }
     }
 
-    private void parseReparse(
-            final ZipLong time,
-            final byte[] expectedLocal,
-            final byte[] almostExpectedCentral
-    ) throws ZipException {
+    private void parseReparse(final ZipLong time, final byte[] expectedLocal, final byte[] almostExpectedCentral) throws ZipException {
         parseReparse(expectedLocal[0], time, expectedLocal[0], expectedLocal, almostExpectedCentral);
     }
 
     @AfterEach
     public void removeTempFiles() {
         if (tmpDir != null) {
-            rmdir(tmpDir);
+            AbstractTest.forceDelete(tmpDir);
         }
-    }
-
-    @Test
-    public void resetsFlagsWhenLocalFileArrayIsTooShort() throws Exception {
-        final byte[] local = {
-            7
-        }; // claims all three time values would be present, but they are not
-        xf.parseFromLocalFileData(local, 0, 1);
-        assertArrayEquals(new byte[1], xf.getLocalFileDataData());
     }
 
     @Test
@@ -330,7 +309,6 @@ public class X5455_ExtendedTimestampTest {
         assertNull(xf.getCreateTime());
         assertFalse(xf.isBit2_createTimePresent());
 
-
         // initialize for flags
         xf.setModifyTime(time);
         xf.setAccessTime(time);
@@ -427,27 +405,23 @@ public class X5455_ExtendedTimestampTest {
         /*
          * Recall the spec:
          *
-         * 0x5455        Short       tag for this extra block type ("UT")
-         * TSize         Short       total data size for this block
-         * Flags         Byte        info bits
-         * (ModTime)     Long        time of last modification (UTC/GMT)
-         * (AcTime)      Long        time of last access (UTC/GMT)
-         * (CrTime)      Long        time of original creation (UTC/GMT)
+         * 0x5455 Short tag for this extra block type ("UT") TSize Short total data size for this block Flags Byte info bits (ModTime) Long time of last
+         * modification (UTC/GMT) (AcTime) Long time of last access (UTC/GMT) (CrTime) Long time of original creation (UTC/GMT)
          */
-        final byte[] NULL_FLAGS = {0};
-        final byte[] AC_CENTRAL = {2}; // central data only contains the AC flag and no actual data
-        final byte[] CR_CENTRAL = {4}; // central data only contains the CR flag and no actual data
+        final byte[] NULL_FLAGS = { 0 };
+        final byte[] AC_CENTRAL = { 2 }; // central data only contains the AC flag and no actual data
+        final byte[] CR_CENTRAL = { 4 }; // central data only contains the CR flag and no actual data
 
-        final byte[] MOD_ZERO = {1, 0, 0, 0, 0};
-        final byte[] MOD_MAX = {1, -1, -1, -1, 0x7f};
-        final byte[] AC_ZERO = {2, 0, 0, 0, 0};
-        final byte[] AC_MAX = {2, -1, -1, -1, 0x7f};
-        final byte[] CR_ZERO = {4, 0, 0, 0, 0};
-        final byte[] CR_MAX = {4, -1, -1, -1, 0x7f};
-        final byte[] MOD_AC_ZERO = {3, 0, 0, 0, 0, 0, 0, 0, 0};
-        final byte[] MOD_AC_MAX = {3, -1, -1, -1, 0x7f, -1, -1, -1, 0x7f};
-        final byte[] MOD_AC_CR_ZERO = {7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        final byte[] MOD_AC_CR_MAX = {7, -1, -1, -1, 0x7f, -1, -1, -1, 0x7f, -1, -1, -1, 0x7f};
+        final byte[] MOD_ZERO = { 1, 0, 0, 0, 0 };
+        final byte[] MOD_MAX = { 1, -1, -1, -1, 0x7f };
+        final byte[] AC_ZERO = { 2, 0, 0, 0, 0 };
+        final byte[] AC_MAX = { 2, -1, -1, -1, 0x7f };
+        final byte[] CR_ZERO = { 4, 0, 0, 0, 0 };
+        final byte[] CR_MAX = { 4, -1, -1, -1, 0x7f };
+        final byte[] MOD_AC_ZERO = { 3, 0, 0, 0, 0, 0, 0, 0, 0 };
+        final byte[] MOD_AC_MAX = { 3, -1, -1, -1, 0x7f, -1, -1, -1, 0x7f };
+        final byte[] MOD_AC_CR_ZERO = { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        final byte[] MOD_AC_CR_MAX = { 7, -1, -1, -1, 0x7f, -1, -1, -1, 0x7f, -1, -1, -1, 0x7f };
 
         parseReparse(null, NULL_FLAGS, NULL_FLAGS);
         parseReparse(ZERO_TIME, MOD_ZERO, MOD_ZERO);
@@ -472,42 +446,37 @@ public class X5455_ExtendedTimestampTest {
     }
 
     @Test
+    public void testResetsFlagsWhenLocalFileArrayIsTooShort() throws Exception {
+        final byte[] local = { 7 }; // claims all three time values would be present, but they are not
+        xf.parseFromLocalFileData(local, 0, 1);
+        assertArrayEquals(new byte[1], xf.getLocalFileDataData());
+    }
+
+    @Test
     public void testSampleFile() throws Exception {
 
         /*
-        Contains entries with zipTime, accessTime, and modifyTime.
-        The file name tells you the year we tried to set the time to
-        (Jan 1st, Midnight, UTC).
-
-        For example:
-
-        COMPRESS-210_unix_time_zip_test/1999
-        COMPRESS-210_unix_time_zip_test/2000
-        COMPRESS-210_unix_time_zip_test/2108
-
-        File's last-modified is 1st second after midnight.
-        Zip-time's 2-second granularity rounds that up to 2nd second.
-        File's last-access is 3rd second after midnight.
-
-        So, from example above:
-
-        1999's zip time:  Jan 1st, 1999-01-01/00:00:02
-        1999's mod time:  Jan 1st, 1999-01-01/00:00:01
-        1999's acc time:  Jan 1st, 1999-01-01/00:00:03
-
-        Starting with a patch release of Java8, "zip time" actually
-        uses the extended time stamp field itself and should be the
-        same as "mod time".
-        http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/rev/90df6756406f
-
-        Starting with Java9 the parser for extended time stamps has
-        been fixed to use signed integers which was detected during
-        the triage of COMPRESS-416. Signed integers is the correct
-        format and Compress 1.15 has started to use signed integers as
-        well.
+         * Contains entries with zipTime, accessTime, and modifyTime. The file name tells you the year we tried to set the time to (Jan 1st, Midnight, UTC).
+         *
+         * For example:
+         *
+         * COMPRESS-210_unix_time_zip_test/1999 COMPRESS-210_unix_time_zip_test/2000 COMPRESS-210_unix_time_zip_test/2108
+         *
+         * File's last-modified is 1st second after midnight. Zip-time's 2-second granularity rounds that up to 2nd second. File's last-access is 3rd second
+         * after midnight.
+         *
+         * So, from example above:
+         *
+         * 1999's zip time: Jan 1st, 1999-01-01/00:00:02 1999's mod time: Jan 1st, 1999-01-01/00:00:01 1999's acc time: Jan 1st, 1999-01-01/00:00:03
+         *
+         * Starting with a patch release of Java8, "zip time" actually uses the extended time stamp field itself and should be the same as "mod time".
+         * http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/rev/90df6756406f
+         *
+         * Starting with Java9 the parser for extended time stamps has been fixed to use signed integers which was detected during the triage of COMPRESS-416.
+         * Signed integers is the correct format and Compress 1.15 has started to use signed integers as well.
          */
 
-        final File archive = getFile("COMPRESS-210_unix_time_zip_test.zip");
+        final File archive = AbstractTest.getFile("COMPRESS-210_unix_time_zip_test.zip");
 
         try (ZipFile zf = new ZipFile(archive)) {
             final Enumeration<ZipArchiveEntry> en = zf.getEntries();
@@ -526,7 +495,7 @@ public class X5455_ExtendedTimestampTest {
                 int year;
                 try {
                     year = Integer.parseInt(yearString);
-                } catch (final NumberFormatException nfe) {
+                } catch (NumberFormatException nfe) {
                     // setTime.sh, skip
                     continue;
                 }
@@ -536,17 +505,14 @@ public class X5455_ExtendedTimestampTest {
                 final Date m = xf.getModifyJavaTime();
 
                 /*
-                  We must distinguish three cases:
-                  - Java has read the extended time field itself and agrees with us (Java9 or Java8 and years prior to
-                    2038)
-                  - Java has read the extended time field but found a year >= 2038 (Java8)
-                  - Java hasn't read the extended time field at all (Java7- or early Java8)
-                */
+                 * We must distinguish three cases: - Java has read the extended time field itself and agrees with us (Java9 or Java8 and years prior to 2038) -
+                 * Java has read the extended time field but found a year >= 2038 (Java8) - Java hasn't read the extended time field at all (Java7- or early
+                 * Java8)
+                 */
 
                 final boolean zipTimeUsesExtendedTimestampCorrectly = rawZ.equals(m);
                 final boolean zipTimeUsesExtendedTimestampButUnsigned = year > 2037 && rawZ.getSeconds() == 1;
-                final boolean zipTimeUsesExtendedTimestamp = zipTimeUsesExtendedTimestampCorrectly
-                    || zipTimeUsesExtendedTimestampButUnsigned;
+                final boolean zipTimeUsesExtendedTimestamp = zipTimeUsesExtendedTimestampCorrectly || zipTimeUsesExtendedTimestampButUnsigned;
 
                 final Date z = zipTimeUsesExtendedTimestamp ? rawZ : adjustFromGMTToExpectedOffset(rawZ);
                 final Date a = xf.getAccessJavaTime();
@@ -585,25 +551,27 @@ public class X5455_ExtendedTimestampTest {
 
     @Test
     public void testWriteReadRoundtrip() throws IOException {
-        tmpDir = mkdir("X5455");
         final File output = new File(tmpDir, "write_rewrite.zip");
-        final Date d = new Date(97, 8, 24, 15, 10, 2);
-        try (final OutputStream out = Files.newOutputStream(output.toPath());
-             ZipArchiveOutputStream os = new ZipArchiveOutputStream(out)) {
+        final Calendar instance = Calendar.getInstance();
+        instance.clear();
+        instance.set(1997, 8, 24, 15, 10, 2);
+        final Date date = instance.getTime();
+        try (OutputStream out = Files.newOutputStream(output.toPath());
+                ZipArchiveOutputStream os = new ZipArchiveOutputStream(out)) {
             final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
-            xf.setModifyJavaTime(d);
+            xf.setModifyJavaTime(date);
             xf.setFlags((byte) 1);
             ze.addExtraField(xf);
             os.putArchiveEntry(ze);
             os.closeArchiveEntry();
         }
 
-        try (final ZipFile zf = new ZipFile(output)) {
+        try (ZipFile zf = new ZipFile(output)) {
             final ZipArchiveEntry ze = zf.getEntry("foo");
             final X5455_ExtendedTimestamp ext = (X5455_ExtendedTimestamp) ze.getExtraField(X5455);
             assertNotNull(ext);
             assertTrue(ext.isBit0_modifyTimePresent());
-            assertEquals(d, ext.getModifyJavaTime());
+            assertEquals(date, ext.getModifyJavaTime());
         }
     }
 }

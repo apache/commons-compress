@@ -22,27 +22,27 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Archive input streams <b>MUST</b> override the
- * {@link #read(byte[], int, int)} - or {@link #read()} -
- * method so that reading from the stream generates EOF for the end of
- * data in each entry as well as at the end of the file proper.
+ * Archive input streams <b>MUST</b> override the {@link #read(byte[], int, int)} - or {@link #read()} - method so that reading from the stream generates EOF
+ * for the end of data in each entry as well as at the end of the file proper.
  * <p>
- * The {@link #getNextEntry()} method is used to reset the input stream
- * ready for reading the data from the next entry.
+ * The {@link #getNextEntry()} method is used to reset the input stream ready for reading the data from the next entry.
  * <p>
  * The input stream classes must also implement a method with the signature:
+ *
  * <pre>
  * public static boolean matches(byte[] signature, int length)
  * </pre>
- * which is used by the {@link ArchiveStreamFactory} to autodetect
- * the archive type from the first few bytes of a stream.
+ *
+ * which is used by the {@link ArchiveStreamFactory} to autodetect the archive type from the first few bytes of a stream.
+ *
+ * @param <E> The type of {@link ArchiveEntry} produced.
  */
-public abstract class ArchiveInputStream extends InputStream {
+public abstract class ArchiveInputStream<E extends ArchiveEntry> extends InputStream {
 
     private static final int BYTE_MASK = 0xFF;
     private final byte[] single = new byte[1];
 
-    /** holds the number of bytes read in this stream */
+    /** Holds the number of bytes read in this stream */
     private long bytesRead;
 
     /**
@@ -52,8 +52,7 @@ public abstract class ArchiveInputStream extends InputStream {
      * Some archive formats support variants or details that are not supported (yet).
      * </p>
      *
-     * @param archiveEntry
-     *            the entry to test
+     * @param archiveEntry the entry to test
      * @return This implementation always returns true.
      *
      * @since 1.1
@@ -62,18 +61,8 @@ public abstract class ArchiveInputStream extends InputStream {
         return true;
     }
 
-    /*
-     * Note that subclasses also implement specific get() methods which
-     * return the appropriate class without need for a cast.
-     * See SVN revision r743259
-     * @return
-     * @throws IOException
-     */
-    // public abstract XXXArchiveEntry getNextXXXEntry() throws IOException;
-
     /**
-     * Increments the counter of already read bytes.
-     * Doesn't increment if the EOF has been hit (read == -1)
+     * Increments the counter of already read bytes. Doesn't increment if the EOF has been hit (read == -1)
      *
      * @param read the number of bytes read
      */
@@ -82,8 +71,7 @@ public abstract class ArchiveInputStream extends InputStream {
     }
 
     /**
-     * Increments the counter of already read bytes.
-     * Doesn't increment if the EOF has been hit (read == -1)
+     * Increments the counter of already read bytes. Doesn't increment if the EOF has been hit (read == -1)
      *
      * @param read the number of bytes read
      * @since 1.1
@@ -96,6 +84,7 @@ public abstract class ArchiveInputStream extends InputStream {
 
     /**
      * Returns the current number of bytes read from this stream.
+     *
      * @return the number of read bytes
      * @since 1.1
      */
@@ -105,9 +94,9 @@ public abstract class ArchiveInputStream extends InputStream {
 
     /**
      * Returns the current number of bytes read from this stream.
+     *
      * @return the number of read bytes
-     * @deprecated this method may yield wrong results for large
-     * archives, use #getBytesRead instead
+     * @deprecated this method may yield wrong results for large archives, use #getBytesRead instead
      */
     @Deprecated
     public int getCount() {
@@ -117,11 +106,10 @@ public abstract class ArchiveInputStream extends InputStream {
     /**
      * Returns the next Archive Entry in this Stream.
      *
-     * @return the next entry,
-     *         or {@code null} if there are no more entries
+     * @return the next entry, or {@code null} if there are no more entries
      * @throws IOException if the next entry could not be read
      */
-    public abstract ArchiveEntry getNextEntry() throws IOException;
+    public abstract E getNextEntry() throws IOException;
 
     /**
      * Decrements the counter of already read bytes.
@@ -134,17 +122,14 @@ public abstract class ArchiveInputStream extends InputStream {
     }
 
     /**
-     * Reads a byte of data. This method will block until enough input is
-     * available.
+     * Reads a byte of data. This method will block until enough input is available.
      *
      * Simply calls the {@link #read(byte[], int, int)} method.
      *
-     * MUST be overridden if the {@link #read(byte[], int, int)} method
-     * is not overridden; may be overridden otherwise.
+     * MUST be overridden if the {@link #read(byte[], int, int)} method is not overridden; may be overridden otherwise.
      *
      * @return the byte read, or -1 if end of input is reached
-     * @throws IOException
-     *             if an I/O error has occurred
+     * @throws IOException if an I/O error has occurred
      */
     @Override
     public int read() throws IOException {

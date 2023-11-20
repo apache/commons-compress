@@ -39,12 +39,14 @@ import org.apache.commons.compress.utils.ByteUtils;
  */
 public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
 
-    final static class Pair {
+    static final class Pair {
+
         private static int lengths(final int litLength, final int brLength) {
             final int l = Math.min(litLength, 15);
-            final int br = brLength < 4 ? 0 : (brLength < 19 ? brLength - 4 : 15);
-            return (l << BlockLZ4CompressorInputStream.SIZE_BITS) | br;
+            final int br = brLength < 4 ? 0 : brLength < 19 ? brLength - 4 : 15;
+            return l << BlockLZ4CompressorInputStream.SIZE_BITS | br;
         }
+
         private static void writeLength(int length, final OutputStream out) throws IOException {
             while (length >= 255) {
                 out.write(255);
@@ -52,16 +54,19 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
             }
             out.write(length);
         }
+
         private final Deque<byte[]> literals = new LinkedList<>();
+
+        private int literalLength;
 
         private int brOffset, brLength;
 
         private boolean written;
 
         byte[] addLiteral(final LZ77Compressor.LiteralBlock block) {
-            final byte[] copy = Arrays.copyOfRange(block.getData(), block.getOffset(),
-                block.getOffset() + block.getLength());
+            final byte[] copy = Arrays.copyOfRange(block.getData(), block.getOffset(), block.getOffset() + block.getLength());
             literals.add(copy);
+            literalLength += copy.length;
             return copy;
         }
 
@@ -70,8 +75,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         }
 
         boolean canBeWritten(final int lengthOfBlocksAfterThisPair) {
-            return hasBackReference()
-                && lengthOfBlocksAfterThisPair >= MIN_OFFSET_OF_LAST_BACK_REFERENCE + MIN_BACK_REFERENCE_LENGTH;
+            return hasBackReference() && lengthOfBlocksAfterThisPair >= MIN_OFFSET_OF_LAST_BACK_REFERENCE + MIN_BACK_REFERENCE_LENGTH;
         }
 
         boolean hasBackReference() {
@@ -87,11 +91,20 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         }
 
         private int literalLength() {
-            return literals.stream().mapToInt(b -> b.length).sum();
+            // This method is performance sensitive
+            if (literalLength != 0) {
+                return literalLength;
+            }
+            int length = 0;
+            for (final byte[] b : literals) {
+                length += b.length;
+            }
+            return literalLength = length;
         }
 
         private void prependLiteral(final byte[] data) {
             literals.addFirst(data);
+            literalLength += data.length;
         }
 
         private void prependTo(final Pair other) {
@@ -129,60 +142,46 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
             if (hasBackReference()) {
                 ByteUtils.toLittleEndian(out, brOffset, 2);
                 if (brLength - MIN_BACK_REFERENCE_LENGTH >= BlockLZ4CompressorInputStream.BACK_REFERENCE_SIZE_MASK) {
-                    writeLength(brLength - MIN_BACK_REFERENCE_LENGTH
-                        - BlockLZ4CompressorInputStream.BACK_REFERENCE_SIZE_MASK, out);
+                    writeLength(brLength - MIN_BACK_REFERENCE_LENGTH - BlockLZ4CompressorInputStream.BACK_REFERENCE_SIZE_MASK, out);
                 }
             }
             written = true;
         }
     }
+
     private static final int MIN_BACK_REFERENCE_LENGTH = 4;
 
     /*
-
-      The LZ4 block format has a few properties that make it less
-      straight-forward than one would hope:
-
-      * literal blocks and back-references must come in pairs (except
-        for the very last literal block), so consecutive literal
-        blocks created by the compressor must be merged into a single
-        block.
-
-      * the start of a literal/back-reference pair contains the length
-        of the back-reference (at least some part of it) so we can't
-        start writing the literal before we know how long the next
-        back-reference is going to be.
-
-      * there are special rules for the final blocks
-
-        > There are specific parsing rules to respect in order to remain
-        > compatible with assumptions made by the decoder :
-        >
-        >     1. The last 5 bytes are always literals
-        >
-        >     2. The last match must start at least 12 bytes before end of
-        >        block. Consequently, a block with less than 13 bytes cannot be
-        >        compressed.
-
-        which means any back-reference may need to get rewritten as a
-        literal block unless we know the next block is at least of
-        length 5 and the sum of this block's length and offset and the
-        next block's length is at least twelve.
-
-    */
+     *
+     * The LZ4 block format has a few properties that make it less straight-forward than one would hope:
+     *
+     * literal blocks and back-references must come in pairs (except for the very last literal block), so consecutive literal blocks created by the compressor
+     * must be merged into a single block.
+     *
+     * the start of a literal/back-reference pair contains the length of the back-reference (at least some part of it) so we can't start writing the literal
+     * before we know how long the next back-reference is going to be.
+     *
+     * there are special rules for the final blocks
+     *
+     * > There are specific parsing rules to respect in order to remain > compatible with assumptions made by the decoder : > > 1. The last 5 bytes are always
+     * literals > > 2. The last match must start at least 12 bytes before end of > block. Consequently, a block with less than 13 bytes cannot be > compressed.
+     *
+     * which means any back-reference may need to get rewritten as a literal block unless we know the next block is at least of length 5 and the sum of this
+     * block's length and offset and the next block's length is at least twelve.
+     *
+     */
 
     private static final int MIN_OFFSET_OF_LAST_BACK_REFERENCE = 12;
+
     /**
      * Returns a builder correctly configured for the LZ4 algorithm.
+     *
      * @return a builder correctly configured for the LZ4 algorithm
      */
     public static Parameters.Builder createParameterBuilder() {
         final int maxLen = BlockLZ4CompressorInputStream.WINDOW_SIZE - 1;
-        return Parameters.builder(BlockLZ4CompressorInputStream.WINDOW_SIZE)
-            .withMinBackReferenceLength(MIN_BACK_REFERENCE_LENGTH)
-            .withMaxBackReferenceLength(maxLen)
-            .withMaxOffset(maxLen)
-            .withMaxLiteralLength(maxLen);
+        return Parameters.builder(BlockLZ4CompressorInputStream.WINDOW_SIZE).withMinBackReferenceLength(MIN_BACK_REFERENCE_LENGTH)
+                .withMaxBackReferenceLength(maxLen).withMaxOffset(maxLen).withMaxLiteralLength(maxLen);
     }
 
     private final LZ77Compressor compressor;
@@ -202,8 +201,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
     /**
      * Creates a new LZ4 output stream.
      *
-     * @param os
-     *            An OutputStream to read compressed data from
+     * @param os An OutputStream to read compressed data from
      */
     public BlockLZ4CompressorOutputStream(final OutputStream os) {
         this(os, createParameterBuilder().build());
@@ -212,27 +210,24 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
     /**
      * Creates a new LZ4 output stream.
      *
-     * @param os
-     *            An OutputStream to read compressed data from
-     * @param params
-     *            The parameters to use for LZ77 compression.
+     * @param os     An OutputStream to read compressed data from
+     * @param params The parameters to use for LZ77 compression.
      */
     public BlockLZ4CompressorOutputStream(final OutputStream os, final Parameters params) {
         this.os = os;
-        compressor = new LZ77Compressor(params,
-            block -> {
-                switch (block.getType()) {
-                case LITERAL:
-                    addLiteralBlock((LZ77Compressor.LiteralBlock) block);
-                    break;
-                case BACK_REFERENCE:
-                    addBackReference((LZ77Compressor.BackReference) block);
-                    break;
-                case EOD:
-                    writeFinalLiteralBlock();
-                    break;
-                }
-            });
+        compressor = new LZ77Compressor(params, block -> {
+            switch (block.getType()) {
+            case LITERAL:
+                addLiteralBlock((LZ77Compressor.LiteralBlock) block);
+                break;
+            case BACK_REFERENCE:
+                addBackReference((LZ77Compressor.BackReference) block);
+                break;
+            case EOD:
+                writeFinalLiteralBlock();
+                break;
+            }
+        });
     }
 
     private void addBackReference(final LZ77Compressor.BackReference block) throws IOException {
@@ -272,7 +267,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
     private void clearUnusedPairs() {
         int pairLengths = 0;
         int pairsToKeep = 0;
-        for (final Iterator<Pair> it = pairs.descendingIterator(); it.hasNext(); ) {
+        for (final Iterator<Pair> it = pairs.descendingIterator(); it.hasNext();) {
             final Pair p = it.next();
             pairsToKeep++;
             pairLengths += p.length();
@@ -351,8 +346,8 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
     }
 
     /**
-     * Compresses all remaining data and writes it to the stream,
-     * doesn't close the underlying stream.
+     * Compresses all remaining data and writes it to the stream, doesn't close the underlying stream.
+     *
      * @throws IOException if an error occurs
      */
     public void finish() throws IOException {
@@ -366,8 +361,8 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
      * Adds some initial data to fill the window with.
      *
      * @param data the data to fill the window with.
-     * @param off offset of real data into the array
-     * @param len amount of data
+     * @param off  offset of real data into the array
+     * @param len  amount of data
      * @throws IllegalStateException if the stream has already started to write data
      * @see LZ77Compressor#prefill
      */
@@ -391,7 +386,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         final LinkedList<Pair> lastPairs = new LinkedList<>();
         final LinkedList<Integer> pairLength = new LinkedList<>();
         int offset = 0;
-        for (final Iterator<Pair> it = pairs.descendingIterator(); it.hasNext(); ) {
+        for (final Iterator<Pair> it = pairs.descendingIterator(); it.hasNext();) {
             final Pair p = it.next();
             if (p.hasBeenWritten()) {
                 break;
@@ -486,7 +481,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
 
     private void writeWritablePairs(final int lengthOfBlocksAfterLastPair) throws IOException {
         int unwrittenLength = lengthOfBlocksAfterLastPair;
-        for (final Iterator<Pair> it = pairs.descendingIterator(); it.hasNext(); ) {
+        for (final Iterator<Pair> it = pairs.descendingIterator(); it.hasNext();) {
             final Pair p = it.next();
             if (p.hasBeenWritten()) {
                 break;

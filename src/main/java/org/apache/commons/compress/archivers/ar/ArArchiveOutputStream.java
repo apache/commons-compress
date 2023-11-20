@@ -26,7 +26,6 @@ import java.io.OutputStream;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 
@@ -35,7 +34,7 @@ import org.apache.commons.compress.utils.ArchiveUtils;
  *
  * @NotThreadSafe
  */
-public class ArArchiveOutputStream extends ArchiveOutputStream {
+public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
     /** Fail if a long file name is required in the archive. */
     public static final int LONGFILE_ERROR = 0;
 
@@ -51,8 +50,8 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     /** indicates if this archive is finished */
     private boolean finished;
 
-    public ArArchiveOutputStream(final OutputStream pOut) {
-        this.out = pOut;
+    public ArArchiveOutputStream(final OutputStream out) {
+        this.out = out;
     }
 
     /**
@@ -75,7 +74,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
-        if (prevEntry == null || !haveUnclosedEntry){
+        if (prevEntry == null || !haveUnclosedEntry) {
             throw new IOException("No current entry to close");
         }
         if (entryOffset % 2 != 0) {
@@ -85,8 +84,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     }
 
     @Override
-    public ArchiveEntry createArchiveEntry(final File inputFile, final String entryName)
-        throws IOException {
+    public ArArchiveEntry createArchiveEntry(final File inputFile, final String entryName) throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
@@ -99,7 +97,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
      * @since 1.21
      */
     @Override
-    public ArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
+    public ArArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
@@ -130,12 +128,11 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     }
 
     @Override
-    public void putArchiveEntry(final ArchiveEntry pEntry) throws IOException {
+    public void putArchiveEntry(final ArArchiveEntry entry) throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
 
-        final ArArchiveEntry pArEntry = (ArArchiveEntry)pEntry;
         if (prevEntry == null) {
             writeArchiveHeader();
         } else {
@@ -148,19 +145,18 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
             }
         }
 
-        prevEntry = pArEntry;
+        prevEntry = entry;
 
-        writeEntryHeader(pArEntry);
+        writeEntryHeader(entry);
 
         entryOffset = 0;
         haveUnclosedEntry = true;
     }
 
     /**
-     * Set the long file mode.
-     * This can be LONGFILE_ERROR(0) or LONGFILE_BSD(1).
-     * This specifies the treatment of long file names (names &gt;= 16).
-     * Default is LONGFILE_ERROR.
+     * Sets the long file mode. This can be LONGFILE_ERROR(0) or LONGFILE_BSD(1). This specifies the treatment of long file names (names &gt;= 16). Default is
+     * LONGFILE_ERROR.
+     *
      * @param longFileMode the mode to use
      * @since 1.3
      */
@@ -182,22 +178,21 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
     }
 
     private void writeArchiveHeader() throws IOException {
-        final byte [] header = ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER);
+        final byte[] header = ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER);
         out.write(header);
     }
 
-    private void writeEntryHeader(final ArArchiveEntry pEntry) throws IOException {
+    private void writeEntryHeader(final ArArchiveEntry entry) throws IOException {
 
         long offset = 0;
         boolean mustAppendName = false;
 
-        final String n = pEntry.getName();
+        final String n = entry.getName();
         final int nLength = n.length();
         if (LONGFILE_ERROR == longFileMode && nLength > 16) {
-            throw new IOException("File name too long, > 16 chars: "+n);
+            throw new IOException("File name too long, > 16 chars: " + n);
         }
-        if (LONGFILE_BSD == longFileMode &&
-            (nLength > 16 || n.contains(" "))) {
+        if (LONGFILE_BSD == longFileMode && (nLength > 16 || n.contains(" "))) {
             mustAppendName = true;
             offset += write(ArArchiveInputStream.BSD_LONGNAME_PREFIX + nLength);
         } else {
@@ -205,37 +200,35 @@ public class ArArchiveOutputStream extends ArchiveOutputStream {
         }
 
         offset = fill(offset, 16, ' ');
-        final String m = "" + pEntry.getLastModified();
+        final String m = "" + entry.getLastModified();
         if (m.length() > 12) {
             throw new IOException("Last modified too long");
         }
         offset += write(m);
 
         offset = fill(offset, 28, ' ');
-        final String u = "" + pEntry.getUserId();
+        final String u = "" + entry.getUserId();
         if (u.length() > 6) {
             throw new IOException("User id too long");
         }
         offset += write(u);
 
         offset = fill(offset, 34, ' ');
-        final String g = "" + pEntry.getGroupId();
+        final String g = "" + entry.getGroupId();
         if (g.length() > 6) {
             throw new IOException("Group id too long");
         }
         offset += write(g);
 
         offset = fill(offset, 40, ' ');
-        final String fm = "" + Integer.toString(pEntry.getMode(), 8);
+        final String fm = "" + Integer.toString(entry.getMode(), 8);
         if (fm.length() > 8) {
             throw new IOException("Filemode too long");
         }
         offset += write(fm);
 
         offset = fill(offset, 48, ' ');
-        final String s =
-            String.valueOf(pEntry.getLength()
-                           + (mustAppendName ? nLength : 0));
+        final String s = String.valueOf(entry.getLength() + (mustAppendName ? nLength : 0));
         if (s.length() > 10) {
             throw new IOException("Size too long");
         }

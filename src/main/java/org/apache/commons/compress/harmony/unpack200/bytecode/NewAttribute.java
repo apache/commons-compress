@@ -26,43 +26,46 @@ import java.util.List;
  */
 public class NewAttribute extends BCIRenumberedAttribute {
 
-    private static class BCIndex extends BCValue {
-
-        private final int index;
-
-        public BCIndex(final int index) {
-            this.index = index;
-        }
-    }
-    private static class BCLength extends BCValue {
-
-        private final int length;
-
-        public BCLength(final int length) {
-            this.length = length;
-        }
-    }
-    private static class BCOffset extends BCValue {
-
-        private final int offset;
-        private int index;
-
-        public BCOffset(final int offset) {
-            this.offset = offset;
-        }
-
-        public void setIndex(final int index) {
-            this.index = index;
-        }
-
-    }
     // Bytecode-related value (either a bytecode index or a length)
-    private static abstract class BCValue {
+    private abstract static class AbstractBcValue {
 
         int actualValue;
 
         public void setActualValue(final int value) {
             this.actualValue = value;
+        }
+
+    }
+
+    private static final class BCIndex extends AbstractBcValue {
+
+        private final int index;
+
+        BCIndex(final int index) {
+            this.index = index;
+        }
+    }
+
+    private static final class BCLength extends AbstractBcValue {
+
+        private final int length;
+
+        BCLength(final int length) {
+            this.length = length;
+        }
+    }
+
+    private static final class BCOffset extends AbstractBcValue {
+
+        private final int offset;
+        private int index;
+
+        BCOffset(final int offset) {
+            this.offset = offset;
+        }
+
+        public void setIndex(final int index) {
+            this.index = index;
         }
 
     }
@@ -220,9 +223,9 @@ public class NewAttribute extends BCIRenumberedAttribute {
             if (obj instanceof Long) {
                 value = ((Long) obj).longValue();
             } else if (obj instanceof ClassFileEntry) {
-                value = pool.indexOf(((ClassFileEntry) obj));
-            } else if (obj instanceof BCValue) {
-                value = ((BCValue) obj).actualValue;
+                value = pool.indexOf((ClassFileEntry) obj);
+            } else if (obj instanceof AbstractBcValue) {
+                value = ((AbstractBcValue) obj).actualValue;
             }
             // Write
             switch (length) {

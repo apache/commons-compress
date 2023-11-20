@@ -44,8 +44,7 @@ public class BandSetTest {
     private final BandSet bandSet = new BandSet(new MockSegment()) {
 
         @Override
-        public void read(final InputStream inputStream) throws IOException,
-                Pack200Exception {
+        public void read(final InputStream inputStream) throws IOException, Pack200Exception {
         }
 
         @Override

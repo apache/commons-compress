@@ -27,11 +27,9 @@ public class CompressorException extends Exception {
     private static final long serialVersionUID = -2932901310255908814L;
 
     /**
-     * Constructs a new exception with the specified detail message. The cause
-     * is not initialized.
+     * Constructs a new exception with the specified detail message. The cause is not initialized.
      *
-     * @param message
-     *            the detail message
+     * @param message the detail message
      */
     public CompressorException(final String message) {
         super(message);
@@ -40,10 +38,8 @@ public class CompressorException extends Exception {
     /**
      * Constructs a new exception with the specified detail message and cause.
      *
-     * @param message
-     *            the detail message
-     * @param cause
-     *            the cause
+     * @param message the detail message
+     * @param cause   the cause
      */
     public CompressorException(final String message, final Throwable cause) {
         super(message, cause);

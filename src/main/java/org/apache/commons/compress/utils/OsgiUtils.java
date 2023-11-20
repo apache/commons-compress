@@ -27,8 +27,8 @@ public class OsgiUtils {
     private static final boolean inOsgiEnvironment;
 
     static {
-        final Class<?> classloaderClass = OsgiUtils.class.getClassLoader().getClass();
-        inOsgiEnvironment = isBundleReference(classloaderClass);
+        final Class<?> classLoaderClass = OsgiUtils.class.getClassLoader().getClass();
+        inOsgiEnvironment = isBundleReference(classLoaderClass);
     }
 
     private static boolean isBundleReference(final Class<?> clazz) {
@@ -49,6 +49,7 @@ public class OsgiUtils {
 
     /**
      * Tests if Commons Compress running as an OSGi bundle?
+     *
      * @return true if Commons Compress running as an OSGi bundle.
      */
     public static boolean isRunningInOsgiEnvironment() {

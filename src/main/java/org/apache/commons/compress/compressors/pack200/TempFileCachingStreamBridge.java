@@ -26,33 +26,33 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * StreamBridge that caches all data written to the output side in
- * a temporary file.
+ * StreamBridge that caches all data written to the output side in a temporary file.
  *
  * @since 1.3
  */
-class TempFileCachingStreamBridge extends StreamBridge {
-    private final Path f;
+final class TempFileCachingStreamBridge extends AbstractStreamBridge {
+
+    private final Path path;
 
     TempFileCachingStreamBridge() throws IOException {
-        f = Files.createTempFile("commons-compress", "packtemp");
-        f.toFile().deleteOnExit();
-        out = Files.newOutputStream(f);
+        this.path = Files.createTempFile("commons-compress", "packtemp");
+        this.path.toFile().deleteOnExit();
+        this.out = Files.newOutputStream(path);
     }
 
     @SuppressWarnings("resource") // Caller closes
     @Override
-    InputStream getInputView() throws IOException {
+    InputStream createInputStream() throws IOException {
         out.close();
-        return new FilterInputStream(Files.newInputStream(f)) {
+        return new FilterInputStream(Files.newInputStream(path)) {
             @Override
             public void close() throws IOException {
                 try {
                     super.close();
                 } finally {
                     try {
-                        Files.deleteIfExists(f);
-                    } catch (IOException ignore) {
+                        Files.deleteIfExists(path);
+                    } catch (final IOException ignore) {
                         // if this fails the only thing we can do is to rely on deleteOnExit
                     }
                 }

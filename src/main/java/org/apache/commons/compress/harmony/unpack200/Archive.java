@@ -33,9 +33,8 @@ import java.util.zip.GZIPInputStream;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 
 /**
- * Archive is the main entry point to unpack200. An archive is constructed with either two file names, a pack file and
- * an output file name or an input stream and an output streams. Then {@code unpack()} is called, to unpack the
- * pack200 archive.
+ * Archive is the main entry point to unpack200. An archive is constructed with either two file names, a pack file and an output file name or an input stream
+ * and an output streams. Then {@code unpack()} is called, to unpack the pack200 archive.
  */
 public class Archive {
 
@@ -58,10 +57,10 @@ public class Archive {
     private String outputFileName;
 
     /**
-     * Creates an Archive with streams for the input and output files. Note: If you use this method then calling
-     * {@link #setRemovePackFile(boolean)} will have no effect.
+     * Creates an Archive with streams for the input and output files. Note: If you use this method then calling {@link #setRemovePackFile(boolean)} will have
+     * no effect.
      *
-     * @param inputStream TODO
+     * @param inputStream  TODO
      * @param outputStream TODO
      */
     public Archive(final InputStream inputStream, final JarOutputStream outputStream) {
@@ -72,11 +71,11 @@ public class Archive {
     /**
      * Creates an Archive with the given input and output file names.
      *
-     * @param inputFile TODO
+     * @param inputFile  TODO
      * @param outputFile TODO
      * @throws FileNotFoundException if the input file does not exist
      * @throws FileNotFoundException TODO
-     * @throws IOException TODO
+     * @throws IOException           TODO
      */
     public Archive(final String inputFile, final String outputFile) throws FileNotFoundException, IOException {
         this.inputFileName = inputFile;
@@ -106,7 +105,7 @@ public class Archive {
     }
 
     public void setQuiet(final boolean quiet) {
-        if (quiet || (logLevel == Segment.LOG_LEVEL_QUIET)) {
+        if (quiet || logLevel == Segment.LOG_LEVEL_QUIET) {
             logLevel = Segment.LOG_LEVEL_QUIET;
         }
     }
@@ -132,7 +131,7 @@ public class Archive {
      * Unpacks the Archive from the input file to the output file
      *
      * @throws Pack200Exception TODO
-     * @throws IOException TODO
+     * @throws IOException      TODO
      */
     public void unpack() throws Pack200Exception, IOException {
         outputStream.setComment("PACK200");
@@ -144,14 +143,14 @@ public class Archive {
                 }
             }
             inputStream.mark(2);
-            if (((inputStream.read() & 0xFF) | (inputStream.read() & 0xFF) << 8) == GZIPInputStream.GZIP_MAGIC) {
+            if ((inputStream.read() & 0xFF | (inputStream.read() & 0xFF) << 8) == GZIPInputStream.GZIP_MAGIC) {
                 inputStream.reset();
                 inputStream = new BufferedInputStream(new GZIPInputStream(inputStream));
             } else {
                 inputStream.reset();
             }
             inputStream.mark(4);
-            final int[] magic = {0xCA, 0xFE, 0xD0, 0x0D}; // Magic word for
+            final int[] magic = { 0xCA, 0xFE, 0xD0, 0x0D }; // Magic word for
             // pack200
             final int[] word = new int[4];
             for (int i = 0; i < word.length; i++) {
@@ -188,8 +187,7 @@ public class Archive {
                     segment.setPreRead(false);
 
                     if (i == 1) {
-                        segment.log(Segment.LOG_LEVEL_VERBOSE,
-                            "Unpacking from " + inputFileName + " to " + outputFileName);
+                        segment.log(Segment.LOG_LEVEL_VERBOSE, "Unpacking from " + inputFileName + " to " + outputFileName);
                     }
                     segment.log(Segment.LOG_LEVEL_VERBOSE, "Reading segment " + i);
                     if (overrideDeflateHint) {

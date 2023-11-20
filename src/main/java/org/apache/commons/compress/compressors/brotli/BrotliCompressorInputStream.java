@@ -27,29 +27,27 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.brotli.dec.BrotliInputStream;
 
 /**
- * {@link CompressorInputStream} implementation to decode Brotli encoded stream.
- * Library relies on <a href="https://github.com/google/brotli">Google brotli</a>
+ * {@link CompressorInputStream} implementation to decode Brotli encoded stream. Library relies on <a href="https://github.com/google/brotli">Google brotli</a>
  *
  * @since 1.14
  */
-public class BrotliCompressorInputStream extends CompressorInputStream
-    implements InputStreamStatistics {
+public class BrotliCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
-    private final CountingInputStream countingStream;
-    private final BrotliInputStream decIS;
+    private final CountingInputStream countingInputStream;
+    private final BrotliInputStream brotliInputStream;
 
-    public BrotliCompressorInputStream(final InputStream in) throws IOException {
-        decIS = new BrotliInputStream(countingStream = new CountingInputStream(in));
+    public BrotliCompressorInputStream(final InputStream inputStream) throws IOException {
+        brotliInputStream = new BrotliInputStream(countingInputStream = new CountingInputStream(inputStream));
     }
 
     @Override
     public int available() throws IOException {
-        return decIS.available();
+        return brotliInputStream.available();
     }
 
     @Override
     public void close() throws IOException {
-        decIS.close();
+        brotliInputStream.close();
     }
 
     /**
@@ -57,50 +55,50 @@ public class BrotliCompressorInputStream extends CompressorInputStream
      */
     @Override
     public long getCompressedCount() {
-        return countingStream.getBytesRead();
+        return countingInputStream.getBytesRead();
     }
 
     @Override
-    public synchronized void mark(final int readlimit) {
-        decIS.mark(readlimit);
+    public synchronized void mark(final int readLimit) {
+        brotliInputStream.mark(readLimit);
     }
 
     @Override
     public boolean markSupported() {
-        return decIS.markSupported();
+        return brotliInputStream.markSupported();
     }
 
     @Override
     public int read() throws IOException {
-        final int ret = decIS.read();
+        final int ret = brotliInputStream.read();
         count(ret == -1 ? 0 : 1);
         return ret;
     }
 
     @Override
     public int read(final byte[] b) throws IOException {
-        return decIS.read(b);
+        return brotliInputStream.read(b);
     }
 
     @Override
     public int read(final byte[] buf, final int off, final int len) throws IOException {
-        final int ret = decIS.read(buf, off, len);
+        final int ret = brotliInputStream.read(buf, off, len);
         count(ret);
         return ret;
     }
 
     @Override
     public synchronized void reset() throws IOException {
-        decIS.reset();
+        brotliInputStream.reset();
     }
 
     @Override
     public long skip(final long n) throws IOException {
-        return IOUtils.skip(decIS, n);
+        return IOUtils.skip(brotliInputStream, n);
     }
 
     @Override
     public String toString() {
-        return decIS.toString();
+        return brotliInputStream.toString();
     }
 }

@@ -29,33 +29,35 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class supports writing to an OutputStream or WritableByteChannel in fixed length blocks.
- * <p>It can be be used to support output to devices such as tape drives that require output in this
- * format. If the final block does not have enough content to fill an entire block, the output will
- * be padded to a full block size.</p>
+ * <p>
+ * It can be be used to support output to devices such as tape drives that require output in this format. If the final block does not have enough content to
+ * fill an entire block, the output will be padded to a full block size.
+ * </p>
  *
- * <p>This class can be used to support TAR,PAX, and CPIO blocked output to character special devices.
- * It is not recommended that this class be used unless writing to such devices, as the padding
- * serves no useful purpose in such cases.</p>
+ * <p>
+ * This class can be used to support TAR,PAX, and CPIO blocked output to character special devices. It is not recommended that this class be used unless writing
+ * to such devices, as the padding serves no useful purpose in such cases.
+ * </p>
  *
- * <p>This class should normally wrap a FileOutputStream or associated WritableByteChannel directly.
- * If there is an intervening filter that modified the output, such as a CompressorOutputStream, or
- * performs its own buffering, such as BufferedOutputStream,  output to the device may
- * no longer be of the specified size.</p>
+ * <p>
+ * This class should normally wrap a FileOutputStream or associated WritableByteChannel directly. If there is an intervening filter that modified the output,
+ * such as a CompressorOutputStream, or performs its own buffering, such as BufferedOutputStream, output to the device may no longer be of the specified size.
+ * </p>
  *
- * <p>Any content written to this stream should be self-delimiting and should tolerate any padding
- * added to fill the last block.</p>
+ * <p>
+ * Any content written to this stream should be self-delimiting and should tolerate any padding added to fill the last block.
+ * </p>
  *
  * @since 1.15
  */
 public class FixedLengthBlockOutputStream extends OutputStream implements WritableByteChannel {
 
     /**
-     * Helper class to provide channel wrapper for arbitrary output stream that doesn't alter the
-     * size of writes.  We can't use Channels.newChannel, because for non FileOutputStreams, it
-     * breaks up writes into 8KB max chunks. Since the purpose of this class is to always write
-     * complete blocks, we need to write a simple class to take care of it.
+     * Helper class to provide channel wrapper for arbitrary output stream that doesn't alter the size of writes. We can't use Channels.newChannel, because for
+     * non FileOutputStreams, it breaks up writes into 8KB max chunks. Since the purpose of this class is to always write complete blocks, we need to write a
+     * simple class to take care of it.
      */
-    private static class BufferAtATimeOutputChannel implements WritableByteChannel {
+    private static final class BufferAtATimeOutputChannel implements WritableByteChannel {
 
         private final OutputStream out;
         private final AtomicBoolean closed = new AtomicBoolean(false);
@@ -94,21 +96,24 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
             } catch (final IOException e) {
                 try {
                     close();
-                } catch (final IOException ignored) { //NOSONAR
+                } catch (final IOException ignored) { // NOSONAR
                 }
                 throw e;
             }
         }
 
     }
+
     private final WritableByteChannel out;
     private final int blockSize;
     private final ByteBuffer buffer;
 
     private final AtomicBoolean closed = new AtomicBoolean(false);
-     /**
+
+    /**
      * Create a fixed length block output stream with given destination stream and block size
-     * @param os   The stream to wrap.
+     *
+     * @param os        The stream to wrap.
      * @param blockSize The block size to use.
      */
     public FixedLengthBlockOutputStream(final OutputStream os, final int blockSize) {
@@ -124,8 +129,9 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
     }
 
     /**
-      * Create a fixed length block output stream with given destination writable byte channel and block size
-     * @param out   The writable byte channel to wrap.
+     * Create a fixed length block output stream with given destination writable byte channel and block size
+     *
+     * @param out       The writable byte channel to wrap.
      * @param blockSize The block size to use.
      */
     public FixedLengthBlockOutputStream(final WritableByteChannel out, final int blockSize) {
@@ -147,6 +153,7 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
 
     /**
      * Potentially pads and then writes the current block to the underlying stream.
+     *
      * @throws IOException if writing fails
      */
     public void flushBlock() throws IOException {
@@ -222,7 +229,7 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
         } else {
             int srcLeft = srcRemaining;
             final int savedLimit = src.limit();
-            // If we're not at the start of buffer, we have some bytes already  buffered
+            // If we're not at the start of buffer, we have some bytes already buffered
             // fill up the reset of buffer and write the block.
             if (buffer.position() != 0) {
                 final int n = buffer.remaining();
@@ -259,13 +266,10 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
         final int i = out.write(buffer);
         final boolean hasRemaining = buffer.hasRemaining();
         if (i != blockSize || hasRemaining) {
-            final String msg = String
-                .format("Failed to write %,d bytes atomically. Only wrote  %,d",
-                    blockSize, i);
+            final String msg = String.format("Failed to write %,d bytes atomically. Only wrote  %,d", blockSize, i);
             throw new IOException(msg);
         }
         buffer.clear();
     }
-
 
 }

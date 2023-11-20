@@ -44,9 +44,11 @@ public class MetadataBandGroup {
 
     private static CPUTF8 rvpaUTF8;
     private static CPUTF8 ripaUTF8;
+
     public static void setRiaAttributeName(final CPUTF8 cpUTF8Value) {
         riaUTF8 = cpUTF8Value;
     }
+
     public static void setRipaAttributeName(final CPUTF8 cpUTF8Value) {
         ripaUTF8 = cpUTF8Value;
     }
@@ -130,8 +132,7 @@ public class MetadataBandGroup {
         return new Annotation(pairCount, type, elementNames, elementValues);
     }
 
-    private Attribute getAttribute(final int numAnnotations, final CPUTF8[] types, final int[] pairCounts,
-        final Iterator<CPUTF8> namesIterator) {
+    private Attribute getAttribute(final int numAnnotations, final CPUTF8[] types, final int[] pairCounts, final Iterator<CPUTF8> namesIterator) {
         final Annotation[] annotations = new Annotation[numAnnotations];
         Arrays.setAll(annotations, i -> getAnnotation(types[i], pairCounts[i], namesIterator));
         return new RuntimeVisibleorInvisibleAnnotationsAttribute(type.equals("RVA") ? rvaUTF8 : riaUTF8, annotations);
@@ -227,8 +228,7 @@ public class MetadataBandGroup {
             Arrays.setAll(annotations, j -> getAnnotation(type_RS[anno_N_Index - 1][j], pairCounts[j], namesIterator));
             parameterAnnotations[i] = new ParameterAnnotation(annotations);
         }
-        return new RuntimeVisibleorInvisibleParameterAnnotationsAttribute(type.equals("RVPA") ? rvpaUTF8 : ripaUTF8,
-            parameterAnnotations);
+        return new RuntimeVisibleorInvisibleParameterAnnotationsAttribute(type.equals("RVPA") ? rvpaUTF8 : ripaUTF8, parameterAnnotations);
     }
 
 }

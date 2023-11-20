@@ -21,14 +21,15 @@ import java.io.Serializable;
 import java.util.zip.ZipException;
 
 /**
- * Exception thrown when attempting to read or write data for a ZIP
- * entry that uses ZIP features not supported by this library.
+ * Exception thrown when attempting to read or write data for a ZIP entry that uses ZIP features not supported by this library.
+ *
  * @since 1.1
  */
 public class UnsupportedZipFeatureException extends ZipException {
 
     /**
      * ZIP Features that may or may not be supported.
+     *
      * @since 1.1
      */
     public static class Feature implements Serializable {
@@ -48,13 +49,14 @@ public class UnsupportedZipFeatureException extends ZipException {
         public static final Feature DATA_DESCRIPTOR = new Feature("data descriptor");
         /**
          * The archive uses splitting or spanning.
+         *
          * @since 1.5
          */
         public static final Feature SPLITTING = new Feature("splitting");
         /**
-         * The archive contains entries with unknown compressed size
-         * for a compression method that doesn't support detection of
-         * the end of the compressed stream.
+         * The archive contains entries with unknown compressed size for a compression method that doesn't support detection of the end of the compressed
+         * stream.
+         *
          * @since 1.16
          */
         public static final Feature UNKNOWN_COMPRESSED_SIZE = new Feature("unknown compressed size");
@@ -70,54 +72,52 @@ public class UnsupportedZipFeatureException extends ZipException {
             return name;
         }
     }
+
     private static final long serialVersionUID = 20161219L;
     private final Feature reason;
 
-    private transient final ZipArchiveEntry entry;
+    private final transient ZipArchiveEntry entry;
 
     /**
-     * Creates an exception when the whole archive uses an unsupported
-     * feature.
+     * Creates an exception when the whole archive uses an unsupported feature.
      *
      * @param reason the feature that is not supported
      * @since 1.5
      */
     public UnsupportedZipFeatureException(final Feature reason) {
-        super("Unsupported feature " + reason +  " used in archive.");
+        super("Unsupported feature " + reason + " used in archive.");
         this.reason = reason;
         this.entry = null;
     }
 
     /**
      * Creates an exception.
+     *
      * @param reason the feature that is not supported
-     * @param entry the entry using the feature
+     * @param entry  the entry using the feature
      */
-    public UnsupportedZipFeatureException(final Feature reason,
-                                          final ZipArchiveEntry entry) {
-        super("Unsupported feature " + reason +  " used in entry "
-              + entry.getName());
+    public UnsupportedZipFeatureException(final Feature reason, final ZipArchiveEntry entry) {
+        super("Unsupported feature " + reason + " used in entry " + entry.getName());
         this.reason = reason;
         this.entry = entry;
     }
 
     /**
-     * Creates an exception for archives that use an unsupported
-     * compression algorithm.
+     * Creates an exception for archives that use an unsupported compression algorithm.
+     *
      * @param method the method that is not supported
-     * @param entry the entry using the feature
+     * @param entry  the entry using the feature
      * @since 1.5
      */
-    public UnsupportedZipFeatureException(final ZipMethod method,
-                                          final ZipArchiveEntry entry) {
-        super("Unsupported compression method " + entry.getMethod()
-              + " (" + method.name() + ") used in entry " + entry.getName());
+    public UnsupportedZipFeatureException(final ZipMethod method, final ZipArchiveEntry entry) {
+        super("Unsupported compression method " + entry.getMethod() + " (" + method.name() + ") used in entry " + entry.getName());
         this.reason = Feature.METHOD;
         this.entry = entry;
     }
 
     /**
      * The entry using the unsupported feature.
+     *
      * @return The entry using the unsupported feature.
      */
     public ZipArchiveEntry getEntry() {
@@ -126,6 +126,7 @@ public class UnsupportedZipFeatureException extends ZipException {
 
     /**
      * The unsupported feature that has been used.
+     *
      * @return The unsupported feature that has been used.
      */
     public Feature getFeature() {

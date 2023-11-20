@@ -21,8 +21,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 
 /**
- * InputStream that delegates requests to the underlying SeekableByteChannel, making sure that only bytes from a certain
- * range can be read.
+ * InputStream that delegates requests to the underlying SeekableByteChannel, making sure that only bytes from a certain range can be read.
+ *
  * @ThreadSafe
  * @since 1.21
  */
@@ -37,8 +37,7 @@ public class BoundedSeekableByteChannelInputStream extends BoundedArchiveInputSt
      * @param remaining Amount of bytes which are allowed to read from the bounded stream
      * @param channel   Channel which the reads will be delegated to
      */
-    public BoundedSeekableByteChannelInputStream(final long start, final long remaining,
-            final SeekableByteChannel channel) {
+    public BoundedSeekableByteChannelInputStream(final long start, final long remaining, final SeekableByteChannel channel) {
         super(start, remaining);
         this.channel = channel;
     }

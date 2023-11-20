@@ -26,47 +26,47 @@ import org.tukaani.xz.LZMA2Options;
 public class SevenZMethodConfigurationTest {
 
     @Test
-    public void shouldAllowLZMA2OptionsForLZMA() {
+    public void testShouldAllowLZMA2OptionsForLZMA() {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA, new LZMA2Options()).getOptions());
     }
 
     @Test
-    public void shouldAllowLZMA2OptionsForLZMA2() {
+    public void testShouldAllowLZMA2OptionsForLZMA2() {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, new LZMA2Options()).getOptions());
     }
 
     @Test
-    public void shouldAllowNullOptions() {
+    public void testShouldAllowNullOptions() {
         assertNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, null).getOptions());
     }
 
     @Test
-    public void shouldAllowNumberForBzip2() {
+    public void testShouldAllowNumberForBzip2() {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.BZIP2, 42).getOptions());
     }
 
     @Test
-    public void shouldAllowNumberForDeflate() {
+    public void testShouldAllowNumberForDeflate() {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.DEFLATE, 42).getOptions());
     }
 
     @Test
-    public void shouldAllowNumberForLZMA() {
+    public void testShouldAllowNumberForLZMA() {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA, 42).getOptions());
     }
 
     @Test
-    public void shouldAllowNumberForLZMA2() {
+    public void testShouldAllowNumberForLZMA2() {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 42).getOptions());
     }
 
     @Test
-    public void shouldNotAllowStringOptionsForLZMA() {
+    public void testShouldNotAllowStringOptionsForLZMA() {
         assertThrows(IllegalArgumentException.class, () -> new SevenZMethodConfiguration(SevenZMethod.LZMA, ""));
     }
 
     @Test
-    public void shouldNotAllowStringOptionsForLZMA2() {
+    public void testShouldNotAllowStringOptionsForLZMA2() {
         assertThrows(IllegalArgumentException.class, () -> new SevenZMethodConfiguration(SevenZMethod.LZMA2, ""));
     }
 

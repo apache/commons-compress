@@ -27,11 +27,9 @@ public class ArchiveException extends Exception {
     private static final long serialVersionUID = 2772690708123267100L;
 
     /**
-     * Constructs a new exception with the specified detail message. The cause
-     * is not initialized.
+     * Constructs a new exception with the specified detail message. The cause is not initialized.
      *
-     * @param message
-     *            the detail message
+     * @param message the detail message
      */
     public ArchiveException(final String message) {
         super(message);
@@ -40,10 +38,8 @@ public class ArchiveException extends Exception {
     /**
      * Constructs a new exception with the specified detail message and cause.
      *
-     * @param message
-     *            the detail message
-     * @param cause
-     *            the cause
+     * @param message the detail message
+     * @param cause   the cause
      */
     public ArchiveException(final String message, final Exception cause) {
         super(message);

@@ -27,7 +27,8 @@ import org.apache.commons.compress.utils.ByteUtils;
 /**
  * Various utilities for dump archives.
  */
-class DumpArchiveUtil {
+final class DumpArchiveUtil {
+
     /**
      * Calculate checksum for buffer.
      *
@@ -41,68 +42,66 @@ class DumpArchiveUtil {
             calc += DumpArchiveUtil.convert32(buffer, 4 * i);
         }
 
-        return DumpArchiveConstants.CHECKSUM -
-        (calc - DumpArchiveUtil.convert32(buffer, 28));
+        return DumpArchiveConstants.CHECKSUM - (calc - DumpArchiveUtil.convert32(buffer, 28));
     }
 
     /**
-     * Read 2-byte integer from buffer.
+     * Reads 2-byte integer from buffer.
      *
-     * @param buffer
-     * @param offset
-     * @return the 2-byte entry as an int
+     * @param buffer The source buffer.
+     * @param offset Where to start reading.
+     * @return the 2-byte entry as an int.
      */
-    public static final int convert16(final byte[] buffer, final int offset) {
+    public static int convert16(final byte[] buffer, final int offset) {
         return (int) ByteUtils.fromLittleEndian(buffer, offset, 2);
     }
 
     /**
-     * Read 4-byte integer from buffer.
+     * Reads 4-byte integer from buffer.
      *
-     * @param buffer
-     * @param offset
-     * @return the 4-byte entry as an int
+     * @param buffer The source buffer.
+     * @param offset Where to start reading.
+     * @return the 4-byte entry as an int.
      */
-    public static final int convert32(final byte[] buffer, final int offset) {
+    public static int convert32(final byte[] buffer, final int offset) {
         return (int) ByteUtils.fromLittleEndian(buffer, offset, 4);
     }
 
     /**
-     * Read 8-byte integer from buffer.
+     * Reads 8-byte integer from buffer.
      *
-     * @param buffer
-     * @param offset
-     * @return the 8-byte entry as a long
+     * @param buffer The source buffer.
+     * @param offset Where to start reading.
+     * @return the 8-byte entry as a long.
      */
-    public static final long convert64(final byte[] buffer, final int offset) {
+    public static long convert64(final byte[] buffer, final int offset) {
         return ByteUtils.fromLittleEndian(buffer, offset, 8);
     }
 
     /**
      * Decodes a byte array to a string.
      */
-    static String decode(final ZipEncoding encoding, final byte[] b, final int offset, final int len)
-        throws IOException {
+    static String decode(final ZipEncoding encoding, final byte[] b, final int offset, final int len) throws IOException {
         return encoding.decode(Arrays.copyOfRange(b, offset, offset + len));
     }
 
     /**
      * Gets the ino associated with this buffer.
      *
-     * @param buffer
+     * @param buffer The source buffer.
      * @return the ino associated with this buffer.
      */
-    public static final int getIno(final byte[] buffer) {
+    public static int getIno(final byte[] buffer) {
         return convert32(buffer, 20);
     }
 
     /**
      * Verifies that the buffer contains a tape segment header.
      *
-     * @param buffer
+     * @param buffer The source buffer.
      * @return Whether the buffer contains a tape segment header.
      */
-    public static final boolean verify(final byte[] buffer) {
+    public static boolean verify(final byte[] buffer) {
         // verify magic. for now only accept NFS_MAGIC.
         final int magic = convert32(buffer, 24);
 
@@ -110,7 +109,7 @@ class DumpArchiveUtil {
             return false;
         }
 
-        //verify checksum...
+        // verify checksum...
         final int checksum = convert32(buffer, 28);
 
         return checksum == calculateChecksum(buffer);

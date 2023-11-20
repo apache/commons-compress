@@ -29,11 +29,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class SegmentUtilsTest {
 
-    private static class MultipleMatches implements IMatcher {
+    private static final class MultipleMatches implements IMatcher {
 
         private final int divisor;
 
-        public MultipleMatches(final int divisor) {
+        MultipleMatches(final int divisor) {
             this.divisor = divisor;
         }
 
@@ -48,30 +48,14 @@ public class SegmentUtilsTest {
     public static final IMatcher five = new MultipleMatches(5);
 
     static Stream<Arguments> countArgs() {
-        return Stream.of(
-                Arguments.of("()V", 0),
-                Arguments.of("(D)V", 1),
-                Arguments.of("([D)V", 1),
-                Arguments.of("([[D)V", 1),
-                Arguments.of("(DD)V", 2),
-                Arguments.of("(DDD)V", 3),
-                Arguments.of("(Lblah/blah;D)V", 2),
-                Arguments.of("(Lblah/blah;DLbLah;)V", 3)
-        );
+        return Stream.of(Arguments.of("()V", 0), Arguments.of("(D)V", 1), Arguments.of("([D)V", 1), Arguments.of("([[D)V", 1), Arguments.of("(DD)V", 2),
+                Arguments.of("(DDD)V", 3), Arguments.of("(Lblah/blah;D)V", 2), Arguments.of("(Lblah/blah;DLbLah;)V", 3));
     }
 
     static Stream<Arguments> countInvokeInterfaceArgs() {
-        return Stream.of(
-                Arguments.of("(Z)V", 1),
-                Arguments.of("(D)V", 2),
-                Arguments.of("(J)V", 2),
-                Arguments.of("([D)V", 1),
-                Arguments.of("([[D)V", 1),
-                Arguments.of("(DD)V", 4),
-                Arguments.of("(Lblah/blah;D)V", 3),
-                Arguments.of("(Lblah/blah;DLbLah;)V", 4),
-                Arguments.of("([Lblah/blah;DLbLah;)V", 4)
-        );
+        return Stream.of(Arguments.of("(Z)V", 1), Arguments.of("(D)V", 2), Arguments.of("(J)V", 2), Arguments.of("([D)V", 1), Arguments.of("([[D)V", 1),
+                Arguments.of("(DD)V", 4), Arguments.of("(Lblah/blah;D)V", 3), Arguments.of("(Lblah/blah;DLbLah;)V", 4),
+                Arguments.of("([Lblah/blah;DLbLah;)V", 4));
     }
 
     @ParameterizedTest
@@ -89,15 +73,11 @@ public class SegmentUtilsTest {
     @Test
     public void testMatches() {
         final long[] oneToTen = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        assertEquals(6, SegmentUtils.countMatches(new long[][] { oneToTen,
-                new long[] { 5, 6, 7 } }, even));
-        assertEquals(5, SegmentUtils.countMatches(new long[][] { oneToTen },
-                even));
+        assertEquals(6, SegmentUtils.countMatches(new long[][] { oneToTen, new long[] { 5, 6, 7 } }, even));
+        assertEquals(5, SegmentUtils.countMatches(new long[][] { oneToTen }, even));
         assertEquals(5, SegmentUtils.countMatches(oneToTen, even));
-        assertEquals(3, SegmentUtils.countMatches(new long[][] { oneToTen,
-                new long[] { 5, 6, 7 } }, five));
-        assertEquals(2, SegmentUtils.countMatches(new long[][] { oneToTen },
-                five));
+        assertEquals(3, SegmentUtils.countMatches(new long[][] { oneToTen, new long[] { 5, 6, 7 } }, five));
+        assertEquals(2, SegmentUtils.countMatches(new long[][] { oneToTen }, five));
         assertEquals(2, SegmentUtils.countMatches(oneToTen, five));
     }
 }

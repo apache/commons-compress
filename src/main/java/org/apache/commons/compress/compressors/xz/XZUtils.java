@@ -25,7 +25,8 @@ import org.apache.commons.compress.compressors.FileNameUtil;
 import org.apache.commons.compress.utils.OsgiUtils;
 
 /**
- * Utility code for the xz compression format.
+ * Utility code for the XZ compression format.
+ *
  * @ThreadSafe
  * @since 1.4
  */
@@ -40,12 +41,11 @@ public class XZUtils {
     /**
      * XZ Header Magic Bytes begin a XZ file.
      *
-     * <p>This is a copy of {@code org.tukaani.xz.XZ.HEADER_MAGIC} in
-     * XZ for Java version 1.5.</p>
+     * <p>
+     * This is a copy of {@code org.tukaani.xz.XZ.HEADER_MAGIC} in XZ for Java version 1.5.
+     * </p>
      */
-    private static final byte[] HEADER_MAGIC = {
-        (byte) 0xFD, '7', 'z', 'X', 'Z', '\0'
-    };
+    private static final byte[] HEADER_MAGIC = { (byte) 0xFD, '7', 'z', 'X', 'Z', '\0' };
 
     private static volatile CachedAvailability cachedXZAvailability;
 
@@ -65,35 +65,59 @@ public class XZUtils {
     }
 
     /**
-     * Maps the given file name to the name that the file should have after
-     * compression with xz. Common file types with custom suffixes for
-     * compressed versions are automatically detected and correctly mapped.
-     * For example the name "package.tar" is mapped to "package.txz". If no
-     * custom mapping is applicable, then the default ".xz" suffix is appended
-     * to the file name.
+     * Maps the given file name to the name that the file should have after compression with xz. Common file types with custom suffixes for compressed versions
+     * are automatically detected and correctly mapped. For example the name "package.tar" is mapped to "package.txz". If no custom mapping is applicable, then
+     * the default ".xz" suffix is appended to the file name.
      *
      * @param fileName name of a file
      * @return name of the corresponding compressed file
+     * @deprecated Use {@link #getCompressedFileName(String)}.
      */
+    @Deprecated
     public static String getCompressedFilename(final String fileName) {
-        return fileNameUtil.getCompressedFilename(fileName);
+        return fileNameUtil.getCompressedFileName(fileName);
     }
 
     /**
-     * Maps the given name of a xz-compressed file to the name that the
-     * file should have after uncompression. Commonly used file type specific
-     * suffixes like ".txz" are automatically detected and
-     * correctly mapped. For example the name "package.txz" is mapped to
-     * "package.tar". And any file names with the generic ".xz" suffix
-     * (or any other generic xz suffix) is mapped to a name without that
-     * suffix. If no xz suffix is detected, then the file name is returned
-     * unmapped.
+     * Maps the given file name to the name that the file should have after compression with xz. Common file types with custom suffixes for compressed versions
+     * are automatically detected and correctly mapped. For example the name "package.tar" is mapped to "package.txz". If no custom mapping is applicable, then
+     * the default ".xz" suffix is appended to the file name.
+     *
+     * @param fileName name of a file
+     * @return name of the corresponding compressed file
+     * @since 1.25.0
+     */
+    public static String getCompressedFileName(final String fileName) {
+        return fileNameUtil.getCompressedFileName(fileName);
+    }
+
+    /**
+     * Maps the given name of a xz-compressed file to the name that the file should have after uncompression. Commonly used file type specific suffixes like
+     * ".txz" are automatically detected and correctly mapped. For example the name "package.txz" is mapped to "package.tar". And any file names with the
+     * generic ".xz" suffix (or any other generic xz suffix) is mapped to a name without that suffix. If no xz suffix is detected, then the file name is
+     * returned unmapped.
      *
      * @param fileName name of a file
      * @return name of the corresponding uncompressed file
+     * @deprecated Use {@link #getUncompressedFileName(String)}.
      */
+    @Deprecated
     public static String getUncompressedFilename(final String fileName) {
-        return fileNameUtil.getUncompressedFilename(fileName);
+        return fileNameUtil.getUncompressedFileName(fileName);
+    }
+
+    /**
+     * Maps the given name of a xz-compressed file to the name that the file should have after uncompression. Commonly used file type specific suffixes like
+     * ".txz" are automatically detected and correctly mapped. For example the name "package.txz" is mapped to "package.tar". And any file names with the
+     * generic ".xz" suffix (or any other generic xz suffix) is mapped to a name without that suffix. If no xz suffix is detected, then the file name is
+     * returned unmapped.
+     *
+     * @param fileName name of a file
+     * @return name of the corresponding uncompressed file
+     * @since 1.25.0
+     */
+    public static String getUncompressedFileName(final String fileName) {
+        return fileNameUtil.getUncompressedFileName(fileName);
     }
 
     private static boolean internalIsXZCompressionAvailable() {
@@ -109,15 +133,28 @@ public class XZUtils {
      * Detects common xz suffixes in the given file name.
      *
      * @param fileName name of a file
-     * @return {@code true} if the file name has a common xz suffix,
-     *         {@code false} otherwise
+     * @return {@code true} if the file name has a common xz suffix, {@code false} otherwise
+     * @deprecated Use {@link #isCompressedFileName(String)}.
      */
+    @Deprecated
     public static boolean isCompressedFilename(final String fileName) {
-        return fileNameUtil.isCompressedFilename(fileName);
+        return fileNameUtil.isCompressedFileName(fileName);
+    }
+
+    /**
+     * Detects common xz suffixes in the given file name.
+     *
+     * @param fileName name of a file
+     * @return {@code true} if the file name has a common xz suffix, {@code false} otherwise
+     * @since 1.25.0
+     */
+    public static boolean isCompressedFileName(final String fileName) {
+        return fileNameUtil.isCompressedFileName(fileName);
     }
 
     /**
      * Are the classes required to support XZ compression available?
+     *
      * @since 1.5
      * @return true if the classes required to support XZ compression are available
      */
@@ -132,13 +169,13 @@ public class XZUtils {
     /**
      * Checks if the signature matches what is expected for a .xz file.
      *
-     * <p>This is more or less a copy of the version found in {@link
-     * XZCompressorInputStream} but doesn't depend on the presence of
-     * XZ for Java.</p>
+     * <p>
+     * This is more or less a copy of the version found in {@link XZCompressorInputStream} but doesn't depend on the presence of XZ for Java.
+     * </p>
      *
-     * @param   signature     the bytes to check
-     * @param   length        the number of bytes to check
-     * @return  true if signature matches the .xz magic bytes, false otherwise
+     * @param signature the bytes to check
+     * @param length    the number of bytes to check
+     * @return true if signature matches the .xz magic bytes, false otherwise
      * @since 1.9
      */
     public static boolean matches(final byte[] signature, final int length) {
@@ -158,7 +195,10 @@ public class XZUtils {
     /**
      * Whether to cache the result of the XZ for Java check.
      *
-     * <p>This defaults to {@code false} in an OSGi environment and {@code true} otherwise.</p>
+     * <p>
+     * This defaults to {@code false} in an OSGi environment and {@code true} otherwise.
+     * </p>
+     *
      * @param doCache whether to cache the result
      * @since 1.9
      */
@@ -168,7 +208,7 @@ public class XZUtils {
         } else if (cachedXZAvailability == CachedAvailability.DONT_CACHE) {
             final boolean hasXz = internalIsXZCompressionAvailable();
             cachedXZAvailability = hasXz ? CachedAvailability.CACHED_AVAILABLE // NOSONAR
-                : CachedAvailability.CACHED_UNAVAILABLE;
+                    : CachedAvailability.CACHED_UNAVAILABLE;
         }
     }
 

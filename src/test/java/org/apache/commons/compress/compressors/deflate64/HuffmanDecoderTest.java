@@ -27,9 +27,9 @@ import org.junit.jupiter.api.Test;
 
 public class HuffmanDecoderTest {
     @Test
-    public void decodeFixedHuffmanBlockWithMemoryLookup() throws Exception {
+    public void testDecodeFixedHuffmanBlockWithMemoryLookup() throws Exception {
         final byte[] data = {
-                //|--- binary filling ---|76543210
+                // |--- binary filling ---|76543210
                 0b11111111111111111111111111110011, // final block + fixed huffman + H
                 0b00000000000000000000000001001000, // H + e
                 0b11111111111111111111111111001101, // e + l
@@ -57,9 +57,9 @@ public class HuffmanDecoderTest {
     }
 
     @Test
-    public void decodeFixedHuffmanBlockWithMemoryLookupInExactBuffer() throws Exception {
+    public void testDecodeFixedHuffmanBlockWithMemoryLookupInExactBuffer() throws Exception {
         final byte[] data = {
-                //|--- binary filling ---|76543210
+                // |--- binary filling ---|76543210
                 0b11111111111111111111111111110011, // final block + fixed huffman + H
                 0b00000000000000000000000001001000, // H + e
                 0b11111111111111111111111111001101, // e + l
@@ -91,9 +91,9 @@ public class HuffmanDecoderTest {
     }
 
     @Test
-    public void decodeFixedHuffmanBlockWithMemoryLookupInSmallBuffer() throws Exception {
+    public void testDecodeFixedHuffmanBlockWithMemoryLookupInSmallBuffer() throws Exception {
         final byte[] data = {
-                //|--- binary filling ---|76543210
+                // |--- binary filling ---|76543210
                 0b11111111111111111111111111110011, // final block + fixed huffman + H
                 0b00000000000000000000000001001000, // H + e
                 0b11111111111111111111111111001101, // e + l
@@ -126,9 +126,9 @@ public class HuffmanDecoderTest {
     }
 
     @Test
-    public void decodeSimpleFixedHuffmanBlock() throws Exception {
+    public void testDecodeSimpleFixedHuffmanBlock() throws Exception {
         final byte[] data = {
-                //|--- binary filling ---|76543210
+                // |--- binary filling ---|76543210
                 0b11111111111111111111111111110011, // final block + fixed huffman + H
                 0b00000000000000000000000001001000, // H + e
                 0b11111111111111111111111111001101, // e + l
@@ -152,11 +152,10 @@ public class HuffmanDecoderTest {
         assertEquals("Hello World", new String(result, 0, len));
     }
 
-
     @Test
-    public void decodeSimpleFixedHuffmanBlockToSmallBuffer() throws Exception {
+    public void testDecodeSimpleFixedHuffmanBlockToSmallBuffer() throws Exception {
         final byte[] data = {
-                //|--- binary filling ---|76543210
+                // |--- binary filling ---|76543210
                 0b11111111111111111111111111110011, // final block + fixed huffman + H
                 0b00000000000000000000000001001000, // H + e
                 0b11111111111111111111111111001101, // e + l
@@ -184,12 +183,10 @@ public class HuffmanDecoderTest {
     }
 
     @Test
-    public void decodeUncompressedBlock() throws Exception {
-        final byte[] data = {
-                0b1, // end of block + no compression mode
+    public void testDecodeUncompressedBlock() throws Exception {
+        final byte[] data = { 0b1, // end of block + no compression mode
                 11, 0, -12, -1, // len & ~len
-                'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'
-        };
+                'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
 
         final HuffmanDecoder decoder = new HuffmanDecoder(new ByteArrayInputStream(data));
         final byte[] result = new byte[100];
@@ -200,12 +197,10 @@ public class HuffmanDecoderTest {
     }
 
     @Test
-    public void decodeUncompressedBlockWithInvalidLenNLenValue() throws Exception {
-        final byte[] data = {
-                0b1, // end of block + no compression mode
+    public void testDecodeUncompressedBlockWithInvalidLenNLenValue() throws Exception {
+        final byte[] data = { 0b1, // end of block + no compression mode
                 11, 0, -12, -2, // len & ~len
-                'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'
-        };
+                'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
 
         final HuffmanDecoder decoder = new HuffmanDecoder(new ByteArrayInputStream(data));
         final byte[] result = new byte[100];

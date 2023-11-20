@@ -26,7 +26,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -36,18 +36,15 @@ public class XXHash32Test {
 
     public static Stream<Arguments> factory() {
         return Stream.of(
-            // reference checksums created with xxh32sum
-            Arguments.of("bla.tar", "fbb5c8d1"),
-            Arguments.of("bla.tar.xz", "4106a208"),
-            Arguments.of("8.posix.tar.gz", "9fce116a")
-        );
+                // reference checksums created with xxh32sum
+                Arguments.of("bla.tar", "fbb5c8d1"), Arguments.of("bla.tar.xz", "4106a208"), Arguments.of("8.posix.tar.gz", "9fce116a"));
     }
 
     @ParameterizedTest
     @MethodSource("factory")
     public void verifyChecksum(final String fileName, final String expectedChecksum) throws IOException {
         final XXHash32 h = new XXHash32();
-        final File file = AbstractTestCase.getFile(fileName);
+        final File file = AbstractTest.getFile(fileName);
         try (InputStream s = Files.newInputStream(file.toPath())) {
             final byte[] b = IOUtils.toByteArray(s);
             h.update(b, 0, b.length);

@@ -98,61 +98,61 @@ public class CpBands extends BandSet {
     }
 
     private void addIndices() {
-		for (final Set<? extends ConstantPoolEntry> set : Arrays.asList(cp_Utf8, cp_Int, cp_Float, cp_Long, cp_Double,
-				cp_String, cp_Class, cp_Signature, cp_Descr, cp_Field, cp_Method, cp_Imethod)) {
-			int j = 0;
-			for (final ConstantPoolEntry entry : set) {
-				entry.setIndex(j);
-				j++;
-			}
-		}
-		final Map<CPClass, Integer> classNameToIndex = new HashMap<>();
-		cp_Field.forEach(mOrF -> {
-			final CPClass cpClassName = mOrF.getClassName();
-			final Integer index = classNameToIndex.get(cpClassName);
-			if (index == null) {
-				classNameToIndex.put(cpClassName, Integer.valueOf(1));
-				mOrF.setIndexInClass(0);
-			} else {
-				final int theIndex = index.intValue();
-				mOrF.setIndexInClass(theIndex);
-				classNameToIndex.put(cpClassName, Integer.valueOf(theIndex + 1));
-			}
-		});
-		classNameToIndex.clear();
-		final Map<CPClass, Integer> classNameToConstructorIndex = new HashMap<>();
-		cp_Method.forEach(mOrF -> {
-			final CPClass cpClassName = mOrF.getClassName();
-			final Integer index = classNameToIndex.get(cpClassName);
-			if (index == null) {
-				classNameToIndex.put(cpClassName, Integer.valueOf(1));
-				mOrF.setIndexInClass(0);
-			} else {
-				final int theIndex = index.intValue();
-				mOrF.setIndexInClass(theIndex);
-				classNameToIndex.put(cpClassName, Integer.valueOf(theIndex + 1));
-			}
-			if (mOrF.getDesc().getName().equals("<init>")) {
-				final Integer constructorIndex = classNameToConstructorIndex.get(cpClassName);
-				if (constructorIndex == null) {
-					classNameToConstructorIndex.put(cpClassName, Integer.valueOf(1));
-					mOrF.setIndexInClassForConstructor(0);
-				} else {
-					final int theIndex = constructorIndex.intValue();
-					mOrF.setIndexInClassForConstructor(theIndex);
-					classNameToConstructorIndex.put(cpClassName, Integer.valueOf(theIndex + 1));
-				}
-			}
-		});
-	}
+        for (final Set<? extends ConstantPoolEntry> set : Arrays.asList(cp_Utf8, cp_Int, cp_Float, cp_Long, cp_Double, cp_String, cp_Class, cp_Signature,
+                cp_Descr, cp_Field, cp_Method, cp_Imethod)) {
+            int j = 0;
+            for (final ConstantPoolEntry entry : set) {
+                entry.setIndex(j);
+                j++;
+            }
+        }
+        final Map<CPClass, Integer> classNameToIndex = new HashMap<>();
+        cp_Field.forEach(mOrF -> {
+            final CPClass cpClassName = mOrF.getClassName();
+            final Integer index = classNameToIndex.get(cpClassName);
+            if (index == null) {
+                classNameToIndex.put(cpClassName, Integer.valueOf(1));
+                mOrF.setIndexInClass(0);
+            } else {
+                final int theIndex = index.intValue();
+                mOrF.setIndexInClass(theIndex);
+                classNameToIndex.put(cpClassName, Integer.valueOf(theIndex + 1));
+            }
+        });
+        classNameToIndex.clear();
+        final Map<CPClass, Integer> classNameToConstructorIndex = new HashMap<>();
+        cp_Method.forEach(mOrF -> {
+            final CPClass cpClassName = mOrF.getClassName();
+            final Integer index = classNameToIndex.get(cpClassName);
+            if (index == null) {
+                classNameToIndex.put(cpClassName, Integer.valueOf(1));
+                mOrF.setIndexInClass(0);
+            } else {
+                final int theIndex = index.intValue();
+                mOrF.setIndexInClass(theIndex);
+                classNameToIndex.put(cpClassName, Integer.valueOf(theIndex + 1));
+            }
+            if (mOrF.getDesc().getName().equals("<init>")) {
+                final Integer constructorIndex = classNameToConstructorIndex.get(cpClassName);
+                if (constructorIndex == null) {
+                    classNameToConstructorIndex.put(cpClassName, Integer.valueOf(1));
+                    mOrF.setIndexInClassForConstructor(0);
+                } else {
+                    final int theIndex = constructorIndex.intValue();
+                    mOrF.setIndexInClassForConstructor(theIndex);
+                    classNameToConstructorIndex.put(cpClassName, Integer.valueOf(theIndex + 1));
+                }
+            }
+        });
+    }
 
     public boolean existsCpClass(final String className) {
         return stringsToCpClass.containsKey(className);
     }
 
     /**
-     * All input classes for the segment have now been read in, so this method is called so that this class can
-     * calculate/complete anything it could not do while classes were being read.
+     * All input classes for the segment have now been read in, so this method is called so that this class can calculate/complete anything it could not do
+     * while classes were being read.
      */
     public void finaliseBands() {
         addCPUtf8("");
@@ -272,7 +272,7 @@ public class CpBands extends BandSet {
         return getCPMethod(getCPClass(owner), name, desc);
     }
 
-	public CPNameAndType getCPNameAndType(final String name, final String signature) {
+    public CPNameAndType getCPNameAndType(final String name, final String signature) {
         final String descr = name + ":" + signature;
         CPNameAndType nameAndType = stringsToCpNameAndType.get(descr);
         if (nameAndType == null) {
@@ -301,8 +301,7 @@ public class CpBands extends BandSet {
                         final StringBuilder className = new StringBuilder();
                         for (int j = i + 1; j < chars.length; j++) {
                             final char c = chars[j];
-                            if (!Character.isLetter(c) && !Character.isDigit(c) && (c != '/') && (c != '$')
-                                && (c != '_')) {
+                            if (!Character.isLetter(c) && !Character.isDigit(c) && c != '/' && c != '$' && c != '_') {
                                 classes.add(className.toString());
                                 i = j - 1;
                                 break;
@@ -370,7 +369,7 @@ public class CpBands extends BandSet {
 
     private void removeCpUtf8(final String string) {
         final CPUTF8 utf8 = stringsToCpUtf8.get(string);
-        if ((utf8 != null) && (stringsToCpClass.get(string) == null)) { // don't remove if strings are also in cpclass
+        if (utf8 != null && stringsToCpClass.get(string) == null) { // don't remove if strings are also in cpclass
             stringsToCpUtf8.remove(string);
             cp_Utf8.remove(utf8);
         }
@@ -486,8 +485,7 @@ public class CpBands extends BandSet {
         PackingUtils.log("Wrote " + encodedBand.length + " bytes from cp_Long_lo[" + loBits.length + "]");
     }
 
-    private void writeCpMethodOrField(final Set<CPMethodOrField> cp, final OutputStream out, final String name)
-        throws IOException, Pack200Exception {
+    private void writeCpMethodOrField(final Set<CPMethodOrField> cp, final OutputStream out, final String name) throws IOException, Pack200Exception {
         PackingUtils.log("Writing " + cp.size() + " Method and Field entries...");
         final int[] cp_methodOrField_class = new int[cp.size()];
         final int[] cp_methodOrField_desc = new int[cp.size()];
@@ -499,13 +497,11 @@ public class CpBands extends BandSet {
         }
         byte[] encodedBand = encodeBandInt(name + "_class", cp_methodOrField_class, Codec.DELTA5);
         out.write(encodedBand);
-        PackingUtils.log(
-            "Wrote " + encodedBand.length + " bytes from " + name + "_class[" + cp_methodOrField_class.length + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + name + "_class[" + cp_methodOrField_class.length + "]");
 
         encodedBand = encodeBandInt(name + "_desc", cp_methodOrField_desc, Codec.UDELTA5);
         out.write(encodedBand);
-        PackingUtils
-            .log("Wrote " + encodedBand.length + " bytes from " + name + "_desc[" + cp_methodOrField_desc.length + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from " + name + "_desc[" + cp_methodOrField_desc.length + "]");
     }
 
     private void writeCpSignature(final OutputStream out) throws IOException, Pack200Exception {
@@ -527,8 +523,7 @@ public class CpBands extends BandSet {
 
         encodedBand = encodeBandInt("cpSignatureClasses", cpSignatureClasses, Codec.UDELTA5);
         out.write(encodedBand);
-        PackingUtils
-            .log("Wrote " + encodedBand.length + " bytes from cpSignatureClasses[" + cpSignatureClasses.length + "]");
+        PackingUtils.log("Wrote " + encodedBand.length + " bytes from cpSignatureClasses[" + cpSignatureClasses.length + "]");
     }
 
     private void writeCpString(final OutputStream out) throws IOException, Pack200Exception {
@@ -609,8 +604,7 @@ public class CpBands extends BandSet {
         for (int i = 0; i < cpUtf8BigChars.length; i++) {
             encodedBand = encodeBandInt("cpUtf8BigChars " + i, cpUtf8BigChars[i], Codec.DELTA5);
             out.write(encodedBand);
-            PackingUtils.log("Wrote " + encodedBand.length + " bytes from cpUtf8BigChars" + i + "["
-                + cpUtf8BigChars[i].length + "]");
+            PackingUtils.log("Wrote " + encodedBand.length + " bytes from cpUtf8BigChars" + i + "[" + cpUtf8BigChars[i].length + "]");
         }
     }
 

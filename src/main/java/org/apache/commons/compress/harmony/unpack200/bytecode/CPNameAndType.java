@@ -42,8 +42,8 @@ public class CPNameAndType extends ConstantPoolEntry {
     /**
      * Create a new CPNameAndType
      *
-     * @param name TODO
-     * @param descriptor TODO
+     * @param name        TODO
+     * @param descriptor  TODO
      * @param globalIndex - index in CpBands
      * @throws NullPointerException if name or descriptor is null
      */
@@ -54,8 +54,7 @@ public class CPNameAndType extends ConstantPoolEntry {
     }
 
     /*
-     * field_info { u2 access_flags; u2 name_index; u2 descriptor_index; u2 attributes_count; attribute_info
-     * attributes[attributes_count]; }
+     * field_info { u2 access_flags; u2 name_index; u2 descriptor_index; u2 attributes_count; attribute_info attributes[attributes_count]; }
      */
 
     @Override
@@ -90,8 +89,9 @@ public class CPNameAndType extends ConstantPoolEntry {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] {name, descriptor};
+        return new ClassFileEntry[] { name, descriptor };
     }
+
     @Override
     public int hashCode() {
         if (!hashCodeComputed) {
@@ -101,8 +101,8 @@ public class CPNameAndType extends ConstantPoolEntry {
     }
 
     /**
-     * Answers the invokeinterface count argument when the receiver is treated as an invokeinterface target. This value
-     * is not meaningful if the receiver is not an invokeinterface target.
+     * Answers the invokeinterface count argument when the receiver is treated as an invokeinterface target. This value is not meaningful if the receiver is not
+     * an invokeinterface target.
      *
      * @return count
      */

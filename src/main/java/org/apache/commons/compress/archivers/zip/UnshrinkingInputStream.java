@@ -26,10 +26,11 @@ import org.apache.commons.compress.compressors.lzw.LZWInputStream;
 
 /**
  * Input stream that decompresses ZIP method 1 (unshrinking). A variation of the LZW algorithm, with some twists.
+ *
  * @NotThreadSafe
  * @since 1.7
  */
-class UnshrinkingInputStream extends LZWInputStream {
+final class UnshrinkingInputStream extends LZWInputStream {
     private static final int MAX_CODE_SIZE = 13;
     private static final int MAX_TABLE_SIZE = 1 << MAX_CODE_SIZE;
     private final boolean[] isUsed;
@@ -39,12 +40,12 @@ class UnshrinkingInputStream extends LZWInputStream {
      *
      * @param inputStream
      */
-    public UnshrinkingInputStream(final InputStream inputStream) {
+    UnshrinkingInputStream(final InputStream inputStream) {
         super(inputStream, ByteOrder.LITTLE_ENDIAN);
         setClearCode(DEFAULT_CODE_SIZE);
         initializeTables(MAX_CODE_SIZE);
         isUsed = new boolean[getPrefixesLength()];
-        for (int i = 0; i < (1 << 8); i++) {
+        for (int i = 0; i < 1 << 8; i++) {
             isUsed[i] = true;
         }
         setTableSize(getClearCode() + 1);
@@ -53,7 +54,7 @@ class UnshrinkingInputStream extends LZWInputStream {
     @Override
     protected int addEntry(final int previousCode, final byte character) throws IOException {
         int tableSize = getTableSize();
-        while ((tableSize < MAX_TABLE_SIZE) && isUsed[tableSize]) {
+        while (tableSize < MAX_TABLE_SIZE && isUsed[tableSize]) {
             tableSize++;
         }
         setTableSize(tableSize);
@@ -67,16 +68,16 @@ class UnshrinkingInputStream extends LZWInputStream {
     @Override
     protected int decompressNextSymbol() throws IOException {
         //
-        //                   table entry    table entry
-        //                  _____________   _____
-        //    table entry  /             \ /     \
-        //    ____________/               \       \
-        //   /           / \             / \       \
-        //  +---+---+---+---+---+---+---+---+---+---+
-        //  | . | . | . | . | . | . | . | . | . | . |
-        //  +---+---+---+---+---+---+---+---+---+---+
-        //  |<--------->|<------------->|<----->|<->|
-        //     symbol        symbol      symbol  symbol
+        // table entry table entry
+        // _____________ _____
+        // table entry / \ / \
+        // ____________/ \ \
+        // / / \ / \ \
+        // +---+---+---+---+---+---+---+---+---+---+
+        // | . | . | . | . | . | . | . | . | . | . |
+        // +---+---+---+---+---+---+---+---+---+---+
+        // |<--------->|<------------->|<----->|<->|
+        // symbol symbol symbol symbol
         //
         final int code = readNextCode();
         if (code < 0) {

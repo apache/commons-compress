@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  */
-public class ClassBandsTest extends AbstractBandsTestCase {
+public class ClassBandsTest extends AbstractBandsTest {
 
     public class MockCpBands extends CpBands {
 
@@ -78,13 +78,15 @@ public class ClassBandsTest extends AbstractBandsTestCase {
             return cpUTF8;
         }
     }
-    public class MockSegment extends AbstractBandsTestCase.MockSegment {
+
+    public class MockSegment extends AbstractBandsTest.MockSegment {
 
         @Override
         protected CpBands getCpBands() {
             return new MockCpBands(this);
         }
     }
+
     private String[] cpClasses;
 
     private String[] cpDescriptor;
@@ -93,8 +95,7 @@ public class ClassBandsTest extends AbstractBandsTestCase {
 
     ClassBands classBands = new ClassBands(new MockSegment());
 
-    private byte[] encodeBandInt(final int[] data, final BHSDCodec codec)
-            throws IOException, Pack200Exception {
+    private byte[] encodeBandInt(final int[] data, final BHSDCodec codec) throws IOException, Pack200Exception {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (int i = 0; i < data.length; i++) {
             baos.write(codec.encode(data[i], i == 0 ? 0 : data[i - 1]));
@@ -104,25 +105,19 @@ public class ClassBandsTest extends AbstractBandsTestCase {
 
     @Test
     public void testSimple() throws IOException, Pack200Exception {
-        cpClasses = new String[] { "Class1", "Class2", "Class3", "Interface1",
-                "Interface2" };
+        cpClasses = new String[] { "Class1", "Class2", "Class3", "Interface1", "Interface2" };
         cpDescriptor = new String[0];
         cpUTF8 = new String[0];
         final byte[] classThis = Codec.DELTA5.encode(1, 0);
         final byte[] classSuper = Codec.DELTA5.encode(2, 0);
         final byte[] classInterfaceCount = Codec.DELTA5.encode(2, 0);
-        final byte[] classInterfaceRef1 = encodeBandInt(
-                new int[] { 3, 4 }, Codec.DELTA5);
+        final byte[] classInterfaceRef1 = encodeBandInt(new int[] { 3, 4 }, Codec.DELTA5);
         final byte[] classFieldCount = Codec.DELTA5.encode(0, 0);
         final byte[] classMethodCount = Codec.DELTA5.encode(0, 0);
         final byte[] classFlags = Codec.UNSIGNED5.encode(0, 0);
-        final byte[][] allArrays = { classThis, classSuper,
-                classInterfaceCount, classInterfaceRef1, classFieldCount,
-                classMethodCount, classFlags };
-        final int total = classThis.length + classSuper.length
-                + classInterfaceCount.length + classInterfaceRef1.length
-                + classFieldCount.length + classMethodCount.length
-                + classFlags.length;
+        final byte[][] allArrays = { classThis, classSuper, classInterfaceCount, classInterfaceRef1, classFieldCount, classMethodCount, classFlags };
+        final int total = classThis.length + classSuper.length + classInterfaceCount.length + classInterfaceRef1.length + classFieldCount.length
+                + classMethodCount.length + classFlags.length;
         final byte[] bytes = new byte[total];
         int index = 0;
         for (final byte[] array : allArrays) {
@@ -152,14 +147,10 @@ public class ClassBandsTest extends AbstractBandsTestCase {
         final byte[] classInterfaceCount = Codec.DELTA5.encode(0, 0);
         final byte[] classFieldCount = Codec.DELTA5.encode(0, 0);
         final byte[] classMethodCount = Codec.DELTA5.encode(3, 0);
-        final byte[] methodDescr = encodeBandInt(new int[] { 0, 1, 2 },
-                Codec.MDELTA5);
-        final byte[] methodFlagsLo = encodeBandInt(
-                new int[] { 0, 0, 0 }, Codec.UNSIGNED5);
+        final byte[] methodDescr = encodeBandInt(new int[] { 0, 1, 2 }, Codec.MDELTA5);
+        final byte[] methodFlagsLo = encodeBandInt(new int[] { 0, 0, 0 }, Codec.UNSIGNED5);
         final byte[] classFlags = Codec.UNSIGNED5.encode(0, 0);
-        final byte[][] allArrays = { classThis, classSuper,
-                classInterfaceCount, classFieldCount, classMethodCount,
-                methodDescr, methodFlagsLo, classFlags, };
+        final byte[][] allArrays = { classThis, classSuper, classInterfaceCount, classFieldCount, classMethodCount, methodDescr, methodFlagsLo, classFlags, };
         int total = 0;
         for (final byte[] array : allArrays) {
             total += array.length;
@@ -185,6 +176,5 @@ public class ClassBandsTest extends AbstractBandsTestCase {
         cpClasses = null;
         cpDescriptor = null;
     }
-
 
 }

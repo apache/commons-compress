@@ -23,8 +23,8 @@ import java.util.Arrays;
 import org.apache.commons.compress.utils.ExactMath;
 
 /**
- * A run codec is a grouping of two nested codecs; K values are decoded from the first codec, and the remaining codes
- * are decoded from the remaining codec. Note that since this codec maintains state, the instances are not reusable.
+ * A run codec is a grouping of two nested codecs; K values are decoded from the first codec, and the remaining codes are decoded from the remaining codec. Note
+ * that since this codec maintains state, the instances are not reusable.
  */
 public class RunCodec extends Codec {
 
@@ -54,7 +54,7 @@ public class RunCodec extends Codec {
     public int decode(final InputStream in, final long last) throws IOException, Pack200Exception {
         if (--k >= 0) {
             final int value = aCodec.decode(in, this.last);
-            this.last = (k == 0 ? 0 : value);
+            this.last = k == 0 ? 0 : value;
             return normalise(value, aCodec);
         }
         this.last = bCodec.decode(in, this.last);

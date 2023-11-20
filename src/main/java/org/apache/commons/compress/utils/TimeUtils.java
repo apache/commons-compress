@@ -29,8 +29,8 @@ import java.util.concurrent.TimeUnit;
  * <ul>
  * <li>A <a href="https://en.wikipedia.org/wiki/Unix_time">Unix timestamp</a> is a primitive long starting at the Unix Epoch on January 1st, 1970 at Coordinated
  * Universal Time (UTC)</li>
- * <li>An <a href="https://learn.microsoft.com/en-us/windows/win32/sysinfo/file-times">NTFS timestamp</a> is a file time is a 64-bit value that represents the number
- * of 100-nanosecond intervals that have elapsed since 12:00 A.M. January 1, 1601 Coordinated Universal Time (UTC).</li>
+ * <li>An <a href="https://learn.microsoft.com/en-us/windows/win32/sysinfo/file-times">NTFS timestamp</a> is a file time is a 64-bit value that represents the
+ * number of 100-nanosecond intervals that have elapsed since 12:00 A.M. January 1, 1601 Coordinated Universal Time (UTC).</li>
  * </ul>
  *
  * @since 1.23
@@ -147,7 +147,7 @@ public final class TimeUtils {
      */
     public static long toNtfsTime(final FileTime fileTime) {
         final Instant instant = fileTime.toInstant();
-        final long javaHundredNanos = (instant.getEpochSecond() * HUNDRED_NANOS_PER_SECOND) + (instant.getNano() / 100);
+        final long javaHundredNanos = instant.getEpochSecond() * HUNDRED_NANOS_PER_SECOND + instant.getNano() / 100;
         return Math.subtractExact(javaHundredNanos, WINDOWS_EPOCH_OFFSET);
     }
 
@@ -180,7 +180,7 @@ public final class TimeUtils {
      */
     public static FileTime truncateToHundredNanos(final FileTime fileTime) {
         final Instant instant = fileTime.toInstant();
-        return FileTime.from(Instant.ofEpochSecond(instant.getEpochSecond(), (instant.getNano() / 100) * 100));
+        return FileTime.from(Instant.ofEpochSecond(instant.getEpochSecond(), instant.getNano() / 100 * 100));
     }
 
     /**

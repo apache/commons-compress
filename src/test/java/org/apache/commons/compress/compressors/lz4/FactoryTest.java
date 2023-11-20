@@ -20,45 +20,45 @@ package org.apache.commons.compress.compressors.lz4;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class FactoryTest extends AbstractTestCase {
-
-    @Test
-    public void blockRoundtripViaFactory() throws Exception {
-        roundtripViaFactory(CompressorStreamFactory.getLZ4Block());
-    }
-
-    @Test
-    public void frameRoundtripViaFactory() throws Exception {
-        roundtripViaFactory(CompressorStreamFactory.getLZ4Framed());
-    }
+public class FactoryTest extends AbstractTest {
 
     private void roundtripViaFactory(final String format) throws Exception {
-        final File input = getFile("bla.tar");
+        final Path input = getPath("bla.tar");
         long start = System.currentTimeMillis();
-        final File outputSz = new File(dir, input.getName() + "." + format + ".lz4");
-        try (OutputStream os = Files.newOutputStream(outputSz.toPath());
+        final Path outputSz = getTempDirFile().toPath().resolve(input.getFileName() + "." + format + ".lz4");
+        try (OutputStream os = Files.newOutputStream(outputSz);
                 OutputStream los = new CompressorStreamFactory().createCompressorOutputStream(format, os)) {
-            Files.copy(input.toPath(), los);
+            Files.copy(input, los);
         }
         // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
         // + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         start = System.currentTimeMillis();
-        try (InputStream is = Files.newInputStream(input.toPath());
-                InputStream sis = new CompressorStreamFactory().createCompressorInputStream(format, Files.newInputStream(outputSz.toPath()))) {
+        try (InputStream is = Files.newInputStream(input);
+                InputStream sis = new CompressorStreamFactory().createCompressorInputStream(format, Files.newInputStream(outputSz))) {
             final byte[] expected = IOUtils.toByteArray(is);
             final byte[] actual = IOUtils.toByteArray(sis);
             assertArrayEquals(expected, actual);
         }
         // System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
+    }
+
+    @Test
+    public void testBlockRoundtripViaFactory() throws Exception {
+        roundtripViaFactory(CompressorStreamFactory.getLZ4Block());
+    }
+
+    @Test
+    public void testFrameRoundtripViaFactory() throws Exception {
+        roundtripViaFactory(CompressorStreamFactory.getLZ4Framed());
     }
 }

@@ -23,7 +23,7 @@ import java.util.LinkedList;
 /**
  * The unit of solid compression.
  */
-class Folder {
+final class Folder {
     static final Folder[] EMPTY_FOLDER_ARRAY = {};
     /// List of coders used in this folder, e.g. one for compression, one for encryption.
     Coder[] coders;
@@ -71,9 +71,10 @@ class Folder {
 
     /**
      * Sorts Coders using bind pairs.
-     * <p>The first coder reads from the packed stream (we currently
-     * only support single input stream decoders), the second reads
-     * from the output of the first and so on.</p>
+     * <p>
+     * The first coder reads from the packed stream (we currently only support single input stream decoders), the second reads from the output of the first and
+     * so on.
+     * </p>
      */
     Iterable<Coder> getOrderedCoders() throws IOException {
         if (packedStreams == null || coders == null || packedStreams.length == 0 || coders.length == 0) {
@@ -96,7 +97,7 @@ class Folder {
         if (totalOutputStreams == 0) {
             return 0;
         }
-        for (int i = ((int) totalOutputStreams) - 1; i >= 0; i--) {
+        for (int i = (int) totalOutputStreams - 1; i >= 0; i--) {
             if (findBindPairForOutStream(i) < 0) {
                 return unpackSizes[i];
             }
@@ -117,12 +118,8 @@ class Folder {
 
     @Override
     public String toString() {
-        return "Folder with " + coders.length + " coders, " + totalInputStreams
-            + " input streams, " + totalOutputStreams + " output streams, "
-            + bindPairs.length + " bind pairs, " + packedStreams.length
-            + " packed streams, " + unpackSizes.length + " unpack sizes, "
-            + (hasCrc ? "with CRC " + crc : "without CRC")
-            + " and " + numUnpackSubStreams + " unpack streams";
+        return "Folder with " + coders.length + " coders, " + totalInputStreams + " input streams, " + totalOutputStreams + " output streams, "
+                + bindPairs.length + " bind pairs, " + packedStreams.length + " packed streams, " + unpackSizes.length + " unpack sizes, "
+                + (hasCrc ? "with CRC " + crc : "without CRC") + " and " + numUnpackSubStreams + " unpack streams";
     }
 }
-
