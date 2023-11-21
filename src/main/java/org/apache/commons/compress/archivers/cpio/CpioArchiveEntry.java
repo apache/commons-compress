@@ -565,12 +565,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         }
         int size = this.headerSize + 1; // Name has terminating null
         if (name != null) {
-            try {
-                size = ExactMath.add(size, nameSize);
-            } catch (ArithmeticException exp) {
-                // Thrown if numeric overflow occurs.
-                throw new IllegalArgumentException("The nameSize value " + nameSize + " is too large", exp);
-            }
+            size = ExactMath.add(size, nameSize);
         }
         final int remain = size % this.alignmentBoundary;
         if (remain > 0) {

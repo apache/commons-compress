@@ -32,11 +32,14 @@ public class ExactMath {
      * @param x the first value, an int.
      * @param y the second value, a long,
      * @return the addition of both values.
-     * @throws ArithmeticException when y overflow an int.
-     * @throws ArithmeticException if the result overflows an int.
+     * @throws IllegalArgumentException when y or the result overflows an int
      */
     public static int add(final int x, final long y) {
-        return Math.addExact(x, Math.toIntExact(y));
+        try {
+            return Math.addExact(x, Math.toIntExact(y));
+        } catch (ArithmeticException exp) {
+            throw new IllegalArgumentException("Argument too large or result overflows", exp);
+        }
     }
 
     private ExactMath() {
