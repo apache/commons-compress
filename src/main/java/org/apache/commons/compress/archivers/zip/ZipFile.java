@@ -485,7 +485,7 @@ public class ZipFile implements Closeable {
      * @param f                     the archive.
      * @param encoding              the encoding to use for file names, use null for the platform's default encoding
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
-     * @param ignoreLocalFileHeader whether to ignore information stored inside the local file header (see the notes in this method's javadoc)
+     * @param ignoreLocalFileHeader whether to ignore information stored inside the local file header (see the notes in this method's Javadoc)
      *
      * @throws IOException if an error occurs while reading the file.
      * @since 1.19
@@ -544,7 +544,7 @@ public class ZipFile implements Closeable {
      * @param path                  path to the archive.
      * @param encoding              the encoding to use for file names, use null for the platform's default encoding
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
-     * @param ignoreLocalFileHeader whether to ignore information stored inside the local file header (see the notes in this method's javadoc)
+     * @param ignoreLocalFileHeader whether to ignore information stored inside the local file header (see the notes in this method's Javadoc)
      * @throws IOException if an error occurs while reading the file.
      * @since 1.22
      */
@@ -624,7 +624,7 @@ public class ZipFile implements Closeable {
      * @param archiveName           name of the archive, used for error messages only.
      * @param encoding              the encoding to use for file names, use null for the platform's default encoding
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
-     * @param ignoreLocalFileHeader whether to ignore information stored inside the local file header (see the notes in this method's javadoc)
+     * @param ignoreLocalFileHeader whether to ignore information stored inside the local file header (see the notes in this method's Javadoc)
      *
      * @throws IOException if an error occurs while reading the file.
      * @since 1.19
