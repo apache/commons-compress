@@ -526,7 +526,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
 
             final byte[] peekBytes = raw.peek();
 
-            if (peekBytes == null || !DumpArchiveUtil.verify(peekBytes)) {
+            if (!DumpArchiveUtil.verify(peekBytes)) {
                 throw new InvalidFormatException();
             }
 

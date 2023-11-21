@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.dump;
 
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.IOException;
 
@@ -44,6 +45,14 @@ public class DumpArchiveUtilTest {
 
     @Test void testDecodeInvalidArguments() {
         assertThrows(IOException.class, () -> DumpArchiveUtil.decode(null, new byte[10], 10, -1));
+    }
+
+    @Test void testVerifyNullArgument() {
+        assertFalse(DumpArchiveUtil.verify(null));
+    }
+
+    @Test void testVerifyNoMagic() {
+        assertFalse(DumpArchiveUtil.verify(new byte[32]));
     }
 
 }

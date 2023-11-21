@@ -106,6 +106,10 @@ final class DumpArchiveUtil {
      * @return Whether the buffer contains a tape segment header.
      */
     public static boolean verify(final byte[] buffer) {
+        if (buffer == null) {
+            return false;
+        }
+
         // verify magic. for now only accept NFS_MAGIC.
         final int magic = convert32(buffer, 24);
 
