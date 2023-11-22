@@ -19,6 +19,8 @@
 
 package org.apache.commons.compress.utils;
 
+import java.io.IOException;
+
 /**
  * PRIVATE.
  *
@@ -37,7 +39,7 @@ public class ExactMath {
     public static int add(final int x, final long y) {
         try {
             return Math.addExact(x, Math.toIntExact(y));
-        } catch (ArithmeticException exp) {
+        } catch (final ArithmeticException exp) {
             throw new IllegalArgumentException("Argument too large or result overflows", exp);
         }
     }
