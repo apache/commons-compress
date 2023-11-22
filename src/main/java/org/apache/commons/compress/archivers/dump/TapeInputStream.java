@@ -295,7 +295,7 @@ final class TapeInputStream extends FilterInputStream {
         }
         blockSize = RECORD_SIZE * recsPerBlock;
         if (blockSize < 1) {
-            throw new IOException("Block size " + blockSize + " cannot be negative");
+            throw new IOException("Block size cannot be less than or equal to 0: " + blockSize);
         }
 
         // save first block in case we need it again
