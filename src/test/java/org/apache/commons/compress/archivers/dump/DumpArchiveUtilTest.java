@@ -43,15 +43,18 @@ public class DumpArchiveUtilTest {
         assertEquals(0xABCDEF0123456780L, DumpArchiveUtil.convert64(new byte[] { (byte) 0x80, 0x67, 0x45, 0x23, 1, (byte) 0xEF, (byte) 0xCD, (byte) 0xAB }, 0));
     }
 
-    @Test void testDecodeInvalidArguments() {
+    @Test
+    public void testDecodeInvalidArguments() {
         assertThrows(IOException.class, () -> DumpArchiveUtil.decode(null, new byte[10], 10, -1));
     }
 
-    @Test void testVerifyNullArgument() {
+    @Test
+    public void testVerifyNullArgument() {
         assertFalse(DumpArchiveUtil.verify(null));
     }
 
-    @Test void testVerifyNoMagic() {
+    @Test
+    public void testVerifyNoMagic() {
         assertFalse(DumpArchiveUtil.verify(new byte[32]));
     }
 
