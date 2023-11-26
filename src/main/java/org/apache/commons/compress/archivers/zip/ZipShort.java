@@ -48,21 +48,21 @@ public final class ZipShort implements Cloneable, Serializable {
     }
 
     /**
-     * Helper method to get the value as a java int from a two-byte array
+     * Helper method to get the value as a Java int from a two-byte array
      *
      * @param bytes the array of bytes
-     * @return the corresponding java int value
+     * @return the corresponding Java int value
      */
     public static int getValue(final byte[] bytes) {
         return getValue(bytes, 0);
     }
 
     /**
-     * Helper method to get the value as a java int from two bytes starting at given array offset
+     * Helper method to get the value as a Java int from two bytes starting at given array offset
      *
      * @param bytes  the array of bytes
      * @param offset the offset to start
-     * @return the corresponding java int value
+     * @return the corresponding Java int value
      */
     public static int getValue(final byte[] bytes, final int offset) {
         return (int) ByteUtils.fromLittleEndian(bytes, offset, 2);
