@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.ParsingUtils;
 
 /**
  * Implements the "ar" archive format as an input stream.
@@ -152,28 +153,28 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         this.input = inputStream;
     }
 
-    private int asInt(final byte[] byteArray, final int offset, final int len) {
+    private int asInt(final byte[] byteArray, final int offset, final int len) throws IOException {
         return asInt(byteArray, offset, len, 10, false);
     }
 
-    private int asInt(final byte[] byteArray, final int offset, final int len, final boolean treatBlankAsZero) {
+    private int asInt(final byte[] byteArray, final int offset, final int len, final boolean treatBlankAsZero) throws IOException {
         return asInt(byteArray, offset, len, 10, treatBlankAsZero);
     }
 
-    private int asInt(final byte[] byteArray, final int offset, final int len, final int base) {
+    private int asInt(final byte[] byteArray, final int offset, final int len, final int base) throws IOException {
         return asInt(byteArray, offset, len, base, false);
     }
 
-    private int asInt(final byte[] byteArray, final int offset, final int len, final int base, final boolean treatBlankAsZero) {
+    private int asInt(final byte[] byteArray, final int offset, final int len, final int base, final boolean treatBlankAsZero) throws IOException {
         final String string = ArchiveUtils.toAsciiString(byteArray, offset, len).trim();
         if (string.isEmpty() && treatBlankAsZero) {
             return 0;
         }
-        return Integer.parseInt(string, base);
+        return ParsingUtils.parseIntValue(string, base);
     }
 
-    private long asLong(final byte[] byteArray, final int offset, final int len) {
-        return Long.parseLong(ArchiveUtils.toAsciiString(byteArray, offset, len).trim());
+    private long asLong(final byte[] byteArray, final int offset, final int len) throws IOException {
+        return ParsingUtils.parseLongValue(ArchiveUtils.toAsciiString(byteArray, offset, len).trim(), 10);
     }
 
     /*
@@ -198,13 +199,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * @since 1.3
      */
     private String getBSDLongName(final String bsdLongName) throws IOException {
-        final int nameLen;
-        try {
-            nameLen = Integer.parseInt(bsdLongName.substring(BSD_LONGNAME_PREFIX_LEN));
-        } catch (NumberFormatException ex) {
-            throw new IOException("Broken archive, unable to parse BSD long name length field as a number", ex);
-        }
-
+        final int nameLen = ParsingUtils.parseIntValue(bsdLongName.substring(BSD_LONGNAME_PREFIX_LEN), 10);
         final byte[] name = IOUtils.readRange(input, nameLen);
         final int read = name.length;
         trackReadBytes(read);
@@ -326,12 +321,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         if (temp.endsWith("/")) { // GNU terminator
             temp = temp.substring(0, temp.length() - 1);
         } else if (isGNULongName(temp)) {
-            int off;
-            try {
-                off = Integer.parseInt(temp.substring(1));// get the offset
-            } catch (NumberFormatException ex) {
-                throw new IOException("Broken archive, unable to parse GNU long name offset field as a number", ex);
-            }
+            final int off = ParsingUtils.parseIntValue(temp.substring(1), 10);// get the offset
             temp = getExtendedName(off); // convert to the long name
         } else if (isBSDLongName(temp)) {
             temp = getBSDLongName(temp);

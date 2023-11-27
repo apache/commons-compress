@@ -19,8 +19,6 @@
 
 package org.apache.commons.compress.utils;
 
-import java.io.IOException;
-
 /**
  * PRIVATE.
  *

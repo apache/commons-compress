@@ -22,6 +22,7 @@ import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 
 import org.apache.commons.compress.java.util.jar.Pack200.Packer;
+import org.apache.commons.compress.utils.ParsingUtils;
 
 /**
  * This class provides the binding between the standard Pack200 interface and the internal interface for (un)packing. As this uses generics for the SortedMap,
@@ -32,7 +33,7 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
     private final PackingOptions options = new PackingOptions();
 
     @Override
-    protected void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) {
+    protected void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) throws IOException {
         super.firePropertyChange(propertyName, oldValue, newValue);
         if (newValue != null && !newValue.equals(oldValue)) {
             if (propertyName.startsWith(CLASS_ATTRIBUTE_PFX)) {
@@ -44,7 +45,7 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
             } else if (propertyName.equals(DEFLATE_HINT)) {
                 options.setDeflateHint((String) newValue);
             } else if (propertyName.equals(EFFORT)) {
-                options.setEffort(Integer.parseInt((String) newValue));
+                options.setEffort(ParsingUtils.parseIntValue((String) newValue, 10));
             } else if (propertyName.startsWith(FIELD_ATTRIBUTE_PFX)) {
                 final String attributeName = propertyName.substring(FIELD_ATTRIBUTE_PFX.length());
                 options.addFieldAttributeAction(attributeName, (String) newValue);
@@ -61,7 +62,7 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
                 }
                 options.addPassFile((String) newValue);
             } else if (propertyName.equals(SEGMENT_LIMIT)) {
-                options.setSegmentLimit(Long.parseLong((String) newValue));
+                options.setSegmentLimit(ParsingUtils.parseLongValue((String) newValue, 10));
             } else if (propertyName.equals(UNKNOWN_ATTRIBUTE)) {
                 options.setUnknownAttributeAction((String) newValue);
             }

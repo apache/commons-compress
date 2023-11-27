@@ -39,6 +39,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPNameAndType;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPString;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.harmony.unpack200.bytecode.NewAttribute;
+import org.apache.commons.compress.utils.ParsingUtils;
 
 /**
  * Sets of bands relating to a non-predefined attribute
@@ -884,7 +885,7 @@ public class NewAttributeBands extends BandSet {
         if (read != digits.length) {
             throw new IOException("Error reading from the input stream");
         }
-        return Integer.valueOf(Integer.parseInt((negative ? "-" : "") + new String(digits)));
+        return ParsingUtils.parseIntValue((negative ? "-" : "") + new String(digits), 10);
     }
 
     /**

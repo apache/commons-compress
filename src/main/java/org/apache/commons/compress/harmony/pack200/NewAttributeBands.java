@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.compress.harmony.pack200.AttributeDefinitionBands.AttributeDefinition;
+import org.apache.commons.compress.utils.ParsingUtils;
 import org.objectweb.asm.Label;
 
 /**
@@ -824,7 +825,7 @@ public class NewAttributeBands extends BandSet {
         if (read != digits.length) {
             throw new IOException("Error reading from the input stream");
         }
-        return Integer.valueOf(Integer.parseInt((negative ? "-" : "") + new String(digits)));
+        return ParsingUtils.parseIntValue((negative ? "-" : "") + new String(digits), 10);
     }
 
     /**
