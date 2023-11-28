@@ -127,17 +127,17 @@ public class ArArchiveInputStreamTest extends AbstractTest {
 
     @Test
     public void testSimpleInputStream() throws IOException {
-        try (InputStream fileInputStream = newInputStream("bla.ar")) {
+        try (InputStream fileInputStream = newInputStream("bla.ar");
 
-            // This default implementation of InputStream.available() always returns zero,
-            // and there are many streams in practice where the total length of the stream is not known.
+                // This default implementation of InputStream.available() always returns zero,
+                // and there are many streams in practice where the total length of the stream is not known.
 
-            final InputStream simpleInputStream = new InputStream() {
-                @Override
-                public int read() throws IOException {
-                    return fileInputStream.read();
-                }
-            };
+                InputStream simpleInputStream = new InputStream() {
+                    @Override
+                    public int read() throws IOException {
+                        return fileInputStream.read();
+                    }
+                }) {
 
             try (ArArchiveInputStream archiveInputStream = new ArArchiveInputStream(simpleInputStream)) {
                 final ArArchiveEntry entry1 = archiveInputStream.getNextArEntry();
