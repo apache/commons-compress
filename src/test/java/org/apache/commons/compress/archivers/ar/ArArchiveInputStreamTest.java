@@ -22,6 +22,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -107,7 +108,7 @@ public class ArArchiveInputStreamTest extends AbstractTest {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.ar");
                 ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
+            assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
             assertEquals(-1, archive.read(buf));
@@ -157,7 +158,7 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (InputStream in = newInputStream("bla.ar");
                 ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
+            assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
