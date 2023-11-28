@@ -45,7 +45,7 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
             } else if (propertyName.equals(DEFLATE_HINT)) {
                 options.setDeflateHint((String) newValue);
             } else if (propertyName.equals(EFFORT)) {
-                options.setEffort(ParsingUtils.parseIntValue((String) newValue, 10));
+                options.setEffort(ParsingUtils.parseIntValue((String) newValue));
             } else if (propertyName.startsWith(FIELD_ATTRIBUTE_PFX)) {
                 final String attributeName = propertyName.substring(FIELD_ATTRIBUTE_PFX.length());
                 options.addFieldAttributeAction(attributeName, (String) newValue);
@@ -62,7 +62,7 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
                 }
                 options.addPassFile((String) newValue);
             } else if (propertyName.equals(SEGMENT_LIMIT)) {
-                options.setSegmentLimit(ParsingUtils.parseLongValue((String) newValue, 10));
+                options.setSegmentLimit(ParsingUtils.parseLongValue((String) newValue));
             } else if (propertyName.equals(UNKNOWN_ATTRIBUTE)) {
                 options.setUnknownAttributeAction((String) newValue);
             }

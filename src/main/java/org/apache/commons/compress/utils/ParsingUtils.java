@@ -25,6 +25,17 @@ import java.io.IOException;
  */
 public final class ParsingUtils {
     /**
+     * Tries to parse the provided string value to an Integer, assuming a base-10 radix
+     *
+     * @param value string value to parse
+     * @return parsed value as an int
+     * @throws IOException
+     */
+    public static int parseIntValue(final String value) throws IOException {
+        return parseIntValue(value, 10);
+    }
+
+    /**
      * Tries to parse the provided string value to an Integer
      *
      * @param value string value to parse
@@ -38,6 +49,17 @@ public final class ParsingUtils {
         } catch (final NumberFormatException exp) {
             throw new IOException("Unable to parse int from string value: " + value);
         }
+    }
+
+    /**
+     * Tries to parse the provided string value to a Long, assuming a base-10 radix
+     *
+     * @param value string value to parse
+     * @return parsed value as a long
+     * @throws IOException
+     */
+    public static long parseLongValue(final String value) throws IOException {
+        return parseLongValue(value, 10);
     }
 
     /**

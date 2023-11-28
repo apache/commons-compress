@@ -762,7 +762,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     void fillGNUSparse0xData(final Map<String, String> headers) throws IOException {
         paxGNUSparse = true;
-        realSize = ParsingUtils.parseIntValue(headers.get(TarGnuSparseKeys.SIZE), 10);
+        realSize = ParsingUtils.parseIntValue(headers.get(TarGnuSparseKeys.SIZE));
         if (headers.containsKey(TarGnuSparseKeys.NAME)) {
             // version 0.1
             name = headers.get(TarGnuSparseKeys.NAME);
@@ -776,14 +776,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             name = headers.get(TarGnuSparseKeys.NAME);
         }
         if (headers.containsKey(TarGnuSparseKeys.REALSIZE)) {
-            realSize = ParsingUtils.parseIntValue(headers.get(TarGnuSparseKeys.REALSIZE), 10);
+            realSize = ParsingUtils.parseIntValue(headers.get(TarGnuSparseKeys.REALSIZE));
         }
     }
 
     void fillStarSparseData(final Map<String, String> headers) throws IOException {
         starSparse = true;
         if (headers.containsKey("SCHILY.realsize")) {
-            realSize = ParsingUtils.parseLongValue(headers.get("SCHILY.realsize"), 10);
+            realSize = ParsingUtils.parseLongValue(headers.get("SCHILY.realsize"));
         }
     }
 
@@ -1627,19 +1627,19 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             setLinkName(val);
             break;
         case "gid":
-            setGroupId(ParsingUtils.parseLongValue(val, 10));
+            setGroupId(ParsingUtils.parseLongValue(val));
             break;
         case "gname":
             setGroupName(val);
             break;
         case "uid":
-            setUserId(ParsingUtils.parseLongValue(val, 10));
+            setUserId(ParsingUtils.parseLongValue(val));
             break;
         case "uname":
             setUserName(val);
             break;
         case "size":
-            final long size = ParsingUtils.parseLongValue(val, 10);
+            final long size = ParsingUtils.parseLongValue(val);
             if (size < 0) {
                 throw new IOException("Corrupted TAR archive. Entry size is negative");
             }
@@ -1658,14 +1658,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             setCreationTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
             break;
         case "SCHILY.devminor":
-            final int devMinor = ParsingUtils.parseIntValue(val, 10);
+            final int devMinor = ParsingUtils.parseIntValue(val);
             if (devMinor < 0) {
                 throw new IOException("Corrupted TAR archive. Dev-Minor is negative");
             }
             setDevMinor(devMinor);
             break;
         case "SCHILY.devmajor":
-            final int devMajor = ParsingUtils.parseIntValue(val, 10);
+            final int devMajor = ParsingUtils.parseIntValue(val);
             if (devMajor < 0) {
                 throw new IOException("Corrupted TAR archive. Dev-Major is negative");
             }
