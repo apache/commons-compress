@@ -385,13 +385,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           </configuration>
         </plugin>
         <plugin>
-          <groupId>org.eluder.coveralls</groupId>
-          <artifactId>coveralls-maven-plugin</artifactId>
-          <configuration>
-            <failOnServiceError>false</failOnServiceError>
-          </configuration>
-        </plugin>
-        <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
           <version>${commons.felix.version}</version>
