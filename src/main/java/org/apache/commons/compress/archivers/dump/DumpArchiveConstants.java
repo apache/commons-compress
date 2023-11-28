@@ -26,7 +26,7 @@ public final class DumpArchiveConstants {
      * The type of compression.
      */
     public enum COMPRESSION_TYPE {
-        ZLIB(0), BZLIB(1), LZO(2);
+        UNKNOWN(-1), ZLIB(0), BZLIB(1), LZO(2);
 
         public static COMPRESSION_TYPE find(final int code) {
             for (final COMPRESSION_TYPE t : values()) {
@@ -35,7 +35,7 @@ public final class DumpArchiveConstants {
                 }
             }
 
-            return null;
+            return UNKNOWN;
         }
 
         final int code;
