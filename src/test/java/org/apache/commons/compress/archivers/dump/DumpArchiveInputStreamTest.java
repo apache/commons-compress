@@ -50,6 +50,22 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    public void testDirectoryNullBytes() throws Exception {
+        try (InputStream is = newInputStream("org/apache/commons/compress/dump/directory_null_bytes.dump");
+             DumpArchiveInputStream archive = new DumpArchiveInputStream(is)) {
+            assertThrows(InvalidFormatException.class, archive::getNextEntry);
+        }
+    }
+
+    @Test
+    public void testInvalidCompressType() throws Exception {
+        try (InputStream is = newInputStream("org/apache/commons/compress/dump/invalid_compression_type.dump")) {
+            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close());
+            assertInstanceOf(UnsupportedCompressionAlgorithmException.class, ex.getCause());
+        }
+    }
+
+    @Test
     public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.dump");
@@ -85,22 +101,6 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
-        }
-    }
-
-    @Test
-    public void testDirectoryNullBytes() throws Exception {
-        try (InputStream is = newInputStream("org/apache/commons/compress/dump/directory_null_bytes.dump");
-             DumpArchiveInputStream archive = new DumpArchiveInputStream(is)) {
-            assertThrows(InvalidFormatException.class, archive::getNextEntry);
-        }
-    }
-
-    @Test
-    public void testInvalidCompressType() throws Exception {
-        try (InputStream is = newInputStream("org/apache/commons/compress/dump/invalid_compression_type.dump")) {
-            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close());
-            assertInstanceOf(UnsupportedCompressionAlgorithmException.class, ex.getCause());
         }
     }
 

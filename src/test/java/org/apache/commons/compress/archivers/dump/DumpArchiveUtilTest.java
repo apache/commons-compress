@@ -49,13 +49,13 @@ public class DumpArchiveUtilTest {
     }
 
     @Test
-    public void testVerifyNullArgument() {
-        assertFalse(DumpArchiveUtil.verify(null));
+    public void testVerifyNoMagic() {
+        assertFalse(DumpArchiveUtil.verify(new byte[32]));
     }
 
     @Test
-    public void testVerifyNoMagic() {
-        assertFalse(DumpArchiveUtil.verify(new byte[32]));
+    public void testVerifyNullArgument() {
+        assertFalse(DumpArchiveUtil.verify(null));
     }
 
 }
