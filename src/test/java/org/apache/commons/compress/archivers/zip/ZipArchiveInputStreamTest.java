@@ -149,7 +149,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.zip");
                 ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
+            assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
             assertEquals(-1, archive.read(buf));
@@ -159,7 +159,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     private void singleByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
         try (InputStream in = Files.newInputStream(file.toPath());
                 ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
+            assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
@@ -223,7 +223,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         final byte[] buf = new byte[2];
         try (ByteArrayInputStream in = new ByteArrayInputStream(content);
                 ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
+            assertNotNull(archive.getNextEntry());
             final IOException ex1 = assertThrows(IOException.class, () -> IOUtils.toByteArray(archive), "expected exception");
             assertEquals("Truncated ZIP file", ex1.getMessage());
             final IOException ex2 = assertThrows(IOException.class, () -> archive.read(buf), "expected exception");
@@ -362,7 +362,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         final byte[] orig = readAllBytes("COMPRESS-380/COMPRESS-380-input");
         final File archive = getFile("COMPRESS-380/COMPRESS-380.zip");
         try (ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(archive.toPath()))) {
-            final ZipArchiveEntry e = zin.getNextZipEntry();
+            assertNotNull(zin.getNextZipEntry());
             final byte[] fromZip = IOUtils.toByteArray(zin);
             assertArrayEquals(orig, fromZip);
         }
@@ -472,7 +472,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         }
         try (ByteArrayInputStream in = new ByteArrayInputStream(content);
                 ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
+            assertNotNull(archive.getNextEntry());
             final IOException ex1 = assertThrows(IOException.class, () -> IOUtils.toByteArray(archive), "expected exception");
             assertEquals("Truncated ZIP file", ex1.getMessage());
             final IOException ex2 = assertThrows(IOException.class, archive::read, "expected exception");
