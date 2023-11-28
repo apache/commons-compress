@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.arj;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -30,7 +31,6 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.apache.commons.compress.AbstractTest;
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
@@ -77,7 +77,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.arj");
                 ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
+            assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
             assertEquals(-1, archive.read(buf));
@@ -116,7 +116,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (InputStream in = newInputStream("bla.arj");
                 ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
+            assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
