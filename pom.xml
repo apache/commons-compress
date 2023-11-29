@@ -404,6 +404,15 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
             </parameter>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
+          <configuration>
+            <threshold>Normal</threshold>
+            <effort>Default</effort>
+            <excludeFilterFile>${basedir}/src/conf/spotbugs-exclude-filter.xml</excludeFilterFile>
+         </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -460,11 +469,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <configuration>
-          <threshold>Normal</threshold>
-          <effort>Default</effort>
-          <excludeFilterFile>${basedir}/src/conf/spotbugs-exclude-filter.xml</excludeFilterFile>
-       </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -556,11 +560,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <configuration>
-          <threshold>Normal</threshold>
-          <effort>Default</effort>
-          <excludeFilterFile>${basedir}/src/conf/spotbugs-exclude-filter.xml</excludeFilterFile>
-       </configuration>
       </plugin>
     </plugins>
   </reporting>
