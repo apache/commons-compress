@@ -139,7 +139,7 @@ public final class ZipLong implements Cloneable, Serializable {
     }
 
     /**
-     * create instance from a java int.
+     * create instance from a Java int.
      *
      * @param value the int to store as a ZipLong
      * @since 1.15
@@ -191,7 +191,7 @@ public final class ZipLong implements Cloneable, Serializable {
     }
 
     /**
-     * Gets value as a (signed) java int
+     * Gets value as a (signed) Java int
      *
      * @return value as int
      * @since 1.15

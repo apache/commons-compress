@@ -22,6 +22,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -107,7 +108,7 @@ public class ArArchiveInputStreamTest extends AbstractTest {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.ar");
                 ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
+            assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
             assertEquals(-1, archive.read(buf));
@@ -126,17 +127,47 @@ public class ArArchiveInputStreamTest extends AbstractTest {
 
     @Test
     public void testSimpleInputStream() throws IOException {
-        try (InputStream fileInputStream = newInputStream("bla.ar")) {
+        try (InputStream fileInputStream = newInputStream("bla.ar");
 
-            // This default implementation of InputStream.available() always returns zero,
-            // and there are many streams in practice where the total length of the stream is not known.
+                // This default implementation of InputStream.available() always returns zero,
+                // and there are many streams in practice where the total length of the stream is not known.
 
-            final InputStream simpleInputStream = new InputStream() {
-                @Override
-                public int read() throws IOException {
-                    return fileInputStream.read();
-                }
-            };
+                InputStream simpleInputStream = new InputStream() {
+                    @Override
+                    public int read() throws IOException {
+                        return fileInputStream.read();
+                    }
+                }) {
+
+            try (ArArchiveInputStream archiveInputStream = new ArArchiveInputStream(simpleInputStream)) {
+                final ArArchiveEntry entry1 = archiveInputStream.getNextEntry();
+                assertThat(entry1, not(nullValue()));
+                assertThat(entry1.getName(), equalTo("test1.xml"));
+                assertThat(entry1.getLength(), equalTo(610L));
+
+                final ArArchiveEntry entry2 = archiveInputStream.getNextEntry();
+                assertThat(entry2.getName(), equalTo("test2.xml"));
+                assertThat(entry2.getLength(), equalTo(82L));
+
+                assertThat(archiveInputStream.getNextEntry(), nullValue());
+            }
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void testSimpleInputStreamDeprecated() throws IOException {
+        try (InputStream fileInputStream = newInputStream("bla.ar");
+
+                // This default implementation of InputStream.available() always returns zero,
+                // and there are many streams in practice where the total length of the stream is not known.
+
+                InputStream simpleInputStream = new InputStream() {
+                    @Override
+                    public int read() throws IOException {
+                        return fileInputStream.read();
+                    }
+                }) {
 
             try (ArArchiveInputStream archiveInputStream = new ArArchiveInputStream(simpleInputStream)) {
                 final ArArchiveEntry entry1 = archiveInputStream.getNextArEntry();
@@ -157,7 +188,7 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (InputStream in = newInputStream("bla.ar");
                 ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
+            assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());

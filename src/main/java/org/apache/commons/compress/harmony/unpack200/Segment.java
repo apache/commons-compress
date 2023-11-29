@@ -394,7 +394,7 @@ public class Segment {
         for (int i = 0; i < numberOfFiles; i++) {
             String name = fileName[i];
 
-            final boolean nameIsEmpty = name == null || name.equals("");
+            final boolean nameIsEmpty = name == null || name.isEmpty();
             final boolean isClass = (fileOptions[i] & 2) == 2 || nameIsEmpty;
             if (isClass && nameIsEmpty) {
                 name = cpBands.getCpClass()[classBands.getClassThisInts()[classNum]] + ".class";

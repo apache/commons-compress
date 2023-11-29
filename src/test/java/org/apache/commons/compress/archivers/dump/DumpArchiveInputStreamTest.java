@@ -21,19 +21,20 @@ package org.apache.commons.compress.archivers.dump;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
 
 import org.apache.commons.compress.AbstractTest;
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public class DumpArchiveInputStreamTest extends AbstractTest {
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testConsumesArchiveCompletely() throws Exception {
         try (InputStream is = DumpArchiveInputStreamTest.class.getResourceAsStream("/archive_with_trailer.dump");
@@ -49,11 +50,27 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    public void testDirectoryNullBytes() throws Exception {
+        try (InputStream is = newInputStream("org/apache/commons/compress/dump/directory_null_bytes.dump");
+             DumpArchiveInputStream archive = new DumpArchiveInputStream(is)) {
+            assertThrows(InvalidFormatException.class, archive::getNextEntry);
+        }
+    }
+
+    @Test
+    public void testInvalidCompressType() throws Exception {
+        try (InputStream is = newInputStream("org/apache/commons/compress/dump/invalid_compression_type.dump")) {
+            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close());
+            assertInstanceOf(UnsupportedCompressionAlgorithmException.class, ex.getCause());
+        }
+    }
+
+    @Test
     public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.dump");
                 DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
+            assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
             assertEquals(-1, archive.read(buf));
@@ -80,7 +97,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
     public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (InputStream in = newInputStream("bla.dump");
                 DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
+            assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());

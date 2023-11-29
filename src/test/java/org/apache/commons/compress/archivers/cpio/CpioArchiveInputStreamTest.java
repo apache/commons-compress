@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.AbstractTest;
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
@@ -90,7 +89,7 @@ public class CpioArchiveInputStreamTest extends AbstractTest {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.cpio");
                 CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
+            assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
             assertEquals(-1, archive.read(buf));
@@ -101,7 +100,7 @@ public class CpioArchiveInputStreamTest extends AbstractTest {
     public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (InputStream in = newInputStream("bla.cpio");
                 CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
+            assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
