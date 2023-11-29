@@ -41,11 +41,20 @@ public abstract class Pack200Adapter {
      * Completion between 0..1.
      *
      * @param value Completion between 0..1.
+     * @throws IOException if the value cannot be parsed
      */
     protected void completed(final double value) throws IOException {
         firePropertyChange("pack.progress", null, String.valueOf((int) (100 * value))); //$NON-NLS-1$
     }
 
+    /**
+     * Reports a property update to listeners
+     *
+     * @param propertyName name of property being updated
+     * @param oldValue old property value
+     * @param newValue new property value
+     * @throws IOException if the values cannot be parsed
+     */
     protected void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) throws IOException {
         support.firePropertyChange(propertyName, oldValue, newValue);
     }

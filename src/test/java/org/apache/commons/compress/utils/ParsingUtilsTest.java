@@ -17,7 +17,6 @@
 
 package org.apache.commons.compress.utils;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
@@ -25,6 +24,11 @@ import java.io.IOException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+/**
+ * Unit tests for class {@link ParsingUtils}.
+ *
+ * @see ParsingUtils
+ */
 public class ParsingUtilsTest {
 
     @ParameterizedTest
@@ -35,8 +39,8 @@ public class ParsingUtilsTest {
 
     @ParameterizedTest
     @ValueSource(strings = {Integer.MIN_VALUE + "", "-1", "1", "123456", Integer.MAX_VALUE + ""})
-    public void testParseIntValueValidValues(final String value) {
-        assertDoesNotThrow(() -> ParsingUtils.parseIntValue(value, 10));
+    public void testParseIntValueValidValues(final String value) throws Exception {
+        ParsingUtils.parseIntValue(value, 10);
     }
 
     @ParameterizedTest
@@ -47,8 +51,8 @@ public class ParsingUtilsTest {
 
     @ParameterizedTest
     @ValueSource(strings = {Long.MIN_VALUE + "", "-1", "1", "12345678901234", Long.MAX_VALUE + ""})
-    public void testParseLongValueValidValues(final String value) {
-        assertDoesNotThrow(() -> ParsingUtils.parseLongValue(value, 10));
+    public void testParseLongValueValidValues(final String value) throws Exception {
+        ParsingUtils.parseLongValue(value, 10);
     }
 
 }

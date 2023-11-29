@@ -21,27 +21,27 @@ import java.io.IOException;
 /**
  * Utility methods for parsing data and converting it to other formats.
  *
- * @since 1.26
+ * @since 1.26.0
  */
 public final class ParsingUtils {
     /**
-     * Tries to parse the provided string value to an Integer, assuming a base-10 radix
+     * Parses the provided string value to an Integer, assuming a base-10 radix
      *
      * @param value string value to parse
      * @return parsed value as an int
-     * @throws IOException
+     * @throws IOException when the value cannot be parsed
      */
     public static int parseIntValue(final String value) throws IOException {
         return parseIntValue(value, 10);
     }
 
     /**
-     * Tries to parse the provided string value to an Integer
+     * Parse the provided string value to an Integer with a provided radix
      *
      * @param value string value to parse
      * @param radix radix value to use for parsing
      * @return parsed value as an int
-     * @throws IOException
+     * @throws IOException when the value cannot be parsed
      */
     public static int parseIntValue(final String value, final int radix) throws IOException {
         try {
@@ -52,23 +52,23 @@ public final class ParsingUtils {
     }
 
     /**
-     * Tries to parse the provided string value to a Long, assuming a base-10 radix
+     * Parses the provided string value to a Long, assuming a base-10 radix
      *
      * @param value string value to parse
      * @return parsed value as a long
-     * @throws IOException
+     * @throws IOException when the value cannot be parsed
      */
     public static long parseLongValue(final String value) throws IOException {
         return parseLongValue(value, 10);
     }
 
     /**
-     * Tries to parse the provided string value to a Long
+     * Parses the provided string value to a Long with a provided radix
      *
      * @param value string value to parse
      * @param radix radix value to use for parsing
      * @return parsed value as a long
-     * @throws IOException
+     * @throws IOException when the value cannot be parsed
      */
     public static long parseLongValue(final String value, final int radix) throws IOException {
         try {
