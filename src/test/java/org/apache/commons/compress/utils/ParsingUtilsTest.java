@@ -17,6 +17,7 @@
 
 package org.apache.commons.compress.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class ParsingUtilsTest {
     @ParameterizedTest
     @ValueSource(strings = {Integer.MIN_VALUE + "", "-1", "1", "123456", Integer.MAX_VALUE + ""})
     public void testParseIntValueValidValues(final String value) throws Exception {
-        ParsingUtils.parseIntValue(value, 10);
+        assertEquals(Long.parseLong(value), ParsingUtils.parseIntValue(value, 10));
     }
 
     @ParameterizedTest
@@ -52,7 +53,7 @@ public class ParsingUtilsTest {
     @ParameterizedTest
     @ValueSource(strings = {Long.MIN_VALUE + "", "-1", "1", "12345678901234", Long.MAX_VALUE + ""})
     public void testParseLongValueValidValues(final String value) throws Exception {
-        ParsingUtils.parseLongValue(value, 10);
+        assertEquals(Long.parseLong(value), ParsingUtils.parseLongValue(value, 10));
     }
 
 }
