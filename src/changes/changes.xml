@@ -50,6 +50,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" issue="COMPRESS-632" dev="ggregory" due-to="Yakov Shafranovich, Gary Gregory">Fix for zero size headers in ArjInputStream #439.</action>
       <action type="fix" issue="COMPRESS-632" dev="ggregory" due-to="Yakov Shafranovich">Fixes and tests for ArInputStream #440.</action>
       <action type="fix" issue="COMPRESS-632" dev="ggregory" due-to="Yakov Shafranovich, Gary Gregory">Fixes for dump file parsing #442.</action>
+      <action type="fix" issue="COMPRESS-632" dev="ggregory" due-to="Yakov Shafranovich, Gary Gregory">Improve CPIO exception detection and handling #441.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate SkipShieldingInputStream without replacement (no longer used).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Reuse commons-codec, don't duplicate package-private class PureJavaCrc32C.</action>
       <!--  UPDATE -->
