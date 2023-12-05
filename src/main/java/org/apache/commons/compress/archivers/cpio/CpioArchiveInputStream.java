@@ -28,6 +28,7 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.ParsingUtils;
 
 /**
  * CpioArchiveInputStream is a stream for reading cpio streams. All formats of cpio are supported (old ascii, old binary, new portable format and the new
@@ -362,7 +363,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
 
     private long readAsciiLong(final int length, final int radix) throws IOException {
         final byte[] tmpBuffer = readRange(length);
-        return Long.parseLong(ArchiveUtils.toAsciiString(tmpBuffer), radix);
+        return ParsingUtils.parseLongValue(ArchiveUtils.toAsciiString(tmpBuffer), radix);
     }
 
     private long readBinaryLong(final int length, final boolean swapHalfWord) throws IOException {

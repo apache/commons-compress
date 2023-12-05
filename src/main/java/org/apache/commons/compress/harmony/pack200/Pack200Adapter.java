@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.pack200;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -40,12 +41,21 @@ public abstract class Pack200Adapter {
      * Completion between 0..1.
      *
      * @param value Completion between 0..1.
+     * @throws IOException if the value cannot be parsed
      */
-    protected void completed(final double value) {
+    protected void completed(final double value) throws IOException {
         firePropertyChange("pack.progress", null, String.valueOf((int) (100 * value))); //$NON-NLS-1$
     }
 
-    protected void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) {
+    /**
+     * Reports a property update to listeners
+     *
+     * @param propertyName name of property being updated
+     * @param oldValue old property value
+     * @param newValue new property value
+     * @throws IOException if the values cannot be parsed
+     */
+    protected void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) throws IOException {
         support.firePropertyChange(propertyName, oldValue, newValue);
     }
 

@@ -50,6 +50,7 @@ import org.apache.commons.compress.archivers.EntryStreamOffsets;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.ParsingUtils;
 import org.apache.commons.compress.utils.TimeUtils;
 
 /**
@@ -759,9 +760,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         return fill((byte) value, offset, outbuf, length);
     }
 
-    void fillGNUSparse0xData(final Map<String, String> headers) {
+    void fillGNUSparse0xData(final Map<String, String> headers) throws IOException {
         paxGNUSparse = true;
-        realSize = Integer.parseInt(headers.get(TarGnuSparseKeys.SIZE));
+        realSize = ParsingUtils.parseIntValue(headers.get(TarGnuSparseKeys.SIZE));
         if (headers.containsKey(TarGnuSparseKeys.NAME)) {
             // version 0.1
             name = headers.get(TarGnuSparseKeys.NAME);
@@ -775,22 +776,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             name = headers.get(TarGnuSparseKeys.NAME);
         }
         if (headers.containsKey(TarGnuSparseKeys.REALSIZE)) {
-            try {
-                realSize = Integer.parseInt(headers.get(TarGnuSparseKeys.REALSIZE));
-            } catch (final NumberFormatException ex) {
-                throw new IOException("Corrupted TAR archive. GNU.sparse.realsize header for " + name + " contains non-numeric value");
-            }
+            realSize = ParsingUtils.parseIntValue(headers.get(TarGnuSparseKeys.REALSIZE));
         }
     }
 
     void fillStarSparseData(final Map<String, String> headers) throws IOException {
         starSparse = true;
         if (headers.containsKey("SCHILY.realsize")) {
-            try {
-                realSize = Long.parseLong(headers.get("SCHILY.realsize"));
-            } catch (final NumberFormatException ex) {
-                throw new IOException("Corrupted TAR archive. SCHILY.realsize header for " + name + " contains non-numeric value");
-            }
+            realSize = ParsingUtils.parseLongValue(headers.get("SCHILY.realsize"));
         }
     }
 
@@ -1634,19 +1627,19 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             setLinkName(val);
             break;
         case "gid":
-            setGroupId(Long.parseLong(val));
+            setGroupId(ParsingUtils.parseLongValue(val));
             break;
         case "gname":
             setGroupName(val);
             break;
         case "uid":
-            setUserId(Long.parseLong(val));
+            setUserId(ParsingUtils.parseLongValue(val));
             break;
         case "uname":
             setUserName(val);
             break;
         case "size":
-            final long size = Long.parseLong(val);
+            final long size = ParsingUtils.parseLongValue(val);
             if (size < 0) {
                 throw new IOException("Corrupted TAR archive. Entry size is negative");
             }
@@ -1665,14 +1658,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             setCreationTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
             break;
         case "SCHILY.devminor":
-            final int devMinor = Integer.parseInt(val);
+            final int devMinor = ParsingUtils.parseIntValue(val);
             if (devMinor < 0) {
                 throw new IOException("Corrupted TAR archive. Dev-Minor is negative");
             }
             setDevMinor(devMinor);
             break;
         case "SCHILY.devmajor":
-            final int devMajor = Integer.parseInt(val);
+            final int devMajor = ParsingUtils.parseIntValue(val);
             if (devMajor < 0) {
                 throw new IOException("Corrupted TAR archive. Dev-Major is negative");
             }

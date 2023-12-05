@@ -36,6 +36,7 @@ import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.ParsingUtils;
 
 /**
  * This class provides static utility methods to work with byte streams.
@@ -396,21 +397,11 @@ public class TarUtils {
         }
 
         for (int i = 0; i < sparseHeaderStrings.length; i += 2) {
-            long sparseOffset;
-            try {
-                sparseOffset = Long.parseLong(sparseHeaderStrings[i]);
-            } catch (final NumberFormatException ex) {
-                throw new IOException("Corrupted TAR archive." + " Sparse struct offset contains a non-numeric value");
-            }
+            final long sparseOffset = ParsingUtils.parseLongValue(sparseHeaderStrings[i]);
             if (sparseOffset < 0) {
                 throw new IOException("Corrupted TAR archive." + " Sparse struct offset contains negative value");
             }
-            long sparseNumbytes;
-            try {
-                sparseNumbytes = Long.parseLong(sparseHeaderStrings[i + 1]);
-            } catch (final NumberFormatException ex) {
-                throw new IOException("Corrupted TAR archive." + " Sparse struct numbytes contains a non-numeric value");
-            }
+            final long sparseNumbytes = ParsingUtils.parseLongValue(sparseHeaderStrings[i + 1]);
             if (sparseNumbytes < 0) {
                 throw new IOException("Corrupted TAR archive." + " Sparse struct numbytes contains negative value");
             }
@@ -750,12 +741,7 @@ public class TarUtils {
                                         throw new IOException(
                                                 "Failed to read Paxheader." + TarGnuSparseKeys.OFFSET + " is expected before GNU.sparse.numbytes shows up.");
                                     }
-                                    long numbytes;
-                                    try {
-                                        numbytes = Long.parseLong(value);
-                                    } catch (final NumberFormatException ex) {
-                                        throw new IOException("Failed to read Paxheader." + TarGnuSparseKeys.NUMBYTES + " contains a non-numeric value.");
-                                    }
+                                    final long numbytes = ParsingUtils.parseLongValue(value);
                                     if (numbytes < 0) {
                                         throw new IOException("Failed to read Paxheader." + TarGnuSparseKeys.NUMBYTES + " contains negative value");
                                     }
