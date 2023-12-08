@@ -369,12 +369,12 @@ public class ZipFile implements Closeable {
     private final List<ZipArchiveEntry> entries = new LinkedList<>();
 
     /**
-     * Maps a string to the first entry named it.
+     * Maps a string to the first entry by that name.
      */
     private final Map<String, ZipArchiveEntry> nameMap = new HashMap<>(HASH_SIZE);
 
     /**
-     * If multiple entries have the same name, maps the name to entries named it.
+     * If multiple entries have the same name, maps the name to entries by that name.
      */
     private Map<String, List<ZipArchiveEntry>> duplicateNameMap;
 
@@ -763,6 +763,7 @@ public class ZipFile implements Closeable {
                 }
 
                 final List<ZipArchiveEntry> entriesOfThatName = duplicateNameMap.computeIfAbsent(name, k -> {
+                    // Create a list when there are two entries with the same name
                     final ArrayList<ZipArchiveEntry> list = new ArrayList<>(2);
                     list.add(firstEntry);
                     return list;
