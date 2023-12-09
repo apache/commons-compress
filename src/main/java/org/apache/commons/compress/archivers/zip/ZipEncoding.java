@@ -31,7 +31,7 @@ import java.nio.ByteBuffer;
  * </p>
  *
  * <p>
- * The main reason for defining an own encoding layer comes from the problems with {@link java.lang.String#getBytes(String) String.getBytes}, which encodes
+ * The main reason for defining an own encoding layer comes from the problems with {@link String#getBytes(String) String.getBytes}, which encodes
  * unknown characters as ASCII quotation marks ('?'). Quotation marks are per definition an invalid file name on some operating systems like Windows, which
  * leads to ignored ZIP entries.
  * </p>

@@ -76,7 +76,7 @@ public class ParallelScatterZipCreator {
 
     /**
      * Constructs a ParallelScatterZipCreator with default threads, which is set to the number of available processors, as defined by
-     * {@link java.lang.Runtime#availableProcessors}
+     * {@link Runtime#availableProcessors}
      */
     public ParallelScatterZipCreator() {
         this(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
