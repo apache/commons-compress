@@ -306,7 +306,7 @@ public class SegmentHeader {
     }
 
     /**
-     * Completely reads in a byte array, akin to the implementation in {@link java.lang.DataInputStream}. TODO Refactor out into a separate InputStream handling
+     * Completely reads in a byte array, akin to the implementation in {@link java.io.DataInputStream}. TODO Refactor out into a separate InputStream handling
      * class
      *
      * @param in   the input stream to read from
