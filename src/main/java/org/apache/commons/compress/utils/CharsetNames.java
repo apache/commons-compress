@@ -17,6 +17,8 @@
 
 package org.apache.commons.compress.utils;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Character encoding names required of every implementation of the Java platform.
  *
@@ -60,7 +62,7 @@ public class CharsetNames {
      *
      * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
-    public static final String ISO_8859_1 = "ISO-8859-1";
+    public static final String ISO_8859_1 = StandardCharsets.ISO_8859_1.name();
 
     /**
      * <p>
@@ -72,7 +74,7 @@ public class CharsetNames {
      *
      * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
-    public static final String US_ASCII = "US-ASCII";
+    public static final String US_ASCII = StandardCharsets.US_ASCII.name();
 
     /**
      * <p>
@@ -85,7 +87,7 @@ public class CharsetNames {
      *
      * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
-    public static final String UTF_16 = "UTF-16";
+    public static final String UTF_16 = StandardCharsets.UTF_16.name();
 
     /**
      * <p>
@@ -97,7 +99,7 @@ public class CharsetNames {
      *
      * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
-    public static final String UTF_16BE = "UTF-16BE";
+    public static final String UTF_16BE = StandardCharsets.UTF_16BE.name();
 
     /**
      * <p>
@@ -109,7 +111,7 @@ public class CharsetNames {
      *
      * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
-    public static final String UTF_16LE = "UTF-16LE";
+    public static final String UTF_16LE = StandardCharsets.UTF_16LE.name();
 
     /**
      * <p>
@@ -121,5 +123,5 @@ public class CharsetNames {
      *
      * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
-    public static final String UTF_8 = "UTF-8";
+    public static final String UTF_8 = StandardCharsets.UTF_8.name();
 }
