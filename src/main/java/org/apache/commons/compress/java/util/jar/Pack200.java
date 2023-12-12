@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
@@ -41,22 +42,22 @@ public abstract class Pack200 {
     public interface Packer {
 
         /**
-         * the format of a class attribute name.
+         * The format of a class attribute name.
          */
         String CLASS_ATTRIBUTE_PFX = "pack.class.attribute."; //$NON-NLS-1$
 
         /**
-         * the format of a code attribute name.
+         * The format of a code attribute name.
          */
         String CODE_ATTRIBUTE_PFX = "pack.code.attribute."; //$NON-NLS-1$
 
         /**
-         * the deflation hint to set in the output archive.
+         * The deflation hint to set in the output archive.
          */
         String DEFLATE_HINT = "pack.deflate.hint";//$NON-NLS-1$
 
         /**
-         * the indicated amount of effort to use in compressing the archive.
+         * The indicated amount of effort to use in compressing the archive.
          */
         String EFFORT = "pack.effort";//$NON-NLS-1$
 
@@ -71,47 +72,47 @@ public abstract class Pack200 {
         String FALSE = "false";//$NON-NLS-1$
 
         /**
-         * the format of a field attribute name.
+         * The format of a field attribute name.
          */
         String FIELD_ATTRIBUTE_PFX = "pack.field.attribute.";//$NON-NLS-1$
 
         /**
-         * a String representation for {@code keep}.
+         * The String representation for {@code keep}.
          */
         String KEEP = "keep";//$NON-NLS-1$
 
         /**
-         * decide if all elements shall transmit in their original order.
+         * Decide if all elements shall transmit in their original order.
          */
         String KEEP_FILE_ORDER = "pack.keep.file.order";//$NON-NLS-1$
 
         /**
-         * a String representation for {@code latest}.
+         * The String representation for {@code latest}.
          */
         String LATEST = "latest";//$NON-NLS-1$
 
         /**
-         * the format of a method attribute name.
+         * The format of a method attribute name.
          */
         String METHOD_ATTRIBUTE_PFX = "pack.method.attribute.";//$NON-NLS-1$
 
         /**
-         * if it shall attempt to determine the latest modification time if this is set to {@code LATEST}.
+         * If it shall attempt to determine the latest modification time if this is set to {@code LATEST}.
          */
         String MODIFICATION_TIME = "pack.modification.time";//$NON-NLS-1$
 
         /**
-         * a String representation of {@code pass}.
+         * The String representation of {@code pass}.
          */
         String PASS = "pass";//$NON-NLS-1$
 
         /**
-         * the file that will not be compressed.
+         * The file that will not be compressed.
          */
         String PASS_FILE_PFX = "pack.pass.file.";//$NON-NLS-1$
 
         /**
-         * packer progress as a percentage.
+         * Packer progress as a percentage.
          */
         String PROGRESS = "pack.progress";//$NON-NLS-1$
 
@@ -121,22 +122,22 @@ public abstract class Pack200 {
         String SEGMENT_LIMIT = "pack.segment.limit";//$NON-NLS-1$
 
         /**
-         * a String representation of {@code strip}.
+         * The String representation of {@code strip}.
          */
         String STRIP = "strip";//$NON-NLS-1$
 
         /**
-         * a String representation of {@code true}.
+         * The String representation of {@code true}.
          */
         String TRUE = "true";//$NON-NLS-1$
 
         /**
-         * the action to take if an unknown attribute is encountered.
+         * The action to take if an unknown attribute is encountered.
          */
         String UNKNOWN_ATTRIBUTE = "pack.unknown.attribute";//$NON-NLS-1$
 
         /**
-         * add a listener for PropertyChange events
+         * Add a listener for PropertyChange events
          *
          * @param listener the listener to listen if PropertyChange events occurs
          */
@@ -196,7 +197,7 @@ public abstract class Pack200 {
         String KEEP = "keep";//$NON-NLS-1$
 
         /**
-         * the progress as a {@code percentage}.
+         * The progress as a {@code percentage}.
          */
         String PROGRESS = "unpack.progress";//$NON-NLS-1$
 
@@ -245,8 +246,14 @@ public abstract class Pack200 {
         void unpack(InputStream in, JarOutputStream out) throws IOException;
     }
 
+    /**
+     * System property key.
+     */
     private static final String SYSTEM_PROPERTY_PACKER = "java.util.jar.Pack200.Packer"; //$NON-NLS-1$
 
+    /**
+     * System property key.
+     */
     private static final String SYSTEM_PROPERTY_UNPACKER = "java.util.jar.Pack200.Unpacker"; //$NON-NLS-1$
 
     static Object newInstance(final String systemProperty, final String defaultClassName) {
@@ -254,7 +261,11 @@ public abstract class Pack200 {
             final String className = System.getProperty(systemProperty, defaultClassName);
             try {
                 // TODO Not sure if this will cause problems loading the class
-                return Pack200.class.getClassLoader().loadClass(className).getConstructor().newInstance();
+                ClassLoader classLoader = Pack200.class.getClassLoader();
+                if (classLoader == null) {
+                    classLoader = Objects.requireNonNull(ClassLoader.getSystemClassLoader(), "ClassLoader.getSystemClassLoader()");
+                }
+                return classLoader.loadClass(className).getConstructor().newInstance();
             } catch (final Exception e) {
                 throw new Error(Messages.getString("archive.3E", className), e); //$NON-NLS-1$
             }
@@ -266,6 +277,7 @@ public abstract class Pack200 {
      * <p>
      * The implementation of the packer engine is defined by the system property {@code 'java.util.jar.Pack200.Packer'}. If this system property is defined an
      * instance of the specified class is returned, otherwise the system's default implementation is returned.
+     * </p>
      *
      * @return an instance of {@code Packer}
      */
@@ -278,6 +290,7 @@ public abstract class Pack200 {
      * <p>
      * The implementation of the unpacker engine is defined by the system property {@link Pack200.Unpacker}. If this system property is defined an instance of
      * the specified class is returned, otherwise the system's default implementation is returned.
+     * </p>
      *
      * @return an instance of {@link Pack200.Unpacker}.
      */
