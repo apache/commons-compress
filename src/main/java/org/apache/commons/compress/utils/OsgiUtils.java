@@ -27,9 +27,8 @@ public class OsgiUtils {
     private static final boolean inOsgiEnvironment;
 
     static {
-        inOsgiEnvironment = OsgiUtils.class.getClassLoader() != null
-            ? isBundleReference(OsgiUtils.class.getClassLoader().getClass())
-            : false;
+        final ClassLoader classLoader = OsgiUtils.class.getClassLoader();
+        inOsgiEnvironment = classLoader != null ? isBundleReference(classLoader.getClass()) : false;
     }
 
     private static boolean isBundleReference(final Class<?> clazz) {
