@@ -109,7 +109,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     }
 
     /**
-     * Constructor.
+     * Constructs a new instance.
      *
      * @param is       stream to read from
      * @param encoding the encoding to use for file names, use null for the platform's default encoding
