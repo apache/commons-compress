@@ -86,10 +86,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      */
     private final class BoundedInputStream extends FilterInputStream {
 
-        /** the max length to provide */
+        /** The max length to provide */
         private final long max;
 
-        /** the number of bytes already returned */
+        /** The number of bytes already returned */
         private long pos;
 
         /**

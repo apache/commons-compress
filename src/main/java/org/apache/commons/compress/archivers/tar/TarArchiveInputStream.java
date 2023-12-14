@@ -102,7 +102,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     /** Input streams for reading sparse entries **/
     private List<InputStream> sparseInputStreams;
 
-    /** the index of current input stream being read when reading sparse entries */
+    /** The index of current input stream being read when reading sparse entries */
     private int currentSparseInputStreamIndex;
 
     /** The meta-data about the current entry */
