@@ -32,7 +32,7 @@ import java.util.Arrays;
  * </p>
  */
 public enum SevenZMethod {
-    /** no compression at all */
+    /** No compression at all */
     COPY(new byte[] { (byte) 0x00 }),
     /** LZMA - only supported when reading */
     LZMA(new byte[] { (byte) 0x03, (byte) 0x01, (byte) 0x01 }),

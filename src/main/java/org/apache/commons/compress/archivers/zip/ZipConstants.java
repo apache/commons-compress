@@ -25,13 +25,13 @@ final class ZipConstants {
     /** Masks last eight bits */
     static final int BYTE_MASK = 0xFF;
 
-    /** length of a ZipShort in bytes */
+    /** Length of a ZipShort in bytes */
     static final int SHORT = 2;
 
-    /** length of a ZipLong in bytes */
+    /** Length of a ZipLong in bytes */
     static final int WORD = 4;
 
-    /** length of a ZipEightByteInteger in bytes */
+    /** Length of a ZipEightByteInteger in bytes */
     static final int DWORD = 8;
 
     /** Initial ZIP specification version */

@@ -141,7 +141,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      */
     private long entryOffset = -1;
 
-    /** cached buffer for meta data - must only be used locally in the class (COMPRESS-172 - reduce garbage collection). */
+    /** Cached buffer for meta data - must only be used locally in the class (COMPRESS-172 - reduce garbage collection). */
     private final byte[] metaData = new byte[NAME_LEN + LAST_MODIFIED_LEN + USER_ID_LEN + GROUP_ID_LEN + FILE_MODE_LEN + LENGTH_LEN];
 
     /**

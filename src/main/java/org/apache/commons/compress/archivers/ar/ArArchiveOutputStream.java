@@ -47,7 +47,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
     private boolean haveUnclosedEntry;
     private int longFileMode = LONGFILE_ERROR;
 
-    /** indicates if this archive is finished */
+    /** Indicates if this archive is finished */
     private boolean finished;
 
     public ArArchiveOutputStream(final OutputStream out) {

@@ -367,7 +367,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /** The entry's real size in case of a sparse file. */
     private long realSize;
 
-    /** is this entry a GNU sparse entry using one of the PAX formats? */
+    /** Is this entry a GNU sparse entry using one of the PAX formats? */
     private boolean paxGNUSparse;
 
     /**
@@ -375,7 +375,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     private boolean paxGNU1XSparse;
 
-    /** is this entry a star sparse entry using the PAX header? */
+    /** Is this entry a star sparse entry using the PAX header? */
     private boolean starSparse;
 
     /** The entry's file reference */

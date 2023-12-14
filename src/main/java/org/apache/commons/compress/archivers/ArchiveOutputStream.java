@@ -55,7 +55,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Output
     /** Temporary buffer used for the {@link #write(int)} method. */
     private final byte[] oneByte = new byte[1];
 
-    /** holds the number of bytes written to this stream. */
+    /** Holds the number of bytes written to this stream. */
     private long bytesWritten;
 
     /**

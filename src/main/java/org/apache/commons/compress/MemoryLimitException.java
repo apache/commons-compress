@@ -35,7 +35,7 @@ public class MemoryLimitException extends IOException {
                 + "If the file is not corrupt, consider increasing the memory limit.";
     }
 
-    /** long instead of int to account for overflow for corrupt files. */
+    /** A long instead of int to account for overflow for corrupt files. */
     private final long memoryNeededInKb;
 
     private final int memoryLimitInKb;
