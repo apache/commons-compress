@@ -559,7 +559,7 @@ public class Segment extends ClassVisitor {
         segmentHeader.setFile_count(segmentUnit.fileListSize());
         segmentHeader.setHave_all_code_flags(!stripDebug);
         if (!options.isKeepDeflateHint()) {
-            segmentHeader.setDeflate_hint("true".equals(options.getDeflateHint()));
+            segmentHeader.setDeflate_hint(Boolean.parseBoolean(options.getDeflateHint()));
         }
 
         PackingUtils.log("Setup constant pool bands for the segment");
