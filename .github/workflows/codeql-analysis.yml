@@ -63,7 +63,7 @@ jobs:
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@305f6546310b9203e892c28c1484e82977f4f63d    # 2.22.10
+      uses: github/codeql-action/init@b374143c1149a9115d881581d29b8390bbcbb59c    # 3.22.11
       with:
         languages: ${{ matrix.language }}
         # If you wish to specify custom queries, you can do so here or in a config file.
@@ -91,4 +91,4 @@ jobs:
         mvn clean package -ntp -f "pom.xml" -B -V -e -Dfindbugs.skip -Dcheckstyle.skip -Dpmd.skip=true -Dspotbugs.skip -Denforcer.skip -Dmaven.javadoc.skip -DskipTests -Dmaven.test.skip.exec -Dlicense.skip=true -Drat.skip=true -Dspotless.check.skip=true
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@305f6546310b9203e892c28c1484e82977f4f63d    # 2.22.10
+      uses: github/codeql-action/analyze@b374143c1149a9115d881581d29b8390bbcbb59c    # 3.22.11
