@@ -65,10 +65,10 @@ public final class ZipEightByteInteger implements Serializable {
     public static final ZipEightByteInteger ZERO = new ZipEightByteInteger(0);
 
     /**
-     * Gets value as eight bytes in big endian byte order.
+     * Gets value as eight bytes in big-endian byte order.
      *
      * @param value the value to convert
-     * @return value as eight bytes in big endian byte order
+     * @return value as eight bytes in big-endian byte order
      */
     public static byte[] getBytes(final BigInteger value) {
         final byte[] result = new byte[8];
@@ -88,10 +88,10 @@ public final class ZipEightByteInteger implements Serializable {
     }
 
     /**
-     * Gets value as eight bytes in big endian byte order.
+     * Gets value as eight bytes in big-endian byte order.
      *
      * @param value the value to convert
-     * @return value as eight bytes in big endian byte order
+     * @return value as eight bytes in big-endian byte order
      */
     public static byte[] getBytes(final long value) {
         return getBytes(BigInteger.valueOf(value));
@@ -202,9 +202,9 @@ public final class ZipEightByteInteger implements Serializable {
     }
 
     /**
-     * Gets value as eight bytes in big endian byte order.
+     * Gets value as eight bytes in big-endian byte order.
      *
-     * @return value as eight bytes in big endian order
+     * @return value as eight bytes in big-endian order
      */
     public byte[] getBytes() {
         return ZipEightByteInteger.getBytes(value);

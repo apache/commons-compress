@@ -73,10 +73,10 @@ public final class ZipLong implements Cloneable, Serializable {
     public static final ZipLong AED_SIG = new ZipLong(0X08064B50L);
 
     /**
-     * Gets value as four bytes in big endian byte order.
+     * Gets value as four bytes in big-endian byte order.
      *
      * @param value the value to convert
-     * @return value as four bytes in big endian byte order
+     * @return value as four bytes in big-endian byte order
      */
     public static byte[] getBytes(final long value) {
         final byte[] result = new byte[WORD];
@@ -106,7 +106,7 @@ public final class ZipLong implements Cloneable, Serializable {
     }
 
     /**
-     * put the value as four bytes in big endian byte order.
+     * put the value as four bytes in big-endian byte order.
      *
      * @param value  the Java long to convert to bytes
      * @param buf    the output buffer
@@ -182,9 +182,9 @@ public final class ZipLong implements Cloneable, Serializable {
     }
 
     /**
-     * Gets value as four bytes in big endian byte order.
+     * Gets value as four bytes in big-endian byte order.
      *
-     * @return value as four bytes in big endian order
+     * @return value as four bytes in big-endian order
      */
     public byte[] getBytes() {
         return ZipLong.getBytes(value);

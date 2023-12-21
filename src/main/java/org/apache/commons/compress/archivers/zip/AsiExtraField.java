@@ -49,7 +49,7 @@ import java.util.zip.ZipException;
  * </p>
  *
  * <p>
- * Short is two bytes and Long is four bytes in big endian byte and word order, device numbers are currently not supported.
+ * Short is two bytes and Long is four bytes in big-endian byte and word order, device numbers are currently not supported.
  * </p>
  *
  * @NotThreadSafe
