@@ -110,7 +110,7 @@ public final class ByteUtils {
     }
 
     /**
-     * Reads the given byte array as a little endian long.
+     * Reads the given byte array as a little-endian long.
      *
      * @param bytes the byte array to convert
      * @return the number read
@@ -120,7 +120,7 @@ public final class ByteUtils {
     }
 
     /**
-     * Reads the given byte array as a little endian long.
+     * Reads the given byte array as a little-endian long.
      *
      * @param bytes  the byte array to convert
      * @param off    the offset into the array that starts the value
@@ -138,7 +138,7 @@ public final class ByteUtils {
     }
 
     /**
-     * Reads the given number of bytes from the given supplier as a little endian long.
+     * Reads the given number of bytes from the given supplier as a little-endian long.
      *
      * <p>
      * Typically used by our InputStreams that need to count the bytes read as well.
@@ -164,7 +164,7 @@ public final class ByteUtils {
     }
 
     /**
-     * Reads the given number of bytes from the given input as little endian long.
+     * Reads the given number of bytes from the given input as little-endian long.
      *
      * @param in     the input to read from
      * @param length the number of bytes representing the value
@@ -184,7 +184,7 @@ public final class ByteUtils {
     }
 
     /**
-     * Reads the given number of bytes from the given stream as a little endian long.
+     * Reads the given number of bytes from the given stream as a little-endian long.
      *
      * @param in     the stream to read from
      * @param length the number of bytes representing the value
@@ -207,7 +207,7 @@ public final class ByteUtils {
     }
 
     /**
-     * Inserts the given value into the array as a little endian sequence of the given length starting at the given offset.
+     * Inserts the given value into the array as a little-endian sequence of the given length starting at the given offset.
      *
      * @param b      the array to write into
      * @param value  the value to insert
@@ -223,7 +223,7 @@ public final class ByteUtils {
     }
 
     /**
-     * Provides the given value to the given consumer as a little endian sequence of the given length.
+     * Provides the given value to the given consumer as a little-endian sequence of the given length.
      *
      * @param consumer the consumer to provide the bytes to
      * @param value    the value to provide
@@ -239,7 +239,7 @@ public final class ByteUtils {
     }
 
     /**
-     * Writes the given value to the given stream as a little endian array of the given length.
+     * Writes the given value to the given stream as a little-endian array of the given length.
      *
      * @param out    the output to write to
      * @param value  the value to write
@@ -256,7 +256,7 @@ public final class ByteUtils {
     }
 
     /**
-     * Writes the given value to the given stream as a little endian array of the given length.
+     * Writes the given value to the given stream as a little-endian array of the given length.
      *
      * @param out    the stream to write to
      * @param value  the value to write

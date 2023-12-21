@@ -42,9 +42,9 @@ import org.apache.commons.compress.utils.ByteUtils;
  * TSize         Short       total data size for this block
  * Version       1 byte      version of this extra field, currently 1
  * UIDSize       1 byte      Size of UID field
- * UID           Variable    UID for this entry (little endian)
+ * UID           Variable    UID for this entry (little-endian)
  * GIDSize       1 byte      Size of GID field
- * GID           Variable    GID for this entry (little endian)
+ * GID           Variable    GID for this entry (little-endian)
  *
  * Central-header version:
  *
