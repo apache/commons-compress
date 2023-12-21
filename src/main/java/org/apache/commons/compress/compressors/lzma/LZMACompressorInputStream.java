@@ -23,9 +23,8 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.utils.CountingInputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.CountingInputStream;
 import org.tukaani.xz.LZMAInputStream;
 
 /**
@@ -102,7 +101,7 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
      */
     @Override
     public long getCompressedCount() {
-        return countingStream.getBytesRead();
+        return countingStream.getByteCount();
     }
 
     /** {@inheritDoc} */
@@ -124,6 +123,6 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
     /** {@inheritDoc} */
     @Override
     public long skip(final long n) throws IOException {
-        return IOUtils.skip(in, n);
+        return org.apache.commons.io.IOUtils.skip(in, n);
     }
 }

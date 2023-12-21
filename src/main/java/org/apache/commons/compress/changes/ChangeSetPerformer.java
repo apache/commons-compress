@@ -31,7 +31,6 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.changes.Change.ChangeType;
-import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * Performs ChangeSet operations on a stream. This class is thread safe and can be used multiple times. It operates on a copy of the ChangeSet. If the ChangeSet
@@ -135,7 +134,7 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
      */
     private void copyStream(final InputStream inputStream, final O outputStream, final E archiveEntry) throws IOException {
         outputStream.putArchiveEntry(archiveEntry);
-        IOUtils.copy(inputStream, outputStream);
+        org.apache.commons.io.IOUtils.copy(inputStream, outputStream);
         outputStream.closeArchiveEntry();
     }
 

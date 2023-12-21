@@ -62,6 +62,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       org.objectweb.asm;resolution:=optional,
       javax.crypto.*;resolution:=optional,
       org.apache.commons.commons-codec;resolution:=optional,
+      org.apache.commons.commons-io;resolution:=optional,
       *
     </commons.osgi.import>
 
@@ -204,7 +205,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>2.15.1</version>
-      <scope>test</scope>
     </dependency>    
     <dependency>
       <groupId>org.apache.commons</groupId>

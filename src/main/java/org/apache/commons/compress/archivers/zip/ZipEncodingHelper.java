@@ -24,7 +24,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 
 import org.apache.commons.compress.utils.CharsetNames;
-import org.apache.commons.compress.utils.Charsets;
+import org.apache.commons.io.Charsets;
 
 /**
  * Static helper functions for robustly encoding file names in ZIP files.

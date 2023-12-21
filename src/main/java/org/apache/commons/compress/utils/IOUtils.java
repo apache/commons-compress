@@ -30,6 +30,8 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 
+import org.apache.commons.io.FileUtils;
+
 /**
  * Utility functions
  *
@@ -38,7 +40,6 @@ import java.nio.file.LinkOption;
 public final class IOUtils {
 
     private static final int COPY_BUF_SIZE = 8024;
-    private static final int SKIP_BUF_SIZE = 4096;
 
     /**
      * Empty array of type {@link LinkOption}.
@@ -47,23 +48,16 @@ public final class IOUtils {
      */
     public static final LinkOption[] EMPTY_LINK_OPTIONS = {};
 
-    // This buffer does not need to be synchronized because it is write only; the contents are ignored
-    // Does not affect Immutability
-    private static final byte[] SKIP_BUF = new byte[SKIP_BUF_SIZE];
-
     /**
      * Closes the given Closeable and swallows any IOException that may occur.
      *
      * @param c Closeable to close, can be null
      * @since 1.7
+     * @deprecated Use {@link org.apache.commons.io.IOUtils#closeQuietly(Closeable)}.
      */
+    @Deprecated
     public static void closeQuietly(final Closeable c) {
-        if (c != null) {
-            try {
-                c.close();
-            } catch (final IOException ignored) { // NOPMD NOSONAR
-            }
-        }
+        org.apache.commons.io.IOUtils.closeQuietly(c);
     }
 
     /**
@@ -73,9 +67,11 @@ public final class IOUtils {
      * @param outputStream The output stream to write.
      * @throws IOException if an I/O error occurs when reading or writing.
      * @since 1.21
+     * @deprecated Use {@link FileUtils#copyFile(File, OutputStream)}.
      */
+    @Deprecated
     public static void copy(final File sourceFile, final OutputStream outputStream) throws IOException {
-        Files.copy(sourceFile.toPath(), outputStream);
+        FileUtils.copyFile(sourceFile, outputStream);
     }
 
     /**
@@ -85,9 +81,11 @@ public final class IOUtils {
      * @param output the target, may be null to simulate output to dev/null on Linux and NUL on Windows
      * @return the number of bytes copied
      * @throws IOException if an error occurs
+     * @deprecated Use {@link org.apache.commons.io.IOUtils#copy(InputStream, OutputStream)}.
      */
+    @Deprecated
     public static long copy(final InputStream input, final OutputStream output) throws IOException {
-        return copy(input, output, COPY_BUF_SIZE);
+        return org.apache.commons.io.IOUtils.copy(input, output);
     }
 
     /**
@@ -99,21 +97,11 @@ public final class IOUtils {
      * @return the number of bytes copied
      * @throws IOException              if an error occurs
      * @throws IllegalArgumentException if bufferSize is smaller than or equal to 0
+     * @deprecated Use {@link org.apache.commons.io.IOUtils#copy(InputStream, OutputStream, int)}.
      */
+    @Deprecated
     public static long copy(final InputStream input, final OutputStream output, final int bufferSize) throws IOException {
-        if (bufferSize < 1) {
-            throw new IllegalArgumentException("bufferSize must be bigger than 0");
-        }
-        final byte[] buffer = new byte[bufferSize];
-        int n = 0;
-        long count = 0;
-        while (-1 != (n = input.read(buffer))) {
-            if (output != null) {
-                output.write(buffer, 0, n);
-            }
-            count += n;
-        }
-        return count;
+        return org.apache.commons.io.IOUtils.copy(input, output, bufferSize);
     }
 
     /**
@@ -125,9 +113,11 @@ public final class IOUtils {
      * @return the number of bytes copied
      * @throws IOException if an error occurs
      * @since 1.21
+     * @deprecated Use {@link org.apache.commons.io.IOUtils#copyLarge(InputStream, OutputStream, long, long)}.
      */
+    @Deprecated
     public static long copyRange(final InputStream input, final long len, final OutputStream output) throws IOException {
-        return copyRange(input, len, output, COPY_BUF_SIZE);
+        return org.apache.commons.io.IOUtils.copyLarge(input, output, 0, len);
     }
 
     /**
@@ -217,15 +207,7 @@ public final class IOUtils {
         if (len < 0 || offset < 0 || len + offset > array.length || len + offset < 0) {
             throw new IndexOutOfBoundsException();
         }
-        int count = 0, x = 0;
-        while (count != len) {
-            x = input.read(array, offset + count, len - count);
-            if (x == -1) {
-                break;
-            }
-            count += x;
-        }
-        return count;
+        return org.apache.commons.io.IOUtils.read(input, array, offset, len);
     }
 
     /**
@@ -243,14 +225,7 @@ public final class IOUtils {
      */
     public static void readFully(final ReadableByteChannel channel, final ByteBuffer byteBuffer) throws IOException {
         final int expectedLength = byteBuffer.remaining();
-        int read = 0;
-        while (read < expectedLength) {
-            final int readNow = channel.read(byteBuffer);
-            if (readNow <= 0) {
-                break;
-            }
-            read += readNow;
-        }
+        final int read = org.apache.commons.io.IOUtils.read(channel, byteBuffer);
         if (read < expectedLength) {
             throw new EOFException();
         }
@@ -316,42 +291,29 @@ public final class IOUtils {
      * @param numToSkip the number of bytes to skip
      * @return the number of bytes actually skipped
      * @throws IOException on error
+     * @deprecated Use {@link org.apache.commons.io.IOUtils#skip(InputStream, long)}.
      */
+    @Deprecated
     public static long skip(final InputStream input, long numToSkip) throws IOException {
-        final long available = numToSkip;
-        while (numToSkip > 0) {
-            final long skipped = input.skip(numToSkip);
-            if (skipped == 0) {
-                break;
-            }
-            numToSkip -= skipped;
-        }
-
-        while (numToSkip > 0) {
-            final int read = readFully(input, SKIP_BUF, 0, (int) Math.min(numToSkip, SKIP_BUF_SIZE));
-            if (read < 1) {
-                break;
-            }
-            numToSkip -= read;
-        }
-        return available - numToSkip;
+        return org.apache.commons.io.IOUtils.skip(input, numToSkip);
     }
 
     /**
      * Gets the contents of an {@code InputStream} as a {@code byte[]}.
      * <p>
      * This method buffers the input internally, so there is no need to use a {@code BufferedInputStream}.
+     * </p>
      *
      * @param input the {@code InputStream} to read from
      * @return the requested byte array
      * @throws NullPointerException if the input is null
      * @throws IOException          if an I/O error occurs
      * @since 1.5
+     * @deprecated Use {@link org.apache.commons.io.IOUtils#toByteArray(InputStream)}.
      */
+    @Deprecated
     public static byte[] toByteArray(final InputStream input) throws IOException {
-        final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        copy(input, output);
-        return output.toByteArray();
+        return org.apache.commons.io.IOUtils.toByteArray(input);
     }
 
     /** Private constructor to prevent instantiation of this utility class. */

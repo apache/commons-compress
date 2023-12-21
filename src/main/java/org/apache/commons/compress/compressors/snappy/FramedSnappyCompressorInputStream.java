@@ -27,9 +27,9 @@ import org.apache.commons.codec.digest.PureJavaCrc32C;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.CountingInputStream;
 
 /**
  * CompressorInputStream for the framing Snappy format.
@@ -194,7 +194,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
      */
     @Override
     public long getCompressedCount() {
-        return countingStream.getBytesRead() - unreadBytes;
+        return countingStream.getByteCount() - unreadBytes;
     }
 
     /** {@inheritDoc} */
@@ -334,7 +334,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
         if (size < 0) {
             throw new IOException("Found illegal chunk with negative size");
         }
-        final long read = IOUtils.skip(inputStream, size);
+        final long read = org.apache.commons.io.IOUtils.skip(inputStream, (long) size);
         count(read);
         if (read != size) {
             throw new IOException("Premature end of stream");

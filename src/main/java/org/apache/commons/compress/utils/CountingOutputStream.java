@@ -27,7 +27,9 @@ import java.io.OutputStream;
  *
  * @since 1.3
  * @NotThreadSafe
+ * @deprecated Use {@link org.apache.commons.io.output.CountingOutputStream}.
  */
+@Deprecated
 public class CountingOutputStream extends FilterOutputStream {
     private long bytesWritten;
 

@@ -28,8 +28,7 @@ import java.util.jar.JarOutputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.java.util.jar.Pack200;
-import org.apache.commons.compress.utils.CloseShieldFilterInputStream;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.input.CloseShieldInputStream;
 
 /**
  * An input stream that decompresses from the Pack200 format to be read as any other stream.
@@ -141,7 +140,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
             if (file == null) {
                 // unpack would close this stream but we want to give the call site more control
                 // TODO unpack should not close its given stream.
-                try (CloseShieldFilterInputStream closeShield = new CloseShieldFilterInputStream(inputStream)) {
+                try (CloseShieldInputStream closeShield = CloseShieldInputStream.wrap(inputStream)) {
                     unpacker.unpack(closeShield, jarOut);
                 }
             } else {
@@ -264,6 +263,6 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     @SuppressWarnings("resource") // Does not allocate
     @Override
     public long skip(final long count) throws IOException {
-        return IOUtils.skip(getInputStream(), count);
+        return org.apache.commons.io.IOUtils.skip(getInputStream(), count);
     }
 }

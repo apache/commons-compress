@@ -48,9 +48,9 @@ import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInpu
 import org.apache.commons.compress.utils.BoundedArchiveInputStream;
 import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.compress.utils.CharsetNames;
-import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.CountingInputStream;
 
 /**
  * Replacement for {@link java.util.zip.ZipFile}.
@@ -138,7 +138,7 @@ public class ZipFile implements Closeable {
 
         @Override
         public long getCompressedCount() {
-            return super.getBytesRead();
+            return super.getByteCount();
         }
 
         @Override
@@ -359,7 +359,7 @@ public class ZipFile implements Closeable {
      * @param zipFile file to close, can be null
      */
     public static void closeQuietly(final ZipFile zipFile) {
-        IOUtils.closeQuietly(zipFile);
+        org.apache.commons.io.IOUtils.closeQuietly(zipFile);
     }
 
     /**
@@ -656,7 +656,7 @@ public class ZipFile implements Closeable {
         } finally {
             closed = !success;
             if (!success && closeOnError) {
-                IOUtils.closeQuietly(archive);
+                org.apache.commons.io.IOUtils.closeQuietly(archive);
             }
         }
     }
@@ -987,7 +987,7 @@ public class ZipFile implements Closeable {
     public String getUnixSymlink(final ZipArchiveEntry entry) throws IOException {
         if (entry != null && entry.isUnixSymlink()) {
             try (InputStream in = getInputStream(entry)) {
-                return zipEncoding.decode(IOUtils.toByteArray(in));
+                return zipEncoding.decode(org.apache.commons.io.IOUtils.toByteArray(in));
             }
         }
         return null;

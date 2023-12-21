@@ -26,9 +26,9 @@ import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.ChecksumCalculatingInputStream;
-import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.CountingInputStream;
 
 /**
  * CompressorInputStream for the LZ4 frame format.
@@ -175,7 +175,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
      */
     @Override
     public long getCompressedCount() {
-        return inputStream.getBytesRead();
+        return inputStream.getByteCount();
     }
 
     private void init(final boolean firstFrame) throws IOException {
@@ -368,7 +368,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
             if (len < 0) {
                 throw new IOException("Found illegal skippable frame with negative size");
             }
-            final long skipped = IOUtils.skip(inputStream, len);
+            final long skipped = org.apache.commons.io.IOUtils.skip(inputStream, len);
             count(skipped);
             if (len != skipped) {
                 throw new IOException("Premature end of stream while skipping frame");

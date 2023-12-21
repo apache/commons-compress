@@ -152,7 +152,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         @Override
         public long skip(final long n) throws IOException {
             final long toSkip = max >= 0 ? Math.min(n, max - pos) : n;
-            final long skippedBytes = IOUtils.skip(in, toSkip);
+            final InputStream input = in;
+            final long skippedBytes = org.apache.commons.io.IOUtils.skip(input, toSkip);
             pos += skippedBytes;
             return skippedBytes;
         }

@@ -39,9 +39,9 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.CharsetNames;
-import org.apache.commons.compress.utils.CountingOutputStream;
 import org.apache.commons.compress.utils.FixedLengthBlockOutputStream;
 import org.apache.commons.compress.utils.TimeUtils;
+import org.apache.commons.io.output.CountingOutputStream;
 
 /**
  * The TarOutputStream writes a UNIX tar archive as an OutputStream. Methods are provided to put entries, and then write their contents by writing to this
@@ -431,7 +431,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
 
     @Override
     public long getBytesWritten() {
-        return countingOut.getBytesWritten();
+        return countingOut.getByteCount();
     }
 
     @Deprecated

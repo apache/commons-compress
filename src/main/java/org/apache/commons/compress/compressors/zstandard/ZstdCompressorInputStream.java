@@ -21,9 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.utils.CountingInputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.CountingInputStream;
 
 import com.github.luben.zstd.BufferPool;
 import com.github.luben.zstd.ZstdInputStream;
@@ -70,7 +69,7 @@ public class ZstdCompressorInputStream extends CompressorInputStream implements 
      */
     @Override
     public long getCompressedCount() {
-        return countingStream.getBytesRead();
+        return countingStream.getByteCount();
     }
 
     @Override
@@ -112,7 +111,7 @@ public class ZstdCompressorInputStream extends CompressorInputStream implements 
 
     @Override
     public long skip(final long n) throws IOException {
-        return IOUtils.skip(decIS, n);
+        return org.apache.commons.io.IOUtils.skip(decIS, n);
     }
 
     @Override

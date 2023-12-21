@@ -322,7 +322,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     private void consumeRemainderOfLastBlock() throws IOException {
         final long bytesReadOfLastBlock = getBytesRead() % blockSize;
         if (bytesReadOfLastBlock > 0) {
-            final long skipped = IOUtils.skip(inputStream, blockSize - bytesReadOfLastBlock);
+            final long skipped = org.apache.commons.io.IOUtils.skip(inputStream, blockSize - bytesReadOfLastBlock);
             count(skipped);
         }
     }
@@ -417,7 +417,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
         if (currEntry != null) {
             /* Skip will only go to the end of the current entry */
-            IOUtils.skip(this, Long.MAX_VALUE);
+            org.apache.commons.io.IOUtils.skip(this, Long.MAX_VALUE);
 
             /* skip to the end of the last record */
             skipRecordPadding();
@@ -796,7 +796,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         long skipped;
 
         if (!currEntry.isSparse()) {
-            skipped = IOUtils.skip(inputStream, numToSkip);
+            skipped = org.apache.commons.io.IOUtils.skip(inputStream, numToSkip);
             // for non-sparse entry, we should get the bytes actually skipped bytes along with
             // inputStream.available() if inputStream is instance of FileInputStream
             skipped = getActuallySkipped(availableOfInputStream, skipped, numToSkip);
@@ -819,7 +819,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             final long available = inputStream.available();
             final long numRecords = this.entrySize / this.recordSize + 1;
             final long padding = numRecords * this.recordSize - this.entrySize;
-            long skipped = IOUtils.skip(inputStream, padding);
+            long skipped = org.apache.commons.io.IOUtils.skip(inputStream, padding);
 
             skipped = getActuallySkipped(available, skipped, padding);
 

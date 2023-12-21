@@ -24,9 +24,9 @@ import java.util.Arrays;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.CountingInputStream;
 
 /**
  * Encapsulates code common to LZ77 decompressors.
@@ -145,7 +145,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      */
     @Override
     public long getCompressedCount() {
-        return in.getBytesRead();
+        return in.getByteCount();
     }
 
     /**

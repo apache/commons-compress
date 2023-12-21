@@ -30,8 +30,8 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
-import org.apache.commons.compress.utils.Charsets;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.Charsets;
 
 /**
  * Implements the "arj" archive format as an InputStream.
@@ -129,7 +129,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     public ArjArchiveEntry getNextEntry() throws IOException {
         if (currentInputStream != null) {
             // return value ignored as IOUtils.skip ensures the stream is drained completely
-            IOUtils.skip(currentInputStream, Long.MAX_VALUE);
+            final InputStream input = currentInputStream;
+            org.apache.commons.io.IOUtils.skip(input, Long.MAX_VALUE);
             currentInputStream.close();
             currentLocalFileHeader = null;
             currentInputStream = null;

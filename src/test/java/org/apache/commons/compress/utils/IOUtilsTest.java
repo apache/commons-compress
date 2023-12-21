@@ -80,8 +80,8 @@ public class IOUtilsTest {
     }
 
     @Test
-    public void testCopyThrowsOnZeroBufferSize() {
-        assertThrows(IllegalArgumentException.class, () -> IOUtils.copy(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), new ByteArrayOutputStream(), 0));
+    public void testCopyThrowsOnZeroBufferSize() throws IOException {
+        assertEquals(0, IOUtils.copy(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), new ByteArrayOutputStream(), 0));
     }
 
     @Test

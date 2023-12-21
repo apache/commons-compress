@@ -42,6 +42,7 @@ import org.apache.commons.compress.archivers.tar.TarFile;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.output.NullOutputStream;
 
 /**
  * Provides a high level API for expanding archives.
@@ -85,7 +86,7 @@ public class Expander {
                     throw new IOException("Failed to create directory " + parent);
                 }
                 if (nullTarget) {
-                    writer.accept(nextEntry, null);
+                    writer.accept(nextEntry, NullOutputStream.INSTANCE);
                 } else {
                     try (OutputStream outputStream = Files.newOutputStream(targetPath)) {
                         writer.accept(nextEntry, outputStream);

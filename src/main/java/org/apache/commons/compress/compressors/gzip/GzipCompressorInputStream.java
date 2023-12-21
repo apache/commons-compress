@@ -32,9 +32,8 @@ import java.util.zip.Inflater;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.apache.commons.compress.utils.CountingInputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.CountingInputStream;
 
 /**
  * Input stream that decompresses .gz files.
@@ -191,7 +190,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
      */
     @Override
     public long getCompressedCount() {
-        return countingStream.getBytesRead();
+        return countingStream.getByteCount();
     }
 
     /**
@@ -339,7 +338,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
                 in.reset();
 
                 final int skipAmount = bufUsed - inf.getRemaining();
-                if (IOUtils.skip(in, skipAmount) != skipAmount) {
+                if (org.apache.commons.io.IOUtils.skip(in, (long) skipAmount) != skipAmount) {
                     throw new IOException();
                 }
 

@@ -17,6 +17,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +41,6 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CharsetNames;
-import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * Reimplementation of {@link java.util.zip.ZipOutputStream java.util.zip.ZipOutputStream} to handle the extended functionality of this package, especially
@@ -477,7 +477,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
             // will never get opened properly when an exception is thrown so doesn't need to get closed
             streamCompressor = StreamCompressor.create(channel, def); // NOSONAR
         } catch (final IOException e) { // NOSONAR
-            IOUtils.closeQuietly(channel);
+            final Closeable c = channel;
+            org.apache.commons.io.IOUtils.closeQuietly(c);
             channel = null;
             outputStream = Files.newOutputStream(file, options);
             streamCompressor = StreamCompressor.create(outputStream, def);

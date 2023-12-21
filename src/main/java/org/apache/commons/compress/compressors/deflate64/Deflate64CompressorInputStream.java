@@ -16,8 +16,7 @@
  */
 package org.apache.commons.compress.compressors.deflate64;
 
-import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
-
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -68,7 +67,8 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
     }
 
     private void closeDecoder() {
-        closeQuietly(decoder);
+        final Closeable c = decoder;
+        org.apache.commons.io.IOUtils.closeQuietly(c);
         decoder = null;
     }
 

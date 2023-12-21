@@ -24,9 +24,8 @@ import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.utils.CountingInputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.CountingInputStream;
 
 /**
  * Deflate decompressor.
@@ -102,7 +101,7 @@ public class DeflateCompressorInputStream extends CompressorInputStream implemen
      */
     @Override
     public long getCompressedCount() {
-        return countingStream.getBytesRead();
+        return countingStream.getByteCount();
     }
 
     /** {@inheritDoc} */
@@ -127,6 +126,6 @@ public class DeflateCompressorInputStream extends CompressorInputStream implemen
     /** {@inheritDoc} */
     @Override
     public long skip(final long n) throws IOException {
-        return IOUtils.skip(in, n);
+        return org.apache.commons.io.IOUtils.skip(in, n);
     }
 }

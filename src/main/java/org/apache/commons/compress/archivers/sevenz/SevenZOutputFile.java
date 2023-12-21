@@ -52,8 +52,8 @@ import java.util.stream.StreamSupport;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.utils.CountingOutputStream;
 import org.apache.commons.compress.utils.TimeUtils;
+import org.apache.commons.io.output.CountingOutputStream;
 
 /**
  * Writes a 7z file.
@@ -217,14 +217,14 @@ public class SevenZOutputFile implements Closeable {
         if (fileBytesWritten > 0) { // this implies currentOutputStream != null
             entry.setHasStream(true);
             ++numNonEmptyStreams;
-            entry.setSize(currentOutputStream.getBytesWritten()); // NOSONAR
+            entry.setSize(currentOutputStream.getByteCount()); // NOSONAR
             entry.setCompressedSize(fileBytesWritten);
             entry.setCrcValue(crc32.getValue());
             entry.setCompressedCrcValue(compressedCrc32.getValue());
             entry.setHasCrc(true);
             if (additionalCountingStreams != null) {
                 final long[] sizes = new long[additionalCountingStreams.length];
-                Arrays.setAll(sizes, i -> additionalCountingStreams[i].getBytesWritten());
+                Arrays.setAll(sizes, i -> additionalCountingStreams[i].getByteCount());
                 additionalSizes.put(entry, sizes);
             }
         } else {
