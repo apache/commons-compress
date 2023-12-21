@@ -350,6 +350,8 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
             <links>
               <link>${commons.javadoc8.java.link}</link>
               <link>${commons.javadoc.javaee.link}</link>
+              <link>https://commons.apache.org/proper/commons-codec/apidocs</link>
+              <link>https://commons.apache.org/proper/commons-io/apidocs</link>
             </links>
             <tags>
               <tag>
@@ -525,38 +527,9 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           </rulesets>
         </configuration>
       </plugin>
-      <!-- Override Javadoc config in parent pom to add JCIP tags -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration> 
-          <source>${maven.compiler.source}</source>
-          <quiet>true</quiet>
-          <encoding>${commons.encoding}</encoding>
-          <docencoding>${commons.docEncoding}</docencoding>
-          <linksource>true</linksource>
-          <links>
-            <link>${commons.javadoc8.java.link}</link>
-            <link>${commons.javadoc.javaee.link}</link>
-          </links>
-          <tags>
-            <tag>
-              <name>Immutable</name>
-              <placement>a</placement>
-              <head>This class is immutable</head>
-            </tag>
-            <tag>
-              <name>NotThreadSafe</name>
-              <placement>a</placement>
-              <head>This class is not thread-safe</head>
-            </tag>
-            <tag>
-              <name>ThreadSafe</name>
-              <placement>a</placement>
-              <head>This class is thread-safe</head>
-            </tag>
-          </tags>
-        </configuration> 
       </plugin>
       <plugin>
         <groupId>com.github.spotbugs</groupId>
