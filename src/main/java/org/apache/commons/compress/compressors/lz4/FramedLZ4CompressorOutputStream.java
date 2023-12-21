@@ -154,9 +154,9 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
     private boolean finished;
 
     // used for frame header checksum and content checksum, if requested
-    private final XXHash32 contentHash = new XXHash32();
+    private final org.apache.commons.codec.digest.XXHash32 contentHash = new org.apache.commons.codec.digest.XXHash32();
     // used for block checksum, if requested
-    private final XXHash32 blockHash;
+    private final org.apache.commons.codec.digest.XXHash32 blockHash;
 
     // only created if the config requires block dependency
     private final byte[] blockDependencyBuffer;
@@ -185,7 +185,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
         this.params = params;
         blockData = new byte[params.blockSize.getSize()];
         this.out = out;
-        blockHash = params.withBlockChecksum ? new XXHash32() : null;
+        blockHash = params.withBlockChecksum ? new org.apache.commons.codec.digest.XXHash32() : null;
         out.write(FramedLZ4CompressorInputStream.LZ4_SIGNATURE);
         writeFrameDescriptor();
         blockDependencyBuffer = params.withBlockDependency ? new byte[BlockLZ4CompressorInputStream.WINDOW_SIZE] : null;

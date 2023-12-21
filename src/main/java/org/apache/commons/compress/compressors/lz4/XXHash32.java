@@ -29,7 +29,9 @@ import java.util.zip.Checksum;
  * @see <a href="http://cyan4973.github.io/xxHash/">xxHash</a>
  * @NotThreadSafe
  * @since 1.14
+ * @deprecated Use {@code org.apache.commons.codec.digest.XXHash32}.
  */
+@Deprecated
 public class XXHash32 implements Checksum {
 
     private static final int BUF_SIZE = 16;
