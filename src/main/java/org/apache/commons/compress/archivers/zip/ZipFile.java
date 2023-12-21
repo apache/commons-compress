@@ -53,7 +53,7 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 
 /**
- * Replacement for {@link java.util.ZipFile}.
+ * Replacement for {@link java.util.zip.ZipFile}.
  *
  * <p>
  * This class adds support for file name encodings other than UTF-8 (which is required to work on ZIP files created by native ZIP tools and is able to skip a
@@ -62,7 +62,7 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  * </p>
  *
  * <p>
- * It doesn't extend {@link java.util.zip.ZipFile} as it would have to reimplement all methods anyway. Like {@link java.util.ZipFile}, it uses
+ * It doesn't extend {@link java.util.zip.ZipFile} as it would have to reimplement all methods anyway. Like {@link java.util.zip.ZipFile}, it uses
  * SeekableByteChannel under the covers and supports compressed and uncompressed entries. As of Apache Commons Compress 1.3 it also transparently supports Zip64
  * extensions and thus individual entries and archives larger than 4 GB or with more than 65536 entries.
  * </p>
