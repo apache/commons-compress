@@ -40,7 +40,6 @@ import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
 
 /**
  * {@link MultiReadOnlySeekableByteChannel} that knows what a split ZIP archive should look like.
- *
  * <p>
  * If you want to read a split archive using {@link ZipFile} then create an instance of this class from the parts of the archive.
  * </p>
@@ -264,9 +263,10 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * 8.5.3 Spanned/Split archives created using PKZIP for Windows (V2.50 or greater), PKZIP Command Line (V2.50 or greater), or PKZIP Explorer will include a
      * special spanning signature as the first 4 bytes of the first segment of the archive. This signature (0x08074b50) will be followed immediately by the
      * local header signature for the first file in the archive.
-     *
+     * </p>
      * <p>
-     * the first 4 bytes of the first ZIP split segment should be the ZIP split signature(0x08074B50)
+     * The first 4 bytes of the first ZIP split segment should be the ZIP split signature(0x08074B50)
+     * </p>
      *
      * @param channels channels to be validated
      * @throws IOException
