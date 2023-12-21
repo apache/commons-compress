@@ -52,9 +52,11 @@ public class ArchiveUtils {
      * @param buffer1 the first buffer
      * @param buffer2 the second buffer
      * @return {@code true} if buffer1 and buffer2 have same contents
+     * @deprecated Use {@link Arrays#equals(byte[], byte[])}.
      */
+    @Deprecated
     public static boolean isEqual(final byte[] buffer1, final byte[] buffer2) {
-        return isEqual(buffer1, 0, buffer1.length, buffer2, 0, buffer2.length, false);
+        return Arrays.equals(buffer1, buffer2);
     }
 
     /**
