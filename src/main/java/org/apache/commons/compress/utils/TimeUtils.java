@@ -187,7 +187,7 @@ public final class TimeUtils {
     /**
      * Converts standard UNIX time (in seconds, UTC/GMT) to {@link FileTime}.
      *
-     * @param time UNIX timestamp.
+     * @param time UNIX timestamp (in seconds, UTC/GMT).
      * @return the corresponding FileTime.
      */
     public static FileTime unixTimeToFileTime(final long time) {
