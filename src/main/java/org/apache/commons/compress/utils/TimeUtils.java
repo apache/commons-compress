@@ -62,6 +62,7 @@ public final class TimeUtils {
      * @return true if the time exceeds the minimum or maximum UNIX time, false otherwise.
      */
     public static boolean isUnixTime(final FileTime time) {
+        // TODO Apache Commons IO 2.16.0
         return isUnixTime(toUnixTime(time));
     }
 
@@ -72,6 +73,7 @@ public final class TimeUtils {
      * @return true if the time can be represented in the standard UNIX time, false otherwise.
      */
     public static boolean isUnixTime(final long seconds) {
+        // TODO Apache Commons IO 2.16.0
         return Integer.MIN_VALUE <= seconds && seconds <= Integer.MAX_VALUE;
     }
 
@@ -170,6 +172,7 @@ public final class TimeUtils {
      * @return the UNIX timestamp.
      */
     public static long toUnixTime(final FileTime fileTime) {
+        // TODO Apache Commons IO 2.16.0
         return fileTime != null ? fileTime.to(TimeUnit.SECONDS) : 0;
     }
 
