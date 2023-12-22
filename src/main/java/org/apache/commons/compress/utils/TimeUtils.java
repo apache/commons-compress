@@ -42,9 +42,6 @@ public final class TimeUtils {
     /** The amount of 100-nanosecond intervals in one millisecond. */
     static final long HUNDRED_NANOS_PER_MILLISECOND = TimeUnit.MILLISECONDS.toNanos(1) / 100;
 
-    /** The amount of 100-nanosecond intervals in one second. */
-    static final long HUNDRED_NANOS_PER_SECOND = TimeUnit.SECONDS.toNanos(1) / 100;
-
     /**
      * <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms724290%28v=vs.85%29.aspx">Windows File Times</a>
      * <p>
