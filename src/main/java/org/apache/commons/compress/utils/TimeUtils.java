@@ -92,8 +92,7 @@ public final class TimeUtils {
      *
      * @param ntfsTime the NTFS time in 100-nanosecond units.
      * @return the FileTime.
-     * @see TimeUtils#WINDOWS_EPOCH_OFFSET
-     * @see TimeUtils#toNtfsTime(FileTime)
+     * @see FileTimes#toNtfsTime(FileTime)
      * @deprecated Use {@link FileTimes#ntfsTimeToFileTime(long)}.
      */
     @Deprecated
@@ -106,7 +105,7 @@ public final class TimeUtils {
      *
      * @param fileTime the file time to be converted.
      * @return a {@link Date} which corresponds to the supplied time, or {@code null} if the time is {@code null}.
-     * @see TimeUtils#toFileTime(Date)
+     * @see FileTimes#toFileTime(Date)
      * @deprecated Use {@link FileTimes#toDate(FileTime)}.
      */
     @Deprecated
@@ -119,7 +118,7 @@ public final class TimeUtils {
      *
      * @param date the date to be converted.
      * @return a {@link FileTime} which corresponds to the supplied date, or {@code null} if the date is {@code null}.
-     * @see TimeUtils#toDate(FileTime)
+     * @see FileTimes#toDate(FileTime)
      * @deprecated Use {@link FileTimes#toFileTime(Date)}.
      */
     @Deprecated
@@ -144,8 +143,7 @@ public final class TimeUtils {
      *
      * @param fileTime the FileTime.
      * @return the NTFS time in 100-nanosecond units.
-     * @see TimeUtils#WINDOWS_EPOCH_OFFSET
-     * @see TimeUtils#ntfsTimeToFileTime(long)
+     * @see FileTimes#ntfsTimeToFileTime(long)
      * @deprecated Use {@link FileTimes#toNtfsTime(FileTime)}.
      */
     @Deprecated
