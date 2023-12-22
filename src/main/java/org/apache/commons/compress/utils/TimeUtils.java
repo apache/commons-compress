@@ -62,7 +62,7 @@ public final class TimeUtils {
      * @return true if the time exceeds the minimum or maximum UNIX time, false otherwise.
      */
     public static boolean isUnixTime(final FileTime time) {
-        return time == null ? true : isUnixTime(toUnixTime(time));
+        return isUnixTime(toUnixTime(time));
     }
 
     /**
@@ -170,7 +170,7 @@ public final class TimeUtils {
      * @return the UNIX timestamp.
      */
     public static long toUnixTime(final FileTime fileTime) {
-        return fileTime.to(TimeUnit.SECONDS);
+        return fileTime != null ? fileTime.to(TimeUnit.SECONDS) : 0;
     }
 
     /**
