@@ -47,7 +47,9 @@ public class BoundedInputStream extends FilterInputStream {
     }
 
     /**
-     * @return bytes remaining to read
+     * Gets how many bytes remain to read.
+     *
+     * @return bytes how many bytes remain to read.
      * @since 1.21
      */
     public long getBytesRemaining() {
