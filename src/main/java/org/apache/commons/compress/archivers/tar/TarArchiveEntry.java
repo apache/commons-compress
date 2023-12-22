@@ -52,6 +52,7 @@ import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.ParsingUtils;
 import org.apache.commons.compress.utils.TimeUtils;
+import org.apache.commons.io.file.attribute.FileTimes;
 
 /**
  * This class represents an entry in a Tar archive. It consists of the entry's header, as well as the entry's File. Entries can be instantiated in one of three
@@ -997,7 +998,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @see TarArchiveEntry#getLastModifiedTime()
      */
     public Date getModTime() {
-        return TimeUtils.toDate(mTime);
+        final FileTime fileTime = mTime;
+        return FileTimes.toDate(fileTime);
     }
 
     /**
@@ -1877,7 +1879,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @see TarArchiveEntry#setLastModifiedTime(FileTime)
      */
     public void setModTime(final Date time) {
-        setLastModifiedTime(TimeUtils.toFileTime(time));
+        setLastModifiedTime(FileTimes.toFileTime(time));
     }
 
     /**

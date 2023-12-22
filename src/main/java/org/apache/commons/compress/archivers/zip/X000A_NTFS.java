@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.zip.ZipException;
 
-import org.apache.commons.compress.utils.TimeUtils;
+import org.apache.commons.io.file.attribute.FileTimes;
 
 /**
  * NTFS extra field that was thought to store various attributes but in reality only stores timestamps.
@@ -81,28 +81,28 @@ public class X000A_NTFS implements ZipExtraField {
         if (d == null) {
             return null;
         }
-        return new ZipEightByteInteger(TimeUtils.toNtfsTime(d));
+        return new ZipEightByteInteger(FileTimes.toNtfsTime(d));
     }
 
     private static ZipEightByteInteger fileTimeToZip(final FileTime time) {
         if (time == null) {
             return null;
         }
-        return new ZipEightByteInteger(TimeUtils.toNtfsTime(time));
+        return new ZipEightByteInteger(FileTimes.toNtfsTime(time));
     }
 
     private static Date zipToDate(final ZipEightByteInteger z) {
         if (z == null || ZipEightByteInteger.ZERO.equals(z)) {
             return null;
         }
-        return TimeUtils.ntfsTimeToDate(z.getLongValue());
+        return FileTimes.ntfsTimeToDate(z.getLongValue());
     }
 
     private static FileTime zipToFileTime(final ZipEightByteInteger z) {
         if (z == null || ZipEightByteInteger.ZERO.equals(z)) {
             return null;
         }
-        return TimeUtils.ntfsTimeToFileTime(z.getLongValue());
+        return FileTimes.ntfsTimeToFileTime(z.getLongValue());
     }
 
     private ZipEightByteInteger modifyTime = ZipEightByteInteger.ZERO;
