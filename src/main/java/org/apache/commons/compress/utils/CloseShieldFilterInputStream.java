@@ -23,13 +23,11 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.io.input.CloseShieldInputStream;
-
 /**
  * Re-implements {@link FilterInputStream#close()} to do nothing.
  *
  * @since 1.14
- * @deprecated Use {@link CloseShieldInputStream}.
+ * @deprecated Use {@link org.apache.commons.io.input.CloseShieldInputStream}.
  */
 @Deprecated
 public class CloseShieldFilterInputStream extends FilterInputStream {
