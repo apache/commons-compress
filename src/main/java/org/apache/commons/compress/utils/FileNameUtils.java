@@ -20,6 +20,8 @@ package org.apache.commons.compress.utils;
 import java.io.File;
 import java.nio.file.Path;
 
+import org.apache.commons.io.FilenameUtils;
+
 /**
  * Generic file name utilities.
  *
@@ -30,11 +32,6 @@ public class FileNameUtils {
     private static String fileNameToBaseName(final String name) {
         final int extensionIndex = name.lastIndexOf('.');
         return extensionIndex < 0 ? name : name.substring(0, extensionIndex);
-    }
-
-    private static String fileNameToExtension(final String name) {
-        final int extensionIndex = name.lastIndexOf('.');
-        return extensionIndex < 0 ? "" : name.substring(extensionIndex + 1);
     }
 
     /**
@@ -88,7 +85,7 @@ public class FileNameUtils {
             return null;
         }
         final Path fileName = path.getFileName();
-        return fileName != null ? fileNameToExtension(fileName.toString()) : null;
+        return fileName != null ? FilenameUtils.getExtension(fileName.toString()) : null;
     }
 
     /**
@@ -103,9 +100,6 @@ public class FileNameUtils {
      * @param fileName the name of the file to obtain the extension of.
      */
     public static String getExtension(final String fileName) {
-        if (fileName == null) {
-            return null;
-        }
-        return fileNameToExtension(new File(fileName).getName());
+        return FilenameUtils.getExtension(fileName);
     }
 }
