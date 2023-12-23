@@ -43,9 +43,8 @@ import org.apache.commons.io.input.CountingInputStream;
  */
 public class FramedLZ4CompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
-    // used by FramedLZ4CompressorOutputStream as well
-    static final byte[] LZ4_SIGNATURE = { // NOSONAR
-            4, 0x22, 0x4d, 0x18 };
+    /** Used by FramedLZ4CompressorOutputStream as well. */
+    static final byte[] LZ4_SIGNATURE = { 4, 0x22, 0x4d, 0x18 };
     private static final byte[] SKIPPABLE_FRAME_TRAILER = { 0x2a, 0x4d, 0x18 };
     private static final byte SKIPPABLE_FRAME_PREFIX_BYTE_MASK = 0x50;
 
@@ -72,7 +71,6 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
 
     /**
      * Checks if the signature matches what is expected for a .lz4 file.
-     *
      * <p>
      * .lz4 files start with a four byte signature.
      * </p>
@@ -95,7 +93,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
         return Arrays.equals(shortenedSig, LZ4_SIGNATURE);
     }
 
-    // used in no-arg read method
+    /** Used in no-arg read method. */
     private final byte[] oneByte = new byte[1];
     private final ByteUtils.ByteSupplier supplier = this::readOneByte;
 
@@ -111,13 +109,13 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
 
     private boolean endReached, inUncompressed;
 
-    // used for frame header checksum and content checksum, if present
+    /** Used for frame header checksum and content checksum, if present. */
     private final org.apache.commons.codec.digest.XXHash32 contentHash = new org.apache.commons.codec.digest.XXHash32();
 
-    // used for block checksum, if present
+    /** Used for block checksum, if present. */
     private final org.apache.commons.codec.digest.XXHash32 blockHash = new org.apache.commons.codec.digest.XXHash32();
 
-    // only created if the frame doesn't set the block independence flag
+    /** Only created if the frame doesn't set the block independence flag. */
     private byte[] blockDependencyBuffer;
 
     /**
@@ -355,7 +353,6 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
 
     /**
      * Skips over the contents of a skippable frame as well as skippable frames following it.
-     *
      * <p>
      * It then tries to read four more bytes which are supposed to hold an LZ4 signature and returns the number of bytes read while storing the bytes in the
      * given array.
