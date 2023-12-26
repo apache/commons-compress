@@ -66,13 +66,13 @@ public class ChecksumVerifyingInputStream extends FilterInputStream {
         if (bytesRemaining <= 0) {
             return -1;
         }
-        final int ret = in.read();
-        if (ret >= 0) {
-            checksum.update(ret);
+        final int data = in.read();
+        if (data >= 0) {
+            checksum.update(data);
             --bytesRemaining;
         }
         verify();
-        return ret;
+        return data;
     }
 
     /**
@@ -85,13 +85,13 @@ public class ChecksumVerifyingInputStream extends FilterInputStream {
         if (len == 0) {
             return 0;
         }
-        final int ret = in.read(b, off, len);
-        if (ret >= 0) {
-            checksum.update(b, off, ret);
-            bytesRemaining -= ret;
+        final int readCount = in.read(b, off, len);
+        if (readCount >= 0) {
+            checksum.update(b, off, readCount);
+            bytesRemaining -= readCount;
         }
         verify();
-        return ret;
+        return readCount;
     }
 
     @Override
