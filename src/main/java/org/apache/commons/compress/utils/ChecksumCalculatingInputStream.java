@@ -52,11 +52,11 @@ public class ChecksumCalculatingInputStream extends FilterInputStream {
      */
     @Override
     public int read() throws IOException {
-        final int ret = in.read();
-        if (ret >= 0) {
-            checksum.update(ret);
+        final int data = in.read();
+        if (data >= 0) {
+            checksum.update(data);
         }
-        return ret;
+        return data;
     }
 
     /**
@@ -69,11 +69,11 @@ public class ChecksumCalculatingInputStream extends FilterInputStream {
         if (len == 0) {
             return 0;
         }
-        final int ret = in.read(b, off, len);
-        if (ret >= 0) {
-            checksum.update(b, off, ret);
+        final int readCount = in.read(b, off, len);
+        if (readCount >= 0) {
+            checksum.update(b, off, readCount);
         }
-        return ret;
+        return readCount;
     }
 
     @Override
