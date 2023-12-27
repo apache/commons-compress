@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -133,6 +134,14 @@ public final class ZipTest extends AbstractTest {
         }
 
         return result;
+    }
+
+    private byte[] createArtificialData(int size) {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        for (int i = 0; i < size; i += 1) {
+            output.write((byte) ((i & 1) == 0 ? (i / 2 % 256) : (i / 2 / 256)));
+        }
+        return output.toByteArray();
     }
 
     private void createArchiveEntry(final String payload, final ZipArchiveOutputStream zos, final String name) throws IOException {
@@ -247,6 +256,139 @@ public final class ZipTest extends AbstractTest {
             }
             // and the number of files should equal
             assertEquals(filesCount, filesNum);
+        }
+    }
+
+    /**
+     * Tests split archive with 32-bit limit, both STORED and DEFLATED.
+     */
+    @Test
+    public void testBuildArtificialSplitZip32Test() throws IOException {
+        final File outputZipFile = newTempFile("artificialSplitZip.zip");
+        final long splitSize = 64 * 1024L; /* 64 KB */
+        try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
+            zipArchiveOutputStream.setUseZip64(Zip64Mode.Never);
+            ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
+            ze1.setMethod(ZipEntry.STORED);
+            zipArchiveOutputStream.putArchiveEntry(ze1);
+            zipArchiveOutputStream.write(createArtificialData(65536));
+            zipArchiveOutputStream.closeArchiveEntry();
+            ZipArchiveEntry ze2 = new ZipArchiveEntry("file02");
+            ze2.setMethod(ZipEntry.DEFLATED);
+            zipArchiveOutputStream.putArchiveEntry(ze2);
+            zipArchiveOutputStream.write(createArtificialData(65536));
+            zipArchiveOutputStream.closeArchiveEntry();
+        }
+
+        try (ZipFile zipFile = new ZipFile(outputZipFile)) {
+            assertArrayEquals(createArtificialData(65536), IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file01"))));
+            assertArrayEquals(createArtificialData(65536), IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file02"))));
+        }
+    }
+
+    /**
+     * Tests split archive with 64-bit limit, both STORED and DEFLATED.
+     */
+    @Test
+    public void testBuildArtificialSplitZip64Test() throws IOException {
+        final File outputZipFile = newTempFile("artificialSplitZip.zip");
+        final long splitSize = 64 * 1024L; /* 64 KB */
+        byte[] data = createArtificialData(128 * 1024);
+        try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
+            zipArchiveOutputStream.setUseZip64(Zip64Mode.Always);
+            ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
+            ze1.setMethod(ZipEntry.STORED);
+            zipArchiveOutputStream.putArchiveEntry(ze1);
+            zipArchiveOutputStream.write(data);
+            zipArchiveOutputStream.closeArchiveEntry();
+            ZipArchiveEntry ze2 = new ZipArchiveEntry("file02");
+            ze2.setMethod(ZipEntry.DEFLATED);
+            zipArchiveOutputStream.putArchiveEntry(ze2);
+            zipArchiveOutputStream.write(data);
+            zipArchiveOutputStream.closeArchiveEntry();
+        }
+
+        try (ZipFile zipFile = new ZipFile(outputZipFile)) {
+            assertArrayEquals(data, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file01"))));
+            assertArrayEquals(data, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file02"))));
+        }
+    }
+
+    /**
+     * Tests split archive with 32-bit limit, with file local headers crossing segment boundaries.
+     */
+    @Test
+    public void testBuildSplitZip32_metaCrossBoundary() throws IOException {
+        final File outputZipFile = newTempFile("artificialSplitZip.zip");
+        final long splitSize = 64 * 1024L; /* 64 KB */
+        // 4 is PK signature, 36 is size of header + local file header,
+        // 15 is next local file header up to second byte of CRC
+        byte[] data1 = createArtificialData(64 * 1024 - 4 - 36 - 15);
+        // 21 is remaining size of second local file header
+        // 19 is next local file header up to second byte of compressed size
+        byte[] data2 = createArtificialData(64 * 1024 - 21 - 19);
+        // 17 is remaining size of third local file header
+        // 23 is next local file header up to second byte of uncompressed size
+        byte[] data3 = createArtificialData(64 * 1024 - 17 - 23);
+        // 13 is remaining size of third local file header
+        // 1 is to wrap to next part
+        byte[] data4 = createArtificialData(64 * 1024 - 13 + 1);
+        try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
+            zipArchiveOutputStream.setUseZip64(Zip64Mode.Never);
+            ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
+            ze1.setMethod(ZipEntry.STORED);
+            zipArchiveOutputStream.putArchiveEntry(ze1);
+            zipArchiveOutputStream.write(data1);
+            zipArchiveOutputStream.closeArchiveEntry();
+            ZipArchiveEntry ze2 = new ZipArchiveEntry("file02");
+            ze2.setMethod(ZipEntry.STORED);
+            zipArchiveOutputStream.putArchiveEntry(ze2);
+            zipArchiveOutputStream.write(data2);
+            zipArchiveOutputStream.closeArchiveEntry();
+            ZipArchiveEntry ze3 = new ZipArchiveEntry("file03");
+            ze3.setMethod(ZipEntry.STORED);
+            zipArchiveOutputStream.putArchiveEntry(ze3);
+            zipArchiveOutputStream.write(data3);
+            zipArchiveOutputStream.closeArchiveEntry();
+            ZipArchiveEntry ze4 = new ZipArchiveEntry("file04");
+            ze4.setMethod(ZipEntry.STORED);
+            zipArchiveOutputStream.putArchiveEntry(ze4);
+            zipArchiveOutputStream.write(data4);
+            zipArchiveOutputStream.closeArchiveEntry();
+        }
+
+        try (ZipFile zipFile = new ZipFile(outputZipFile)) {
+            assertArrayEquals(data1, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file01"))));
+            assertArrayEquals(data2, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file02"))));
+            assertArrayEquals(data3, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file03"))));
+            assertArrayEquals(data4, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file04"))));
+        }
+    }
+
+    /**
+     * Tests split archive with 32-bit limit, with end of central directory skipping lack of space in segment.
+     */
+    @Test
+    public void testBuildSplitZip32_endOfCentralDirectorySkipBoundary() throws IOException {
+        final File outputZipFile = newTempFile("artificialSplitZip.zip");
+        final long splitSize = 64 * 1024L; /* 64 KB */
+        // 4 is PK signature, 36 is size of header + local file header,
+        // 36 is length of central directory entry
+        // 1 is remaining byte in first archive, this should be skipped
+        byte[] data1 = createArtificialData(64 * 1024 - 4 - 36 - 52 - 1);
+        try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
+            zipArchiveOutputStream.setUseZip64(Zip64Mode.Never);
+            ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
+            ze1.setMethod(ZipEntry.STORED);
+            zipArchiveOutputStream.putArchiveEntry(ze1);
+            zipArchiveOutputStream.write(data1);
+            zipArchiveOutputStream.closeArchiveEntry();
+        }
+
+        assertEquals(64 * 1024L - 1, Files.size(outputZipFile.toPath().getParent().resolve("artificialSplitZip.z01")));
+
+        try (ZipFile zipFile = new ZipFile(outputZipFile)) {
+            assertArrayEquals(data1, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file01"))));
         }
     }
 
