@@ -21,11 +21,11 @@ package org.apache.commons.compress.compressors.lz4;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.zip.CheckedInputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.apache.commons.compress.utils.ChecksumCalculatingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.input.CountingInputStream;
@@ -210,7 +210,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
         }
         InputStream capped = new BoundedInputStream(inputStream, realLen);
         if (expectBlockChecksum) {
-            capped = new ChecksumCalculatingInputStream(blockHash, capped);
+            capped = new CheckedInputStream(capped, blockHash);
         }
         if (uncompressed) {
             inUncompressed = true;
