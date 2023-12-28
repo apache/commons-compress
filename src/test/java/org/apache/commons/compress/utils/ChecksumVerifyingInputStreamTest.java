@@ -46,10 +46,10 @@ public class ChecksumVerifyingInputStreamTest {
 
     @Test
     public void testReadTakingNoArgumentsThrowsIOException() throws IOException {
-        final CRC32 cRC32_ = new CRC32();
+        final CRC32 crc32 = new CRC32();
         final byte[] byteArray = new byte[9];
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
-        try (ChecksumVerifyingInputStream checksumVerifyingInputStream = new ChecksumVerifyingInputStream(cRC32_, byteArrayInputStream, (byte) 1, (byte) 1)) {
+        try (ChecksumVerifyingInputStream checksumVerifyingInputStream = new ChecksumVerifyingInputStream(crc32, byteArrayInputStream, (byte) 1, (byte) 1)) {
             assertThrows(IOException.class, () -> checksumVerifyingInputStream.read());
         }
     }
