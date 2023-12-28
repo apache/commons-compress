@@ -56,14 +56,14 @@ public class ChecksumVerifyingInputStreamTest {
 
     @Test
     public void testSkip() throws IOException {
-        final CRC32 cRC32_ = new CRC32();
+        final CRC32 crc32 = new CRC32();
         final byte[] byteArray = new byte[4];
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
-        try (ChecksumVerifyingInputStream checksumVerifyingInputStream = new ChecksumVerifyingInputStream(cRC32_, byteArrayInputStream, (byte) 33, 2303L)) {
+        try (ChecksumVerifyingInputStream checksumVerifyingInputStream = new ChecksumVerifyingInputStream(crc32, byteArrayInputStream, (byte) 33, 2303L)) {
             @SuppressWarnings("unused")
             final int intOne = checksumVerifyingInputStream.read(byteArray);
             final long skipReturnValue = checksumVerifyingInputStream.skip((byte) 1);
-            assertEquals(558161692L, cRC32_.getValue());
+            assertEquals(558161692L, crc32.getValue());
             assertEquals(0, byteArrayInputStream.available());
             assertArrayEquals(new byte[] { (byte) 0, (byte) 0, (byte) 0, (byte) 0 }, byteArray);
             assertEquals(0L, skipReturnValue);
