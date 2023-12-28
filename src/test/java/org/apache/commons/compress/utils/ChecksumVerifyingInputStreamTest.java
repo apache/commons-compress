@@ -65,7 +65,7 @@ public class ChecksumVerifyingInputStreamTest {
             final long skipReturnValue = checksumVerifyingInputStream.skip((byte) 1);
             assertEquals(558161692L, crc32.getValue());
             assertEquals(0, byteArrayInputStream.available());
-            assertArrayEquals(new byte[] { (byte) 0, (byte) 0, (byte) 0, (byte) 0 }, byteArray);
+            assertArrayEquals(new byte[4], byteArray);
             assertEquals(0L, skipReturnValue);
         }
     }
