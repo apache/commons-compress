@@ -16,9 +16,9 @@
  */
 package org.apache.commons.compress.utils;
 
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.CheckedInputStream;
 import java.util.zip.Checksum;
 
 /**
@@ -27,11 +27,10 @@ import java.util.zip.Checksum;
  * @NotThreadSafe
  * @since 1.7
  */
-public class ChecksumVerifyingInputStream extends FilterInputStream {
+public class ChecksumVerifyingInputStream extends CheckedInputStream {
 
-    private long bytesRemaining;
-    private final long expectedChecksum;
-    private final Checksum checksum;
+    private long remaining;
+    private final long expected;
 
     /**
      * Constructs a new instance.
@@ -42,18 +41,19 @@ public class ChecksumVerifyingInputStream extends FilterInputStream {
      * @param expectedChecksum the expected checksum
      */
     public ChecksumVerifyingInputStream(final Checksum checksum, final InputStream in, final long size, final long expectedChecksum) {
-        super(in);
-        this.checksum = checksum;
-        this.expectedChecksum = expectedChecksum;
-        this.bytesRemaining = size;
+        super(in, checksum);
+        this.expected = expectedChecksum;
+        this.remaining = size;
     }
 
     /**
-     * @return bytes remaining to read
+     * Gets the byte count remaining to read.
+     *
+     * @return bytes remaining to read.
      * @since 1.21
      */
     public long getBytesRemaining() {
-        return bytesRemaining;
+        return remaining;
     }
 
     /**
@@ -63,13 +63,12 @@ public class ChecksumVerifyingInputStream extends FilterInputStream {
      */
     @Override
     public int read() throws IOException {
-        if (bytesRemaining <= 0) {
+        if (remaining <= 0) {
             return -1;
         }
-        final int data = in.read();
+        final int data = super.read();
         if (data >= 0) {
-            checksum.update(data);
-            --bytesRemaining;
+            --remaining;
         }
         verify();
         return data;
@@ -85,23 +84,16 @@ public class ChecksumVerifyingInputStream extends FilterInputStream {
         if (len == 0) {
             return 0;
         }
-        final int readCount = in.read(b, off, len);
+        final int readCount = super.read(b, off, len);
         if (readCount >= 0) {
-            checksum.update(b, off, readCount);
-            bytesRemaining -= readCount;
+            remaining -= readCount;
         }
         verify();
         return readCount;
     }
 
-    @Override
-    public long skip(final long n) throws IOException {
-        // Can't really skip, we have to hash everything to verify the checksum
-        return read() >= 0 ? 1 : 0;
-    }
-
     private void verify() throws IOException {
-        if (bytesRemaining <= 0 && expectedChecksum != checksum.getValue()) {
+        if (remaining <= 0 && expected != getChecksum().getValue()) {
             throw new IOException("Checksum verification failed");
         }
     }
