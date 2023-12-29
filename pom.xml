@@ -222,110 +222,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     </dependency>
   </dependencies>
 
-  <developers>
-    <developer>
-      <name>Torsten Curdt</name>
-      <id>tcurdt</id>
-      <email>tcurdt at apache.org</email>
-    </developer>
-    <developer>
-      <name>Stefan Bodewig</name>
-      <id>bodewig</id>
-      <email>bodewig at apache.org</email>
-    </developer>
-    <developer>
-      <name>Sebastian Bazley</name>
-      <id>sebb</id>
-      <email>sebb at apache.org</email>
-    </developer>
-    <developer>
-      <name>Christian Grobmeier</name>
-      <id>grobmeier</id>
-      <email>grobmeier at apache.org</email>
-    </developer>
-    <developer>
-      <name>Julius Davies</name>
-      <id>julius</id>
-      <email>julius at apache.org</email>
-    </developer>
-    <developer>
-      <name>Damjan Jovanovic</name>
-      <id>damjan</id>
-      <email>damjan at apache.org</email>
-    </developer>
-    <developer>
-      <name>Emmanuel Bourg</name>
-      <id>ebourg</id>
-      <email>ebourg at apache.org</email>
-    </developer>
-    <developer>
-      <id>ggregory</id>
-      <name>Gary Gregory</name>
-      <email>ggregory at apache.org</email>
-      <url>https://www.garygregory.com</url>
-      <organization>The Apache Software Foundation</organization>
-      <organizationUrl>https://www.apache.org/</organizationUrl>      
-      <roles>
-        <role>PMC Member</role>
-      </roles>
-      <timezone>America/New_York</timezone>
-      <properties>
-        <picUrl>https://people.apache.org/~ggregory/img/garydgregory80.png</picUrl>
-      </properties>
-    </developer>
-    <developer>
-      <name>Rob Tompkins</name>
-      <id>chtompki</id>
-      <email>chtompki at apache.org</email>
-    </developer>
-    <developer>
-      <name>Peter Alfred Lee</name>
-      <id>peterlee</id>
-      <email>peterlee at apache.org</email>
-    </developer>
-  </developers>
-
-  <contributors>
-    <contributor>
-      <name>Wolfgang Glas</name>
-      <email>wolfgang.glas at ev-i.at</email>
-    </contributor>
-    <contributor>
-      <name>Christian Kohlschütte</name>
-      <email>ck@newsclub.de</email>
-    </contributor>
-    <contributor>
-      <name>Bear Giles</name>
-      <email>bgiles@coyotesong.com</email>
-    </contributor>
-    <contributor>
-      <name>Michael Kuss</name>
-      <email>mail at michael minus kuss.de</email>
-    </contributor>
-    <contributor>
-      <name>Lasse Collin</name>
-      <email>lasse.collin@tukaani.org</email>
-    </contributor>
-    <contributor>
-      <name>John Kodis</name>
-    </contributor>
-    <contributor>
-      <name>BELUGA BEHR</name>
-    </contributor>
-    <contributor>
-	<name>Simon Spero</name>
-	<email>sesuncedu@gmail.com</email>
-    </contributor>
-    <contributor>
-      <name>Michael Hausegger</name>
-      <email>hausegger.michael@googlemail.com</email>
-    </contributor>
-    <contributor>
-      <name>Arturo Bernal</name>
-      <email>arturobernalg@yahoo.com</email>
-    </contributor>
-  </contributors>
-
   <scm>
     <connection>scm:git:https://gitbox.apache.org/repos/asf/commons-compress.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/commons-compress.git</developerConnection>
@@ -619,5 +515,109 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     </profile>
 
   </profiles>
+
+  <developers>
+    <developer>
+      <name>Torsten Curdt</name>
+      <id>tcurdt</id>
+      <email>tcurdt at apache.org</email>
+    </developer>
+    <developer>
+      <name>Stefan Bodewig</name>
+      <id>bodewig</id>
+      <email>bodewig at apache.org</email>
+    </developer>
+    <developer>
+      <name>Sebastian Bazley</name>
+      <id>sebb</id>
+      <email>sebb at apache.org</email>
+    </developer>
+    <developer>
+      <name>Christian Grobmeier</name>
+      <id>grobmeier</id>
+      <email>grobmeier at apache.org</email>
+    </developer>
+    <developer>
+      <name>Julius Davies</name>
+      <id>julius</id>
+      <email>julius at apache.org</email>
+    </developer>
+    <developer>
+      <name>Damjan Jovanovic</name>
+      <id>damjan</id>
+      <email>damjan at apache.org</email>
+    </developer>
+    <developer>
+      <name>Emmanuel Bourg</name>
+      <id>ebourg</id>
+      <email>ebourg at apache.org</email>
+    </developer>
+    <developer>
+      <id>ggregory</id>
+      <name>Gary Gregory</name>
+      <email>ggregory at apache.org</email>
+      <url>https://www.garygregory.com</url>
+      <organization>The Apache Software Foundation</organization>
+      <organizationUrl>https://www.apache.org/</organizationUrl>      
+      <roles>
+        <role>PMC Member</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+      <properties>
+        <picUrl>https://people.apache.org/~ggregory/img/garydgregory80.png</picUrl>
+      </properties>
+    </developer>
+    <developer>
+      <name>Rob Tompkins</name>
+      <id>chtompki</id>
+      <email>chtompki at apache.org</email>
+    </developer>
+    <developer>
+      <name>Peter Alfred Lee</name>
+      <id>peterlee</id>
+      <email>peterlee at apache.org</email>
+    </developer>
+  </developers>
+
+  <contributors>
+    <contributor>
+      <name>Wolfgang Glas</name>
+      <email>wolfgang.glas at ev-i.at</email>
+    </contributor>
+    <contributor>
+      <name>Christian Kohlschütte</name>
+      <email>ck@newsclub.de</email>
+    </contributor>
+    <contributor>
+      <name>Bear Giles</name>
+      <email>bgiles@coyotesong.com</email>
+    </contributor>
+    <contributor>
+      <name>Michael Kuss</name>
+      <email>mail at michael minus kuss.de</email>
+    </contributor>
+    <contributor>
+      <name>Lasse Collin</name>
+      <email>lasse.collin@tukaani.org</email>
+    </contributor>
+    <contributor>
+      <name>John Kodis</name>
+    </contributor>
+    <contributor>
+      <name>BELUGA BEHR</name>
+    </contributor>
+    <contributor>
+    <name>Simon Spero</name>
+    <email>sesuncedu@gmail.com</email>
+    </contributor>
+    <contributor>
+      <name>Michael Hausegger</name>
+      <email>hausegger.michael@googlemail.com</email>
+    </contributor>
+    <contributor>
+      <name>Arturo Bernal</name>
+      <email>arturobernalg@yahoo.com</email>
+    </contributor>
+  </contributors>
 
 </project>
