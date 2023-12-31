@@ -59,9 +59,9 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.Charsets;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.build.AbstractOrigin.ByteArrayOrigin;
 import org.apache.commons.io.build.AbstractStreamBuilder;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.input.CountingInputStream;
 
 /**
@@ -133,6 +133,7 @@ public class ZipFile implements Closeable {
         private SeekableByteChannel seekableByteChannel;
         private boolean useUnicodeExtraFields = true;
         private boolean ignoreLocalFileHeader;
+        private long maxNumberOfDisks = 1;
 
         public Builder() {
             setCharset(DEFAULT_CHARSET);
@@ -156,7 +157,7 @@ public class ZipFile implements Closeable {
                     openOptions = new OpenOption[] { StandardOpenOption.READ };
                 }
                 final Path path = getPath();
-                actualChannel = Files.newByteChannel(path, openOptions);
+                actualChannel = openZipChannel(path, maxNumberOfDisks, openOptions);
                 actualDescription = path.toString();
             }
             final boolean closeOnError = seekableByteChannel != null;
@@ -193,6 +194,19 @@ public class ZipFile implements Closeable {
          */
         public Builder setUseUnicodeExtraFields(final boolean useUnicodeExtraFields) {
             this.useUnicodeExtraFields = useUnicodeExtraFields;
+            return this;
+        }
+
+        /**
+         * Sets max number of multi archive disks, default is 1 (no multi archive).
+         *
+         * @param maxNumberOfDisks
+         *      max number of multi archive disks
+         *
+         * @return this instance
+         */
+        public Builder setMaxNumberOfDisks(final long maxNumberOfDisks) {
+            this.maxNumberOfDisks = maxNumberOfDisks;
             return this;
         }
 
@@ -550,6 +564,7 @@ public class ZipFile implements Closeable {
 
     private long firstLocalFileHeaderOffset;
 
+
     /**
      * Opens the given file for reading, assuming "UTF8" for file names.
      *
@@ -677,54 +692,7 @@ public class ZipFile implements Closeable {
     @SuppressWarnings("resource") // Caller closes
     @Deprecated
     public ZipFile(final Path path, final String encoding, final boolean useUnicodeExtraFields, final boolean ignoreLocalFileHeader) throws IOException {
-        this(openZipArchive(path), path.toAbsolutePath().toString(), encoding, useUnicodeExtraFields, true,
-                ignoreLocalFileHeader);
-    }
-
-    private static SeekableByteChannel openZipArchive(Path path) throws IOException {
-        FileChannel channel = FileChannel.open(path, StandardOpenOption.READ);
-        List<FileChannel> channels = new ArrayList<>();
-        try {
-            boolean is64 = positionAtEndOfCentralDirectoryRecord(channel);
-            long numberOfFiles;
-            if (is64) {
-                channel.position(channel.position() + ZipConstants.WORD + ZipConstants.WORD + ZipConstants.DWORD);
-                ByteBuffer buf = ByteBuffer.allocate(ZipConstants.WORD);
-                buf.order(ByteOrder.LITTLE_ENDIAN);
-                IOUtils.readFully(channel, buf);
-                buf.flip();
-                numberOfFiles = buf.getInt() & 0xffffffffL;
-            } else {
-                channel.position(channel.position() + ZipConstants.WORD);
-                ByteBuffer buf = ByteBuffer.allocate(ZipConstants.SHORT);
-                buf.order(ByteOrder.LITTLE_ENDIAN);
-                IOUtils.readFully(channel, buf);
-                buf.flip();
-                numberOfFiles = (buf.getShort() & 0xffff) + 1;
-            }
-            if (numberOfFiles >= Integer.MAX_VALUE) {
-                throw new IOException("Too many files in zip archive, max=" + Integer.MAX_VALUE + " actual=" + numberOfFiles);
-            }
-
-            if (numberOfFiles <= 1) {
-                return channel;
-            }
-            channel.close();
-
-            Path parent = path.getParent();
-            String basename = FilenameUtils.removeExtension(path.getFileName().toString());
-
-            return ZipSplitReadOnlySeekableByteChannel.forPaths(
-                    IntStream.range(0, (int) numberOfFiles)
-                            .mapToObj(i -> i == numberOfFiles - 1 ? path : parent.resolve(String.format("%s.z%02d", basename, i + 1)))
-                            .collect(Collectors.toList())
-                            .toArray(new Path[(int) numberOfFiles])
-            );
-        } catch (Throwable ex) {
-            IOUtils.closeQuietly(channel);
-            channels.forEach(IOUtils::closeQuietly);
-            throw ex;
-        }
+        this(newReadByteChannel(path), path.toAbsolutePath().toString(), encoding, useUnicodeExtraFields, true, ignoreLocalFileHeader);
     }
 
     /**
@@ -862,6 +830,66 @@ public class ZipFile implements Closeable {
     @Deprecated
     public ZipFile(final String name, final String encoding) throws IOException {
         this(new File(name).toPath(), encoding, true);
+    }
+
+    private static SeekableByteChannel openZipChannel(Path path, long maxNumberOfDisks, OpenOption[] openOptions) throws IOException {
+        FileChannel channel = FileChannel.open(path, StandardOpenOption.READ);
+        List<FileChannel> channels = new ArrayList<>();
+        try {
+            boolean is64 = positionAtEndOfCentralDirectoryRecord(channel);
+            long numberOfDisks;
+            if (is64) {
+                channel.position(channel.position() + ZipConstants.WORD + ZipConstants.WORD + ZipConstants.DWORD);
+                ByteBuffer buf = ByteBuffer.allocate(ZipConstants.WORD);
+                buf.order(ByteOrder.LITTLE_ENDIAN);
+                IOUtils.readFully(channel, buf);
+                buf.flip();
+                numberOfDisks = buf.getInt() & 0xffffffffL;
+            } else {
+                channel.position(channel.position() + ZipConstants.WORD);
+                ByteBuffer buf = ByteBuffer.allocate(ZipConstants.SHORT);
+                buf.order(ByteOrder.LITTLE_ENDIAN);
+                IOUtils.readFully(channel, buf);
+                buf.flip();
+                numberOfDisks = (buf.getShort() & 0xffff) + 1;
+            }
+            if (numberOfDisks > Math.min(maxNumberOfDisks, Integer.MAX_VALUE)) {
+                throw new IOException("Too many disks for zip archive, max=" +
+                        Math.min(maxNumberOfDisks, Integer.MAX_VALUE) + " actual=" + numberOfDisks);
+            }
+
+            if (numberOfDisks <= 1) {
+                return channel;
+            }
+            channel.close();
+
+            Path parent = path.getParent();
+            String basename = FilenameUtils.removeExtension(path.getFileName().toString());
+
+            return ZipSplitReadOnlySeekableByteChannel.forPaths(
+                    IntStream.range(0, (int) numberOfDisks)
+                            .mapToObj(i -> {
+                                if (i == numberOfDisks - 1) {
+                                    return path;
+                                }
+                                Path lowercase = parent.resolve(String.format("%s.z%02d", basename, i + 1));
+                                if (Files.exists(lowercase)) {
+                                    return lowercase;
+                                }
+                                Path uppercase = parent.resolve(String.format("%s.Z%02d", basename, i + 1));
+                                if (Files.exists(uppercase)) {
+                                    return uppercase;
+                                }
+                                return lowercase;
+                            })
+                            .collect(Collectors.toList()),
+                    openOptions
+            );
+        } catch (Throwable ex) {
+            IOUtils.closeQuietly(channel);
+            channels.forEach(IOUtils::closeQuietly);
+            throw ex;
+        }
     }
 
     /**

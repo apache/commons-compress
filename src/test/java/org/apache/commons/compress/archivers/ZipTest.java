@@ -280,7 +280,11 @@ public final class ZipTest extends AbstractTest {
             zipArchiveOutputStream.closeArchiveEntry();
         }
 
-        try (ZipFile zipFile = new ZipFile(outputZipFile)) {
+        try (ZipFile zipFile = ZipFile.builder()
+                .setPath(outputZipFile.toPath())
+                .setMaxNumberOfDisks(Integer.MAX_VALUE)
+                .get()
+        ) {
             assertArrayEquals(createArtificialData(65536), IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file01"))));
             assertArrayEquals(createArtificialData(65536), IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file02"))));
         }
@@ -308,7 +312,11 @@ public final class ZipTest extends AbstractTest {
             zipArchiveOutputStream.closeArchiveEntry();
         }
 
-        try (ZipFile zipFile = new ZipFile(outputZipFile)) {
+        try (ZipFile zipFile = ZipFile.builder()
+                .setPath(outputZipFile.toPath())
+                .setMaxNumberOfDisks(Integer.MAX_VALUE)
+                .get()
+        ) {
             assertArrayEquals(data, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file01"))));
             assertArrayEquals(data, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file02"))));
         }
@@ -357,7 +365,11 @@ public final class ZipTest extends AbstractTest {
             zipArchiveOutputStream.closeArchiveEntry();
         }
 
-        try (ZipFile zipFile = new ZipFile(outputZipFile)) {
+        try (ZipFile zipFile = ZipFile.builder()
+                .setPath(outputZipFile.toPath())
+                .setMaxNumberOfDisks(Integer.MAX_VALUE)
+                .get()
+        ) {
             assertArrayEquals(data1, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file01"))));
             assertArrayEquals(data2, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file02"))));
             assertArrayEquals(data3, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file03"))));
@@ -387,7 +399,11 @@ public final class ZipTest extends AbstractTest {
 
         assertEquals(64 * 1024L - 1, Files.size(outputZipFile.toPath().getParent().resolve("artificialSplitZip.z01")));
 
-        try (ZipFile zipFile = new ZipFile(outputZipFile)) {
+        try (ZipFile zipFile = ZipFile.builder()
+                .setPath(outputZipFile.toPath())
+                .setMaxNumberOfDisks(Integer.MAX_VALUE)
+                .get()
+        ) {
             assertArrayEquals(data1, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file01"))));
         }
     }
