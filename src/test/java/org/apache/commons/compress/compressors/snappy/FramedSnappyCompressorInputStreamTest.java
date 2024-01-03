@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.zip.ZipFile;
@@ -170,6 +171,67 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
             assertTrue(exception.getMessage().contains("Unskippable chunk"));
         } catch (IOException ex) {
         }
+    }
+
+    @Test
+    public void testWriteDataLargerThanBufferOneCall() throws IOException {
+        int inputSize = 500_000;
+        byte[] data = generateTestData(inputSize);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (FramedSnappyCompressorOutputStream compressor = new FramedSnappyCompressorOutputStream(outputStream)) {
+            compressor.write(data, 0, data.length);
+            compressor.finish();
+        }
+        byte[] compressed = outputStream.toByteArray();
+
+        byte[] decompressed = new byte[0];
+        try (ByteArrayInputStream bytesIn = new ByteArrayInputStream(compressed, 0, compressed.length);
+                 FramedSnappyCompressorInputStream decompressor = new FramedSnappyCompressorInputStream(bytesIn)) {
+            int i;
+            ByteArrayOutputStream decompressedOutputStream = new ByteArrayOutputStream();
+            while (-1 != (i = decompressor.read())) {
+                decompressedOutputStream.write(i);
+            }
+            decompressed = decompressedOutputStream.toByteArray();
+        }
+        assertTrue(Arrays.equals(data, decompressed));
+    }
+
+    private static byte[] generateTestData(int inputSize) {
+        byte[] arr = new byte[inputSize];
+        for (int i = 0; i < arr.length; i++) {
+          arr[i] = (byte) (65 + i % 10);
+        }
+
+        return arr;
+    }
+
+    @Test
+    public void testFinishWithNoWrite() throws IOException {
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        try (FramedSnappyCompressorOutputStream compressor = new FramedSnappyCompressorOutputStream(buffer)) {
+            // do nothing here. this will test that flush on close doesn't throw any exceptions if no data is written.
+        }
+        assertTrue(buffer.size() == 10, "Only the signature gets written.");
+    }
+
+    @Test
+    public void testWriteByteArrayVsWriteByte() throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        final byte[] bytes = "abcdefghijklmnop".getBytes();
+        try (FramedSnappyCompressorOutputStream compressor = new FramedSnappyCompressorOutputStream(buffer)) {
+            compressor.write(bytes);
+            compressor.finish();
+        }
+        final byte[] bulkOutput = buffer.toByteArray();
+        buffer = new ByteArrayOutputStream();
+        try (FramedSnappyCompressorOutputStream compressor = new FramedSnappyCompressorOutputStream(buffer)) {
+            for (final byte element : bytes) {
+                compressor.write(element);
+            }
+            compressor.finish();
+        }
+        assertTrue(Arrays.equals(bulkOutput, buffer.toByteArray()));
     }
 
 }
