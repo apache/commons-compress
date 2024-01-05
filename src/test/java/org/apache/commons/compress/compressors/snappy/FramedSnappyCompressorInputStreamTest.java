@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.zip.ZipFile;
@@ -194,7 +193,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
             }
             decompressed = decompressedOutputStream.toByteArray();
         }
-        assertTrue(Arrays.equals(data, decompressed));
+        assertArrayEquals(data, decompressed);
     }
 
     private static byte[] generateTestData(int inputSize) {
@@ -231,7 +230,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
             }
             compressor.finish();
         }
-        assertTrue(Arrays.equals(bulkOutput, buffer.toByteArray()));
+        assertArrayEquals(bulkOutput, buffer.toByteArray());
     }
 
 }
