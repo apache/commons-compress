@@ -127,7 +127,7 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
     public void write(final byte[] data, int off, int len) throws IOException {
         int blockDataRemaining = buffer.length - currentIndex;
         while (len > 0) {
-            int copyLen = Math.min(len, blockDataRemaining);
+            final int copyLen = Math.min(len, blockDataRemaining);
             System.arraycopy(data, off, buffer, currentIndex, copyLen);
             off += copyLen;
             blockDataRemaining -= copyLen;
