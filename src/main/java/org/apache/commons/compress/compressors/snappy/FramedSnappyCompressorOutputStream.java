@@ -104,12 +104,13 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
      * @throws IOException if an error occurs
      */
     public void finish() throws IOException {
-        if (currentIndex > 0) {
-            flushBuffer();
-        }
+        flushBuffer();
     }
 
     private void flushBuffer() throws IOException {
+        if (currentIndex == 0) {
+            return;
+        }
         out.write(FramedSnappyCompressorInputStream.COMPRESSED_CHUNK_TYPE);
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (OutputStream o = new SnappyCompressorOutputStream(baos, currentIndex, params)) {
@@ -124,18 +125,19 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
 
     @Override
     public void write(final byte[] data, int off, int len) throws IOException {
-        if (currentIndex + len > MAX_COMPRESSED_BUFFER_SIZE) {
-            flushBuffer();
-            while (len > MAX_COMPRESSED_BUFFER_SIZE) {
-                System.arraycopy(data, off, buffer, 0, MAX_COMPRESSED_BUFFER_SIZE);
-                off += MAX_COMPRESSED_BUFFER_SIZE;
-                len -= MAX_COMPRESSED_BUFFER_SIZE;
-                currentIndex = MAX_COMPRESSED_BUFFER_SIZE;
+        int blockDataRemaining = buffer.length - currentIndex;
+        while (len > 0) {
+            final int copyLen = Math.min(len, blockDataRemaining);
+            System.arraycopy(data, off, buffer, currentIndex, copyLen);
+            off += copyLen;
+            blockDataRemaining -= copyLen;
+            len -= copyLen;
+            currentIndex += copyLen;
+            if (blockDataRemaining == 0) {
                 flushBuffer();
+                blockDataRemaining = buffer.length;
             }
         }
-        System.arraycopy(data, off, buffer, currentIndex, len);
-        currentIndex += len;
     }
 
     @Override
