@@ -168,26 +168,26 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
         try (FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(new ByteArrayInputStream(input))) {
             final IOException exception = assertThrows(IOException.class, () -> in.read());
             assertTrue(exception.getMessage().contains("Unskippable chunk"));
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
         }
     }
 
     @Test
     public void testWriteDataLargerThanBufferOneCall() throws IOException {
-        int inputSize = 500_000;
-        byte[] data = generateTestData(inputSize);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        final int inputSize = 500_000;
+        final byte[] data = generateTestData(inputSize);
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try (FramedSnappyCompressorOutputStream compressor = new FramedSnappyCompressorOutputStream(outputStream)) {
             compressor.write(data, 0, data.length);
             compressor.finish();
         }
-        byte[] compressed = outputStream.toByteArray();
+        final byte[] compressed = outputStream.toByteArray();
 
-        byte[] decompressed = new byte[0];
+        byte[] decompressed = {};
         try (ByteArrayInputStream bytesIn = new ByteArrayInputStream(compressed, 0, compressed.length);
                  FramedSnappyCompressorInputStream decompressor = new FramedSnappyCompressorInputStream(bytesIn)) {
             int i;
-            ByteArrayOutputStream decompressedOutputStream = new ByteArrayOutputStream();
+            final ByteArrayOutputStream decompressedOutputStream = new ByteArrayOutputStream();
             while (-1 != (i = decompressor.read())) {
                 decompressedOutputStream.write(i);
             }
@@ -196,8 +196,8 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
         assertArrayEquals(data, decompressed);
     }
 
-    private static byte[] generateTestData(int inputSize) {
-        byte[] arr = new byte[inputSize];
+    private static byte[] generateTestData(final int inputSize) {
+        final byte[] arr = new byte[inputSize];
         for (int i = 0; i < arr.length; i++) {
           arr[i] = (byte) (65 + i % 10);
         }
