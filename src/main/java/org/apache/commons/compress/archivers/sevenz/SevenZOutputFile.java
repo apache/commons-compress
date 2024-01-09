@@ -93,6 +93,7 @@ public class SevenZOutputFile implements Closeable {
             }
             compressedCrc32.update(b, off, len);
             fileBytesWritten += len;
+            entryPackedSize +=len;
         }
 
         @Override
@@ -102,6 +103,7 @@ public class SevenZOutputFile implements Closeable {
             channel.write(buffer);
             compressedCrc32.update(b);
             fileBytesWritten++;
+            entryPackedSize++;
         }
     }
 
@@ -127,6 +129,15 @@ public class SevenZOutputFile implements Closeable {
     private final Map<SevenZArchiveEntry, long[]> additionalSizes = new HashMap<>();
 
     private AES256Options aes256Options;
+
+    private long entryPackedSize = 0;
+
+    /**
+     * This method returns the packedSize of the entry.
+     */
+    public long getEntryPackedSize(){
+        return entryPackedSize;
+    }
 
     /**
      * Opens file to write a 7z archive to.
@@ -227,11 +238,13 @@ public class SevenZOutputFile implements Closeable {
                 Arrays.setAll(sizes, i -> additionalCountingStreams[i].getByteCount());
                 additionalSizes.put(entry, sizes);
             }
+            entryPackedSize = fileBytesWritten;
         } else {
             entry.setHasStream(false);
             entry.setSize(0);
             entry.setCompressedSize(0);
             entry.setHasCrc(false);
+            entryPackedSize = 0;
         }
         currentOutputStream = null;
         additionalCountingStreams = null;
