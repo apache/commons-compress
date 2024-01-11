@@ -1241,7 +1241,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         if (linkFlag == LF_OLDNORM || linkFlag == LF_NORMAL) {
             return true;
         }
-        return !getName().endsWith("/");
+        return linkFlag != LF_DIR && !getName().endsWith("/");
     }
 
     /**
