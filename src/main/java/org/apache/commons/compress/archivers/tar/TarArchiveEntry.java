@@ -1151,7 +1151,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Check if this is a block device entry.
+     * Tests whether this is a block device entry.
      *
      * @since 1.2
      * @return whether this is a block device
@@ -1161,7 +1161,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Check if this is a character device entry.
+     * Tests whether this is a character device entry.
      *
      * @since 1.2
      * @return whether this is a character device
@@ -1171,7 +1171,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Gets this entry's checksum status.
+     * Tests whether this entry's checksum status.
      *
      * @return if the header checksum is reasonably correct
      * @see TarUtils#verifyCheckSum(byte[])
@@ -1182,7 +1182,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Determine if the given entry is a descendant of this entry. Descendancy is determined by the name of the descendant starting with this entry's name.
+     * Tests whether the given entry is a descendant of this entry. Descendancy is determined by the name of the descendant starting with this entry's name.
      *
      * @param desc Entry to be checked as a descendent of this.
      * @return True if entry is a descendant of this.
@@ -1192,7 +1192,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Return whether or not this entry represents a directory.
+     * Tests whether or not this entry represents a directory.
      *
      * @return True if this entry is a directory.
      */
@@ -1210,7 +1210,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Indicates in case of an oldgnu sparse file if an extension sparse header follows.
+     * Tests whether in case of an oldgnu sparse file if an extension sparse header follows.
      *
      * @return true if an extension oldgnu sparse header follows.
      */
@@ -1219,7 +1219,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Check if this is a FIFO (pipe) entry.
+     * Tests whether this is a FIFO (pipe) entry.
      *
      * @since 1.2
      * @return whether this is a FIFO entry
@@ -1229,7 +1229,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Check if this is a "normal file"
+     * Tests whether this is a "normal file"
      *
      * @since 1.2
      * @return whether this is a "normal file"
@@ -1245,7 +1245,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Check if this is a Pax header.
+     * Tests whether this is a Pax header.
      *
      * @return {@code true} if this is a Pax header.
      *
@@ -1256,7 +1256,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Indicate if this entry is a GNU long linkname block
+     * Tests whether this entry is a GNU long linkname block
      *
      * @return true if this is a long name extension provided by GNU tar
      */
@@ -1265,7 +1265,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Indicate if this entry is a GNU long name block
+     * Tests whether this entry is a GNU long name block
      *
      * @return true if this is a long name extension provided by GNU tar
      */
@@ -1274,7 +1274,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Indicate if this entry is a GNU sparse block.
+     * Tests whether this entry is a GNU sparse block.
      *
      * @return true if this is a sparse extension provided by GNU tar
      */
@@ -1319,7 +1319,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Check if this is a link entry.
+     * Tests whether this is a link entry.
      *
      * @since 1.2
      * @return whether this is a link entry
@@ -1329,7 +1329,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Indicate if this entry is a GNU or star sparse block using the oldgnu format.
+     * Tests whether this entry is a GNU or star sparse block using the oldgnu format.
      *
      * @return true if this is a sparse extension provided by GNU tar or star
      * @since 1.11
@@ -1339,7 +1339,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Gets if this entry is a sparse file with 1.X PAX Format or not
+     * Tests whether this entry is a sparse file with 1.X PAX Format or not
      *
      * @return True if this entry is a sparse file with 1.X PAX Format
      * @since 1.20
@@ -1349,7 +1349,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Indicate if this entry is a GNU sparse block using one of the PAX formats.
+     * Tests whether this entry is a GNU sparse block using one of the PAX formats.
      *
      * @return true if this is a sparse extension provided by GNU tar
      * @since 1.11
@@ -1359,7 +1359,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Check if this is a Pax header.
+     * Tests whether this is a Pax header.
      *
      * @return {@code true} if this is a Pax header.
      *
@@ -1371,7 +1371,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Check whether this is a sparse entry.
+     * Tests whether this is a sparse entry.
      *
      * @return whether this is a sparse entry
      * @since 1.11
@@ -1381,7 +1381,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Indicate if this entry is a star sparse block using PAX headers.
+     * Tests whether this entry is a star sparse block using PAX headers.
      *
      * @return true if this is a sparse extension provided by star
      * @since 1.11
@@ -1401,7 +1401,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Check if this is a symbolic link entry.
+     * Tests whether this is a symbolic link entry.
      *
      * @since 1.2
      * @return whether this is a symbolic link
@@ -1411,7 +1411,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Check for XSTAR / XUSTAR format.
+     * Tests whether the given header is in XSTAR / XUSTAR format.
      *
      * Use the same logic found in star version 1.6 in {@code header.c}, function {@code isxmagic(TCB *ptb)}.
      */
