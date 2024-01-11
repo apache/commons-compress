@@ -17,6 +17,7 @@
 package org.apache.commons.compress.archivers.tar;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -108,6 +109,18 @@ public class TarFileTest extends AbstractTest {
             assertEquals(TarConstants.LF_NORMAL, entries.get(1).getLinkFlag());
             assertEquals(producerJavaName, entries.get(2).getName());
             assertEquals(TarConstants.LF_NORMAL, entries.get(2).getLinkFlag());
+        }
+    }
+
+    @Test
+    public void testCompress657() throws IOException {
+        try (TarFile tarFile = new TarFile(getPath("COMPRESS-657/orjson-3.7.8.tar"))) {
+            for (final TarArchiveEntry entry : tarFile.getEntries()) {
+                if (entry.isDirectory()) {
+                    // An entry cannot be a directory and a "normal file" at the same time.
+                    assertFalse(entry.isFile(), "Entry '" + entry.getName() + "' is both a directory and a file");
+                }
+            }
         }
     }
 
