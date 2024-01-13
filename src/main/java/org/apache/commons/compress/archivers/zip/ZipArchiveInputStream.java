@@ -395,7 +395,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * Checks whether the current buffer contains the signature of a &quot;data descriptor&quot;, &quot;local file header&quot; or &quot;central directory
      * entry&quot;.
-     *
      * <p>
      * If it contains such a signature, reads the data descriptor and positions the stream right after the data descriptor.
      * </p>
@@ -432,7 +431,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * If the last read bytes could hold a data descriptor and an incomplete signature then save the last bytes to the front of the buffer and cache everything
      * in front of the potential data descriptor into the given ByteArrayOutputStream.
-     *
      * <p>
      * Data descriptor plus incomplete signature (3 bytes in the worst case) can be 20 bytes max.
      * </p>
@@ -451,7 +449,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     /**
      * Whether this class is able to read the given entry.
-     *
      * <p>
      * May return false if it is set up to use encryption or a compression method that hasn't been implemented yet.
      * </p>
@@ -485,9 +482,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * <p>
      * If the compressed size of this entry is included in the entry header, then any outstanding bytes are simply skipped from the underlying stream without
      * uncompressing them. This allows an entry to be safely closed even if the compression method is unsupported.
+     * </p>
      * <p>
      * In case we don't know the compressed size of this entry or have already buffered too much data from the underlying stream to support uncompression, then
      * the uncompression process is completed and the end position of the stream is adjusted based on the result of that process.
+     * </p>
      *
      * @throws IOException if an error occurs
      */
@@ -613,11 +612,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     /**
      * Gets the number of bytes Inflater has actually processed.
-     *
      * <p>
      * for Java &lt; Java7 the getBytes* methods in Inflater/Deflater seem to return unsigned ints rather than longs that start over with 0 at 2^32.
      * </p>
-     *
      * <p>
      * The stream knows how many bytes it has read, but not how many the Inflater actually consumed - it should be between the total number of bytes read for
      * the entry and the total number minus the last read operation. Here we just try to make the value close enough to the bytes we've read by assuming the
@@ -819,7 +816,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     /**
      * Checks whether this might be an APK Signing Block.
-     *
      * <p>
      * Unfortunately the APK signing block does not start with some kind of signature, it rather ends with one. It starts with a length, so what we do is parse
      * the suspect length, skip ahead far enough, look for the signature and if we've found it, return true.
@@ -1174,7 +1170,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     /**
      * Caches a stored entry that uses the data descriptor.
-     *
      * <ul>
      * <li>Reads a stored entry until the signature of a local file header, central directory header or data descriptor has been found.</li>
      * <li>Stores all entry data in lastStoredEntry.
@@ -1182,7 +1177,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * <li>Rewinds the stream to position at the data descriptor.</li>
      * <li>reads the data descriptor</li>
      * </ul>
-     *
      * <p>
      * After calling this method the entry should know its size, the entry's data is cached and the stream is positioned at the next local file or central
      * directory header.
@@ -1248,11 +1242,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     /**
      * Skips over and discards value bytes of data from this input stream.
-     *
      * <p>
      * This implementation may end up skipping over some smaller number of bytes, possibly 0, if and only if it reaches the end of the underlying stream.
      * </p>
-     *
      * <p>
      * The actual number of bytes skipped is returned.
      * </p>
