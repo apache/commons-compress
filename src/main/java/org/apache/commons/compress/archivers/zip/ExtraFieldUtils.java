@@ -136,7 +136,7 @@ public class ExtraFieldUtils {
     static final ZipExtraField[] EMPTY_ZIP_EXTRA_FIELD_ARRAY = {};
 
     /**
-     * Create an instance of the appropriate ExtraField, falls back to {@link UnrecognizedExtraField UnrecognizedExtraField}.
+     * Creates an instance of the appropriate ExtraField, falls back to {@link UnrecognizedExtraField UnrecognizedExtraField}.
      *
      * @param headerId the header identifier
      * @return an instance of the appropriate ExtraField
@@ -154,7 +154,7 @@ public class ExtraFieldUtils {
     }
 
     /**
-     * Create an instance of the appropriate ExtraField.
+     * Creates an instance of the appropriate ExtraField.
      *
      * @param headerId the header identifier
      * @return an instance of the appropriate ExtraField or null if the id is not supported

@@ -387,7 +387,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     }
 
     /**
-     * Create an archive input stream from an input stream, autodetecting the archive type from the first few bytes of the stream. The InputStream must support
+     * Creates an archive input stream from an input stream, autodetecting the archive type from the first few bytes of the stream. The InputStream must support
      * marks, like BufferedInputStream.
      *
      * @param <I> The {@link ArchiveInputStream} type.

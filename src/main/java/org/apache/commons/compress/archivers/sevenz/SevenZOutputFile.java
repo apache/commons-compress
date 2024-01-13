@@ -241,7 +241,7 @@ public class SevenZOutputFile implements Closeable {
     }
 
     /**
-     * Create an archive entry using the inputFile and entryName provided.
+     * Creates an archive entry using the inputFile and entryName provided.
      *
      * @param inputFile file to create an entry from
      * @param entryName the name to use
@@ -260,7 +260,7 @@ public class SevenZOutputFile implements Closeable {
     }
 
     /**
-     * Create an archive entry using the inputPath and entryName provided.
+     * Creates an archive entry using the inputPath and entryName provided.
      *
      * @param inputPath path to create an entry from
      * @param entryName the name to use

@@ -92,7 +92,7 @@ final class ZipSplitOutputStream extends OutputStream {
     }
 
     /**
-     * Create the new ZIP split segment, the last ZIP segment should be .zip, and the ZIP split segments' suffix should be like .z01, .z02, .z03, ... .z99,
+     * Creates the new ZIP split segment, the last ZIP segment should be .zip, and the ZIP split segments' suffix should be like .z01, .z02, .z03, ... .z99,
      * .z100, ..., .z(N-1), .zip
      * <p>
      * 8.3.3 Split ZIP files are typically written to the same location and are subject to name collisions if the spanned name format is used since each segment
@@ -151,7 +151,7 @@ final class ZipSplitOutputStream extends OutputStream {
     }
 
     /**
-     * Create a new ZIP split segment and prepare to write to the new segment
+     * Creates a new ZIP split segment and prepare to write to the new segment
      *
      * @throws IOException
      */

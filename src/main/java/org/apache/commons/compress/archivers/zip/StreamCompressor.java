@@ -103,7 +103,7 @@ public abstract class StreamCompressor implements Closeable {
     private static final int BUFFER_SIZE = 4096;
 
     /**
-     * Create a stream compressor with the given compression level.
+     * Creates a stream compressor with the given compression level.
      *
      * @param os       The DataOutput to receive output
      * @param deflater The deflater to use for the compressor
@@ -114,7 +114,7 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     /**
-     * Create a stream compressor with the given compression level.
+     * Creates a stream compressor with the given compression level.
      *
      * @param compressionLevel The {@link Deflater} compression level
      * @param bs               The ScatterGatherBackingStore to receive output
@@ -126,7 +126,7 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     /**
-     * Create a stream compressor with the default compression level.
+     * Creates a stream compressor with the default compression level.
      *
      * @param os The stream to receive output
      * @return A stream compressor
@@ -136,7 +136,7 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     /**
-     * Create a stream compressor with the given compression level.
+     * Creates a stream compressor with the given compression level.
      *
      * @param os       The stream to receive output
      * @param deflater The deflater to use
@@ -147,7 +147,7 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     /**
-     * Create a stream compressor with the default compression level.
+     * Creates a stream compressor with the default compression level.
      *
      * @param bs The ScatterGatherBackingStore to receive output
      * @return A stream compressor
@@ -157,7 +157,7 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     /**
-     * Create a stream compressor with the given compression level.
+     * Creates a stream compressor with the given compression level.
      *
      * @param os       The SeekableByteChannel to receive output
      * @param deflater The deflater to use for the compressor

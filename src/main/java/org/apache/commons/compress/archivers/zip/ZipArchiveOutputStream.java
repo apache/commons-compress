@@ -138,7 +138,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         public static final UnicodeExtraFieldPolicy NEVER = new UnicodeExtraFieldPolicy("never");
 
         /**
-         * Create Unicode extra fields for file names that cannot be encoded using the specified encoding.
+         * Creates Unicode extra fields for file names that cannot be encoded using the specified encoding.
          */
         public static final UnicodeExtraFieldPolicy NOT_ENCODEABLE = new UnicodeExtraFieldPolicy("not encodeable");
 

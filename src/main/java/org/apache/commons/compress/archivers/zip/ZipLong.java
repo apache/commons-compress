@@ -129,7 +129,7 @@ public final class ZipLong implements Cloneable, Serializable {
     }
 
     /**
-     * Create instance from the four bytes starting at offset.
+     * Creates instance from the four bytes starting at offset.
      *
      * @param bytes  the bytes to store as a ZipLong
      * @param offset the offset to start
@@ -149,7 +149,7 @@ public final class ZipLong implements Cloneable, Serializable {
     }
 
     /**
-     * Create instance from a number.
+     * Creates instance from a number.
      *
      * @param value the long to store as a ZipLong
      */
