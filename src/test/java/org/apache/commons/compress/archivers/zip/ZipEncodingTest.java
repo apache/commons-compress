@@ -111,7 +111,8 @@ public class ZipEncodingTest {
     public void testIsUTF8() {
         assertTrue(ZipEncodingHelper.isUTF8(CharsetNames.UTF_8));
         assertTrue(ZipEncodingHelper.isUTF8("UTF8"));
-        Assertions.assertEquals(Charset.defaultCharset().name().equals(CharsetNames.UTF_8), ZipEncodingHelper.isUTF8(null));
+        Assertions.assertEquals(Charset.defaultCharset().name().equals(CharsetNames.UTF_8), ZipEncodingHelper.isUTF8((Charset) null));
+        Assertions.assertEquals(Charset.defaultCharset().name().equals(CharsetNames.UTF_8), ZipEncodingHelper.isUTF8((String) null));
     }
 
     @Test

@@ -48,7 +48,7 @@ public class TarUtils {
 
     private static final int BYTE_MASK = 255;
 
-    static final ZipEncoding DEFAULT_ENCODING = ZipEncodingHelper.getZipEncoding(null);
+    static final ZipEncoding DEFAULT_ENCODING = ZipEncodingHelper.getZipEncoding(Charset.defaultCharset());
 
     /**
      * Encapsulates the algorithms used up to Commons Compress 1.3 as ZipEncoding.
