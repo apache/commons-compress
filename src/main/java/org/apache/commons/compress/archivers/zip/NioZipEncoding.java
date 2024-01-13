@@ -29,7 +29,7 @@ import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 
 /**
- * A ZipEncoding, which uses a java.nio {@link java.nio.charset.Charset Charset} to encode names.
+ * A ZipEncoding, which uses a {@link Charset} to encode names.
  * <p>
  * The methods of this class are reentrant.
  * </p>

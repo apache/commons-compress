@@ -47,13 +47,13 @@ public abstract class ZipEncodingHelper {
      * @return A ZIP encoding for the given encoding name.
      */
     public static ZipEncoding getZipEncoding(final String name) {
-        Charset cs = Charset.defaultCharset();
+        Charset charset = Charset.defaultCharset();
         try {
-            cs = Charsets.toCharset(name);
+            charset = Charsets.toCharset(name);
         } catch (final UnsupportedCharsetException ignore) { // NOSONAR we use the default encoding instead
         }
-        final boolean useReplacement = isUTF8(cs.name());
-        return new NioZipEncoding(cs, useReplacement);
+        final boolean useReplacement = isUTF8(charset.name());
+        return new NioZipEncoding(charset, useReplacement);
     }
 
     static ByteBuffer growBufferBy(final ByteBuffer buffer, final int increment) {
