@@ -40,6 +40,7 @@ public class FileNameUtils {
      * @since 1.22
      */
     public static String getBaseName(final Path path) {
+        // TODO Use Commons IO 2.17.0
         if (path == null) {
             return null;
         }
@@ -77,6 +78,7 @@ public class FileNameUtils {
      * @since 1.22
      */
     public static String getExtension(final Path path) {
+        // TODO Use Commons IO 2.17.0
         if (path == null) {
             return null;
         }
