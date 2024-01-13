@@ -50,27 +50,23 @@ import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
-import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.apache.commons.io.input.CountingInputStream;
 
 /**
  * Replacement for {@link java.util.zip.ZipFile}.
- *
  * <p>
  * This class adds support for file name encodings other than UTF-8 (which is required to work on ZIP files created by native ZIP tools and is able to skip a
  * preamble like the one found in self extracting archives. Furthermore it returns instances of
  * {@code org.apache.commons.compress.archivers.zip.ZipArchiveEntry} instead of {@link java.util.zip.ZipEntry}.
  * </p>
- *
  * <p>
  * It doesn't extend {@link java.util.zip.ZipFile} as it would have to reimplement all methods anyway. Like {@link java.util.zip.ZipFile}, it uses
  * SeekableByteChannel under the covers and supports compressed and uncompressed entries. As of Apache Commons Compress 1.3 it also transparently supports Zip64
  * extensions and thus individual entries and archives larger than 4 GB or with more than 65536 entries.
  * </p>
- *
  * <p>
  * The method signatures mimic the ones of {@link java.util.zip.ZipFile}, with a couple of exceptions:
- *
+ * </p>
  * <ul>
  * <li>There is no getName method.</li>
  * <li>entries has been renamed to getEntries.</li>
@@ -344,7 +340,6 @@ public class ZipFile implements Closeable {
 
     /**
      * Compares two ZipArchiveEntries based on their offset within the archive.
-     *
      * <p>
      * Won't return any meaningful results if one of the entries isn't part of the archive at all.
      * </p>
@@ -375,7 +370,6 @@ public class ZipFile implements Closeable {
 
     /**
      * The encoding to use for file names and the file comment.
-     *
      * <p>
      * For a list of possible values see <a href="Supported Encodings">https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html</a>.
      * Defaults to UTF-8.
@@ -387,11 +381,6 @@ public class ZipFile implements Closeable {
      * The ZIP encoding to use for file names and the file comment.
      */
     private final ZipEncoding zipEncoding;
-
-    /**
-     * File name of actual source.
-     */
-    private final String archiveName;
 
     /**
      * The actual data source.
@@ -452,7 +441,6 @@ public class ZipFile implements Closeable {
      *
      * @param file     the archive.
      * @param encoding the encoding to use for file names, use null for the platform's default encoding
-     *
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(final File file, final String encoding) throws IOException {
@@ -465,7 +453,6 @@ public class ZipFile implements Closeable {
      * @param file                  the archive.
      * @param encoding              the encoding to use for file names, use null for the platform's default encoding
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
-     *
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(final File file, final String encoding, final boolean useUnicodeExtraFields) throws IOException {
@@ -474,7 +461,6 @@ public class ZipFile implements Closeable {
 
     /**
      * Opens the given file for reading, assuming the specified encoding for file names.
-     *
      * <p>
      * By default the central directory record and all local file headers of the archive will be read immediately which may take a considerable amount of time
      * when the archive is big. The {@code ignoreLocalFileHeader} parameter can be set to {@code true} which restricts parsing to the central directory.
@@ -487,7 +473,6 @@ public class ZipFile implements Closeable {
      * @param encoding              the encoding to use for file names, use null for the platform's default encoding
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
      * @param ignoreLocalFileHeader whether to ignore information stored inside the local file header (see the notes in this method's Javadoc)
-     *
      * @throws IOException if an error occurs while reading the file.
      * @since 1.19
      */
@@ -497,7 +482,7 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * Opens the given path for reading, assuming "UTF8" for file names.
+     * Opens the given path for reading, assuming "UTF-8" for file names.
      *
      * @param path path to the archive.
      * @throws IOException if an error occurs while reading the file.
@@ -555,8 +540,7 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * Opens the given channel for reading, assuming "UTF8" for file names.
-     *
+     * Opens the given channel for reading, assuming "UTF-8" for file names.
      * <p>
      * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
      * </p>
@@ -567,52 +551,47 @@ public class ZipFile implements Closeable {
      * @since 1.13
      */
     public ZipFile(final SeekableByteChannel channel) throws IOException {
-        this(channel, "unknown archive", CharsetNames.UTF_8, true);
+        this(channel, "a SeekableByteChannel", CharsetNames.UTF_8, true);
     }
 
     /**
      * Opens the given channel for reading, assuming the specified encoding for file names.
-     *
      * <p>
      * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel  the archive.
      * @param encoding the encoding to use for file names, use null for the platform's default encoding
-     *
      * @throws IOException if an error occurs while reading the file.
      * @since 1.13
      */
     public ZipFile(final SeekableByteChannel channel, final String encoding) throws IOException {
-        this(channel, "unknown archive", encoding, true);
+        this(channel, "a SeekableByteChannel", encoding, true);
     }
 
     /**
      * Opens the given channel for reading, assuming the specified encoding for file names.
-     *
      * <p>
      * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel               the archive.
-     * @param archiveName           name of the archive, used for error messages only.
+     * @param channelDescription    description of the archive, used for error messages only.
      * @param encoding              the encoding to use for file names, use null for the platform's default encoding
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
-     *
      * @throws IOException if an error occurs while reading the file.
      * @since 1.13
      */
-    public ZipFile(final SeekableByteChannel channel, final String archiveName, final String encoding, final boolean useUnicodeExtraFields) throws IOException {
-        this(channel, archiveName, encoding, useUnicodeExtraFields, false, false);
+    public ZipFile(final SeekableByteChannel channel, final String channelDescription, final String encoding, final boolean useUnicodeExtraFields)
+            throws IOException {
+        this(channel, channelDescription, encoding, useUnicodeExtraFields, false, false);
     }
 
     /**
      * Opens the given channel for reading, assuming the specified encoding for file names.
-     *
      * <p>
      * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
      * </p>
-     *
      * <p>
      * By default the central directory record and all local file headers of the archive will be read immediately which may take a considerable amount of time
      * when the archive is big. The {@code ignoreLocalFileHeader} parameter can be set to {@code true} which restricts parsing to the central directory.
@@ -622,23 +601,21 @@ public class ZipFile implements Closeable {
      * </p>
      *
      * @param channel               the archive.
-     * @param archiveName           name of the archive, used for error messages only.
+     * @param channelDescription    description of the archive, used for error messages only.
      * @param encoding              the encoding to use for file names, use null for the platform's default encoding
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
      * @param ignoreLocalFileHeader whether to ignore information stored inside the local file header (see the notes in this method's Javadoc)
-     *
      * @throws IOException if an error occurs while reading the file.
      * @since 1.19
      */
-    public ZipFile(final SeekableByteChannel channel, final String archiveName, final String encoding, final boolean useUnicodeExtraFields,
+    public ZipFile(final SeekableByteChannel channel, final String channelDescription, final String encoding, final boolean useUnicodeExtraFields,
             final boolean ignoreLocalFileHeader) throws IOException {
-        this(channel, archiveName, encoding, useUnicodeExtraFields, false, ignoreLocalFileHeader);
+        this(channel, channelDescription, encoding, useUnicodeExtraFields, false, ignoreLocalFileHeader);
     }
 
-    private ZipFile(final SeekableByteChannel channel, final String archiveName, final String encoding, final boolean useUnicodeExtraFields,
+    private ZipFile(final SeekableByteChannel channel, final String channelDescription, final String encoding, final boolean useUnicodeExtraFields,
             final boolean closeOnError, final boolean ignoreLocalFileHeader) throws IOException {
         this.isSplitZipArchive = channel instanceof ZipSplitReadOnlySeekableByteChannel;
-        this.archiveName = archiveName;
         this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.useUnicodeExtraFields = useUnicodeExtraFields;
@@ -652,7 +629,7 @@ public class ZipFile implements Closeable {
             fillNameMap();
             success = true;
         } catch (final IOException e) {
-            throw new IOException("Error on ZipFile " + archiveName, e);
+            throw new IOException("Error reading Zip content from " + channelDescription, e);
         } finally {
             this.closed = !success;
             if (!success && closeOnError) {
@@ -662,10 +639,9 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * Opens the given file for reading, assuming "UTF8".
+     * Opens the given file for reading, assuming "UTF-8".
      *
      * @param name name of the archive.
-     *
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(final String name) throws IOException {
@@ -677,7 +653,6 @@ public class ZipFile implements Closeable {
      *
      * @param name     name of the archive.
      * @param encoding the encoding to use for file names, use null for the platform's default encoding
-     *
      * @throws IOException if an error occurs while reading the file.
      */
     public ZipFile(final String name, final String encoding) throws IOException {
@@ -686,7 +661,6 @@ public class ZipFile implements Closeable {
 
     /**
      * Whether this class is able to read the given entry.
-     *
      * <p>
      * May return false if it is set up to use encryption or a compression method that hasn't been implemented yet.
      * </p>
@@ -801,7 +775,6 @@ public class ZipFile implements Closeable {
 
     /**
      * Gets all entries.
-     *
      * <p>
      * Entries will be returned in the same order they appear within the archive's central directory.
      * </p>
@@ -825,7 +798,6 @@ public class ZipFile implements Closeable {
 
     /**
      * Gets all entries in physical order.
-     *
      * <p>
      * Entries will be returned in the same order their contents appear within the archive.
      * </p>
@@ -853,7 +825,6 @@ public class ZipFile implements Closeable {
 
     /**
      * Gets a named entry or {@code null} if no entry by that name exists.
-     *
      * <p>
      * If multiple entries with the same name exist the first entry in the archive's central directory by that name is returned.
      * </p>
@@ -947,11 +918,9 @@ public class ZipFile implements Closeable {
 
     /**
      * Gets the raw stream of the archive entry (compressed form).
-     *
      * <p>
      * This method does not relate to how/if we understand the payload in the stream, since we really only intend to move it on to somewhere else.
      * </p>
-     *
      * <p>
      * Since version 1.22, this method will make an attempt to read the entry's data stream offset, even if the {@code ignoreLocalFileHeader} parameter was
      * {@code true} in the constructor. An IOException can also be thrown from the body of the method if this lookup fails for some reason.
@@ -995,7 +964,6 @@ public class ZipFile implements Closeable {
 
     /**
      * Reads the central directory of the given archive and populates the internal tables with ZipArchiveEntry instances.
-     *
      * <p>
      * The ZipArchiveEntrys will know all data that can be obtained from the central directory alone, but not the data that requires the local file header or
      * additional data to be read.
@@ -1271,7 +1239,6 @@ public class ZipFile implements Closeable {
 
     /**
      * Walks through all recorded entries and adds the data available from the local file header.
-     *
      * <p>
      * Also records the offsets for the data to read from the entries.
      * </p>
@@ -1348,7 +1315,6 @@ public class ZipFile implements Closeable {
     /**
      * If the entry holds a Zip64 extended information extra field, read sizes from there if the entry's sizes are set to 0xFFFFFFFFF, do the same for the
      * offset of the local file header.
-     *
      * <p>
      * Ensures the Zip64 extra either knows both compressed and uncompressed size or neither of both as the internal logic in ExtraFieldUtils forces the field
      * to create local header data even if they are never used - and here a field with only one size would be invalid.
