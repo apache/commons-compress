@@ -183,12 +183,6 @@ public final class IOUtils {
         return readFully(input, array, 0, array.length);
     }
 
-    // toByteArray(InputStream) copied from:
-    // commons/proper/io/trunk/src/main/java/org/apache/commons/io/IOUtils.java?revision=1428941
-    // January 8th, 2013
-    //
-    // Assuming our copy() works just as well as theirs! :-)
-
     /**
      * Reads as much from input as possible to fill the given array with the given amount of bytes.
      *
