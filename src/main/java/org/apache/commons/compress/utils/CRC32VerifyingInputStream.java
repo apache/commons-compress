@@ -26,6 +26,7 @@ import java.util.zip.CRC32;
  * @since 1.6
  */
 public class CRC32VerifyingInputStream extends ChecksumVerifyingInputStream {
+    // TODO Use Commons IO 2.16.0 ChecksumInputStream
 
     /**
      * Constructs a new instance.

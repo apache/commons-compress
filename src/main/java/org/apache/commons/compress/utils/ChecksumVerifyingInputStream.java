@@ -28,6 +28,7 @@ import java.util.zip.Checksum;
  * @since 1.7
  */
 public class ChecksumVerifyingInputStream extends CheckedInputStream {
+    // TODO Use Commons IO 2.16.0 ChecksumInputStream
 
     private long remaining;
     private final long expected;
