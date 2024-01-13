@@ -144,6 +144,8 @@ public class ZipFile implements Closeable {
         }
     }
 
+    private static final EnumSet<StandardOpenOption> READ = EnumSet.of(StandardOpenOption.READ);
+
     private static final int HASH_SIZE = 509;
     static final int NIBLET_MASK = 0x0f;
     static final int BYTE_SHIFT = 8;
@@ -359,6 +361,17 @@ public class ZipFile implements Closeable {
     }
 
     /**
+     * Creates a new SeekableByteChannel for reading.
+     *
+     * @param path the path to the file to open or create
+     * @return a new seekable byte channel
+     * @throws IOException if an I/O error occurs
+     */
+    private static SeekableByteChannel newReadByteChannel(final Path path) throws IOException {
+        return Files.newByteChannel(path, READ);
+    }
+
+    /**
      * List of entries in the order they appear inside the central directory.
      */
     private final List<ZipArchiveEntry> entries = new LinkedList<>();
@@ -477,8 +490,7 @@ public class ZipFile implements Closeable {
      * @since 1.19
      */
     public ZipFile(final File file, final String encoding, final boolean useUnicodeExtraFields, final boolean ignoreLocalFileHeader) throws IOException {
-        this(Files.newByteChannel(file.toPath(), EnumSet.of(StandardOpenOption.READ)), file.getAbsolutePath(), encoding, useUnicodeExtraFields, true,
-                ignoreLocalFileHeader);
+        this(newReadByteChannel(file.toPath()), file.getAbsolutePath(), encoding, useUnicodeExtraFields, true, ignoreLocalFileHeader);
     }
 
     /**
@@ -535,8 +547,7 @@ public class ZipFile implements Closeable {
      * @since 1.22
      */
     public ZipFile(final Path path, final String encoding, final boolean useUnicodeExtraFields, final boolean ignoreLocalFileHeader) throws IOException {
-        this(Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ)), path.toAbsolutePath().toString(), encoding, useUnicodeExtraFields, true,
-                ignoreLocalFileHeader);
+        this(newReadByteChannel(path), path.toAbsolutePath().toString(), encoding, useUnicodeExtraFields, true, ignoreLocalFileHeader);
     }
 
     /**
