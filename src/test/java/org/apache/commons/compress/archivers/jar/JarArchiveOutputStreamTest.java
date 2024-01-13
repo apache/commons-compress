@@ -53,7 +53,7 @@ public class JarArchiveOutputStreamTest extends AbstractTempDirTest {
             out.closeArchiveEntry();
             out.finish();
         }
-        try (ZipFile zf = new ZipFile(testArchive)) {
+        try (ZipFile zf = ZipFile.builder().setPath(testArchive).get()) {
             ZipArchiveEntry ze = zf.getEntry("foo/");
             assertNotNull(ze);
             ZipExtraField[] fes = ze.getExtraFields();

@@ -341,7 +341,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
      */
     @Test
     public void testProperUseOfInflater() throws Exception {
-        try (ZipFile zf = new ZipFile(getFile("COMPRESS-189.zip"))) {
+        try (ZipFile zf = ZipFile.builder().setFile(getFile("COMPRESS-189.zip")).get()) {
             final ZipArchiveEntry zae = zf.getEntry("USD0558682-20080101.ZIP");
             try (ZipArchiveInputStream in = new ZipArchiveInputStream(new BufferedInputStream(zf.getInputStream(zae)))) {
                 ZipArchiveEntry innerEntry;

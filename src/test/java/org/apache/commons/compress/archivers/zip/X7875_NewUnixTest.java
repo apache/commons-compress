@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
 import java.util.Enumeration;
 import java.util.zip.ZipException;
 
@@ -167,9 +166,7 @@ public class X7875_NewUnixTest {
 
     @Test
     public void testSampleFile() throws Exception {
-        final File archive = getFile("COMPRESS-211_uid_gid_zip_test.zip");
-
-        try (ZipFile zf = new ZipFile(archive)) {
+        try (ZipFile zf = ZipFile.builder().setFile(getFile("COMPRESS-211_uid_gid_zip_test.zip")).get()) {
             final Enumeration<ZipArchiveEntry> en = zf.getEntries();
 
             // We expect EVERY entry of this ZIP file (dir & file) to

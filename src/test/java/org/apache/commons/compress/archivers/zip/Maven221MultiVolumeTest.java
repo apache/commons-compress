@@ -62,7 +62,7 @@ public class Maven221MultiVolumeTest extends AbstractTest {
 
     @Test
     public void testRead7ZipMultiVolumeArchiveForFile() {
-        assertThrows(IOException.class, () -> new ZipFile(getFile("apache-maven-2.2.1.zip.001")));
+        assertThrows(IOException.class, () -> ZipFile.builder().setFile(getFile("apache-maven-2.2.1.zip.001")).get());
     }
 
     @Test

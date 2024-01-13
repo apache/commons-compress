@@ -183,7 +183,7 @@ public class ExpanderTest extends AbstractTest {
     @Test
     public void testFileCantEscapeDoubleDotPath() throws IOException, ArchiveException {
         setupZip("../foo");
-        try (ZipFile f = new ZipFile(archive)) {
+        try (ZipFile f = ZipFile.builder().setFile(archive).get()) {
             assertThrows(IOException.class, () -> new Expander().expand(f, tempResultDir));
         }
     }
@@ -196,7 +196,7 @@ public class ExpanderTest extends AbstractTest {
         s.mkdirs();
         assumeTrue(s.exists());
         setupZip("../" + sibling + "/a");
-        try (ZipFile f = new ZipFile(archive)) {
+        try (ZipFile f = ZipFile.builder().setFile(archive).get()) {
             assertThrows(IOException.class, () -> new Expander().expand(f, tempResultDir));
         }
     }
@@ -204,7 +204,7 @@ public class ExpanderTest extends AbstractTest {
     @Test
     public void testFileCantEscapeViaAbsolutePath() throws IOException, ArchiveException {
         setupZip("/tmp/foo");
-        try (ZipFile f = new ZipFile(archive)) {
+        try (ZipFile f = ZipFile.builder().setFile(archive).get()) {
             assertThrows(IOException.class, () -> new Expander().expand(f, tempResultDir));
         }
         assertFalse(new File(tempResultDir, "tmp/foo").isFile());
@@ -270,7 +270,7 @@ public class ExpanderTest extends AbstractTest {
     @Test
     public void testZipFileVersion() throws IOException, ArchiveException {
         setupZip();
-        try (ZipFile f = new ZipFile(archive)) {
+        try (ZipFile f = ZipFile.builder().setFile(archive).get()) {
             new Expander().expand(f, tempResultDir);
         }
         verifyTargetDir();

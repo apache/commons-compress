@@ -107,7 +107,7 @@ public class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
         }
 
         // validate the content of the compressed files
-        try (ZipFile zf = new ZipFile(result)) {
+        try (ZipFile zf = ZipFile.builder().setFile(result).get()) {
             final Enumeration<ZipArchiveEntry> entriesInPhysicalOrder = zf.getEntriesInPhysicalOrder();
             while (entriesInPhysicalOrder.hasMoreElements()) {
                 final ZipArchiveEntry zipArchiveEntry = entriesInPhysicalOrder.nextElement();
@@ -131,7 +131,7 @@ public class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
     }
 
     private void removeEntriesFoundInZipFile(final File result, final Map<String, byte[]> entries) throws IOException {
-        try (ZipFile zf = new ZipFile(result)) {
+        try (ZipFile zf = ZipFile.builder().setFile(result).get()) {
             final Enumeration<ZipArchiveEntry> entriesInPhysicalOrder = zf.getEntriesInPhysicalOrder();
             int i = 0;
             while (entriesInPhysicalOrder.hasMoreElements()) {

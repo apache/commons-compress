@@ -18,6 +18,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.compress.AbstractTest.getFile;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -73,7 +75,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     private static void nameSource(final String archive, final String entry, final ZipArchiveEntry.NameSource expected) throws Exception {
-        try (ZipFile zf = new ZipFile(getFile(archive))) {
+        try (ZipFile zf = ZipFile.builder().setFile(getFile(archive)).get()) {
             final ZipArchiveEntry ze = zf.getEntry(entry);
             assertEquals(entry, ze.getName());
             assertEquals(expected, ze.getNameSource());
@@ -160,7 +162,7 @@ public class ZipFileTest extends AbstractTest {
 
     private void multiByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
         final byte[] buf = new byte[2];
-        try (ZipFile archive = new ZipFile(file)) {
+        try (ZipFile archive = ZipFile.builder().setFile(file).get()) {
             final ZipArchiveEntry e = archive.getEntries().nextElement();
             try (InputStream is = archive.getInputStream(e)) {
                 IOUtils.toByteArray(is);
@@ -179,8 +181,7 @@ public class ZipFileTest extends AbstractTest {
      * The central directory has ZipFile and ZipUtil swapped so central directory order is different from entry data order.
      */
     private void readOrderTest() throws Exception {
-        final File archive = getFile("ordertest.zip");
-        zf = new ZipFile(archive);
+        zf = ZipFile.builder().setFile(getFile("ordertest.zip")).get();
     }
 
     /**
@@ -195,7 +196,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     private void singleByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
-        try (ZipFile archive = new ZipFile(file)) {
+        try (ZipFile archive = ZipFile.builder().setFile(file).get();) {
             final ZipArchiveEntry e = archive.getEntries().nextElement();
             try (InputStream is = archive.getInputStream(e)) {
                 IOUtils.toByteArray(is);
@@ -213,63 +214,49 @@ public class ZipFileTest extends AbstractTest {
     @Test
     public void testCDOrder() throws Exception {
         readOrderTest();
-        final ArrayList<ZipArchiveEntry> l = Collections.list(zf.getEntries());
-        assertEntryName(l, 0, "AbstractUnicodeExtraField");
-        assertEntryName(l, 1, "AsiExtraField");
-        assertEntryName(l, 2, "ExtraFieldUtils");
-        assertEntryName(l, 3, "FallbackZipEncoding");
-        assertEntryName(l, 4, "GeneralPurposeBit");
-        assertEntryName(l, 5, "JarMarker");
-        assertEntryName(l, 6, "NioZipEncoding");
-        assertEntryName(l, 7, "Simple8BitZipEncoding");
-        assertEntryName(l, 8, "UnicodeCommentExtraField");
-        assertEntryName(l, 9, "UnicodePathExtraField");
-        assertEntryName(l, 10, "UnixStat");
-        assertEntryName(l, 11, "UnparseableExtraFieldData");
-        assertEntryName(l, 12, "UnrecognizedExtraField");
-        assertEntryName(l, 13, "ZipArchiveEntry");
-        assertEntryName(l, 14, "ZipArchiveInputStream");
-        assertEntryName(l, 15, "ZipArchiveOutputStream");
-        assertEntryName(l, 16, "ZipEncoding");
-        assertEntryName(l, 17, "ZipEncodingHelper");
-        assertEntryName(l, 18, "ZipExtraField");
-        assertEntryName(l, 19, "ZipUtil");
-        assertEntryName(l, 20, "ZipLong");
-        assertEntryName(l, 21, "ZipShort");
-        assertEntryName(l, 22, "ZipFile");
+        testCDOrderInMemory();
     }
 
     @Test
     public void testCDOrderInMemory() throws Exception {
         final byte[] data = readAllBytes("ordertest.zip");
-
+        zf = ZipFile.builder().setByteArray(data).setCharset(StandardCharsets.UTF_8).get();
+        testCDOrderInMemory(zf);
+        try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(data)) {
+            zf = ZipFile.builder().setSeekableByteChannel(channel).setCharset(StandardCharsets.UTF_8).get();
+            testCDOrderInMemory(zf);
+        }
         try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(data)) {
             zf = new ZipFile(channel, CharsetNames.UTF_8);
-            final ArrayList<ZipArchiveEntry> l = Collections.list(zf.getEntries());
-            assertEntryName(l, 0, "AbstractUnicodeExtraField");
-            assertEntryName(l, 1, "AsiExtraField");
-            assertEntryName(l, 2, "ExtraFieldUtils");
-            assertEntryName(l, 3, "FallbackZipEncoding");
-            assertEntryName(l, 4, "GeneralPurposeBit");
-            assertEntryName(l, 5, "JarMarker");
-            assertEntryName(l, 6, "NioZipEncoding");
-            assertEntryName(l, 7, "Simple8BitZipEncoding");
-            assertEntryName(l, 8, "UnicodeCommentExtraField");
-            assertEntryName(l, 9, "UnicodePathExtraField");
-            assertEntryName(l, 10, "UnixStat");
-            assertEntryName(l, 11, "UnparseableExtraFieldData");
-            assertEntryName(l, 12, "UnrecognizedExtraField");
-            assertEntryName(l, 13, "ZipArchiveEntry");
-            assertEntryName(l, 14, "ZipArchiveInputStream");
-            assertEntryName(l, 15, "ZipArchiveOutputStream");
-            assertEntryName(l, 16, "ZipEncoding");
-            assertEntryName(l, 17, "ZipEncodingHelper");
-            assertEntryName(l, 18, "ZipExtraField");
-            assertEntryName(l, 19, "ZipUtil");
-            assertEntryName(l, 20, "ZipLong");
-            assertEntryName(l, 21, "ZipShort");
-            assertEntryName(l, 22, "ZipFile");
+            testCDOrderInMemory(zf);
         }
+    }
+
+    private void testCDOrderInMemory(final ZipFile zipFile) {
+        final ArrayList<ZipArchiveEntry> list = Collections.list(zipFile.getEntries());
+        assertEntryName(list, 0, "AbstractUnicodeExtraField");
+        assertEntryName(list, 1, "AsiExtraField");
+        assertEntryName(list, 2, "ExtraFieldUtils");
+        assertEntryName(list, 3, "FallbackZipEncoding");
+        assertEntryName(list, 4, "GeneralPurposeBit");
+        assertEntryName(list, 5, "JarMarker");
+        assertEntryName(list, 6, "NioZipEncoding");
+        assertEntryName(list, 7, "Simple8BitZipEncoding");
+        assertEntryName(list, 8, "UnicodeCommentExtraField");
+        assertEntryName(list, 9, "UnicodePathExtraField");
+        assertEntryName(list, 10, "UnixStat");
+        assertEntryName(list, 11, "UnparseableExtraFieldData");
+        assertEntryName(list, 12, "UnrecognizedExtraField");
+        assertEntryName(list, 13, "ZipArchiveEntry");
+        assertEntryName(list, 14, "ZipArchiveInputStream");
+        assertEntryName(list, 15, "ZipArchiveOutputStream");
+        assertEntryName(list, 16, "ZipEncoding");
+        assertEntryName(list, 17, "ZipEncodingHelper");
+        assertEntryName(list, 18, "ZipExtraField");
+        assertEntryName(list, 19, "ZipUtil");
+        assertEntryName(list, 20, "ZipLong");
+        assertEntryName(list, 21, "ZipShort");
+        assertEntryName(list, 22, "ZipFile");
     }
 
     @Test
@@ -309,7 +296,7 @@ public class ZipFileTest extends AbstractTest {
             data = IOUtils.toByteArray(fis);
         }
         try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(data)) {
-            zf = new ZipFile(channel, CharsetNames.UTF_8);
+            zf = ZipFile.builder().setSeekableByteChannel(channel).setCharset(StandardCharsets.UTF_8).get();
 
             final Map<String, byte[]> content = new HashMap<>();
             for (final ZipArchiveEntry entry : Collections.list(zf.getEntries())) {
@@ -359,7 +346,7 @@ public class ZipFileTest extends AbstractTest {
 
         }
 
-        try (ZipFile zf = new ZipFile(new SeekableInMemoryByteChannel(zipContent.toByteArray()))) {
+        try (ZipFile zf = ZipFile.builder().setByteArray(zipContent.toByteArray()).get()) {
             final ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
             assertNotEquals(-1L, inflatedEntry.getLocalHeaderOffset());
             assertNotEquals(-1L, inflatedEntry.getDataOffset());
@@ -444,7 +431,7 @@ public class ZipFileTest extends AbstractTest {
 
             }
 
-            try (ZipFile zf = new ZipFile(new SeekableInMemoryByteChannel(Arrays.copyOfRange(zipContent.array(), 0, (int) zipContent.size())))) {
+            try (ZipFile zf = ZipFile.builder().setByteArray(Arrays.copyOfRange(zipContent.array(), 0, (int) zipContent.size())).get()) {
                 final ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
                 final ResourceAlignmentExtraField inflatedAlignmentEx = (ResourceAlignmentExtraField) inflatedEntry
                         .getExtraField(ResourceAlignmentExtraField.ID);
@@ -526,7 +513,7 @@ public class ZipFileTest extends AbstractTest {
     public void testExtractFileLiesAcrossSplitZipSegmentsCreatedByWinrar() throws Exception {
         final File lastFile = getFile("COMPRESS-477/split_zip_created_by_winrar/split_zip_created_by_winrar.zip");
         try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile)) {
-            zf = new ZipFile(channel);
+            zf = ZipFile.builder().setSeekableByteChannel(channel).get();
 
             // the compressed content of ZipArchiveInputStream.java lies between .z01 and .z02
             final ZipArchiveEntry zipEntry = zf.getEntry("commons-compress/src/main/java/org/apache/commons/compress/archivers/zip/ZipArchiveInputStream.java");

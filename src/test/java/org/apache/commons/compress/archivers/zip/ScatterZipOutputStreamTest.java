@@ -59,7 +59,7 @@ public class ScatterZipOutputStreamTest extends AbstractTempDirTest {
             }
         }
 
-        try (ZipFile zf = new ZipFile(target)) {
+        try (ZipFile zf = ZipFile.builder().setFile(target).get()) {
             final ZipArchiveEntry bEntry = zf.getEntries("b.txt").iterator().next();
             assertEquals(8, bEntry.getSize());
             try (InputStream inputStream = zf.getInputStream(bEntry)) {

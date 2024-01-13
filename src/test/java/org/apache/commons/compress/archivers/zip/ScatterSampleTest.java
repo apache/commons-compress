@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 public class ScatterSampleTest extends AbstractTempDirTest {
 
     private void checkFile(final File result) throws IOException {
-        try (ZipFile zipFile = new ZipFile(result)) {
+        try (ZipFile zipFile = ZipFile.builder().setFile(result).get()) {
             final ZipArchiveEntry archiveEntry1 = zipFile.getEntries().nextElement();
             assertEquals("test1.xml", archiveEntry1.getName());
             try (InputStream inputStream = zipFile.getInputStream(archiveEntry1)) {

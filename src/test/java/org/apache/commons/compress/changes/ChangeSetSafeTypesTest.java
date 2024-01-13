@@ -673,7 +673,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
         final File file1 = getFile("test.txt");
-        try (ZipFile ais = new ZipFile(input);
+        try (ZipFile ais = ZipFile.builder().setPath(input).get();
                 OutputStream outputStream = Files.newOutputStream(result.toPath());
                 ArchiveOutputStream<ZipArchiveEntry> out = createArchiveOutputStream(archiverName, outputStream);
                 InputStream csInputStream = Files.newInputStream(file1.toPath())) {

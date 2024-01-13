@@ -113,7 +113,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
 
     @Test
     public void testReadIWAFile() throws Exception {
-        try (ZipFile zip = new ZipFile(getFile("testNumbersNew.numbers"))) {
+        try (ZipFile zip = ZipFile.builder().setFile(getFile("testNumbersNew.numbers")).get()) {
             try (InputStream is = zip.getInputStream(zip.getEntry("Index/Document.iwa"))) {
                 try (FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is, FramedSnappyDialect.IWORK_ARCHIVE)) {
                     Files.copy(in, newTempFile("snappyIWATest.raw").toPath());

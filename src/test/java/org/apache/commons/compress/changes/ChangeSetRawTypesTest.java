@@ -666,7 +666,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
         final String archiverName = "zip";
         final Path input = createArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
-        try (ZipFile archiveInputStream = new ZipFile(input);
+        try (ZipFile archiveInputStream = ZipFile.builder().setPath(input).get();
                 OutputStream newOutputStream = Files.newOutputStream(result);
                 ArchiveOutputStream archiveOutputStream = factory.createArchiveOutputStream(archiverName, newOutputStream);
                 InputStream csInputStream = Files.newInputStream(getPath("test.txt"))) {

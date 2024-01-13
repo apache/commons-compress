@@ -52,7 +52,7 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.utils.CharsetNames;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.file.PathUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -171,7 +171,7 @@ public class ZipMemoryFileSystemTest {
                 }
             }
 
-            try (ZipFile zf = new ZipFile(target.toFile())) {
+            try (ZipFile zf = ZipFile.builder().setPath(target).get()) {
                 final ZipArchiveEntry b_entry = zf.getEntries("b.txt").iterator().next();
                 assertEquals(8, b_entry.getSize());
                 try (InputStream inputStream = zf.getInputStream(b_entry)) {
@@ -212,6 +212,19 @@ public class ZipMemoryFileSystemTest {
                     scatterZipOutputStream.writeTo(outputStream);
                 }
             }
+            try (ZipFile zf = ZipFile.builder().setPath(target).get()) {
+                final ZipArchiveEntry b_entry = zf.getEntries("b.txt").iterator().next();
+                assertEquals(8, b_entry.getSize());
+                try (InputStream inputStream = zf.getInputStream(b_entry)) {
+                    assertArrayEquals(B_PAYLOAD, IOUtils.toByteArray(inputStream));
+                }
+
+                final ZipArchiveEntry a_entry = zf.getEntries("a.txt").iterator().next();
+                assertEquals(4, a_entry.getSize());
+                try (InputStream inputStream = zf.getInputStream(a_entry)) {
+                    assertArrayEquals(A_PAYLOAD, IOUtils.toByteArray(inputStream));
+                }
+            }
 
             try (ZipFile zf = new ZipFile(Files.newByteChannel(target, StandardOpenOption.READ), target.getFileName().toString(), CharsetNames.UTF_8, true)) {
                 final ZipArchiveEntry b_entry = zf.getEntries("b.txt").iterator().next();
@@ -226,6 +239,22 @@ public class ZipMemoryFileSystemTest {
                     assertArrayEquals(A_PAYLOAD, IOUtils.toByteArray(inputStream));
                 }
             }
+
+            try (ZipFile zf = new ZipFile(Files.newByteChannel(target, StandardOpenOption.READ), target.getFileName().toString(), CharsetNames.UTF_8, true,
+                    false)) {
+                final ZipArchiveEntry b_entry = zf.getEntries("b.txt").iterator().next();
+                assertEquals(8, b_entry.getSize());
+                try (InputStream inputStream = zf.getInputStream(b_entry)) {
+                    assertArrayEquals(B_PAYLOAD, IOUtils.toByteArray(inputStream));
+                }
+
+                final ZipArchiveEntry a_entry = zf.getEntries("a.txt").iterator().next();
+                assertEquals(4, a_entry.getSize());
+                try (InputStream inputStream = zf.getInputStream(a_entry)) {
+                    assertArrayEquals(A_PAYLOAD, IOUtils.toByteArray(inputStream));
+                }
+            }
+
         }
     }
 
@@ -253,7 +282,7 @@ public class ZipMemoryFileSystemTest {
                 }
             }
 
-            try (ZipFile zf = new ZipFile(target.toFile())) {
+            try (ZipFile zf = ZipFile.builder().setPath(target).get()) {
                 final ZipArchiveEntry b_entry = zf.getEntries("b.txt").iterator().next();
                 assertEquals(8, b_entry.getSize());
                 try (InputStream inputStream = zf.getInputStream(b_entry)) {

@@ -410,7 +410,7 @@ public class Expander {
             } else if (ArchiveStreamFactory.TAR.equalsIgnoreCase(format)) {
                 expand(c.track(new TarFile(archive)), targetDirectory);
             } else if (ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)) {
-                expand(c.track(new ZipFile(archive)), targetDirectory);
+                expand(c.track(ZipFile.builder().setSeekableByteChannel(archive).get()), targetDirectory);
             } else if (ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format)) {
                 expand(c.track(new SevenZFile(archive)), targetDirectory);
             } else {

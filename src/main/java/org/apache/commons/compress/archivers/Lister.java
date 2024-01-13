@@ -90,7 +90,7 @@ public final class Lister {
     }
 
     private static void listZipUsingZipFile(final File file) throws IOException {
-        try (ZipFile zipFile = new ZipFile(file)) {
+        try (ZipFile zipFile = ZipFile.builder().setFile(file).get()) {
             System.out.println("Created " + zipFile);
             for (final Enumeration<ZipArchiveEntry> en = zipFile.getEntries(); en.hasMoreElements();) {
                 System.out.println(en.nextElement().getName());

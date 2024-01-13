@@ -258,7 +258,7 @@ public class ZipArchiveEntryTest {
      */
     @Test
     public void testIsUnixSymlinkIsFalseIfMoreThanOneFlagIsSet() throws Exception {
-        try (ZipFile zf = new ZipFile(getFile("COMPRESS-379.jar"))) {
+        try (ZipFile zf = ZipFile.builder().setFile(getFile("COMPRESS-379.jar")).get()) {
             final ZipArchiveEntry ze = zf.getEntry("META-INF/maven/");
             assertFalse(ze.isUnixSymlink());
         }
@@ -312,7 +312,7 @@ public class ZipArchiveEntryTest {
 
     @Test
     public void testReparsingUnicodeExtraWithUnsupportedversionThrowsInStrictMode() throws Exception {
-        try (ZipFile zf = new ZipFile(getFile("COMPRESS-479.zip"))) {
+        try (ZipFile zf = ZipFile.builder().setFile(getFile("COMPRESS-479.zip")).get()) {
             final ZipArchiveEntry ze = zf.getEntry("%U20AC_for_Dollar.txt");
             assertThrows(ZipException.class, () -> ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.STRICT_FOR_KNOW_EXTRA_FIELDS));
         }
@@ -512,7 +512,7 @@ public class ZipArchiveEntryTest {
 
     @Test
     public void testZipArchiveClone() throws Exception {
-        try (ZipFile zf = new ZipFile(getFile("COMPRESS-479.zip"))) {
+        try (ZipFile zf = ZipFile.builder().setFile(getFile("COMPRESS-479.zip")).get()) {
             final ZipArchiveEntry ze = zf.getEntry("%U20AC_for_Dollar.txt");
             final ZipArchiveEntry clonedZe = (ZipArchiveEntry) ze.clone();
             assertEquals(ze, clonedZe);

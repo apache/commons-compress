@@ -44,8 +44,8 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Compress Release Notes</title>
   </properties>
   <body>
-    <release version="1.25.1" date="202Y-MM-DD" description="Minor feature and maintenance release.">
-      <!--  FIX -->
+    <release version="1.26.0" date="202Y-MM-DD" description="Minor feature and maintenance release.">
+      <!-- FIX -->
       <action type="fix" issue="COMPRESS-632" dev="ggregory" due-to="Yakov Shafranovich, Gary Gregory">Check for invalid PAX values in TarArchiveEntry #438.</action>
       <action type="fix" issue="COMPRESS-632" dev="ggregory" due-to="Yakov Shafranovich, Gary Gregory">Fix for zero size headers in ArjInputStream #439.</action>
       <action type="fix" issue="COMPRESS-632" dev="ggregory" due-to="Yakov Shafranovich">Fixes and tests for ArInputStream #440.</action>
@@ -65,7 +65,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate CRC32VerifyingInputStream.CRC32VerifyingInputStream(InputStream, long, int).</action>
       <action type="fix" issue="COMPRESS-655" dev="ggregory" due-to="cpreisler, Gary Gregory">FramedSnappyCompressorOutputStream produces incorrect output when writing a large buffer #457.</action>
       <action type="fix" issue="COMPRESS-657" dev="ggregory" due-to="Sebastian Schuberth, Gary Gregory">Fix TAR directory entries being misinterpreted as files #460.</action>
-      <!--  UPDATE -->
+      <!-- ADD -->
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add ZipFile.builder(), add ZipFile.Builder, deprecated constructors.</action>     
+      <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump commons-lang3 from 3.13.0 to 3.14.0.</action>
       <action type="update" dev="ggregory" due-to="Dependabot">Bump com.github.marschall:memoryfilesystem from 2.6.1 to 2.8.0 #444, #458.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump commons-io from 2.15.0 to 2.15.1.</action>
