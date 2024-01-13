@@ -26,7 +26,7 @@ public abstract class CPConstant extends ConstantPoolEntry {
     private final Object value;
 
     /**
-     * Create a new CPConstant
+     * Constructs a new CPConstant.
      *
      * @param tag         TODO
      * @param value       TODO

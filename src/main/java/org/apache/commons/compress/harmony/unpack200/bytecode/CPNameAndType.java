@@ -40,7 +40,7 @@ public class CPNameAndType extends ConstantPoolEntry {
     private int cachedHashCode;
 
     /**
-     * Create a new CPNameAndType
+     * Constructs a new CPNameAndType.
      *
      * @param name        TODO
      * @param descriptor  TODO

@@ -120,7 +120,7 @@ public final class ZipLong implements Cloneable, Serializable {
     private final long value;
 
     /**
-     * Create instance from bytes.
+     * Constructs a new instance from bytes.
      *
      * @param bytes the bytes to store as a ZipLong
      */

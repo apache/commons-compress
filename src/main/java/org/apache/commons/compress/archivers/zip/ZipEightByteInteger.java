@@ -151,7 +151,7 @@ public final class ZipEightByteInteger implements Serializable {
     private final BigInteger value;
 
     /**
-     * Create instance from a number.
+     * Constructs a new instance from a number.
      *
      * @param value the BigInteger to store as a ZipEightByteInteger
      */
@@ -160,7 +160,7 @@ public final class ZipEightByteInteger implements Serializable {
     }
 
     /**
-     * Create instance from bytes.
+     * Constructs a new instance from bytes.
      *
      * @param bytes the bytes to store as a ZipEightByteInteger
      */
@@ -169,7 +169,7 @@ public final class ZipEightByteInteger implements Serializable {
     }
 
     /**
-     * Create instance from the eight bytes starting at offset.
+     * Constructs a new instance from the eight bytes starting at offset.
      *
      * @param bytes  the bytes to store as a ZipEightByteInteger
      * @param offset the offset to start
@@ -179,7 +179,7 @@ public final class ZipEightByteInteger implements Serializable {
     }
 
     /**
-     * Create instance from a number.
+     * Constructs a new instance from a number.
      *
      * @param value the long to store as a ZipEightByteInteger
      */

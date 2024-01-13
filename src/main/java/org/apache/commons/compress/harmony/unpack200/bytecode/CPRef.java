@@ -34,7 +34,7 @@ public abstract class CPRef extends ConstantPoolEntry {
     protected String cachedToString;
 
     /**
-     * Create a new CPRef
+     * Constructs a new CPRef.
      *
      * @param type        TODO
      * @param className   TODO

@@ -103,7 +103,7 @@ public class ArArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Create a new instance using a couple of default values.
+     * Constructs a new instance using a couple of default values.
      *
      * <p>
      * Sets userId and groupId to 0, the octal file mode to 644 and the last modified time to the current time.
@@ -117,7 +117,7 @@ public class ArArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Create a new instance.
+     * Constructs a new instance.
      *
      * @param name         name of the entry
      * @param length       length of the entry in bytes

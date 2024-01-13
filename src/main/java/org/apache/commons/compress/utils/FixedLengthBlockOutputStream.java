@@ -111,7 +111,7 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
     private final AtomicBoolean closed = new AtomicBoolean(false);
 
     /**
-     * Create a fixed length block output stream with given destination stream and block size
+     * Constructs a fixed length block output stream with given destination stream and block size.
      *
      * @param os        The stream to wrap.
      * @param blockSize The block size to use.
@@ -129,7 +129,7 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
     }
 
     /**
-     * Create a fixed length block output stream with given destination writable byte channel and block size
+     * Constructs a fixed length block output stream with given destination writable byte channel and block size.
      *
      * @param out       The writable byte channel to wrap.
      * @param blockSize The block size to use.

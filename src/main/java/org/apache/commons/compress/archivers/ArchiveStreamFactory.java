@@ -367,14 +367,14 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     private SortedMap<String, ArchiveStreamProvider> archiveOutputStreamProviders;
 
     /**
-     * Create an instance using the platform default encoding.
+     * Constructs an instance using the platform default encoding.
      */
     public ArchiveStreamFactory() {
         this(null);
     }
 
     /**
-     * Create an instance using the specified encoding.
+     * Constructs an instance using the specified encoding.
      *
      * @param encoding the encoding to be used.
      *

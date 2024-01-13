@@ -75,7 +75,7 @@ public abstract class BandSet {
         private Map<Integer, Integer> distinctValues;
 
         /**
-         * Create a new instance of BandData. The band is then analysed.
+         * Constructs a new instance of BandData. The band is then analysed.
          *
          * @param band - the band of integers
          */
@@ -190,7 +190,7 @@ public abstract class BandSet {
     private long[] canonicalSmallest;
 
     /**
-     * Create a new BandSet
+     * Constructs a new BandSet.
      *
      * @param effort - the packing effort to be used (must be 1-9)
      * @param header - the segment header

@@ -311,7 +311,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /** Whether the stream will try to skip the ZIP split signature(08074B50) at the beginning **/
     private final boolean skipSplitSig;
 
-    // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
+    /** Cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection). */
     private final byte[] lfhBuf = new byte[LFH_LEN];
 
     private final byte[] skipBuf = new byte[1024];
@@ -325,7 +325,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private int entriesRead;
 
     /**
-     * Create an instance using UTF-8 encoding
+     * Constructs an instance using UTF-8 encoding
      *
      * @param inputStream the stream to wrap
      */
@@ -334,7 +334,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Create an instance using the specified encoding
+     * Constructs an instance using the specified encoding
      *
      * @param inputStream the stream to wrap
      * @param encoding    the encoding to use for file names, use null for the platform's default encoding
@@ -345,7 +345,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Create an instance using the specified encoding
+     * Constructs an instance using the specified encoding
      *
      * @param inputStream           the stream to wrap
      * @param encoding              the encoding to use for file names, use null for the platform's default encoding
@@ -356,7 +356,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Create an instance using the specified encoding
+     * Constructs an instance using the specified encoding
      *
      * @param inputStream                          the stream to wrap
      * @param encoding                             the encoding to use for file names, use null for the platform's default encoding
@@ -370,7 +370,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Create an instance using the specified encoding
+     * Constructs an instance using the specified encoding
      *
      * @param inputStream                          the stream to wrap
      * @param encoding                             the encoding to use for file names, use null for the platform's default encoding

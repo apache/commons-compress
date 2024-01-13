@@ -107,7 +107,7 @@ public class SegmentHeader extends BandSet {
     private final Counter majverCounter = new Counter();
 
     /**
-     * Create a new SegmentHeader
+     * Constructs a new SegmentHeader
      */
     public SegmentHeader() {
         super(1, null); // Pass 1 for effort because bands in the segment header

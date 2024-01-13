@@ -35,7 +35,7 @@ public class CPMember extends ClassFileEntry {
     transient int descriptorIndex;
 
     /**
-     * Create a new CPMember
+     * Constructs a new CPMember.
      *
      * @param name       TODO
      * @param descriptor TODO

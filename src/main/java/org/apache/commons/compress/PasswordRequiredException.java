@@ -28,7 +28,7 @@ public class PasswordRequiredException extends IOException {
     private static final long serialVersionUID = 1391070005491684483L;
 
     /**
-     * Create a new exception.
+     * Constructs a new exception.
      *
      * @param name name of the archive containing encrypted streams or the encrypted file.
      */

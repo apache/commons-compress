@@ -33,7 +33,7 @@ public abstract class BoundedArchiveInputStream extends InputStream {
     private long loc;
 
     /**
-     * Create a new bounded input stream.
+     * Constructs a new bounded input stream.
      *
      * @param start     position in the stream from where the reading of this bounded stream starts.
      * @param remaining amount of bytes which are allowed to read from the bounded stream.

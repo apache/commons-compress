@@ -31,7 +31,7 @@ public class BoundedSeekableByteChannelInputStream extends BoundedArchiveInputSt
     private final SeekableByteChannel channel;
 
     /**
-     * Create a bounded stream on the underlying {@link SeekableByteChannel}
+     * Constructs a bounded stream on the underlying {@link SeekableByteChannel}
      *
      * @param start     Position in the stream from where the reading of this bounded stream starts
      * @param remaining Amount of bytes which are allowed to read from the bounded stream
