@@ -80,14 +80,6 @@ import org.apache.commons.io.input.CountingInputStream;
  */
 public class ZipFile implements Closeable {
 
-    public static class Builder extends AbstractStreamBuilder<ZipFile, Builder> {
-
-        @Override
-        public ZipFile get() throws IOException {
-            return null;
-        }
-        
-    }
     /**
      * Lock-free implementation of BoundedInputStream. The implementation uses positioned reads on the underlying archive file channel and therefore performs
      * significantly faster in concurrent environment.
