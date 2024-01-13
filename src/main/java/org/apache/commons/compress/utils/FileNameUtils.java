@@ -29,11 +29,6 @@ import org.apache.commons.io.FilenameUtils;
  */
 public class FileNameUtils {
 
-    private static String fileNameToBaseName(final String name) {
-        final int extensionIndex = name.lastIndexOf('.');
-        return extensionIndex < 0 ? name : name.substring(0, extensionIndex);
-    }
-
     /**
      * Gets the base name (i.e. the part up to and not including the last ".") of the last path segment of a file name.
      * <p>
@@ -49,24 +44,25 @@ public class FileNameUtils {
             return null;
         }
         final Path fileName = path.getFileName();
-        return fileName != null ? fileNameToBaseName(fileName.toString()) : null;
+        return fileName != null ? FilenameUtils.removeExtension(fileName.toString()) : null;
     }
 
     /**
      * Gets the base name (i.e. the part up to and not including the last ".") of the last path segment of a file name.
-     *
      * <p>
      * Will return the file name itself if it doesn't contain any dots. All leading directories of the {@code file name} parameter are skipped.
      * </p>
      *
      * @return the base name of file name
      * @param fileName the name of the file to obtain the base name of.
+     * @deprecated No longer used, no replacement.
      */
+    @Deprecated
     public static String getBaseName(final String fileName) {
         if (fileName == null) {
             return null;
         }
-        return fileNameToBaseName(new File(fileName).getName());
+        return FilenameUtils.removeExtension(new File(fileName).getName());
     }
 
     /**
@@ -90,7 +86,6 @@ public class FileNameUtils {
 
     /**
      * Gets the extension (i.e. the part after the last ".") of a file.
-     *
      * <p>
      * Will return an empty string if the file name doesn't contain any dots. Only the last segment of a the file name is consulted - i.e. all leading
      * directories of the {@code fileName} parameter are skipped.
@@ -98,7 +93,9 @@ public class FileNameUtils {
      *
      * @return the extension of file name
      * @param fileName the name of the file to obtain the extension of.
+     * @deprecated Use {@link FilenameUtils#getExtension(String)}.
      */
+    @Deprecated
     public static String getExtension(final String fileName) {
         return FilenameUtils.getExtension(fileName);
     }

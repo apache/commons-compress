@@ -65,6 +65,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate CRC32VerifyingInputStream.CRC32VerifyingInputStream(InputStream, long, int).</action>
       <action type="fix" issue="COMPRESS-655" dev="ggregory" due-to="cpreisler, Gary Gregory">FramedSnappyCompressorOutputStream produces incorrect output when writing a large buffer #457.</action>
       <action type="fix" issue="COMPRESS-657" dev="ggregory" due-to="Sebastian Schuberth, Gary Gregory">Fix TAR directory entries being misinterpreted as files #460.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate unused method FileNameUtils.getBaseName(String).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate unused method FileNameUtils.getExtension(String).</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ZipFile.builder(), add ZipFile.Builder, deprecated constructors.</action>     
       <!-- UPDATE -->
