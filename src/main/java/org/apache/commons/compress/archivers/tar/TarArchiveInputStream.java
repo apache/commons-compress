@@ -123,73 +123,73 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     private final boolean lenient;
 
     /**
-     * Constructor for TarInputStream.
+     * Constructs a new instance.
      *
-     * @param is the input stream to use
+     * @param inputStream the input stream to use
      */
-    public TarArchiveInputStream(final InputStream is) {
-        this(is, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE);
+    public TarArchiveInputStream(final InputStream inputStream) {
+        this(inputStream, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE);
     }
 
     /**
-     * Constructor for TarInputStream.
+     * Constructs a new instance.
      *
-     * @param is      the input stream to use
-     * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
-     *                {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
+     * @param inputStream the input stream to use
+     * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
+     *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @since 1.19
      */
-    public TarArchiveInputStream(final InputStream is, final boolean lenient) {
-        this(is, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, lenient);
+    public TarArchiveInputStream(final InputStream inputStream, final boolean lenient) {
+        this(inputStream, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, lenient);
     }
 
     /**
-     * Constructor for TarInputStream.
+     * Constructs a new instance.
      *
-     * @param is        the input stream to use
-     * @param blockSize the block size to use
+     * @param inputStream the input stream to use
+     * @param blockSize   the block size to use
      */
-    public TarArchiveInputStream(final InputStream is, final int blockSize) {
-        this(is, blockSize, TarConstants.DEFAULT_RCDSIZE);
+    public TarArchiveInputStream(final InputStream inputStream, final int blockSize) {
+        this(inputStream, blockSize, TarConstants.DEFAULT_RCDSIZE);
     }
 
     /**
-     * Constructor for TarInputStream.
+     * Constructs a new instance.
      *
-     * @param is         the input stream to use
-     * @param blockSize  the block size to use
-     * @param recordSize the record size to use
+     * @param inputStream the input stream to use
+     * @param blockSize   the block size to use
+     * @param recordSize  the record size to use
      */
-    public TarArchiveInputStream(final InputStream is, final int blockSize, final int recordSize) {
-        this(is, blockSize, recordSize, null);
+    public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize) {
+        this(inputStream, blockSize, recordSize, null);
     }
 
     /**
-     * Constructor for TarInputStream.
+     * Constructs a new instance.
      *
-     * @param is         the input stream to use
-     * @param blockSize  the block size to use
-     * @param recordSize the record size to use
-     * @param encoding   name of the encoding to use for file names
+     * @param inputStream the input stream to use
+     * @param blockSize   the block size to use
+     * @param recordSize  the record size to use
+     * @param encoding    name of the encoding to use for file names
      * @since 1.4
      */
-    public TarArchiveInputStream(final InputStream is, final int blockSize, final int recordSize, final String encoding) {
-        this(is, blockSize, recordSize, encoding, false);
+    public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize, final String encoding) {
+        this(inputStream, blockSize, recordSize, encoding, false);
     }
 
     /**
-     * Constructor for TarInputStream.
+     * Constructs a new instance.
      *
-     * @param is         the input stream to use
-     * @param blockSize  the block size to use
-     * @param recordSize the record size to use
-     * @param encoding   name of the encoding to use for file names
-     * @param lenient    when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
-     *                   {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
+     * @param inputStream the input stream to use
+     * @param blockSize   the block size to use
+     * @param recordSize  the record size to use
+     * @param encoding    name of the encoding to use for file names
+     * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
+     *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @since 1.19
      */
-    public TarArchiveInputStream(final InputStream is, final int blockSize, final int recordSize, final String encoding, final boolean lenient) {
-        this.inputStream = is;
+    public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize, final String encoding, final boolean lenient) {
+        this.inputStream = inputStream;
         this.hasHitEOF = false;
         this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
@@ -200,26 +200,26 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     /**
-     * Constructor for TarInputStream.
+     * Constructs a new instance.
      *
-     * @param is        the input stream to use
-     * @param blockSize the block size to use
-     * @param encoding  name of the encoding to use for file names
+     * @param inputStream the input stream to use
+     * @param blockSize   the block size to use
+     * @param encoding    name of the encoding to use for file names
      * @since 1.4
      */
-    public TarArchiveInputStream(final InputStream is, final int blockSize, final String encoding) {
-        this(is, blockSize, TarConstants.DEFAULT_RCDSIZE, encoding);
+    public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final String encoding) {
+        this(inputStream, blockSize, TarConstants.DEFAULT_RCDSIZE, encoding);
     }
 
     /**
-     * Constructor for TarInputStream.
+     * Constructs a new instance.
      *
-     * @param is       the input stream to use
-     * @param encoding name of the encoding to use for file names
+     * @param inputStream the input stream to use
+     * @param encoding    name of the encoding to use for file names
      * @since 1.4
      */
-    public TarArchiveInputStream(final InputStream is, final String encoding) {
-        this(is, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding);
+    public TarArchiveInputStream(final InputStream inputStream, final String encoding) {
+        this(inputStream, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding);
     }
 
     private void applyPaxHeadersToCurrentEntry(final Map<String, String> headers, final List<TarArchiveStructSparse> sparseHeaders) throws IOException {
@@ -240,7 +240,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         if (isDirectory()) {
             return 0;
         }
-
         if (currEntry.getRealSize() - entryOffset > Integer.MAX_VALUE) {
             return Integer.MAX_VALUE;
         }
