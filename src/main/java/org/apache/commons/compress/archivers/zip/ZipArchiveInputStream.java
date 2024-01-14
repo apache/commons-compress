@@ -26,7 +26,6 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.ZIP64_MAGIC
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
@@ -48,6 +47,7 @@ import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.BoundedInputStream;
 
 /**
  * Implements an input stream that can read Zip archives.
@@ -73,45 +73,34 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
 public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> implements InputStreamStatistics {
 
     /**
-     * Bounded input stream adapted from commons-io
+     * Input stream adapted from commons-io.
      */
-    private final class BoundedInputStream extends FilterInputStream {
+    private final class BoundCountInputStream extends BoundedInputStream {
 
-        /** The max length to provide */
-        private final long max;
-
-        /** The number of bytes already returned */
-        private long pos;
+        // TODO Consider how to do this from a final class, an IO class, or basically without the current side-effect implementation.
 
         /**
          * Creates a new {@code BoundedInputStream} that wraps the given input stream and limits it to a certain size.
          *
          * @param in   The wrapped input stream
-         * @param size The maximum number of bytes to return
+         * @param max The maximum number of bytes to return
          */
-        BoundedInputStream(final InputStream in, final long size) {
-            super(in);
-            this.max = size;
+        BoundCountInputStream(final InputStream in, final long max) {
+            super(in, max);
         }
 
-        @Override
-        public int available() throws IOException {
-            if (max >= 0 && pos >= max) {
-                return 0;
-            }
-            return in.available();
+        private boolean atMaxLength() {
+            return getMaxLength() >= 0 && getCount() >= getMaxLength();
         }
 
         @Override
         public int read() throws IOException {
-            if (max >= 0 && pos >= max) {
+            if (atMaxLength()) {
                 return -1;
             }
-            final int result = in.read();
+            final int result = super.read();
             if (result != -1) {
-                pos++;
-                count(1);
-                current.bytesReadFromStream++;
+                readCount(1);
             }
             return result;
         }
@@ -121,30 +110,21 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             if (len == 0) {
                 return 0;
             }
-            if (max >= 0 && pos >= max) {
+            if (atMaxLength()) {
                 return -1;
             }
-            final long maxRead = max >= 0 ? Math.min(len, max - pos) : len;
-            final int bytesRead = in.read(b, off, (int) maxRead);
+            final long maxRead = getMaxLength() >= 0 ? Math.min(len, getMaxLength() - getCount()) : len;
+            return readCount(super.read(b, off, (int) maxRead));
+        }
 
-            if (bytesRead == -1) {
-                return -1;
+        private int readCount(final int bytesRead) {
+            if (bytesRead != -1) {
+                count(bytesRead);
+                current.bytesReadFromStream += bytesRead;
             }
-
-            pos += bytesRead;
-            count(bytesRead);
-            current.bytesReadFromStream += bytesRead;
             return bytesRead;
         }
 
-        @Override
-        public long skip(final long n) throws IOException {
-            final long toSkip = max >= 0 ? Math.min(n, max - pos) : n;
-            final InputStream input = in;
-            final long skippedBytes = org.apache.commons.io.IOUtils.skip(input, toSkip);
-            pos += skippedBytes;
-            return skippedBytes;
-        }
     }
 
     /**
@@ -764,7 +744,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         final ZipMethod m = ZipMethod.getMethodByCode(current.entry.getMethod());
         if (current.entry.getCompressedSize() != ArchiveEntry.SIZE_UNKNOWN) {
             if (ZipUtil.canHandleEntryData(current.entry) && m != ZipMethod.STORED && m != ZipMethod.DEFLATED) {
-                final InputStream bis = new BoundedInputStream(inputStream, current.entry.getCompressedSize());
+                final InputStream bis = new BoundCountInputStream(inputStream, current.entry.getCompressedSize());
                 switch (m) {
                 case UNSHRINKING:
                     current.inputStream = new UnshrinkingInputStream(bis);
