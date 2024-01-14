@@ -48,34 +48,34 @@ final class CRC {
             0xf464a0aa, 0xf9278673, 0xfde69bc4, 0x89b8fd09, 0x8d79e0be, 0x803ac667, 0x84fbdbd0, 0x9abc8bd5, 0x9e7d9662, 0x933eb0bb, 0x97ffad0c, 0xafb010b1,
             0xab710d06, 0xa6322bdf, 0xa2f33668, 0xbcb4666d, 0xb8757bda, 0xb5365d03, 0xb1f740b4 };
 
-    private int value;
+    private int crc;
 
     CRC() {
         reset();
     }
 
     int getValue() {
-        return ~value;
+        return ~crc;
     }
 
     void reset() {
-        value = 0xffffffff;
+        crc = 0xffffffff;
     }
 
     void update(final int inCh) {
-        int temp = value >> 24 ^ inCh;
+        int temp = crc >> 24 ^ inCh;
         if (temp < 0) {
             temp = 256 + temp;
         }
-        value = value << 8 ^ CRC.crc32Table[temp];
+        crc = crc << 8 ^ CRC.crc32Table[temp];
     }
 
     void update(final int inCh, int repeat) {
-        int globalCrcShadow = this.value;
+        int globalCrcShadow = this.crc;
         while (repeat-- > 0) {
             final int temp = globalCrcShadow >> 24 ^ inCh;
             globalCrcShadow = globalCrcShadow << 8 ^ crc32Table[temp >= 0 ? temp : temp + 256];
         }
-        this.value = globalCrcShadow;
+        this.crc = globalCrcShadow;
     }
 }
