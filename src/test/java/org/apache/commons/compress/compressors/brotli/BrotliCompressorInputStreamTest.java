@@ -44,7 +44,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTest {
     }
 
     /**
-     * Test bridge works fine.
+     * Tests bridge.
      *
      * @throws IOException
      */
