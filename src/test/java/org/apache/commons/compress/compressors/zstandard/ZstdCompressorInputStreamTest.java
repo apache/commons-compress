@@ -138,17 +138,15 @@ public class ZstdCompressorInputStreamTest extends AbstractTest {
     @Test
     public void testZstdDecode() throws IOException {
         final File input = getFile("zstandard.testdata.zst");
-        final File expected = getFile("zstandard.testdata");
         try (InputStream inputStream = Files.newInputStream(input.toPath());
                 ZstdCompressorInputStream zstdInputStream = new ZstdCompressorInputStream(inputStream)) {
-            final byte[] b = new byte[97];
-            IOUtils.read(expected, b);
+            final byte[] expected = Files.readAllBytes(getPath("zstandard.testdata"));
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             int readByte = -1;
             while ((readByte = zstdInputStream.read()) != -1) {
                 bos.write(readByte);
             }
-            assertArrayEquals(b, bos.toByteArray());
+            assertArrayEquals(expected, bos.toByteArray());
         }
     }
 
