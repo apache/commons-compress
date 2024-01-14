@@ -108,6 +108,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                 return -1;
             }
             final int result = in.read();
+            // TODO what if the result is -1?
             pos++;
             count(1);
             current.bytesReadFromStream++;
