@@ -51,18 +51,18 @@ final class CRC {
     private int globalCrc;
 
     CRC() {
-        initializeCRC();
+        initialize();
     }
 
-    int getFinalCRC() {
+    int getFinal() {
         return ~globalCrc;
     }
 
-    void initializeCRC() {
+    void initialize() {
         globalCrc = 0xffffffff;
     }
 
-    void updateCRC(final int inCh) {
+    void update(final int inCh) {
         int temp = globalCrc >> 24 ^ inCh;
         if (temp < 0) {
             temp = 256 + temp;
@@ -70,7 +70,7 @@ final class CRC {
         globalCrc = globalCrc << 8 ^ CRC.crc32Table[temp];
     }
 
-    void updateCRC(final int inCh, int repeat) {
+    void update(final int inCh, int repeat) {
         int globalCrcShadow = this.globalCrc;
         while (repeat-- > 0) {
             final int temp = globalCrcShadow >> 24 ^ inCh;

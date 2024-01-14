@@ -340,7 +340,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     }
 
     private void endBlock() throws IOException {
-        this.computedBlockCRC = this.crc.getFinalCRC();
+        this.computedBlockCRC = this.crc.getFinal();
 
         // A bad CRC is considered a fatal error.
         if (this.storedBlockCRC != this.computedBlockCRC) {
@@ -611,7 +611,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         // currBlockNo++;
         getAndMoveToFrontDecode();
 
-        this.crc.initializeCRC();
+        this.crc.initialize();
         this.currentState = START_BLOCK_STATE;
     }
 
@@ -850,7 +850,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             this.su_tPos = this.data.tt[this.su_tPos];
             this.su_i2++;
             this.currentState = NO_RAND_PART_B_STATE;
-            this.crc.updateCRC(su_ch2Shadow);
+            this.crc.update(su_ch2Shadow);
             return su_ch2Shadow;
         }
         this.currentState = NO_RAND_PART_A_STATE;
@@ -877,7 +877,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private int setupNoRandPartC() throws IOException {
         if (this.su_j2 < this.su_z) {
             final int su_ch2Shadow = this.su_ch2;
-            this.crc.updateCRC(su_ch2Shadow);
+            this.crc.update(su_ch2Shadow);
             this.su_j2++;
             this.currentState = NO_RAND_PART_C_STATE;
             return su_ch2Shadow;
@@ -904,7 +904,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             this.su_ch2 = su_ch2Shadow ^= this.su_rNToGo == 1 ? 1 : 0;
             this.su_i2++;
             this.currentState = RAND_PART_B_STATE;
-            this.crc.updateCRC(su_ch2Shadow);
+            this.crc.update(su_ch2Shadow);
             return su_ch2Shadow;
         }
         endBlock();
@@ -943,7 +943,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
     private int setupRandPartC() throws IOException {
         if (this.su_j2 < this.su_z) {
-            this.crc.updateCRC(this.su_ch2);
+            this.crc.update(this.su_ch2);
             this.su_j2++;
             return this.su_ch2;
         }
