@@ -26,14 +26,16 @@ import java.io.InputStream;
  * for the end of data in each entry as well as at the end of the file proper.
  * <p>
  * The {@link #getNextEntry()} method is used to reset the input stream ready for reading the data from the next entry.
+ * </p>
  * <p>
  * The input stream classes must also implement a method with the signature:
- *
+ * </p>
  * <pre>
  * public static boolean matches(byte[] signature, int length)
  * </pre>
- *
+ * <p>
  * which is used by the {@link ArchiveStreamFactory} to autodetect the archive type from the first few bytes of a stream.
+ * </p>
  *
  * @param <E> The type of {@link ArchiveEntry} produced.
  */
@@ -47,7 +49,6 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends InputSt
 
     /**
      * Whether this stream is able to read the given entry.
-     *
      * <p>
      * Some archive formats support variants or details that are not supported (yet).
      * </p>
@@ -83,7 +84,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends InputSt
     }
 
     /**
-     * Returns the current number of bytes read from this stream.
+     * Gets the current number of bytes read from this stream.
      *
      * @return the number of read bytes
      * @since 1.1
@@ -93,7 +94,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends InputSt
     }
 
     /**
-     * Returns the current number of bytes read from this stream.
+     * Gets the current number of bytes read from this stream.
      *
      * @return the number of read bytes
      * @deprecated this method may yield wrong results for large archives, use #getBytesRead instead
@@ -104,7 +105,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends InputSt
     }
 
     /**
-     * Returns the next Archive Entry in this Stream.
+     * Gets the next Archive Entry in this Stream.
      *
      * @return the next entry, or {@code null} if there are no more entries
      * @throws IOException if the next entry could not be read
