@@ -51,14 +51,14 @@ final class CRC {
     private int value;
 
     CRC() {
-        initialize();
+        reset();
     }
 
-    int getFinal() {
+    int getValue() {
         return ~value;
     }
 
-    void initialize() {
+    void reset() {
         value = 0xffffffff;
     }
 

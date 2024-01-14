@@ -340,7 +340,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     }
 
     private void endBlock() throws IOException {
-        this.computedBlockCRC = this.crc.getFinal();
+        this.computedBlockCRC = this.crc.getValue();
 
         // A bad CRC is considered a fatal error.
         if (this.storedBlockCRC != this.computedBlockCRC) {
@@ -611,7 +611,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         // currBlockNo++;
         getAndMoveToFrontDecode();
 
-        this.crc.initialize();
+        this.crc.reset();
         this.currentState = START_BLOCK_STATE;
     }
 

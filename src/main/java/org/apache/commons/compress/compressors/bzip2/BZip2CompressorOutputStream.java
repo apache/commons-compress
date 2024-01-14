@@ -492,7 +492,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
     }
 
     private void endBlock() throws IOException {
-        this.blockCRC = this.crc.getFinal();
+        this.blockCRC = this.crc.getValue();
         this.combinedCRC = this.combinedCRC << 1 | this.combinedCRC >>> 31;
         this.combinedCRC ^= this.blockCRC;
 
@@ -705,7 +705,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
 
     private void initBlock() {
         // blockNo++;
-        this.crc.initialize();
+        this.crc.reset();
         this.last = -1;
         // ch = 0;
 
