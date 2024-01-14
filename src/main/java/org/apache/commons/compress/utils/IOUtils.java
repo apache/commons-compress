@@ -33,9 +33,9 @@ import java.nio.file.LinkOption;
 import org.apache.commons.io.FileUtils;
 
 /**
- * Utility functions
+ * Utility functions.
  *
- * @Immutable (has mutable data but it is write-only)
+ * @Immutable (has mutable data but it is write-only).
  */
 public final class IOUtils {
 
@@ -150,7 +150,6 @@ public final class IOUtils {
 
     /**
      * Reads as much from the file as possible to fill the given array.
-     *
      * <p>
      * This method may invoke read repeatedly to fill the array and only read less bytes than the length of the array if the end of the stream has been reached.
      * </p>
@@ -169,7 +168,6 @@ public final class IOUtils {
 
     /**
      * Reads as much from input as possible to fill the given array.
-     *
      * <p>
      * This method may invoke read repeatedly to fill the array and only read less bytes than the length of the array if the end of the stream has been reached.
      * </p>
@@ -185,7 +183,6 @@ public final class IOUtils {
 
     /**
      * Reads as much from input as possible to fill the given array with the given amount of bytes.
-     *
      * <p>
      * This method may invoke read repeatedly to read the bytes and only read less bytes than the requested length if the end of the stream has been reached.
      * </p>
@@ -206,7 +203,6 @@ public final class IOUtils {
 
     /**
      * Reads {@code b.remaining()} bytes from the given channel starting at the current channel's position.
-     *
      * <p>
      * This method reads repeatedly from the channel until the requested number of bytes are read. This method blocks until the requested number of bytes are
      * read, the end of the channel is detected, or an exception is thrown.
@@ -271,12 +267,10 @@ public final class IOUtils {
 
     /**
      * Skips the given number of bytes by repeatedly invoking skip on the given input stream if necessary.
-     *
      * <p>
      * In a case where the stream's skip() method returns 0 before the requested number of bytes has been skip this implementation will fall back to using the
      * read() method.
      * </p>
-     *
      * <p>
      * This method will only skip less than the requested number of bytes if the end of the input stream has been reached.
      * </p>
