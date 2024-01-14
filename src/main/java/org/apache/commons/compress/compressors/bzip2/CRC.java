@@ -58,16 +58,8 @@ final class CRC {
         return ~globalCrc;
     }
 
-    int getGlobalCRC() {
-        return globalCrc;
-    }
-
     void initializeCRC() {
         globalCrc = 0xffffffff;
-    }
-
-    void setGlobalCRC(final int newCrc) {
-        globalCrc = newCrc;
     }
 
     void updateCRC(final int inCh) {
