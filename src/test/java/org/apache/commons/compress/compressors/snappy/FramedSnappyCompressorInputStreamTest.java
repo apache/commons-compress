@@ -92,11 +92,10 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
     @Test
     public void testMatches() throws IOException {
         assertFalse(FramedSnappyCompressorInputStream.matches(new byte[10], 10));
-        final byte[] b = new byte[12];
-        IOUtils.read(getFile("bla.tar.sz"), b);
-        assertFalse(FramedSnappyCompressorInputStream.matches(b, 9));
-        assertTrue(FramedSnappyCompressorInputStream.matches(b, 10));
-        assertTrue(FramedSnappyCompressorInputStream.matches(b, 12));
+        final byte[] expected = Files.readAllBytes(getPath("bla.tar.sz"));
+        assertFalse(FramedSnappyCompressorInputStream.matches(expected, 9));
+        assertTrue(FramedSnappyCompressorInputStream.matches(expected, 10));
+        assertTrue(FramedSnappyCompressorInputStream.matches(expected, 12));
     }
 
     @Test
