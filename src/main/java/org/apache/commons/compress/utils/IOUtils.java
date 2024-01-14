@@ -237,7 +237,7 @@ public final class IOUtils {
      */
     public static byte[] readRange(final InputStream input, final int len) throws IOException {
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        copyRange(input, len, output);
+        org.apache.commons.io.IOUtils.copyLarge(input, output, 0, len);
         return output.toByteArray();
     }
 
