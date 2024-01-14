@@ -24,7 +24,7 @@ import java.util.Objects;
  * This class represents struct sparse in a Tar archive.
  * <p>
  * Whereas, "struct sparse" is:
- *
+ * </p>
  * <pre>
  * struct sparse {
  * char offset[12];   // offset 0
