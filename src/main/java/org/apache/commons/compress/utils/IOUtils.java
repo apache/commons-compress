@@ -159,7 +159,9 @@ public final class IOUtils {
      * @return the number of bytes actually read
      * @throws IOException on error
      * @since 1.20
+     * @deprecated Use {@link Files#readAllBytes(java.nio.file.Path)}.
      */
+    @Deprecated
     public static int read(final File file, final byte[] array) throws IOException {
         try (InputStream inputStream = Files.newInputStream(file.toPath())) {
             return readFully(inputStream, array, 0, array.length);
