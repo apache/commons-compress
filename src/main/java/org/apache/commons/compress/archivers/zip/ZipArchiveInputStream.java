@@ -115,11 +115,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         }
 
         @Override
-        public int read(final byte[] b) throws IOException {
-            return this.read(b, 0, b.length);
-        }
-
-        @Override
         public int read(final byte[] b, final int off, final int len) throws IOException {
             if (len == 0) {
                 return 0;
@@ -268,16 +263,16 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     /** Wrapped stream, will always be a PushbackInputStream. */
     private final InputStream inputStream;
-    
+
     /** Inflater used for all deflated entries. */
     private final Inflater inf = new Inflater(true);
-    
+
     /** Buffer used to read from the wrapped stream. */
     private final ByteBuffer buf = ByteBuffer.allocate(ZipArchiveOutputStream.BUFFER_SIZE);
-    
+
     /** The entry that is currently being read. */
     private CurrentEntry current;
-    
+
     /** Whether the stream has been closed. */
     private boolean closed;
 
