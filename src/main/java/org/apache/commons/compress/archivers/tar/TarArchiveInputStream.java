@@ -78,46 +78,46 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
     private final byte[] smallBuf = new byte[SMALL_BUFFER_SIZE];
 
-    /** The size the TAR header */
+    /** The size the TAR header. */
     private final int recordSize;
 
-    /** The buffer to store the TAR header **/
+    /** The buffer to store the TAR header. **/
     private final byte[] recordBuffer;
 
-    /** The size of a block */
+    /** The size of a block. */
     private final int blockSize;
 
-    /** True if file has hit EOF */
-    private boolean hasHitEOF;
+    /** True if stream is at EOF. */
+    private boolean atEof;
 
-    /** Size of the current entry */
+    /** Size of the current . */
     private long entrySize;
 
-    /** How far into the entry the stream is at */
+    /** How far into the entry the stream is at. */
     private long entryOffset;
 
-    /** An input stream to read from */
+    /** An input stream to read from. */
     private final InputStream inputStream;
 
-    /** Input streams for reading sparse entries **/
+    /** Input streams for reading sparse entries. **/
     private List<InputStream> sparseInputStreams;
 
-    /** The index of current input stream being read when reading sparse entries */
+    /** The index of current input stream being read when reading sparse entries. */
     private int currentSparseInputStreamIndex;
 
-    /** The meta-data about the current entry */
+    /** The meta-data about the current entry. */
     private TarArchiveEntry currEntry;
 
-    /** The encoding of the file */
+    /** The encoding of the file. */
     private final ZipEncoding zipEncoding;
 
-    // the provided encoding (for unit tests)
+    /** The provided encoding (for unit tests). */
     final String encoding;
 
-    // the global PAX header
+    /** The global PAX header. */
     private Map<String, String> globalPaxHeaders = new HashMap<>();
 
-    // the global sparse headers, this is only used in PAX Format 0.X
+    /** The global sparse headers, this is only used in PAX Format 0.X. */
     private final List<TarArchiveStructSparse> globalSparseHeaders = new ArrayList<>();
 
     private final boolean lenient;
@@ -190,7 +190,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      */
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize, final String encoding, final boolean lenient) {
         this.inputStream = inputStream;
-        this.hasHitEOF = false;
+        this.atEof = false;
         this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.recordSize = recordSize;
@@ -527,7 +527,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     protected final boolean isAtEOF() {
-        return hasHitEOF;
+        return atEof;
     }
 
     private boolean isDirectory() {
@@ -766,7 +766,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     protected final void setAtEOF(final boolean b) {
-        hasHitEOF = b;
+        atEof = b;
     }
 
     protected final void setCurrentEntry(final TarArchiveEntry e) {
