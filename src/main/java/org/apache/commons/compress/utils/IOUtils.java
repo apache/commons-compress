@@ -131,7 +131,9 @@ public final class IOUtils {
      * @throws IOException              if an error occurs
      * @throws IllegalArgumentException if bufferSize is smaller than or equal to 0
      * @since 1.21
+     * @deprecated No longer used.
      */
+    @Deprecated
     public static long copyRange(final InputStream input, final long len, final OutputStream output, final int bufferSize) throws IOException {
         if (bufferSize < 1) {
             throw new IllegalArgumentException("bufferSize must be bigger than 0");

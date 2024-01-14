@@ -68,7 +68,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate unused method FileNameUtils.getBaseName(String).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate unused method FileNameUtils.getExtension(String).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">ArchiveInputStream.BoundedInputStream.read() incorrectly adds 1 for EOF to the bytes read count.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate org.apache.commons.compress.utils.IOUtils.read(File, byte[]).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate IOUtils.read(File, byte[]).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate IOUtils.copyRange(InputStream, long, OutputStream, int).</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ZipFile.builder(), add ZipFile.Builder, deprecated constructors.</action>     
       <!-- UPDATE -->
