@@ -111,9 +111,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     /** The encoding of the file. */
     private final ZipEncoding zipEncoding;
 
-    /** The provided encoding (for unit tests). */
-    final String encoding;
-
     /** The global PAX header. */
     private Map<String, String> globalPaxHeaders = new HashMap<>();
 
@@ -191,7 +188,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize, final String encoding, final boolean lenient) {
         this.inputStream = inputStream;
         this.atEof = false;
-        this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.recordSize = recordSize;
         this.recordBuffer = new byte[recordSize];
