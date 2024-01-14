@@ -151,7 +151,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
             new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, CharsetNames.UTF_8, FACTORY_SET_UTF8, "encoding"),
             new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, "ASCII", FACTORY_SET_ASCII, "encoding"), };
 
-    // equals allowing null
+    /** equals allowing null. */
     private static boolean eq(final String exp, final String act) {
         if (exp == null) {
             return act == null;
@@ -375,7 +375,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
     }
 
     /**
-     * see https://issues.apache.org/jira/browse/COMPRESS-171
+     * See https://issues.apache.org/jira/browse/COMPRESS-171
      */
     @Test
     public void testShortTextFilesAreNoTARs() {
@@ -387,7 +387,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
     }
 
     /**
-     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-208" >COMPRESS-208</a>.
+     * Tests case for <a href="https://issues.apache.org/jira/browse/COMPRESS-208" >COMPRESS-208</a>.
      */
     @Test
     public void testSkipsPK00Prefix() throws Exception {
