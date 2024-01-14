@@ -50,17 +50,15 @@ public class BrotliCompressorInputStreamTest extends AbstractTest {
      */
     @Test
     public void testBrotliDecode() throws IOException {
-        final File expected = getFile("brotli.testdata.uncompressed");
         try (InputStream inputStream = newInputStream("brotli.testdata.compressed");
                 BrotliCompressorInputStream brotliInputStream = new BrotliCompressorInputStream(inputStream)) {
-            final byte[] b = new byte[20];
-            IOUtils.read(expected, b);
+            final byte[] expected = Files.readAllBytes(getPath("brotli.testdata.uncompressed"));
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             int readByte = -1;
             while ((readByte = brotliInputStream.read()) != -1) {
                 bos.write(readByte);
             }
-            assertArrayEquals(b, bos.toByteArray());
+            assertArrayEquals(expected, bos.toByteArray());
         }
     }
 
