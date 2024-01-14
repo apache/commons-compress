@@ -18,7 +18,7 @@
  */
 
 /**
- * Provides stream classes for the <a href="http://lz4.github.io/lz4/">LZ4</a> algorithm.
+ * Provides stream classes for the <a href="https://lz4.github.io/lz4/">LZ4</a> algorithm.
  * <p>
  * The block LZ4 format which only contains the compressed data is supported by the <code>BlockLZ4Compressor*putStream</code> classes while the frame format is
  * implemented by <code>FramedLZ4Compressor*putStream</code>. The implementation in Commons Compress is based on the specifications "Last revised: 2015-03-26"

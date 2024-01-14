@@ -38,7 +38,7 @@ public class LZ77CompressorTest {
         /*
          * Example from "An Explanation of the Deflate Algorithm" by "Antaeus Feldspar".
          *
-         * @see "http://zlib.net/feldspar.html"
+         * @see "https://zlib.net/feldspar.html"
          */
         BLA = "Blah blah blah blah blah!".getBytes(US_ASCII);
 

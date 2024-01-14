@@ -37,7 +37,7 @@ import org.apache.commons.io.input.CountingInputStream;
  * Based on the "spec" in the version "1.5.1 (31/03/2015)"
  * </p>
  *
- * @see <a href="http://lz4.github.io/lz4/lz4_Frame_format.html">LZ4 Frame Format Description</a>
+ * @see <a href="https://lz4.github.io/lz4/lz4_Frame_format.html">LZ4 Frame Format Description</a>
  * @since 1.14
  * @NotThreadSafe
  */

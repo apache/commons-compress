@@ -470,7 +470,7 @@ public class X5455_ExtendedTimestampTest {
          * 1999's zip time: Jan 1st, 1999-01-01/00:00:02 1999's mod time: Jan 1st, 1999-01-01/00:00:01 1999's acc time: Jan 1st, 1999-01-01/00:00:03
          *
          * Starting with a patch release of Java8, "zip time" actually uses the extended time stamp field itself and should be the same as "mod time".
-         * http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/rev/90df6756406f
+         * https://hg.openjdk.java.net/jdk8u/jdk8u/jdk/rev/90df6756406f
          *
          * Starting with Java9 the parser for extended time stamps has been fixed to use signed integers which was detected during the triage of COMPRESS-416.
          * Signed integers is the correct format and Compress 1.15 has started to use signed integers as well.

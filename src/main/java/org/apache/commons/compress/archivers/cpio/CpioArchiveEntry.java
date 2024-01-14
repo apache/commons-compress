@@ -147,7 +147,7 @@ import org.apache.commons.compress.utils.TimeUtils;
  * </p>
  *
  * <p>
- * Based on code from the jRPM project (http://jrpm.sourceforge.net).
+ * Based on code from the jRPM project (https://jrpm.sourceforge.net).
  * </p>
  *
  * <p>

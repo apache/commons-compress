@@ -27,7 +27,7 @@ import org.apache.commons.compress.utils.ByteUtils;
 /**
  * CompressorInputStream for the LZ4 block format.
  *
- * @see <a href="http://lz4.github.io/lz4/lz4_Block_format.html">LZ4 Block Format Description</a>
+ * @see <a href="https://lz4.github.io/lz4/lz4_Block_format.html">LZ4 Block Format Description</a>
  * @since 1.14
  * @NotThreadSafe
  */

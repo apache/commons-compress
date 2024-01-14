@@ -21,7 +21,7 @@ package org.apache.commons.compress.compressors.lz4;
 /**
  * Implementation of the xxhash32 hash algorithm.
  *
- * @see <a href="http://cyan4973.github.io/xxHash/">xxHash</a>
+ * @see <a href="https://cyan4973.github.io/xxHash/">xxHash</a>
  * @NotThreadSafe
  * @since 1.14
  * @deprecated Use {@link org.apache.commons.codec.digest.XXHash32}.
