@@ -75,7 +75,6 @@ import org.apache.commons.io.file.attribute.FileTimes;
  * <p>
  * The C structure for a Tar Entry's header is:
  * </p>
- *
  * <pre>
  * struct header {
  *   char name[100];     // TarConstants.NAMELEN    - offset   0
@@ -106,7 +105,6 @@ import org.apache.commons.io.file.attribute.FileTimes;
  * <p>
  * The C structure for a old GNU Tar Entry's header is:
  * </p>
- *
  * <pre>
  * struct oldgnu_header {
  *   char unused_pad1[345]; // TarConstants.PAD1LEN_GNU       - offset 0
@@ -124,7 +122,6 @@ import org.apache.commons.io.file.attribute.FileTimes;
  * <p>
  * Whereas, "struct sparse" is:
  * </p>
- *
  * <pre>
  * struct sparse {
  *   char offset[12];   // offset 0
@@ -134,7 +131,6 @@ import org.apache.commons.io.file.attribute.FileTimes;
  * <p>
  * The C structure for a xstar (Jörg Schilling star) Tar Entry's header is:
  * </p>
- *
  * <pre>
  * struct star_header {
  *   char name[100];     // offset   0
@@ -165,7 +161,6 @@ import org.apache.commons.io.file.attribute.FileTimes;
  * <p>
  * The C structure for the xstar-specific parts of a xstar Tar Entry's header is:
  * </p>
- *
  * <pre>
  * struct xstar_in_header {
  *   char fill[345];         // offset 0     Everything before t_prefix
@@ -306,6 +301,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /** The entry's size. */
     private long size;
+
     /**
      * The entry's modification time. Corresponds to the POSIX {@code mtime} attribute.
      */
@@ -465,12 +461,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Constructs an entry for a file. File is set to file, and the header is constructed from information from the file. The name is set from the normalized
      * file path.
-     *
      * <p>
      * The entry's name will be the value of the {@code file}'s path with all file separators replaced by forward slashes and leading slashes as well as Windows
      * drive letters stripped. The name will end in a slash if the {@code file} represents a directory.
      * </p>
-     *
      * <p>
      * Note: Since 1.21 this internally uses the same code as the TarArchiveEntry constructors with a {@link Path} as parameter. But all thrown exceptions are
      * ignored. If handling those exceptions is needed consider switching to the path constructors.
@@ -484,12 +478,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Constructs an entry for a file. File is set to file, and the header is constructed from information from the file.
-     *
      * <p>
      * The entry's name will be the value of the {@code fileName} argument with all file separators replaced by forward slashes and leading slashes as well as
      * Windows drive letters stripped. The name will end in a slash if the {@code file} represents a directory.
      * </p>
-     *
      * <p>
      * Note: Since 1.21 this internally uses the same code as the TarArchiveEntry constructors with a {@link Path} as parameter. But all thrown exceptions are
      * ignored. If handling those exceptions is needed consider switching to the path constructors.
@@ -564,7 +556,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Constructs an entry for a file. File is set to file, and the header is constructed from information from the file. The name is set from the normalized
      * file path.
-     *
      * <p>
      * The entry's name will be the value of the {@code file}'s path with all file separators replaced by forward slashes and leading slashes as well as Windows
      * drive letters stripped. The name will end in a slash if the {@code file} represents a directory.
@@ -580,7 +571,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Constructs an entry for a file. File is set to file, and the header is constructed from information from the file.
-     *
      * <p>
      * The entry's name will be the value of the {@code fileName} argument with all file separators replaced by forward slashes and leading slashes as well as
      * Windows drive letters stripped. The name will end in a slash if the {@code file} represents a directory.
@@ -606,7 +596,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Constructs an entry with only a name. This allows the programmer to construct the entry's header "by hand". File is set to null.
-     *
      * <p>
      * The entry's name will be the value of the {@code name} argument with all file separators replaced by forward slashes and leading slashes as well as
      * Windows drive letters stripped.
@@ -620,7 +609,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Constructs an entry with only a name. This allows the programmer to construct the entry's header "by hand". File is set to null.
-     *
      * <p>
      * The entry's name will be the value of the {@code name} argument with all file separators replaced by forward slashes. Leading slashes and Windows drive
      * letters are stripped if {@code preserveAbsolutePath} is {@code false}.
@@ -646,7 +634,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Constructs an entry with a name and a link flag.
-     *
      * <p>
      * The entry's name will be the value of the {@code name} argument with all file separators replaced by forward slashes and leading slashes as well as
      * Windows drive letters stripped.
@@ -661,7 +648,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Constructs an entry with a name and a link flag.
-     *
      * <p>
      * The entry's name will be the value of the {@code name} argument with all file separators replaced by forward slashes. Leading slashes and Windows drive
      * letters are stripped if {@code preserveAbsolutePath} is {@code false}.
@@ -683,7 +669,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * add a PAX header to this entry. If the header corresponds to an existing field in the entry, that field will be set; otherwise the header will be added
+     * Adds a PAX header to this entry. If the header corresponds to an existing field in the entry, that field will be set; otherwise the header will be added
      * to the extraPaxHeaders Map
      *
      * @param name  The full name of the header to set.
@@ -699,7 +685,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * clear all extra PAX headers.
+     * Clears all extra PAX headers.
      *
      * @since 1.15
      */
@@ -732,7 +718,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Evaluate an entry's header format from a header buffer.
+     * Evaluates an entry's header format from a header buffer.
      *
      * @param header The tar entry header buffer to evaluate the format for.
      * @return format type
@@ -830,7 +816,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * If this entry represents a file, and the file is a directory, return an array of TarEntries for this entry's children.
-     *
      * <p>
      * This method is only useful for entries created from a {@code
      * File} or {@code Path} but not for entries read from an archive.
@@ -855,7 +840,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * get named extra PAX header
+     * Gets named extra PAX header
      *
      * @param name The full name of an extended PAX header to retrieve
      * @return The value of the header, if any.
@@ -866,7 +851,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * get extra PAX Headers
+     * Gets extra PAX Headers
      *
      * @return read-only map containing any extra PAX Headers
      * @since 1.15
@@ -877,7 +862,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Gets this entry's file.
-     *
      * <p>
      * This method is only useful for entries created from a {@code
      * File} or {@code Path} but not for entries read from an archive.
@@ -1004,7 +988,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Gets this entry's name.
-     *
      * <p>
      * This method returns the raw name as it is stored inside of the archive.
      * </p>
@@ -1053,7 +1036,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Gets this entry's file.
-     *
      * <p>
      * This method is only useful for entries created from a {@code
      * File} or {@code Path} but not for entries read from an archive.
@@ -1068,11 +1050,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Gets this entry's real file size in case of a sparse file.
-     *
      * <p>
      * This is the size a file would take on disk if the entry was expanded.
      * </p>
-     *
      * <p>
      * If the file is not a sparse file, return size instead of realSize.
      * </p>
@@ -1088,10 +1068,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Gets this entry's file size.
-     *
      * <p>
      * This is the size the entry's data uses inside the archive. Usually this is the same as {@link #getRealSize}, but it doesn't take the "holes" into account
      * when the entry represents a sparse file.
+     * </p>
      *
      * @return This entry's file size.
      */
@@ -1458,7 +1438,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Parse an entry's header information from a header buffer.
+     * Parses an entry's header information from a header buffer.
      *
      * @param header The tar entry header buffer to get information from.
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
@@ -1591,7 +1571,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * process one pax header, using the entries extraPaxHeaders map as source for extra headers used when handling entries for sparse files.
+     * Processes one pax header, using the entries extraPaxHeaders map as source for extra headers used when handling entries for sparse files.
      *
      * @param key
      * @param val
@@ -1602,7 +1582,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Process one pax header, using the supplied map as source for extra headers to be used when handling entries for sparse files
+     * Processes one pax header, using the supplied map as source for extra headers to be used when handling entries for sparse files
      *
      * @param key     the header name.
      * @param val     the header value.
@@ -1997,8 +1977,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Write an entry's header information to a header buffer.
-     *
+     * Writes an entry's header information to a header buffer.
      * <p>
      * This method does not use the star/GNU tar/BSD tar extensions.
      * </p>
@@ -2019,7 +1998,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Write an entry's header information to a header buffer.
+     * Writes an entry's header information to a header buffer.
      *
      * @param outbuf   The tar entry header buffer to fill in.
      * @param encoding encoding to use when writing the file name.
