@@ -195,7 +195,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private static final String USE_ZIPFILE_INSTEAD_OF_STREAM_DISCLAIMER = " while reading a stored entry using data descriptor. Either the archive is broken"
             + " or it can not be read using ZipArchiveInputStream and you must use ZipFile."
             + " A common cause for this is a ZIP archive containing a ZIP archive."
-            + " See http://commons.apache.org/proper/commons-compress/zip.html#ZipArchiveInputStream_vs_ZipFile";
+            + " See https://commons.apache.org/proper/commons-compress/zip.html#ZipArchiveInputStream_vs_ZipFile";
 
     private static final byte[] LFH = ZipLong.LFH_SIG.getBytes();
 
