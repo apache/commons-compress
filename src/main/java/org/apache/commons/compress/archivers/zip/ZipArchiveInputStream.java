@@ -51,29 +51,20 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
 
 /**
  * Implements an input stream that can read Zip archives.
- *
  * <p>
  * As of Apache Commons Compress it transparently supports Zip64 extensions and thus individual entries and archives larger than 4 GB or with more than 65536
  * entries.
  * </p>
- *
  * <p>
  * The {@link ZipFile} class is preferred when reading from files as {@link ZipArchiveInputStream} is limited by not being able to read the central directory
  * header before returning entries. In particular {@link ZipArchiveInputStream}
  * </p>
- *
  * <ul>
- *
  * <li>may return entries that are not part of the central directory at all and shouldn't be considered part of the archive.</li>
- *
  * <li>may return several entries with the same name.</li>
- *
  * <li>will not return internal or external attributes.</li>
- *
  * <li>may return incomplete extra field data.</li>
- *
  * <li>may return unknown sizes and CRC values for entries until the next entry has been reached if the archive uses the data descriptor feature.</li>
- *
  * </ul>
  *
  * @see ZipFile
@@ -186,7 +177,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
         /**
          * Number of bytes of entry content read from the stream.
-         *
          * <p>
          * This may be more than the actual entry's length as some stuff gets buffered up and needs to be pushed back when the end of the entry has been
          * reached.
@@ -211,18 +201,18 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     private static final int LFH_LEN = 30;
+
     /*
      * local file header signature WORD version needed to extract SHORT general purpose bit flag SHORT compression method SHORT last mod file time SHORT last
      * mod file date SHORT crc-32 WORD compressed size WORD uncompressed size WORD file name length SHORT extra field length SHORT
      */
-
     private static final int CFH_LEN = 46;
+
     /*
      * central file header signature WORD version made by SHORT version needed to extract SHORT general purpose bit flag SHORT compression method SHORT last mod
      * file time SHORT last mod file date SHORT crc-32 WORD compressed size WORD uncompressed size WORD file name length SHORT extra field length SHORT file
      * comment length SHORT disk number start SHORT internal file attributes SHORT external file attributes WORD relative offset of local header WORD
      */
-
     private static final long TWO_EXP_32 = ZIP64_MAGIC + 1;
 
     private static final String USE_ZIPFILE_INSTEAD_OF_STREAM_DISCLAIMER = " while reading a stored entry using data descriptor. Either the archive is broken"
@@ -278,12 +268,16 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     /** Wrapped stream, will always be a PushbackInputStream. */
     private final InputStream inputStream;
+    
     /** Inflater used for all deflated entries. */
     private final Inflater inf = new Inflater(true);
+    
     /** Buffer used to read from the wrapped stream. */
     private final ByteBuffer buf = ByteBuffer.allocate(ZipArchiveOutputStream.BUFFER_SIZE);
+    
     /** The entry that is currently being read. */
     private CurrentEntry current;
+    
     /** Whether the stream has been closed. */
     private boolean closed;
 
@@ -302,6 +296,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * <p>
      * See also : https://issues.apache.org/jira/projects/COMPRESS/issues/COMPRESS-555
      * https://github.com/apache/commons-compress/pull/137#issuecomment-690835644
+     * </p>
      */
     private final boolean allowStoredEntriesWithDataDescriptor;
 
@@ -383,7 +378,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     public ZipArchiveInputStream(final InputStream inputStream, final String encoding, final boolean useUnicodeExtraFields,
             final boolean allowStoredEntriesWithDataDescriptor, final boolean skipSplitSig) {
         this.encoding = encoding;
-        zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.useUnicodeExtraFields = useUnicodeExtraFields;
         this.inputStream = new PushbackInputStream(inputStream, buf.capacity());
         this.allowStoredEntriesWithDataDescriptor = allowStoredEntriesWithDataDescriptor;
@@ -807,6 +802,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
+     * Gets the uncompressed count.
+     *
      * @since 1.17
      */
     @Override
@@ -822,9 +819,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * </p>
      *
      * @param suspectLocalFileHeader the bytes read from the underlying stream in the expectation that they would hold the local file header of the next entry.
-     *
      * @return true if this looks like an APK signing block
-     *
      * @see <a href="https://source.android.com/security/apksigning/v2">https://source.android.com/security/apksigning/v2</a>
      */
     private boolean isApkSigningBlock(final byte[] suspectLocalFileHeader) throws IOException {
