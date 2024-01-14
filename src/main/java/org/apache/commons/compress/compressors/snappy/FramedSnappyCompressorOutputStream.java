@@ -41,7 +41,7 @@ import org.apache.commons.compress.utils.ByteUtils;
 public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
     // see spec:
     // > However, we place an additional restriction that the uncompressed data
-    // > in a chunk must be no longer than 65536 bytes. This allows consumers to
+    // > in a chunk must be no longer than 65,536 bytes. This allows consumers to
     // > easily use small fixed-size buffers.
     private static final int MAX_COMPRESSED_BUFFER_SIZE = 1 << 16;
 

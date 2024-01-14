@@ -69,7 +69,7 @@ import org.apache.commons.io.input.CountingInputStream;
  * <p>
  * It doesn't extend {@link java.util.zip.ZipFile} as it would have to reimplement all methods anyway. Like {@link java.util.zip.ZipFile}, it uses
  * SeekableByteChannel under the covers and supports compressed and uncompressed entries. As of Apache Commons Compress 1.3 it also transparently supports Zip64
- * extensions and thus individual entries and archives larger than 4 GB or with more than 65536 entries.
+ * extensions and thus individual entries and archives larger than 4 GB or with more than 65,536 entries.
  * </p>
  * <p>
  * The method signatures mimic the ones of {@link java.util.zip.ZipFile}, with a couple of exceptions:

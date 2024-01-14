@@ -45,21 +45,18 @@ import org.apache.commons.compress.utils.CharsetNames;
 /**
  * Reimplementation of {@link java.util.zip.ZipOutputStream java.util.zip.ZipOutputStream} to handle the extended functionality of this package, especially
  * internal/external file attributes and extra fields with different layouts for local file data and central directory entries.
- *
  * <p>
  * This class will try to use {@link java.nio.channels.SeekableByteChannel} when it knows that the output is going to go to a file and no split archive shall be
  * created.
  * </p>
- *
  * <p>
  * If SeekableByteChannel cannot be used, this implementation will use a Data Descriptor to store size and CRC information for {@link #DEFLATED DEFLATED}
  * entries, you don't need to calculate them yourself. Unfortunately, this is not possible for the {@link #STORED STORED} method, where setting the CRC and
  * uncompressed size information is required before {@link #putArchiveEntry(ZipArchiveEntry)} can be called.
  * </p>
- *
  * <p>
  * As of Apache Commons Compress 1.3, the class transparently supports Zip64 extensions and thus individual entries and archives larger than 4 GB or with more
- * than 65536 entries in most cases but explicit control is provided via {@link #setUseZip64}. If the stream can not use SeekableByteChannel and you try to
+ * than 65,536 entries in most cases but explicit control is provided via {@link #setUseZip64}. If the stream can not use SeekableByteChannel and you try to
  * write a ZipArchiveEntry of unknown size, then Zip64 extensions will be disabled by default.
  * </p>
  *
@@ -509,11 +506,13 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     /**
      * Adds an archive entry with a raw input stream.
-     *
+     * <p>
      * If crc, size and compressed size are supplied on the entry, these values will be used as-is. Zip64 status is re-established based on the settings in this
      * stream, and the supplied value is ignored.
-     *
+     * </p>
+     * <p>
      * The entry is put and closed immediately.
+     * </p>
      *
      * @param entry     The archive entry to add
      * @param rawStream The raw input stream of a different entry. May be compressed/encrypted.
@@ -556,7 +555,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     /**
      * Whether this stream is able to write the given entry.
-     *
      * <p>
      * May return false if it is set up to use encryption or a compression method that hasn't been implemented yet.
      * </p>
@@ -663,12 +661,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     /**
      * Creates a new ZIP entry taking some information from the given file and using the provided name.
-     *
      * <p>
      * The name will be adjusted to end with a forward slash "/" if the file is a directory. If the file is not a directory a potential trailing forward slash
      * will be stripped from the entry name.
      * </p>
-     *
      * <p>
      * Must not be used if the stream has already been closed.
      * </p>
@@ -683,12 +679,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     /**
      * Creates a new ZIP entry taking some information from the given file and using the provided name.
-     *
      * <p>
      * The name will be adjusted to end with a forward slash "/" if the file is a directory. If the file is not a directory a potential trailing forward slash
      * will be stripped from the entry name.
      * </p>
-     *
      * <p>
      * Must not be used if the stream has already been closed.
      * </p>
@@ -932,7 +926,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     /**
      * Closes the underlying stream/file without finishing the archive, the result will likely be a corrupt archive.
-     *
      * <p>
      * This method only exists to support tests that generate corrupt archives so they can clean up any temporary files.
      * </p>
@@ -1171,10 +1164,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     /**
      * This method indicates whether this archive is writing to a seekable stream (i.e., to a random access file).
-     *
      * <p>
      * For seekable streams, you don't need to calculate the CRC or uncompressed size for {@link #STORED} entries before invoking
      * {@link #putArchiveEntry(ZipArchiveEntry)}.
+     * </p>
      *
      * @return true if seekable
      */
@@ -1332,7 +1325,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     /**
      * Whether to create Unicode Extra Fields.
-     *
      * <p>
      * Defaults to NEVER.
      * </p>
@@ -1358,7 +1350,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     /**
      * The encoding to use for file names and the file comment.
-     *
      * <p>
      * For a list of possible values see <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html">Supported Encodings</a>.
      * Defaults to UTF-8.
@@ -1376,7 +1367,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     /**
      * Whether to fall back to UTF and the language encoding flag if the file name cannot be encoded using the specified encoding.
-     *
      * <p>
      * Defaults to false.
      * </p>
@@ -1389,7 +1379,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     /**
      * Sets the compression level for subsequent entries.
-     *
      * <p>
      * Default is Deflater.DEFAULT_COMPRESSION.
      * </p>
@@ -1410,7 +1399,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     /**
      * Sets the default compression method for subsequent entries.
-     *
      * <p>
      * Default is DEFLATED.
      * </p>
@@ -1423,7 +1411,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     /**
      * Whether to set the language encoding flag if the file name encoding is UTF-8.
-     *
      * <p>
      * Defaults to true.
      * </p>
@@ -1436,32 +1423,27 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     /**
      * Whether Zip64 extensions will be used.
-     *
      * <p>
      * When setting the mode to {@link Zip64Mode#Never Never}, {@link #putArchiveEntry}, {@link #closeArchiveEntry}, {@link #finish} or {@link #close} may throw
-     * a {@link Zip64RequiredException} if the entry's size or the total size of the archive exceeds 4GB or there are more than 65536 entries inside the
+     * a {@link Zip64RequiredException} if the entry's size or the total size of the archive exceeds 4GB or there are more than 65,536 entries inside the
      * archive. Any archive created in this mode will be readable by implementations that don't support Zip64.
      * </p>
-     *
      * <p>
      * When setting the mode to {@link Zip64Mode#Always Always}, Zip64 extensions will be used for all entries. Any archive created in this mode may be
      * unreadable by implementations that don't support Zip64 even if all its contents would be.
      * </p>
-     *
      * <p>
      * When setting the mode to {@link Zip64Mode#AsNeeded AsNeeded}, Zip64 extensions will transparently be used for those entries that require them. This mode
      * can only be used if the uncompressed size of the {@link ZipArchiveEntry} is known when calling {@link #putArchiveEntry} or the archive is written to a
      * seekable output (i.e. you have used the {@link #ZipArchiveOutputStream(java.io.File) File-arg constructor}) - this mode is not valid when the output
      * stream is not seekable and the uncompressed size is unknown when {@link #putArchiveEntry} is called.
      * </p>
-     *
      * <p>
      * If no entry inside the resulting archive requires Zip64 extensions then {@link Zip64Mode#Never Never} will create the smallest archive.
      * {@link Zip64Mode#AsNeeded AsNeeded} will create a slightly bigger archive if the uncompressed size of any entry has initially been unknown and create an
      * archive identical to {@link Zip64Mode#Never Never} otherwise. {@link Zip64Mode#Always Always} will create an archive that is at least 24 bytes per entry
      * bigger than the one {@link Zip64Mode#Never Never} would create.
      * </p>
-     *
      * <p>
      * Defaults to {@link Zip64Mode#AsNeeded AsNeeded} unless {@link #putArchiveEntry} is called with an entry of unknown size and data is written to a
      * non-seekable stream - in this case the default is {@link Zip64Mode#Never Never}.
@@ -1476,11 +1458,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     /**
      * Whether to add a Zip64 extended information extra field to the local file header.
-     *
      * <p>
      * Returns true if
      * </p>
-     *
      * <ul>
      * <li>mode is Always</li>
      * <li>or we already know it is going to be needed</li>

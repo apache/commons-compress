@@ -52,7 +52,7 @@ import org.apache.commons.io.input.BoundedInputStream;
 /**
  * Implements an input stream that can read Zip archives.
  * <p>
- * As of Apache Commons Compress it transparently supports Zip64 extensions and thus individual entries and archives larger than 4 GB or with more than 65536
+ * As of Apache Commons Compress it transparently supports Zip64 extensions and thus individual entries and archives larger than 4 GB or with more than 65,536
  * entries.
  * </p>
  * <p>
