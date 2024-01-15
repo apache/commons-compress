@@ -82,7 +82,7 @@ public class TarArchiveInputStreamTest extends AbstractTest {
             while (entry != null) {
                 entry = tar.getNextTarEntry();
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             fail("COMPRESS-197: " + e.getMessage());
         }
     }
@@ -259,7 +259,7 @@ public class TarArchiveInputStreamTest extends AbstractTest {
                 }
                 assertEquals(31, count);
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             fail("COMPRESS-245: " + e.getMessage());
         }
     }

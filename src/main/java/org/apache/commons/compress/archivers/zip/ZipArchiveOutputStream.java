@@ -1238,7 +1238,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * sizes.
      */
     private void rewriteSizesAndCrc(final boolean actuallyNeedsZip64) throws IOException {
-        RandomAccessOutputStream randomStream = (RandomAccessOutputStream) outputStream;
+        final RandomAccessOutputStream randomStream = (RandomAccessOutputStream) outputStream;
         long dataStart = entry.localDataStart;
         if (randomStream instanceof ZipSplitOutputStream) {
             dataStart = ((ZipSplitOutputStream) randomStream).calculateDiskPosition(entry.entry.getDiskNumberStart(), dataStart);

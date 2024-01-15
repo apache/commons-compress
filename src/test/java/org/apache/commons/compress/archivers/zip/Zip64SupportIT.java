@@ -206,7 +206,7 @@ public class Zip64SupportIT {
     private static void read5GBOfZerosUsingZipFileImpl(final File f, final String expectedName) throws IOException {
         ZipFile zf = null;
         try {
-            zf = ZipFile.builder().setFile(f).get();;
+            zf = ZipFile.builder().setFile(f).get();
             final Enumeration<ZipArchiveEntry> e = zf.getEntries();
             assertTrue(e.hasMoreElements());
             ZipArchiveEntry zae = e.nextElement();
@@ -260,7 +260,7 @@ public class Zip64SupportIT {
 
         try {
             test.test(f, zos);
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             System.err.println("Failed to write archive because of: " + ex.getMessage() + " - likely not enough disk space.");
             assumeTrue(false);
         } finally {
@@ -523,7 +523,7 @@ public class Zip64SupportIT {
             }
             zos.closeArchiveEntry();
             zos.close();
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             System.err.println("Failed to write archive because of: " + ex.getMessage() + " - likely not enough disk space.");
             assumeTrue(false);
         } finally {
@@ -1892,7 +1892,7 @@ public class Zip64SupportIT {
             write3EntriesCreatingBigArchiveToStream(zos);
             ZipFile zf = null;
             try {
-                zf = ZipFile.builder().setFile(f).get();;
+                zf = ZipFile.builder().setFile(f).get();
                 int idx = 0;
                 for (final Enumeration<ZipArchiveEntry> e = zf.getEntriesInPhysicalOrder(); e.hasMoreElements();) {
                     final ZipArchiveEntry zae = e.nextElement();

@@ -144,7 +144,7 @@ public final class DetectCompressorTest {
         final InputStream is = new BufferedInputStream(Files.newInputStream(getFile(fileName).toPath()));
         try {
             return fac.createCompressorInputStream(is);
-        } catch (CompressorException e) {
+        } catch (final CompressorException e) {
             if (e.getCause() != null && e.getCause() instanceof Exception) {
                 // unwrap cause to reveal MemoryLimitException
                 throw (Exception) e.getCause();

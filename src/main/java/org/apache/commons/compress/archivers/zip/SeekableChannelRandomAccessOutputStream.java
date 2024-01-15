@@ -51,7 +51,7 @@ class SeekableChannelRandomAccessOutputStream extends RandomAccessOutputStream {
 
     @Override
     public synchronized void writeFullyAt(final byte[] b, final int off, final int len, final long position) throws IOException {
-        long saved = channel.position();
+        final long saved = channel.position();
         try {
             channel.position(position);
             ZipIoUtil.writeFully(channel, ByteBuffer.wrap(b, off, len));

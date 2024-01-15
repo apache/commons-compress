@@ -297,9 +297,9 @@ public class NewAttributeBands extends BandSet {
 
         private final String tag;
 
-        private List<ConstantPoolEntry> band = new ArrayList<>();
+        private final List<ConstantPoolEntry> band = new ArrayList<>();
 
-        private boolean nullsAllowed;
+        private final boolean nullsAllowed;
 
         public Reference(final String tag) {
             this.tag = tag;

@@ -18,7 +18,6 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.compress.AbstractTest.getFile;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;

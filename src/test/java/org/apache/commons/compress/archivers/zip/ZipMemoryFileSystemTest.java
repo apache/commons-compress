@@ -83,7 +83,7 @@ public class ZipMemoryFileSystemTest {
             walk.sorted(Comparator.reverseOrder()).peek(path -> println("Deleting: " + path.toAbsolutePath())).forEach(path -> {
                 try {
                     Files.deleteIfExists(path);
-                } catch (IOException ignore) {
+                } catch (final IOException ignore) {
                 }
             });
         }

@@ -144,10 +144,10 @@ public final class ZipTest extends AbstractTest {
         zos.closeArchiveEntry();
     }
 
-    private byte[] createArtificialData(int size) {
+    private byte[] createArtificialData(final int size) {
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
         for (int i = 0; i < size; i += 1) {
-            output.write((byte) ((i & 1) == 0 ? (i / 2 % 256) : (i / 2 / 256)));
+            output.write((byte) ((i & 1) == 0 ? i / 2 % 256 : i / 2 / 256));
         }
         return output.toByteArray();
     }
@@ -242,12 +242,12 @@ public final class ZipTest extends AbstractTest {
         final long splitSize = 64 * 1024L; /* 64 KB */
         try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
             zipArchiveOutputStream.setUseZip64(Zip64Mode.Never);
-            ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
+            final ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
             ze1.setMethod(ZipEntry.STORED);
             zipArchiveOutputStream.putArchiveEntry(ze1);
             zipArchiveOutputStream.write(createArtificialData(65536));
             zipArchiveOutputStream.closeArchiveEntry();
-            ZipArchiveEntry ze2 = new ZipArchiveEntry("file02");
+            final ZipArchiveEntry ze2 = new ZipArchiveEntry("file02");
             ze2.setMethod(ZipEntry.DEFLATED);
             zipArchiveOutputStream.putArchiveEntry(ze2);
             zipArchiveOutputStream.write(createArtificialData(65536));
@@ -271,15 +271,15 @@ public final class ZipTest extends AbstractTest {
     public void testBuildArtificialSplitZip64Test() throws IOException {
         final File outputZipFile = newTempFile("artificialSplitZip.zip");
         final long splitSize = 64 * 1024L; /* 64 KB */
-        byte[] data = createArtificialData(128 * 1024);
+        final byte[] data = createArtificialData(128 * 1024);
         try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
             zipArchiveOutputStream.setUseZip64(Zip64Mode.Always);
-            ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
+            final ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
             ze1.setMethod(ZipEntry.STORED);
             zipArchiveOutputStream.putArchiveEntry(ze1);
             zipArchiveOutputStream.write(data);
             zipArchiveOutputStream.closeArchiveEntry();
-            ZipArchiveEntry ze2 = new ZipArchiveEntry("file02");
+            final ZipArchiveEntry ze2 = new ZipArchiveEntry("file02");
             ze2.setMethod(ZipEntry.DEFLATED);
             zipArchiveOutputStream.putArchiveEntry(ze2);
             zipArchiveOutputStream.write(data);
@@ -306,10 +306,10 @@ public final class ZipTest extends AbstractTest {
         // 4 is PK signature, 36 is size of header + local file header,
         // 36 is length of central directory entry
         // 1 is remaining byte in first archive, this should be skipped
-        byte[] data1 = createArtificialData(64 * 1024 - 4 - 36 - 52 - 1);
+        final byte[] data1 = createArtificialData(64 * 1024 - 4 - 36 - 52 - 1);
         try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
             zipArchiveOutputStream.setUseZip64(Zip64Mode.Never);
-            ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
+            final ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
             ze1.setMethod(ZipEntry.STORED);
             zipArchiveOutputStream.putArchiveEntry(ze1);
             zipArchiveOutputStream.write(data1);
@@ -336,34 +336,34 @@ public final class ZipTest extends AbstractTest {
         final long splitSize = 64 * 1024L; /* 64 KB */
         // 4 is PK signature, 36 is size of header + local file header,
         // 15 is next local file header up to second byte of CRC
-        byte[] data1 = createArtificialData(64 * 1024 - 4 - 36 - 15);
+        final byte[] data1 = createArtificialData(64 * 1024 - 4 - 36 - 15);
         // 21 is remaining size of second local file header
         // 19 is next local file header up to second byte of compressed size
-        byte[] data2 = createArtificialData(64 * 1024 - 21 - 19);
+        final byte[] data2 = createArtificialData(64 * 1024 - 21 - 19);
         // 17 is remaining size of third local file header
         // 23 is next local file header up to second byte of uncompressed size
-        byte[] data3 = createArtificialData(64 * 1024 - 17 - 23);
+        final byte[] data3 = createArtificialData(64 * 1024 - 17 - 23);
         // 13 is remaining size of third local file header
         // 1 is to wrap to next part
-        byte[] data4 = createArtificialData(64 * 1024 - 13 + 1);
+        final byte[] data4 = createArtificialData(64 * 1024 - 13 + 1);
         try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
             zipArchiveOutputStream.setUseZip64(Zip64Mode.Never);
-            ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
+            final ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
             ze1.setMethod(ZipEntry.STORED);
             zipArchiveOutputStream.putArchiveEntry(ze1);
             zipArchiveOutputStream.write(data1);
             zipArchiveOutputStream.closeArchiveEntry();
-            ZipArchiveEntry ze2 = new ZipArchiveEntry("file02");
+            final ZipArchiveEntry ze2 = new ZipArchiveEntry("file02");
             ze2.setMethod(ZipEntry.STORED);
             zipArchiveOutputStream.putArchiveEntry(ze2);
             zipArchiveOutputStream.write(data2);
             zipArchiveOutputStream.closeArchiveEntry();
-            ZipArchiveEntry ze3 = new ZipArchiveEntry("file03");
+            final ZipArchiveEntry ze3 = new ZipArchiveEntry("file03");
             ze3.setMethod(ZipEntry.STORED);
             zipArchiveOutputStream.putArchiveEntry(ze3);
             zipArchiveOutputStream.write(data3);
             zipArchiveOutputStream.closeArchiveEntry();
-            ZipArchiveEntry ze4 = new ZipArchiveEntry("file04");
+            final ZipArchiveEntry ze4 = new ZipArchiveEntry("file04");
             ze4.setMethod(ZipEntry.STORED);
             zipArchiveOutputStream.putArchiveEntry(ze4);
             zipArchiveOutputStream.write(data4);
@@ -420,7 +420,7 @@ public final class ZipTest extends AbstractTest {
             sameNameFile.createNewFile();
 
             assertThrows(IOException.class, () -> addFilesToZip(zipArchiveOutputStream, directoryToZip));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // Ignore:
             // java.io.IOException: This archive contains unclosed entries.
             // at org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.finish(ZipArchiveOutputStream.java:563)
@@ -701,7 +701,7 @@ public final class ZipTest extends AbstractTest {
                     while ((nestedEntry = nestedIn.getNextEntry()) != null) {
                         results.add(nestedEntry.getName());
                     }
-                } catch (ZipException ex) {
+                } catch (final ZipException ex) {
                     // expected since you cannot create a final ArchiveInputStream from test3.xml
                     expectedExceptions.add(ex);
                 }

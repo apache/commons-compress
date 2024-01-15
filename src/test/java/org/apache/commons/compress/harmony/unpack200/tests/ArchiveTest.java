@@ -55,7 +55,7 @@ public class ArchiveTest extends AbstractTempDirTest {
         if (in != null) {
             try {
                 in.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         }
@@ -63,7 +63,7 @@ public class ArchiveTest extends AbstractTempDirTest {
             if (out != null) {
                 out.close();
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
     }

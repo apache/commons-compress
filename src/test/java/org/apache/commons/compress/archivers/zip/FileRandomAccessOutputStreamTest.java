@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 public class FileRandomAccessOutputStreamTest extends AbstractTempDirTest {
     @Test
     public void testChannelReturn() throws IOException {
-        Path file = newTempPath("testChannel");
+        final Path file = newTempPath("testChannel");
         try (FileRandomAccessOutputStream stream = new FileRandomAccessOutputStream(file)) {
             assertNotNull(stream.channel());
         }
@@ -47,8 +47,8 @@ public class FileRandomAccessOutputStreamTest extends AbstractTempDirTest {
 
     @Test
     public void testWrite() throws IOException {
-        FileChannel channel = mock(FileChannel.class);
-        FileRandomAccessOutputStream stream = new FileRandomAccessOutputStream(channel);
+        final FileChannel channel = mock(FileChannel.class);
+        final FileRandomAccessOutputStream stream = new FileRandomAccessOutputStream(channel);
         when(channel.write((ByteBuffer) any()))
             .thenAnswer(answer -> {
                 ((ByteBuffer) answer.getArgument(0)).position(5);
@@ -68,8 +68,8 @@ public class FileRandomAccessOutputStreamTest extends AbstractTempDirTest {
 
     @Test
     public void testWriteFullyAt_whenFullAtOnce_thenSucceed() throws IOException {
-        FileChannel channel = mock(FileChannel.class);
-        FileRandomAccessOutputStream stream = new FileRandomAccessOutputStream(channel);
+        final FileChannel channel = mock(FileChannel.class);
+        final FileRandomAccessOutputStream stream = new FileRandomAccessOutputStream(channel);
         when(channel.write((ByteBuffer) any(), eq(20L)))
             .thenAnswer(answer -> {
                 ((ByteBuffer) answer.getArgument(0)).position(5);
@@ -93,8 +93,8 @@ public class FileRandomAccessOutputStreamTest extends AbstractTempDirTest {
 
     @Test
     public void testWriteFullyAt_whenFullButPartial_thenSucceed() throws IOException {
-        FileChannel channel = mock(FileChannel.class);
-        FileRandomAccessOutputStream stream = new FileRandomAccessOutputStream(channel);
+        final FileChannel channel = mock(FileChannel.class);
+        final FileRandomAccessOutputStream stream = new FileRandomAccessOutputStream(channel);
         when(channel.write((ByteBuffer) any(), eq(20L)))
             .thenAnswer(answer -> {
                 ((ByteBuffer) answer.getArgument(0)).position(3);
@@ -125,17 +125,15 @@ public class FileRandomAccessOutputStreamTest extends AbstractTempDirTest {
 
     @Test
     public void testWriteFullyAt_whenPartial_thenFail() throws IOException {
-        FileChannel channel = mock(FileChannel.class);
-        FileRandomAccessOutputStream stream = new FileRandomAccessOutputStream(channel);
+        final FileChannel channel = mock(FileChannel.class);
+        final FileRandomAccessOutputStream stream = new FileRandomAccessOutputStream(channel);
         when(channel.write((ByteBuffer) any(), eq(20L)))
             .thenAnswer(answer -> {
                 ((ByteBuffer) answer.getArgument(0)).position(3);
                 return 3;
             });
         when(channel.write((ByteBuffer) any(), eq(23L)))
-            .thenAnswer(answer -> {
-                return 0;
-            });
+            .thenAnswer(answer -> 0);
         assertThrows(IOException.class, () -> stream.writeFullyAt("hello".getBytes(StandardCharsets.UTF_8), 20));
 
         verify(channel, times(1))

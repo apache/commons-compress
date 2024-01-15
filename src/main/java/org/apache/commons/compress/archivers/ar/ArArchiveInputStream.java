@@ -315,7 +315,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         long len;
         try {
             len = asLong(metaData, LENGTH_OFFSET, LENGTH_LEN);
-        } catch (NumberFormatException ex) {
+        } catch (final NumberFormatException ex) {
             throw new IOException("Broken archive, unable to parse ar_size field as a number", ex);
         }
         if (temp.endsWith("/")) { // GNU terminator
@@ -398,7 +398,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         int bufflen;
         try {
             bufflen = asInt(length, offset, len); // Assume length will fit in an int
-        } catch (NumberFormatException ex) {
+        } catch (final NumberFormatException ex) {
             throw new IOException("Broken archive, unable to parse GNU string table length field as a number", ex);
         }
 

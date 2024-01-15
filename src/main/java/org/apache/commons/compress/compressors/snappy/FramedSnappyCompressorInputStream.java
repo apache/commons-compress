@@ -334,7 +334,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
         if (size < 0) {
             throw new IOException("Found illegal chunk with negative size");
         }
-        final long read = org.apache.commons.io.IOUtils.skip(inputStream, (long) size);
+        final long read = org.apache.commons.io.IOUtils.skip(inputStream, size);
         count(read);
         if (read != size) {
             throw new IOException("Premature end of stream");

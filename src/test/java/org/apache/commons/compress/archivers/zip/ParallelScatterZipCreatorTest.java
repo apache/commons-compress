@@ -175,31 +175,31 @@ public class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
 
     @Test
     public void testCallableApiUsingSubmit() throws Exception {
-        File result = createTempFile("parallelScatterGather2", "");
+        final File result = createTempFile("parallelScatterGather2", "");
         callableApi(zipCreator -> zipCreator::submit, result);
     }
 
     @Test
     public void testCallableApiUsingSubmitStreamAwareCallable() throws Exception {
-        File result = createTempFile("parallelScatterGather3", "");
+        final File result = createTempFile("parallelScatterGather3", "");
         callableApi(zipCreator -> zipCreator::submitStreamAwareCallable, result);
     }
 
     @Test
     public void testCallableApiWithHighestLevelUsingSubmitStreamAwareCallable() throws Exception {
-        File result = createTempFile("parallelScatterGather5", "");
+        final File result = createTempFile("parallelScatterGather5", "");
         callableApiWithTestFiles(zipCreator -> zipCreator::submitStreamAwareCallable, Deflater.BEST_COMPRESSION, result);
     }
 
     @Test
     public void testCallableWithLowestLevelApiUsingSubmit() throws Exception {
-        File result = createTempFile("parallelScatterGather4", "");
+        final File result = createTempFile("parallelScatterGather4", "");
         callableApiWithTestFiles(zipCreator -> zipCreator::submit, Deflater.NO_COMPRESSION, result);
     }
 
     @Test
     public void testConcurrentCustomTempFolder() throws Exception {
-        File result = createTempFile("parallelScatterGather1", "");
+        final File result = createTempFile("parallelScatterGather1", "");
         final ParallelScatterZipCreator zipCreator;
         final Map<String, byte[]> entries;
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result)) {
@@ -222,7 +222,7 @@ public class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
 
     @Test
     public void testConcurrentDefaultTempFolder() throws Exception {
-        File result = createTempFile("parallelScatterGather1", "");
+        final File result = createTempFile("parallelScatterGather1", "");
         final ParallelScatterZipCreator zipCreator;
         final Map<String, byte[]> entries;
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result)) {
@@ -324,7 +324,7 @@ public class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
             final InputStreamSupplier iss = () -> {
                 try {
                     return Files.newInputStream(file.toPath());
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     return null;
                 }
             };

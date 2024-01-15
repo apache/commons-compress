@@ -338,7 +338,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
                 in.reset();
 
                 final int skipAmount = bufUsed - inf.getRemaining();
-                if (org.apache.commons.io.IOUtils.skip(in, (long) skipAmount) != skipAmount) {
+                if (org.apache.commons.io.IOUtils.skip(in, skipAmount) != skipAmount) {
                     throw new IOException();
                 }
 

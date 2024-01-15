@@ -295,7 +295,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
         this(inputFile.isDirectory() && !entryName.endsWith("/") ? entryName + "/" : entryName);
         try {
             setAttributes(inputFile.toPath());
-        } catch (IOException e) { // NOSONAR
+        } catch (final IOException e) { // NOSONAR
             if (inputFile.isFile()) {
                 setSize(inputFile.length());
             }

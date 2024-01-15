@@ -235,7 +235,7 @@ public class Archiver {
     public void create(final String format, final OutputStream target, final File directory, final CloseableConsumer closeableConsumer)
             throws IOException, ArchiveException {
         try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
-            ArchiveOutputStream<? extends ArchiveEntry> archiveOutputStream = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, target);
+            final ArchiveOutputStream<? extends ArchiveEntry> archiveOutputStream = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(format, target);
             create(c.track(archiveOutputStream), directory);
         }
     }

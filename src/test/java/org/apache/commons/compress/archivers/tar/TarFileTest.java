@@ -222,7 +222,7 @@ public class TarFileTest extends AbstractTest {
             try (TarFile tarFile = new TarFile(tempTar)) {
                 assertEquals(31, tarFile.getEntries().size());
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             fail("COMPRESS-245: " + e.getMessage());
         }
     }

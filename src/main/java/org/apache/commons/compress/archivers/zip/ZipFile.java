@@ -497,22 +497,22 @@ public class ZipFile implements Closeable {
         return Files.newByteChannel(path, READ);
     }
 
-    private static SeekableByteChannel openZipChannel(Path path, long maxNumberOfDisks, OpenOption[] openOptions) throws IOException {
-        FileChannel channel = FileChannel.open(path, StandardOpenOption.READ);
-        List<FileChannel> channels = new ArrayList<>();
+    private static SeekableByteChannel openZipChannel(final Path path, final long maxNumberOfDisks, final OpenOption[] openOptions) throws IOException {
+        final FileChannel channel = FileChannel.open(path, StandardOpenOption.READ);
+        final List<FileChannel> channels = new ArrayList<>();
         try {
-            boolean is64 = positionAtEndOfCentralDirectoryRecord(channel);
+            final boolean is64 = positionAtEndOfCentralDirectoryRecord(channel);
             long numberOfDisks;
             if (is64) {
                 channel.position(channel.position() + ZipConstants.WORD + ZipConstants.WORD + ZipConstants.DWORD);
-                ByteBuffer buf = ByteBuffer.allocate(ZipConstants.WORD);
+                final ByteBuffer buf = ByteBuffer.allocate(ZipConstants.WORD);
                 buf.order(ByteOrder.LITTLE_ENDIAN);
                 IOUtils.readFully(channel, buf);
                 buf.flip();
                 numberOfDisks = buf.getInt() & 0xffffffffL;
             } else {
                 channel.position(channel.position() + ZipConstants.WORD);
-                ByteBuffer buf = ByteBuffer.allocate(ZipConstants.SHORT);
+                final ByteBuffer buf = ByteBuffer.allocate(ZipConstants.SHORT);
                 buf.order(ByteOrder.LITTLE_ENDIAN);
                 IOUtils.readFully(channel, buf);
                 buf.flip();
@@ -528,8 +528,8 @@ public class ZipFile implements Closeable {
             }
             channel.close();
 
-            Path parent = path.getParent();
-            String basename = FilenameUtils.removeExtension(path.getFileName().toString());
+            final Path parent = path.getParent();
+            final String basename = FilenameUtils.removeExtension(path.getFileName().toString());
 
             return ZipSplitReadOnlySeekableByteChannel.forPaths(
                     IntStream.range(0, (int) numberOfDisks)
@@ -537,11 +537,11 @@ public class ZipFile implements Closeable {
                                 if (i == numberOfDisks - 1) {
                                     return path;
                                 }
-                                Path lowercase = parent.resolve(String.format("%s.z%02d", basename, i + 1));
+                                final Path lowercase = parent.resolve(String.format("%s.z%02d", basename, i + 1));
                                 if (Files.exists(lowercase)) {
                                     return lowercase;
                                 }
-                                Path uppercase = parent.resolve(String.format("%s.Z%02d", basename, i + 1));
+                                final Path uppercase = parent.resolve(String.format("%s.Z%02d", basename, i + 1));
                                 if (Files.exists(uppercase)) {
                                     return uppercase;
                                 }
@@ -550,7 +550,7 @@ public class ZipFile implements Closeable {
                             .collect(Collectors.toList()),
                     openOptions
             );
-        } catch (Throwable ex) {
+        } catch (final Throwable ex) {
             IOUtils.closeQuietly(channel);
             channels.forEach(IOUtils::closeQuietly);
             throw ex;
@@ -563,15 +563,15 @@ public class ZipFile implements Closeable {
      * @return
      *      true if it's Zip64 end of central directory or false if it's Zip32
      */
-    private static boolean positionAtEndOfCentralDirectoryRecord(SeekableByteChannel channel) throws IOException {
+    private static boolean positionAtEndOfCentralDirectoryRecord(final SeekableByteChannel channel) throws IOException {
         final boolean found = tryToLocateSignature(channel, MIN_EOCD_SIZE, MAX_EOCD_SIZE, ZipArchiveOutputStream.EOCD_SIG);
         if (!found) {
             throw new ZipException("Archive is not a ZIP archive");
         }
         boolean found64 = false;
-        long position = channel.position();
+        final long position = channel.position();
         if (position > ZIP64_EOCDL_LENGTH) {
-            ByteBuffer wordBuf = ByteBuffer.allocate(4);
+            final ByteBuffer wordBuf = ByteBuffer.allocate(4);
             channel.position(channel.position() - ZIP64_EOCDL_LENGTH);
             wordBuf.rewind();
             IOUtils.readFully(channel, wordBuf);
@@ -597,7 +597,7 @@ public class ZipFile implements Closeable {
             final long maxDistanceFromEnd,
             final byte[] sig
     ) throws IOException {
-        ByteBuffer wordBuf = ByteBuffer.allocate(ZipConstants.WORD);
+        final ByteBuffer wordBuf = ByteBuffer.allocate(ZipConstants.WORD);
         boolean found = false;
         long off = channel.size() - minDistanceFromEnd;
         final long stopSearching = Math.max(0L, channel.size() - maxDistanceFromEnd);
@@ -1308,7 +1308,7 @@ public class ZipFile implements Closeable {
      * stream at the first central directory record.
      */
     private void positionAtCentralDirectory() throws IOException {
-        boolean is64 = positionAtEndOfCentralDirectoryRecord(archive);
+        final boolean is64 = positionAtEndOfCentralDirectoryRecord(archive);
         if (!is64) {
             positionAtCentralDirectory32();
         } else {

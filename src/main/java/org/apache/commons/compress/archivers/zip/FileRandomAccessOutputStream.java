@@ -41,7 +41,7 @@ class FileRandomAccessOutputStream extends RandomAccessOutputStream {
         this(file, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
     }
 
-    FileRandomAccessOutputStream(final Path file, OpenOption... options) throws IOException {
+    FileRandomAccessOutputStream(final Path file, final OpenOption... options) throws IOException {
         this(FileChannel.open(file, options));
     }
 
@@ -67,9 +67,9 @@ class FileRandomAccessOutputStream extends RandomAccessOutputStream {
 
     @Override
     public void writeFullyAt(final byte[] b, final int off, final int len, final long atPosition) throws IOException {
-        ByteBuffer buf = ByteBuffer.wrap(b, off, len);
+        final ByteBuffer buf = ByteBuffer.wrap(b, off, len);
         for (long currentPos = atPosition; buf.hasRemaining(); ) {
-            int written = this.channel.write(buf, currentPos);
+            final int written = this.channel.write(buf, currentPos);
             if (written <= 0) {
                 throw new IOException("Failed to fully write to file: written=" + written);
             }

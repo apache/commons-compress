@@ -58,9 +58,9 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
     private boolean finished;
     private final byte[] singleByte = new byte[1];
 
-    private List<Long> diskToPosition = new ArrayList<>();
+    private final List<Long> diskToPosition = new ArrayList<>();
 
-    private TreeMap<Long, Path> positionToFiles = new TreeMap<>();
+    private final TreeMap<Long, Path> positionToFiles = new TreeMap<>();
 
     /**
      * Creates a split ZIP. If the ZIP file is smaller than the split size, then there will only be one split ZIP, and its suffix is .zip, otherwise the split
@@ -99,7 +99,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
         writeZipSplitSignature();
     }
 
-    public long calculateDiskPosition(long disk, long localOffset) throws IOException {
+    public long calculateDiskPosition(final long disk, final long localOffset) throws IOException {
         if (disk >= Integer.MAX_VALUE) {
             throw new IOException("Disk number exceeded internal limits: limit=" + Integer.MAX_VALUE + " requested=" + disk);
         }
@@ -129,7 +129,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
      * @throws IOException
      */
     private Path createNewSplitSegmentFile(final Integer zipSplitSegmentSuffixIndex) throws IOException {
-        Path newFile = getSplitSegmentFilename(zipSplitSegmentSuffixIndex);
+        final Path newFile = getSplitSegmentFilename(zipSplitSegmentSuffixIndex);
 
         if (Files.exists(newFile)) {
             throw new IOException("split ZIP segment " + newFile + " already exists");
@@ -275,8 +275,8 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
     public void writeFullyAt(final byte[] b, final int off, final int len, final long atPosition) throws IOException {
         long remainingPosition = atPosition;
         for (int remainingOff = off, remainingLen = len; remainingLen > 0; ) {
-            Map.Entry<Long, Path> segment = positionToFiles.floorEntry(remainingPosition);
-            Long segmentEnd = positionToFiles.higherKey(remainingPosition);
+            final Map.Entry<Long, Path> segment = positionToFiles.floorEntry(remainingPosition);
+            final Long segmentEnd = positionToFiles.higherKey(remainingPosition);
             if (segmentEnd == null) {
                 ZipIoUtil.writeFullyAt(this.currentChannel, ByteBuffer.wrap(b, remainingOff, remainingLen), remainingPosition - segment.getKey());
                 remainingPosition += remainingLen;
@@ -288,7 +288,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
                 remainingOff += remainingLen;
                 remainingLen = 0;
             } else {
-                int toWrite = Math.toIntExact(segmentEnd - remainingPosition);
+                final int toWrite = Math.toIntExact(segmentEnd - remainingPosition);
                 writeToSegment(segment.getValue(), remainingPosition - segment.getKey(), b, remainingOff, toWrite);
                 remainingPosition += toWrite;
                 remainingOff += toWrite;

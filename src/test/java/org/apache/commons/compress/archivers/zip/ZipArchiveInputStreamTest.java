@@ -720,7 +720,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
             while (zae != null) {
                 zae = zIn.getNextEntry();
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             // Ignore expected exception
         }
     }

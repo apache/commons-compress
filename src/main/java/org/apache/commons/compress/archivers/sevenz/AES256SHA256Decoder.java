@@ -46,7 +46,7 @@ final class AES256SHA256Decoder extends AbstractCoder {
         private boolean isInitialized;
         private CipherInputStream cipherInputStream;
 
-        private AES256SHA256DecoderInputStream(InputStream in, Coder coder, String archiveName, byte[] passwordBytes) {
+        private AES256SHA256DecoderInputStream(final InputStream in, final Coder coder, final String archiveName, final byte[] passwordBytes) {
             this.in = in;
             this.coder = coder;
             this.archiveName = archiveName;
@@ -130,7 +130,7 @@ final class AES256SHA256Decoder extends AbstractCoder {
         private final byte[] cipherBlockBuffer;
         private int count;
 
-        private AES256SHA256DecoderOutputStream(AES256Options opts, OutputStream out) {
+        private AES256SHA256DecoderOutputStream(final AES256Options opts, final OutputStream out) {
             cipherOutputStream = new CipherOutputStream(out, opts.getCipher());
             cipherBlockSize = opts.getCipher().getBlockSize();
             cipherBlockBuffer = new byte[cipherBlockSize];

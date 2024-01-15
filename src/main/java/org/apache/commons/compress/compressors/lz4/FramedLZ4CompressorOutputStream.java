@@ -270,7 +270,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
         }
         int blockDataRemaining = blockData.length - currentIndex;
         while (len > 0) {
-            int copyLen = Math.min(len, blockDataRemaining);
+            final int copyLen = Math.min(len, blockDataRemaining);
             System.arraycopy(data, off, blockData, currentIndex, copyLen);
             off += copyLen;
             blockDataRemaining -= copyLen;

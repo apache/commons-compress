@@ -32,21 +32,21 @@ public class RandomAccessOutputStreamTest extends AbstractTempDirTest {
 
     @Test
     public void testWrite() throws IOException {
-        RandomAccessOutputStream delegate = mock(RandomAccessOutputStream.class);
+        final RandomAccessOutputStream delegate = mock(RandomAccessOutputStream.class);
 
-        RandomAccessOutputStream stream = new RandomAccessOutputStream() {
+        final RandomAccessOutputStream stream = new RandomAccessOutputStream() {
             @Override
             public long position() throws IOException {
                 return delegate.position();
             }
 
             @Override
-            public void write(byte[] b, int off, int len) throws IOException {
+            public void write(final byte[] b, final int off, final int len) throws IOException {
                 delegate.write(b, off, len);
             }
 
             @Override
-            void writeFullyAt(byte[] b, int off, int len, long position) throws IOException {
+            void writeFullyAt(final byte[] b, final int off, final int len, final long position) throws IOException {
                 delegate.writeFullyAt(b, off, len, position);
             }
         };

@@ -40,10 +40,10 @@ class ZipIoUtil {
      * @throws IOException
      *      when writing fails or fails to write fully
      */
-    static void writeFully(SeekableByteChannel channel, ByteBuffer buf) throws IOException {
+    static void writeFully(final SeekableByteChannel channel, final ByteBuffer buf) throws IOException {
         while (buf.hasRemaining()) {
-            int remaining = buf.remaining();
-            int written = channel.write(buf);
+            final int remaining = buf.remaining();
+            final int written = channel.write(buf);
             if (written <= 0) {
                 throw new IOException("Failed to fully write: channel=" + channel + " length=" + remaining + " written=" + written);
             }
@@ -62,10 +62,10 @@ class ZipIoUtil {
      * @throws IOException
      *      when writing fails or fails to write fully
      */
-    static void writeFullyAt(FileChannel channel, ByteBuffer buf, long position) throws IOException {
+    static void writeFullyAt(final FileChannel channel, final ByteBuffer buf, final long position) throws IOException {
         for (long currentPosition = position; buf.hasRemaining(); ) {
-            int remaining = buf.remaining();
-            int written = channel.write(buf, currentPosition);
+            final int remaining = buf.remaining();
+            final int written = channel.write(buf, currentPosition);
             if (written <= 0) {
                 throw new IOException("Failed to fully write: channel=" + channel + " length=" + remaining + " written=" + written);
             }

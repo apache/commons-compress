@@ -316,7 +316,7 @@ public class Expander {
     public void expand(final String format, final InputStream archive, final Path targetDirectory, final CloseableConsumer closeableConsumer)
             throws IOException, ArchiveException {
         try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
-            ArchiveInputStream<?> archiveInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, archive);
+            final ArchiveInputStream<?> archiveInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(format, archive);
             expand(c.track(archiveInputStream), targetDirectory);
         }
     }

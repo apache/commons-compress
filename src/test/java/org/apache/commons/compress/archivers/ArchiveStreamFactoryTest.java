@@ -101,7 +101,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
         dflt = UNKNOWN;
         try (ArjArchiveInputStream inputStream = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
             dflt = getField(inputStream, "charsetName");
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         ARJ_DEFAULT = dflt;
@@ -109,7 +109,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
         try (DumpArchiveInputStream inputStream = new DumpArchiveInputStream(newInputStream("bla.dump"))) {
 
             dflt = getField(inputStream, "encoding");
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         DUMP_DEFAULT = dflt;
@@ -171,10 +171,10 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
         Field fld;
         try {
             fld = cls.getDeclaredField(name);
-        } catch (NoSuchFieldException nsfe) {
+        } catch (final NoSuchFieldException nsfe) {
             try {
                 fld = cls.getSuperclass().getDeclaredField(name);
-            } catch (NoSuchFieldException e) {
+            } catch (final NoSuchFieldException e) {
                 System.out.println("Cannot find " + name + " in class " + instance.getClass().getSimpleName());
                 return UNKNOWN;
             }
@@ -190,7 +190,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
             }
             System.out.println("Wrong type: " + object.getClass().getCanonicalName() + " for " + name + " in class " + instance.getClass().getSimpleName());
             return UNKNOWN;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             return UNKNOWN;
         } finally {

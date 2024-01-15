@@ -35,7 +35,7 @@ abstract class RandomAccessOutputStream extends OutputStream {
 
     @Override
     public void write(final int b) throws IOException {
-        write(new byte[]{ (byte) b });
+        write(new byte[] { (byte) b });
     }
 
     /**

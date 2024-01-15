@@ -38,7 +38,7 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
 
     @Test
     public void testWriteFully_whenFullAtOnce_thenSucceed() throws IOException {
-        SeekableByteChannel channel = mock(SeekableByteChannel.class);
+        final SeekableByteChannel channel = mock(SeekableByteChannel.class);
 
         when(channel.write((ByteBuffer) any()))
                 .thenAnswer(answer -> {
@@ -59,7 +59,7 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
 
     @Test
     public void testWriteFully_whenFullButPartial_thenSucceed() throws IOException {
-        SeekableByteChannel channel = mock(SeekableByteChannel.class);
+        final SeekableByteChannel channel = mock(SeekableByteChannel.class);
 
         when(channel.write((ByteBuffer) any()))
                 .thenAnswer(answer -> {
@@ -84,16 +84,14 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
 
     @Test
     public void testWriteFully_whenPartial_thenFail() throws IOException {
-        SeekableByteChannel channel = mock(SeekableByteChannel.class);
+        final SeekableByteChannel channel = mock(SeekableByteChannel.class);
 
         when(channel.write((ByteBuffer) any()))
                 .thenAnswer(answer -> {
                     ((ByteBuffer) answer.getArgument(0)).position(3);
                     return 3;
                 })
-                .thenAnswer(answer -> {
-                    return 0;
-                });
+                .thenAnswer(answer -> 0);
 
         assertThrows(IOException.class, () ->
                 ZipIoUtil.writeFully(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8)))
@@ -105,7 +103,7 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
 
     @Test
     public void testWriteFullyAt_whenFullAtOnce_thenSucceed() throws IOException {
-        FileChannel channel = mock(FileChannel.class);
+        final FileChannel channel = mock(FileChannel.class);
 
         when(channel.write((ByteBuffer) any(), eq(20L)))
                 .thenAnswer(answer -> {
@@ -129,7 +127,7 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
 
     @Test
     public void testWriteFullyAt_whenFullButPartial_thenSucceed() throws IOException {
-        FileChannel channel = mock(FileChannel.class);
+        final FileChannel channel = mock(FileChannel.class);
 
         when(channel.write((ByteBuffer) any(), eq(20L)))
                 .thenAnswer(answer -> {
@@ -160,7 +158,7 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
 
     @Test
     public void testWriteFullyAt_whenPartial_thenFail() throws IOException {
-        FileChannel channel = mock(FileChannel.class);
+        final FileChannel channel = mock(FileChannel.class);
 
         when(channel.write((ByteBuffer) any(), eq(20L)))
                 .thenAnswer(answer -> {
@@ -168,9 +166,7 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
                     return 3;
                 });
         when(channel.write((ByteBuffer) any(), eq(23L)))
-                .thenAnswer(answer -> {
-                    return 0;
-                });
+                .thenAnswer(answer -> 0);
         assertThrows(IOException.class, () ->
                 ZipIoUtil.writeFullyAt(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8)), 20));
 

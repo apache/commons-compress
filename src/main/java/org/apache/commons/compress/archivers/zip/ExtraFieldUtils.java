@@ -390,7 +390,7 @@ public class ExtraFieldUtils {
             throw new IllegalArgumentException(c + " is not a concrete class"); // NOSONAR
         } catch (final IllegalAccessException ie) { // NOSONAR
             throw new IllegalArgumentException(c + "'s no-arg constructor is not public"); // NOSONAR
-        } catch (ReflectiveOperationException e) {
+        } catch (final ReflectiveOperationException e) {
             throw new IllegalArgumentException(c + ": " + e); // NOSONAR
         }
     }

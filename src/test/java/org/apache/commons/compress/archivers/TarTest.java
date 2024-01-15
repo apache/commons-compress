@@ -293,7 +293,7 @@ public final class TarTest extends AbstractTest {
             os2.putArchiveEntry(entry);
             Files.copy(file1.toPath(), os2);
             os2.closeArchiveEntry();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             assertTrue(true);
         }
     }

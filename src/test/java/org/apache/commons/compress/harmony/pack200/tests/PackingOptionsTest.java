@@ -109,7 +109,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
 
     @Test
     public void testErrorAttributes() throws Exception {
-        File file = createTempFile("unknown", ".pack");
+        final File file = createTempFile("unknown", ".pack");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/jndiWithUnknownAttributes.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
             final PackingOptions options = new PackingOptions();
@@ -321,7 +321,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
 
     @Test
     public void testNewAttributes() throws Exception {
-        File file = createTempFile("unknown", ".pack");
+        final File file = createTempFile("unknown", ".pack");
         try (FileOutputStream out = new FileOutputStream(file);
                 JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/jndiWithUnknownAttributes.jar").toURI()))) {
             final PackingOptions options = new PackingOptions();
@@ -344,7 +344,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
 
     @Test
     public void testNewAttributes2() throws Exception {
-        File file = createTempFile("unknown", ".pack");
+        final File file = createTempFile("unknown", ".pack");
         try (FileOutputStream out = new FileOutputStream(file);
                 JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/p200WithUnknownAttributes.jar").toURI()))) {
             final PackingOptions options = new PackingOptions();
@@ -370,7 +370,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
     @Test
     public void testPackEffort0() throws Pack200Exception, IOException, URISyntaxException {
         final File f1 = new File(Archive.class.getResource("/pack200/jndi.jar").toURI());
-        File file = createTempFile("jndiE0", ".pack");
+        final File file = createTempFile("jndiE0", ".pack");
         try (JarFile in = new JarFile(f1);
                 FileOutputStream out = new FileOutputStream(file)) {
             final PackingOptions options = new PackingOptions();
@@ -386,7 +386,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
 
     @Test
     public void testPassAttributes() throws Exception {
-        File file = createTempFile("unknown", ".pack");
+        final File file = createTempFile("unknown", ".pack");
         try (FileOutputStream out = new FileOutputStream(file);
                 JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/jndiWithUnknownAttributes.jar").toURI()))) {
             final PackingOptions options = new PackingOptions();
@@ -419,7 +419,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
         }
 
         // Pass one file
-        File file = createTempFile("sql", ".pack");
+        final File file = createTempFile("sql", ".pack");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
             final PackingOptions options = new PackingOptions();
@@ -494,7 +494,7 @@ public class PackingOptionsTest extends AbstractTempDirTest {
 
     @Test
     public void testStripDebug() throws IOException, Pack200Exception, URISyntaxException {
-        File file = createTempFile("sql", ".pack");
+        final File file = createTempFile("sql", ".pack");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/sqlUnpacked.jar").toURI()));
                 FileOutputStream out = new FileOutputStream(file)) {
             final PackingOptions options = new PackingOptions();

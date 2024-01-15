@@ -201,7 +201,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     public void testJNDI() throws IOException, Pack200Exception, URISyntaxException {
         final File file = createTempFile("jndi", ".pack");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/jndi.jar").toURI()))) {
-            FileOutputStream out = new FileOutputStream(file);
+            final FileOutputStream out = new FileOutputStream(file);
             final PackingOptions options = new PackingOptions();
             options.setGzip(false);
             new Archive(in, out, options).pack();
@@ -249,7 +249,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     @ParameterizedTest
     @MethodSource("loadMultipleJars")
     public void testMultipleJars(final Path path) throws IOException, Pack200Exception {
-        File file = createTempFile("temp", ".pack.gz");
+        final File file = createTempFile("temp", ".pack.gz");
         final File inputFile = path.toFile();
         try (JarFile in = new JarFile(inputFile);
                 FileOutputStream out = new FileOutputStream(file)) {

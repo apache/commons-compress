@@ -76,7 +76,7 @@ public class BHSDCodecTest {
                 long decoded = 0;
                 try {
                     decoded = codec.decode(new ByteArrayInputStream(encoded), 0);
-                } catch (EOFException e) {
+                } catch (final EOFException e) {
                     System.out.println(e);
                 }
                 if (j != decoded) {

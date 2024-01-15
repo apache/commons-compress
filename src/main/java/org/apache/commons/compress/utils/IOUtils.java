@@ -286,7 +286,7 @@ public final class IOUtils {
      * @deprecated Use {@link org.apache.commons.io.IOUtils#skip(InputStream, long)}.
      */
     @Deprecated
-    public static long skip(final InputStream input, long numToSkip) throws IOException {
+    public static long skip(final InputStream input, final long numToSkip) throws IOException {
         return org.apache.commons.io.IOUtils.skip(input, numToSkip);
     }
 

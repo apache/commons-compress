@@ -203,7 +203,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * @throws IOException          if the first channel doesn't seem to hold the beginning of a split archive
      * @since 1.22
      */
-    public static SeekableByteChannel forPaths(final List<Path> paths, OpenOption[] openOptions) throws IOException {
+    public static SeekableByteChannel forPaths(final List<Path> paths, final OpenOption[] openOptions) throws IOException {
         final List<SeekableByteChannel> channels = new ArrayList<>();
         for (final Path path : Objects.requireNonNull(paths, "paths must not be null")) {
             channels.add(Files.newByteChannel(path, openOptions));

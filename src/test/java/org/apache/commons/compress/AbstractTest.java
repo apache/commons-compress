@@ -64,7 +64,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
                 FileUtils.forceDelete(file);
             }
             return true;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
             file.deleteOnExit();
             return false;
@@ -88,7 +88,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
         }
         try {
             return new File(url.toURI());
-        } catch (URISyntaxException ex) {
+        } catch (final URISyntaxException ex) {
             throw new IOException(ex);
         }
     }

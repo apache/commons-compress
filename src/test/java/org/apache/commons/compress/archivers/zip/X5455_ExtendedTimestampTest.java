@@ -495,7 +495,7 @@ public class X5455_ExtendedTimestampTest {
                 int year;
                 try {
                     year = Integer.parseInt(yearString);
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     // setTime.sh, skip
                     continue;
                 }
