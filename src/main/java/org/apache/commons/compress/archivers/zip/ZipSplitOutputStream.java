@@ -272,7 +272,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
     }
 
     @Override
-    public void writeFullyAt(final byte[] b, final int off, final int len, final long atPosition) throws IOException {
+    public void writeFully(final byte[] b, final int off, final int len, final long atPosition) throws IOException {
         long remainingPosition = atPosition;
         for (int remainingOff = off, remainingLen = len; remainingLen > 0; ) {
             final Map.Entry<Long, Path> segment = positionToFiles.floorEntry(remainingPosition);

@@ -66,7 +66,7 @@ class FileRandomAccessOutputStream extends RandomAccessOutputStream {
     }
 
     @Override
-    public void writeFullyAt(final byte[] b, final int off, final int len, final long atPosition) throws IOException {
+    public void writeFully(final byte[] b, final int off, final int len, final long atPosition) throws IOException {
         final ByteBuffer buf = ByteBuffer.wrap(b, off, len);
         for (long currentPos = atPosition; buf.hasRemaining(); ) {
             final int written = this.channel.write(buf, currentPos);

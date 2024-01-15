@@ -46,8 +46,8 @@ public class RandomAccessOutputStreamTest extends AbstractTempDirTest {
             }
 
             @Override
-            void writeFullyAt(final byte[] b, final int off, final int len, final long position) throws IOException {
-                delegate.writeFullyAt(b, off, len, position);
+            void writeFully(final byte[] b, final int off, final int len, final long position) throws IOException {
+                delegate.writeFully(b, off, len, position);
             }
         };
 

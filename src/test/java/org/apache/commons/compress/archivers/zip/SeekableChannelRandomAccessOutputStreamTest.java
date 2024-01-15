@@ -94,8 +94,8 @@ public class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDir
                     return 6;
                 });
 
-        stream.writeFullyAt("hello".getBytes(StandardCharsets.UTF_8), 20);
-        stream.writeFullyAt("world\n".getBytes(StandardCharsets.UTF_8), 30);
+        stream.writeFully("hello".getBytes(StandardCharsets.UTF_8), 20);
+        stream.writeFully("world\n".getBytes(StandardCharsets.UTF_8), 30);
 
         verify(channel, times(2))
                 .write((ByteBuffer) any());
@@ -129,8 +129,8 @@ public class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDir
                     return 6;
                 });
 
-        stream.writeFullyAt("hello".getBytes(StandardCharsets.UTF_8), 20);
-        stream.writeFullyAt("world\n".getBytes(StandardCharsets.UTF_8), 30);
+        stream.writeFully("hello".getBytes(StandardCharsets.UTF_8), 20);
+        stream.writeFully("world\n".getBytes(StandardCharsets.UTF_8), 30);
 
         verify(channel, times(3))
                 .write((ByteBuffer) any());
@@ -156,7 +156,7 @@ public class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDir
                 })
                 .thenAnswer(answer -> 0);
 
-        assertThrows(IOException.class, () -> stream.writeFullyAt("hello".getBytes(StandardCharsets.UTF_8), 20));
+        assertThrows(IOException.class, () -> stream.writeFully("hello".getBytes(StandardCharsets.UTF_8), 20));
 
         verify(channel, times(2))
                 .write((ByteBuffer) any());

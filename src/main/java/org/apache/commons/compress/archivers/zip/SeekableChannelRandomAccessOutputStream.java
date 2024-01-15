@@ -50,7 +50,7 @@ class SeekableChannelRandomAccessOutputStream extends RandomAccessOutputStream {
     }
 
     @Override
-    public synchronized void writeFullyAt(final byte[] b, final int off, final int len, final long position) throws IOException {
+    public synchronized void writeFully(final byte[] b, final int off, final int len, final long position) throws IOException {
         final long saved = channel.position();
         try {
             channel.position(position);

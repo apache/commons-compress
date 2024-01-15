@@ -52,7 +52,7 @@ abstract class RandomAccessOutputStream extends OutputStream {
      * @throws IOException
      *      when write fails.
      */
-    abstract void writeFullyAt(byte[] b, int off, int len, long position) throws IOException;
+    abstract void writeFully(byte[] b, int off, int len, long position) throws IOException;
 
     /**
      * Writes given data to specific position.
@@ -64,7 +64,7 @@ abstract class RandomAccessOutputStream extends OutputStream {
      * @throws IOException
      *      when write fails.
      */
-    public void writeFullyAt(final byte[] b, final long position) throws IOException {
-        writeFullyAt(b, 0, b.length, position);
+    public void writeFully(final byte[] b, final long position) throws IOException {
+        writeFully(b, 0, b.length, position);
     }
 }
