@@ -19,7 +19,6 @@ package org.apache.commons.compress.archivers.zip;
 import java.io.IOException;
 import java.io.OutputStream;
 
-
 /**
  * Abstraction over OutputStream which also allows random access writes.
  */
@@ -28,8 +27,8 @@ abstract class RandomAccessOutputStream extends OutputStream {
     /**
      * Provides current position in output.
      *
-     * @return
-     *      current position.
+     * @return current position.
+     * @throws IOException if an I/O error occurs
      */
     public abstract long position() throws IOException;
 
@@ -41,28 +40,20 @@ abstract class RandomAccessOutputStream extends OutputStream {
     /**
      * Writes given data to specific position.
      *
-     * @param position
-     *      position in the stream
-     * @param b
-     *      data to write
-     * @param off
-     *      offset of the start of data in param b
-     * @param len
-     *      the length of data to write
-     * @throws IOException
-     *      when write fails.
+     * @param position position in the stream
+     * @param b        data to write
+     * @param off      offset of the start of data in param b
+     * @param len      the length of data to write
+     * @throws IOException if an I/O error occurs.
      */
     abstract void writeFully(byte[] b, int off, int len, long position) throws IOException;
 
     /**
      * Writes given data to specific position.
      *
-     * @param position
-     *      position in the stream
-     * @param b
-     *      data to write
-     * @throws IOException
-     *      when write fails.
+     * @param position position in the stream
+     * @param b        data to write
+     * @throws IOException if an I/O error occurs.
      */
     public void writeFully(final byte[] b, final long position) throws IOException {
         writeFully(b, 0, b.length, position);
