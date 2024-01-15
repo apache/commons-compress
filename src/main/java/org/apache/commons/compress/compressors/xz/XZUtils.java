@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.compressors.xz;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -182,14 +183,7 @@ public class XZUtils {
         if (length < HEADER_MAGIC.length) {
             return false;
         }
-
-        for (int i = 0; i < HEADER_MAGIC.length; ++i) {
-            if (signature[i] != HEADER_MAGIC[i]) {
-                return false;
-            }
-        }
-
-        return true;
+        return Arrays.equals(HEADER_MAGIC, signature);
     }
 
     /**
