@@ -193,7 +193,9 @@ public final class ByteUtils {
      * @return the number read
      * @throws IllegalArgumentException if len is bigger than eight
      * @throws IOException              if reading fails or the stream doesn't contain the given number of bytes anymore
+     * @deprecated Unused
      */
+    @Deprecated
     public static long fromLittleEndian(final InputStream in, final int length) throws IOException {
         // somewhat duplicates the ByteSupplier version in order to save the creation of a wrapper object
         checkReadLength(length);
@@ -247,7 +249,9 @@ public final class ByteUtils {
      * @param value  the value to write
      * @param length the number of bytes to use to represent the value
      * @throws IOException if writing fails
+     * @deprecated Unused
      */
+    @Deprecated
     public static void toLittleEndian(final DataOutput out, final long value, final int length) throws IOException {
         // somewhat duplicates the ByteConsumer version in order to save the creation of a wrapper object
         long num = value;
