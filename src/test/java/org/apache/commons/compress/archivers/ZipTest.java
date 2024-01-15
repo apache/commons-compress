@@ -137,7 +137,7 @@ public final class ZipTest extends AbstractTest {
     }
 
     private byte[] createArtificialData(int size) {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        final ByteArrayOutputStream output = new ByteArrayOutputStream();
         for (int i = 0; i < size; i += 1) {
             output.write((byte) ((i & 1) == 0 ? (i / 2 % 256) : (i / 2 / 256)));
         }
