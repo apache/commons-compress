@@ -37,15 +37,16 @@ import java.nio.file.StandardOpenOption;
 import org.apache.commons.compress.AbstractTempDirTest;
 import org.junit.jupiter.api.Test;
 
-
+/**
+ * Tests {@link SeekableChannelRandomAccessOutputStream}.
+ */
 public class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDirTest {
 
     @Test
     public void testInitialization() throws IOException {
         final Path file = newTempPath("testChannel");
         try (SeekableChannelRandomAccessOutputStream stream = new SeekableChannelRandomAccessOutputStream(
-                Files.newByteChannel(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE)
-    )) {
+                Files.newByteChannel(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE))) {
             assertEquals(0, stream.position());
         }
     }
@@ -55,23 +56,19 @@ public class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDir
         final FileChannel channel = mock(FileChannel.class);
         final SeekableChannelRandomAccessOutputStream stream = new SeekableChannelRandomAccessOutputStream(channel);
 
-        when(channel.position())
-                .thenReturn(11L);
-        when(channel.write((ByteBuffer) any()))
-                .thenAnswer(answer -> {
-                    ((ByteBuffer) answer.getArgument(0)).position(5);
-                    return 5;
-                })
-                .thenAnswer(answer -> {
-                    ((ByteBuffer) answer.getArgument(0)).position(6);
-                    return 6;
-                });
+        when(channel.position()).thenReturn(11L);
+        when(channel.write((ByteBuffer) any())).thenAnswer(answer -> {
+            ((ByteBuffer) answer.getArgument(0)).position(5);
+            return 5;
+        }).thenAnswer(answer -> {
+            ((ByteBuffer) answer.getArgument(0)).position(6);
+            return 6;
+        });
 
         stream.write("hello".getBytes(StandardCharsets.UTF_8));
         stream.write("world\n".getBytes(StandardCharsets.UTF_8));
 
-        verify(channel, times(2))
-                .write((ByteBuffer) any());
+        verify(channel, times(2)).write((ByteBuffer) any());
 
         assertEquals(11, stream.position());
     }
@@ -81,28 +78,21 @@ public class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDir
         final SeekableByteChannel channel = mock(SeekableByteChannel.class);
         final SeekableChannelRandomAccessOutputStream stream = new SeekableChannelRandomAccessOutputStream(channel);
 
-        when(channel.position())
-                .thenReturn(50L)
-                .thenReturn(60L);
-        when(channel.write((ByteBuffer) any()))
-                .thenAnswer(answer -> {
-                    ((ByteBuffer) answer.getArgument(0)).position(5);
-                    return 5;
-                })
-                .thenAnswer(answer -> {
-                    ((ByteBuffer) answer.getArgument(0)).position(6);
-                    return 6;
-                });
+        when(channel.position()).thenReturn(50L).thenReturn(60L);
+        when(channel.write((ByteBuffer) any())).thenAnswer(answer -> {
+            ((ByteBuffer) answer.getArgument(0)).position(5);
+            return 5;
+        }).thenAnswer(answer -> {
+            ((ByteBuffer) answer.getArgument(0)).position(6);
+            return 6;
+        });
 
         stream.writeFully("hello".getBytes(StandardCharsets.UTF_8), 20);
         stream.writeFully("world\n".getBytes(StandardCharsets.UTF_8), 30);
 
-        verify(channel, times(2))
-                .write((ByteBuffer) any());
-        verify(channel, times(1))
-                .position(eq(50L));
-        verify(channel, times(1))
-                .position(eq(60L));
+        verify(channel, times(2)).write((ByteBuffer) any());
+        verify(channel, times(1)).position(eq(50L));
+        verify(channel, times(1)).position(eq(60L));
 
         assertEquals(60L, stream.position());
     }
@@ -112,32 +102,24 @@ public class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDir
         final SeekableByteChannel channel = mock(SeekableByteChannel.class);
         final SeekableChannelRandomAccessOutputStream stream = new SeekableChannelRandomAccessOutputStream(channel);
 
-        when(channel.position())
-                .thenReturn(50L)
-                .thenReturn(60L);
-        when(channel.write((ByteBuffer) any()))
-                .thenAnswer(answer -> {
-                    ((ByteBuffer) answer.getArgument(0)).position(3);
-                    return 3;
-                })
-                .thenAnswer(answer -> {
-                    ((ByteBuffer) answer.getArgument(0)).position(5);
-                    return 2;
-                })
-                .thenAnswer(answer -> {
-                    ((ByteBuffer) answer.getArgument(0)).position(6);
-                    return 6;
-                });
+        when(channel.position()).thenReturn(50L).thenReturn(60L);
+        when(channel.write((ByteBuffer) any())).thenAnswer(answer -> {
+            ((ByteBuffer) answer.getArgument(0)).position(3);
+            return 3;
+        }).thenAnswer(answer -> {
+            ((ByteBuffer) answer.getArgument(0)).position(5);
+            return 2;
+        }).thenAnswer(answer -> {
+            ((ByteBuffer) answer.getArgument(0)).position(6);
+            return 6;
+        });
 
         stream.writeFully("hello".getBytes(StandardCharsets.UTF_8), 20);
         stream.writeFully("world\n".getBytes(StandardCharsets.UTF_8), 30);
 
-        verify(channel, times(3))
-                .write((ByteBuffer) any());
-        verify(channel, times(1))
-                .position(eq(50L));
-        verify(channel, times(1))
-                .position(eq(60L));
+        verify(channel, times(3)).write((ByteBuffer) any());
+        verify(channel, times(1)).position(eq(50L));
+        verify(channel, times(1)).position(eq(60L));
 
         assertEquals(60L, stream.position());
     }
@@ -147,19 +129,15 @@ public class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDir
         final SeekableByteChannel channel = mock(SeekableByteChannel.class);
         final SeekableChannelRandomAccessOutputStream stream = new SeekableChannelRandomAccessOutputStream(channel);
 
-        when(channel.position())
-                .thenReturn(50L);
-        when(channel.write((ByteBuffer) any()))
-                .thenAnswer(answer -> {
-                    ((ByteBuffer) answer.getArgument(0)).position(3);
-                    return 3;
-                })
-                .thenAnswer(answer -> 0);
+        when(channel.position()).thenReturn(50L);
+        when(channel.write((ByteBuffer) any())).thenAnswer(answer -> {
+            ((ByteBuffer) answer.getArgument(0)).position(3);
+            return 3;
+        }).thenAnswer(answer -> 0);
 
         assertThrows(IOException.class, () -> stream.writeFully("hello".getBytes(StandardCharsets.UTF_8), 20));
 
-        verify(channel, times(2))
-                .write((ByteBuffer) any());
+        verify(channel, times(2)).write((ByteBuffer) any());
 
         assertEquals(50L, stream.position());
     }

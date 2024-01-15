@@ -27,14 +27,16 @@ import java.io.IOException;
 import org.apache.commons.compress.AbstractTempDirTest;
 import org.junit.jupiter.api.Test;
 
-
+/**
+ * Tests {@link RandomAccessOutputStream}.
+ */
 public class RandomAccessOutputStreamTest extends AbstractTempDirTest {
 
     @Test
     public void testWrite() throws IOException {
         final RandomAccessOutputStream delegate = mock(RandomAccessOutputStream.class);
-
         final RandomAccessOutputStream stream = new RandomAccessOutputStream() {
+
             @Override
             public long position() throws IOException {
                 return delegate.position();
@@ -50,10 +52,7 @@ public class RandomAccessOutputStreamTest extends AbstractTempDirTest {
                 delegate.writeFully(b, off, len, position);
             }
         };
-
         stream.write('\n');
-
-        verify(delegate, times(1))
-                .write(any(), eq(0), eq(1));
+        verify(delegate, times(1)).write(any(), eq(0), eq(1));
     }
 }

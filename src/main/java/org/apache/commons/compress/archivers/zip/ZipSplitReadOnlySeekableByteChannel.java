@@ -226,7 +226,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * @since 1.22
      */
     public static SeekableByteChannel forPaths(final Path... paths) throws IOException {
-        return forPaths(Arrays.asList(paths), new OpenOption[]{ StandardOpenOption.READ });
+        return forPaths(Arrays.asList(paths), new OpenOption[] { StandardOpenOption.READ });
     }
 
     /**

@@ -22,6 +22,7 @@ import java.io.OutputStream;
 /**
  * Abstraction over OutputStream which also allows random access writes.
  */
+// Keep package-private; consider for Apache Commons IO.
 abstract class RandomAccessOutputStream extends OutputStream {
 
     /**

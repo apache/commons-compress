@@ -23,22 +23,18 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 
-
 /**
  * IO utilities for Zip operations.
- *
- * Package private to potentially move to something reusable.
  */
+// Keep package-private; consider for Apache Commons IO.
 class ZipIoUtil {
+
     /**
      * Writes full buffer to channel.
      *
-     * @param channel
-     *      channel to write to
-     * @param buf
-     *      buffer to write
-     * @throws IOException
-     *      when writing fails or fails to write fully
+     * @param channel channel to write to
+     * @param buf     buffer to write
+     * @throws IOException when writing fails or fails to write fully
      */
     static void writeFully(final SeekableByteChannel channel, final ByteBuffer buf) throws IOException {
         while (buf.hasRemaining()) {
@@ -53,17 +49,13 @@ class ZipIoUtil {
     /**
      * Writes full buffer to channel at specified position.
      *
-     * @param channel
-     *      channel to write to
-     * @param buf
-     *      buffer to write
-     * @param position
-     *      position to write at
-     * @throws IOException
-     *      when writing fails or fails to write fully
+     * @param channel  channel to write to
+     * @param buf      buffer to write
+     * @param position position to write at
+     * @throws IOException when writing fails or fails to write fully
      */
     static void writeFullyAt(final FileChannel channel, final ByteBuffer buf, final long position) throws IOException {
-        for (long currentPosition = position; buf.hasRemaining(); ) {
+        for (long currentPosition = position; buf.hasRemaining();) {
             final int remaining = buf.remaining();
             final int written = channel.write(buf, currentPosition);
             if (written <= 0) {

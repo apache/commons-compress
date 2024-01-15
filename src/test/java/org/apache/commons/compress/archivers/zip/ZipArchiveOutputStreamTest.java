@@ -25,7 +25,9 @@ import java.io.IOException;
 import org.apache.commons.compress.AbstractTempDirTest;
 import org.junit.jupiter.api.Test;
 
-
+/**
+ * Tests {@link ZipArchiveOutputStream}.
+ */
 public class ZipArchiveOutputStreamTest extends AbstractTempDirTest {
 
     @Test

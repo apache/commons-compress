@@ -43,7 +43,10 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
      * 8.5.1 Capacities for split archives are as follows:
      * <p>
      * Maximum number of segments = 4,294,967,295 - 1 Maximum .ZIP segment size = 4,294,967,295 bytes (refer to section 8.5.6) Minimum segment size = 64K
+     * </p>
+     * <p>
      * Maximum PKSFX segment size = 2,147,483,647 bytes
+     * </p>
      */
     private static final long ZIP_SEGMENT_MIN_SIZE = 64 * 1024L;
     private static final long ZIP_SEGMENT_MAX_SIZE = 4294967295L;
@@ -57,9 +60,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
     private long currentSplitSegmentBytesWritten;
     private boolean finished;
     private final byte[] singleByte = new byte[1];
-
     private final List<Long> diskToPosition = new ArrayList<>();
-
     private final TreeMap<Long, Path> positionToFiles = new TreeMap<>();
 
     /**

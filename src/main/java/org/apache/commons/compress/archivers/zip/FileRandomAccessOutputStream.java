@@ -22,11 +22,12 @@ import java.nio.channels.FileChannel;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-
+import java.util.Objects;
 
 /**
- * {@link RandomAccessOutputStream} implementation based on Path file.
+ * {@link RandomAccessOutputStream} implementation based on a file.
  */
+// Keep package-private; consider for Apache Commons IO.
 class FileRandomAccessOutputStream extends RandomAccessOutputStream {
 
     private final FileChannel channel;
@@ -34,7 +35,7 @@ class FileRandomAccessOutputStream extends RandomAccessOutputStream {
     private long position;
 
     FileRandomAccessOutputStream(final FileChannel channel) throws IOException {
-        this.channel = channel;
+        this.channel = Objects.requireNonNull(channel, "channel");
     }
 
     FileRandomAccessOutputStream(final Path file) throws IOException {
@@ -68,7 +69,7 @@ class FileRandomAccessOutputStream extends RandomAccessOutputStream {
     @Override
     public void writeFully(final byte[] b, final int off, final int len, final long atPosition) throws IOException {
         final ByteBuffer buf = ByteBuffer.wrap(b, off, len);
-        for (long currentPos = atPosition; buf.hasRemaining(); ) {
+        for (long currentPos = atPosition; buf.hasRemaining();) {
             final int written = this.channel.write(buf, currentPos);
             if (written <= 0) {
                 throw new IOException("Failed to fully write to file: written=" + written);

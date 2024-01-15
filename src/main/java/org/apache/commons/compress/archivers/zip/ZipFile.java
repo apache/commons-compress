@@ -178,10 +178,9 @@ public class ZipFile implements Closeable {
         /**
          * Sets max number of multi archive disks, default is 1 (no multi archive).
          *
-         * @param maxNumberOfDisks
-         *      max number of multi archive disks
+         * @param maxNumberOfDisks max number of multi archive disks.
          *
-         * @return this instance
+         * @return this.
          */
         public Builder setMaxNumberOfDisks(final long maxNumberOfDisks) {
             this.maxNumberOfDisks = maxNumberOfDisks;
@@ -519,8 +518,7 @@ public class ZipFile implements Closeable {
                 numberOfDisks = (buf.getShort() & 0xffff) + 1;
             }
             if (numberOfDisks > Math.min(maxNumberOfDisks, Integer.MAX_VALUE)) {
-                throw new IOException("Too many disks for zip archive, max=" +
-                        Math.min(maxNumberOfDisks, Integer.MAX_VALUE) + " actual=" + numberOfDisks);
+                throw new IOException("Too many disks for zip archive, max=" + Math.min(maxNumberOfDisks, Integer.MAX_VALUE) + " actual=" + numberOfDisks);
             }
 
             if (numberOfDisks <= 1) {
@@ -531,28 +529,23 @@ public class ZipFile implements Closeable {
             final Path parent = path.getParent();
             final String basename = FilenameUtils.removeExtension(path.getFileName().toString());
 
-            return ZipSplitReadOnlySeekableByteChannel.forPaths(
-                    IntStream.range(0, (int) numberOfDisks)
-                            .mapToObj(i -> {
-                                if (i == numberOfDisks - 1) {
-                                    return path;
-                                }
-                                final Path lowercase = parent.resolve(String.format("%s.z%02d", basename, i + 1));
-                                if (Files.exists(lowercase)) {
-                                    return lowercase;
-                                }
-                                final Path uppercase = parent.resolve(String.format("%s.Z%02d", basename, i + 1));
-                                if (Files.exists(uppercase)) {
-                                    return uppercase;
-                                }
-                                return lowercase;
-                            })
-                            .collect(Collectors.toList()),
-                    openOptions
-            );
+            return ZipSplitReadOnlySeekableByteChannel.forPaths(IntStream.range(0, (int) numberOfDisks).mapToObj(i -> {
+                if (i == numberOfDisks - 1) {
+                    return path;
+                }
+                final Path lowercase = parent.resolve(String.format("%s.z%02d", basename, i + 1));
+                if (Files.exists(lowercase)) {
+                    return lowercase;
+                }
+                final Path uppercase = parent.resolve(String.format("%s.Z%02d", basename, i + 1));
+                if (Files.exists(uppercase)) {
+                    return uppercase;
+                }
+                return lowercase;
+            }).collect(Collectors.toList()), openOptions);
         } catch (final Throwable ex) {
-            IOUtils.closeQuietly(channel);
-            channels.forEach(IOUtils::closeQuietly);
+            org.apache.commons.io.IOUtils.closeQuietly(channel);
+            channels.forEach(org.apache.commons.io.IOUtils::closeQuietly);
             throw ex;
         }
     }
@@ -560,8 +553,7 @@ public class ZipFile implements Closeable {
     /**
      * Searches for the and positions the stream at the start of the &quot;End of central dir record&quot;.
      *
-     * @return
-     *      true if it's Zip64 end of central directory or false if it's Zip32
+     * @return true if it's Zip64 end of central directory or false if it's Zip32
      */
     private static boolean positionAtEndOfCentralDirectoryRecord(final SeekableByteChannel channel) throws IOException {
         final boolean found = tryToLocateSignature(channel, MIN_EOCD_SIZE, MAX_EOCD_SIZE, ZipArchiveOutputStream.EOCD_SIG);
@@ -591,12 +583,8 @@ public class ZipFile implements Closeable {
      * Searches the archive backwards from minDistance to maxDistance for the given signature, positions the RandomaccessFile right at the signature if it has
      * been found.
      */
-    private static boolean tryToLocateSignature(
-            final SeekableByteChannel channel,
-            final long minDistanceFromEnd,
-            final long maxDistanceFromEnd,
-            final byte[] sig
-    ) throws IOException {
+    private static boolean tryToLocateSignature(final SeekableByteChannel channel, final long minDistanceFromEnd, final long maxDistanceFromEnd,
+            final byte[] sig) throws IOException {
         final ByteBuffer wordBuf = ByteBuffer.allocate(ZipConstants.WORD);
         boolean found = false;
         long off = channel.size() - minDistanceFromEnd;
@@ -693,7 +681,6 @@ public class ZipFile implements Closeable {
     private final ByteBuffer cfhBbuf = ByteBuffer.wrap(cfhBuf);
 
     private final ByteBuffer shortBbuf = ByteBuffer.wrap(shortBuf);
-
 
     private long centralDirectoryStartDiskNumber, centralDirectoryStartRelativeOffset;
 

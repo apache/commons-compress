@@ -20,15 +20,13 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 
-
 /**
  * {@link RandomAccessOutputStream} implementation for SeekableByteChannel.
  */
+// Keep package-private; consider for Apache Commons IO.
 class SeekableChannelRandomAccessOutputStream extends RandomAccessOutputStream {
 
     private final SeekableByteChannel channel;
-
-    private long position;
 
     SeekableChannelRandomAccessOutputStream(final SeekableByteChannel channel) {
         this.channel = channel;
