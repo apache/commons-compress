@@ -156,7 +156,7 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
 
     @Test
     public void testForPathsOfTwoParametersThrowsOnNullArg() {
-        assertThrows(NullPointerException.class, () -> ZipSplitReadOnlySeekableByteChannel.forPaths(null, null));
+        assertThrows(NullPointerException.class, () -> ZipSplitReadOnlySeekableByteChannel.forPaths((Path) null, null));
     }
 
     @Test

@@ -17,19 +17,15 @@
 package org.apache.commons.compress.archivers.zip;
 
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -340,11 +336,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     protected final Deflater def;
 
-    /**
-     * Optional random access output.
-     */
-    private final SeekableByteChannel channel;
-
     private final OutputStream outputStream;
 
     /**
@@ -424,7 +415,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     public ZipArchiveOutputStream(final OutputStream out) {
         this.outputStream = out;
-        this.channel = null;
         def = new Deflater(level, true);
         streamCompressor = StreamCompressor.create(out, def);
         isSplitZip = false;
@@ -451,7 +441,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         def = new Deflater(level, true);
         this.outputStream = new ZipSplitOutputStream(path, zipSplitSize);
         streamCompressor = StreamCompressor.create(this.outputStream, def);
-        channel = null;
         isSplitZip = true;
     }
 
@@ -465,24 +454,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     public ZipArchiveOutputStream(final Path file, final OpenOption... options) throws IOException {
         def = new Deflater(level, true);
-        OutputStream outputStream = null;
-        SeekableByteChannel channel = null;
-        StreamCompressor streamCompressor;
-        try {
-            channel = Files.newByteChannel(file,
-                    EnumSet.of(StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.READ, StandardOpenOption.TRUNCATE_EXISTING));
-            // will never get opened properly when an exception is thrown so doesn't need to get closed
-            streamCompressor = StreamCompressor.create(channel, def); // NOSONAR
-        } catch (final IOException e) { // NOSONAR
-            final Closeable c = channel;
-            org.apache.commons.io.IOUtils.closeQuietly(c);
-            channel = null;
-            outputStream = Files.newOutputStream(file, options);
-            streamCompressor = StreamCompressor.create(outputStream, def);
-        }
-        this.outputStream = outputStream;
-        this.channel = channel;
-        this.streamCompressor = streamCompressor;
+        this.outputStream = options.length == 0 ? new FileRandomAccessOutputStream(file) : new FileRandomAccessOutputStream(file, options);
+        this.streamCompressor = StreamCompressor.create(outputStream, def);
         this.isSplitZip = false;
     }
 
@@ -497,10 +470,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @since 1.13
      */
     public ZipArchiveOutputStream(final SeekableByteChannel channel) {
-        this.channel = channel;
+        this.outputStream = new SeekableChannelRandomAccessOutputStream(channel);
         def = new Deflater(level, true);
-        streamCompressor = StreamCompressor.create(channel, def);
-        outputStream = null;
+        streamCompressor = StreamCompressor.create(outputStream, def);
         isSplitZip = false;
     }
 
@@ -636,7 +608,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     private void closeEntry(final boolean actuallyNeedsZip64, final boolean phased) throws IOException {
-        if (!phased && channel != null) {
+        if (!phased && outputStream instanceof RandomAccessOutputStream) {
             rewriteSizesAndCrc(actuallyNeedsZip64);
         }
 
@@ -876,7 +848,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         ZipUtil.toDosTime(ze.getTime(), buf, LFH_TIME_OFFSET);
 
         // CRC
-        if (phased || !(zipMethod == DEFLATED || channel != null)) {
+        if (phased || !(zipMethod == DEFLATED || outputStream instanceof RandomAccessOutputStream)) {
             ZipLong.putLong(ze.getCrc(), buf, LFH_CRC_OFFSET);
         } else {
             System.arraycopy(LZERO, 0, buf, LFH_CRC_OFFSET, ZipConstants.WORD);
@@ -893,7 +865,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         } else if (phased) {
             ZipLong.putLong(ze.getCompressedSize(), buf, LFH_COMPRESSED_SIZE_OFFSET);
             ZipLong.putLong(ze.getSize(), buf, LFH_ORIGINAL_SIZE_OFFSET);
-        } else if (zipMethod == DEFLATED || channel != null) {
+        } else if (zipMethod == DEFLATED || outputStream instanceof RandomAccessOutputStream) {
             System.arraycopy(LZERO, 0, buf, LFH_COMPRESSED_SIZE_OFFSET, ZipConstants.WORD);
             System.arraycopy(LZERO, 0, buf, LFH_ORIGINAL_SIZE_OFFSET, ZipConstants.WORD);
         } else { // Stored
@@ -931,14 +903,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * </p>
      */
     void destroy() throws IOException {
-        try {
-            if (channel != null) {
-                channel.close();
-            }
-        } finally {
-            if (outputStream != null) {
-                outputStream.close();
-            }
+        if (outputStream != null) {
+            outputStream.close();
         }
     }
 
@@ -1034,7 +1000,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @since 1.3
      */
     private Zip64Mode getEffectiveZip64Mode(final ZipArchiveEntry ze) {
-        if (zip64Mode != Zip64Mode.AsNeeded || channel != null || ze.getMethod() != DEFLATED || ze.getSize() != ArchiveEntry.SIZE_UNKNOWN) {
+        if (zip64Mode != Zip64Mode.AsNeeded || outputStream instanceof RandomAccessOutputStream ||
+                ze.getMethod() != DEFLATED || ze.getSize() != ArchiveEntry.SIZE_UNKNOWN) {
             return zip64Mode;
         }
         return Zip64Mode.Never;
@@ -1106,7 +1073,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
             entry.entry.setCompressedSize(bytesWritten);
             entry.entry.setCrc(crc);
 
-        } else if (channel == null) {
+        } else if (!(outputStream instanceof RandomAccessOutputStream)) {
             if (entry.entry.getCrc() != crc) {
                 throw new ZipException("Bad CRC checksum for entry " + entry.entry.getName() + ": " + Long.toHexString(entry.entry.getCrc()) + " instead of "
                         + Long.toHexString(crc));
@@ -1172,7 +1139,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @return true if seekable
      */
     public boolean isSeekable() {
-        return channel != null;
+        return outputStream instanceof RandomAccessOutputStream;
     }
 
     private boolean isTooLargeForZip32(final ZipArchiveEntry zipArchiveEntry) {
@@ -1271,33 +1238,38 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * sizes.
      */
     private void rewriteSizesAndCrc(final boolean actuallyNeedsZip64) throws IOException {
-        final long save = channel.position();
+        RandomAccessOutputStream randomStream = (RandomAccessOutputStream) outputStream;
+        long dataStart = entry.localDataStart;
+        if (randomStream instanceof ZipSplitOutputStream) {
+            dataStart = ((ZipSplitOutputStream) randomStream).calculateDiskPosition(entry.entry.getDiskNumberStart(), dataStart);
+        }
 
-        channel.position(entry.localDataStart);
-        writeOut(ZipLong.getBytes(entry.entry.getCrc()));
+        long position = dataStart;
+        randomStream.writeFullyAt(ZipLong.getBytes(entry.entry.getCrc()), position); position += ZipConstants.WORD;
         if (!hasZip64Extra(entry.entry) || !actuallyNeedsZip64) {
-            writeOut(ZipLong.getBytes(entry.entry.getCompressedSize()));
-            writeOut(ZipLong.getBytes(entry.entry.getSize()));
+            randomStream.writeFullyAt(ZipLong.getBytes(entry.entry.getCompressedSize()), position); position += ZipConstants.WORD;
+            randomStream.writeFullyAt(ZipLong.getBytes(entry.entry.getSize()), position); position += ZipConstants.WORD;
         } else {
-            writeOut(ZipLong.ZIP64_MAGIC.getBytes());
-            writeOut(ZipLong.ZIP64_MAGIC.getBytes());
+            randomStream.writeFullyAt(ZipLong.ZIP64_MAGIC.getBytes(), position); position += ZipConstants.WORD;
+            randomStream.writeFullyAt(ZipLong.ZIP64_MAGIC.getBytes(), position); position += ZipConstants.WORD;
         }
 
         if (hasZip64Extra(entry.entry)) {
             final ByteBuffer name = getName(entry.entry);
             final int nameLen = name.limit() - name.position();
             // seek to ZIP64 extra, skip header and size information
-            channel.position(entry.localDataStart + 3 * ZipConstants.WORD + 2 * ZipConstants.SHORT + nameLen + 2 * ZipConstants.SHORT);
+            position = dataStart + 3 * ZipConstants.WORD + 2 * ZipConstants.SHORT + nameLen + 2 * ZipConstants.SHORT;
             // inside the ZIP64 extra uncompressed size comes
             // first, unlike the LFH, CD or data descriptor
-            writeOut(ZipEightByteInteger.getBytes(entry.entry.getSize()));
-            writeOut(ZipEightByteInteger.getBytes(entry.entry.getCompressedSize()));
+            randomStream.writeFullyAt(ZipEightByteInteger.getBytes(entry.entry.getSize()), position); position += ZipConstants.DWORD;
+            randomStream.writeFullyAt(ZipEightByteInteger.getBytes(entry.entry.getCompressedSize()), position); position += ZipConstants.DWORD;
 
             if (!actuallyNeedsZip64) {
                 // do some cleanup:
                 // * rewrite version needed to extract
-                channel.position(entry.localDataStart - 5 * ZipConstants.SHORT);
-                writeOut(ZipShort.getBytes(versionNeededToExtract(entry.entry.getMethod(), false, false)));
+                position = dataStart - 5 * ZipConstants.SHORT;
+                randomStream.writeFullyAt(ZipShort.getBytes(versionNeededToExtract(entry.entry.getMethod(), false, false)), position);
+                position += ZipConstants.SHORT;
 
                 // * remove ZIP64 extra, so it doesn't get written
                 // to the central directory
@@ -1311,7 +1283,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
                 }
             }
         }
-        channel.position(save);
     }
 
     /**
@@ -1470,7 +1441,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     private boolean shouldAddZip64Extra(final ZipArchiveEntry entry, final Zip64Mode mode) {
         return mode == Zip64Mode.Always || mode == Zip64Mode.AlwaysWithCompatibility || entry.getSize() >= ZipConstants.ZIP64_MAGIC
                 || entry.getCompressedSize() >= ZipConstants.ZIP64_MAGIC
-                || entry.getSize() == ArchiveEntry.SIZE_UNKNOWN && channel != null && mode != Zip64Mode.Never;
+                || entry.getSize() == ArchiveEntry.SIZE_UNKNOWN && outputStream instanceof RandomAccessOutputStream && mode != Zip64Mode.Never;
     }
 
     /**
@@ -1496,7 +1467,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     private boolean usesDataDescriptor(final int zipMethod, final boolean phased) {
-        return !phased && zipMethod == DEFLATED && channel == null;
+        return !phased && zipMethod == DEFLATED && !(outputStream instanceof RandomAccessOutputStream);
     }
 
     /**
@@ -1547,7 +1518,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     private void validateSizeInformation(final Zip64Mode effectiveMode) throws ZipException {
         // Size/CRC not required if SeekableByteChannel is used
-        if (entry.entry.getMethod() == STORED && channel == null) {
+        if (entry.entry.getMethod() == STORED && !(outputStream instanceof RandomAccessOutputStream)) {
             if (entry.entry.getSize() == ArchiveEntry.SIZE_UNKNOWN) {
                 throw new ZipException("Uncompressed size is required for" + " STORED method when not writing to a" + " file");
             }

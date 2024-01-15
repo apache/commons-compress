@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.Charset;
@@ -33,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,6 +44,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.zip.Inflater;
 import java.util.zip.ZipException;
 
@@ -55,6 +59,7 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.Charsets;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.build.AbstractOrigin.ByteArrayOrigin;
 import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.apache.commons.io.input.CountingInputStream;
@@ -128,6 +133,7 @@ public class ZipFile implements Closeable {
         private SeekableByteChannel seekableByteChannel;
         private boolean useUnicodeExtraFields = true;
         private boolean ignoreLocalFileHeader;
+        private long maxNumberOfDisks = 1;
 
         public Builder() {
             setCharset(DEFAULT_CHARSET);
@@ -151,7 +157,7 @@ public class ZipFile implements Closeable {
                     openOptions = new OpenOption[] { StandardOpenOption.READ };
                 }
                 final Path path = getPath();
-                actualChannel = Files.newByteChannel(path, openOptions);
+                actualChannel = openZipChannel(path, maxNumberOfDisks, openOptions);
                 actualDescription = path.toString();
             }
             final boolean closeOnError = seekableByteChannel != null;
@@ -188,6 +194,19 @@ public class ZipFile implements Closeable {
          */
         public Builder setUseUnicodeExtraFields(final boolean useUnicodeExtraFields) {
             this.useUnicodeExtraFields = useUnicodeExtraFields;
+            return this;
+        }
+
+        /**
+         * Sets max number of multi archive disks, default is 1 (no multi archive).
+         *
+         * @param maxNumberOfDisks
+         *      max number of multi archive disks
+         *
+         * @return this instance
+         */
+        public Builder setMaxNumberOfDisks(final long maxNumberOfDisks) {
+            this.maxNumberOfDisks = maxNumberOfDisks;
             return this;
         }
 
@@ -545,6 +564,7 @@ public class ZipFile implements Closeable {
 
     private long firstLocalFileHeaderOffset;
 
+
     /**
      * Opens the given file for reading, assuming "UTF8" for file names.
      *
@@ -810,6 +830,66 @@ public class ZipFile implements Closeable {
     @Deprecated
     public ZipFile(final String name, final String encoding) throws IOException {
         this(new File(name).toPath(), encoding, true);
+    }
+
+    private static SeekableByteChannel openZipChannel(Path path, long maxNumberOfDisks, OpenOption[] openOptions) throws IOException {
+        FileChannel channel = FileChannel.open(path, StandardOpenOption.READ);
+        List<FileChannel> channels = new ArrayList<>();
+        try {
+            boolean is64 = positionAtEndOfCentralDirectoryRecord(channel);
+            long numberOfDisks;
+            if (is64) {
+                channel.position(channel.position() + ZipConstants.WORD + ZipConstants.WORD + ZipConstants.DWORD);
+                ByteBuffer buf = ByteBuffer.allocate(ZipConstants.WORD);
+                buf.order(ByteOrder.LITTLE_ENDIAN);
+                IOUtils.readFully(channel, buf);
+                buf.flip();
+                numberOfDisks = buf.getInt() & 0xffffffffL;
+            } else {
+                channel.position(channel.position() + ZipConstants.WORD);
+                ByteBuffer buf = ByteBuffer.allocate(ZipConstants.SHORT);
+                buf.order(ByteOrder.LITTLE_ENDIAN);
+                IOUtils.readFully(channel, buf);
+                buf.flip();
+                numberOfDisks = (buf.getShort() & 0xffff) + 1;
+            }
+            if (numberOfDisks > Math.min(maxNumberOfDisks, Integer.MAX_VALUE)) {
+                throw new IOException("Too many disks for zip archive, max=" +
+                        Math.min(maxNumberOfDisks, Integer.MAX_VALUE) + " actual=" + numberOfDisks);
+            }
+
+            if (numberOfDisks <= 1) {
+                return channel;
+            }
+            channel.close();
+
+            Path parent = path.getParent();
+            String basename = FilenameUtils.removeExtension(path.getFileName().toString());
+
+            return ZipSplitReadOnlySeekableByteChannel.forPaths(
+                    IntStream.range(0, (int) numberOfDisks)
+                            .mapToObj(i -> {
+                                if (i == numberOfDisks - 1) {
+                                    return path;
+                                }
+                                Path lowercase = parent.resolve(String.format("%s.z%02d", basename, i + 1));
+                                if (Files.exists(lowercase)) {
+                                    return lowercase;
+                                }
+                                Path uppercase = parent.resolve(String.format("%s.Z%02d", basename, i + 1));
+                                if (Files.exists(uppercase)) {
+                                    return uppercase;
+                                }
+                                return lowercase;
+                            })
+                            .collect(Collectors.toList()),
+                    openOptions
+            );
+        } catch (Throwable ex) {
+            IOUtils.closeQuietly(channel);
+            channels.forEach(IOUtils::closeQuietly);
+            throw ex;
+        }
     }
 
     /**
@@ -1152,20 +1232,8 @@ public class ZipFile implements Closeable {
      * stream at the first central directory record.
      */
     private void positionAtCentralDirectory() throws IOException {
-        positionAtEndOfCentralDirectoryRecord();
-        boolean found = false;
-        final boolean searchedForZip64EOCD = archive.position() > ZIP64_EOCDL_LENGTH;
-        if (searchedForZip64EOCD) {
-            archive.position(archive.position() - ZIP64_EOCDL_LENGTH);
-            wordBbuf.rewind();
-            IOUtils.readFully(archive, wordBbuf);
-            found = Arrays.equals(ZipArchiveOutputStream.ZIP64_EOCD_LOC_SIG, wordBuf);
-        }
-        if (!found) {
-            // not a ZIP64 archive
-            if (searchedForZip64EOCD) {
-                skipBytes(ZIP64_EOCDL_LENGTH - ZipConstants.WORD);
-            }
+        boolean is64 = positionAtEndOfCentralDirectoryRecord(archive);
+        if (!is64) {
             positionAtCentralDirectory32();
         } else {
             positionAtCentralDirectory64();
@@ -1214,6 +1282,7 @@ public class ZipFile implements Closeable {
      * Expects stream to be positioned right behind the &quot;Zip64 end of central directory locator&quot;'s signature.
      */
     private void positionAtCentralDirectory64() throws IOException {
+        skipBytes(ZipConstants.WORD);
         if (isSplitZipArchive) {
             wordBbuf.rewind();
             IOUtils.readFully(archive, wordBbuf);
@@ -1260,12 +1329,32 @@ public class ZipFile implements Closeable {
 
     /**
      * Searches for the and positions the stream at the start of the &quot;End of central dir record&quot;.
+     *
+     * @return
+     *      true if it's Zip64 end of central directory or false if it's Zip32
      */
-    private void positionAtEndOfCentralDirectoryRecord() throws IOException {
-        final boolean found = tryToLocateSignature(MIN_EOCD_SIZE, MAX_EOCD_SIZE, ZipArchiveOutputStream.EOCD_SIG);
+    private static boolean positionAtEndOfCentralDirectoryRecord(SeekableByteChannel channel) throws IOException {
+        final boolean found = tryToLocateSignature(channel, MIN_EOCD_SIZE, MAX_EOCD_SIZE, ZipArchiveOutputStream.EOCD_SIG);
         if (!found) {
             throw new ZipException("Archive is not a ZIP archive");
         }
+        boolean found64 = false;
+        long position = channel.position();
+        if (position > ZIP64_EOCDL_LENGTH) {
+            ByteBuffer wordBuf = ByteBuffer.allocate(4);
+            channel.position(channel.position() - ZIP64_EOCDL_LENGTH);
+            wordBuf.rewind();
+            IOUtils.readFully(channel, wordBuf);
+            wordBuf.flip();
+            found64 = wordBuf.equals(ByteBuffer.wrap(ZipArchiveOutputStream.ZIP64_EOCD_LOC_SIG));
+            if (!found64) {
+                channel.position(position);
+            } else {
+                channel.position(channel.position() - ZipConstants.WORD);
+            }
+        }
+
+        return found64;
     }
 
     /**
@@ -1553,27 +1642,33 @@ public class ZipFile implements Closeable {
      * Searches the archive backwards from minDistance to maxDistance for the given signature, positions the RandomaccessFile right at the signature if it has
      * been found.
      */
-    private boolean tryToLocateSignature(final long minDistanceFromEnd, final long maxDistanceFromEnd, final byte[] sig) throws IOException {
+    private static boolean tryToLocateSignature(
+            final SeekableByteChannel channel,
+            final long minDistanceFromEnd,
+            final long maxDistanceFromEnd,
+            final byte[] sig
+    ) throws IOException {
+        ByteBuffer wordBuf = ByteBuffer.allocate(ZipConstants.WORD);
         boolean found = false;
-        long off = archive.size() - minDistanceFromEnd;
-        final long stopSearching = Math.max(0L, archive.size() - maxDistanceFromEnd);
+        long off = channel.size() - minDistanceFromEnd;
+        final long stopSearching = Math.max(0L, channel.size() - maxDistanceFromEnd);
         if (off >= 0) {
             for (; off >= stopSearching; off--) {
-                archive.position(off);
+                channel.position(off);
                 try {
-                    wordBbuf.rewind();
-                    IOUtils.readFully(archive, wordBbuf);
-                    wordBbuf.flip();
+                    wordBuf.rewind();
+                    IOUtils.readFully(channel, wordBuf);
+                    wordBuf.flip();
                 } catch (final EOFException ex) { // NOSONAR
                     break;
                 }
-                int curr = wordBbuf.get();
+                int curr = wordBuf.get();
                 if (curr == sig[POS_0]) {
-                    curr = wordBbuf.get();
+                    curr = wordBuf.get();
                     if (curr == sig[POS_1]) {
-                        curr = wordBbuf.get();
+                        curr = wordBuf.get();
                         if (curr == sig[POS_2]) {
-                            curr = wordBbuf.get();
+                            curr = wordBuf.get();
                             if (curr == sig[POS_3]) {
                                 found = true;
                                 break;
@@ -1584,7 +1679,7 @@ public class ZipFile implements Closeable {
             }
         }
         if (found) {
-            archive.position(off);
+            channel.position(off);
         }
         return found;
     }

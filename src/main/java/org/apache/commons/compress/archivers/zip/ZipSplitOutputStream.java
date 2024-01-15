@@ -18,11 +18,17 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 import org.apache.commons.compress.utils.FileNameUtils;
 
@@ -31,7 +37,7 @@ import org.apache.commons.compress.utils.FileNameUtils;
  *
  * @since 1.20
  */
-final class ZipSplitOutputStream extends OutputStream {
+final class ZipSplitOutputStream extends RandomAccessOutputStream {
 
     /**
      * 8.5.1 Capacities for split archives are as follows:
@@ -42,13 +48,19 @@ final class ZipSplitOutputStream extends OutputStream {
     private static final long ZIP_SEGMENT_MIN_SIZE = 64 * 1024L;
     private static final long ZIP_SEGMENT_MAX_SIZE = 4294967295L;
 
-    private OutputStream outputStream;
+    private FileChannel currentChannel;
+    private FileRandomAccessOutputStream outputStream;
     private Path zipFile;
     private final long splitSize;
+    private long totalPosition;
     private int currentSplitSegmentIndex;
     private long currentSplitSegmentBytesWritten;
     private boolean finished;
     private final byte[] singleByte = new byte[1];
+
+    private List<Long> diskToPosition = new ArrayList<>();
+
+    private TreeMap<Long, Path> positionToFiles = new TreeMap<>();
 
     /**
      * Creates a split ZIP. If the ZIP file is smaller than the split size, then there will only be one split ZIP, and its suffix is .zip, otherwise the split
@@ -79,7 +91,10 @@ final class ZipSplitOutputStream extends OutputStream {
         }
         this.zipFile = zipFile;
         this.splitSize = splitSize;
-        this.outputStream = Files.newOutputStream(zipFile);
+        this.outputStream = new FileRandomAccessOutputStream(zipFile);
+        this.currentChannel = this.outputStream.channel();
+        this.positionToFiles.put(0L, this.zipFile);
+        this.diskToPosition.add(0L);
         // write the ZIP split signature 0x08074B50 to the ZIP file
         writeZipSplitSignature();
     }
@@ -107,6 +122,15 @@ final class ZipSplitOutputStream extends OutputStream {
      * @throws IOException
      */
     private Path createNewSplitSegmentFile(final Integer zipSplitSegmentSuffixIndex) throws IOException {
+        Path newFile = getSplitSegmentFilename(zipSplitSegmentSuffixIndex);
+
+        if (Files.exists(newFile)) {
+            throw new IOException("split ZIP segment " + newFile + " already exists");
+        }
+        return newFile;
+    }
+
+    private Path getSplitSegmentFilename(final Integer zipSplitSegmentSuffixIndex) throws IOException {
         final int newZipSplitSegmentSuffixIndex = zipSplitSegmentSuffixIndex == null ? currentSplitSegmentIndex + 2 : zipSplitSegmentSuffixIndex;
         final String baseName = FileNameUtils.getBaseName(zipFile);
         String extension = ".z";
@@ -120,11 +144,9 @@ final class ZipSplitOutputStream extends OutputStream {
         final String dir = Objects.nonNull(parent) ? parent.toAbsolutePath().toString() : ".";
         final Path newFile = zipFile.getFileSystem().getPath(dir, baseName + extension);
 
-        if (Files.exists(newFile)) {
-            throw new IOException("split ZIP segment " + baseName + extension + " already exists");
-        }
         return newFile;
     }
+
 
     /**
      * The last ZIP split segment's suffix should be .zip
@@ -161,16 +183,26 @@ final class ZipSplitOutputStream extends OutputStream {
             outputStream.close();
             newFile = createNewSplitSegmentFile(1);
             Files.move(zipFile, newFile, StandardCopyOption.ATOMIC_MOVE);
+            this.positionToFiles.put(0L, newFile);
         }
 
         newFile = createNewSplitSegmentFile(null);
 
         outputStream.close();
-        outputStream = Files.newOutputStream(newFile);
+        outputStream = new FileRandomAccessOutputStream(newFile);
+        currentChannel = outputStream.channel();
         currentSplitSegmentBytesWritten = 0;
         zipFile = newFile;
         currentSplitSegmentIndex++;
+        this.diskToPosition.add(this.totalPosition);
+        this.positionToFiles.put(this.totalPosition, newFile);
+    }
 
+    public long calculateDiskPosition(long disk, long localOffset) throws IOException {
+        if (disk >= Integer.MAX_VALUE) {
+            throw new IOException("Disk number exceeded internal limits: limit=" + Integer.MAX_VALUE + " requested=" + disk);
+        }
+        return diskToPosition.get((int) disk) + localOffset;
     }
 
     /**
@@ -224,6 +256,7 @@ final class ZipSplitOutputStream extends OutputStream {
         } else {
             outputStream.write(b, off, len);
             currentSplitSegmentBytesWritten += len;
+            totalPosition += len;
         }
     }
 
@@ -231,6 +264,49 @@ final class ZipSplitOutputStream extends OutputStream {
     public void write(final int i) throws IOException {
         singleByte[0] = (byte) (i & 0xff);
         write(singleByte);
+    }
+
+    @Override
+    public long position() {
+        return totalPosition;
+    }
+
+    @Override
+    public void writeFullyAt(final byte[] b, final int off, final int len, final long atPosition) throws IOException {
+        long remainingPosition = atPosition;
+        for (int remainingOff = off, remainingLen = len; remainingLen > 0; ) {
+            Map.Entry<Long, Path> segment = positionToFiles.floorEntry(remainingPosition);
+            Long segmentEnd = positionToFiles.higherKey(remainingPosition);
+            if (segmentEnd == null) {
+                ZipIoUtil.writeFullyAt(this.currentChannel, ByteBuffer.wrap(b, remainingOff, remainingLen), remainingPosition - segment.getKey());
+                remainingPosition += remainingLen;
+                remainingOff += remainingLen;
+                remainingLen = 0;
+            } else if (remainingPosition + remainingLen <= segmentEnd) {
+                writeToSegment(segment.getValue(), remainingPosition - segment.getKey(), b, remainingOff, remainingLen);
+                remainingPosition += remainingLen;
+                remainingOff += remainingLen;
+                remainingLen = 0;
+            } else {
+                int toWrite = Math.toIntExact(segmentEnd - remainingPosition);
+                writeToSegment(segment.getValue(), remainingPosition - segment.getKey(), b, remainingOff, toWrite);
+                remainingPosition += toWrite;
+                remainingOff += toWrite;
+                remainingLen -= toWrite;
+            }
+        }
+    }
+
+    private void writeToSegment(
+            final Path segment,
+            final long position,
+            final byte[] b,
+            final int off,
+            final int len
+    ) throws IOException {
+        try (FileChannel channel = FileChannel.open(segment, StandardOpenOption.WRITE)) {
+            ZipIoUtil.writeFullyAt(channel, ByteBuffer.wrap(b, off, len), position);
+        }
     }
 
     /**
@@ -241,5 +317,6 @@ final class ZipSplitOutputStream extends OutputStream {
     private void writeZipSplitSignature() throws IOException {
         outputStream.write(ZipArchiveOutputStream.DD_SIG);
         currentSplitSegmentBytesWritten += ZipArchiveOutputStream.DD_SIG.length;
+        totalPosition += ZipArchiveOutputStream.DD_SIG.length;
     }
 }
