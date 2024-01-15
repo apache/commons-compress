@@ -87,7 +87,7 @@ public abstract class BoundedArchiveInputStream extends InputStream {
     }
 
     /**
-     * Read content of the stream into a {@link ByteBuffer}.
+     * Reads content of the stream into a {@link ByteBuffer}.
      *
      * @param pos position to start the read.
      * @param buf buffer to add the read content.
