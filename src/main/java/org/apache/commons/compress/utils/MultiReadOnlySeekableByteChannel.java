@@ -34,7 +34,6 @@ import java.util.Objects;
 
 /**
  * Read-Only Implementation of {@link SeekableByteChannel} that concatenates a collection of other {@link SeekableByteChannel}s.
- *
  * <p>
  * This is a lose port of <a href=
  * "https://github.com/frugalmechanic/fm-common/blob/master/jvm/src/main/scala/fm/common/MultiReadOnlySeekableByteChannel.scala">
@@ -61,7 +60,6 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
         for (final File f : Objects.requireNonNull(files, "files must not be null")) {
             paths.add(f.toPath());
         }
-
         return forPaths(paths.toArray(EMPTY_PATH_ARRAY));
     }
 
@@ -141,7 +139,6 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
 
     /**
      * Gets this channel's position.
-     *
      * <p>
      * This method violates the contract of {@link SeekableByteChannel#position()} as it will not throw any exception when invoked on a closed channel. Instead
      * it will return the position the channel had when close has been called.
@@ -160,11 +157,8 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
         if (!isOpen()) {
             throw new ClosedChannelException();
         }
-
         globalPosition = newPosition;
-
         long pos = newPosition;
-
         for (int i = 0; i < channels.size(); i++) {
             final SeekableByteChannel currentChannel = channels.get(i);
             final long size = currentChannel.size();
@@ -187,7 +181,6 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
                 pos -= size;
                 newChannelPos = size;
             }
-
             currentChannel.position(newChannelPos);
         }
         return this;
