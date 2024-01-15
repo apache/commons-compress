@@ -71,6 +71,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate IOUtils.read(File, byte[]).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate IOUtils.copyRange(InputStream, long, OutputStream, int).</action>
       <action type="fix" issue="COMPRESS-653" dev="ggregory" due-to="Zbynek Vyskovsky, Gary Gregory">ZipArchiveOutputStream multi archive updates metadata in incorrect file #455.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate ByteUtils.InputStreamByteSupplier.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ZipFile.builder(), add ZipFile.Builder, deprecated constructors.</action>     
       <!-- UPDATE -->

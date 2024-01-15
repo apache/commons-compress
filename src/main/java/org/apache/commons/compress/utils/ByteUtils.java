@@ -64,7 +64,9 @@ public final class ByteUtils {
      * {@link ByteSupplier} based on {@link InputStream}.
      *
      * @since 1.14
+     * @deprecated Unused
      */
+    @Deprecated
     public static class InputStreamByteSupplier implements ByteSupplier {
         private final InputStream is;
 
