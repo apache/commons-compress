@@ -333,7 +333,7 @@ public class ClassBands extends BandSet {
         }
 //        if ((flags & Opcodes.ACC_DEPRECATED) != 0) { // ASM uses (1<<17) flag for deprecated
 //            flags &= ~Opcodes.ACC_DEPRECATED;
-//            flags = flags | (1 << 20);
+//            flags |= (1 << 20);
 //        }
         if (signature != null) {
             class_flags[index] |= 1 << 19;
@@ -392,7 +392,7 @@ public class ClassBands extends BandSet {
         }
         if ((flags & Opcodes.ACC_DEPRECATED) != 0) { // ASM uses (1<<17) flag for deprecated
             flags &= ~Opcodes.ACC_DEPRECATED;
-            flags = flags | 1 << 20;
+            flags |= 1 << 20;
         }
         if (value != null) {
             fieldConstantValueKQ.add(cpBands.getConstant(value));
@@ -494,7 +494,7 @@ public class ClassBands extends BandSet {
         }
         if ((flags & Opcodes.ACC_DEPRECATED) != 0) { // ASM uses (1<<17) flag for deprecated
             flags &= ~Opcodes.ACC_DEPRECATED;
-            flags = flags | 1 << 20;
+            flags |= 1 << 20;
         }
         tempMethodFlags.add(Long.valueOf(flags));
         numMethodArgs = countArgs(desc);
