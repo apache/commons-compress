@@ -327,7 +327,6 @@ public class SevenZFile implements Closeable {
 
     /**
      * Reads a SeekableByteChannel as 7z archive
-     *
      * <p>
      * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
      * </p>
@@ -342,7 +341,6 @@ public class SevenZFile implements Closeable {
 
     /**
      * Reads a SeekableByteChannel as 7z archive
-     *
      * <p>
      * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
      * </p>
@@ -360,7 +358,6 @@ public class SevenZFile implements Closeable {
 
     /**
      * Reads a SeekableByteChannel as 7z archive
-     *
      * <p>
      * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
      * </p>
@@ -376,7 +373,6 @@ public class SevenZFile implements Closeable {
 
     /**
      * Reads a SeekableByteChannel as 7z archive with additional options.
-     *
      * <p>
      * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
      * </p>
@@ -393,7 +389,6 @@ public class SevenZFile implements Closeable {
 
     /**
      * Reads a SeekableByteChannel as 7z archive with additional options.
-     *
      * <p>
      * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
      * </p>
@@ -409,7 +404,6 @@ public class SevenZFile implements Closeable {
 
     /**
      * Reads a SeekableByteChannel as 7z archive
-     *
      * <p>
      * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
      * </p>
@@ -425,7 +419,6 @@ public class SevenZFile implements Closeable {
 
     /**
      * Reads a SeekableByteChannel as 7z archive
-     *
      * <p>
      * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
      * </p>
@@ -465,7 +458,6 @@ public class SevenZFile implements Closeable {
 
     /**
      * Reads a SeekableByteChannel as 7z archive
-     *
      * <p>
      * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
      * </p>
@@ -482,7 +474,6 @@ public class SevenZFile implements Closeable {
 
     /**
      * Reads a SeekableByteChannel as 7z archive with additional options.
-     *
      * <p>
      * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
      * </p>
@@ -500,7 +491,6 @@ public class SevenZFile implements Closeable {
 
     /**
      * Reads a SeekableByteChannel as 7z archive with additional options.
-     *
      * <p>
      * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
      * </p>
@@ -568,7 +558,7 @@ public class SevenZFile implements Closeable {
     }
 
     /**
-     * Build the decoding stream for the entry to be read. This method may be called from a random access(getInputStream) or sequential access(getNextEntry). If
+     * Builds the decoding stream for the entry to be read. This method may be called from a random access(getInputStream) or sequential access(getNextEntry). If
      * this method is called from a random access, some entries may need to be skipped(we put them to the deferredBlockStreams and skip them when actually
      * needed to improve the performance)
      *
@@ -737,7 +727,6 @@ public class SevenZFile implements Closeable {
 
     /**
      * Gets a default file name from the archive name - if known.
-     *
      * <p>
      * This implements the same heuristics the 7z tools use. In 7z's case if an archive contains entries without a name - i.e.
      * {@link SevenZArchiveEntry#getName} returns {@code null} - then its command line and GUI tools will use this default name when extracting the entries.
@@ -745,7 +734,6 @@ public class SevenZFile implements Closeable {
      *
      * @return null if the name of the archive is unknown. Otherwise, if the name of the archive has got any extension, it is stripped and the remainder
      *         returned. Finally, if the name of the archive hasn't got any extension, then a {@code ~} character is appended to the archive name.
-     *
      * @since 1.19
      */
     public String getDefaultName() {
@@ -763,12 +751,10 @@ public class SevenZFile implements Closeable {
 
     /**
      * Gets a copy of meta-data of all archive entries.
-     *
      * <p>
      * This method only provides meta-data, the entries can not be used to read the contents, you still need to process all entries in order using
      * {@link #getNextEntry} for that.
      * </p>
-     *
      * <p>
      * The content methods are only available for entries that have already been reached via {@link #getNextEntry}.
      * </p>
@@ -782,7 +768,6 @@ public class SevenZFile implements Closeable {
 
     /**
      * Gets an InputStream for reading the contents of the given entry.
-     *
      * <p>
      * For archives using solid compression randomly accessing entries will be significantly slower than reading the archive sequentially.
      * </p>
@@ -1950,15 +1935,18 @@ public class SevenZFile implements Closeable {
     }
 
     /**
-     * Skip all the entries if needed. Entries need to be skipped when:
+     * Skips all the entries if needed. Entries need to be skipped when:
      * <p>
      * 1. it's a random access 2. one of these 2 condition is meet :
+     * </p>
      * <p>
      * 2.1 currentEntryIndex != entryIndex : this means there are some entries to be skipped(currentEntryIndex < entryIndex) or the entry has already been
      * read(currentEntryIndex > entryIndex)
+     * </p>
      * <p>
      * 2.2 currentEntryIndex == entryIndex && !hasCurrentEntryBeenRead: if the entry to be read is the current entry, but some data of it has been read before,
      * then we need to reopen the stream of the folder and skip all the entries before the current entries
+     * </p>
      *
      * @param entryIndex     the entry to be read
      * @param isInSameFolder are the entry to be read and the current entry in the same folder
