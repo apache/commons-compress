@@ -370,7 +370,7 @@ public abstract class BandSet {
                     if (defaultCodec.isSigned()) {
                         specifier = -1 - specifier;
                     } else {
-                        specifier = specifier + defaultCodec.getL();
+                        specifier += defaultCodec.getL();
                     }
                     final byte[] specifierEncoded = defaultCodec.encode(new int[] { specifier });
                     final byte[] band = new byte[specifierEncoded.length + encodedBand.length];
@@ -636,7 +636,7 @@ public abstract class BandSet {
         if (defaultCodec.isSigned()) {
             specifier = -1 - specifier;
         } else {
-            specifier = specifier + defaultCodec.getL();
+            specifier += defaultCodec.getL();
         }
         final byte[] firstValueEncoded = defaultCodec.encode(new int[] { specifier });
         final int totalBandLength = firstValueEncoded.length + favouredEncoded.length + tokensEncoded.length + unfavouredEncoded.length;

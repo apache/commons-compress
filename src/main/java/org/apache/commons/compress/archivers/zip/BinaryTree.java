@@ -110,7 +110,7 @@ final class BinaryTree {
         final int[] codes = new int[totalNumberOfValues];
 
         for (int i = totalNumberOfValues - 1; i >= 0; i--) {
-            code = code + codeIncrement;
+            code += codeIncrement;
             if (sortedBitLengths[i] != lastBitLength) {
                 lastBitLength = sortedBitLengths[i];
                 codeIncrement = 1 << 16 - lastBitLength;

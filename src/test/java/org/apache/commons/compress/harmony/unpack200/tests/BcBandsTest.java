@@ -142,7 +142,7 @@ public class BcBandsTest extends AbstractBandsTest {
         public ArrayList getOrderedCodeAttributes() {
             int totalMethods = 0;
             for (final int numMethod : numMethods) {
-                totalMethods = totalMethods + numMethod;
+                totalMethods += numMethod;
             }
             final ArrayList orderedAttributeList = new ArrayList();
             for (int classIndex = 0; classIndex < totalMethods; classIndex++) {

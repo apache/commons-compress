@@ -97,7 +97,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Output
      */
     protected void count(final long written) {
         if (written != -1) {
-            bytesWritten = bytesWritten + written;
+            bytesWritten += written;
         }
     }
 

@@ -199,7 +199,7 @@ public class PackingOptions {
                     // Make sure we don't get any false positives (e.g.
                     // exclude "org/apache/harmony/pack" should not match
                     // files under "org/apache/harmony/pack200/")
-                    pass = pass + "/";
+                    pass += "/";
                 }
                 return passFileName.startsWith(pass);
             }
