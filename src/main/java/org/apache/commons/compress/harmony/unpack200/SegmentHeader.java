@@ -302,7 +302,7 @@ public class SegmentHeader {
             setBandHeadersData(bandHeaders);
         }
 
-        archiveSizeOffset = archiveSizeOffset - in.available();
+        archiveSizeOffset -= in.available();
     }
 
     /**

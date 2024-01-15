@@ -238,7 +238,7 @@ public final class BHSDCodec extends Codec {
             if ((z & u) == u) {
                 z = z >>> s ^ -1L;
             } else {
-                z = z - (z >>> s);
+                z -= z >>> s;
             }
         }
         // This algorithm does the same thing, but is probably slower. Leaving
