@@ -33,10 +33,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 public class ZipFileIgnoringLocalFileHeaderTest {
 
-    private static ZipFile openZipWithoutLocalFileHeaderDeprecated(final String fileName) throws IOException {
-        return new ZipFile(AbstractTest.getFile(fileName), CharsetNames.UTF_8, true, true);
-    }
-
     private static ZipFile openZipWithoutLocalFileHeader(final String fileName) throws IOException {
         // @formatter:off
         return ZipFile.builder()
@@ -46,6 +42,10 @@ public class ZipFileIgnoringLocalFileHeaderTest {
                 .setIgnoreLocalFileHeader(true)
                 .get();
         // @formatter:on
+    }
+
+    private static ZipFile openZipWithoutLocalFileHeaderDeprecated(final String fileName) throws IOException {
+        return new ZipFile(AbstractTest.getFile(fileName), CharsetNames.UTF_8, true, true);
     }
 
     @TempDir

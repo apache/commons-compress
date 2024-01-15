@@ -99,6 +99,13 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
         writeZipSplitSignature();
     }
 
+    public long calculateDiskPosition(long disk, long localOffset) throws IOException {
+        if (disk >= Integer.MAX_VALUE) {
+            throw new IOException("Disk number exceeded internal limits: limit=" + Integer.MAX_VALUE + " requested=" + disk);
+        }
+        return diskToPosition.get((int) disk) + localOffset;
+    }
+
     @Override
     public void close() throws IOException {
         if (!finished) {
@@ -130,23 +137,6 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
         return newFile;
     }
 
-    private Path getSplitSegmentFilename(final Integer zipSplitSegmentSuffixIndex) throws IOException {
-        final int newZipSplitSegmentSuffixIndex = zipSplitSegmentSuffixIndex == null ? currentSplitSegmentIndex + 2 : zipSplitSegmentSuffixIndex;
-        final String baseName = FileNameUtils.getBaseName(zipFile);
-        String extension = ".z";
-        if (newZipSplitSegmentSuffixIndex <= 9) {
-            extension += "0" + newZipSplitSegmentSuffixIndex;
-        } else {
-            extension += newZipSplitSegmentSuffixIndex;
-        }
-
-        final Path parent = zipFile.getParent();
-        final String dir = Objects.nonNull(parent) ? parent.toAbsolutePath().toString() : ".";
-        final Path newFile = zipFile.getFileSystem().getPath(dir, baseName + extension);
-
-        return newFile;
-    }
-
 
     /**
      * The last ZIP split segment's suffix should be .zip
@@ -170,6 +160,23 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
 
     public int getCurrentSplitSegmentIndex() {
         return currentSplitSegmentIndex;
+    }
+
+    private Path getSplitSegmentFilename(final Integer zipSplitSegmentSuffixIndex) throws IOException {
+        final int newZipSplitSegmentSuffixIndex = zipSplitSegmentSuffixIndex == null ? currentSplitSegmentIndex + 2 : zipSplitSegmentSuffixIndex;
+        final String baseName = FileNameUtils.getBaseName(zipFile);
+        String extension = ".z";
+        if (newZipSplitSegmentSuffixIndex <= 9) {
+            extension += "0" + newZipSplitSegmentSuffixIndex;
+        } else {
+            extension += newZipSplitSegmentSuffixIndex;
+        }
+
+        final Path parent = zipFile.getParent();
+        final String dir = Objects.nonNull(parent) ? parent.toAbsolutePath().toString() : ".";
+        final Path newFile = zipFile.getFileSystem().getPath(dir, baseName + extension);
+
+        return newFile;
     }
 
     /**
@@ -198,11 +205,9 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
         this.positionToFiles.put(this.totalPosition, newFile);
     }
 
-    public long calculateDiskPosition(long disk, long localOffset) throws IOException {
-        if (disk >= Integer.MAX_VALUE) {
-            throw new IOException("Disk number exceeded internal limits: limit=" + Integer.MAX_VALUE + " requested=" + disk);
-        }
-        return diskToPosition.get((int) disk) + localOffset;
+    @Override
+    public long position() {
+        return totalPosition;
     }
 
     /**
@@ -264,11 +269,6 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
     public void write(final int i) throws IOException {
         singleByte[0] = (byte) (i & 0xff);
         write(singleByte);
-    }
-
-    @Override
-    public long position() {
-        return totalPosition;
     }
 
     @Override

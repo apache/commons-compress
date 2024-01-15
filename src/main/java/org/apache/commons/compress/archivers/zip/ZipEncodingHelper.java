@@ -90,10 +90,6 @@ public abstract class ZipEncodingHelper {
         return isUTF8Alias(Charsets.toCharset(charset).name());
     }
 
-    private static boolean isUTF8Alias(final String actual) {
-        return UTF_8.name().equalsIgnoreCase(actual) || UTF_8.aliases().stream().anyMatch(alias -> alias.equalsIgnoreCase(actual));
-    }
-
     /**
      * Tests whether a given encoding is UTF-8. If the given name is null, then check the platform's default encoding.
      *
@@ -101,5 +97,9 @@ public abstract class ZipEncodingHelper {
      */
     static boolean isUTF8(final String charsetName) {
         return isUTF8Alias(charsetName != null ? charsetName : Charset.defaultCharset().name());
+    }
+
+    private static boolean isUTF8Alias(final String actual) {
+        return UTF_8.name().equalsIgnoreCase(actual) || UTF_8.aliases().stream().anyMatch(alias -> alias.equalsIgnoreCase(actual));
     }
 }

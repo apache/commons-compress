@@ -33,6 +33,10 @@ class FileRandomAccessOutputStream extends RandomAccessOutputStream {
 
     private long position;
 
+    FileRandomAccessOutputStream(final FileChannel channel) throws IOException {
+        this.channel = channel;
+    }
+
     FileRandomAccessOutputStream(final Path file) throws IOException {
         this(file, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
     }
@@ -41,23 +45,24 @@ class FileRandomAccessOutputStream extends RandomAccessOutputStream {
         this(FileChannel.open(file, options));
     }
 
-    FileRandomAccessOutputStream(final FileChannel channel) throws IOException {
-        this.channel = channel;
-    }
-
     FileChannel channel() {
         return channel;
+    }
+
+    @Override
+    public void close() throws IOException {
+        channel.close();
+    }
+
+    @Override
+    public synchronized long position() {
+        return position;
     }
 
     @Override
     public synchronized void write(final byte[] b, final int off, final int len) throws IOException {
         ZipIoUtil.writeFully(this.channel, ByteBuffer.wrap(b, off, len));
         position += len;
-    }
-
-    @Override
-    public synchronized long position() {
-        return position;
     }
 
     @Override
@@ -70,10 +75,5 @@ class FileRandomAccessOutputStream extends RandomAccessOutputStream {
             }
             currentPos += written;
         }
-    }
-
-    @Override
-    public void close() throws IOException {
-        channel.close();
     }
 }

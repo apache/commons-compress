@@ -29,16 +29,16 @@ import org.junit.jupiter.api.Test;
 public class ZipArchiveOutputStreamTest extends AbstractTempDirTest {
 
     @Test
-    public void testOutputStreamBasics() throws IOException {
-        try (ZipArchiveOutputStream stream = new ZipArchiveOutputStream(new ByteArrayOutputStream())) {
-            assertFalse(stream.isSeekable());
+    public void testFileBasics() throws IOException {
+        try (ZipArchiveOutputStream stream = new ZipArchiveOutputStream(createTempFile())) {
+            assertTrue(stream.isSeekable());
         }
     }
 
     @Test
-    public void testFileBasics() throws IOException {
-        try (ZipArchiveOutputStream stream = new ZipArchiveOutputStream(createTempFile())) {
-            assertTrue(stream.isSeekable());
+    public void testOutputStreamBasics() throws IOException {
+        try (ZipArchiveOutputStream stream = new ZipArchiveOutputStream(new ByteArrayOutputStream())) {
+            assertFalse(stream.isSeekable());
         }
     }
 }

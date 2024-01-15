@@ -136,20 +136,20 @@ public final class ZipTest extends AbstractTest {
         return result;
     }
 
-    private byte[] createArtificialData(int size) {
-        final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        for (int i = 0; i < size; i += 1) {
-            output.write((byte) ((i & 1) == 0 ? (i / 2 % 256) : (i / 2 / 256)));
-        }
-        return output.toByteArray();
-    }
-
     private void createArchiveEntry(final String payload, final ZipArchiveOutputStream zos, final String name) throws IOException {
         final ZipArchiveEntry in = new ZipArchiveEntry(name);
         zos.putArchiveEntry(in);
 
         zos.write(payload.getBytes());
         zos.closeArchiveEntry();
+    }
+
+    private byte[] createArtificialData(int size) {
+        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+        for (int i = 0; i < size; i += 1) {
+            output.write((byte) ((i & 1) == 0 ? (i / 2 % 256) : (i / 2 / 256)));
+        }
+        return output.toByteArray();
     }
 
     private ZipArchiveOutputStream createFirstEntry(final ZipArchiveOutputStream zos) throws IOException {
@@ -233,32 +233,6 @@ public final class ZipTest extends AbstractTest {
         list.add(Arrays.asList(t, b));
     }
 
-    @Test
-    public void testBuildSplitZipTest() throws IOException {
-        final File directoryToZip = getFilesToZip();
-        createTestSplitZipSegments();
-
-        final File lastFile = newTempFile("splitZip.zip");
-        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
-                InputStream inputStream = Channels.newInputStream(channel);
-                ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, UTF_8.toString(), true, false, true)) {
-
-            ArchiveEntry entry;
-            final int filesNum = countNonDirectories(directoryToZip);
-            int filesCount = 0;
-            while ((entry = splitInputStream.getNextEntry()) != null) {
-                if (entry.isDirectory()) {
-                    continue;
-                }
-                // compare all files one by one
-                assertArrayEquals(IOUtils.toByteArray(splitInputStream), Files.readAllBytes(Paths.get(entry.getName())));
-                filesCount++;
-            }
-            // and the number of files should equal
-            assertEquals(filesCount, filesNum);
-        }
-    }
-
     /**
      * Tests split archive with 32-bit limit, both STORED and DEFLATED.
      */
@@ -323,6 +297,37 @@ public final class ZipTest extends AbstractTest {
     }
 
     /**
+     * Tests split archive with 32-bit limit, with end of central directory skipping lack of space in segment.
+     */
+    @Test
+    public void testBuildSplitZip32_endOfCentralDirectorySkipBoundary() throws IOException {
+        final File outputZipFile = newTempFile("artificialSplitZip.zip");
+        final long splitSize = 64 * 1024L; /* 64 KB */
+        // 4 is PK signature, 36 is size of header + local file header,
+        // 36 is length of central directory entry
+        // 1 is remaining byte in first archive, this should be skipped
+        byte[] data1 = createArtificialData(64 * 1024 - 4 - 36 - 52 - 1);
+        try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
+            zipArchiveOutputStream.setUseZip64(Zip64Mode.Never);
+            ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
+            ze1.setMethod(ZipEntry.STORED);
+            zipArchiveOutputStream.putArchiveEntry(ze1);
+            zipArchiveOutputStream.write(data1);
+            zipArchiveOutputStream.closeArchiveEntry();
+        }
+
+        assertEquals(64 * 1024L - 1, Files.size(outputZipFile.toPath().getParent().resolve("artificialSplitZip.z01")));
+
+        try (ZipFile zipFile = ZipFile.builder()
+                .setPath(outputZipFile.toPath())
+                .setMaxNumberOfDisks(Integer.MAX_VALUE)
+                .get()
+        ) {
+            assertArrayEquals(data1, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file01"))));
+        }
+    }
+
+    /**
      * Tests split archive with 32-bit limit, with file local headers crossing segment boundaries.
      */
     @Test
@@ -377,34 +382,29 @@ public final class ZipTest extends AbstractTest {
         }
     }
 
-    /**
-     * Tests split archive with 32-bit limit, with end of central directory skipping lack of space in segment.
-     */
     @Test
-    public void testBuildSplitZip32_endOfCentralDirectorySkipBoundary() throws IOException {
-        final File outputZipFile = newTempFile("artificialSplitZip.zip");
-        final long splitSize = 64 * 1024L; /* 64 KB */
-        // 4 is PK signature, 36 is size of header + local file header,
-        // 36 is length of central directory entry
-        // 1 is remaining byte in first archive, this should be skipped
-        byte[] data1 = createArtificialData(64 * 1024 - 4 - 36 - 52 - 1);
-        try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
-            zipArchiveOutputStream.setUseZip64(Zip64Mode.Never);
-            ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
-            ze1.setMethod(ZipEntry.STORED);
-            zipArchiveOutputStream.putArchiveEntry(ze1);
-            zipArchiveOutputStream.write(data1);
-            zipArchiveOutputStream.closeArchiveEntry();
-        }
+    public void testBuildSplitZipTest() throws IOException {
+        final File directoryToZip = getFilesToZip();
+        createTestSplitZipSegments();
 
-        assertEquals(64 * 1024L - 1, Files.size(outputZipFile.toPath().getParent().resolve("artificialSplitZip.z01")));
+        final File lastFile = newTempFile("splitZip.zip");
+        try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
+                InputStream inputStream = Channels.newInputStream(channel);
+                ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, UTF_8.toString(), true, false, true)) {
 
-        try (ZipFile zipFile = ZipFile.builder()
-                .setPath(outputZipFile.toPath())
-                .setMaxNumberOfDisks(Integer.MAX_VALUE)
-                .get()
-        ) {
-            assertArrayEquals(data1, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file01"))));
+            ArchiveEntry entry;
+            final int filesNum = countNonDirectories(directoryToZip);
+            int filesCount = 0;
+            while ((entry = splitInputStream.getNextEntry()) != null) {
+                if (entry.isDirectory()) {
+                    continue;
+                }
+                // compare all files one by one
+                assertArrayEquals(IOUtils.toByteArray(splitInputStream), Files.readAllBytes(Paths.get(entry.getName())));
+                filesCount++;
+            }
+            // and the number of files should equal
+            assertEquals(filesCount, filesNum);
         }
     }
 

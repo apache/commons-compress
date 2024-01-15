@@ -85,6 +85,14 @@ public class CpioArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    public void testInvalidLongValueInMetadata() throws Exception {
+        try (InputStream in = newInputStream("org/apache/commons/compress/cpio/bad_long_value.cpio");
+             CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
+            assertThrows(IOException.class, archive::getNextEntry);
+        }
+    }
+
+    @Test
     public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.cpio");
@@ -104,14 +112,6 @@ public class CpioArchiveInputStreamTest extends AbstractTest {
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
-        }
-    }
-
-    @Test
-    public void testInvalidLongValueInMetadata() throws Exception {
-        try (InputStream in = newInputStream("org/apache/commons/compress/cpio/bad_long_value.cpio");
-             CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
-            assertThrows(IOException.class, archive::getNextEntry);
         }
     }
 

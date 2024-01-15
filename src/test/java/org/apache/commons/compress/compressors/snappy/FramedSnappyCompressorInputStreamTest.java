@@ -40,6 +40,15 @@ import org.junit.jupiter.api.Test;
 
 public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
 
+    private static byte[] generateTestData(final int inputSize) {
+        final byte[] arr = new byte[inputSize];
+        for (int i = 0; i < arr.length; i++) {
+          arr[i] = (byte) (65 + i % 10);
+        }
+
+        return arr;
+    }
+
     private long mask(final long x) {
         return (x >>> 15 | x << 17) + FramedSnappyCompressorInputStream.MASK_OFFSET & 0xffffFFFFL;
     }
@@ -67,6 +76,15 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
 
     private void testChecksumUnmasking(final long x) {
         assertEquals(Long.toHexString(x), Long.toHexString(FramedSnappyCompressorInputStream.unmask(mask(x))));
+    }
+
+    @Test
+    public void testFinishWithNoWrite() throws IOException {
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        try (FramedSnappyCompressorOutputStream compressor = new FramedSnappyCompressorOutputStream(buffer)) {
+            // do nothing here. this will test that flush on close doesn't throw any exceptions if no data is written.
+        }
+        assertTrue(buffer.size() == 10, "Only the signature gets written.");
     }
 
     /**
@@ -172,6 +190,25 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
+    public void testWriteByteArrayVsWriteByte() throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        final byte[] bytes = "abcdefghijklmnop".getBytes();
+        try (FramedSnappyCompressorOutputStream compressor = new FramedSnappyCompressorOutputStream(buffer)) {
+            compressor.write(bytes);
+            compressor.finish();
+        }
+        final byte[] bulkOutput = buffer.toByteArray();
+        buffer = new ByteArrayOutputStream();
+        try (FramedSnappyCompressorOutputStream compressor = new FramedSnappyCompressorOutputStream(buffer)) {
+            for (final byte element : bytes) {
+                compressor.write(element);
+            }
+            compressor.finish();
+        }
+        assertArrayEquals(bulkOutput, buffer.toByteArray());
+    }
+
+    @Test
     public void testWriteDataLargerThanBufferOneCall() throws IOException {
         final int inputSize = 500_000;
         final byte[] data = generateTestData(inputSize);
@@ -193,43 +230,6 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
             decompressed = decompressedOutputStream.toByteArray();
         }
         assertArrayEquals(data, decompressed);
-    }
-
-    private static byte[] generateTestData(final int inputSize) {
-        final byte[] arr = new byte[inputSize];
-        for (int i = 0; i < arr.length; i++) {
-          arr[i] = (byte) (65 + i % 10);
-        }
-
-        return arr;
-    }
-
-    @Test
-    public void testFinishWithNoWrite() throws IOException {
-        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        try (FramedSnappyCompressorOutputStream compressor = new FramedSnappyCompressorOutputStream(buffer)) {
-            // do nothing here. this will test that flush on close doesn't throw any exceptions if no data is written.
-        }
-        assertTrue(buffer.size() == 10, "Only the signature gets written.");
-    }
-
-    @Test
-    public void testWriteByteArrayVsWriteByte() throws IOException {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        final byte[] bytes = "abcdefghijklmnop".getBytes();
-        try (FramedSnappyCompressorOutputStream compressor = new FramedSnappyCompressorOutputStream(buffer)) {
-            compressor.write(bytes);
-            compressor.finish();
-        }
-        final byte[] bulkOutput = buffer.toByteArray();
-        buffer = new ByteArrayOutputStream();
-        try (FramedSnappyCompressorOutputStream compressor = new FramedSnappyCompressorOutputStream(buffer)) {
-            for (final byte element : bytes) {
-                compressor.write(element);
-            }
-            compressor.finish();
-        }
-        assertArrayEquals(bulkOutput, buffer.toByteArray());
     }
 
 }
