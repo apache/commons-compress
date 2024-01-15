@@ -31,7 +31,7 @@ class FileRandomAccessOutputStream extends RandomAccessOutputStream {
 
     private final FileChannel channel;
 
-    private long position = 0L;
+    private long position;
 
     FileRandomAccessOutputStream(final Path file) throws IOException {
         this(file, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
