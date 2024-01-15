@@ -332,7 +332,7 @@ public class ClassBands extends BandSet {
             anySyntheticClasses = true;
         }
 //        if ((flags & Opcodes.ACC_DEPRECATED) != 0) { // ASM uses (1<<17) flag for deprecated
-//            flags = flags & ~Opcodes.ACC_DEPRECATED;
+//            flags &= ~Opcodes.ACC_DEPRECATED;
 //            flags = flags | (1 << 20);
 //        }
         if (signature != null) {
@@ -384,14 +384,14 @@ public class ClassBands extends BandSet {
     }
 
     public void addField(int flags, final String name, final String desc, final String signature, final Object value) {
-        flags = flags & 0xFFFF;
+        flags &= 0xFFFF;
         tempFieldDesc.add(cpBands.getCPNameAndType(name, desc));
         if (signature != null) {
             fieldSignature.add(cpBands.getCPSignature(signature));
             flags |= 1 << 19;
         }
         if ((flags & Opcodes.ACC_DEPRECATED) != 0) { // ASM uses (1<<17) flag for deprecated
-            flags = flags & ~Opcodes.ACC_DEPRECATED;
+            flags &= ~Opcodes.ACC_DEPRECATED;
             flags = flags | 1 << 20;
         }
         if (value != null) {
@@ -493,7 +493,7 @@ public class ClassBands extends BandSet {
             flags |= 1 << 18;
         }
         if ((flags & Opcodes.ACC_DEPRECATED) != 0) { // ASM uses (1<<17) flag for deprecated
-            flags = flags & ~Opcodes.ACC_DEPRECATED;
+            flags &= ~Opcodes.ACC_DEPRECATED;
             flags = flags | 1 << 20;
         }
         tempMethodFlags.add(Long.valueOf(flags));
