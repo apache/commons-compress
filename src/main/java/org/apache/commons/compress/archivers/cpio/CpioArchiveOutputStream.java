@@ -100,7 +100,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     private final ZipEncoding zipEncoding;
 
     // the provided encoding (for unit tests)
-    final String encoding;
+    final String charsetName;
 
     /**
      * Constructs the cpio output stream. The format for this CPIO stream is the "new" format using ASCII encoding for file names
@@ -159,7 +159,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
         }
         this.entryFormat = format;
         this.blockSize = blockSize;
-        this.encoding = encoding;
+        this.charsetName = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
     }
 

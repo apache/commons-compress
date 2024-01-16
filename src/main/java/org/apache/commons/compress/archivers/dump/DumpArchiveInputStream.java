@@ -95,9 +95,6 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      */
     private final ZipEncoding zipEncoding;
 
-    // the provided encoding (for unit tests)
-    final String encoding;
-
     /**
      * Constructor using the platform's default encoding for file names.
      *
@@ -117,9 +114,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      * @throws ArchiveException on error
      */
     public DumpArchiveInputStream(final InputStream is, final String encoding) throws ArchiveException {
+        super(encoding);
         this.raw = new TapeInputStream(is);
         this.hasHitEOF = false;
-        this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
 
         try {

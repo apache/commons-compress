@@ -20,6 +20,9 @@ package org.apache.commons.compress.archivers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+
+import org.apache.commons.io.Charsets;
 
 /**
  * Archive input streams <b>MUST</b> override the {@link #read(byte[], int, int)} - or {@link #read()} - method so that reading from the stream generates EOF
@@ -42,10 +45,41 @@ import java.io.InputStream;
 public abstract class ArchiveInputStream<E extends ArchiveEntry> extends InputStream {
 
     private static final int BYTE_MASK = 0xFF;
+
     private final byte[] single = new byte[1];
 
-    /** Holds the number of bytes read in this stream */
+    /** The number of bytes read in this stream */
     private long bytesRead;
+
+    private Charset charset;
+
+    /**
+     * Constructs a new instance.
+     */
+    public ArchiveInputStream() {
+        this(Charset.defaultCharset());
+    }
+
+    /**
+     * Constructs a new instance.
+     *
+     * @param charset charset.
+     * @since 1.26.0
+     */
+    // This will be protected once subclasses use builders.
+    private ArchiveInputStream(final Charset charset) {
+        this.charset = Charsets.toCharset(charset);
+    }
+
+    /**
+     * Constructs a new instance.
+     *
+     * @param charsetName charset name.
+     * @since 1.26.0
+     */
+    protected ArchiveInputStream(final String charsetName) {
+        this(Charsets.toCharset(charsetName));
+    }
 
     /**
      * Whether this stream is able to read the given entry.
@@ -94,10 +128,19 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends InputSt
     }
 
     /**
+     * Gets the Charest.
+     *
+     * @return the Charest.
+     */
+    public Charset getCharset() {
+        return charset;
+    }
+
+    /**
      * Gets the current number of bytes read from this stream.
      *
      * @return the number of read bytes
-     * @deprecated this method may yield wrong results for large archives, use #getBytesRead instead
+     * @deprecated this method may yield wrong results for large archives, use {@link #getBytesRead()} instead.
      */
     @Deprecated
     public int getCount() {

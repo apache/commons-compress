@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.ar;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
@@ -145,6 +146,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * @param inputStream the ar input stream
      */
     public ArArchiveInputStream(final InputStream inputStream) {
+        super(StandardCharsets.US_ASCII.name());
         this.input = inputStream;
     }
 

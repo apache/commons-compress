@@ -31,7 +31,6 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.CRC32VerifyingInputStream;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.io.Charsets;
 
 /**
  * Implements the "arj" archive format as an InputStream.
@@ -60,7 +59,6 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     }
 
     private final DataInputStream in;
-    private final String charsetName;
     private final MainHeader mainHeader;
     private LocalFileHeader currentLocalFileHeader;
     private InputStream currentInputStream;
@@ -83,8 +81,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      * @throws ArchiveException if an exception occurs while reading
      */
     public ArjArchiveInputStream(final InputStream inputStream, final String charsetName) throws ArchiveException {
+        super(charsetName);
         in = new DataInputStream(inputStream);
-        this.charsetName = charsetName;
         try {
             mainHeader = readMainHeader();
             if ((mainHeader.arjFlags & MainHeader.Flags.GARBLED) != 0) {
@@ -347,7 +345,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
             while ((nextByte = dataIn.readUnsignedByte()) != 0) {
                 buffer.write(nextByte);
             }
-            return buffer.toString(Charsets.toCharset(charsetName).name());
+            return buffer.toString(getCharset().name());
         }
     }
 }

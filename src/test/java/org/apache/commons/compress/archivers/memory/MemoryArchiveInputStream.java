@@ -22,6 +22,9 @@ import java.io.IOException;
 
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
+/**
+ * A test input stream.
+ */
 public final class MemoryArchiveInputStream extends ArchiveInputStream<MemoryArchiveEntry> {
 
     private final String[] fileNames;

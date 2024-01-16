@@ -151,9 +151,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      */
     private final ZipEncoding zipEncoding;
 
-    // the provided encoding (for unit tests)
-    final String encoding;
-
     /**
      * Constructs the cpio input stream with a blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE} and expecting ASCII file names.
      *
@@ -184,12 +181,12 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @since 1.6
      */
     public CpioArchiveInputStream(final InputStream in, final int blockSize, final String encoding) {
+        super(encoding);
         this.in = in;
         if (blockSize <= 0) {
             throw new IllegalArgumentException("blockSize must be bigger than 0");
         }
         this.blockSize = blockSize;
-        this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
     }
 

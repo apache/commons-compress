@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.codec.Charsets;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
@@ -129,7 +130,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     /**
      * The provided encoding (for unit tests).
      */
-    final String encoding;
+    final String charsetName;
 
     private boolean addPaxHeadersForNonAsciiNames;
 
@@ -208,7 +209,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
             throw new IllegalArgumentException("Block size must be a multiple of 512 bytes. Attempt to use set size of " + blockSize);
         }
         out = new FixedLengthBlockOutputStream(countingOut = new CountingOutputStream(os), RECORD_SIZE);
-        this.encoding = encoding;
+        this.charsetName = Charsets.toCharset(encoding).name();
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
 
         this.recordBuf = new byte[RECORD_SIZE];

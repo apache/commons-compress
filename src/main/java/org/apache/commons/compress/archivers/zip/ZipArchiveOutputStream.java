@@ -321,7 +321,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * Defaults to UTF-8.
      * </p>
      */
-    private String encoding = DEFAULT_ENCODING;
+    private String charsetName = DEFAULT_ENCODING;
 
     /**
      * The ZIP encoding to use for file names and the file comment.
@@ -415,9 +415,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     public ZipArchiveOutputStream(final OutputStream out) {
         this.outputStream = out;
-        def = new Deflater(level, true);
-        streamCompressor = StreamCompressor.create(out, def);
-        isSplitZip = false;
+        this.def = new Deflater(level, true);
+        this.streamCompressor = StreamCompressor.create(out, def);
+        this.isSplitZip = false;
     }
 
     /**
@@ -438,10 +438,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @since 1.22
      */
     public ZipArchiveOutputStream(final Path path, final long zipSplitSize) throws IOException {
-        def = new Deflater(level, true);
+        this.def = new Deflater(level, true);
         this.outputStream = new ZipSplitOutputStream(path, zipSplitSize);
-        streamCompressor = StreamCompressor.create(this.outputStream, def);
-        isSplitZip = true;
+        this.streamCompressor = StreamCompressor.create(this.outputStream, def);
+        this.isSplitZip = true;
     }
 
     /**
@@ -453,7 +453,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @since 1.21
      */
     public ZipArchiveOutputStream(final Path file, final OpenOption... options) throws IOException {
-        def = new Deflater(level, true);
+        this.def = new Deflater(level, true);
         this.outputStream = options.length == 0 ? new FileRandomAccessOutputStream(file) : new FileRandomAccessOutputStream(file, options);
         this.streamCompressor = StreamCompressor.create(outputStream, def);
         this.isSplitZip = false;
@@ -471,9 +471,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     public ZipArchiveOutputStream(final SeekableByteChannel channel) {
         this.outputStream = new SeekableChannelRandomAccessOutputStream(channel);
-        def = new Deflater(level, true);
-        streamCompressor = StreamCompressor.create(outputStream, def);
-        isSplitZip = false;
+        this.def = new Deflater(level, true);
+        this.streamCompressor = StreamCompressor.create(outputStream, def);
+        this.isSplitZip = false;
     }
 
     /**
@@ -1013,7 +1013,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @return null if using the platform's default character encoding.
      */
     public String getEncoding() {
-        return encoding;
+        return charsetName;
     }
 
     private ZipEncoding getEntryEncoding(final ZipArchiveEntry ze) {
@@ -1329,7 +1329,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @param encoding the encoding to use for file names, use null for the platform's default encoding
      */
     public void setEncoding(final String encoding) {
-        this.encoding = encoding;
+        this.charsetName = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         if (useUTF8Flag && !ZipEncodingHelper.isUTF8(encoding)) {
             useUTF8Flag = false;
@@ -1389,7 +1389,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @param b whether to set the language encoding flag if the file name encoding is UTF-8
      */
     public void setUseLanguageEncodingFlag(final boolean b) {
-        useUTF8Flag = b && ZipEncodingHelper.isUTF8(encoding);
+        useUTF8Flag = b && ZipEncodingHelper.isUTF8(charsetName);
     }
 
     /**
