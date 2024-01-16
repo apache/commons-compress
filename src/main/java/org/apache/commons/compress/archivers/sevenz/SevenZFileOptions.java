@@ -21,17 +21,21 @@ package org.apache.commons.compress.archivers.sevenz;
  *
  * @since 1.19
  * @Immutable
+ * @deprecated Use {@link SevenZFile.Builder}.
  */
+@Deprecated
 public class SevenZFileOptions {
+
     /**
      * Mutable builder for the immutable {@link SevenZFileOptions}.
      *
      * @since 1.19
      */
     public static class Builder {
-        private int maxMemoryLimitInKb = DEFAUL_MEMORY_LIMIT_IN_KB;
-        private boolean useDefaultNameForUnnamedEntries = DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES;
-        private boolean tryToRecoverBrokenArchives = DEFAULT_TRY_TO_RECOVER_BROKEN_ARCHIVES;
+
+        private int maxMemoryLimitKb = SevenZFile.Builder.MEMORY_LIMIT_IN_KB;
+        private boolean useDefaultNameForUnnamedEntries = SevenZFile.Builder.USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES;
+        private boolean tryToRecoverBrokenArchives = SevenZFile.Builder.TRY_TO_RECOVER_BROKEN_ARCHIVES;
 
         /**
          * Builds the {@link SevenZFileOptions}.
@@ -39,12 +43,11 @@ public class SevenZFileOptions {
          * @return configured {@link SevenZFileOptions}.
          */
         public SevenZFileOptions build() {
-            return new SevenZFileOptions(maxMemoryLimitInKb, useDefaultNameForUnnamedEntries, tryToRecoverBrokenArchives);
+            return new SevenZFileOptions(maxMemoryLimitKb, useDefaultNameForUnnamedEntries, tryToRecoverBrokenArchives);
         }
 
         /**
          * Sets the maximum amount of memory to use for parsing the archive and during extraction.
-         *
          * <p>
          * Not all codecs will honor this setting. Currently only LZMA and LZMA2 are supported.
          * </p>
@@ -53,12 +56,12 @@ public class SevenZFileOptions {
          * @return the reconfigured builder
          */
         public Builder withMaxMemoryLimitInKb(final int maxMemoryLimitInKb) {
-            this.maxMemoryLimitInKb = maxMemoryLimitInKb;
+            this.maxMemoryLimitKb = maxMemoryLimitInKb;
             return this;
         }
 
         /**
-         * Sets whether {@link SevenZFile} will try to revover broken archives where the CRC of the file's metadata is 0.
+         * Sets whether {@link SevenZFile} will try to recover broken archives where the CRC of the file's metadata is 0.
          * <p>
          * This special kind of broken archive is encountered when mutli volume archives are closed prematurely. If you enable this option SevenZFile will trust
          * data that looks as if it could contain metadata of an archive and allocate big amounts of memory. It is strongly recommended to not enable this
@@ -86,20 +89,15 @@ public class SevenZFileOptions {
         }
     }
 
-    private static final int DEFAUL_MEMORY_LIMIT_IN_KB = Integer.MAX_VALUE;
-    private static final boolean DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES = false;
-
-    private static final boolean DEFAULT_TRY_TO_RECOVER_BROKEN_ARCHIVES = false;
     /**
      * The default options.
-     *
      * <ul>
      * <li>no memory limit</li>
      * <li>don't modify the name of unnamed entries</li>
      * </ul>
      */
-    public static final SevenZFileOptions DEFAULT = new SevenZFileOptions(DEFAUL_MEMORY_LIMIT_IN_KB, DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES,
-            DEFAULT_TRY_TO_RECOVER_BROKEN_ARCHIVES);
+    public static final SevenZFileOptions DEFAULT = new SevenZFileOptions(SevenZFile.Builder.MEMORY_LIMIT_IN_KB,
+            SevenZFile.Builder.USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES, SevenZFile.Builder.TRY_TO_RECOVER_BROKEN_ARCHIVES);
 
     /**
      * Obtains a builder for SevenZFileOptions.
@@ -110,21 +108,18 @@ public class SevenZFileOptions {
         return new Builder();
     }
 
-    private final int maxMemoryLimitInKb;
-
+    private final int maxMemoryLimitKb;
     private final boolean useDefaultNameForUnnamedEntries;
-
     private final boolean tryToRecoverBrokenArchives;
 
-    private SevenZFileOptions(final int maxMemoryLimitInKb, final boolean useDefaultNameForUnnamedEntries, final boolean tryToRecoverBrokenArchives) {
-        this.maxMemoryLimitInKb = maxMemoryLimitInKb;
+    private SevenZFileOptions(final int maxMemoryLimitKb, final boolean useDefaultNameForUnnamedEntries, final boolean tryToRecoverBrokenArchives) {
+        this.maxMemoryLimitKb = maxMemoryLimitKb;
         this.useDefaultNameForUnnamedEntries = useDefaultNameForUnnamedEntries;
         this.tryToRecoverBrokenArchives = tryToRecoverBrokenArchives;
     }
 
     /**
      * Gets the maximum amount of memory to use for parsing the archive and during extraction.
-     *
      * <p>
      * Not all codecs will honor this setting. Currently only LZMA and LZMA2 are supported.
      * </p>
@@ -132,7 +127,7 @@ public class SevenZFileOptions {
      * @return the maximum amount of memory to use for extraction
      */
     public int getMaxMemoryLimitInKb() {
-        return maxMemoryLimitInKb;
+        return maxMemoryLimitKb;
     }
 
     /**

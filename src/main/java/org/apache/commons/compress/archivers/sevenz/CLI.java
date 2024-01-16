@@ -91,11 +91,11 @@ public class CLI {
         }
         final Mode mode = grabMode(args);
         System.out.println(mode.getMessage() + " " + args[0]);
-        final File f = new File(args[0]);
-        if (!f.isFile()) {
-            System.err.println(f + " doesn't exist or is a directory");
+        final File file = new File(args[0]);
+        if (!file.isFile()) {
+            System.err.println(file + " doesn't exist or is a directory");
         }
-        try (SevenZFile archive = new SevenZFile(f)) {
+        try (SevenZFile archive = SevenZFile.builder().setFile(file).get()) {
             SevenZArchiveEntry ae;
             while ((ae = archive.getNextEntry()) != null) {
                 mode.takeAction(archive, ae);

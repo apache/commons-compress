@@ -222,8 +222,8 @@ public class ExpanderTest extends AbstractTest {
     @Test
     public void testSevenZFileVersion() throws IOException {
         setup7z();
-        try (SevenZFile f = new SevenZFile(archive)) {
-            new Expander().expand(f, tempResultDir);
+        try (SevenZFile file = SevenZFile.builder().setFile(archive).get()) {
+            new Expander().expand(file, tempResultDir);
         }
         verifyTargetDir();
     }

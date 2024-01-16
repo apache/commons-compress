@@ -433,13 +433,13 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
 
         <h4><a name="Recovering from Certain Broken 7z Archives"></a>Recovering from Certain Broken 7z Archives</h4>
 
-        <p>Starting with Compress 1.19 <code>SevenZFile</code> tries
+        <p><code>SevenZFile</code> tries
         to recover archives that look as if they were part of a
         multi-volume archive where the first volume has been removed
         too early.</p>
 
-        <p>Starting with Compress 1.21 this option has to be enabled
-        explicitly in <code>SevenZFileOptions</code>. The way recovery
+        <p>This option has to be enabled
+        explicitly in <code>SevenZFile.Builder</code>. The way recovery
         works is by Compress scanning an archive from the end for
         something that might look like valid 7z metadata and use that,
         if it can successfully parse the block of data. When doing so
@@ -447,7 +447,7 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
         metadata of very large archives which in turn may make
         Compress allocate a lot of memory. Therefore we strongly
         recommend you also set a memory limit inside the
-        <code>SevenZFileOptions</code> if you enable recovery.</p>
+        <code>SevenZFile.Builder</code> if you enable recovery.</p>
       </subsection>
 
       <subsection name="ar">

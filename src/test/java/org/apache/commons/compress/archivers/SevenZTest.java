@@ -92,7 +92,7 @@ public class SevenZTest extends AbstractTest {
 
     private void multiByteReadConsistentlyReturnsMinusOneAtEof(final SevenZMethod method) throws Exception {
         createArchive(method);
-        try (SevenZFile archive = new SevenZFile(output)) {
+        try (SevenZFile archive = SevenZFile.builder().setFile(output).get()) {
             multiByteReadConsistentlyReturnsMinusOneAtEof(archive);
         }
     }
@@ -120,7 +120,7 @@ public class SevenZTest extends AbstractTest {
 
     private void singleByteReadConsistentlyReturnsMinusOneAtEof(final SevenZMethod method) throws Exception {
         createArchive(method);
-        try (SevenZFile archive = new SevenZFile(output)) {
+        try (SevenZFile archive = SevenZFile.builder().setFile(output).get()) {
             singleByteReadConsistentlyReturnsMinusOneAtEof(archive);
         }
     }
@@ -155,7 +155,7 @@ public class SevenZTest extends AbstractTest {
 
     private void testSevenZArchiveCreation(final SevenZMethod method) throws Exception {
         createArchive(method);
-        try (SevenZFile archive = new SevenZFile(output)) {
+        try (SevenZFile archive = SevenZFile.builder().setFile(output).get()) {
             SevenZArchiveEntry entry;
 
             entry = archive.getNextEntry();

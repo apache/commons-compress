@@ -61,7 +61,7 @@ public final class Lister {
     }
 
     private static void list7z(final File file) throws IOException {
-        try (SevenZFile sevenZFile = new SevenZFile(file)) {
+        try (SevenZFile sevenZFile = SevenZFile.builder().setFile(file).get()) {
             System.out.println("Created " + sevenZFile);
             ArchiveEntry entry;
             while ((entry = sevenZFile.getNextEntry()) != null) {
