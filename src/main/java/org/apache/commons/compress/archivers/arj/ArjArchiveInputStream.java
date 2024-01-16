@@ -44,6 +44,7 @@ import org.apache.commons.io.Charsets;
  */
 public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
 
+    private static final String ENCODING_NAME = "CP437";
     private static final int ARJ_MAGIC_1 = 0x60;
     private static final int ARJ_MAGIC_2 = 0xEA;
 
@@ -71,7 +72,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      * @throws ArchiveException if an exception occurs while reading
      */
     public ArjArchiveInputStream(final InputStream inputStream) throws ArchiveException {
-        this(inputStream, "CP437");
+        this(inputStream, ENCODING_NAME);
     }
 
     /**
