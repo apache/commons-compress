@@ -61,11 +61,9 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
 
     /**
      * Does the name look like it is a long name (or a name containing spaces) as encoded by BSD ar?
-     *
      * <p>
      * From the FreeBSD ar(5) man page:
      * </p>
-     *
      * <pre>
      * BSD   In the BSD variant, names that are shorter than 16
      *       characters and without embedded spaces are stored
@@ -89,16 +87,13 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
 
     /**
      * Is this the name of the "Archive String Table" as used by SVR4/GNU to store long file names?
-     *
      * <p>
      * GNU ar stores multiple extended file names in the data section of a file with the name "//", this record is referred to by future headers.
      * </p>
-     *
      * <p>
      * A header references an extended file name by storing a "/" followed by a decimal offset to the start of the file name in the extended file name data
      * section.
      * </p>
-     *
      * <p>
      * The format of the "//" file itself is simply a list of the long file names, each separated by one or more LF characters. Note that the decimal offsets
      * are number of characters, not line or string number within the "//" file.
