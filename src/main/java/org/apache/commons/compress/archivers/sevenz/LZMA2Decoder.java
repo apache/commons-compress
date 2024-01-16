@@ -46,7 +46,7 @@ final class LZMA2Decoder extends AbstractCoder {
         }
     }
 
-    @SuppressWarnings("resource") // Caller closes result.
+    @SuppressWarnings("resource") // Caller closes.
     @Override
     OutputStream encode(final OutputStream out, final Object opts) throws IOException {
         return getOptions(opts).getOutputStream(new FinishableWrapperOutputStream(out));

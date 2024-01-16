@@ -17,6 +17,7 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 final class BindPair {
+
     long inIndex;
     long outIndex;
 

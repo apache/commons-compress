@@ -91,17 +91,17 @@ final class Folder {
         if (packedStreams == null || coders == null || packedStreams.length == 0 || coders.length == 0) {
             return Collections.emptyList();
         }
-        final LinkedList<Coder> l = new LinkedList<>();
+        final LinkedList<Coder> list = new LinkedList<>();
         int current = (int) packedStreams[0]; // more that 2^31 coders?
         while (current >= 0 && current < coders.length) {
-            if (l.contains(coders[current])) {
+            if (list.contains(coders[current])) {
                 throw new IOException("folder uses the same coder more than once in coder chain");
             }
-            l.addLast(coders[current]);
+            list.addLast(coders[current]);
             final int pair = findBindPairForOutStream(current);
             current = pair != -1 ? (int) bindPairs[pair].inIndex : -1;
         }
-        return l;
+        return list;
     }
 
     long getUnpackSize() {

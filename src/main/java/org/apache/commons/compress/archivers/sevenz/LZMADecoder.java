@@ -28,6 +28,7 @@ import org.tukaani.xz.LZMAInputStream;
 import org.tukaani.xz.LZMAOutputStream;
 
 final class LZMADecoder extends AbstractCoder {
+
     LZMADecoder() {
         super(LZMA2Options.class, Number.class);
     }
