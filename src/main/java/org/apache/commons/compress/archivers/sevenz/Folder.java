@@ -24,27 +24,38 @@ import java.util.LinkedList;
  * The unit of solid compression.
  */
 final class Folder {
+
     static final Folder[] EMPTY_FOLDER_ARRAY = {};
-    /// List of coders used in this folder, e.g. one for compression, one for encryption.
+
+    /** List of coders used in this folder, e.g. one for compression, one for encryption. */
     Coder[] coders;
-    /// Total number of input streams across all coders.
-    /// this field is currently unused but technically part of the 7z API
+
+    /**
+     * Total number of input streams across all coders. This field is currently unused but technically part of the 7z API.
+     */
     long totalInputStreams;
-    /// Total number of output streams across all coders.
+
+    /** Total number of output streams across all coders. */
     long totalOutputStreams;
-    /// Mapping between input and output streams.
+
+    /** Mapping between input and output streams. */
     BindPair[] bindPairs;
-    /// Indeces of input streams, one per input stream not listed in bindPairs.
+
+    /** Indices of input streams, one per input stream not listed in bindPairs. */
     long[] packedStreams;
-    /// Unpack sizes, per each output stream.
+
+    /** Unpack sizes, per each output stream. */
     long[] unpackSizes;
-    /// Whether the folder has a CRC.
+
+    /** Whether the folder has a CRC. */
     boolean hasCrc;
-    /// The CRC, if present.
+
+    /** The CRC, if present. */
     long crc;
-    /// The number of unpack substreams, product of the number of
-    /// output streams and the number of non-empty files in this
-    /// folder.
+
+    /**
+     * The number of unpack substreams, product of the number of output streams and the number of non-empty files in this folder.
+     */
     int numUnpackSubStreams;
 
     int findBindPairForInStream(final int index) {
