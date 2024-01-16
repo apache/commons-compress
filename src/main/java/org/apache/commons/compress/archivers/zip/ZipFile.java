@@ -1490,9 +1490,9 @@ public class ZipFile implements Closeable {
         }
         try {
             ze.setCentralDirectoryExtra(cdExtraData);
-        } catch (final RuntimeException ex) {
+        } catch (final RuntimeException e) {
             final ZipException z = new ZipException("Invalid extra data in entry " + ze.getName());
-            z.initCause(ex);
+            z.initCause(e);
             throw z;
         }
 
@@ -1532,9 +1532,9 @@ public class ZipFile implements Closeable {
             }
             try {
                 ze.setExtra(localExtraData);
-            } catch (final RuntimeException ex) {
+            } catch (final RuntimeException e) {
                 final ZipException z = new ZipException("Invalid extra data in entry " + ze.getName());
-                z.initCause(ex);
+                z.initCause(e);
                 throw z;
             }
 

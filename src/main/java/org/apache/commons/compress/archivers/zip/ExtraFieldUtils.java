@@ -198,9 +198,9 @@ public class ExtraFieldUtils {
                 ze.parseFromCentralDirectoryData(data, off, len);
             }
             return ze;
-        } catch (final ArrayIndexOutOfBoundsException aiobe) {
+        } catch (final ArrayIndexOutOfBoundsException e) {
             throw (ZipException) new ZipException("Failed to parse corrupt ZIP extra field of type " + Integer.toHexString(ze.getHeaderId().getValue()))
-                    .initCause(aiobe);
+                    .initCause(e);
         }
     }
 
@@ -332,8 +332,8 @@ public class ExtraFieldUtils {
                 final ZipExtraField ze = Objects.requireNonNull(parsingBehavior.createExtraField(headerId), "createExtraField must not return null");
                 v.add(Objects.requireNonNull(parsingBehavior.fill(ze, data, start + WORD, length, local), "fill must not return null"));
                 start += length + WORD;
-            } catch (final InstantiationException | IllegalAccessException ie) {
-                throw (ZipException) new ZipException(ie.getMessage()).initCause(ie);
+            } catch (final InstantiationException | IllegalAccessException e) {
+                throw (ZipException) new ZipException(e.getMessage()).initCause(e);
             }
         }
 
