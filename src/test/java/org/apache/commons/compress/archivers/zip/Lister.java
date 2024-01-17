@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -42,15 +44,16 @@ public final class Lister {
         boolean useStream = false;
         String encoding;
         boolean allowStoredEntriesWithDataDescriptor = false;
-        String dir;
+        Path dir;
     }
 
-    private static void extract(final String dirName, final ZipArchiveEntry entry, final InputStream inputStream) throws IOException {
-        final File file = new File(dirName, entry.getName());
-        if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
+    private static void extract(final Path targetDir, final ZipArchiveEntry entry, final InputStream inputStream) throws IOException {
+        final Path outputFile = entry.resolveIn(targetDir);
+        final Path parent = outputFile.getParent();
+        if (parent != null && !Files.exists(parent)) {
+            Files.createDirectories(parent);
         }
-        Files.copy(inputStream, file.toPath());
+        Files.copy(inputStream, outputFile);
     }
 
     private static void list(final ZipArchiveEntry entry) {
@@ -104,7 +107,7 @@ public final class Lister {
                 }
             } else if (args[i].equals("-extract")) {
                 if (argsLength > i + 1) {
-                    cl.dir = args[++i];
+                    cl.dir = Paths.get(args[++i]);
                 } else {
                     System.err.println("missing argument to -extract");
                     error = true;

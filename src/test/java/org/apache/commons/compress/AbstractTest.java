@@ -32,7 +32,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -152,27 +151,25 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      * @throws Exception
      */
     protected File checkArchiveContent(final ArchiveInputStream<?> inputStream, final List<String> expected, final boolean cleanUp) throws Exception {
-        final Path result = createTempDirectory("dir-result");
+        final Path targetDir = createTempDirectory("dir-result");
+        final Path result = targetDir.resolve("result");
         try {
             ArchiveEntry entry;
             while ((entry = inputStream.getNextEntry()) != null) {
-                final Path output = Paths.get(result.toString(), "result", entry.getName()).normalize();
-                if (!output.startsWith(result)) {
-                    throw new IOException("Zip slip " + output);
-                }
+                final Path outputFile = entry.resolveIn(result);
                 long bytesCopied = 0;
                 if (entry.isDirectory()) {
-                    Files.createDirectories(output);
+                    Files.createDirectories(outputFile);
                 } else {
-                    Files.createDirectories(output.getParent());
-                    bytesCopied = Files.copy(inputStream, output);
+                    Files.createDirectories(outputFile.getParent());
+                    bytesCopied = Files.copy(inputStream, outputFile);
                 }
                 final long size = entry.getSize();
                 if (size != ArchiveEntry.SIZE_UNKNOWN) {
                     assertEquals(size, bytesCopied, "Entry.size should equal bytes read.");
                 }
 
-                if (!Files.exists(output)) {
+                if (!Files.exists(outputFile)) {
                     fail("Extraction failed: " + entry.getName());
                 }
                 if (expected != null && !expected.remove(getExpectedString(entry))) {
@@ -188,10 +185,10 @@ public abstract class AbstractTest extends AbstractTempDirTest {
             }
         } finally {
             if (cleanUp) {
-                forceDelete(result);
+                forceDelete(targetDir);
             }
         }
-        return result.toFile();
+        return targetDir.toFile();
     }
 
     /**

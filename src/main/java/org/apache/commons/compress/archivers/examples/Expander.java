@@ -41,7 +41,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarFile;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullOutputStream;
 
 /**
@@ -70,12 +70,7 @@ public class Expander {
         final Path targetDirPath = nullTarget ? null : targetDirectory.normalize();
         T nextEntry = supplier.get();
         while (nextEntry != null) {
-            final Path targetPath = nullTarget ? null : targetDirectory.resolve(nextEntry.getName());
-            // check if targetDirectory and f are the same path - this may
-            // happen if the nextEntry.getName() is "./"
-            if (!nullTarget && !targetPath.normalize().startsWith(targetDirPath) && !Files.isSameFile(targetDirectory, targetPath)) {
-                throw new IOException("Expanding " + nextEntry.getName() + " would create file outside of " + targetDirectory);
-            }
+            final Path targetPath = nullTarget ? null : nextEntry.resolveIn(targetDirPath);
             if (nextEntry.isDirectory()) {
                 if (!nullTarget && !Files.isDirectory(targetPath) && Files.createDirectories(targetPath) == null) {
                     throw new IOException("Failed to create directory " + targetPath);

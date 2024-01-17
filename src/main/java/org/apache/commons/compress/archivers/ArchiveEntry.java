@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.archivers;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Date;
 
 /**
@@ -62,4 +64,22 @@ public interface ArchiveEntry {
      * @return true if this entry refers to a directory.
      */
     boolean isDirectory();
+
+    /**
+     * Resolves this entry in the given parent Path.
+     *
+     * @param parentPath the {@link Path#resolve(Path)} receiver.
+     * @return a resolved and normalized Path.
+     * @throws IOException if this method detects a Zip slip.
+     * @since 1.26.0
+     */
+    default Path resolveIn(final Path parentPath) throws IOException {
+        final String name = getName();
+        final Path outputFile = parentPath.resolve(name).normalize();
+        if (!outputFile.startsWith(parentPath)) {
+            throw new IOException(String.format("Zip slip '%s' + '%s' -> '%s'", parentPath, name, outputFile));
+        }
+        return outputFile;
+    }
+
 }
