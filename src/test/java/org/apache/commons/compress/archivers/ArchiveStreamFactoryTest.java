@@ -177,7 +177,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
             }
             System.out.println("Wrong type: " + object.getClass().getCanonicalName() + " for " + name + " in class " + instance.getClass().getSimpleName());
             return UNKNOWN;
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             System.out.println("Cannot find " + name + " in class " + instance.getClass().getSimpleName());
             return UNKNOWN;
         }
