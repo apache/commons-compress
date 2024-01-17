@@ -35,7 +35,6 @@ import org.apache.commons.io.input.NullInputStream;
  * <p>
  * The input stream classes must also implement a method with the signature:
  * </p>
- * 
  * <pre>
  * public static boolean matches(byte[] signature, int length)
  * </pre>
