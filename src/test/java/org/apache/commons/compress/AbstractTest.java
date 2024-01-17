@@ -48,6 +48,8 @@ import org.junit.jupiter.api.io.TempDir;
 
 public abstract class AbstractTest extends AbstractTempDirTest {
 
+    private static final String PARENT_PATH_SEGMENT = "..";
+
     protected interface StreamWrapper<I extends InputStream> {
         I wrap(InputStream inputStream) throws Exception;
     }
@@ -157,7 +159,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
         try {
             ArchiveEntry entry;
             while ((entry = inputStream.getNextEntry()) != null) {
-                final Path outputFile = Paths.get(result.toString(), "result", entry.getName());
+                final Path outputFile = Paths.get(result.toString(), "result", checkParentSegment(entry));
                 long bytesCopied = 0;
                 if (entry.isDirectory()) {
                     Files.createDirectories(outputFile);
@@ -171,7 +173,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
                 }
 
                 if (!Files.exists(outputFile)) {
-                    fail("Extraction failed: " + entry.getName());
+                    fail("Extraction failed: " + checkParentSegment(entry));
                 }
                 if (expected != null && !expected.remove(getExpectedString(entry))) {
                     fail("Unexpected entry: " + getExpectedString(entry));
@@ -215,6 +217,14 @@ public abstract class AbstractTest extends AbstractTempDirTest {
                 ArchiveInputStream<?> archiveInputStream = factory.createArchiveInputStream(new BufferedInputStream(inputStream))) {
             checkArchiveContent(archiveInputStream, expected);
         }
+    }
+
+    public static String checkParentSegment(final ArchiveEntry entry) {
+        final String name = entry.getName();
+        if (name.contains(PARENT_PATH_SEGMENT)) {
+            throw new IllegalStateException("Archive entry contains the parent path segment \"..\"");
+        }
+        return name;
     }
 
     protected void closeQuietly(final Closeable closeable) {
@@ -317,7 +327,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      * @return returns the entry name
      */
     protected String getExpectedString(final ArchiveEntry entry) {
-        return entry.getName();
+        return checkParentSegment(entry);
     }
 
     protected void setLongFileMode(final ArchiveOutputStream<?> outputStream) {

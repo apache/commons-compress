@@ -44,6 +44,10 @@ import org.apache.commons.compress.utils.IOUtils;
  * @NotThreadSafe
  */
 public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry> {
+
+    private static final String CURRENT_PATH_SEGMENT = ".";
+    private static final String PARENT_PATH_SEGMENT = "..";
+
     /**
      * Look at the first few bytes of the file to decide if it's a dump archive. With 32 bytes we can look at the magic value, with a full 1k we can verify the
      * checksum.
@@ -144,7 +148,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
         }
 
         // put in a dummy record for the root node.
-        final Dirent root = new Dirent(2, 2, 4, ".");
+        final Dirent root = new Dirent(2, 2, 4, CURRENT_PATH_SEGMENT);
         names.put(2, root);
 
         // use priority based on queue to ensure parent directories are
@@ -492,7 +496,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
 
                 final String name = DumpArchiveUtil.decode(zipEncoding, blockBuffer, i + 8, blockBuffer[i + 7]);
 
-                if (".".equals(name) || "..".equals(name)) {
+                if (CURRENT_PATH_SEGMENT.equals(name) || PARENT_PATH_SEGMENT.equals(name)) {
                     // do nothing...
                     continue;
                 }

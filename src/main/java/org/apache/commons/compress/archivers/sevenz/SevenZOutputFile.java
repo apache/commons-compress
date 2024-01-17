@@ -123,9 +123,7 @@ public class SevenZOutputFile implements Closeable {
     private CountingOutputStream currentOutputStream;
     private CountingOutputStream[] additionalCountingStreams;
     private Iterable<? extends SevenZMethodConfiguration> contentMethods = Collections.singletonList(new SevenZMethodConfiguration(SevenZMethod.LZMA2));
-
     private final Map<SevenZArchiveEntry, long[]> additionalSizes = new HashMap<>();
-
     private AES256Options aes256Options;
 
     /**
