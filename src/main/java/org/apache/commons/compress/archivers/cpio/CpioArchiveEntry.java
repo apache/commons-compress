@@ -437,7 +437,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the alignment boundary for this CPIO format
      *
-     * @return the aligment boundary (0, 2, 4) in bytes
+     * @return the alignment boundary (0, 2, 4) in bytes
      */
     public int getAlignmentBoundary() {
         return this.alignmentBoundary;
