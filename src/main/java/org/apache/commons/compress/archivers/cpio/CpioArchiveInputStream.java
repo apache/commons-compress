@@ -33,12 +33,10 @@ import org.apache.commons.compress.utils.ParsingUtils;
 /**
  * CpioArchiveInputStream is a stream for reading cpio streams. All formats of cpio are supported (old ascii, old binary, new portable format and the new
  * portable format with crc).
- *
  * <p>
  * The stream can be read by extracting a cpio entry (containing all information about an entry) and afterwards reading from the stream the file specified by
  * the entry.
  * </p>
- *
  * <pre>
  * CpioArchiveInputStream cpioIn = new CpioArchiveInputStream(Files.newInputStream(Paths.get(&quot;test.cpio&quot;)));
  * CpioArchiveEntry cpioEntry;
@@ -56,14 +54,14 @@ import org.apache.commons.compress.utils.ParsingUtils;
  * </pre>
  * <p>
  * Note: This implementation should be compatible to cpio 2.5
- *
+ * </p>
  * <p>
  * This class uses mutable fields and is not considered to be threadsafe.
- *
+ * </p>
  * <p>
  * Based on code from the jRPM project (jrpm.sourceforge.net)
+ * </p>
  */
-
 public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry> implements CpioConstants {
 
     /**
@@ -137,8 +135,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
 
     private long crc;
 
-    // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
+    /** Cached buffer - must only be used locally in the class (COMPRESS-172 - reduce garbage collection). */
     private final byte[] twoBytesBuf = new byte[2];
+
+    /** Cached buffer - must only be used locally in the class (COMPRESS-172 - reduce garbage collection). */
     private final byte[] fourBytesBuf = new byte[4];
 
     private final byte[] sixBytesBuf = new byte[6];
@@ -204,6 +204,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * Returns 0 after EOF has reached for the current entry data, otherwise always return 1.
      * <p>
      * Programs should not count on this method to return the actual number of bytes that could be read without blocking.
+     * </p>
      *
      * @return 1 before EOF and 0 after EOF has reached for current entry.
      * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred
