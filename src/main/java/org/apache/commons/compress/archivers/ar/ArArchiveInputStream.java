@@ -118,8 +118,6 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
                 && signature[5] == 0x68 && signature[6] == 0x3e && signature[7] == 0x0a;
     }
 
-    private final InputStream input;
-
     private long offset;
 
     private boolean closed;
@@ -146,8 +144,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * @param inputStream the ar input stream
      */
     public ArArchiveInputStream(final InputStream inputStream) {
-        super(StandardCharsets.US_ASCII.name());
-        this.input = inputStream;
+        super(inputStream, StandardCharsets.US_ASCII.name());
     }
 
     private int asInt(final byte[] byteArray, final int offset, final int len) throws IOException {
@@ -183,7 +180,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     public void close() throws IOException {
         if (!closed) {
             closed = true;
-            input.close();
+            in.close();
         }
         currentEntry = null;
     }
@@ -197,7 +194,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      */
     private String getBSDLongName(final String bsdLongName) throws IOException {
         final int nameLen = ParsingUtils.parseIntValue(bsdLongName.substring(BSD_LONGNAME_PREFIX_LEN));
-        final byte[] name = IOUtils.readRange(input, nameLen);
+        final byte[] name = IOUtils.readRange(in, nameLen);
         final int read = name.length;
         trackReadBytes(read);
         if (read != nameLen) {
@@ -248,14 +245,14 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     public ArArchiveEntry getNextArEntry() throws IOException {
         if (currentEntry != null) {
             final long entryEnd = entryOffset + currentEntry.getLength();
-            final long skipped = org.apache.commons.io.IOUtils.skip(input, entryEnd - offset);
+            final long skipped = org.apache.commons.io.IOUtils.skip(in, entryEnd - offset);
             trackReadBytes(skipped);
             currentEntry = null;
         }
 
         if (offset == 0) {
             final byte[] expected = ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER);
-            final byte[] realized = IOUtils.readRange(input, expected.length);
+            final byte[] realized = IOUtils.readRange(in, expected.length);
             final int read = realized.length;
             trackReadBytes(read);
             if (read != expected.length) {
@@ -267,7 +264,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         }
 
         if (offset % 2 != 0) {
-            if (input.read() < 0) {
+            if (in.read() < 0) {
                 // hit eof
                 return null;
             }
@@ -275,7 +272,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         }
 
         {
-            final int read = IOUtils.readFully(input, metaData);
+            final int read = IOUtils.readFully(in, metaData);
             trackReadBytes(read);
             if (read == 0) {
                 return null;
@@ -287,7 +284,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
 
         {
             final byte[] expected = ArchiveUtils.toAsciiBytes(ArArchiveEntry.TRAILER);
-            final byte[] realized = IOUtils.readRange(input, expected.length);
+            final byte[] realized = IOUtils.readRange(in, expected.length);
             final int read = realized.length;
             trackReadBytes(read);
             if (read != expected.length) {
@@ -381,7 +378,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
             return -1;
         }
         final int toRead = (int) Math.min(len, entryEnd - offset);
-        final int ret = this.input.read(b, off, toRead);
+        final int ret = this.in.read(b, off, toRead);
         trackReadBytes(ret);
         return ret;
     }
@@ -399,7 +396,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
             throw new IOException("Broken archive, unable to parse GNU string table length field as a number", ex);
         }
 
-        namebuffer = IOUtils.readRange(input, bufflen);
+        namebuffer = IOUtils.readRange(in, bufflen);
         final int read = namebuffer.length;
         trackReadBytes(read);
         if (read != bufflen) {

@@ -18,11 +18,13 @@
  */
 package org.apache.commons.compress.archivers;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.Charsets;
+import org.apache.commons.io.input.NullInputStream;
 
 /**
  * Archive input streams <b>MUST</b> override the {@link #read(byte[], int, int)} - or {@link #read()} - method so that reading from the stream generates EOF
@@ -42,7 +44,7 @@ import org.apache.commons.io.Charsets;
  *
  * @param <E> The type of {@link ArchiveEntry} produced.
  */
-public abstract class ArchiveInputStream<E extends ArchiveEntry> extends InputStream {
+public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterInputStream {
 
     private static final int BYTE_MASK = 0xFF;
 
@@ -57,7 +59,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends InputSt
      * Constructs a new instance.
      */
     public ArchiveInputStream() {
-        this(Charset.defaultCharset());
+        this(NullInputStream.INSTANCE, Charset.defaultCharset());
     }
 
     /**
@@ -67,7 +69,8 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends InputSt
      * @since 1.26.0
      */
     // This will be protected once subclasses use builders.
-    private ArchiveInputStream(final Charset charset) {
+    private ArchiveInputStream(final InputStream inputStream, final Charset charset) {
+        super(inputStream);
         this.charset = Charsets.toCharset(charset);
     }
 
@@ -77,8 +80,8 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends InputSt
      * @param charsetName charset name.
      * @since 1.26.0
      */
-    protected ArchiveInputStream(final String charsetName) {
-        this(Charsets.toCharset(charsetName));
+    protected ArchiveInputStream(final InputStream inputStream, final String charsetName) {
+        this(inputStream, Charsets.toCharset(charsetName));
     }
 
     /**

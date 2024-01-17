@@ -58,7 +58,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         return length >= 2 && (0xff & signature[0]) == ARJ_MAGIC_1 && (0xff & signature[1]) == ARJ_MAGIC_2;
     }
 
-    private final DataInputStream in;
+    private final DataInputStream dis;
     private final MainHeader mainHeader;
     private LocalFileHeader currentLocalFileHeader;
     private InputStream currentInputStream;
@@ -81,8 +81,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      * @throws ArchiveException if an exception occurs while reading
      */
     public ArjArchiveInputStream(final InputStream inputStream, final String charsetName) throws ArchiveException {
-        super(charsetName);
-        in = new DataInputStream(inputStream);
+        super(inputStream, charsetName);
+        in = dis = new DataInputStream(inputStream);
         try {
             mainHeader = readMainHeader();
             if ((mainHeader.arjFlags & MainHeader.Flags.GARBLED) != 0) {
@@ -103,7 +103,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
 
     @Override
     public void close() throws IOException {
-        in.close();
+        dis.close();
     }
 
     /**
@@ -137,7 +137,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
 
         currentLocalFileHeader = readLocalFileHeader();
         if (currentLocalFileHeader != null) {
-            currentInputStream = new BoundedInputStream(in, currentLocalFileHeader.compressedSize);
+            currentInputStream = new BoundedInputStream(dis, currentLocalFileHeader.compressedSize);
             if (currentLocalFileHeader.method == LocalFileHeader.Methods.STORED) {
                 currentInputStream = new CRC32VerifyingInputStream(currentInputStream, currentLocalFileHeader.originalSize,
                         currentLocalFileHeader.originalCrc32);
@@ -198,19 +198,19 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         byte[] basicHeaderBytes = null;
         do {
             int first;
-            int second = read8(in);
+            int second = read8(dis);
             do {
                 first = second;
-                second = read8(in);
+                second = read8(dis);
             } while (first != ARJ_MAGIC_1 && second != ARJ_MAGIC_2);
-            final int basicHeaderSize = read16(in);
+            final int basicHeaderSize = read16(dis);
             if (basicHeaderSize == 0) {
                 // end of archive
                 return null;
             }
             if (basicHeaderSize <= 2600) {
-                basicHeaderBytes = readRange(in, basicHeaderSize);
-                final long basicHeaderCrc32 = read32(in) & 0xFFFFFFFFL;
+                basicHeaderBytes = readRange(dis, basicHeaderSize);
+                final long basicHeaderCrc32 = read32(dis) & 0xFFFFFFFFL;
                 final CRC32 crc32 = new CRC32();
                 crc32.update(basicHeaderBytes);
                 if (basicHeaderCrc32 == crc32.getValue()) {
@@ -258,9 +258,9 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
 
                 final ArrayList<byte[]> extendedHeaders = new ArrayList<>();
                 int extendedHeaderSize;
-                while ((extendedHeaderSize = read16(in)) > 0) {
-                    final byte[] extendedHeaderBytes = readRange(in, extendedHeaderSize);
-                    final long extendedHeaderCrc32 = 0xffffFFFFL & read32(in);
+                while ((extendedHeaderSize = read16(dis)) > 0) {
+                    final byte[] extendedHeaderBytes = readRange(dis, extendedHeaderSize);
+                    final long extendedHeaderCrc32 = 0xffffFFFFL & read32(dis);
                     final CRC32 crc32 = new CRC32();
                     crc32.update(extendedHeaderBytes);
                     if (extendedHeaderCrc32 != crc32.getValue()) {
@@ -316,10 +316,10 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         hdr.name = readString(basicHeader);
         hdr.comment = readString(basicHeader);
 
-        final int extendedHeaderSize = read16(in);
+        final int extendedHeaderSize = read16(dis);
         if (extendedHeaderSize > 0) {
-            hdr.extendedHeaderBytes = readRange(in, extendedHeaderSize);
-            final long extendedHeaderCrc32 = 0xffffFFFFL & read32(in);
+            hdr.extendedHeaderBytes = readRange(dis, extendedHeaderSize);
+            final long extendedHeaderCrc32 = 0xffffFFFFL & read32(dis);
             final CRC32 crc32 = new CRC32();
             crc32.update(hdr.extendedHeaderBytes);
             if (extendedHeaderCrc32 != crc32.getValue()) {

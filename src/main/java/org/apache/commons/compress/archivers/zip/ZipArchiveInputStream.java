@@ -240,9 +240,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /** Whether to look for and use Unicode extra fields. */
     private final boolean useUnicodeExtraFields;
 
-    /** Wrapped stream, will always be a PushbackInputStream. */
-    private final InputStream inputStream;
-
     /** Inflater used for all deflated entries. */
     private final Inflater inf = new Inflater(true);
 
@@ -351,10 +348,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      */
     public ZipArchiveInputStream(final InputStream inputStream, final String encoding, final boolean useUnicodeExtraFields,
             final boolean allowStoredEntriesWithDataDescriptor, final boolean skipSplitSig) {
-        super(encoding);
+        super(inputStream, encoding);
+        this.in = new PushbackInputStream(inputStream, buf.capacity());
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.useUnicodeExtraFields = useUnicodeExtraFields;
-        this.inputStream = new PushbackInputStream(inputStream, buf.capacity());
         this.allowStoredEntriesWithDataDescriptor = allowStoredEntriesWithDataDescriptor;
         this.skipSplitSig = skipSplitSig;
         // haven't read anything so far
@@ -438,7 +435,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         if (!closed) {
             closed = true;
             try {
-                inputStream.close();
+                in.close();
             } finally {
                 inf.end();
             }
@@ -518,7 +515,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private void drainCurrentEntryData() throws IOException {
         long remaining = current.entry.getCompressedSize() - current.bytesReadFromStream;
         while (remaining > 0) {
-            final long n = inputStream.read(buf.array(), 0, (int) Math.min(buf.capacity(), remaining));
+            final long n = in.read(buf.array(), 0, (int) Math.min(buf.capacity(), remaining));
             if (n < 0) {
                 throw new EOFException("Truncated ZIP entry: " + ArchiveUtils.sanitize(current.entry.getName()));
             }
@@ -531,7 +528,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         if (closed) {
             throw new IOException("The stream is closed");
         }
-        final int length = inputStream.read(buf.array());
+        final int length = in.read(buf.array());
         if (length > 0) {
             buf.limit(length);
             count(buf.limit());
@@ -741,7 +738,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         final ZipMethod m = ZipMethod.getMethodByCode(current.entry.getMethod());
         if (current.entry.getCompressedSize() != ArchiveEntry.SIZE_UNKNOWN) {
             if (ZipUtil.canHandleEntryData(current.entry) && m != ZipMethod.STORED && m != ZipMethod.DEFLATED) {
-                final InputStream bis = new BoundCountInputStream(inputStream, current.entry.getCompressedSize());
+                final InputStream bis = new BoundCountInputStream(in, current.entry.getCompressedSize());
                 switch (m) {
                 case UNSHRINKING:
                     current.inputStream = new UnshrinkingInputStream(bis);
@@ -768,7 +765,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                 }
             }
         } else if (m == ZipMethod.ENHANCED_DEFLATED) {
-            current.inputStream = new Deflate64CompressorInputStream(inputStream);
+            current.inputStream = new Deflate64CompressorInputStream(in);
         }
 
         entriesRead++;
@@ -881,7 +878,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             // Instead of ArrayIndexOutOfBoundsException
             throw new IOException(String.format("Negative offset %,d into buffer", offset));
         }
-        ((PushbackInputStream) inputStream).unread(buf, offset, length);
+        ((PushbackInputStream) in).unread(buf, offset, length);
         pushedBackBytes(length);
     }
 
@@ -1068,7 +1065,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     private void readFully(final byte[] b, final int off) throws IOException {
         final int len = b.length - off;
-        final int count = IOUtils.readFully(inputStream, b, off, len);
+        final int count = IOUtils.readFully(in, b, off, len);
         count(count);
         if (count < len) {
             throw new EOFException();
@@ -1081,7 +1078,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * Also updates bytes-read counter.
      */
     private int readOneByte() throws IOException {
-        final int b = inputStream.read();
+        final int b = in.read();
         if (b != -1) {
             count(1);
         }
@@ -1089,7 +1086,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     private byte[] readRange(final int len) throws IOException {
-        final byte[] ret = IOUtils.readRange(inputStream, len);
+        final byte[] ret = IOUtils.readRange(in, len);
         count(ret.length);
         if (ret.length < len) {
             throw new EOFException();
@@ -1116,7 +1113,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
         if (buf.position() >= buf.limit()) {
             buf.position(0);
-            final int l = inputStream.read(buf.array());
+            final int l = in.read(buf.array());
             if (l == -1) {
                 buf.limit(0);
                 throw new IOException("Truncated ZIP file");
@@ -1160,7 +1157,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         final int ddLen = current.usesZip64 ? WORD + 2 * DWORD : 3 * WORD;
 
         while (!done) {
-            final int r = inputStream.read(buf.array(), off, ZipArchiveOutputStream.BUFFER_SIZE - off);
+            final int r = in.read(buf.array(), off, ZipArchiveOutputStream.BUFFER_SIZE - off);
             if (r <= 0) {
                 // read the whole archive without ever finding a
                 // central directory
@@ -1197,7 +1194,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             long skipped = 0;
             while (skipped < value) {
                 final long rem = value - skipped;
-                final int x = inputStream.read(skipBuf, 0, (int) (skipBuf.length > rem ? rem : skipBuf.length));
+                final int x = in.read(skipBuf, 0, (int) (skipBuf.length > rem ? rem : skipBuf.length));
                 if (x == -1) {
                     return;
                 }

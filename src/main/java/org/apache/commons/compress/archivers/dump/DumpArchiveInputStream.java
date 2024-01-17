@@ -118,7 +118,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      * @throws ArchiveException on error
      */
     public DumpArchiveInputStream(final InputStream is, final String encoding) throws ArchiveException {
-        super(encoding);
+        super(is, encoding);
         this.raw = new TapeInputStream(is);
         this.hasHitEOF = false;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);

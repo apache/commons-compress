@@ -137,7 +137,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
 
     private long crc;
 
-    private final InputStream in;
     // cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection)
     private final byte[] twoBytesBuf = new byte[2];
     private final byte[] fourBytesBuf = new byte[4];
@@ -181,7 +180,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @since 1.6
      */
     public CpioArchiveInputStream(final InputStream in, final int blockSize, final String encoding) {
-        super(encoding);
+        super(in, encoding);
         this.in = in;
         if (blockSize <= 0) {
             throw new IllegalArgumentException("blockSize must be bigger than 0");
