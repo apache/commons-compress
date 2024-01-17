@@ -442,7 +442,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Return the generation of the file.
+     * Gets the generation of the file.
      *
      * @return the generation
      */
@@ -451,7 +451,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Return the group id
+     * Gets the group id
      *
      * @return the group id
      */
@@ -460,7 +460,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Return the number of records in this segment.
+     * Gets the number of records in this segment.
      *
      * @return the number of records
      */
@@ -469,7 +469,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Return the number of sparse records in this segment.
+     * Gets the number of sparse records in this segment.
      *
      * @return the number of sparse records
      */
@@ -478,7 +478,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Return the type of the tape segment header.
+     * Gets the type of the tape segment header.
      *
      * @return the segment header
      */
@@ -506,7 +506,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Return the access permissions on the entry.
+     * Gets the access permissions on the entry.
      *
      * @return the access permissions
      */
@@ -529,7 +529,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Return the number of hard links to the entry.
+     * Gets the number of hard links to the entry.
      *
      * @return the number of hard links
      */
@@ -538,7 +538,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Return the offset within the archive
+     * Gets the offset within the archive
      *
      * @return the offset
      */
@@ -593,7 +593,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Return the user id.
+     * Gets the user id.
      *
      * @return the user id
      */
@@ -602,7 +602,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Return the tape volume where this file is located.
+     * Gets the tape volume where this file is located.
      *
      * @return the volume
      */

@@ -232,7 +232,7 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     /**
-     * Return the number of bytes read from the source stream
+     * Gets the number of bytes read from the source stream
      *
      * @return The number of bytes read, never negative
      */

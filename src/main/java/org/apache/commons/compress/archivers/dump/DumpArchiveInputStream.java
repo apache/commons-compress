@@ -37,10 +37,10 @@ import org.apache.commons.compress.utils.IOUtils;
 /**
  * The DumpArchiveInputStream reads a UNIX dump archive as an InputStream. Methods are provided to position at each successive entry in the archive, and the
  * read each entry as a normal input stream using read().
- *
+ * <p>
  * There doesn't seem to exist a hint on the encoding of string values in any piece documentation. Given the main purpose of dump/restore is backing up a system
  * it seems very likely the format uses the current default encoding of the system.
- *
+ * </p>
  * @NotThreadSafe
  */
 public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry> {
@@ -85,13 +85,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
 
     protected TapeInputStream raw;
 
-    // map of ino -> dirent entry. We can use this to reconstruct full paths.
+    /** Map of ino -> dirent entry. We can use this to reconstruct full paths. */
     private final Map<Integer, Dirent> names = new HashMap<>();
 
-    // map of ino -> (directory) entry when we're missing one or more elements in the path.
+    /** Map of ino -> (directory) entry when we're missing one or more elements in the path. */
     private final Map<Integer, DumpArchiveEntry> pending = new HashMap<>();
 
-    // queue of (directory) entries where we now have the full path.
+    /** Queue of (directory) entries where we now have the full path. */
     private final Queue<DumpArchiveEntry> queue;
 
     /**
@@ -331,7 +331,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     }
 
     /**
-     * Return the archive summary information.
+     * Gets the archive summary information.
      *
      * @return the summary
      */

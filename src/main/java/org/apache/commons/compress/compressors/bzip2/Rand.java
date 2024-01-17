@@ -44,7 +44,7 @@ final class Rand {
             197, 510, 357, 358, 850, 858, 364, 936, 638 };
 
     /**
-     * Return the random number at a specific index.
+     * Gets the random number at a specific index.
      *
      * @param i the index
      * @return the random number
