@@ -35,6 +35,7 @@ import org.apache.commons.io.input.NullInputStream;
  * <p>
  * The input stream classes must also implement a method with the signature:
  * </p>
+ * 
  * <pre>
  * public static boolean matches(byte[] signature, int length)
  * </pre>
@@ -65,6 +66,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Constructs a new instance.
      *
+     * @param inputStream the underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
      * @param charset charset.
      * @since 1.26.0
      */
@@ -77,6 +79,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Constructs a new instance.
      *
+     * @param inputStream the underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
      * @param charsetName charset name.
      * @since 1.26.0
      */
