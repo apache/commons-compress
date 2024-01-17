@@ -28,16 +28,15 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 
 /**
  * Simple command line application that lists the contents of a ZIP archive.
- *
  * <p>
  * The name of the archive must be given as a command line argument.
  * </p>
- *
  * <p>
  * Optional command line arguments specify the encoding to assume and whether to use ZipFile or ZipArchiveInputStream.
  * </p>
  */
 public final class Lister {
+
     private static final class CommandLine {
         String archive;
         boolean useStream = false;
