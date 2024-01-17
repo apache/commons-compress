@@ -437,7 +437,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the alignment boundary for this CPIO format
      *
-     * @return Returns the aligment boundary (0, 2, 4) in bytes
+     * @return the aligment boundary (0, 2, 4) in bytes
      */
     public int getAlignmentBoundary() {
         return this.alignmentBoundary;
@@ -446,7 +446,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the checksum. Only supported for the new formats.
      *
-     * @return Returns the checksum.
+     * @return the checksum.
      * @throws UnsupportedOperationException if the format is not a new format
      */
     public long getChksum() {
@@ -474,7 +474,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the device id.
      *
-     * @return Returns the device id.
+     * @return the device id.
      * @throws UnsupportedOperationException if this method is called for a CpioArchiveEntry with a new format.
      */
     public long getDevice() {
@@ -485,7 +485,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the major device id.
      *
-     * @return Returns the major device id.
+     * @return the major device id.
      * @throws UnsupportedOperationException if this method is called for a CpioArchiveEntry with an old format.
      */
     public long getDeviceMaj() {
@@ -496,7 +496,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the minor device id
      *
-     * @return Returns the minor device id.
+     * @return the minor device id.
      * @throws UnsupportedOperationException if format is not a new format
      */
     public long getDeviceMin() {
@@ -507,7 +507,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the format for this entry.
      *
-     * @return Returns the format.
+     * @return the format.
      */
     public short getFormat() {
         return this.fileFormat;
@@ -516,7 +516,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the group id.
      *
-     * @return Returns the group id.
+     * @return the group id.
      */
     public long getGID() {
         return this.gid;
@@ -577,7 +577,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the header size for this CPIO format
      *
-     * @return Returns the header size in bytes.
+     * @return the header size in bytes.
      */
     public int getHeaderSize() {
         return this.headerSize;
@@ -586,7 +586,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the inode.
      *
-     * @return Returns the inode.
+     * @return the inode.
      */
     public long getInode() {
         return this.inode;
@@ -600,7 +600,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the mode of this entry (e.g. directory, regular file).
      *
-     * @return Returns the mode.
+     * @return the mode.
      */
     public long getMode() {
         return mode == 0 && !CPIO_TRAILER.equals(name) ? C_ISREG : mode;
@@ -613,7 +613,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * This method returns the raw name as it is stored inside of the archive.
      * </p>
      *
-     * @return Returns the name.
+     * @return the name.
      */
     @Override
     public String getName() {
@@ -623,7 +623,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the number of links.
      *
-     * @return Returns the number of links.
+     * @return the number of links.
      */
     public long getNumberOfLinks() {
         return nlink == 0 ? isDirectory() ? 2 : 1 : nlink;
@@ -632,7 +632,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the remote device id.
      *
-     * @return Returns the remote device id.
+     * @return the remote device id.
      * @throws UnsupportedOperationException if this method is called for a CpioArchiveEntry with a new format.
      */
     public long getRemoteDevice() {
@@ -643,7 +643,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the remote major device id.
      *
-     * @return Returns the remote major device id.
+     * @return the remote major device id.
      * @throws UnsupportedOperationException if this method is called for a CpioArchiveEntry with an old format.
      */
     public long getRemoteDeviceMaj() {
@@ -654,7 +654,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the remote minor device id.
      *
-     * @return Returns the remote minor device id.
+     * @return the remote minor device id.
      * @throws UnsupportedOperationException if this method is called for a CpioArchiveEntry with an old format.
      */
     public long getRemoteDeviceMin() {
@@ -665,7 +665,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the filesize.
      *
-     * @return Returns the filesize.
+     * @return the filesize.
      * @see org.apache.commons.compress.archivers.ArchiveEntry#getSize()
      */
     @Override
@@ -676,7 +676,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the time in seconds.
      *
-     * @return Returns the time.
+     * @return the time.
      */
     public long getTime() {
         return this.mtime;
@@ -685,7 +685,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the user id.
      *
-     * @return Returns the user id.
+     * @return the user id.
      */
     public long getUID() {
         return this.uid;
