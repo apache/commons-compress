@@ -48,8 +48,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 public abstract class AbstractTest extends AbstractTempDirTest {
 
-    private static final String PARENT_PATH_SEGMENT = "..";
-
     protected interface StreamWrapper<I extends InputStream> {
         I wrap(InputStream inputStream) throws Exception;
     }
@@ -155,25 +153,27 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      */
     protected File checkArchiveContent(final ArchiveInputStream<?> inputStream, final List<String> expected, final boolean cleanUp) throws Exception {
         final Path result = createTempDirectory("dir-result");
-
         try {
             ArchiveEntry entry;
             while ((entry = inputStream.getNextEntry()) != null) {
-                final Path outputFile = Paths.get(result.toString(), "result", checkParentSegment(entry));
+                final Path output = Paths.get(result.toString(), "result", entry.getName()).normalize();
+                if (!output.startsWith(result)) {
+                    throw new IOException("Zip slip " + output);
+                }
                 long bytesCopied = 0;
                 if (entry.isDirectory()) {
-                    Files.createDirectories(outputFile);
+                    Files.createDirectories(output);
                 } else {
-                    Files.createDirectories(outputFile.getParent());
-                    bytesCopied = Files.copy(inputStream, outputFile);
+                    Files.createDirectories(output.getParent());
+                    bytesCopied = Files.copy(inputStream, output);
                 }
                 final long size = entry.getSize();
                 if (size != ArchiveEntry.SIZE_UNKNOWN) {
                     assertEquals(size, bytesCopied, "Entry.size should equal bytes read.");
                 }
 
-                if (!Files.exists(outputFile)) {
-                    fail("Extraction failed: " + checkParentSegment(entry));
+                if (!Files.exists(output)) {
+                    fail("Extraction failed: " + entry.getName());
                 }
                 if (expected != null && !expected.remove(getExpectedString(entry))) {
                     fail("Unexpected entry: " + getExpectedString(entry));
@@ -217,14 +217,6 @@ public abstract class AbstractTest extends AbstractTempDirTest {
                 ArchiveInputStream<?> archiveInputStream = factory.createArchiveInputStream(new BufferedInputStream(inputStream))) {
             checkArchiveContent(archiveInputStream, expected);
         }
-    }
-
-    public static String checkParentSegment(final ArchiveEntry entry) {
-        final String name = entry.getName();
-        if (name.contains(PARENT_PATH_SEGMENT)) {
-            throw new IllegalStateException("Archive entry contains the parent path segment \"..\"");
-        }
-        return name;
     }
 
     protected void closeQuietly(final Closeable closeable) {
@@ -327,7 +319,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      * @return returns the entry name
      */
     protected String getExpectedString(final ArchiveEntry entry) {
-        return checkParentSegment(entry);
+        return entry.getName();
     }
 
     protected void setLongFileMode(final ArchiveOutputStream<?> outputStream) {
