@@ -45,12 +45,12 @@ public final class Lister {
         String dir;
     }
 
-    private static void extract(final String dir, final ZipArchiveEntry entry, final InputStream is) throws IOException {
-        final File f = new File(dir, entry.getName());
-        if (!f.getParentFile().exists()) {
-            f.getParentFile().mkdirs();
+    private static void extract(final String dirName, final ZipArchiveEntry entry, final InputStream inputStream) throws IOException {
+        final File file = new File(dirName, entry.getName());
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
         }
-        Files.copy(is, f.toPath());
+        Files.copy(inputStream, file.toPath());
     }
 
     private static void list(final ZipArchiveEntry entry) {
