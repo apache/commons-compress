@@ -23,12 +23,12 @@ import java.nio.file.Path;
 import java.util.Date;
 
 /**
- * Represents an entry of an archive.
+ * An entry of an archive.
  */
 public interface ArchiveEntry {
 
     /**
-     * Special value {@value} indicating that the size is unknown.
+     * Special value ({@value}) indicating that the size is unknown.
      */
     long SIZE_UNKNOWN = -1;
 
@@ -42,7 +42,6 @@ public interface ArchiveEntry {
 
     /**
      * Gets the name of the entry in this archive. May refer to a file or directory or other item.
-     *
      * <p>
      * This method returns the raw name as it is stored inside of the archive.
      * </p>
