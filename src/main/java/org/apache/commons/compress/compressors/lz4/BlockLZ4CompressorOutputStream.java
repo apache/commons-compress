@@ -168,7 +168,6 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
      *
      * which means any back-reference may need to get rewritten as a literal block unless we know the next block is at least of length 5 and the sum of this
      * block's length and offset and the next block's length is at least twelve.
-     *
      */
 
     private static final int MIN_OFFSET_OF_LAST_BACK_REFERENCE = 12;

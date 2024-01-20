@@ -1344,7 +1344,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @return {@code true} if this is a Pax header.
      *
      * @since 1.1
-     *
      */
     public boolean isPaxHeader() {
         return linkFlag == LF_PAX_EXTENDED_HEADER_LC || linkFlag == LF_PAX_EXTENDED_HEADER_UC;

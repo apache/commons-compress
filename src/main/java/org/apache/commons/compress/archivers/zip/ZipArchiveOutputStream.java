@@ -332,7 +332,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     /**
      * This Deflater object is used for output.
-     *
      */
     protected final Deflater def;
 

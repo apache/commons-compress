@@ -130,55 +130,46 @@ public interface TarConstants {
 
     /**
      * Length of the prefix field.
-     *
      */
     int PREFIXLEN = 155;
 
     /**
      * The length of the access time field in an old GNU header buffer.
-     *
      */
     int ATIMELEN_GNU = 12;
 
     /**
      * The length of the created time field in an old GNU header buffer.
-     *
      */
     int CTIMELEN_GNU = 12;
 
     /**
      * The length of the multivolume start offset field in an old GNU header buffer.
-     *
      */
     int OFFSETLEN_GNU = 12;
 
     /**
      * The length of the long names field in an old GNU header buffer.
-     *
      */
     int LONGNAMESLEN_GNU = 4;
 
     /**
      * The length of the padding field in an old GNU header buffer.
-     *
      */
     int PAD2LEN_GNU = 1;
 
     /**
      * The sum of the length of all sparse headers in an old GNU header buffer.
-     *
      */
     int SPARSELEN_GNU = 96;
 
     /**
      * The length of the is extension field in an old GNU header buffer.
-     *
      */
     int ISEXTENDEDLEN_GNU = 1;
 
     /**
      * The length of the real size field in an old GNU header buffer.
-     *
      */
     int REALSIZELEN_GNU = 12;
 
@@ -212,13 +203,11 @@ public interface TarConstants {
 
     /**
      * The sum of the length of all sparse headers in a sparse header buffer.
-     *
      */
     int SPARSELEN_GNU_SPARSE = 504;
 
     /**
      * The length of the is extension field in a sparse header buffer.
-     *
      */
     int ISEXTENDEDLEN_GNU_SPARSE = 1;
 

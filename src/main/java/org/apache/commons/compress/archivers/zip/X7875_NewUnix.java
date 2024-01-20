@@ -106,7 +106,6 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
          * (requires changes to unit tests, though).
          *
          * And I am sorry that the time you spent reading this comment is now gone, and you can never have it back.
-         *
          */
         final int MIN_LENGTH = 1;
 

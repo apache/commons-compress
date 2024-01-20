@@ -63,7 +63,6 @@ public class DeflateCompressorInputStream extends CompressorInputStream implemen
      * Creates a new input stream that decompresses Deflate-compressed data from the specified input stream.
      *
      * @param inputStream where to read the compressed data
-     *
      */
     public DeflateCompressorInputStream(final InputStream inputStream) {
         this(inputStream, new DeflateParameters());

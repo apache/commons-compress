@@ -182,7 +182,6 @@ final class BlockSort {
      * becomes.
      *
      * fmap = { 5, 3, 0, 4, 1, 2 }
-     *
      */
 
     private final int[] stack_dd = new int[QSORT_STACK_SIZE]; // 4000 byte
