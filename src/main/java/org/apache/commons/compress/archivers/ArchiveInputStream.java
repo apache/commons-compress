@@ -18,13 +18,13 @@
  */
 package org.apache.commons.compress.archivers;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.input.NullInputStream;
-import org.apache.commons.io.input.ProxyInputStream;
 
 /**
  * Archive input streams <b>MUST</b> override the {@link #read(byte[], int, int)} - or {@link #read()} - method so that reading from the stream generates EOF
@@ -44,7 +44,7 @@ import org.apache.commons.io.input.ProxyInputStream;
  *
  * @param <E> The type of {@link ArchiveEntry} produced.
  */
-public abstract class ArchiveInputStream<E extends ArchiveEntry> extends ProxyInputStream {
+public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterInputStream {
 
     private static final int BYTE_MASK = 0xFF;
 
@@ -168,6 +168,22 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends ProxyIn
      */
     protected void pushedBackBytes(final long pushedBack) {
         bytesRead -= pushedBack;
+    }
+
+    /**
+     * Reads a byte of data. This method will block until enough input is available.
+     *
+     * Simply calls the {@link #read(byte[], int, int)} method.
+     *
+     * MUST be overridden if the {@link #read(byte[], int, int)} method is not overridden; may be overridden otherwise.
+     *
+     * @return the byte read, or -1 if end of input is reached
+     * @throws IOException if an I/O error has occurred
+     */
+    @Override
+    public int read() throws IOException {
+        final int num = read(single, 0, 1);
+        return num == -1 ? -1 : single[0] & BYTE_MASK;
     }
 
 }
