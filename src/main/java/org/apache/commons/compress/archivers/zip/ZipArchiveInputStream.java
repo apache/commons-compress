@@ -177,6 +177,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         }
     }
 
+    public static final int PREAMBLE_GARBAGE_MAX_SIZE = 4096;
+
     private static final int LFH_LEN = 30;
 
     /*
@@ -649,7 +651,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                 // first local file header - look for it and fail with
                 // the appropriate error message if this is a split
                 // archive.
-                readFirstLocalFileHeader();
+                if (!readFirstLocalFileHeader()) {
+                    hitCentralDirectory = true;
+                    skipRemainderOfArchive(true);
+                    return null;
+                }
             } else {
                 readFully(lfhBuf);
             }
@@ -661,7 +667,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         if (!sig.equals(ZipLong.LFH_SIG)) {
             if (sig.equals(ZipLong.CFH_SIG) || sig.equals(ZipLong.AED_SIG) || isApkSigningBlock(lfhBuf)) {
                 hitCentralDirectory = true;
-                skipRemainderOfArchive();
+                skipRemainderOfArchive(false);
                 return null;
             }
             throw new ZipException(String.format("Unexpected record signature: 0x%x", sig.getValue()));
@@ -999,8 +1005,41 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * Fills the given array with the first local file header and deals with splitting/spanning markers that may prefix the first LFH.
      */
-    private void readFirstLocalFileHeader() throws IOException {
-        readFully(lfhBuf);
+    private boolean readFirstLocalFileHeader() throws IOException {
+        try {
+            // for empty archive, we may get only EOCD size:
+            byte[] header = new byte[Math.min(LFH_LEN, ZipFile.MIN_EOCD_SIZE)];
+            readFully(header);
+            READ_LOOP: for (int i = 0; ; ) {
+                for (int j = 0; i <= PREAMBLE_GARBAGE_MAX_SIZE - 4 && j <= header.length - 4; ++j, ++i) {
+                    ZipLong sig = new ZipLong(header, j);
+                    if (
+                            sig.equals(ZipLong.LFH_SIG) ||
+                            sig.equals(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER) ||
+                            sig.equals(ZipLong.DD_SIG)) {
+                        // regular archive containing at least one entry:
+                        System.arraycopy(header, j, header, 0, header.length - j);
+                        readFully(header, header.length - j);
+                        break READ_LOOP;
+                    } else if (
+                            sig.equals(new ZipLong(ZipArchiveOutputStream.EOCD_SIG))
+                    ) {
+                        // empty archive:
+                        pushback(header, j, header.length - j);
+                        return false;
+                    }
+                }
+                if (i >= PREAMBLE_GARBAGE_MAX_SIZE - 4) {
+                    throw new ZipException("Cannot find zip signature within the first " + PREAMBLE_GARBAGE_MAX_SIZE + " bytes");
+                }
+                System.arraycopy(header, header.length - 3, header, 0, 3);
+                readFully(header, 3);
+            }
+            System.arraycopy(header, 0, lfhBuf, 0, header.length);
+            readFully(lfhBuf, header.length);
+        } catch (EOFException ex) {
+            throw new ZipException("Cannot find zip signature within the file");
+        }
         final ZipLong sig = new ZipLong(lfhBuf);
 
         if (!skipSplitSig && sig.equals(ZipLong.DD_SIG)) {
@@ -1010,11 +1049,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         // the split ZIP signature(08074B50) should only be skipped when the skipSplitSig is set
         if (sig.equals(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER) || sig.equals(ZipLong.DD_SIG)) {
             // Just skip over the marker.
-            final byte[] missedLfhBytes = new byte[4];
-            readFully(missedLfhBytes);
-            System.arraycopy(lfhBuf, 4, lfhBuf, 0, LFH_LEN - 4);
-            System.arraycopy(missedLfhBytes, 0, lfhBuf, LFH_LEN - 4, 4);
+            System.arraycopy(lfhBuf, 4, lfhBuf, 0, lfhBuf.length - 4);
+            readFully(lfhBuf, lfhBuf.length - 4);
         }
+        return true;
     }
 
     /**
@@ -1240,22 +1278,22 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * Reads the stream until it find the "End of central directory record" and consumes it as well.
      */
-    private void skipRemainderOfArchive() throws IOException {
+    private void skipRemainderOfArchive(boolean read) throws IOException {
         // skip over central directory. One LFH has been read too much
         // already. The calculation discounts file names and extra
         // data, so it will be too short.
         if (entriesRead > 0) {
             realSkip((long) entriesRead * CFH_LEN - LFH_LEN);
-            final boolean foundEocd = findEocdRecord();
-            if (foundEocd) {
-                realSkip((long) ZipFile.MIN_EOCD_SIZE - WORD /* signature */ - SHORT /* comment len */);
-                readFully(shortBuf);
-                // file comment
-                final int commentLen = ZipShort.getValue(shortBuf);
-                if (commentLen >= 0) {
-                    realSkip(commentLen);
-                    return;
-                }
+        }
+        final boolean foundEocd = findEocdRecord();
+        if (foundEocd) {
+            realSkip((long) ZipFile.MIN_EOCD_SIZE - WORD /* signature */ - SHORT /* comment len */);
+            readFully(shortBuf);
+            // file comment
+            final int commentLen = ZipShort.getValue(shortBuf);
+            if (commentLen >= 0) {
+                realSkip(commentLen);
+                return;
             }
         }
         throw new IOException("Truncated ZIP file");
