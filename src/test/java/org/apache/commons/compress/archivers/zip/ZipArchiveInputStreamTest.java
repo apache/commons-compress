@@ -715,12 +715,12 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
 
     @Test
     public void testZipWithLongerBeginningGarbage() throws IOException {
-        Path path = createTempPath("preamble", ".zip");
+        final Path path = createTempPath("preamble", ".zip");
 
         try (OutputStream fos = Files.newOutputStream(path)) {
             fos.write("#!/usr/bin/env some-program with quite a few arguments to make it longer than the local header\n".getBytes(StandardCharsets.UTF_8));
             try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(fos)) {
-                ZipArchiveEntry entry = new ZipArchiveEntry("file-1.txt");
+                final ZipArchiveEntry entry = new ZipArchiveEntry("file-1.txt");
                 entry.setMethod(ZipEntry.DEFLATED);
                 zos.putArchiveEntry(entry);
                 zos.write("entry-content\n".getBytes(StandardCharsets.UTF_8));
@@ -729,21 +729,21 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         }
 
         try (InputStream is = Files.newInputStream(path); ZipArchiveInputStream zis = new ZipArchiveInputStream(is)) {
-            ZipArchiveEntry entry = zis.getNextEntry();
+            final ZipArchiveEntry entry = zis.getNextEntry();
             assertEquals("file-1.txt", entry.getName());
-            byte[] content = IOUtils.toByteArray(zis);
+            final byte[] content = IOUtils.toByteArray(zis);
             assertArrayEquals("entry-content\n".getBytes(StandardCharsets.UTF_8), content);
         }
     }
 
     @Test
     public void testZipWithShortBeginningGarbage() throws IOException {
-        Path path = createTempPath("preamble", ".zip");
+        final Path path = createTempPath("preamble", ".zip");
 
         try (OutputStream fos = Files.newOutputStream(path)) {
             fos.write("#!/usr/bin/unzip\n".getBytes(StandardCharsets.UTF_8));
             try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(fos)) {
-                ZipArchiveEntry entry = new ZipArchiveEntry("file-1.txt");
+                final ZipArchiveEntry entry = new ZipArchiveEntry("file-1.txt");
                 entry.setMethod(ZipEntry.DEFLATED);
                 zos.putArchiveEntry(entry);
                 zos.write("entry-content\n".getBytes(StandardCharsets.UTF_8));
@@ -752,9 +752,9 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         }
 
         try (InputStream is = Files.newInputStream(path); ZipArchiveInputStream zis = new ZipArchiveInputStream(is)) {
-            ZipArchiveEntry entry = zis.getNextEntry();
+            final ZipArchiveEntry entry = zis.getNextEntry();
             assertEquals("file-1.txt", entry.getName());
-            byte[] content = IOUtils.toByteArray(zis);
+            final byte[] content = IOUtils.toByteArray(zis);
             assertArrayEquals("entry-content\n".getBytes(StandardCharsets.UTF_8), content);
         }
     }

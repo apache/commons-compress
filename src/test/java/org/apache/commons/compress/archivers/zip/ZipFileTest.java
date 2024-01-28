@@ -960,12 +960,12 @@ public class ZipFileTest extends AbstractTest {
 
     @Test
     public void testZipWithShortBeginningGarbage() throws IOException {
-        Path path = createTempPath("preamble", ".zip");
+        final Path path = createTempPath("preamble", ".zip");
 
         try (OutputStream fos = Files.newOutputStream(path)) {
             fos.write("#!/usr/bin/unzip\n".getBytes(StandardCharsets.UTF_8));
             try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(fos)) {
-                ZipArchiveEntry entry = new ZipArchiveEntry("file-1.txt");
+                final ZipArchiveEntry entry = new ZipArchiveEntry("file-1.txt");
                 entry.setMethod(ZipEntry.DEFLATED);
                 zos.putArchiveEntry(entry);
                 zos.write("entry-content\n".getBytes(StandardCharsets.UTF_8));
@@ -974,9 +974,9 @@ public class ZipFileTest extends AbstractTest {
         }
 
         try (ZipFile zipFile = ZipFile.builder().setPath(path).get()) {
-            ZipArchiveEntry entry = zipFile.getEntry("file-1.txt");
+            final ZipArchiveEntry entry = zipFile.getEntry("file-1.txt");
             assertEquals("file-1.txt", entry.getName());
-            byte[] content = IOUtils.toByteArray(zipFile.getInputStream(entry));
+            final byte[] content = IOUtils.toByteArray(zipFile.getInputStream(entry));
             assertArrayEquals("entry-content\n".getBytes(StandardCharsets.UTF_8), content);
         }
     }

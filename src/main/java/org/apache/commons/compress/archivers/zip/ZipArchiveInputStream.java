@@ -1008,11 +1008,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private boolean readFirstLocalFileHeader() throws IOException {
         try {
             // for empty archive, we may get only EOCD size:
-            byte[] header = new byte[Math.min(LFH_LEN, ZipFile.MIN_EOCD_SIZE)];
+            final byte[] header = new byte[Math.min(LFH_LEN, ZipFile.MIN_EOCD_SIZE)];
             readFully(header);
             READ_LOOP: for (int i = 0; ; ) {
                 for (int j = 0; i <= PREAMBLE_GARBAGE_MAX_SIZE - 4 && j <= header.length - 4; ++j, ++i) {
-                    ZipLong sig = new ZipLong(header, j);
+                    final ZipLong sig = new ZipLong(header, j);
                     if (
                             sig.equals(ZipLong.LFH_SIG) ||
                             sig.equals(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER) ||
@@ -1021,7 +1021,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                         System.arraycopy(header, j, header, 0, header.length - j);
                         readFully(header, header.length - j);
                         break READ_LOOP;
-                    } else if (
+                    }
+                    if (
                             sig.equals(new ZipLong(ZipArchiveOutputStream.EOCD_SIG))
                     ) {
                         // empty archive:
@@ -1037,7 +1038,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             }
             System.arraycopy(header, 0, lfhBuf, 0, header.length);
             readFully(lfhBuf, header.length);
-        } catch (EOFException ex) {
+        } catch (final EOFException ex) {
             throw new ZipException("Cannot find zip signature within the file");
         }
         final ZipLong sig = new ZipLong(lfhBuf);
@@ -1278,7 +1279,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * Reads the stream until it find the "End of central directory record" and consumes it as well.
      */
-    private void skipRemainderOfArchive(boolean read) throws IOException {
+    private void skipRemainderOfArchive(final boolean read) throws IOException {
         // skip over central directory. One LFH has been read too much
         // already. The calculation discounts file names and extra
         // data, so it will be too short.
