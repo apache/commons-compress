@@ -713,17 +713,26 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         }
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = { true, false })
-    public void zipInputStream(final boolean allowStoredEntriesWithDataDescriptor) {
-        try (ZipArchiveInputStream zIn = new ZipArchiveInputStream(Files.newInputStream(Paths.get("src/test/resources/COMPRESS-647/test.zip")),
-                CharsetNames.UTF_8, false, allowStoredEntriesWithDataDescriptor)) {
-            ZipArchiveEntry zae = zIn.getNextEntry();
-            while (zae != null) {
-                zae = zIn.getNextEntry();
+    @Test
+    public void testZipWithLongerBeginningGarbage() throws IOException {
+        Path path = createTempPath("preamble", ".zip");
+
+        try (OutputStream fos = Files.newOutputStream(path)) {
+            fos.write("#!/usr/bin/env some-program with quite a few arguments to make it longer than the local header\n".getBytes(StandardCharsets.UTF_8));
+            try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(fos)) {
+                ZipArchiveEntry entry = new ZipArchiveEntry("file-1.txt");
+                entry.setMethod(ZipEntry.DEFLATED);
+                zos.putArchiveEntry(entry);
+                zos.write("entry-content\n".getBytes(StandardCharsets.UTF_8));
+                zos.closeArchiveEntry();
             }
-        } catch (final IOException e) {
-            // Ignore expected exception
+        }
+
+        try (InputStream is = Files.newInputStream(path); ZipArchiveInputStream zis = new ZipArchiveInputStream(is)) {
+            ZipArchiveEntry entry = zis.getNextEntry();
+            assertEquals("file-1.txt", entry.getName());
+            byte[] content = IOUtils.toByteArray(zis);
+            assertArrayEquals("entry-content\n".getBytes(StandardCharsets.UTF_8), content);
         }
     }
 
@@ -750,26 +759,17 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         }
     }
 
-    @Test
-    public void testZipWithLongerBeginningGarbage() throws IOException {
-        Path path = createTempPath("preamble", ".zip");
-
-        try (OutputStream fos = Files.newOutputStream(path)) {
-            fos.write("#!/usr/bin/env some-program with quite a few arguments to make it longer than the local header\n".getBytes(StandardCharsets.UTF_8));
-            try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(fos)) {
-                ZipArchiveEntry entry = new ZipArchiveEntry("file-1.txt");
-                entry.setMethod(ZipEntry.DEFLATED);
-                zos.putArchiveEntry(entry);
-                zos.write("entry-content\n".getBytes(StandardCharsets.UTF_8));
-                zos.closeArchiveEntry();
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    public void zipInputStream(final boolean allowStoredEntriesWithDataDescriptor) {
+        try (ZipArchiveInputStream zIn = new ZipArchiveInputStream(Files.newInputStream(Paths.get("src/test/resources/COMPRESS-647/test.zip")),
+                CharsetNames.UTF_8, false, allowStoredEntriesWithDataDescriptor)) {
+            ZipArchiveEntry zae = zIn.getNextEntry();
+            while (zae != null) {
+                zae = zIn.getNextEntry();
             }
-        }
-
-        try (InputStream is = Files.newInputStream(path); ZipArchiveInputStream zis = new ZipArchiveInputStream(is)) {
-            ZipArchiveEntry entry = zis.getNextEntry();
-            assertEquals("file-1.txt", entry.getName());
-            byte[] content = IOUtils.toByteArray(zis);
-            assertArrayEquals("entry-content\n".getBytes(StandardCharsets.UTF_8), content);
+        } catch (final IOException e) {
+            // Ignore expected exception
         }
     }
 }
