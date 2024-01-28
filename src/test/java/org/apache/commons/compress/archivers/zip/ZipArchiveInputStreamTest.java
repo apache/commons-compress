@@ -32,8 +32,10 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -570,7 +572,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     public void testThrowOnInvalidEntry() throws Exception {
         try (ZipArchiveInputStream zip = new ZipArchiveInputStream(ZipArchiveInputStreamTest.class.getResourceAsStream("/invalid-zip.zip"))) {
             final ZipException expected = assertThrows(ZipException.class, zip::getNextZipEntry, "IOException expected");
-            assertTrue(expected.getMessage().contains("Unexpected record signature"));
+            assertTrue(expected.getMessage().contains("Cannot find zip signature"));
         }
     }
 
@@ -722,6 +724,52 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
             }
         } catch (final IOException e) {
             // Ignore expected exception
+        }
+    }
+
+    @Test
+    public void testZipWithShortBeginningGarbage() throws IOException {
+        Path path = createTempPath("preamble", ".zip");
+
+        try (OutputStream fos = Files.newOutputStream(path)) {
+            fos.write("#!/usr/bin/unzip\n".getBytes(StandardCharsets.UTF_8));
+            try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(fos)) {
+                ZipArchiveEntry entry = new ZipArchiveEntry("file-1.txt");
+                entry.setMethod(ZipEntry.DEFLATED);
+                zos.putArchiveEntry(entry);
+                zos.write("entry-content\n".getBytes(StandardCharsets.UTF_8));
+                zos.closeArchiveEntry();
+            }
+        }
+
+        try (InputStream is = Files.newInputStream(path); ZipArchiveInputStream zis = new ZipArchiveInputStream(is)) {
+            ZipArchiveEntry entry = zis.getNextEntry();
+            assertEquals("file-1.txt", entry.getName());
+            byte[] content = IOUtils.toByteArray(zis);
+            assertArrayEquals("entry-content\n".getBytes(StandardCharsets.UTF_8), content);
+        }
+    }
+
+    @Test
+    public void testZipWithLongerBeginningGarbage() throws IOException {
+        Path path = createTempPath("preamble", ".zip");
+
+        try (OutputStream fos = Files.newOutputStream(path)) {
+            fos.write("#!/usr/bin/env some-program with quite a few arguments to make it longer than the local header\n".getBytes(StandardCharsets.UTF_8));
+            try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(fos)) {
+                ZipArchiveEntry entry = new ZipArchiveEntry("file-1.txt");
+                entry.setMethod(ZipEntry.DEFLATED);
+                zos.putArchiveEntry(entry);
+                zos.write("entry-content\n".getBytes(StandardCharsets.UTF_8));
+                zos.closeArchiveEntry();
+            }
+        }
+
+        try (InputStream is = Files.newInputStream(path); ZipArchiveInputStream zis = new ZipArchiveInputStream(is)) {
+            ZipArchiveEntry entry = zis.getNextEntry();
+            assertEquals("file-1.txt", entry.getName());
+            byte[] content = IOUtils.toByteArray(zis);
+            assertArrayEquals("entry-content\n".getBytes(StandardCharsets.UTF_8), content);
         }
     }
 }

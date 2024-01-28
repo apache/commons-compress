@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -956,4 +957,29 @@ public class ZipFileTest extends AbstractTest {
         assertNull(zf.getEntry("\u00e4\\\u00fc.txt"));
         assertNotNull(zf.getEntry("\u00e4/\u00fc.txt"));
     }
+
+    @Test
+    public void testZipWithShortBeginningGarbage() throws IOException {
+        Path path = createTempPath("preamble", ".zip");
+
+        try (OutputStream fos = Files.newOutputStream(path)) {
+            fos.write("#!/usr/bin/unzip\n".getBytes(StandardCharsets.UTF_8));
+            try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(fos)) {
+                ZipArchiveEntry entry = new ZipArchiveEntry("file-1.txt");
+                entry.setMethod(ZipEntry.DEFLATED);
+                zos.putArchiveEntry(entry);
+                zos.write("entry-content\n".getBytes(StandardCharsets.UTF_8));
+                zos.closeArchiveEntry();
+            }
+        }
+
+        try (ZipFile zipFile = ZipFile.builder().setPath(path).get()) {
+            ZipArchiveEntry entry = zipFile.getEntry("file-1.txt");
+            assertEquals("file-1.txt", entry.getName());
+            byte[] content = IOUtils.toByteArray(zipFile.getInputStream(entry));
+            assertArrayEquals("entry-content\n".getBytes(StandardCharsets.UTF_8), content);
+        }
+    }
+
+
 }
