@@ -75,6 +75,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate ByteUtils.fromLittleEndian(InputStream, int).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate ByteUtils.toLittleEndian(DataOutput, long, int).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Reduce duplication by having ArchiveInputStream extend FilterInputStream.</action>
+      <action type="fix" dev="ggregory" due-to="Zbynek Vyskovsky, Gary Gregory">Support preamble garbage in ZipArchiveInputStream #471.</action>     
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use ZipFile.builder(), ZipFile.Builder, and deprecate constructors.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use SevenZFile.builder(), SevenZFile.Builder, and deprecate constructors.</action>
