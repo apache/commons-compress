@@ -160,6 +160,9 @@ public class ZipUtilTest {
         assertTrue(ZipUtil.isDosTime(toLocalInstant("1980-01-03T00:00:00").toEpochMilli()));
         assertTrue(ZipUtil.isDosTime(toLocalInstant("2097-11-27T00:00:00").toEpochMilli()));
         assertFalse(ZipUtil.isDosTime(toLocalInstant("2099-01-01T00:00:00").toEpochMilli()));
+        // The lowest data/time expressable as DOS Time, see comment in ZipUtil#DOSTIME_BEFORE_1980
+        long lowestExpressableDosTime = 1 << 21 | 1 << 16; // 0x210000
+        assertTrue(ZipUtil.isDosTime(ZipUtil.dosToJavaTime(lowestExpressableDosTime)));
     }
 
     @Test
