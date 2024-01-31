@@ -76,6 +76,9 @@ public abstract class ZipUtil {
      */
     private static final long DOSTIME_BEFORE_1980 = 1 << 21 | 1 << 16; // 0x210000
 
+    /** Java time representation of the smallest date/time ZIP can handle */
+    private static final long DOSTIME_BEFORE_1980_AS_JAVA_TIME = dosToJavaTime(DOSTIME_BEFORE_1980);
+
     /**
      * Approximately 128 years, in milliseconds (ignoring leap years, etc.).
      *
@@ -230,7 +233,8 @@ public abstract class ZipUtil {
      * @since 1.23
      */
     public static boolean isDosTime(final long time) {
-        return time <= UPPER_DOSTIME_BOUND && javaToDosTime(time) != DOSTIME_BEFORE_1980;
+        return time <= UPPER_DOSTIME_BOUND &&
+                (time == DOSTIME_BEFORE_1980_AS_JAVA_TIME || javaToDosTime(time) != DOSTIME_BEFORE_1980);
     }
 
     private static LocalDateTime javaEpochToLocalDateTime(final long time) {
