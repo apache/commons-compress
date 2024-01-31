@@ -30,7 +30,7 @@ import java.nio.file.Files;
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public class BrotliCompressorInputStreamTest extends AbstractTest {
