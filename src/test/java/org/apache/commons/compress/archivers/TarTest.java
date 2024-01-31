@@ -45,7 +45,7 @@ import org.apache.commons.compress.archivers.tar.TarConstants;
 import org.apache.commons.compress.archivers.tar.TarFile;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CharsetNames;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public final class TarTest extends AbstractTest {
