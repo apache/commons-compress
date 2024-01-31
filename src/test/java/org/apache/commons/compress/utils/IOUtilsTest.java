@@ -19,6 +19,7 @@ package org.apache.commons.compress.utils;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
@@ -30,6 +31,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
 
@@ -212,4 +214,18 @@ public class IOUtilsTest {
             }
         });
     }
+
+    @Test
+    public void testToByteArray_InputStream() throws Exception {
+        final byte[] bytes = "ABCB".getBytes(StandardCharsets.UTF_8);
+        try (InputStream fin = new ByteArrayInputStream(bytes)) {
+            @SuppressWarnings("deprecation")
+            final byte[] out = IOUtils.toByteArray(fin);
+            assertNotNull(out);
+            assertEquals(0, fin.available());
+            assertEquals(4, out.length);
+            assertArrayEquals(bytes, out);
+        }
+    }
+
 }
