@@ -28,11 +28,14 @@ import java.io.EOFException;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.io.output.NullOutputStream;
 import org.junit.jupiter.api.Test;
 
 public class IOUtilsTest {
@@ -53,6 +56,29 @@ public class IOUtilsTest {
             assertEquals(10, IOUtils.skip(sut, 10));
             assertEquals(11, sut.read());
         }
+    }
+
+    @Test
+    public void testCopy_inputStreamToOutputStream_IO84() throws Exception {
+        final long size = (long) Integer.MAX_VALUE + (long) 1;
+        final InputStream in = new NullInputStream(size);
+        final OutputStream out = NullOutputStream.INSTANCE;
+        // Test copy() method
+        assertEquals(-1, IOUtils.copy(in, out));
+        // reset the input
+        in.close();
+    }
+
+    @Test
+    public void testCopy_inputStreamToOutputStream_nullIn() {
+        final OutputStream out = new ByteArrayOutputStream();
+        assertThrows(NullPointerException.class, () -> IOUtils.copy((InputStream) null, out));
+    }
+
+    @Test
+    public void testCopy_inputStreamToOutputStream_nullOut() {
+        final InputStream in = new ByteArrayInputStream(new byte[] { 1, 2, 3, 4 });
+        assertThrows(NullPointerException.class, () -> IOUtils.copy(in, (OutputStream) null));
     }
 
     @Test
