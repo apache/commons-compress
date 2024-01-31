@@ -40,7 +40,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorOutputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200Strategy;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public final class Pack200Test extends AbstractTest {
