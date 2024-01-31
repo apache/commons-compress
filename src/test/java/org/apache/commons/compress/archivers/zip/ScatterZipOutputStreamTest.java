@@ -27,7 +27,7 @@ import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTempDirTest;
 import org.apache.commons.compress.parallel.InputStreamSupplier;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public class ScatterZipOutputStreamTest extends AbstractTempDirTest {
