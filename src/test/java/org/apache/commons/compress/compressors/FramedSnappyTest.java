@@ -30,7 +30,7 @@ import java.util.Random;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.snappy.FramedSnappyCompressorInputStream;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public final class FramedSnappyTest extends AbstractTest {
