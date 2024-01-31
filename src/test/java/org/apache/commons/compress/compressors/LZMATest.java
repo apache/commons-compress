@@ -31,7 +31,7 @@ import java.nio.file.Path;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public final class LZMATest extends AbstractTest {
