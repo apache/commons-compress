@@ -56,8 +56,8 @@ import java.util.zip.ZipEntry;
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.CharsetNames;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IORunnable;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assume;
@@ -809,7 +809,7 @@ public class ZipFileTest extends AbstractTest {
             }
 
             try (InputStream inputStream = Files.newInputStream(extractedFile.toPath())) {
-                bytesRead = IOUtils.readFully(inputStream, buffer);
+                bytesRead = org.apache.commons.compress.utils.IOUtils.readFully(inputStream, buffer);
                 assertEquals(testData.length, bytesRead);
                 assertArrayEquals(testData, Arrays.copyOfRange(buffer, 0, bytesRead));
             }
