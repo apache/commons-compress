@@ -37,7 +37,7 @@ import java.util.Arrays;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
