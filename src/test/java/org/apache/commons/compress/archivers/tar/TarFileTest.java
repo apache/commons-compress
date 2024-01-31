@@ -40,7 +40,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.utils.CharsetNames;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public class TarFileTest extends AbstractTest {
