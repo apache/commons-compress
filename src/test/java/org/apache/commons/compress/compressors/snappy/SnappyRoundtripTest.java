@@ -31,7 +31,7 @@ import java.util.Random;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.lz77support.Parameters;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public final class SnappyRoundtripTest extends AbstractTest {
