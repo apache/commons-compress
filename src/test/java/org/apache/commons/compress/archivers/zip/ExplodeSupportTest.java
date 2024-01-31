@@ -33,7 +33,7 @@ import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
 
 import org.apache.commons.compress.utils.BoundedInputStream;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public class ExplodeSupportTest {
