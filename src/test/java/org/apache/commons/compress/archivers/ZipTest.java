@@ -57,9 +57,9 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.archivers.zip.ZipMethod;
 import org.apache.commons.compress.archivers.zip.ZipSplitReadOnlySeekableByteChannel;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public final class ZipTest extends AbstractTest {
@@ -114,8 +114,8 @@ public final class ZipTest extends AbstractTest {
 
                 try (InputStream actualIs = actual.getInputStream(actualElement);
                         InputStream expectedIs = expected.getInputStream(expectedElement)) {
-                    IOUtils.readFully(expectedIs, expectedBuf);
-                    IOUtils.readFully(actualIs, actualBuf);
+                    org.apache.commons.compress.utils.IOUtils.readFully(expectedIs, expectedBuf);
+                    org.apache.commons.compress.utils.IOUtils.readFully(actualIs, actualBuf);
                 }
                 assertArrayEquals(expectedBuf, actualBuf); // Buffers are larger than payload. don't care
             }
