@@ -142,9 +142,7 @@ public class TarFileTest extends AbstractTest {
         final File root = new File(rootPath + "/" + dirDirectory);
         root.mkdirs();
         for (int i = 1; i < count; i++) {
-            // -----------------------
             // create empty dirs with incremental length
-            // -----------------------
             final StringBuilder subDirBuilder = new StringBuilder();
             for (int j = 0; j < i; j++) {
                 subDirBuilder.append("a");
@@ -153,9 +151,7 @@ public class TarFileTest extends AbstractTest {
             final File dir = new File(rootPath + "/" + dirDirectory, "/" + subDir);
             dir.mkdir();
 
-            // -----------------------
             // tar these dirs
-            // -----------------------
             final String fileName = "/" + dirDirectory + "/" + subDir;
             final File tarF = new File(rootPath + "/tar" + i + ".tar");
             try (OutputStream dest = Files.newOutputStream(tarF.toPath());
@@ -170,9 +166,7 @@ public class TarFileTest extends AbstractTest {
                 out.closeArchiveEntry();
                 out.flush();
             }
-            // -----------------------
             // untar these tars
-            // -----------------------
             try (TarFile tarFile = new TarFile(tarF)) {
                 for (final TarArchiveEntry entry : tarFile.getEntries()) {
                     assertTrue(entry.getName().endsWith("/"), "Entry name: " + entry.getName());

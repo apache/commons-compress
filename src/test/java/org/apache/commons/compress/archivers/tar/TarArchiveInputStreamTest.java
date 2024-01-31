@@ -138,9 +138,7 @@ public class TarArchiveInputStreamTest extends AbstractTest {
         final File root = new File(rootPath + "/" + dirDirectory);
         root.mkdirs();
         for (int i = 1; i < count; i++) {
-            // -----------------------
             // create empty dirs with incremental length
-            // -----------------------
             String subDir = "";
             for (int j = 0; j < i; j++) {
                 subDir += "a";
@@ -148,9 +146,7 @@ public class TarArchiveInputStreamTest extends AbstractTest {
             final File dir = new File(rootPath + "/" + dirDirectory, "/" + subDir);
             dir.mkdir();
 
-            // -----------------------
             // tar these dirs
-            // -----------------------
             final String fileName = "/" + dirDirectory + "/" + subDir;
             final File tarF = new File(rootPath + "/tar" + i + ".tar");
             try (OutputStream dest = Files.newOutputStream(tarF.toPath())) {
@@ -166,9 +162,7 @@ public class TarArchiveInputStreamTest extends AbstractTest {
                 out.flush();
             }
 
-            // -----------------------
             // untar these tars
-            // -----------------------
             try (InputStream is = Files.newInputStream(tarF.toPath());
                     TarArchiveInputStream debInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("tar", is)) {
                 TarArchiveEntry outEntry;
