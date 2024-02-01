@@ -62,6 +62,28 @@ public final class Lister {
         }
     }
 
+    private static void list(final Path file, final String... args) throws ArchiveException, IOException {
+        println("Analyzing " + file);
+        if (!Files.isRegularFile(file)) {
+            System.err.println(file + " doesn't exist or is a directory");
+        }
+        final String format = (args.length > 1 ? args[1] : detectFormat(file)).toLowerCase(Locale.ROOT);
+        println("Detected format " + format);
+        switch (format) {
+        case ArchiveStreamFactory.SEVEN_Z:
+            list7z(file);
+            break;
+        case ArchiveStreamFactory.ZIP:
+            listZipUsingZipFile(file);
+            break;
+        case ArchiveStreamFactory.TAR:
+            listZipUsingTarFile(file);
+            break;
+        default:
+            listStream(file, args);
+        }
+    }
+
     private static void list7z(final Path file) throws IOException {
         try (SevenZFile sevenZFile = SevenZFile.builder().setPath(file).get()) {
             println("Created " + sevenZFile);
@@ -118,26 +140,8 @@ public final class Lister {
             return;
         }
         Objects.requireNonNull(args[0], "args[0]");
-        println("Analysing " + args[0]);
         final Path file = Paths.get(args[0]);
-        if (!Files.isRegularFile(file)) {
-            System.err.println(file + " doesn't exist or is a directory");
-        }
-        final String format = (args.length > 1 ? args[1] : detectFormat(file)).toLowerCase(Locale.ROOT);
-        println("Detected format " + format);
-        switch (format) {
-        case ArchiveStreamFactory.SEVEN_Z:
-            list7z(file);
-            break;
-        case ArchiveStreamFactory.ZIP:
-            listZipUsingZipFile(file);
-            break;
-        case ArchiveStreamFactory.TAR:
-            listZipUsingTarFile(file);
-            break;
-        default:
-            listStream(file, args);
-        }
+        list(file, args);
     }
 
     private static void println(final ArchiveEntry entry) {
