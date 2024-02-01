@@ -58,22 +58,26 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @return true, if this stream is a tar archive stream, false otherwise
      */
     public static boolean matches(final byte[] signature, final int length) {
-        if (length < TarConstants.VERSION_OFFSET + TarConstants.VERSIONLEN) {
+        final int versionOffset = TarConstants.VERSION_OFFSET;
+        final int versionLen = TarConstants.VERSIONLEN;
+        if (length < versionOffset + versionLen) {
             return false;
         }
 
-        if (ArchiveUtils.matchAsciiBuffer(TarConstants.MAGIC_POSIX, signature, TarConstants.MAGIC_OFFSET, TarConstants.MAGICLEN)
-                && ArchiveUtils.matchAsciiBuffer(TarConstants.VERSION_POSIX, signature, TarConstants.VERSION_OFFSET, TarConstants.VERSIONLEN)) {
+        final int magicOffset = TarConstants.MAGIC_OFFSET;
+        final int magicLen = TarConstants.MAGICLEN;
+        if (ArchiveUtils.matchAsciiBuffer(TarConstants.MAGIC_POSIX, signature, magicOffset, magicLen)
+                && ArchiveUtils.matchAsciiBuffer(TarConstants.VERSION_POSIX, signature, versionOffset, versionLen)) {
             return true;
         }
-        if (ArchiveUtils.matchAsciiBuffer(TarConstants.MAGIC_GNU, signature, TarConstants.MAGIC_OFFSET, TarConstants.MAGICLEN)
-                && (ArchiveUtils.matchAsciiBuffer(TarConstants.VERSION_GNU_SPACE, signature, TarConstants.VERSION_OFFSET, TarConstants.VERSIONLEN)
-                        || ArchiveUtils.matchAsciiBuffer(TarConstants.VERSION_GNU_ZERO, signature, TarConstants.VERSION_OFFSET, TarConstants.VERSIONLEN))) {
+        if (ArchiveUtils.matchAsciiBuffer(TarConstants.MAGIC_GNU, signature, magicOffset, magicLen)
+                && (ArchiveUtils.matchAsciiBuffer(TarConstants.VERSION_GNU_SPACE, signature, versionOffset, versionLen)
+                        || ArchiveUtils.matchAsciiBuffer(TarConstants.VERSION_GNU_ZERO, signature, versionOffset, versionLen))) {
             return true;
         }
         // COMPRESS-107 - recognize Ant tar files
-        return ArchiveUtils.matchAsciiBuffer(TarConstants.MAGIC_ANT, signature, TarConstants.MAGIC_OFFSET, TarConstants.MAGICLEN)
-                && ArchiveUtils.matchAsciiBuffer(TarConstants.VERSION_ANT, signature, TarConstants.VERSION_OFFSET, TarConstants.VERSIONLEN);
+        return ArchiveUtils.matchAsciiBuffer(TarConstants.MAGIC_ANT, signature, magicOffset, magicLen)
+                && ArchiveUtils.matchAsciiBuffer(TarConstants.VERSION_ANT, signature, versionOffset, versionLen);
     }
 
     private final byte[] smallBuf = new byte[SMALL_BUFFER_SIZE];
