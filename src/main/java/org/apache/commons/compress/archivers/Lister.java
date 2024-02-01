@@ -18,10 +18,11 @@
 package org.apache.commons.compress.archivers;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Objects;
@@ -55,14 +56,14 @@ public final class Lister {
         return FACTORY.createArchiveInputStream(inputStream);
     }
 
-    private static String detectFormat(final File file) throws ArchiveException, IOException {
-        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
+    private static String detectFormat(final Path file) throws ArchiveException, IOException {
+        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(file))) {
             return ArchiveStreamFactory.detect(inputStream);
         }
     }
 
-    private static void list7z(final File file) throws IOException {
-        try (SevenZFile sevenZFile = SevenZFile.builder().setFile(file).get()) {
+    private static void list7z(final Path file) throws IOException {
+        try (SevenZFile sevenZFile = SevenZFile.builder().setPath(file).get()) {
             println("Created " + sevenZFile);
             ArchiveEntry entry;
             while ((entry = sevenZFile.getNextEntry()) != null) {
@@ -71,8 +72,8 @@ public final class Lister {
         }
     }
 
-    private static void listStream(final File file, final String[] args) throws ArchiveException, IOException {
-        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()));
+    private static void listStream(final Path file, final String[] args) throws ArchiveException, IOException {
+        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(file));
                 ArchiveInputStream<?> archiveInputStream = createArchiveInputStream(args, inputStream)) {
             println("Created " + archiveInputStream.toString());
             ArchiveEntry entry;
@@ -82,15 +83,15 @@ public final class Lister {
         }
     }
 
-    private static void listZipUsingTarFile(final File file) throws IOException {
+    private static void listZipUsingTarFile(final Path file) throws IOException {
         try (TarFile tarFile = new TarFile(file)) {
             println("Created " + tarFile);
             tarFile.getEntries().forEach(Lister::println);
         }
     }
 
-    private static void listZipUsingZipFile(final File file) throws IOException {
-        try (ZipFile zipFile = ZipFile.builder().setFile(file).get()) {
+    private static void listZipUsingZipFile(final Path file) throws IOException {
+        try (ZipFile zipFile = ZipFile.builder().setPath(file).get()) {
             println("Created " + zipFile);
             for (final Enumeration<ZipArchiveEntry> en = zipFile.getEntries(); en.hasMoreElements();) {
                 println(en.nextElement());
@@ -118,8 +119,8 @@ public final class Lister {
         }
         Objects.requireNonNull(args[0], "args[0]");
         println("Analysing " + args[0]);
-        final File file = new File(args[0]);
-        if (!file.isFile()) {
+        final Path file = Paths.get(args[0]);
+        if (!Files.isRegularFile(file)) {
             System.err.println(file + " doesn't exist or is a directory");
         }
         final String format = (args.length > 1 ? args[1] : detectFormat(file)).toLowerCase(Locale.ROOT);
