@@ -123,14 +123,15 @@ public final class Lister {
             System.err.println(file + " doesn't exist or is a directory");
         }
         final String format = (args.length > 1 ? args[1] : detectFormat(file)).toLowerCase(Locale.ROOT);
+        println("Detected format " + format);
         switch (format) {
         case ArchiveStreamFactory.SEVEN_Z:
             list7z(file);
             break;
-        case "zipfile":
+        case ArchiveStreamFactory.ZIP:
             listZipUsingZipFile(file);
             break;
-        case "tarfile":
+        case ArchiveStreamFactory.TAR:
             listZipUsingTarFile(file);
             break;
         default:
