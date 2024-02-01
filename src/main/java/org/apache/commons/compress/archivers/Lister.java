@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Enumeration;
+import java.util.Locale;
 import java.util.Objects;
 
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
@@ -62,11 +63,10 @@ public final class Lister {
 
     private static void list7z(final File file) throws IOException {
         try (SevenZFile sevenZFile = SevenZFile.builder().setFile(file).get()) {
-            System.out.println("Created " + sevenZFile);
+            println("Created " + sevenZFile);
             ArchiveEntry entry;
             while ((entry = sevenZFile.getNextEntry()) != null) {
-                final String name = entry.getName() == null ? sevenZFile.getDefaultName() + " (entry name was null)" : entry.getName();
-                System.out.println(name);
+                println(entry.getName() == null ? sevenZFile.getDefaultName() + " (entry name was null)" : entry.getName());
             }
         }
     }
@@ -74,26 +74,26 @@ public final class Lister {
     private static void listStream(final File file, final String[] args) throws ArchiveException, IOException {
         try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()));
                 ArchiveInputStream<?> archiveInputStream = createArchiveInputStream(args, inputStream)) {
-            System.out.println("Created " + archiveInputStream.toString());
+            println("Created " + archiveInputStream.toString());
             ArchiveEntry entry;
             while ((entry = archiveInputStream.getNextEntry()) != null) {
-                System.out.println(entry.getName());
+                println(entry);
             }
         }
     }
 
     private static void listZipUsingTarFile(final File file) throws IOException {
         try (TarFile tarFile = new TarFile(file)) {
-            System.out.println("Created " + tarFile);
-            tarFile.getEntries().forEach(en -> System.out.println(en.getName()));
+            println("Created " + tarFile);
+            tarFile.getEntries().forEach(Lister::println);
         }
     }
 
     private static void listZipUsingZipFile(final File file) throws IOException {
         try (ZipFile zipFile = ZipFile.builder().setFile(file).get()) {
-            System.out.println("Created " + zipFile);
+            println("Created " + zipFile);
             for (final Enumeration<ZipArchiveEntry> en = zipFile.getEntries(); en.hasMoreElements();) {
-                System.out.println(en.nextElement().getName());
+                println(en.nextElement());
             }
         }
     }
@@ -117,27 +117,39 @@ public final class Lister {
             return;
         }
         Objects.requireNonNull(args[0], "args[0]");
-        System.out.println("Analysing " + args[0]);
+        println("Analysing " + args[0]);
         final File file = new File(args[0]);
         if (!file.isFile()) {
             System.err.println(file + " doesn't exist or is a directory");
         }
-        final String format = args.length > 1 ? args[1] : detectFormat(file);
-        if (ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format)) {
+        final String format = (args.length > 1 ? args[1] : detectFormat(file)).toLowerCase(Locale.ROOT);
+        switch (format) {
+        case ArchiveStreamFactory.SEVEN_Z:
             list7z(file);
-        } else if ("zipfile".equals(format)) {
+            break;
+        case "zipfile":
             listZipUsingZipFile(file);
-        } else if ("tarfile".equals(format)) {
+            break;
+        case "tarfile":
             listZipUsingTarFile(file);
-        } else {
+            break;
+        default:
             listStream(file, args);
         }
     }
 
+    private static void println(final ArchiveEntry entry) {
+        println(entry.getName());
+    }
+
+    private static void println(final String line) {
+        System.out.println(line);
+    }
+
     private static void usage() {
-        System.out.println("Parameters: archive-name [archive-type]\n");
-        System.out.println("The magic archive-type 'zipfile' prefers ZipFile over ZipArchiveInputStream");
-        System.out.println("The magic archive-type 'tarfile' prefers TarFile over TarArchiveInputStream");
+        println("Parameters: archive-name [archive-type]\n");
+        println("The magic archive-type 'zipfile' prefers ZipFile over ZipArchiveInputStream");
+        println("The magic archive-type 'tarfile' prefers TarFile over TarArchiveInputStream");
     }
 
 }
