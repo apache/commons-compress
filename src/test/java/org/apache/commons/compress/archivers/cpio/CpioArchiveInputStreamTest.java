@@ -32,17 +32,25 @@ import org.junit.jupiter.api.Test;
 
 public class CpioArchiveInputStreamTest extends AbstractTest {
 
+    private long consumeEntries(final CpioArchiveInputStream in) throws IOException {
+        long count = 0;
+        CpioArchiveEntry entry;
+        while ((entry = in.getNextEntry()) != null) {
+            count++;
+            assertNotNull(entry);
+        }
+        return count;
+    }
+
     @Test
     public void testCpioUnarchive() throws Exception {
         final StringBuilder expected = new StringBuilder();
         expected.append("./test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>./test2.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>\n");
-
         final StringBuilder result = new StringBuilder();
         try (CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("bla.cpio"))) {
             CpioArchiveEntry entry;
-
             while ((entry = in.getNextEntry()) != null) {
                 result.append(entry.getName());
                 int tmp;
@@ -56,31 +64,19 @@ public class CpioArchiveInputStreamTest extends AbstractTest {
 
     @Test
     public void testCpioUnarchiveCreatedByRedlineRpm() throws Exception {
-        int count = 0;
+        long count = 0;
         try (CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("redline.cpio"))) {
-            CpioArchiveEntry entry;
-
-            while ((entry = in.getNextEntry()) != null) {
-                count++;
-                assertNotNull(entry);
-            }
+            count = consumeEntries(in);
         }
-
         assertEquals(count, 1);
     }
 
     @Test
     public void testCpioUnarchiveMultibyteCharName() throws Exception {
-        int count = 0;
+        long count = 0;
         try (CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("COMPRESS-459.cpio"), CharsetNames.UTF_8)) {
-            CpioArchiveEntry entry;
-
-            while ((entry = in.getNextEntry()) != null) {
-                count++;
-                assertNotNull(entry);
-            }
+            count = consumeEntries(in);
         }
-
         assertEquals(2, count);
     }
 
