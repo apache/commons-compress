@@ -51,7 +51,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
 
     @Test
     public void testDirectoryNullBytes() throws Exception {
-        try (InputStream is = newInputStream("org/apache/commons/compress/dump/-fail.dump");
+        try (InputStream is = newInputStream("org/apache/commons/compress/dump/directory_null_bytes-fail.dump");
              DumpArchiveInputStream archive = new DumpArchiveInputStream(is)) {
             assertThrows(InvalidFormatException.class, archive::getNextEntry);
         }
