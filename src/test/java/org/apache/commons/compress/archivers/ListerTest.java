@@ -31,6 +31,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class ListerTest {
 
+    /**
+     * Creates a stream of paths of test fixtures with file names that don't end with "-fail" for specific file extensions.
+     */
     public static Stream<Path> getFixtures() throws IOException {
         return PathUtils.walk(Paths.get("src/test/resources"), new RegexFileFilter("^(?!.*(-fail)).*\\.(tar|ar|arj|apk|dump)$"), 10, false);
     }
