@@ -26,15 +26,21 @@ final class SubStreamsInfo {
     /**
      * Unpacked size of each unpacked stream.
      */
-    long[] unpackSizes;
+    final long[] unpackSizes;
 
     /**
      * Whether CRC is present for each unpacked stream.
      */
-    BitSet hasCrc;
+    final BitSet hasCrc;
 
     /**
      * CRCs of unpacked streams, if present.
      */
-    long[] crcs;
+    final long[] crcs;
+
+    SubStreamsInfo(final int totalUnpackStreams) {
+        this.unpackSizes = new long[totalUnpackStreams];
+        this.hasCrc = new BitSet(totalUnpackStreams);
+        this.crcs = new long[totalUnpackStreams];
+    }
 }

@@ -1601,11 +1601,7 @@ public class SevenZFile implements Closeable {
         }
 
         final int totalUnpackStreams = (int) unpackStreamsCount;
-        final SubStreamsInfo subStreamsInfo = new SubStreamsInfo();
-        subStreamsInfo.unpackSizes = new long[totalUnpackStreams];
-        subStreamsInfo.hasCrc = new BitSet(totalUnpackStreams);
-        subStreamsInfo.crcs = new long[totalUnpackStreams];
-
+        final SubStreamsInfo subStreamsInfo = new SubStreamsInfo(totalUnpackStreams);
         int nextUnpackStream = 0;
         for (final Folder folder : archive.folders) {
             if (folder.numUnpackSubStreams == 0) {
