@@ -17,7 +17,14 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 final class StartHeader {
-    long nextHeaderOffset;
-    long nextHeaderSize;
-    long nextHeaderCrc;
+
+    final long nextHeaderOffset;
+    final long nextHeaderSize;
+    final long nextHeaderCrc;
+
+    StartHeader(final long nextHeaderOffset, final long nextHeaderSize, final long nextHeaderCrc) {
+        this.nextHeaderOffset = nextHeaderOffset;
+        this.nextHeaderSize = nextHeaderSize;
+        this.nextHeaderCrc = nextHeaderCrc;
+    }
 }

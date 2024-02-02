@@ -1539,25 +1539,21 @@ public class SevenZFile implements Closeable {
     }
 
     private StartHeader readStartHeader(final long startHeaderCrc) throws IOException {
-        final StartHeader startHeader = new StartHeader();
         // using Stream rather than ByteBuffer for the benefit of the
         // built-in CRC check
         try (DataInputStream dataInputStream = new DataInputStream(
                 new CRC32VerifyingInputStream(new BoundedSeekableByteChannelInputStream(channel, 20), 20, startHeaderCrc))) {
-            startHeader.nextHeaderOffset = Long.reverseBytes(dataInputStream.readLong());
-            if (startHeader.nextHeaderOffset < 0 || startHeader.nextHeaderOffset + SIGNATURE_HEADER_SIZE > channel.size()) {
+            long nextHeaderOffset = Long.reverseBytes(dataInputStream.readLong());
+            if (nextHeaderOffset < 0 || nextHeaderOffset + SIGNATURE_HEADER_SIZE > channel.size()) {
                 throw new IOException("nextHeaderOffset is out of bounds");
             }
-
-            startHeader.nextHeaderSize = Long.reverseBytes(dataInputStream.readLong());
-            final long nextHeaderEnd = startHeader.nextHeaderOffset + startHeader.nextHeaderSize;
-            if (nextHeaderEnd < startHeader.nextHeaderOffset || nextHeaderEnd + SIGNATURE_HEADER_SIZE > channel.size()) {
+            long nextHeaderSize = Long.reverseBytes(dataInputStream.readLong());
+            final long nextHeaderEnd = nextHeaderOffset + nextHeaderSize;
+            if (nextHeaderEnd < nextHeaderOffset || nextHeaderEnd + SIGNATURE_HEADER_SIZE > channel.size()) {
                 throw new IOException("nextHeaderSize is out of bounds");
             }
-
-            startHeader.nextHeaderCrc = 0xffffFFFFL & Integer.reverseBytes(dataInputStream.readInt());
-
-            return startHeader;
+            long nextHeaderCrc = 0xffffFFFFL & Integer.reverseBytes(dataInputStream.readInt());
+            return new StartHeader(nextHeaderOffset, nextHeaderSize, nextHeaderCrc);
         }
     }
 
@@ -2220,9 +2216,9 @@ public class SevenZFile implements Closeable {
             if (nid == NID.kEncodedHeader || nid == NID.kHeader) {
                 try {
                     // Try to initialize Archive structure from here
-                    final StartHeader startHeader = new StartHeader();
-                    startHeader.nextHeaderOffset = pos - previousDataSize;
-                    startHeader.nextHeaderSize = channel.size() - pos;
+                    long nextHeaderOffset = pos - previousDataSize;
+                    long nextHeaderSize = channel.size() - pos;
+                    final StartHeader startHeader = new StartHeader(nextHeaderOffset, nextHeaderSize, 0);
                     final Archive result = initializeArchive(startHeader, password, false);
                     // Sanity check: There must be some data...
                     if (result.packSizes.length > 0 && result.files.length > 0) {
