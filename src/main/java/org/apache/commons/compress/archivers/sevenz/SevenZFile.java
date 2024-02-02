@@ -825,36 +825,32 @@ public class SevenZFile implements Closeable {
     }
 
     private void calculateStreamMap(final Archive archive) throws IOException {
-        final StreamMap streamMap = new StreamMap();
-
         int nextFolderPackStreamIndex = 0;
         final int numFolders = archive.folders != null ? archive.folders.length : 0;
-        streamMap.folderFirstPackStreamIndex = new int[numFolders];
+        final int[] folderFirstPackStreamIndex = new int[numFolders];
         for (int i = 0; i < numFolders; i++) {
-            streamMap.folderFirstPackStreamIndex[i] = nextFolderPackStreamIndex;
+            folderFirstPackStreamIndex[i] = nextFolderPackStreamIndex;
             nextFolderPackStreamIndex += archive.folders[i].packedStreams.length;
         }
-
         long nextPackStreamOffset = 0;
         final int numPackSizes = archive.packSizes.length;
-        streamMap.packStreamOffsets = new long[numPackSizes];
+        final long[] packStreamOffsets = new long[numPackSizes];
         for (int i = 0; i < numPackSizes; i++) {
-            streamMap.packStreamOffsets[i] = nextPackStreamOffset;
+            packStreamOffsets[i] = nextPackStreamOffset;
             nextPackStreamOffset += archive.packSizes[i];
         }
-
-        streamMap.folderFirstFileIndex = new int[numFolders];
-        streamMap.fileFolderIndex = new int[archive.files.length];
+        final int[] folderFirstFileIndex = new int[numFolders];
+        final int[] fileFolderIndex = new int[archive.files.length];
         int nextFolderIndex = 0;
         int nextFolderUnpackStreamIndex = 0;
         for (int i = 0; i < archive.files.length; i++) {
             if (!archive.files[i].hasStream() && nextFolderUnpackStreamIndex == 0) {
-                streamMap.fileFolderIndex[i] = -1;
+                fileFolderIndex[i] = -1;
                 continue;
             }
             if (nextFolderUnpackStreamIndex == 0) {
                 for (; nextFolderIndex < archive.folders.length; ++nextFolderIndex) {
-                    streamMap.folderFirstFileIndex[nextFolderIndex] = i;
+                    folderFirstFileIndex[nextFolderIndex] = i;
                     if (archive.folders[nextFolderIndex].numUnpackSubStreams > 0) {
                         break;
                     }
@@ -863,7 +859,7 @@ public class SevenZFile implements Closeable {
                     throw new IOException("Too few folders in archive");
                 }
             }
-            streamMap.fileFolderIndex[i] = nextFolderIndex;
+            fileFolderIndex[i] = nextFolderIndex;
             if (!archive.files[i].hasStream()) {
                 continue;
             }
@@ -873,8 +869,7 @@ public class SevenZFile implements Closeable {
                 nextFolderUnpackStreamIndex = 0;
             }
         }
-
-        archive.streamMap = streamMap;
+        archive.streamMap = new StreamMap(folderFirstPackStreamIndex, packStreamOffsets, folderFirstFileIndex, fileFolderIndex);
     }
 
     private void checkEntryIsInitialized(final Map<Integer, SevenZArchiveEntry> archiveEntries, final int index) {
@@ -1543,16 +1538,16 @@ public class SevenZFile implements Closeable {
         // built-in CRC check
         try (DataInputStream dataInputStream = new DataInputStream(
                 new CRC32VerifyingInputStream(new BoundedSeekableByteChannelInputStream(channel, 20), 20, startHeaderCrc))) {
-            long nextHeaderOffset = Long.reverseBytes(dataInputStream.readLong());
+            final long nextHeaderOffset = Long.reverseBytes(dataInputStream.readLong());
             if (nextHeaderOffset < 0 || nextHeaderOffset + SIGNATURE_HEADER_SIZE > channel.size()) {
                 throw new IOException("nextHeaderOffset is out of bounds");
             }
-            long nextHeaderSize = Long.reverseBytes(dataInputStream.readLong());
+            final long nextHeaderSize = Long.reverseBytes(dataInputStream.readLong());
             final long nextHeaderEnd = nextHeaderOffset + nextHeaderSize;
             if (nextHeaderEnd < nextHeaderOffset || nextHeaderEnd + SIGNATURE_HEADER_SIZE > channel.size()) {
                 throw new IOException("nextHeaderSize is out of bounds");
             }
-            long nextHeaderCrc = 0xffffFFFFL & Integer.reverseBytes(dataInputStream.readInt());
+            final long nextHeaderCrc = 0xffffFFFFL & Integer.reverseBytes(dataInputStream.readInt());
             return new StartHeader(nextHeaderOffset, nextHeaderSize, nextHeaderCrc);
         }
     }
@@ -2216,8 +2211,8 @@ public class SevenZFile implements Closeable {
             if (nid == NID.kEncodedHeader || nid == NID.kHeader) {
                 try {
                     // Try to initialize Archive structure from here
-                    long nextHeaderOffset = pos - previousDataSize;
-                    long nextHeaderSize = channel.size() - pos;
+                    final long nextHeaderOffset = pos - previousDataSize;
+                    final long nextHeaderSize = channel.size() - pos;
                     final StartHeader startHeader = new StartHeader(nextHeaderOffset, nextHeaderSize, 0);
                     final Archive result = initializeArchive(startHeader, password, false);
                     // Sanity check: There must be some data...

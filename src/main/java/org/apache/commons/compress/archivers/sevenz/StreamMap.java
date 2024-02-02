@@ -24,22 +24,29 @@ final class StreamMap {
     /**
      * The first Archive.packStream index of each folder.
      */
-    int[] folderFirstPackStreamIndex;
+    final int[] folderFirstPackStreamIndex;
 
     /**
      * Offset to beginning of this pack stream's data, relative to the beginning of the first pack stream.
      */
-    long[] packStreamOffsets;
+    final long[] packStreamOffsets;
 
     /**
      * Index of first file for each folder.
      */
-    int[] folderFirstFileIndex;
+    final int[] folderFirstFileIndex;
 
     /**
      * Index of folder for each file.
      */
-    int[] fileFolderIndex;
+    final int[] fileFolderIndex;
+
+    StreamMap(final int[] folderFirstPackStreamIndex, final long[] packStreamOffsets, final int[] folderFirstFileIndex, final int[] fileFolderIndex) {
+        this.folderFirstPackStreamIndex = folderFirstPackStreamIndex;
+        this.packStreamOffsets = packStreamOffsets;
+        this.folderFirstFileIndex = folderFirstFileIndex;
+        this.fileFolderIndex = fileFolderIndex;
+    }
 
     @Override
     public String toString() {
