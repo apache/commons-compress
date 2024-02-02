@@ -78,7 +78,7 @@ public class ArArchiveInputStreamTest extends AbstractTest {
 
     @Test
     public void testInvalidBadTableLength() throws Exception {
-        try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/bad_table_length_gnu.ar");
+        try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/bad_table_length_gnu-fail.ar");
                 ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             assertThrows(IOException.class, archive::getNextEntry);
         }
@@ -95,7 +95,7 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "bad_group-fail.ar", "bad_length-fail.ar", "bad_modified.ar", "bad_user.ar" })
+    @ValueSource(strings = { "bad_group-fail.ar", "bad_length-fail.ar", "bad_modified-fail.ar", "bad_user-fail.ar" })
     public void testInvalidNumericFields(final String testFileName) throws Exception {
         try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/" + testFileName);
                 ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
