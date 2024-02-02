@@ -18,12 +18,23 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import java.util.BitSet;
 
-/// Properties for non-empty files.
+/**
+ * Properties for non-empty files.
+ */
 final class SubStreamsInfo {
-    /// Unpacked size of each unpacked stream.
+
+    /**
+     * Unpacked size of each unpacked stream.
+     */
     long[] unpackSizes;
-    /// Whether CRC is present for each unpacked stream.
+
+    /**
+     * Whether CRC is present for each unpacked stream.
+     */
     BitSet hasCrc;
-    /// CRCs of unpacked streams, if present.
+
+    /**
+     * CRCs of unpacked streams, if present.
+     */
     long[] crcs;
 }
