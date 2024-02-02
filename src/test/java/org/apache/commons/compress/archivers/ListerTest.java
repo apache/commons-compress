@@ -32,7 +32,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class ListerTest {
 
     public static Stream<Path> getFixtures() throws IOException {
-        return PathUtils.walk(Paths.get("src/test/resources"), new RegexFileFilter("^(?!.*(-fail)).*\\.tar$"), 10, false);
+        return PathUtils.walk(Paths.get("src/test/resources"), new RegexFileFilter("^(?!.*(-fail)).*\\.(tar|arj)$"), 10, false);
     }
 
     @ParameterizedTest
