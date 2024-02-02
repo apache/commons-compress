@@ -85,8 +85,8 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "bad_long_namelen_bsd.ar", "bad_long_namelen_gnu1.ar", "bad_long_namelen_gnu2.ar", "bad_long_namelen_gnu3.ar",
-            "bad_table_length_gnu.ar" })
+    @ValueSource(strings = { "bad_long_namelen_bsd-fail.ar", "bad_long_namelen_gnu1-fail.ar", "bad_long_namelen_gnu2-fail.ar", "bad_long_namelen_gnu3-fail.ar",
+            "bad_table_length_gnu-fail.ar" })
     public void testInvalidLongNameLength(final String testFileName) throws Exception {
         try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/" + testFileName);
                 ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
@@ -95,7 +95,7 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "bad_group.ar", "bad_length.ar", "bad_modified.ar", "bad_user.ar" })
+    @ValueSource(strings = { "bad_group-fail.ar", "bad_length-fail.ar", "bad_modified.ar", "bad_user.ar" })
     public void testInvalidNumericFields(final String testFileName) throws Exception {
         try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/" + testFileName);
                 ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
