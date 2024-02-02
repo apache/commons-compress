@@ -47,7 +47,7 @@ public class FolderTest {
 
         final Folder folder = new Folder();
         final Coder[] coderArray = new Coder[5];
-        final Coder coder = new Coder();
+        final Coder coder = new Coder(null, 0, 0, null);
         folder.coders = coderArray;
 
         assertEquals(0L, folder.getUnpackSizeForCoder(coder));

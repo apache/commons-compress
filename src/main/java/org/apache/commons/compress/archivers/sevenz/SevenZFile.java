@@ -1370,34 +1370,37 @@ public class SevenZFile implements Closeable {
         long totalInStreams = 0;
         long totalOutStreams = 0;
         for (int i = 0; i < coders.length; i++) {
-            coders[i] = new Coder();
             final int bits = getUnsignedByte(header);
             final int idSize = bits & 0xf;
             final boolean isSimple = (bits & 0x10) == 0;
             final boolean hasAttributes = (bits & 0x20) != 0;
             final boolean moreAlternativeMethods = (bits & 0x80) != 0;
 
-            coders[i].decompressionMethodId = new byte[idSize];
-            get(header, coders[i].decompressionMethodId);
+            final byte[] decompressionMethodId = new byte[idSize];
+            get(header, decompressionMethodId);
+            final long numInStreams;
+            final long numOutStreams;
             if (isSimple) {
-                coders[i].numInStreams = 1;
-                coders[i].numOutStreams = 1;
+                numInStreams = 1;
+                numOutStreams = 1;
             } else {
-                coders[i].numInStreams = readUint64(header);
-                coders[i].numOutStreams = readUint64(header);
+                numInStreams = readUint64(header);
+                numOutStreams = readUint64(header);
             }
-            totalInStreams += coders[i].numInStreams;
-            totalOutStreams += coders[i].numOutStreams;
+            totalInStreams += numInStreams;
+            totalOutStreams += numOutStreams;
+            byte[] properties = null;
             if (hasAttributes) {
                 final long propertiesSize = readUint64(header);
-                coders[i].properties = new byte[(int) propertiesSize];
-                get(header, coders[i].properties);
+                properties = new byte[(int) propertiesSize];
+                get(header, properties);
             }
             // would need to keep looping as above:
             if (moreAlternativeMethods) {
                 throw new IOException("Alternative methods are unsupported, please report. " + // NOSONAR
                         "The reference implementation doesn't support them either.");
             }
+            coders[i] = new Coder(decompressionMethodId, numInStreams, numOutStreams, properties);
         }
         folder.coders = coders;
         folder.totalInputStreams = totalInStreams;

@@ -40,10 +40,9 @@ public class AES256SHA256DecoderTest {
 
         final AES256SHA256Decoder aES256SHA256Decoder = new AES256SHA256Decoder();
         try (BufferedInputStream bufferedInputStream = new BufferedInputStream(null, 3138)) {
-            final Coder coder = new Coder();
             final byte[] byteArray = new byte[8];
             byteArray[1] = (byte) -72;
-            coder.properties = byteArray;
+            final Coder coder = new Coder(null, 0, 0, byteArray);
             try (InputStream inputStream = aES256SHA256Decoder.decode("x", bufferedInputStream, 3138, coder, coder.properties, Integer.MAX_VALUE)) {
                 final IOException e = assertThrows(IOException.class, () -> new ObjectInputStream(inputStream), "Expecting exception: IOException");
                 assertEquals("Salt size + IV size too long in x", e.getMessage());
