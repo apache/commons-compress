@@ -18,8 +18,13 @@ package org.apache.commons.compress.archivers.sevenz;
 
 final class BindPair {
 
-    long inIndex;
-    long outIndex;
+    final long inIndex;
+    final long outIndex;
+
+    BindPair(final long inIndex, final long outIndex) {
+        this.inIndex = inIndex;
+        this.outIndex = outIndex;
+    }
 
     @Override
     public String toString() {

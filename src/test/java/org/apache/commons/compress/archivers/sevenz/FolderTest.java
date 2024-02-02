@@ -34,7 +34,7 @@ public class FolderTest {
 
         final Folder folder = new Folder();
         final BindPair[] bindPairArray = new BindPair[1];
-        final BindPair bindPair = new BindPair();
+        final BindPair bindPair = new BindPair(0, 0);
         bindPairArray[0] = bindPair;
         folder.bindPairs = bindPairArray;
 
@@ -60,7 +60,7 @@ public class FolderTest {
         final Folder folder = new Folder();
         folder.totalOutputStreams = 266L;
         final BindPair[] bindPairArray = new BindPair[1];
-        final BindPair bindPair = new BindPair();
+        final BindPair bindPair = new BindPair(0, 0);
         bindPairArray[0] = bindPair;
         folder.bindPairs = bindPairArray;
         folder.totalOutputStreams = 1L;

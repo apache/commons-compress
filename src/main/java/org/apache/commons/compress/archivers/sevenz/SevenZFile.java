@@ -1406,9 +1406,7 @@ public class SevenZFile implements Closeable {
         final long numBindPairs = totalOutStreams - 1;
         final BindPair[] bindPairs = new BindPair[(int) numBindPairs];
         for (int i = 0; i < bindPairs.length; i++) {
-            bindPairs[i] = new BindPair();
-            bindPairs[i].inIndex = readUint64(header);
-            bindPairs[i].outIndex = readUint64(header);
+            bindPairs[i] = new BindPair(readUint64(header), readUint64(header));
         }
         folder.bindPairs = bindPairs;
 
