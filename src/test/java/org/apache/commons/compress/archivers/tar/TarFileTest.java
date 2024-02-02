@@ -198,12 +198,12 @@ public class TarFileTest extends AbstractTest {
 
     @Test
     public void testParseTarWithNonNumberPaxHeaders() {
-        assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-529.tar")));
+        assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-529-fail.tar")));
     }
 
     @Test
     public void testParseTarWithSpecialPaxHeaders() {
-        assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-530.tar")));
+        assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-530-fail.tar")));
     }
 
     @Test
@@ -223,7 +223,7 @@ public class TarFileTest extends AbstractTest {
 
     @Test
     public void testRejectsArchivesWithNegativeSizes() throws Exception {
-        assertThrows(IOException.class, () -> new TarFile(getFile("COMPRESS-569.tar")));
+        assertThrows(IOException.class, () -> new TarFile(getFile("COMPRESS-569-fail.tar")));
     }
 
     @Test
@@ -340,12 +340,12 @@ public class TarFileTest extends AbstractTest {
 
     @Test
     public void testThrowException() {
-        assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-553.tar")));
+        assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-553-fail.tar")));
     }
 
     @Test
     public void testThrowExceptionWithNullEntry() {
-        assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-554.tar")));
+        assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-554-fail.tar")));
     }
 
     @Test

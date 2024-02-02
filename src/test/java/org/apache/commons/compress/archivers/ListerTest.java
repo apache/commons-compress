@@ -20,25 +20,24 @@
 package org.apache.commons.compress.archivers;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
+import org.apache.commons.io.file.PathUtils;
+import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class ListerTest {
 
-    @Test
-    public void testCompress654() throws ArchiveException, IOException {
-//        Analysing ruff-aarch64-apple-darwin.tar
-//        Created org.apache.commons.compress.archivers.tar.TarArchiveInputStream@17f052a3
-//        ruff
-//        Exception in thread "main" java.io.IOException: Truncated TAR archive
-//        at org.apache.commons.compress.archivers.tar.TarArchiveInputStream.read(TarArchiveInputStream.java:694)
-//        at org.apache.commons.compress.utils.IOUtils.readFully(IOUtils.java:244)
-//        at org.apache.commons.compress.utils.IOUtils.skip(IOUtils.java:355)
-//        at org.apache.commons.compress.archivers.tar.TarArchiveInputStream.getNextTarEntry(TarArchiveInputStream.java:451)
-//        at org.apache.commons.compress.archivers.tar.TarArchiveInputStream.getNextEntry(TarArchiveInputStream.java:426)
-//        at org.apache.commons.compress.archivers.tar.TarArchiveInputStream.getNextEntry(TarArchiveInputStream.java:50)
-//        at org.apache.commons.compress.archivers.Lister.listStream(Lister.java:79)
-//        at org.apache.commons.compress.archivers.Lister.main(Lister.java:133)
-        Lister.main("src/test/resources/org/apache/commons/compress/COMPRESS-654/ruff-aarch64-apple-darwin.tar");
+    public static Stream<Path> getFixtures() throws IOException {
+        return PathUtils.walk(Paths.get("src/test/resources"), new RegexFileFilter("^(?!.*(-fail)).*\\.tar$"), 10, false);
+    }
+
+    @ParameterizedTest
+    @MethodSource("getFixtures")
+    public void testMain(final Path path) throws ArchiveException, IOException {
+        new Lister(true, path.toString()).go();
     }
 }

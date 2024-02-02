@@ -299,7 +299,7 @@ public class TarUtilsTest extends AbstractTest {
 
     @Test
     public void testParseTarWithSpecialPaxHeaders() throws IOException {
-        try (InputStream in = newInputStream("COMPRESS-530.tar");
+        try (InputStream in = newInputStream("COMPRESS-530-fail.tar");
                 TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             assertThrows(IOException.class, () -> archive.getNextEntry());
             // IOUtils.toByteArray(archive);

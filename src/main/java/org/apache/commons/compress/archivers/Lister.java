@@ -62,7 +62,58 @@ public final class Lister {
         }
     }
 
-    private static void list(final Path file, final String... args) throws ArchiveException, IOException {
+    /**
+     * Runs this class from the command line.
+     * <p>
+     * The name of the archive must be given as a command line argument.
+     * </p>
+     * <p>
+     * The optional second argument defines the archive type, in case the format is not recognized.
+     * </p>
+     *
+     * @param args name of the archive and optional argument archive type.
+     * @throws ArchiveException Archiver related Exception.
+     * @throws IOException      an I/O exception.
+     */
+    public static void main(final String... args) throws ArchiveException, IOException {
+        if (args == null || args.length == 0) {
+            usage();
+            return;
+        }
+        new Lister(false, args).go();
+    }
+
+    private static void usage() {
+        System.err.println("Parameters: archive-name [archive-type]\n");
+        System.err.println("The magic archive-type 'zipfile' prefers ZipFile over ZipArchiveInputStream");
+        System.err.println("The magic archive-type 'tarfile' prefers TarFile over TarArchiveInputStream");
+    }
+
+    private final boolean quiet;
+
+    private final String[] args;
+
+    /**
+     * Constructs a new instance.
+     *
+     * @deprecated No replacement.
+     */
+    @Deprecated
+    public Lister() {
+        this(false, "");
+    }
+
+    Lister(final boolean quiet, final String... args) {
+        this.quiet = quiet;
+        this.args = args.clone();
+        Objects.requireNonNull(args[0], "args[0]");
+    }
+
+    void go() throws ArchiveException, IOException {
+        list(Paths.get(args[0]), args);
+    }
+
+    private void list(final Path file, final String... args) throws ArchiveException, IOException {
         println("Analyzing " + file);
         if (!Files.isRegularFile(file)) {
             System.err.println(file + " doesn't exist or is a directory");
@@ -84,7 +135,7 @@ public final class Lister {
         }
     }
 
-    private static void list7z(final Path file) throws IOException {
+    private  void list7z(final Path file) throws IOException {
         try (SevenZFile sevenZFile = SevenZFile.builder().setPath(file).get()) {
             println("Created " + sevenZFile);
             ArchiveEntry entry;
@@ -94,7 +145,7 @@ public final class Lister {
         }
     }
 
-    private static void listStream(final Path file, final String[] args) throws ArchiveException, IOException {
+    private  void listStream(final Path file, final String[] args) throws ArchiveException, IOException {
         try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(file));
                 ArchiveInputStream<?> archiveInputStream = createArchiveInputStream(args, inputStream)) {
             println("Created " + archiveInputStream.toString());
@@ -105,14 +156,14 @@ public final class Lister {
         }
     }
 
-    private static void listZipUsingTarFile(final Path file) throws IOException {
+    private  void listZipUsingTarFile(final Path file) throws IOException {
         try (TarFile tarFile = new TarFile(file)) {
             println("Created " + tarFile);
-            tarFile.getEntries().forEach(Lister::println);
+            tarFile.getEntries().forEach(this::println);
         }
     }
 
-    private static void listZipUsingZipFile(final Path file) throws IOException {
+    private  void listZipUsingZipFile(final Path file) throws IOException {
         try (ZipFile zipFile = ZipFile.builder().setPath(file).get()) {
             println("Created " + zipFile);
             for (final Enumeration<ZipArchiveEntry> en = zipFile.getEntries(); en.hasMoreElements();) {
@@ -121,41 +172,14 @@ public final class Lister {
         }
     }
 
-    /**
-     * Runs this class from the command line.
-     * <p>
-     * The name of the archive must be given as a command line argument.
-     * </p>
-     * <p>
-     * The optional second argument defines the archive type, in case the format is not recognized.
-     * </p>
-     *
-     * @param args name of the archive and optional argument archive type.
-     * @throws ArchiveException Archiver related Exception.
-     * @throws IOException      an I/O exception.
-     */
-    public static void main(final String... args) throws ArchiveException, IOException {
-        if (args == null || args.length == 0) {
-            usage();
-            return;
-        }
-        Objects.requireNonNull(args[0], "args[0]");
-        final Path file = Paths.get(args[0]);
-        list(file, args);
-    }
-
-    private static void println(final ArchiveEntry entry) {
+    private void println(final ArchiveEntry entry) {
         println(entry.getName());
     }
 
-    private static void println(final String line) {
-        System.out.println(line);
-    }
-
-    private static void usage() {
-        println("Parameters: archive-name [archive-type]\n");
-        println("The magic archive-type 'zipfile' prefers ZipFile over ZipArchiveInputStream");
-        println("The magic archive-type 'tarfile' prefers TarFile over TarArchiveInputStream");
+    private void println(final String line) {
+        if (!quiet) {
+            System.out.println(line);
+        }
     }
 
 }

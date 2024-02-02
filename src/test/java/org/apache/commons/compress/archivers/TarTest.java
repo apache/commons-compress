@@ -85,7 +85,7 @@ public final class TarTest extends AbstractTest {
 
     @Test
     public void testCOMPRESS178() throws Exception {
-        final File input = getFile("COMPRESS-178.tar");
+        final File input = getFile("COMPRESS-178-fail.tar");
         try (InputStream is = Files.newInputStream(input.toPath());
                 ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("tar", is)) {
             final IOException e = assertThrows(IOException.class, in::getNextEntry, "Expected IOException");
@@ -96,7 +96,7 @@ public final class TarTest extends AbstractTest {
 
     @Test
     public void testCOMPRESS178Lenient() throws Exception {
-        final File input = getFile("COMPRESS-178.tar");
+        final File input = getFile("COMPRESS-178-fail.tar");
         try (InputStream is = Files.newInputStream(input.toPath());
                 ArchiveInputStream<?> in = new TarArchiveInputStream(is, true)) {
             in.getNextEntry();
@@ -314,7 +314,7 @@ public final class TarTest extends AbstractTest {
 
     @Test
     public void testTarFileCOMPRESS178() throws Exception {
-        final File input = getFile("COMPRESS-178.tar");
+        final File input = getFile("COMPRESS-178-fail.tar");
         final IOException e = assertThrows(IOException.class, () -> {
             try (TarFile tarFile = new TarFile(input)) {
                 // Compared to the TarArchiveInputStream all entries are read when instantiating the tar file
@@ -326,7 +326,7 @@ public final class TarTest extends AbstractTest {
 
     @Test
     public void testTarFileCOMPRESS178Lenient() throws Exception {
-        final File input = getFile("COMPRESS-178.tar");
+        final File input = getFile("COMPRESS-178-fail.tar");
         try (TarFile tarFile = new TarFile(input, true)) {
             // Compared to the TarArchiveInputStream all entries are read when instantiating the tar file
         }
