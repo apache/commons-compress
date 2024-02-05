@@ -80,7 +80,8 @@ public abstract class Codec {
     public int lastBandLength;
 
     /**
-     * Decodes a sequence of bytes from the given input stream, returning the value as a long. Note that this method can only be applied for non-delta encodings.
+     * Decodes a sequence of bytes from the given input stream, returning the value as a long. Note that this method can only be applied for non-delta
+     * encodings.
      *
      * @param in the input stream to read from
      * @return the value as a long
@@ -90,9 +91,9 @@ public abstract class Codec {
     public abstract int decode(InputStream in) throws IOException, Pack200Exception;
 
     /**
-     * Decodes a sequence of bytes from the given input stream, returning the value as a long. If this encoding is a delta encoding (d=1) then the previous value
-     * must be passed in as a parameter. If it is a non-delta encoding, then it does not matter what value is passed in, so it makes sense for the value to be
-     * passed in by default using code similar to:
+     * Decodes a sequence of bytes from the given input stream, returning the value as a long. If this encoding is a delta encoding (d=1) then the previous
+     * value must be passed in as a parameter. If it is a non-delta encoding, then it does not matter what value is passed in, so it makes sense for the value
+     * to be passed in by default using code similar to:
      *
      * <pre>
      * long last = 0;
