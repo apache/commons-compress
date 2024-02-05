@@ -21,11 +21,12 @@ import java.io.InputStream;
 
 /**
  * A Codec allows a sequence of bytes to be decoded into integer values (or vice versa).
- *
+ * <p>
  * There are a number of standard Codecs ({@link #UDELTA5}, {@link #UNSIGNED5}, {@link #BYTE1}, {@link #CHAR3}) that are used in the implementation of many
  * bands; but there are a variety of other ones, and indeed the specification assumes that other combinations of values can result in more specific and
  * efficient formats. There are also a sequence of canonical encodings defined by the Pack200 specification, which allow a Codec to be referred to by canonical
  * number. {@link CodecEncoding#getCodec(int, InputStream, Codec)})
+ * </p>
  */
 public abstract class Codec {
 
@@ -150,7 +151,7 @@ public abstract class Codec {
     }
 
     /**
-     * Encode a single value into a sequence of bytes. Note that this method can only be used for non-delta encodings.
+     * Encodes a single value into a sequence of bytes. Note that this method can only be used for non-delta encodings.
      *
      * @param value the value to encode
      * @return the encoded bytes
@@ -159,7 +160,7 @@ public abstract class Codec {
     public abstract byte[] encode(int value) throws Pack200Exception;
 
     /**
-     * Encode a single value into a sequence of bytes.
+     * Encodes a single value into a sequence of bytes.
      *
      * @param value the value to encode
      * @param last  the previous value encoded (for delta encodings)
@@ -169,7 +170,7 @@ public abstract class Codec {
     public abstract byte[] encode(int value, int last) throws Pack200Exception;
 
     /**
-     * Encode a sequence of integers into a byte array
+     * Encodes a sequence of integers into a byte array
      *
      * @param ints the values to encode
      * @return byte[] encoded bytes
