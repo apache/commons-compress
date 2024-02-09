@@ -47,12 +47,14 @@ import java.util.zip.ZipException;
  */
 public class X0015_CertificateIdForFile extends PKWareExtraHeader {
 
+    static final ZipShort HEADER_ID = new ZipShort(0x0015);
+
     private int rcount;
 
     private HashAlgorithm hashAlg;
 
     public X0015_CertificateIdForFile() {
-        super(new ZipShort(0x0015));
+        super(HEADER_ID);
     }
 
     /**

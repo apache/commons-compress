@@ -257,6 +257,8 @@ import java.util.zip.ZipException;
  */
 public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
 
+    static final ZipShort HEADER_ID = new ZipShort(0x0017);
+
     private int format; // TODO written but not read
 
     private EncryptionAlgorithm algId;
@@ -279,7 +281,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     private byte[] vCRC32;
 
     public X0017_StrongEncryptionHeader() {
-        super(new ZipShort(0x0017));
+        super(HEADER_ID);
     }
 
     private void assertDynamicLengthFits(final String what, final int dynamicLength, final int prefixLength, final int length) throws ZipException {

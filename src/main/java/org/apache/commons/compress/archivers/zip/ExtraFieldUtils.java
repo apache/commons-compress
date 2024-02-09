@@ -16,11 +16,14 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 import java.util.zip.ZipException;
 
 /**
@@ -113,24 +116,24 @@ public class ExtraFieldUtils {
     /**
      * Static registry of known extra fields.
      */
-    private static final Map<ZipShort, Class<?>> IMPLEMENTATIONS;
+    private static final Map<ZipShort, Supplier<ZipExtraField>> IMPLEMENTATIONS;
 
     static {
         IMPLEMENTATIONS = new ConcurrentHashMap<>();
-        register(AsiExtraField.class);
-        register(X5455_ExtendedTimestamp.class);
-        register(X7875_NewUnix.class);
-        register(JarMarker.class);
-        register(UnicodePathExtraField.class);
-        register(UnicodeCommentExtraField.class);
-        register(Zip64ExtendedInformationExtraField.class);
-        register(X000A_NTFS.class);
-        register(X0014_X509Certificates.class);
-        register(X0015_CertificateIdForFile.class);
-        register(X0016_CertificateIdForCentralDirectory.class);
-        register(X0017_StrongEncryptionHeader.class);
-        register(X0019_EncryptionRecipientCertificateList.class);
-        register(ResourceAlignmentExtraField.class);
+        register(AsiExtraField.HEADER_ID, AsiExtraField::new);
+        register(X5455_ExtendedTimestamp.HEADER_ID, X5455_ExtendedTimestamp::new);
+        register(X7875_NewUnix.HEADER_ID, X7875_NewUnix::new);
+        register(JarMarker.ID, JarMarker::new);
+        register(UnicodePathExtraField.UPATH_ID, UnicodePathExtraField::new);
+        register(UnicodeCommentExtraField.UCOM_ID, UnicodeCommentExtraField::new);
+        register(Zip64ExtendedInformationExtraField.HEADER_ID, Zip64ExtendedInformationExtraField::new);
+        register(X000A_NTFS.HEADER_ID, X000A_NTFS::new);
+        register(X0014_X509Certificates.HEADER_ID, X0014_X509Certificates::new);
+        register(X0015_CertificateIdForFile.HEADER_ID, X0015_CertificateIdForFile::new);
+        register(X0016_CertificateIdForCentralDirectory.HEADER_ID, X0016_CertificateIdForCentralDirectory::new);
+        register(X0017_StrongEncryptionHeader.HEADER_ID, X0017_StrongEncryptionHeader::new);
+        register(X0019_EncryptionRecipientCertificateList.HEADER_ID, X0019_EncryptionRecipientCertificateList::new);
+        register(ResourceAlignmentExtraField.ID, ResourceAlignmentExtraField::new);
     }
 
     static final ZipExtraField[] EMPTY_ZIP_EXTRA_FIELD_ARRAY = {};
@@ -163,9 +166,9 @@ public class ExtraFieldUtils {
      * @since 1.19
      */
     public static ZipExtraField createExtraFieldNoDefault(final ZipShort headerId) throws InstantiationException, IllegalAccessException {
-        final Class<?> c = IMPLEMENTATIONS.get(headerId);
-        if (c != null) {
-            return (ZipExtraField) c.newInstance();
+        final Supplier<ZipExtraField> provider = IMPLEMENTATIONS.get(headerId);
+        if (provider != null) {
+            return provider.get();
         }
         return null;
     }
@@ -379,11 +382,28 @@ public class ExtraFieldUtils {
      * </p>
      *
      * @param c the class to register
+     *
+     * todo: "at_deprecated this registration is global and shared by all consumers.", find a way to make it specific.
      */
     public static void register(final Class<?> c) {
         try {
-            final ZipExtraField ze = (ZipExtraField) c.getConstructor().newInstance();
-            IMPLEMENTATIONS.put(ze.getHeaderId(), c);
+            final Constructor<? extends ZipExtraField> constructor = c
+                    .asSubclass(ZipExtraField.class)
+                    .getConstructor();
+            final ZipExtraField ze = constructor.newInstance();
+            IMPLEMENTATIONS.put(ze.getHeaderId(), () -> {
+                try {
+                    return constructor.newInstance();
+                } catch (final InstantiationException | IllegalAccessException e) {
+                    throw new IllegalStateException(e);
+                } catch (final InvocationTargetException e) {
+                    final Throwable cause = e.getTargetException();
+                    if (cause instanceof RuntimeException) {
+                        throw (RuntimeException) cause;
+                    }
+                    throw new IllegalStateException(cause);
+                }
+            });
         } catch (final ClassCastException cc) { // NOSONAR
             throw new IllegalArgumentException(c + " doesn't implement ZipExtraField"); // NOSONAR
         } catch (final InstantiationException ie) { // NOSONAR
@@ -393,5 +413,9 @@ public class ExtraFieldUtils {
         } catch (final ReflectiveOperationException e) {
             throw new IllegalArgumentException(c + ": " + e); // NOSONAR
         }
+    }
+
+    private static void register(final ZipShort id, final Supplier<ZipExtraField> c) {
+        IMPLEMENTATIONS.put(id, c);
     }
 }

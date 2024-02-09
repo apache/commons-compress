@@ -57,7 +57,7 @@ import org.apache.commons.compress.utils.ByteUtils;
  * @since 1.5
  */
 public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
-    private static final ZipShort HEADER_ID = new ZipShort(0x7875);
+    static final ZipShort HEADER_ID = new ZipShort(0x7875);
     private static final ZipShort ZERO = new ZipShort(0);
     private static final BigInteger ONE_THOUSAND = BigInteger.valueOf(1000);
     private static final long serialVersionUID = 1L;
