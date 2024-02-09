@@ -60,7 +60,7 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
     private static final class BufferAtATimeOutputChannel implements WritableByteChannel {
 
         private final OutputStream out;
-        private final AtomicBoolean closed = new AtomicBoolean(false);
+        private final AtomicBoolean closed = new AtomicBoolean();
 
         private BufferAtATimeOutputChannel(final OutputStream out) {
             this.out = out;
@@ -108,7 +108,7 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
     private final int blockSize;
     private final ByteBuffer buffer;
 
-    private final AtomicBoolean closed = new AtomicBoolean(false);
+    private final AtomicBoolean closed = new AtomicBoolean();
 
     /**
      * Constructs a fixed length block output stream with given destination stream and block size.
