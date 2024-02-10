@@ -43,6 +43,7 @@ import org.apache.commons.compress.utils.IOUtils;
  * it seems very likely the format uses the current default encoding of the system.
  * </p>
  * @NotThreadSafe
+ * @since 1.3
  */
 public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry> {
 
