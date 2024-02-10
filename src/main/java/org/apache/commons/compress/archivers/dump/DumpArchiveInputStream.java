@@ -22,6 +22,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -291,42 +292,40 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      *
      * @param entry
      * @return full path for specified archive entry, or null if there's a gap.
+     * @throws DumpArchiveException Infinite loop detected in directory entries.
      */
-    private String getPath(final DumpArchiveEntry entry) {
+    private String getPath(final DumpArchiveEntry entry) throws DumpArchiveException {
         // build the stack of elements. It's possible that we're
         // still missing an intermediate value and if so we
         final Stack<String> elements = new Stack<>();
+        final BitSet visited = new BitSet();
         Dirent dirent = null;
-
         for (int i = entry.getIno();; i = dirent.getParentIno()) {
             if (!names.containsKey(i)) {
                 elements.clear();
                 break;
             }
-
+            if (visited.get(i)) {
+                throw new DumpArchiveException("Duplicate node " + i);
+            }
             dirent = names.get(i);
+            visited.set(i);
             elements.push(dirent.getName());
-
             if (dirent.getIno() == dirent.getParentIno()) {
                 break;
             }
         }
-
         // if an element is missing defer the work and read next entry.
         if (elements.isEmpty()) {
             pending.put(entry.getIno(), entry);
-
             return null;
         }
-
         // generate full path from stack of elements.
         final StringBuilder sb = new StringBuilder(elements.pop());
-
         while (!elements.isEmpty()) {
             sb.append('/');
             sb.append(elements.pop());
         }
-
         return sb.toString();
     }
 
@@ -491,6 +490,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
             for (int i = 0; i < datalen - 8 && i < size - 8; i += reclen) {
                 final int ino = DumpArchiveUtil.convert32(blockBuffer, i);
                 reclen = DumpArchiveUtil.convert16(blockBuffer, i + 4);
+                if (reclen == 0) {
+                    throw new DumpArchiveException("reclen cannot be 0");
+                }
 
                 final byte type = blockBuffer[i + 6];
 
@@ -510,15 +512,15 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
                 names.put(ino, d);
 
                 // check whether this allows us to fill anything in the pending list.
-                pending.forEach((k, v) -> {
+                for (final Map.Entry<Integer, DumpArchiveEntry> mapEntry : pending.entrySet()) {
+                    final DumpArchiveEntry v = mapEntry.getValue();
                     final String path = getPath(v);
-
                     if (path != null) {
                         v.setName(path);
-                        v.setSimpleName(names.get(k).getName());
+                        v.setSimpleName(names.get(mapEntry.getKey()).getName());
                         queue.add(v);
                     }
-                });
+                }
 
                 // remove anything that we found. (We can't do it earlier
                 // because of concurrent modification exceptions.)

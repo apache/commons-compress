@@ -23,14 +23,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.Timeout.ThreadMode;
 
 public class DumpArchiveInputStreamTest extends AbstractTest {
 
@@ -52,7 +57,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
     @Test
     public void testDirectoryNullBytes() throws Exception {
         try (InputStream is = newInputStream("org/apache/commons/compress/dump/directory_null_bytes-fail.dump");
-             DumpArchiveInputStream archive = new DumpArchiveInputStream(is)) {
+                DumpArchiveInputStream archive = new DumpArchiveInputStream(is)) {
             assertThrows(InvalidFormatException.class, archive::getNextEntry);
         }
     }
@@ -62,6 +67,16 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
         try (InputStream is = newInputStream("org/apache/commons/compress/dump/invalid_compression_type-fail.dump")) {
             final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close());
             assertInstanceOf(UnsupportedCompressionAlgorithmException.class, ex.getCause());
+        }
+    }
+
+    @Test
+    @Timeout(value = 15,unit = TimeUnit.SECONDS, threadMode = ThreadMode.SEPARATE_THREAD)
+    public void testLoopingInodes() throws Exception {
+        try (InputStream is = newInputStream("org/apache/commons/compress/dump/looping_inodes-fail.dump");
+                DumpArchiveInputStream archive = new DumpArchiveInputStream(is)) {
+            archive.getNextEntry();
+            assertThrows(DumpArchiveException.class, archive::getNextEntry);
         }
     }
 
@@ -90,6 +105,16 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
         try (InputStream is = newInputStream("zip64support.tar.bz2")) {
             final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(), "expected an exception");
             assertInstanceOf(UnrecognizedFormatException.class, ex.getCause());
+        }
+    }
+
+    @Test
+    public void testRecLenZeroLongExecution() throws Exception {
+        try (InputStream is = newInputStream("org/apache/commons/compress/dump/reclen_zero-fail.dump");
+                DumpArchiveInputStream archive = new DumpArchiveInputStream(is)) {
+            assertTimeoutPreemptively(Duration.ofSeconds(20), () -> {
+                assertThrows(DumpArchiveException.class, archive::getNextEntry);
+            });
         }
     }
 
