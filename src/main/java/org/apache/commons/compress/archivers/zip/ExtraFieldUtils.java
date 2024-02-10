@@ -144,10 +144,8 @@ public class ExtraFieldUtils {
      *
      * @param headerId the header identifier
      * @return an instance of the appropriate ExtraField
-     * @throws InstantiationException if unable to instantiate the class
-     * @throws IllegalAccessException if not allowed to instantiate the class
      */
-    public static ZipExtraField createExtraField(final ZipShort headerId) throws InstantiationException, IllegalAccessException {
+    public static ZipExtraField createExtraField(final ZipShort headerId) {
         final ZipExtraField field = createExtraFieldNoDefault(headerId);
         if (field != null) {
             return field;
@@ -158,15 +156,13 @@ public class ExtraFieldUtils {
     }
 
     /**
-     * Creates an instance of the appropriate ExtraField.
+     * Creates an instance of the appropriate {@link ZipExtraField}.
      *
      * @param headerId the header identifier
-     * @return an instance of the appropriate ExtraField or null if the id is not supported
-     * @throws InstantiationException if unable to instantiate the class
-     * @throws IllegalAccessException if not allowed to instantiate the class
+     * @return an instance of the appropriate {@link ZipExtraField} or null if the id is not supported
      * @since 1.19
      */
-    public static ZipExtraField createExtraFieldNoDefault(final ZipShort headerId) throws InstantiationException, IllegalAccessException {
+    public static ZipExtraField createExtraFieldNoDefault(final ZipShort headerId) {
         final Supplier<ZipExtraField> provider = IMPLEMENTATIONS.get(headerId);
         return provider != null ? provider.get() : null;
     }
