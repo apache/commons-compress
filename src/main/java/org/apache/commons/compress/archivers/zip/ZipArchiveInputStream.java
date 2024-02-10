@@ -367,16 +367,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Enable custom extra fields factory.
-     * @param extraFieldSupport the lookup function based on extra field header id.
-     * @return the archive.
-     */
-    public ZipArchiveInputStream setExtraFieldSupport(final Function<ZipShort, ZipExtraField> extraFieldSupport) {
-        this.extraFieldSupport = extraFieldSupport;
-        return this;
-    }
-
-    /**
      * Checks whether the current buffer contains the signature of a &quot;data descriptor&quot;, &quot;local file header&quot; or &quot;central directory
      * entry&quot;.
      * <p>
@@ -1101,6 +1091,15 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         readFully(b, 0);
     }
 
+    private void readFully(final byte[] b, final int off) throws IOException {
+        final int len = b.length - off;
+        final int count = IOUtils.readFully(in, b, off, len);
+        count(count);
+        if (count < len) {
+            throw new EOFException();
+        }
+    }
+
     // End of Central Directory Record
     // end of central dir signature WORD
     // number of this disk SHORT
@@ -1117,15 +1116,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     // .ZIP file comment length SHORT
     // .ZIP file comment up to 64KB
     //
-
-    private void readFully(final byte[] b, final int off) throws IOException {
-        final int len = b.length - off;
-        final int count = IOUtils.readFully(in, b, off, len);
-        count(count);
-        if (count < len) {
-            throw new EOFException();
-        }
-    }
 
     /**
      * Reads bytes by reading from the underlying stream rather than the (potentially inflating) archive stream - which {@link #read} would do.
@@ -1259,6 +1249,16 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             return;
         }
         throw new IllegalArgumentException();
+    }
+
+    /**
+     * Enable custom extra fields factory.
+     * @param extraFieldSupport the lookup function based on extra field header id.
+     * @return the archive.
+     */
+    public ZipArchiveInputStream setExtraFieldSupport(final Function<ZipShort, ZipExtraField> extraFieldSupport) {
+        this.extraFieldSupport = extraFieldSupport;
+        return this;
     }
 
     /**
