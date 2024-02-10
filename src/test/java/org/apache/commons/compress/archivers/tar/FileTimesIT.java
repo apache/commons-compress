@@ -52,7 +52,7 @@ public class FileTimesIT extends AbstractTest {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test/", e.getName());
+            assertEquals("test/", e.getName());
             assertEquals(TarConstants.LF_DIR, e.getLinkFlag());
             assertTrue(e.isDirectory());
             assertEquals(toFileTime("2022-03-17T00:24:44.147126600Z"), e.getLastModifiedTime(), "mtime");
@@ -62,7 +62,7 @@ public class FileTimesIT extends AbstractTest {
             e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test/test-times.txt", e.getName());
+            assertEquals("test/test-times.txt", e.getName());
             assertEquals(TarConstants.LF_NORMAL, e.getLinkFlag());
             assertTrue(e.isFile());
             assertEquals(toFileTime("2022-03-17T00:38:20.470751500Z"), e.getLastModifiedTime(), "mtime");
@@ -81,7 +81,7 @@ public class FileTimesIT extends AbstractTest {
                 TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
-            assertEquals("name", "test/", e.getName());
+            assertEquals("test/", e.getName());
             assertEquals(TarConstants.LF_DIR, e.getLinkFlag());
             assertTrue(e.isDirectory());
             assertEquals(toFileTime("2022-03-17T00:24:44.147126600Z"), e.getLastModifiedTime(), "mtime");
@@ -90,7 +90,7 @@ public class FileTimesIT extends AbstractTest {
             assertNull(e.getCreationTime(), "birthtime");
             assertGlobalHeaders(e);
             e = tin.getNextTarEntry();
-            assertEquals("name", "test/test-times.txt", e.getName());
+            assertEquals("test/test-times.txt", e.getName());
             assertEquals(TarConstants.LF_NORMAL, e.getLinkFlag());
             assertTrue(e.isFile());
             assertEquals(toFileTime("2022-03-17T00:38:20.470751500Z"), e.getLastModifiedTime(), "mtime");
@@ -130,7 +130,7 @@ public class FileTimesIT extends AbstractTest {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test-times.txt", e.getName());
+            assertEquals("test-times.txt", e.getName());
             assertEquals(toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime(), "mtime");
             assertNull(e.getLastAccessTime(), "atime");
             assertNull(e.getStatusChangeTime(), "ctime");
@@ -138,7 +138,7 @@ public class FileTimesIT extends AbstractTest {
             e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test-times.txt", e.getName());
+            assertEquals("test-times.txt", e.getName());
             assertEquals(toFileTime("2022-03-14T03:17:05Z"), e.getLastModifiedTime(), "mtime");
             assertEquals(toFileTime("2022-03-14T03:17:10Z"), e.getLastAccessTime(), "atime");
             assertEquals(toFileTime("2022-03-14T03:17:10Z"), e.getStatusChangeTime(), "ctime");
@@ -210,7 +210,7 @@ public class FileTimesIT extends AbstractTest {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test-times.txt", e.getName());
+            assertEquals("test-times.txt", e.getName());
             assertEquals(toFileTime("2022-03-14T01:25:03Z"), e.getLastModifiedTime(), "mtime");
             assertNull(e.getLastAccessTime(), "atime");
             assertNull(e.getStatusChangeTime(), "ctime");
@@ -218,7 +218,7 @@ public class FileTimesIT extends AbstractTest {
             e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test-times.txt", e.getName());
+            assertEquals("test-times.txt", e.getName());
             assertEquals(toFileTime("2022-03-14T03:17:05Z"), e.getLastModifiedTime(), "mtime");
             assertEquals(toFileTime("2022-03-14T03:17:06Z"), e.getLastAccessTime(), "atime");
             assertEquals(toFileTime("2022-03-14T03:17:05Z"), e.getStatusChangeTime(), "ctime");
@@ -237,7 +237,7 @@ public class FileTimesIT extends AbstractTest {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test/", e.getName());
+            assertEquals("test/", e.getName());
             assertEquals(TarConstants.LF_DIR, e.getLinkFlag());
             assertTrue(e.isDirectory());
             assertEquals(toFileTime("2022-03-17T00:24:44.147126600Z"), e.getLastModifiedTime(), "mtime");
@@ -247,7 +247,7 @@ public class FileTimesIT extends AbstractTest {
             e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test/test-times.txt", e.getName());
+            assertEquals("test/test-times.txt", e.getName());
             assertEquals(TarConstants.LF_NORMAL, e.getLinkFlag());
             assertTrue(e.isFile());
             assertEquals(toFileTime("2022-03-17T00:38:20.470751500Z"), e.getLastModifiedTime(), "mtime");
@@ -286,7 +286,7 @@ public class FileTimesIT extends AbstractTest {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test/", e.getName());
+            assertEquals("test/", e.getName());
             assertEquals(TarConstants.LF_DIR, e.getLinkFlag());
             assertTrue(e.isDirectory());
             assertEquals(toFileTime("2022-03-16T10:19:43.382883700Z"), e.getLastModifiedTime(), "mtime");
@@ -296,7 +296,7 @@ public class FileTimesIT extends AbstractTest {
             e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test/test-times.txt", e.getName());
+            assertEquals("test/test-times.txt", e.getName());
             assertEquals(TarConstants.LF_NORMAL, e.getLinkFlag());
             assertTrue(e.isFile());
             assertEquals(toFileTime("2022-03-16T10:21:00.249238500Z"), e.getLastModifiedTime(), "mtime");
@@ -334,7 +334,7 @@ public class FileTimesIT extends AbstractTest {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test/", e.getName());
+            assertEquals("test/", e.getName());
             assertEquals(TarConstants.LF_DIR, e.getLinkFlag());
             assertTrue(e.isDirectory());
             assertEquals(toFileTime("2022-03-17T00:24:44Z"), e.getLastModifiedTime(), "mtime");
@@ -343,7 +343,7 @@ public class FileTimesIT extends AbstractTest {
             assertNull(e.getCreationTime(), "birthtime");
             e = tin.getNextTarEntry();
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test/test-times.txt", e.getName());
+            assertEquals("test/test-times.txt", e.getName());
             assertEquals(TarConstants.LF_NORMAL, e.getLinkFlag());
             assertTrue(e.isFile());
             assertEquals(toFileTime("2022-03-17T00:38:20Z"), e.getLastModifiedTime(), "mtime");
@@ -414,7 +414,7 @@ public class FileTimesIT extends AbstractTest {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test/", e.getName());
+            assertEquals("test/", e.getName());
             assertEquals(TarConstants.LF_DIR, e.getLinkFlag());
             assertTrue(e.isDirectory());
             assertEquals(toFileTime("2022-03-17T00:24:44Z"), e.getLastModifiedTime(), "mtime");
@@ -422,7 +422,7 @@ public class FileTimesIT extends AbstractTest {
             assertEquals(toFileTime("2022-03-17T00:24:44Z"), e.getStatusChangeTime(), "ctime");
             assertNull(e.getCreationTime(), "birthtime");
             e = tin.getNextTarEntry();
-            assertEquals("name", "test/test-times.txt", e.getName());
+            assertEquals("test/test-times.txt", e.getName());
             assertEquals(TarConstants.LF_NORMAL, e.getLinkFlag());
             assertTrue(e.isFile());
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -443,7 +443,7 @@ public class FileTimesIT extends AbstractTest {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test-times.txt", e.getName());
+            assertEquals("test-times.txt", e.getName());
             assertEquals(toFileTime("2022-03-14T04:03:29Z"), e.getLastModifiedTime(), "mtime");
             assertEquals(toFileTime("2022-03-14T04:03:29Z"), e.getLastAccessTime(), "atime");
             assertEquals(toFileTime("2022-03-14T04:03:29Z"), e.getStatusChangeTime(), "ctime");
@@ -486,7 +486,7 @@ public class FileTimesIT extends AbstractTest {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test/", e.getName());
+            assertEquals("test/", e.getName());
             assertEquals(TarConstants.LF_DIR, e.getLinkFlag());
             assertTrue(e.isDirectory());
             assertEquals(toFileTime("2022-03-17T00:24:44.147126600Z"), e.getLastModifiedTime(), "mtime");
@@ -495,7 +495,7 @@ public class FileTimesIT extends AbstractTest {
             assertNull(e.getCreationTime(), "birthtime");
             e = tin.getNextTarEntry();
             assertTrue(e.getExtraPaxHeaders().isEmpty());
-            assertEquals("name", "test/test-times.txt", e.getName());
+            assertEquals("test/test-times.txt", e.getName());
             assertEquals(TarConstants.LF_NORMAL, e.getLinkFlag());
             assertTrue(e.isFile());
             assertEquals(toFileTime("2022-03-17T00:38:20.470751500Z"), e.getLastModifiedTime(), "mtime");
