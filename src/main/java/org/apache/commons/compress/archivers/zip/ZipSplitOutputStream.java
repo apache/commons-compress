@@ -120,10 +120,13 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
      * <p>
      * 8.3.3 Split ZIP files are typically written to the same location and are subject to name collisions if the spanned name format is used since each segment
      * will reside on the same drive. To avoid name collisions, split archives are named as follows.
+     * </p>
      * <p>
      * Segment 1 = filename.z01 Segment n-1 = filename.z(n-1) Segment n = filename.zip
+     * </p>
      * <p>
      * NOTE: The ZIP split segment begin from 1,2,3,... , and we're creating a new segment, so the new segment suffix should be (currentSplitSegmentIndex + 2)
+     * </p>
      *
      * @param zipSplitSegmentSuffixIndex
      * @return
@@ -214,6 +217,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
      * <p>
      * 4.4.1.5 The end of central directory record and the Zip64 end of central directory locator record MUST reside on the same disk when splitting or spanning
      * an archive.
+     * </p>
      *
      * @param unsplittableContentSize
      * @throws IllegalArgumentException
@@ -236,7 +240,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
     }
 
     /**
-     * Write the data to ZIP split segments, if the remaining space of current split segment is not enough, then a new split segment should be created
+     * Writes the data to ZIP split segments, if the remaining space of current split segment is not enough, then a new split segment should be created
      *
      * @param b   data to write
      * @param off offset of the start of data in param b
@@ -309,7 +313,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
     }
 
     /**
-     * Write the ZIP split signature (0x08074B50) to the head of the first ZIP split segment
+     * Writes the ZIP split signature (0x08074B50) to the head of the first ZIP split segment
      *
      * @throws IOException
      */
