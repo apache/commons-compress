@@ -1104,8 +1104,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
         }
     }
 
-    private ZipExtraField[] parseExtraFields(final byte[] data, final boolean local,
-                                             final ExtraFieldParsingBehavior parsingBehavior) throws ZipException {
+    private ZipExtraField[] parseExtraFields(final byte[] data, final boolean local, final ExtraFieldParsingBehavior parsingBehavior) throws ZipException {
         if (extraFieldFactory != null) {
             return ExtraFieldUtils.parse(data, local, new ExtraFieldParsingBehavior() {
                 @Override
@@ -1115,16 +1114,13 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
                 }
 
                 @Override
-                public ZipExtraField fill(final ZipExtraField field,
-                                          final byte[] data, final int off, final int len,
-                                          final boolean local) throws ZipException {
+                public ZipExtraField fill(final ZipExtraField field, final byte[] data, final int off, final int len, final boolean local) throws ZipException {
                     return parsingBehavior.fill(field, data, off, len, local);
                 }
 
                 @Override
-                public ZipExtraField onUnparseableExtraField(
-                        final byte[] data, final int off, final int len,
-                        final boolean local, final int claimedLength) throws ZipException {
+                public ZipExtraField onUnparseableExtraField(final byte[] data, final int off, final int len, final boolean local, final int claimedLength)
+                        throws ZipException {
                     return parsingBehavior.onUnparseableExtraField(data, off, len, local, claimedLength);
                 }
             });

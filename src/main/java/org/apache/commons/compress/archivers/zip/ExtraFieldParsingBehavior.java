@@ -24,9 +24,9 @@ import java.util.zip.ZipException;
  * @since 1.19
  */
 public interface ExtraFieldParsingBehavior extends UnparseableExtraFieldBehavior {
+
     /**
      * Creates an instance of ZipExtraField for the given id.
-     *
      * <p>
      * A good default implementation would be {@link ExtraFieldUtils#createExtraField}.
      * </p>
@@ -34,14 +34,13 @@ public interface ExtraFieldParsingBehavior extends UnparseableExtraFieldBehavior
      * @param headerId the id for the extra field
      * @return an instance of ZipExtraField, must not be {@code null}
      * @throws ZipException           if an error occurs
-     * @throws InstantiationException if unable to instantiate the class
-     * @throws IllegalAccessException if not allowed to instantiate the class
+     * @throws InstantiationException if unable to instantiate the class, not thrown by Commons Compress.
+     * @throws IllegalAccessException if not allowed to instantiate the class, not thrown by Commons Compress.
      */
     ZipExtraField createExtraField(ZipShort headerId) throws ZipException, InstantiationException, IllegalAccessException;
 
     /**
      * Fills in the extra field data for a single extra field.
-     *
      * <p>
      * A good default implementation would be {@link ExtraFieldUtils#fillExtraField}.
      * </p>
