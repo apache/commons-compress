@@ -279,7 +279,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     private UnparseableExtraFieldData unparseableExtra;
     private String name;
     private byte[] rawName;
-    private GeneralPurposeBit gpb = new GeneralPurposeBit();
+    private GeneralPurposeBit generalPurposeBit = new GeneralPurposeBit();
     private long localHeaderOffset = OFFSET_UNKNOWN;
     private long dataOffset = OFFSET_UNKNOWN;
     private boolean isStreamContiguous;
@@ -586,7 +586,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
                 && getCrc() == other.getCrc() && getCompressedSize() == other.getCompressedSize()
                 && Arrays.equals(getCentralDirectoryExtra(), other.getCentralDirectoryExtra())
                 && Arrays.equals(getLocalFileDataExtra(), other.getLocalFileDataExtra()) && localHeaderOffset == other.localHeaderOffset
-                && dataOffset == other.dataOffset && gpb.equals(other.gpb);
+                && dataOffset == other.dataOffset && generalPurposeBit.equals(other.generalPurposeBit);
     }
 
     private ZipExtraField findMatching(final ZipShort headerId, final List<ZipExtraField> fs) {
@@ -762,7 +762,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      * @since 1.1
      */
     public GeneralPurposeBit getGeneralPurposeBit() {
-        return gpb;
+        return generalPurposeBit;
     }
 
     /**
@@ -1323,34 +1323,34 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * The "general purpose bit" field.
+     * Sets the "general purpose bit" field.
      *
-     * @param b the general purpose bit
+     * @param generalPurposeBit the general purpose bit
      * @since 1.1
      */
-    public void setGeneralPurposeBit(final GeneralPurposeBit b) {
-        gpb = b;
+    public void setGeneralPurposeBit(final GeneralPurposeBit generalPurposeBit) {
+        this.generalPurposeBit = generalPurposeBit;
     }
 
     /**
      * Sets the internal file attributes.
      *
-     * @param value an {@code int} value
+     * @param internalAttributes an {@code int} value
      */
-    public void setInternalAttributes(final int value) {
-        internalAttributes = value;
+    public void setInternalAttributes(final int internalAttributes) {
+        this.internalAttributes = internalAttributes;
     }
 
     @Override
-    public ZipEntry setLastAccessTime(final FileTime time) {
-        super.setLastAccessTime(time);
+    public ZipEntry setLastAccessTime(final FileTime fileTime) {
+        super.setLastAccessTime(fileTime);
         setExtraTimeFields();
         return this;
     }
 
     @Override
-    public ZipEntry setLastModifiedTime(final FileTime time) {
-        internalSetLastModifiedTime(time);
+    public ZipEntry setLastModifiedTime(final FileTime fileTime) {
+        internalSetLastModifiedTime(fileTime);
         setExtraTimeFields();
         return this;
     }
@@ -1463,19 +1463,19 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      * Override to work around bug <a href="https://bugs.openjdk.org/browse/JDK-8130914">JDK-8130914</a>
      * </p>
      *
-     * @param time The last modification time of the entry in milliseconds since the epoch
+     * @param timeEpochMillis The last modification time of the entry in milliseconds since the epoch.
      * @see #getTime()
      * @see #getLastModifiedTime()
      */
     @Override
-    public void setTime(final long time) {
-        if (ZipUtil.isDosTime(time)) {
-            super.setTime(time);
-            this.time = time;
+    public void setTime(final long timeEpochMillis) {
+        if (ZipUtil.isDosTime(timeEpochMillis)) {
+            super.setTime(timeEpochMillis);
+            this.time = timeEpochMillis;
             lastModifiedDateSet = false;
             setExtraTimeFields();
         } else {
-            setLastModifiedTime(FileTime.fromMillis(time));
+            setLastModifiedTime(FileTime.fromMillis(timeEpochMillis));
         }
     }
 
