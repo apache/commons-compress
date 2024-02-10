@@ -130,7 +130,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
      * @throws IOException
      */
     private Path createNewSplitSegmentFile(final Integer zipSplitSegmentSuffixIndex) throws IOException {
-        final Path newFile = getSplitSegmentFilename(zipSplitSegmentSuffixIndex);
+        final Path newFile = getSplitSegmentFileName(zipSplitSegmentSuffixIndex);
 
         if (Files.exists(newFile)) {
             throw new IOException("split ZIP segment " + newFile + " already exists");
@@ -163,21 +163,19 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
         return currentSplitSegmentIndex;
     }
 
-    private Path getSplitSegmentFilename(final Integer zipSplitSegmentSuffixIndex) throws IOException {
+    private Path getSplitSegmentFileName(final Integer zipSplitSegmentSuffixIndex) {
         final int newZipSplitSegmentSuffixIndex = zipSplitSegmentSuffixIndex == null ? currentSplitSegmentIndex + 2 : zipSplitSegmentSuffixIndex;
         final String baseName = FileNameUtils.getBaseName(zipFile);
-        String extension = ".z";
+        final StringBuilder extension = new StringBuilder(".z");
         if (newZipSplitSegmentSuffixIndex <= 9) {
-            extension += "0" + newZipSplitSegmentSuffixIndex;
+            extension.append("0").append(newZipSplitSegmentSuffixIndex);
         } else {
-            extension += newZipSplitSegmentSuffixIndex;
+            extension.append(newZipSplitSegmentSuffixIndex);
         }
 
         final Path parent = zipFile.getParent();
         final String dir = Objects.nonNull(parent) ? parent.toAbsolutePath().toString() : ".";
-        final Path newFile = zipFile.getFileSystem().getPath(dir, baseName + extension);
-
-        return newFile;
+        return zipFile.getFileSystem().getPath(dir, baseName + extension.toString());
     }
 
     /**
