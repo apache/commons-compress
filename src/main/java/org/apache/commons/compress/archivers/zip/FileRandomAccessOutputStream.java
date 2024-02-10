@@ -34,7 +34,7 @@ class FileRandomAccessOutputStream extends RandomAccessOutputStream {
 
     private long position;
 
-    FileRandomAccessOutputStream(final FileChannel channel) throws IOException {
+    FileRandomAccessOutputStream(final FileChannel channel) {
         this.channel = Objects.requireNonNull(channel, "channel");
     }
 
