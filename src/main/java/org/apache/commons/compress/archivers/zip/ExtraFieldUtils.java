@@ -16,11 +16,14 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 import java.util.zip.ZipException;
 
 /**
@@ -113,24 +116,25 @@ public class ExtraFieldUtils {
     /**
      * Static registry of known extra fields.
      */
-    private static final Map<ZipShort, Class<?>> IMPLEMENTATIONS;
+    private static final Map<ZipShort, Supplier<ZipExtraField>> IMPLEMENTATIONS;
 
     static {
-        IMPLEMENTATIONS = new ConcurrentHashMap<>();
-        register(AsiExtraField.class);
-        register(X5455_ExtendedTimestamp.class);
-        register(X7875_NewUnix.class);
-        register(JarMarker.class);
-        register(UnicodePathExtraField.class);
-        register(UnicodeCommentExtraField.class);
-        register(Zip64ExtendedInformationExtraField.class);
-        register(X000A_NTFS.class);
-        register(X0014_X509Certificates.class);
-        register(X0015_CertificateIdForFile.class);
-        register(X0016_CertificateIdForCentralDirectory.class);
-        register(X0017_StrongEncryptionHeader.class);
-        register(X0019_EncryptionRecipientCertificateList.class);
-        register(ResourceAlignmentExtraField.class);
+        IMPLEMENTATIONS = new ConcurrentHashMap<>(); // it can't be used at runtime by design so no need to be concurrent
+        // IMPLEMENTATIONS = new HashMap<>(); // see register() comment
+        IMPLEMENTATIONS.put(AsiExtraField.HEADER_ID, AsiExtraField::new);
+        IMPLEMENTATIONS.put(X5455_ExtendedTimestamp.HEADER_ID, X5455_ExtendedTimestamp::new);
+        IMPLEMENTATIONS.put(X7875_NewUnix.HEADER_ID, X7875_NewUnix::new);
+        IMPLEMENTATIONS.put(JarMarker.ID, JarMarker::new);
+        IMPLEMENTATIONS.put(UnicodePathExtraField.UPATH_ID, UnicodePathExtraField::new);
+        IMPLEMENTATIONS.put(UnicodeCommentExtraField.UCOM_ID, UnicodeCommentExtraField::new);
+        IMPLEMENTATIONS.put(Zip64ExtendedInformationExtraField.HEADER_ID, Zip64ExtendedInformationExtraField::new);
+        IMPLEMENTATIONS.put(X000A_NTFS.HEADER_ID, X000A_NTFS::new);
+        IMPLEMENTATIONS.put(X0014_X509Certificates.HEADER_ID, X0014_X509Certificates::new);
+        IMPLEMENTATIONS.put(X0015_CertificateIdForFile.HEADER_ID, X0015_CertificateIdForFile::new);
+        IMPLEMENTATIONS.put(X0016_CertificateIdForCentralDirectory.HEADER_ID, X0016_CertificateIdForCentralDirectory::new);
+        IMPLEMENTATIONS.put(X0017_StrongEncryptionHeader.HEADER_ID, X0017_StrongEncryptionHeader::new);
+        IMPLEMENTATIONS.put(X0019_EncryptionRecipientCertificateList.HEADER_ID, X0019_EncryptionRecipientCertificateList::new);
+        IMPLEMENTATIONS.put(ResourceAlignmentExtraField.ID, ResourceAlignmentExtraField::new);
     }
 
     static final ZipExtraField[] EMPTY_ZIP_EXTRA_FIELD_ARRAY = {};
@@ -163,9 +167,9 @@ public class ExtraFieldUtils {
      * @since 1.19
      */
     public static ZipExtraField createExtraFieldNoDefault(final ZipShort headerId) throws InstantiationException, IllegalAccessException {
-        final Class<?> c = IMPLEMENTATIONS.get(headerId);
-        if (c != null) {
-            return (ZipExtraField) c.newInstance();
+        final Supplier<ZipExtraField> provider = IMPLEMENTATIONS.get(headerId);
+        if (provider != null) {
+            return provider.get();
         }
         return null;
     }
@@ -379,11 +383,30 @@ public class ExtraFieldUtils {
      * </p>
      *
      * @param c the class to register
+     *
+     * @deprecated use {@link ZipArchiveInputStream#setExtraFieldSupport} instead
+     *             to not leak instances between archives and applications.
      */
+    @Deprecated // note: when dropping update registration to move to a HashMap (static init)
     public static void register(final Class<?> c) {
         try {
-            final ZipExtraField ze = (ZipExtraField) c.getConstructor().newInstance();
-            IMPLEMENTATIONS.put(ze.getHeaderId(), c);
+            final Constructor<? extends ZipExtraField> constructor = c
+                    .asSubclass(ZipExtraField.class)
+                    .getConstructor();
+            final ZipExtraField ze = constructor.newInstance();
+            IMPLEMENTATIONS.put(ze.getHeaderId(), () -> {
+                try {
+                    return constructor.newInstance();
+                } catch (final InstantiationException | IllegalAccessException e) {
+                    throw new IllegalStateException(e);
+                } catch (final InvocationTargetException e) {
+                    final Throwable cause = e.getTargetException();
+                    if (cause instanceof RuntimeException) {
+                        throw (RuntimeException) cause;
+                    }
+                    throw new IllegalStateException(cause);
+                }
+            });
         } catch (final ClassCastException cc) { // NOSONAR
             throw new IllegalArgumentException(c + " doesn't implement ZipExtraField"); // NOSONAR
         } catch (final InstantiationException ie) { // NOSONAR
