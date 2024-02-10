@@ -168,10 +168,7 @@ public class ExtraFieldUtils {
      */
     public static ZipExtraField createExtraFieldNoDefault(final ZipShort headerId) throws InstantiationException, IllegalAccessException {
         final Supplier<ZipExtraField> provider = IMPLEMENTATIONS.get(headerId);
-        if (provider != null) {
-            return provider.get();
-        }
-        return null;
+        return provider != null ? provider.get() : null;
     }
 
     /**
