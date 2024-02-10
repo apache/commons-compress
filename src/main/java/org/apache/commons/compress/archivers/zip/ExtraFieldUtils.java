@@ -350,8 +350,9 @@ public class ExtraFieldUtils {
      */
     public static ZipExtraField[] parse(final byte[] data, final boolean local, final UnparseableExtraField onUnparseableData) throws ZipException {
         return parse(data, local, new ExtraFieldParsingBehavior() {
+
             @Override
-            public ZipExtraField createExtraField(final ZipShort headerId) throws ZipException, InstantiationException, IllegalAccessException {
+            public ZipExtraField createExtraField(final ZipShort headerId) {
                 return ExtraFieldUtils.createExtraField(headerId);
             }
 

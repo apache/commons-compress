@@ -180,7 +180,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
         }
 
         @Override
-        public ZipExtraField createExtraField(final ZipShort headerId) throws ZipException, InstantiationException, IllegalAccessException {
+        public ZipExtraField createExtraField(final ZipShort headerId) {
             return ExtraFieldUtils.createExtraField(headerId);
         }
 
