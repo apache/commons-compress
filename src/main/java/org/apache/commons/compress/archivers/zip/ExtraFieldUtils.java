@@ -19,10 +19,10 @@ package org.apache.commons.compress.archivers.zip;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.zip.ZipException;
 
@@ -119,7 +119,8 @@ public class ExtraFieldUtils {
     private static final Map<ZipShort, Supplier<ZipExtraField>> IMPLEMENTATIONS;
 
     static {
-        IMPLEMENTATIONS = new HashMap<>(); // it can't be used at runtime by design so no need to be concurrent
+        IMPLEMENTATIONS = new ConcurrentHashMap<>(); // it can't be used at runtime by design so no need to be concurrent
+        // IMPLEMENTATIONS = new HashMap<>(); // see register() comment
         IMPLEMENTATIONS.put(AsiExtraField.HEADER_ID, AsiExtraField::new);
         IMPLEMENTATIONS.put(X5455_ExtendedTimestamp.HEADER_ID, X5455_ExtendedTimestamp::new);
         IMPLEMENTATIONS.put(X7875_NewUnix.HEADER_ID, X7875_NewUnix::new);
@@ -346,7 +347,6 @@ public class ExtraFieldUtils {
     /**
      * Split the array into ExtraFields and populate them with the given data.
      *
-     * @param archive           {@link ZipArchiveInputStream} input
      * @param data              an array of bytes
      * @param local             whether data originates from the local file data or the central directory
      * @param onUnparseableData what to do if the extra field data cannot be parsed.
@@ -387,7 +387,7 @@ public class ExtraFieldUtils {
      * @deprecated use {@link ZipArchiveInputStream#setExtraFieldSupport} instead
      *             to not leak instances between archives and applications.
      */
-    @Deprecated
+    @Deprecated // note: when dropping update registration to move to a HashMap (static init)
     public static void register(final Class<?> c) {
         try {
             final Constructor<? extends ZipExtraField> constructor = c

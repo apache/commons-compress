@@ -293,8 +293,9 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      * @param extraFieldFactory custom lookup factory for extra fields or null
      * @param inputFile file to create the entry from
      * @param entryName name of the entry
+     * @since 1.26.0
      */
-    public ZipArchiveEntry(final Function<ZipShort, ZipExtraField> extraFieldFactory, final File inputFile, final String entryName) {
+    ZipArchiveEntry(final Function<ZipShort, ZipExtraField> extraFieldFactory, final File inputFile, final String entryName) {
         this(extraFieldFactory, inputFile.isDirectory() && !entryName.endsWith("/") ? entryName + "/" : entryName);
         try {
             setAttributes(inputFile.toPath());
@@ -342,12 +343,13 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      * Assumes the entry represents a directory if and only if the name ends with a forward slash "/".
      * </p>
      *
+     * @param extraFieldFactory the extra field lookup factory.
      * @param entry the entry to get fields from
      * @throws ZipException on error
      * @since 1.26.0
      */
-    public ZipArchiveEntry(final Function<ZipShort, ZipExtraField> extraFieldFactory,
-                           final java.util.zip.ZipEntry entry) throws ZipException {
+    ZipArchiveEntry(final Function<ZipShort, ZipExtraField> extraFieldFactory,
+                    final java.util.zip.ZipEntry entry) throws ZipException {
         super(entry);
         this.extraFieldFactory = extraFieldFactory;
         setName(entry.getName());
@@ -393,11 +395,11 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      * @param entryName name of the entry.
      * @param options   options indicating how symbolic links are handled.
      * @throws IOException if an I/O error occurs.
-     * @since 1.21
+     * @since 1.26.0
      */
-    public ZipArchiveEntry(final Function<ZipShort, ZipExtraField> extraFieldFactory,
-                           final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
-        this(Files.isDirectory(inputPath, options) && !entryName.endsWith("/") ? entryName + "/" : entryName);
+    ZipArchiveEntry(final Function<ZipShort, ZipExtraField> extraFieldFactory,
+                    final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
+        this(extraFieldFactory, Files.isDirectory(inputPath, options) && !entryName.endsWith("/") ? entryName + "/" : entryName);
         setAttributes(inputPath, options);
     }
 
@@ -409,6 +411,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      * </p>
      *
      * @param name the name of the entry
+     * @since 1.26.0
      */
     public ZipArchiveEntry(final String name) {
         this((Function<ZipShort, ZipExtraField>) null, name);
@@ -423,9 +426,10 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      *
      * @param extraFieldFactory custom lookup factory for extra fields or null
      * @param name the name of the entry
+     * @since 1.26.0
      */
-    public ZipArchiveEntry(final Function<ZipShort, ZipExtraField> extraFieldFactory,
-                           final String name) {
+    ZipArchiveEntry(final Function<ZipShort, ZipExtraField> extraFieldFactory,
+                    final String name) {
         super(name);
         this.extraFieldFactory = extraFieldFactory;
         setName(name);
