@@ -19,10 +19,10 @@ package org.apache.commons.compress.archivers.zip;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.zip.ZipException;
 
@@ -119,21 +119,21 @@ public class ExtraFieldUtils {
     private static final Map<ZipShort, Supplier<ZipExtraField>> IMPLEMENTATIONS;
 
     static {
-        IMPLEMENTATIONS = new ConcurrentHashMap<>();
-        register(AsiExtraField.HEADER_ID, AsiExtraField::new);
-        register(X5455_ExtendedTimestamp.HEADER_ID, X5455_ExtendedTimestamp::new);
-        register(X7875_NewUnix.HEADER_ID, X7875_NewUnix::new);
-        register(JarMarker.ID, JarMarker::new);
-        register(UnicodePathExtraField.UPATH_ID, UnicodePathExtraField::new);
-        register(UnicodeCommentExtraField.UCOM_ID, UnicodeCommentExtraField::new);
-        register(Zip64ExtendedInformationExtraField.HEADER_ID, Zip64ExtendedInformationExtraField::new);
-        register(X000A_NTFS.HEADER_ID, X000A_NTFS::new);
-        register(X0014_X509Certificates.HEADER_ID, X0014_X509Certificates::new);
-        register(X0015_CertificateIdForFile.HEADER_ID, X0015_CertificateIdForFile::new);
-        register(X0016_CertificateIdForCentralDirectory.HEADER_ID, X0016_CertificateIdForCentralDirectory::new);
-        register(X0017_StrongEncryptionHeader.HEADER_ID, X0017_StrongEncryptionHeader::new);
-        register(X0019_EncryptionRecipientCertificateList.HEADER_ID, X0019_EncryptionRecipientCertificateList::new);
-        register(ResourceAlignmentExtraField.ID, ResourceAlignmentExtraField::new);
+        IMPLEMENTATIONS = new HashMap<>(); // it can't be used at runtime by design so no need to be concurrent
+        IMPLEMENTATIONS.put(AsiExtraField.HEADER_ID, AsiExtraField::new);
+        IMPLEMENTATIONS.put(X5455_ExtendedTimestamp.HEADER_ID, X5455_ExtendedTimestamp::new);
+        IMPLEMENTATIONS.put(X7875_NewUnix.HEADER_ID, X7875_NewUnix::new);
+        IMPLEMENTATIONS.put(JarMarker.ID, JarMarker::new);
+        IMPLEMENTATIONS.put(UnicodePathExtraField.UPATH_ID, UnicodePathExtraField::new);
+        IMPLEMENTATIONS.put(UnicodeCommentExtraField.UCOM_ID, UnicodeCommentExtraField::new);
+        IMPLEMENTATIONS.put(Zip64ExtendedInformationExtraField.HEADER_ID, Zip64ExtendedInformationExtraField::new);
+        IMPLEMENTATIONS.put(X000A_NTFS.HEADER_ID, X000A_NTFS::new);
+        IMPLEMENTATIONS.put(X0014_X509Certificates.HEADER_ID, X0014_X509Certificates::new);
+        IMPLEMENTATIONS.put(X0015_CertificateIdForFile.HEADER_ID, X0015_CertificateIdForFile::new);
+        IMPLEMENTATIONS.put(X0016_CertificateIdForCentralDirectory.HEADER_ID, X0016_CertificateIdForCentralDirectory::new);
+        IMPLEMENTATIONS.put(X0017_StrongEncryptionHeader.HEADER_ID, X0017_StrongEncryptionHeader::new);
+        IMPLEMENTATIONS.put(X0019_EncryptionRecipientCertificateList.HEADER_ID, X0019_EncryptionRecipientCertificateList::new);
+        IMPLEMENTATIONS.put(ResourceAlignmentExtraField.ID, ResourceAlignmentExtraField::new);
     }
 
     static final ZipExtraField[] EMPTY_ZIP_EXTRA_FIELD_ARRAY = {};
@@ -346,6 +346,7 @@ public class ExtraFieldUtils {
     /**
      * Split the array into ExtraFields and populate them with the given data.
      *
+     * @param archive           {@link ZipArchiveInputStream} input
      * @param data              an array of bytes
      * @param local             whether data originates from the local file data or the central directory
      * @param onUnparseableData what to do if the extra field data cannot be parsed.
@@ -383,8 +384,10 @@ public class ExtraFieldUtils {
      *
      * @param c the class to register
      *
-     * todo: "at_deprecated this registration is global and shared by all consumers.", find a way to make it specific.
+     * @deprecated use {@link ZipArchiveInputStream#setExtraFieldSupport} instead
+     *             to not leak instances between archives and applications.
      */
+    @Deprecated
     public static void register(final Class<?> c) {
         try {
             final Constructor<? extends ZipExtraField> constructor = c
@@ -413,9 +416,5 @@ public class ExtraFieldUtils {
         } catch (final ReflectiveOperationException e) {
             throw new IllegalArgumentException(c + ": " + e); // NOSONAR
         }
-    }
-
-    private static void register(final ZipShort id, final Supplier<ZipExtraField> c) {
-        IMPLEMENTATIONS.put(id, c);
     }
 }

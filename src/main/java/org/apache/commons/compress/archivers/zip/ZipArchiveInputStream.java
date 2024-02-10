@@ -33,6 +33,7 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.zip.CRC32;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
@@ -293,6 +294,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private int entriesRead;
 
     /**
+     * The factory for extra fields or null.
+     */
+    private Function<ZipShort, ZipExtraField> extraFieldSupport;
+
+    /**
      * Constructs an instance using UTF-8 encoding
      *
      * @param inputStream the stream to wrap
@@ -358,6 +364,16 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         this.skipSplitSig = skipSplitSig;
         // haven't read anything so far
         buf.limit(0);
+    }
+
+    /**
+     * Enable custom extra fields factory.
+     * @param extraFieldSupport the lookup function based on extra field header id.
+     * @return the archive.
+     */
+    public ZipArchiveInputStream setExtraFieldSupport(final Function<ZipShort, ZipExtraField> extraFieldSupport) {
+        this.extraFieldSupport = extraFieldSupport;
+        return this;
     }
 
     /**
