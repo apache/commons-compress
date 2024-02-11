@@ -168,8 +168,7 @@ public final class BHSDCodec extends Codec {
         long result;
         // TODO This can probably be optimized into a better mathematical statement
         if (d == 1) {
-            final BHSDCodec bh0 = new BHSDCodec(b, h);
-            return bh0.largest();
+            return new BHSDCodec(b, h).largest();
         }
         switch (s) {
         case 0:
