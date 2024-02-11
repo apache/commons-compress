@@ -32,8 +32,9 @@ import org.apache.commons.compress.utils.ExactMath;
  * complement. The Codec also supports delta coding, where a sequence of numbers is represented as a series of first-order differences. So a delta encoding of
  * the integers [1..10] would be represented as a sequence of 10x1s. This allows the absolute value of a coded integer to fall outside of the 'small number'
  * range, whilst still being encoded as a single byte.
- *
+ * <p>
  * A BHSD codec is configured with four parameters:
+ * </p>
  * <dl>
  * <dt>B</dt>
  * <dd>The maximum number of bytes that each value is encoded as. B must be a value between [1..5]. For a pass-through coding (where each byte is encoded as
@@ -52,36 +53,38 @@ import org.apache.commons.compress.utils.ExactMath;
  * value is ignored if passed. If the codec is a delta encoding, it is a run-time error to call the value without the extra parameter, and the previous value
  * should be returned. (It was designed this way to support multi-threaded access without requiring a new instance of the Codec to be cloned for each use.)</dd>
  * </dl>
- *
+ * <p>
  * Codecs are notated as (B,H,S,D) and either D or S,D may be omitted if zero. Thus {@link #BYTE1} is denoted (1,256,0,0) or (1,256). The {@link #toString()}
  * method prints out the condensed form of the encoding. Often, the last character in the name ({@link #BYTE1}, {@link #UNSIGNED5}) gives a clue as to the B
  * value. Those that start with U ({@link #UDELTA5}, {@link #UNSIGNED5}) are unsigned; otherwise, in most cases, they are signed. The presence of the word Delta
  * ({@link #DELTA5}, {@link #UDELTA5}) indicates a delta encoding is used.
+ * </p>
  */
 public final class BHSDCodec extends Codec {
 
     /**
-     * The maximum number of bytes in each coding word
+     * The maximum number of bytes in each coding word. B must be a value between [1..5]. For a pass-through coding (where each byte is encoded as itself, aka
+     * {@link #BYTE1}, B is 1 (each byte takes a maximum of 1 byte).
      */
     private final int b;
 
     /**
-     * Whether delta encoding is used (0=false,1=true)
+     * Whether delta encoding is used (0=false,1=true).
      */
     private final int d;
 
     /**
-     * The radix of the encoding
+     * The radix of the encoding.
      */
     private final int h;
 
     /**
-     * The co-parameter of h; 256-h
+     * The co-parameter of h; 256-h.
      */
     private final int l;
 
     /**
-     * Represents signed numbers or not (0=unsigned,1/2=signed)
+     * Represents signed numbers or not, 0 (unsigned), 1 (signed, one's complement) or 2 (signed, two's complement).
      */
     private final int s;
 
@@ -163,8 +166,7 @@ public final class BHSDCodec extends Codec {
 
     private long calculateLargest() {
         long result;
-        // TODO This can probably be optimized into a better mathematical
-        // statement
+        // TODO This can probably be optimized into a better mathematical statement
         if (d == 1) {
             final BHSDCodec bh0 = new BHSDCodec(b, h);
             return bh0.largest();
