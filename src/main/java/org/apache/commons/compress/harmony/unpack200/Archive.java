@@ -71,17 +71,17 @@ public class Archive {
     /**
      * Creates an Archive with the given input and output file names.
      *
-     * @param inputFile  TODO
-     * @param outputFile TODO
+     * @param inputFileName  TODO
+     * @param outputFileName TODO
      * @throws FileNotFoundException if the input file does not exist
      * @throws FileNotFoundException TODO
      * @throws IOException           TODO
      */
-    public Archive(final String inputFile, final String outputFile) throws FileNotFoundException, IOException {
-        this.inputFileName = inputFile;
-        this.outputFileName = outputFile;
-        inputStream = new FileInputStream(inputFile);
-        outputStream = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(outputFile)));
+    public Archive(final String inputFileName, final String outputFileName) throws FileNotFoundException, IOException {
+        this.inputFileName = inputFileName;
+        this.outputFileName = outputFileName;
+        this.inputStream = new FileInputStream(inputFileName);
+        this.outputStream = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(outputFileName)));
     }
 
     private boolean available(final InputStream inputStream) throws IOException {
@@ -169,7 +169,7 @@ public class Archive {
                 JarEntry jarEntry;
                 while ((jarEntry = jarInputStream.getNextJarEntry()) != null) {
                     outputStream.putNextEntry(jarEntry);
-                    final byte[] bytes = new byte[16384];
+                    final byte[] bytes = new byte[16_384];
                     int bytesRead = jarInputStream.read(bytes);
                     while (bytesRead != -1) {
                         outputStream.write(bytes, 0, bytesRead);
