@@ -27,12 +27,6 @@ public class LookupSwitchForm extends SwitchForm {
         super(opcode, name);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.apache.commons.compress.harmony.unpack200.bytecode.forms.SwitchForm#setByteCodeOperands(org.apache.commons.
-     * compress.harmony.unpack200.bytecode.ByteCode, org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager, int)
-     */
     @Override
     public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) {
         final int caseCount = operandManager.nextCaseCount();
