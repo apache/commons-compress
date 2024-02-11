@@ -39,7 +39,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.utils.ExactMath;
 
 /**
- * Abstract superclass for a set of bands
+ * Abstract superclass for a set of bands.
  */
 public abstract class BandSet {
 
@@ -53,7 +53,7 @@ public abstract class BandSet {
     }
 
     /**
-     * Decode a band and return an array of {@code int} values
+     * Decodes a band and return an array of {@code int} values.
      *
      * @param name  the name of the band (primarily for logging/debugging purposes)
      * @param in    the InputStream to decode from
@@ -118,7 +118,7 @@ public abstract class BandSet {
     }
 
     /**
-     * Decode a band and return an array of {@code int[]} values
+     * Decodes a band and return an array of {@code int[]} values.
      *
      * @param name         the name of the band (primarily for logging/debugging purposes)
      * @param in           the InputStream to decode from
