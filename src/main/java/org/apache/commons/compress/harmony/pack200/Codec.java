@@ -46,7 +46,7 @@ public abstract class Codec {
     public static final BHSDCodec BYTE1 = new BHSDCodec(1, 256);
 
     /**
-     * CHAR3 = (3,128): Used for storing text (UTF-8) strings. NB This isn't quite the same as UTF-8, but has similar properties; ASCII characters &lt; 127 are
+     * CHAR3 = (3,128): Used for storing text (UTF-8) strings. This isn't quite the same as UTF-8, but has similar properties; ASCII characters &lt; 127 are
      * stored in a single byte.
      */
     public static final BHSDCodec CHAR3 = new BHSDCodec(3, 128);
