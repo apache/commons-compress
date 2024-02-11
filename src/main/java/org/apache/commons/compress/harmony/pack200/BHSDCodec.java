@@ -384,6 +384,8 @@ public final class BHSDCodec extends Codec {
     }
 
     /**
+     * Gets the B.
+     *
      * @return the b
      */
     public int getB() {
@@ -391,6 +393,8 @@ public final class BHSDCodec extends Codec {
     }
 
     /**
+     * Gets the H.
+     *
      * @return the h
      */
     public int getH() {
@@ -398,6 +402,8 @@ public final class BHSDCodec extends Codec {
     }
 
     /**
+     * Gets the L.
+     *
      * @return the l
      */
     public int getL() {
@@ -405,6 +411,8 @@ public final class BHSDCodec extends Codec {
     }
 
     /**
+     * Gets the S.
+     *
      * @return the s
      */
     public int getS() {
