@@ -21,8 +21,8 @@ import org.apache.commons.compress.harmony.unpack200.Segment;
 import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
 
 /**
- * This class keeps track of operands used. It provides API to let other classes get next elements, and also knows about which classes have been used recently
- * in super, this and new references.
+ * Tracks operands, provides methods to let other classes get next elements, and also knows about which classes have been used recently in super, this and new
+ * references.
  */
 public class OperandManager {
 
