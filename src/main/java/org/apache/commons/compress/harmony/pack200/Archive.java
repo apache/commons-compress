@@ -170,7 +170,7 @@ public class Archive {
      *
      * @param inputStream  TODO
      * @param outputStream TODO
-     * @param options      - packing options (if null then defaults are used)
+     * @param options      packing options (if null then defaults are used)
      * @throws IOException If an I/O error occurs.
      */
     public Archive(final JarInputStream inputStream, OutputStream outputStream, PackingOptions options) throws IOException {
@@ -265,7 +265,7 @@ public class Archive {
     }
 
     /**
-     * Pack the archive
+     * Packs the archive.
      *
      * @throws Pack200Exception TODO
      * @throws IOException      If an I/O error occurs.
