@@ -31,7 +31,7 @@ import org.apache.commons.compress.java.util.jar.Pack200.Unpacker;
  * This class provides the binding between the standard Pack200 interface and the internal interface for (un)packing.
  */
 public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
-    
+
     @Override
     public void unpack(final File file, final JarOutputStream out) throws IOException {
         if (file == null || out == null) {
