@@ -119,8 +119,7 @@ public class ExtraFieldUtils {
     private static final Map<ZipShort, Supplier<ZipExtraField>> IMPLEMENTATIONS;
 
     static {
-        IMPLEMENTATIONS = new ConcurrentHashMap<>(); // it can't be used at runtime by design so no need to be concurrent
-        // IMPLEMENTATIONS = new HashMap<>(); // see register() comment
+        IMPLEMENTATIONS = new ConcurrentHashMap<>();
         IMPLEMENTATIONS.put(AsiExtraField.HEADER_ID, AsiExtraField::new);
         IMPLEMENTATIONS.put(X5455_ExtendedTimestamp.HEADER_ID, X5455_ExtendedTimestamp::new);
         IMPLEMENTATIONS.put(X7875_NewUnix.HEADER_ID, X7875_NewUnix::new);
@@ -376,17 +375,15 @@ public class ExtraFieldUtils {
      * The given class must have a no-arg constructor and implement the {@link ZipExtraField ZipExtraField interface}.
      * </p>
      *
-     * @param c the class to register
+     * @param clazz the class to register.
      *
-     * @deprecated use {@link ZipArchiveInputStream#setExtraFieldSupport} instead
+     * @deprecated Use {@link ZipArchiveInputStream#setExtraFieldSupport} instead
      *             to not leak instances between archives and applications.
      */
     @Deprecated // note: when dropping update registration to move to a HashMap (static init)
-    public static void register(final Class<?> c) {
+    public static void register(final Class<?> clazz) {
         try {
-            final Constructor<? extends ZipExtraField> constructor = c
-                    .asSubclass(ZipExtraField.class)
-                    .getConstructor();
+            final Constructor<? extends ZipExtraField> constructor = clazz.asSubclass(ZipExtraField.class).getConstructor();
             final ZipExtraField ze = constructor.newInstance();
             IMPLEMENTATIONS.put(ze.getHeaderId(), () -> {
                 try {
@@ -402,13 +399,13 @@ public class ExtraFieldUtils {
                 }
             });
         } catch (final ClassCastException cc) { // NOSONAR
-            throw new IllegalArgumentException(c + " doesn't implement ZipExtraField"); // NOSONAR
+            throw new IllegalArgumentException(clazz + " doesn't implement ZipExtraField"); // NOSONAR
         } catch (final InstantiationException ie) { // NOSONAR
-            throw new IllegalArgumentException(c + " is not a concrete class"); // NOSONAR
+            throw new IllegalArgumentException(clazz + " is not a concrete class"); // NOSONAR
         } catch (final IllegalAccessException ie) { // NOSONAR
-            throw new IllegalArgumentException(c + "'s no-arg constructor is not public"); // NOSONAR
+            throw new IllegalArgumentException(clazz + "'s no-arg constructor is not public"); // NOSONAR
         } catch (final ReflectiveOperationException e) {
-            throw new IllegalArgumentException(c + ": " + e); // NOSONAR
+            throw new IllegalArgumentException(clazz + ": " + e); // NOSONAR
         }
     }
 }
