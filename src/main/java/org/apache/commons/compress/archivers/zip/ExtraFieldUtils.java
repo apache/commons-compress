@@ -20,9 +20,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 import java.util.zip.ZipException;
 
@@ -36,7 +36,6 @@ public class ExtraFieldUtils {
 
     /**
      * "enum" for the possible actions to take if the extra field cannot be parsed.
-     *
      * <p>
      * This class has been created long before Java 5 and would have been a real enum ever since.
      * </p>
@@ -44,6 +43,7 @@ public class ExtraFieldUtils {
      * @since 1.1
      */
     public static final class UnparseableExtraField implements UnparseableExtraFieldBehavior {
+
         /**
          * Key for "throw an exception" action.
          */
@@ -116,7 +116,7 @@ public class ExtraFieldUtils {
     /**
      * Static registry of known extra fields.
      */
-    private static final Map<ZipShort, Supplier<ZipExtraField>> IMPLEMENTATIONS;
+    private static final ConcurrentMap<ZipShort, Supplier<ZipExtraField>> IMPLEMENTATIONS;
 
     static {
         IMPLEMENTATIONS = new ConcurrentHashMap<>();
@@ -274,7 +274,7 @@ public class ExtraFieldUtils {
     }
 
     /**
-     * Split the array into ExtraFields and populate them with the given data as local file data, throwing an exception if the data cannot be parsed.
+     * Parses the array into ExtraFields and populate them with the given data as local file data, throwing an exception if the data cannot be parsed.
      *
      * @param data an array of bytes as it appears in local file data
      * @return an array of ExtraFields
@@ -285,7 +285,7 @@ public class ExtraFieldUtils {
     }
 
     /**
-     * Split the array into ExtraFields and populate them with the given data, throwing an exception if the data cannot be parsed.
+     * Parses the array into ExtraFields and populate them with the given data, throwing an exception if the data cannot be parsed.
      *
      * @param data  an array of bytes
      * @param local whether data originates from the local file data or the central directory
@@ -297,7 +297,7 @@ public class ExtraFieldUtils {
     }
 
     /**
-     * Split the array into ExtraFields and populate them with the given data.
+     * Parses the array into ExtraFields and populate them with the given data.
      *
      * @param data            an array of bytes
      * @param parsingBehavior controls parsing of extra fields.
@@ -337,7 +337,7 @@ public class ExtraFieldUtils {
     }
 
     /**
-     * Split the array into ExtraFields and populate them with the given data.
+     * Parses the array into ExtraFields and populate them with the given data.
      *
      * @param data              an array of bytes
      * @param local             whether data originates from the local file data or the central directory
@@ -369,8 +369,7 @@ public class ExtraFieldUtils {
     }
 
     /**
-     * Register a ZipExtraField implementation.
-     *
+     * Registers a ZipExtraField implementation.
      * <p>
      * The given class must have a no-arg constructor and implement the {@link ZipExtraField ZipExtraField interface}.
      * </p>
