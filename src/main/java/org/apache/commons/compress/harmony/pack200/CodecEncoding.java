@@ -28,6 +28,8 @@ import java.util.Map;
  */
 public class CodecEncoding {
 
+    private static final int[] EMPTY_INT_ARRAY = new int[0];
+
     /**
      * The canonical encodings are defined to allow a single byte to represent one of the standard encodings. The following values are defined in the Pack200
      * specification, and this array cannot be changed.
@@ -213,8 +215,8 @@ public class CodecEncoding {
                 abDef = 2;
             }
             final int first = 117 + kb + (kx == 3 ? 0 : 4) + 8 * abDef;
-            final int[] aSpecifier = abDef == 1 ? new int[0] : getSpecifier(aCodec, defaultForBand);
-            final int[] bSpecifier = abDef == 2 ? new int[0] : getSpecifier(bCodec, defaultForBand);
+            final int[] aSpecifier = abDef == 1 ? EMPTY_INT_ARRAY : getSpecifier(aCodec, defaultForBand);
+            final int[] bSpecifier = abDef == 2 ? EMPTY_INT_ARRAY : getSpecifier(bCodec, defaultForBand);
             final int[] specifier = new int[1 + (kx == 3 ? 0 : 1) + aSpecifier.length + bSpecifier.length];
             specifier[0] = first;
             int index = 1;
@@ -258,9 +260,9 @@ public class CodecEncoding {
                 }
             }
             final int first = 141 + fDef + 2 * uDef + 4 * tDefL;
-            final int[] favouredSpecifier = fDef == 1 ? new int[0] : getSpecifier(favouredCodec, defaultForBand);
-            final int[] tokenSpecifier = tDefL != 0 ? new int[0] : getSpecifier(tokenCodec, defaultForBand);
-            final int[] unfavouredSpecifier = uDef == 1 ? new int[0] : getSpecifier(unfavouredCodec, defaultForBand);
+            final int[] favouredSpecifier = fDef == 1 ? EMPTY_INT_ARRAY : getSpecifier(favouredCodec, defaultForBand);
+            final int[] tokenSpecifier = tDefL != 0 ? EMPTY_INT_ARRAY : getSpecifier(tokenCodec, defaultForBand);
+            final int[] unfavouredSpecifier = uDef == 1 ? EMPTY_INT_ARRAY : getSpecifier(unfavouredCodec, defaultForBand);
             final int[] specifier = new int[1 + favouredSpecifier.length + unfavouredSpecifier.length + tokenSpecifier.length];
             specifier[0] = first;
             int index = 1;

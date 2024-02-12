@@ -37,6 +37,8 @@ import org.objectweb.asm.Opcodes;
  */
 public class ClassBands extends BandSet {
 
+    private static final long[] EMPTY_LONG_ARRAY = new long[0];
+
     private static final class TempParamAnnotation {
 
         int numParams;
@@ -224,8 +226,8 @@ public class ClassBands extends BandSet {
         method_descr = new CPNameAndType[numClasses][];
         method_flags = new long[numClasses][];
         for (int i = 0; i < numClasses; i++) {
-            field_flags[i] = new long[0];
-            method_flags[i] = new long[0];
+            field_flags[i] = EMPTY_LONG_ARRAY;
+            method_flags[i] = EMPTY_LONG_ARRAY;
         }
         // minor_versions = new int[numClasses];
         major_versions = new int[numClasses];

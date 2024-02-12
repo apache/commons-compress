@@ -30,6 +30,8 @@ import java.util.stream.IntStream;
  */
 public abstract class BandSet {
 
+    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
     /**
      * Results obtained by trying different Codecs to encode a band
      */
@@ -414,7 +416,7 @@ public abstract class BandSet {
             }
             return encodedBand;
         }
-        return new byte[0];
+        return EMPTY_BYTE_ARRAY;
     }
 
     /**

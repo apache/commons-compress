@@ -33,6 +33,8 @@ import java.util.zip.ZipEntry;
  */
 public class Archive {
 
+    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
     static class PackingFile {
 
         private final String name;
@@ -207,7 +209,7 @@ public class Archive {
             final Pack200ClassReader classParser = new Pack200ClassReader(packingFile.contents);
             classParser.setFileName(name);
             javaClasses.add(classParser);
-            packingFile.contents = new byte[0];
+            packingFile.contents = EMPTY_BYTE_ARRAY;
         }
         files.add(packingFile);
         return true;

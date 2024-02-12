@@ -30,6 +30,8 @@ import org.apache.commons.compress.harmony.pack200.Pack200Exception;
  */
 public class SegmentHeader {
 
+    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
     /**
      * The magic header for a Pack200 Segment is 0xCAFED00D. I wonder where they get their inspiration from ...
      */
@@ -153,7 +155,7 @@ public class SegmentHeader {
      */
     public InputStream getBandHeadersInputStream() {
         if (bandHeadersInputStream == null) {
-            bandHeadersInputStream = new ByteArrayInputStream(new byte[0]);
+            bandHeadersInputStream = new ByteArrayInputStream(EMPTY_BYTE_ARRAY);
         }
         return bandHeadersInputStream;
 

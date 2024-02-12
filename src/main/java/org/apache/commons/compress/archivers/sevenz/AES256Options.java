@@ -33,6 +33,8 @@ import javax.crypto.spec.SecretKeySpec;
  */
 final class AES256Options {
 
+    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
     static final String ALGORITHM = "AES";
 
     static final String TRANSFORMATION = "AES/CBC/NoPadding";
@@ -62,7 +64,7 @@ final class AES256Options {
      * @param password password used for encryption
      */
     AES256Options(final char[] password) {
-        this(password, new byte[0], randomBytes(16), 19);
+        this(password, EMPTY_BYTE_ARRAY, randomBytes(16), 19);
     }
 
     /**
