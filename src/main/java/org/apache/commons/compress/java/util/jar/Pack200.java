@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Objects;
@@ -30,6 +31,7 @@ import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 
 import org.apache.commons.compress.harmony.archive.internal.nls.Messages;
+import org.apache.commons.io.input.BoundedInputStream;
 
 /**
  * Class factory for {@link Pack200.Packer} and {@link Pack200.Unpacker}.
@@ -137,14 +139,14 @@ public abstract class Pack200 {
         String UNKNOWN_ATTRIBUTE = "pack.unknown.attribute";//$NON-NLS-1$
 
         /**
-         * Add a listener for PropertyChange events
+         * Adds a listener for PropertyChange events
          *
          * @param listener the listener to listen if PropertyChange events occurs
          */
         void addPropertyChangeListener(PropertyChangeListener listener);
 
         /**
-         * Pack the specified JAR file to the specified output stream.
+         * Packs the specified JAR file to the specified output stream.
          *
          * @param in  JAR file to be compressed.
          * @param out stream of compressed data.
@@ -153,7 +155,7 @@ public abstract class Pack200 {
         void pack(JarFile in, OutputStream out) throws IOException;
 
         /**
-         * Pack the data from the specified jar input stream to the specified output stream.
+         * Packs the data from the specified jar input stream to the specified output stream.
          *
          * @param in  stream of uncompressed JAR data.
          * @param out stream of compressed data.
@@ -162,14 +164,14 @@ public abstract class Pack200 {
         void pack(JarInputStream in, OutputStream out) throws IOException;
 
         /**
-         * Returns a sorted map of the properties of this packer.
+         * Gets a sorted map of the properties of this packer.
          *
          * @return the properties of the packer.
          */
         SortedMap<String, String> properties();
 
         /**
-         * remove a listener
+         * Removes a listener
          *
          * @param listener listener to remove
          */
@@ -207,28 +209,28 @@ public abstract class Pack200 {
         String TRUE = "true";//$NON-NLS-1$
 
         /**
-         * add a listener for {@code PropertyChange} events.
+         * Adds a listener for {@code PropertyChange} events.
          *
          * @param listener the listener to listen if {@code PropertyChange} events occurs.
          */
         void addPropertyChangeListener(PropertyChangeListener listener);
 
         /**
-         * Returns a sorted map of the properties of this unpacker.
+         * Gets a sorted map of the properties of this unpacker.
          *
          * @return the properties of unpacker.
          */
         SortedMap<String, String> properties();
 
         /**
-         * remove a listener.
+         * Removes a listener.
          *
          * @param listener listener to remove.
          */
         void removePropertyChangeListener(PropertyChangeListener listener);
 
         /**
-         * Unpack the contents of the specified {@code File} to the specified JAR output stream.
+         * Unpacks the contents of the specified {@code File} to the specified JAR output stream.
          *
          * @param in  file to be uncompressed.
          * @param out JAR output stream of uncompressed data.
@@ -237,13 +239,16 @@ public abstract class Pack200 {
         void unpack(File in, JarOutputStream out) throws IOException;
 
         /**
-         * Unpack the specified stream to the specified JAR output stream.
+         * Unpacks the specified stream to the specified JAR output stream.
          *
          * @param in  stream to uncompressed.
          * @param out JAR output stream of uncompressed data.
          * @throws IOException if I/O exception occurs.
+         * @deprecated Use {@link #unpack(Path, BoundedInputStream, JarOutputStream)}.
          */
+        @Deprecated
         void unpack(InputStream in, JarOutputStream out) throws IOException;
+
     }
 
     /**
@@ -299,7 +304,7 @@ public abstract class Pack200 {
     }
 
     /**
-     * Prevent this class from being instantiated.
+     * Prevents this class from being instantiated.
      */
     private Pack200() {
         // do nothing
