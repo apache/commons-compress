@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Objects;
@@ -31,7 +30,6 @@ import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 
 import org.apache.commons.compress.harmony.archive.internal.nls.Messages;
-import org.apache.commons.io.input.BoundedInputStream;
 
 /**
  * Class factory for {@link Pack200.Packer} and {@link Pack200.Unpacker}.
