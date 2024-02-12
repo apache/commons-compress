@@ -244,9 +244,7 @@ public abstract class Pack200 {
          * @param in  stream to uncompressed.
          * @param out JAR output stream of uncompressed data.
          * @throws IOException if I/O exception occurs.
-         * @deprecated Use {@link #unpack(Path, BoundedInputStream, JarOutputStream)}.
          */
-        @Deprecated
         void unpack(InputStream in, JarOutputStream out) throws IOException;
 
     }
