@@ -17,7 +17,6 @@
 package org.apache.commons.compress.archivers.zip;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -385,24 +384,12 @@ public class ExtraFieldUtils {
             IMPLEMENTATIONS.put(zef.getHeaderId(), () -> {
                 try {
                     return constructor.newInstance();
-                } catch (final InstantiationException | IllegalAccessException e) {
-                    throw new IllegalStateException(e);
-                } catch (final InvocationTargetException e) {
-                    final Throwable cause = e.getTargetException();
-                    if (cause instanceof RuntimeException) {
-                        throw (RuntimeException) cause;
-                    }
-                    throw new IllegalStateException(cause);
+                } catch (final ReflectiveOperationException e) {
+                    throw new IllegalStateException(clazz.toString(), e);
                 }
             });
-        } catch (final ClassCastException cc) { // NOSONAR
-            throw new IllegalArgumentException(clazz + " doesn't implement ZipExtraField"); // NOSONAR
-        } catch (final InstantiationException ie) { // NOSONAR
-            throw new IllegalArgumentException(clazz + " is not a concrete class"); // NOSONAR
-        } catch (final IllegalAccessException ie) { // NOSONAR
-            throw new IllegalArgumentException(clazz + "'s no-arg constructor is not public"); // NOSONAR
         } catch (final ReflectiveOperationException e) {
-            throw new IllegalArgumentException(clazz + ": " + e); // NOSONAR
+            throw new IllegalArgumentException(clazz.toString(), e);
         }
     }
 }
