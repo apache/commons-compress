@@ -31,6 +31,7 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Archive is the main entry point to unpack200. An archive is constructed with either two file names, a pack file and an output file name or an input stream
@@ -202,26 +203,14 @@ public class Archive {
                 }
             }
         } finally {
-            try {
-                inputStream.close();
-            } catch (final Exception e) {
-            }
-            try {
-                outputStream.close();
-            } catch (final Exception e) {
-            }
-            if (logFile != null) {
-                try {
-                    logFile.close();
-                } catch (final Exception e) {
-                }
-            }
+            IOUtils.closeQuietly(inputStream);
+            IOUtils.closeQuietly(outputStream);
+            IOUtils.closeQuietly(logFile);
         }
         if (removePackFile) {
             boolean deleted = false;
             if (inputFileName != null) {
-                final File file = new File(inputFileName);
-                deleted = file.delete();
+                deleted = new File(inputFileName).delete();
             }
             if (!deleted) {
                 throw new Pack200Exception("Failed to delete the input file.");
