@@ -28,8 +28,6 @@ import java.util.zip.ZipException;
 
 /**
  * {@link ZipExtraField} related methods.
- *
- * @NotThreadSafe because the HashMap is not synchronized.
  */
 // CheckStyle:HideUtilityClassConstructorCheck OFF (bc)
 public class ExtraFieldUtils {
@@ -369,7 +367,7 @@ public class ExtraFieldUtils {
     }
 
     /**
-     * Registers a ZipExtraField implementation.
+     * Registers a ZipExtraField implementation, overriding a matching existing entry.
      * <p>
      * The given class must have a no-arg constructor and implement the {@link ZipExtraField ZipExtraField interface}.
      * </p>
@@ -383,8 +381,8 @@ public class ExtraFieldUtils {
     public static void register(final Class<?> clazz) {
         try {
             final Constructor<? extends ZipExtraField> constructor = clazz.asSubclass(ZipExtraField.class).getConstructor();
-            final ZipExtraField ze = constructor.newInstance();
-            IMPLEMENTATIONS.put(ze.getHeaderId(), () -> {
+            final ZipExtraField zef = clazz.asSubclass(ZipExtraField.class).getConstructor().newInstance();
+            IMPLEMENTATIONS.put(zef.getHeaderId(), () -> {
                 try {
                     return constructor.newInstance();
                 } catch (final InstantiationException | IllegalAccessException e) {
