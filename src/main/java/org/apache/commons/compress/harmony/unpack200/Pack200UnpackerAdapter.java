@@ -28,15 +28,10 @@ import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.java.util.jar.Pack200.Unpacker;
 
 /**
- * This class provides the binding between the standard Pack200 interface and the internal interface for (un)packing. As this uses generics for the SortedMap,
- * this class must be compiled and run on a Java 1.5 system. However, Java 1.5 is not necessary to use the internal libraries for unpacking.
+ * This class provides the binding between the standard Pack200 interface and the internal interface for (un)packing.
  */
 public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.apache.commons.compress.java.util.jar.Pack200.Unpacker#unpack(java.io.File, java.util.jar.JarOutputStream)
-     */
+    
     @Override
     public void unpack(final File file, final JarOutputStream out) throws IOException {
         if (file == null || out == null) {
@@ -49,11 +44,6 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.apache.commons.compress.java.util.jar.Pack200.Unpacker#unpack(java.io.InputStream, java.util.jar.JarOutputStream)
-     */
     @Override
     public void unpack(final InputStream in, final JarOutputStream out) throws IOException {
         if (in == null || out == null) {
