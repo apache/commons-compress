@@ -24,7 +24,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -69,18 +68,15 @@ public class Archive {
      * Creates an Archive with streams for the input and output files. Note: If you use this method then calling {@link #setRemovePackFile(boolean)} will have
      * no effect.
      *
-     * @param inputStream  TODO
-     * @param outputStream TODO
+     * @param inputStream  the input stream, preferably a {@link BoundedInputStream}. The bound can the the file size.
+     * @param outputStream the JAR output stream.
+     * @throws IOException if an I/O error occurs
      */
-    public Archive(final InputStream inputStream, final JarOutputStream outputStream) {
-        this.inputStream = inputStream instanceof BoundedInputStream ? (BoundedInputStream) inputStream : new BoundedInputStream(inputStream);
+    public Archive(final InputStream inputStream, final JarOutputStream outputStream) throws IOException {
+        this.inputStream = Pack200UnpackerAdapter.newBoundedInputStream(inputStream);
         this.outputStream = outputStream;
         if (inputStream instanceof FileInputStream) {
-            try {
-                inputPath = Paths.get(((FileInputStream) inputStream).getFD().toString());
-            } catch (final IOException e) {
-                throw new UncheckedIOException(e);
-            }
+            inputPath = Paths.get(Pack200UnpackerAdapter.readPath((FileInputStream) inputStream));
         } else {
             inputPath = null;
         }
@@ -90,18 +86,18 @@ public class Archive {
     /**
      * Creates an Archive with the given input and output file names.
      *
-     * @param inputFileName  TODO
-     * @param outputFileName TODO
+     * @param inputFileName  the input file name.
+     * @param outputFileName the output file name
      * @throws FileNotFoundException if the input file does not exist
-     * @throws FileNotFoundException TODO
-     * @throws IOException           TODO
+     * @throws IOException           if an I/O error occurs
      */
+    @SuppressWarnings("resource")
     public Archive(final String inputFileName, final String outputFileName) throws FileNotFoundException, IOException {
         this.inputPath = Paths.get(inputFileName);
-        this.outputFileName = outputFileName;
         this.inputSize = Files.size(this.inputPath);
         this.inputStream = new BoundedInputStream(Files.newInputStream(inputPath), inputSize);
         this.outputStream = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(outputFileName)));
+        this.outputFileName = outputFileName;
     }
 
     private boolean available(final InputStream inputStream) throws IOException {

@@ -33,9 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -196,15 +193,36 @@ public class ArchiveTest extends AbstractTempDirTest {
             "references_oom.pack",
             "segment_header_oom.pack",
             "signatures_oom.pack"
-            // @formatter:on
+    // @formatter:on
     })
     // Tests of various files that can cause out of memory errors
-    public void testParsingOOM(final String testFileName) throws Exception {
+    public void testParsingOOMBounded(final String testFileName) throws Exception {
         final URL url = Segment.class.getResource("/org/apache/commons/compress/pack/" + testFileName);
-        final Path path = Paths.get(url.toURI());
-        try (InputStream in = new BoundedInputStream(new BufferedInputStream(Files.newInputStream(path)), Files.size(path));
+        try (BoundedInputStream in = Pack200UnpackerAdapter.newBoundedInputStream(url);
                 JarOutputStream out = new JarOutputStream(NullOutputStream.INSTANCE)) {
             assertThrows(IOException.class, () -> new Archive(in, out).unpack());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+    // @formatter:off
+            "bandint_oom.pack",
+            "cpfloat_oom.pack",
+            "cputf8_oom.pack",
+            "favoured_oom.pack",
+            "filebits_oom.pack",
+            "flags_oom.pack",
+            "references_oom.pack",
+            "segment_header_oom.pack",
+            "signatures_oom.pack"
+    // @formatter:on
+    })
+    // Tests of various files that can cause out of memory errors
+    public void testParsingOOMUnbounded(final String testFileName) throws Exception {
+        try (InputStream is = Segment.class.getResourceAsStream("/org/apache/commons/compress/pack/" + testFileName);
+                JarOutputStream out = new JarOutputStream(NullOutputStream.INSTANCE)) {
+            assertThrows(IOException.class, () -> new Archive(is, out).unpack());
         }
     }
 
@@ -221,10 +239,10 @@ public class ArchiveTest extends AbstractTempDirTest {
                 read = inputStream.read(bytes);
             }
         }
-        final String inputFile = copy.getPath();
+        final String inputFileName = copy.getPath();
         final File file = createTempFile("sqlout", ".jar");
-        final String outputFile = file.getPath();
-        final Archive archive = new Archive(inputFile, outputFile);
+        final String outputFileName = file.getPath();
+        final Archive archive = new Archive(inputFileName, outputFileName);
         archive.setRemovePackFile(true);
         archive.unpack();
         assertFalse(copy.exists());

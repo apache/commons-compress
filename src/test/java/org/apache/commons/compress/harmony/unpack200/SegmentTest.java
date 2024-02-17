@@ -20,7 +20,6 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,9 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -113,10 +109,31 @@ public class SegmentTest extends AbstractTempDirTest {
             // @formatter:on
     })
     // Tests of various files that can cause out of memory errors
-    public void testParsingOOM(final String testFileName) throws Exception {
+    public void testParsingOOMBounded(final String testFileName) throws Exception {
         final URL url = Segment.class.getResource("/org/apache/commons/compress/pack/" + testFileName);
-        final Path path = Paths.get(url.toURI());
-        try (InputStream in = new BoundedInputStream(new BufferedInputStream(Files.newInputStream(path)), Files.size(path));
+        try (BoundedInputStream in = Pack200UnpackerAdapter.newBoundedInputStream(url);
+                JarOutputStream out = new JarOutputStream(NullOutputStream.INSTANCE)) {
+            assertThrows(IOException.class, () -> new Segment().unpack(in, out));
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+    // @formatter:off
+            "bandint_oom.pack",
+            "cpfloat_oom.pack",
+            "cputf8_oom.pack",
+            "favoured_oom.pack",
+            "filebits_oom.pack",
+            "flags_oom.pack",
+            "references_oom.pack",
+            "segment_header_oom.pack",
+            "signatures_oom.pack"
+            // @formatter:on
+    })
+    // Tests of various files that can cause out of memory errors
+    public void testParsingOOMUnounded(final String testFileName) throws Exception {
+        try (InputStream in = Segment.class.getResourceAsStream("/org/apache/commons/compress/pack/" + testFileName);
                 JarOutputStream out = new JarOutputStream(NullOutputStream.INSTANCE)) {
             assertThrows(IOException.class, () -> new Segment().unpack(in, out));
         }

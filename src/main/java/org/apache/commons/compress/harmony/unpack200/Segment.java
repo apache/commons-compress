@@ -49,6 +49,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ClassFile;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry;
 import org.apache.commons.compress.harmony.unpack200.bytecode.InnerClassesAttribute;
 import org.apache.commons.compress.harmony.unpack200.bytecode.SourceFileAttribute;
+import org.apache.commons.io.input.BoundedInputStream;
 
 /**
  * A Pack200 archive consists of one or more segments. Each segment is stand-alone, in the sense that every segment has the magic number header; thus, every
@@ -462,7 +463,7 @@ public class Segment {
     /**
      * Unpacks a packed stream (either .pack. or .pack.gz) into a corresponding JarOuputStream.
      *
-     * @param inputStream  a packed input stream.
+     * @param inputStream  a packed input stream, preferably a {@link BoundedInputStream}.
      * @param out output stream.
      * @throws Pack200Exception if there is a problem unpacking
      * @throws IOException      if there is a problem with I/O during unpacking
@@ -484,7 +485,8 @@ public class Segment {
      * Package-private accessors for unpacking stages
      */
     void unpackRead(final InputStream inputStream) throws IOException, Pack200Exception {
-        final InputStream in = inputStream.markSupported() ? inputStream : new BufferedInputStream(inputStream);
+        @SuppressWarnings("resource")
+        final InputStream in = Pack200UnpackerAdapter.newBoundedInputStream(inputStream);
 
         header = new SegmentHeader(this);
         header.read(in);

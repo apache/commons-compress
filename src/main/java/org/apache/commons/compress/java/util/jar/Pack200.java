@@ -30,6 +30,7 @@ import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 
 import org.apache.commons.compress.harmony.archive.internal.nls.Messages;
+import org.apache.commons.io.input.BoundedInputStream;
 
 /**
  * Class factory for {@link Pack200.Packer} and {@link Pack200.Unpacker}.
@@ -230,7 +231,7 @@ public abstract class Pack200 {
         /**
          * Unpacks the contents of the specified {@code File} to the specified JAR output stream.
          *
-         * @param in  file to be uncompressed.
+         * @param in  file to uncompress.
          * @param out JAR output stream of uncompressed data.
          * @throws IOException if I/O exception occurs.
          */
@@ -239,7 +240,7 @@ public abstract class Pack200 {
         /**
          * Unpacks the specified stream to the specified JAR output stream.
          *
-         * @param in  stream to uncompressed.
+         * @param in  stream to uncompress, preferably a {@link BoundedInputStream}.
          * @param out JAR output stream of uncompressed data.
          * @throws IOException if I/O exception occurs.
          */

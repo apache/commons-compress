@@ -144,7 +144,7 @@ public abstract class Codec {
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
     public int[] decodeInts(final int n, final InputStream in, final int firstValue) throws IOException, Pack200Exception {
-        final int[] result = new int[check(n + 1, in)];
+        final int[] result = new int[check(n, in) + 1];
         result[0] = firstValue;
         int last = firstValue;
         for (int i = 1; i < n + 1; i++) {
