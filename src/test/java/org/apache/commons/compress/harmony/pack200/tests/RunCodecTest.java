@@ -20,12 +20,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.stream.Stream;
 
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.pack200.PopulationCodec;
 import org.apache.commons.compress.harmony.pack200.RunCodec;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -76,6 +78,21 @@ public class RunCodecTest {
         }
     }
 
+    @Disabled
+    @Test
+    public void testRunCodecDecodeIntsOverflow() throws Exception {
+        final byte[] bytes1 = Codec.DELTA5.encode(new int[] { 1, -2, -3, 1000, 55 });
+        final byte[] bytes2 = Codec.UNSIGNED5.encode(new int[] { 5, 10, 20 });
+        final byte[] bandEncoded = new byte[bytes1.length + bytes2.length];
+        System.arraycopy(bytes1, 0, bandEncoded, 0, bytes1.length);
+        System.arraycopy(bytes2, 0, bandEncoded, bytes1.length, bytes2.length);
+        final RunCodec runCodec = new RunCodec(5, Codec.DELTA5, Codec.UNSIGNED5);
+
+        // Should only throw an IOException and not an OutOfMemoryError
+        assertThrows(IOException.class, () -> runCodec.decodeInts(Integer.MAX_VALUE - 1, new ByteArrayInputStream(bandEncoded)));
+        assertThrows(IOException.class, () -> runCodec.decodeInts(Integer.MAX_VALUE - 1, new ByteArrayInputStream(bandEncoded), 1));
+    }
+
     @Test
     public void testEncodeSingleValue() {
         assertThrows(Pack200Exception.class, () -> new RunCodec(10, Codec.SIGNED5, Codec.UDELTA5).encode(5),
@@ -102,6 +119,19 @@ public class RunCodecTest {
         for (int i = 0; i < band.length; i++) {
             assertEquals(band[i], bandDecoded[i]);
         }
+    }
+
+    @Disabled
+    @Test
+    public void testPopulationCodecDecodeIntsOverflow() throws Exception {
+        final byte[] bytes1 = Codec.DELTA5.encode(new int[] { 11, 12, 33, 4000, -555 });
+        final PopulationCodec popCodec = new PopulationCodec(Codec.UNSIGNED5, Codec.BYTE1, Codec.UNSIGNED5);
+        final byte[] bytes2 = popCodec.encode(new int[] { 10, 20 }, new int[] { 0, 1, 2, 1, 0, 2, 2, 2, 1, 1, 0, 2, 0, 1, 1, 0, 0 },
+                new int[] { 5, 3, 999, 789, 355, 12345 });
+        final byte[] bandEncoded = new byte[bytes1.length + bytes2.length];
+
+        // Should only throw an IOException and not an OutOfMemoryError
+        assertThrows(IOException.class, () -> popCodec.decodeInts(Integer.MAX_VALUE - 1, new ByteArrayInputStream(bandEncoded)));
     }
 
     @Test

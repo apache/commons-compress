@@ -21,16 +21,32 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.jar.JarOutputStream;
 
 import org.apache.commons.compress.harmony.pack200.Pack200Adapter;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.java.util.jar.Pack200.Unpacker;
+import org.apache.commons.io.input.BoundedInputStream;
 
 /**
  * This class provides the binding between the standard Pack200 interface and the internal interface for (un)packing.
  */
 public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
+
+    static BoundedInputStream newBoundedInputStream(final File file) throws IOException {
+        return newBoundedInputStream(file.toPath());
+    }
+
+    @SuppressWarnings("resource")
+    static BoundedInputStream newBoundedInputStream(final Path inputPath) throws IOException {
+        return new BoundedInputStream(new BufferedInputStream(Files.newInputStream(inputPath)), Files.size(inputPath));
+    }
+
+    static BoundedInputStream newBoundedInputStream(final String first, final String... more) throws IOException {
+        return newBoundedInputStream(Paths.get(first, more));
+    }
 
     @Override
     public void unpack(final File file, final JarOutputStream out) throws IOException {

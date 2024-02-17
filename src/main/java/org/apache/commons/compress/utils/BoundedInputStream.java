@@ -49,4 +49,10 @@ public class BoundedInputStream extends org.apache.commons.io.input.BoundedInput
         return getMaxLength() - getCount();
     }
 
+//    @Override
+//    protected void onMaxLength(long maxLength, long count) throws IOException {
+//        if (count > maxLength) {
+//            throw new IOException("Can't read past EOF.");
+//        }
+//    }
 }

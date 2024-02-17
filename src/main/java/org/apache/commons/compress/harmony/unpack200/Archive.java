@@ -18,13 +18,16 @@ package org.apache.commons.compress.harmony.unpack200;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
@@ -32,6 +35,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
 
 /**
  * Archive is the main entry point to unpack200. An archive is constructed with either two file names, a pack file and an output file name or an input stream
@@ -39,7 +43,7 @@ import org.apache.commons.io.IOUtils;
  */
 public class Archive {
 
-    private InputStream inputStream;
+    private BoundedInputStream inputStream;
 
     private final JarOutputStream outputStream;
 
@@ -53,9 +57,13 @@ public class Archive {
 
     private boolean deflateHint;
 
-    private String inputFileName;
+    private final Path inputPath;
+
+    private final long inputSize;
 
     private String outputFileName;
+
+    private static final int[] MAGIC = { 0xCA, 0xFE, 0xD0, 0x0D };
 
     /**
      * Creates an Archive with streams for the input and output files. Note: If you use this method then calling {@link #setRemovePackFile(boolean)} will have
@@ -65,8 +73,18 @@ public class Archive {
      * @param outputStream TODO
      */
     public Archive(final InputStream inputStream, final JarOutputStream outputStream) {
-        this.inputStream = inputStream;
+        this.inputStream = inputStream instanceof BoundedInputStream ? (BoundedInputStream) inputStream : new BoundedInputStream(inputStream);
         this.outputStream = outputStream;
+        if (inputStream instanceof FileInputStream) {
+            try {
+                inputPath = Paths.get(((FileInputStream) inputStream).getFD().toString());
+            } catch (final IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        } else {
+            inputPath = null;
+        }
+        this.inputSize = -1;
     }
 
     /**
@@ -79,9 +97,10 @@ public class Archive {
      * @throws IOException           TODO
      */
     public Archive(final String inputFileName, final String outputFileName) throws FileNotFoundException, IOException {
-        this.inputFileName = inputFileName;
+        this.inputPath = Paths.get(inputFileName);
         this.outputFileName = outputFileName;
-        this.inputStream = new FileInputStream(inputFileName);
+        this.inputSize = Files.size(this.inputPath);
+        this.inputStream = new BoundedInputStream(Files.newInputStream(inputPath), inputSize);
         this.outputStream = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(outputFileName)));
     }
 
@@ -138,7 +157,7 @@ public class Archive {
         outputStream.setComment("PACK200");
         try {
             if (!inputStream.markSupported()) {
-                inputStream = new BufferedInputStream(inputStream);
+                inputStream = new BoundedInputStream(new BufferedInputStream(inputStream));
                 if (!inputStream.markSupported()) {
                     throw new IllegalStateException();
                 }
@@ -146,20 +165,19 @@ public class Archive {
             inputStream.mark(2);
             if ((inputStream.read() & 0xFF | (inputStream.read() & 0xFF) << 8) == GZIPInputStream.GZIP_MAGIC) {
                 inputStream.reset();
-                inputStream = new BufferedInputStream(new GZIPInputStream(inputStream));
+                inputStream = new BoundedInputStream(new BufferedInputStream(new GZIPInputStream(inputStream)));
             } else {
                 inputStream.reset();
             }
-            inputStream.mark(4);
-            final int[] magic = { 0xCA, 0xFE, 0xD0, 0x0D }; // Magic word for
+            inputStream.mark(MAGIC.length);
             // pack200
-            final int[] word = new int[4];
+            final int[] word = new int[MAGIC.length];
             for (int i = 0; i < word.length; i++) {
                 word[i] = inputStream.read();
             }
             boolean compressedWithE0 = false;
-            for (int m = 0; m < magic.length; m++) {
-                if (word[m] != magic[m]) {
+            for (int m = 0; m < MAGIC.length; m++) {
+                if (word[m] != MAGIC[m]) {
                     compressedWithE0 = true;
                 }
             }
@@ -188,7 +206,7 @@ public class Archive {
                     segment.setPreRead(false);
 
                     if (i == 1) {
-                        segment.log(Segment.LOG_LEVEL_VERBOSE, "Unpacking from " + inputFileName + " to " + outputFileName);
+                        segment.log(Segment.LOG_LEVEL_VERBOSE, "Unpacking from " + inputPath + " to " + outputFileName);
                     }
                     segment.log(Segment.LOG_LEVEL_VERBOSE, "Reading segment " + i);
                     if (overrideDeflateHint) {
@@ -196,10 +214,6 @@ public class Archive {
                     }
                     segment.unpack(inputStream, outputStream);
                     outputStream.flush();
-
-                    if (inputStream instanceof FileInputStream) {
-                        inputFileName = ((FileInputStream) inputStream).getFD().toString();
-                    }
                 }
             }
         } finally {
@@ -207,14 +221,8 @@ public class Archive {
             IOUtils.closeQuietly(outputStream);
             IOUtils.closeQuietly(logFile);
         }
-        if (removePackFile) {
-            boolean deleted = false;
-            if (inputFileName != null) {
-                deleted = new File(inputFileName).delete();
-            }
-            if (!deleted) {
-                throw new Pack200Exception("Failed to delete the input file.");
-            }
+        if (removePackFile && inputPath != null) {
+            Files.delete(inputPath);
         }
     }
 

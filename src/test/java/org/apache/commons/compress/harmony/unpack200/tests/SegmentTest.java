@@ -16,21 +16,32 @@
  */
 package org.apache.commons.compress.harmony.unpack200.tests;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 
 import org.apache.commons.compress.AbstractTempDirTest;
 import org.apache.commons.compress.harmony.unpack200.Segment;
+import org.apache.commons.io.input.BoundedInputStream;
+import org.apache.commons.io.output.NullOutputStream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Tests for org.apache.commons.compress.harmony.unpack200.Segment.
@@ -85,6 +96,30 @@ public class SegmentTest extends AbstractTempDirTest {
         try (InputStream in = Segment.class.getResourceAsStream("/pack200/JustResources.pack");
                 JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
             new Segment().unpack(in, out);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+    // @formatter:off
+            "bandint_oom.pack",
+            "cpfloat_oom.pack",
+            "cputf8_oom.pack",
+            "favoured_oom.pack",
+            "filebits_oom.pack",
+            "flags_oom.pack",
+            "references_oom.pack",
+            "segment_header_oom.pack",
+            "signatures_oom.pack"
+            // @formatter:on
+    })
+    // Tests of various files that can cause out of memory errors
+    public void testParsingOOM(final String testFileName) throws Exception {
+        final URL url = Segment.class.getResource("/org/apache/commons/compress/pack/" + testFileName);
+        final Path path = Paths.get(url.toURI());
+        try (InputStream in = new BoundedInputStream(new BufferedInputStream(Files.newInputStream(path)), Files.size(path));
+                JarOutputStream out = new JarOutputStream(NullOutputStream.INSTANCE)) {
+            assertThrows(IOException.class, () -> new Segment().unpack(in, out));
         }
     }
 

@@ -19,6 +19,8 @@ package org.apache.commons.compress.harmony.pack200;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.io.input.BoundedInputStream;
+
 /**
  * A Codec allows a sequence of bytes to be decoded into integer values (or vice versa).
  * <p>
@@ -123,7 +125,7 @@ public abstract class Codec {
      */
     public int[] decodeInts(final int n, final InputStream in) throws IOException, Pack200Exception {
         lastBandLength = 0;
-        final int[] result = new int[n];
+        final int[] result = new int[check(n, in)];
         int last = 0;
         for (int i = 0; i < n; i++) {
             result[i] = last = decode(in, last);
@@ -142,13 +144,32 @@ public abstract class Codec {
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
     public int[] decodeInts(final int n, final InputStream in, final int firstValue) throws IOException, Pack200Exception {
-        final int[] result = new int[n + 1];
+        final int[] result = new int[check(n + 1, in)];
         result[0] = firstValue;
         int last = firstValue;
         for (int i = 1; i < n + 1; i++) {
             result[i] = last = decode(in, last);
         }
         return result;
+    }
+
+    int check(final int n, final InputStream in) throws Pack200Exception {
+        if (in instanceof BoundedInputStream) {
+            final BoundedInputStream bin = (BoundedInputStream) in;
+            final long count = bin.getCount();
+            final long maxLength = bin.getMaxLength();
+            if (maxLength > -1) {
+                final long remaining = maxLength - count;
+                final String format = "Can't read beyond end of stream (n = %,d, count = %,d, maxLength = %,d, remaining = %,d)";
+                if (count < -1) {
+                    throw new Pack200Exception(String.format(format, n, count, maxLength, remaining));
+                }
+                if (n > remaining) {
+                    throw new Pack200Exception(String.format(format, n, count, maxLength, remaining));
+                }
+            }
+        }
+        return n;
     }
 
     /**

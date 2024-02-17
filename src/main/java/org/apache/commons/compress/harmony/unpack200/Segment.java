@@ -462,13 +462,13 @@ public class Segment {
     /**
      * Unpacks a packed stream (either .pack. or .pack.gz) into a corresponding JarOuputStream.
      *
-     * @param in  a packed stream.
+     * @param inputStream  a packed input stream.
      * @param out output stream.
      * @throws Pack200Exception if there is a problem unpacking
      * @throws IOException      if there is a problem with I/O during unpacking
      */
-    public void unpack(final InputStream in, final JarOutputStream out) throws IOException, Pack200Exception {
-        unpackRead(in);
+    public void unpack(final InputStream inputStream, final JarOutputStream out) throws IOException, Pack200Exception {
+        unpackRead(inputStream);
         unpackProcess();
         unpackWrite(out);
     }
