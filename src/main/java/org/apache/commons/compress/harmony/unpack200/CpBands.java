@@ -42,6 +42,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
  */
 public class CpBands extends BandSet {
 
+    private static final String EMPTY_STRING = ""; //$NON-NLS-1$
+
     private final SegmentConstantPool pool = new SegmentConstantPool(this);
 
     private String[] cpClass;
@@ -397,8 +399,8 @@ public class CpBands extends BandSet {
 
     private void parseCpFloat(final InputStream in) throws IOException, Pack200Exception {
         final int cpFloatCount = header.getCpFloatCount();
-        cpFloat = new float[cpFloatCount];
         final int[] floatBits = decodeBandInt("cp_Float", in, Codec.UDELTA5, cpFloatCount);
+        cpFloat = new float[cpFloatCount];
         for (int i = 0; i < cpFloatCount; i++) {
             cpFloat[i] = Float.intBitsToFloat(floatBits[i]);
         }
@@ -524,10 +526,9 @@ public class CpBands extends BandSet {
 
     private void parseCpUtf8(final InputStream in) throws IOException, Pack200Exception {
         final int cpUTF8Count = header.getCpUTF8Count();
-        cpUTF8 = new String[cpUTF8Count];
-        mapUTF8 = new HashMap<>(cpUTF8Count + 1);
-        cpUTF8[0] = ""; //$NON-NLS-1$
-        mapUTF8.put("", Integer.valueOf(0));
+        if (cpUTF8Count <= 0) {
+            throw new IOException("cpUTF8Count value must be greater than 0");
+        }
         final int[] prefix = decodeBandInt("cpUTF8Prefix", in, Codec.DELTA5, cpUTF8Count - 2);
         int charCount = 0;
         int bigSuffixCount = 0;
@@ -540,8 +541,8 @@ public class CpBands extends BandSet {
                 charCount += element;
             }
         }
-        final char[] data = new char[charCount];
         final int[] dataBand = decodeBandInt("cp_Utf8_chars", in, Codec.CHAR3, charCount);
+        final char[] data = new char[charCount];
         for (int i = 0; i < data.length; i++) {
             data[i] = (char) dataBand[i];
         }
@@ -561,6 +562,13 @@ public class CpBands extends BandSet {
                 bigSuffixData[i][j] = (char) bigSuffixDataBand[i][j];
             }
         }
+
+        // Initialize variables
+        mapUTF8 = new HashMap<>(cpUTF8Count + 1);
+        cpUTF8 = new String[cpUTF8Count];
+        cpUTF8[0] = EMPTY_STRING;
+        mapUTF8.put(EMPTY_STRING, Integer.valueOf(0));
+
         // Go through the strings
         charCount = 0;
         bigSuffixCount = 0;
