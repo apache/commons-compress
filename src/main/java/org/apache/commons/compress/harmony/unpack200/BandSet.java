@@ -64,7 +64,9 @@ public abstract class BandSet {
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
     public int[] decodeBandInt(final String name, final InputStream in, final BHSDCodec codec, final int count) throws IOException, Pack200Exception {
-        int[] band;
+        if (count < 0) {
+            throw new Pack200Exception("count < 0");
+        }
         // Useful for debugging
 //        if (count > 0) {
 //            System.out.println("decoding " + name + " " + count);
@@ -78,6 +80,7 @@ public abstract class BandSet {
             return getFirst;
         }
         final int first = getFirst[0];
+        int[] band;
         if (codec.isSigned() && first >= -256 && first <= -1) {
             // Non-default codec should be used
             codecUsed = CodecEncoding.getCodec(-1 - first, header.getBandHeadersInputStream(), codec);
