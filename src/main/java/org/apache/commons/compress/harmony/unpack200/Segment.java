@@ -483,10 +483,8 @@ public class Segment {
     /*
      * Package-private accessors for unpacking stages
      */
-    void unpackRead(InputStream in) throws IOException, Pack200Exception {
-        if (!in.markSupported()) {
-            in = new BufferedInputStream(in);
-        }
+    void unpackRead(final InputStream inputStream) throws IOException, Pack200Exception {
+        final InputStream in = inputStream.markSupported() ? inputStream : new BufferedInputStream(inputStream);
 
         header = new SegmentHeader(this);
         header.read(in);
