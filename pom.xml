@@ -514,7 +514,25 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <coveralls.skip>true</coveralls.skip>
       </properties>
     </profile>
-
+    <profile>
+      <id>java17</id>
+      <activation>
+        <jdk>[17,)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>
+                --add-opens java.base/java.io=ALL-UNNAMED                     
+              </argLine>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
   <developers>
