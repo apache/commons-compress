@@ -16,17 +16,19 @@
  */
 package org.apache.commons.compress.harmony.pack200;
 
+import java.io.IOException;
+
 /**
- * Represents a problem with a Pack200 coding/decoding issue.
+ * Signals a problem with a Pack200 coding or decoding issue.
  */
-public class Pack200Exception extends Exception {
+public class Pack200Exception extends IOException {
 
     private static final long serialVersionUID = 5168177401552611803L;
 
     /**
-     * Creates a new Pack200 exception with the given message
+     * Constructs a new Pack200 exception with the given message
      *
-     * @param message the text message to display
+     * @param message The detail message (which is saved for later retrieval by the {@link #getMessage()} method).
      */
     public Pack200Exception(final String message) {
         super(message);
