@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.commons.compress.harmony.pack200.tests;
+package org.apache.commons.compress.harmony.pack200;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -25,13 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.compress.harmony.pack200.AttributeDefinitionBands;
 import org.apache.commons.compress.harmony.pack200.AttributeDefinitionBands.AttributeDefinition;
-import org.apache.commons.compress.harmony.pack200.CPUTF8;
-import org.apache.commons.compress.harmony.pack200.Codec;
-import org.apache.commons.compress.harmony.pack200.CpBands;
-import org.apache.commons.compress.harmony.pack200.NewAttribute;
-import org.apache.commons.compress.harmony.pack200.NewAttributeBands;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.AttributeLayoutElement;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.Call;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.Callable;
@@ -41,8 +35,6 @@ import org.apache.commons.compress.harmony.pack200.NewAttributeBands.Reference;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.Replication;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.Union;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.UnionCase;
-import org.apache.commons.compress.harmony.pack200.Pack200Exception;
-import org.apache.commons.compress.harmony.pack200.SegmentHeader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

@@ -15,13 +15,10 @@
  *  limitations under the License.
  */
 
-package org.apache.commons.compress.harmony.pack200.tests;
+package org.apache.commons.compress.harmony.pack200;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-import org.apache.commons.compress.harmony.pack200.AttributeDefinitionBands;
-import org.apache.commons.compress.harmony.pack200.CPUTF8;
-import org.apache.commons.compress.harmony.pack200.NewAttributeBands;
 import org.junit.jupiter.api.Test;
 
 public class Compress628Test {

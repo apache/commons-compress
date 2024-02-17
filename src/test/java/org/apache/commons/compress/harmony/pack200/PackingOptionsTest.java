@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.commons.compress.harmony.pack200.tests;
+package org.apache.commons.compress.harmony.pack200;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -39,10 +39,6 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 
 import org.apache.commons.compress.AbstractTempDirTest;
-import org.apache.commons.compress.harmony.pack200.Archive;
-import org.apache.commons.compress.harmony.pack200.Pack200Exception;
-import org.apache.commons.compress.harmony.pack200.PackingOptions;
-import org.apache.commons.compress.harmony.pack200.PackingUtils;
 import org.junit.jupiter.api.Test;
 
 /**

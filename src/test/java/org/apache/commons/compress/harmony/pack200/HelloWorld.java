@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.commons.compress.harmony.pack200.tests;
+package org.apache.commons.compress.harmony.pack200;
 
 /**
  * This is intended to be used as a test class for unpacking a packed Jar file.

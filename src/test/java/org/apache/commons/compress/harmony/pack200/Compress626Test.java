@@ -15,7 +15,7 @@
  *  limitations under the License.
  */
 
-package org.apache.commons.compress.harmony.pack200.tests;
+package org.apache.commons.compress.harmony.pack200;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -25,9 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.jar.JarOutputStream;
 
-import org.apache.commons.compress.harmony.pack200.AttributeDefinitionBands;
-import org.apache.commons.compress.harmony.pack200.CPUTF8;
-import org.apache.commons.compress.harmony.pack200.NewAttributeBands;
 import org.apache.commons.compress.java.util.jar.Pack200;
 import org.apache.commons.io.output.NullOutputStream;
 import org.junit.jupiter.api.Test;
