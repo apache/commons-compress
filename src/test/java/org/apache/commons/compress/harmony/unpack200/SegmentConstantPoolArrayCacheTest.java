@@ -15,13 +15,12 @@
  *  limitations under the License.
  */
 
-package org.apache.commons.compress.harmony.unpack200.tests;
+package org.apache.commons.compress.harmony.unpack200;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import org.apache.commons.compress.harmony.unpack200.SegmentConstantPoolArrayCache;
 import org.junit.jupiter.api.Test;
 
 public class SegmentConstantPoolArrayCacheTest {

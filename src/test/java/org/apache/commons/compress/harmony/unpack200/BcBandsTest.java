@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.commons.compress.harmony.unpack200.tests;
+package org.apache.commons.compress.harmony.unpack200;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,12 +24,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
-import org.apache.commons.compress.harmony.unpack200.AttrDefinitionBands;
-import org.apache.commons.compress.harmony.unpack200.BcBands;
-import org.apache.commons.compress.harmony.unpack200.ClassBands;
-import org.apache.commons.compress.harmony.unpack200.CpBands;
-import org.apache.commons.compress.harmony.unpack200.Segment;
-import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPClass;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPDouble;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPFieldRef;

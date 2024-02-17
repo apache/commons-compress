@@ -14,20 +14,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.commons.compress.harmony.unpack200.tests.bytecode;
+package org.apache.commons.compress.harmony.unpack200.bytecode;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.commons.compress.harmony.unpack200.bytecode.CPDouble;
-import org.apache.commons.compress.harmony.unpack200.bytecode.CPFloat;
-import org.apache.commons.compress.harmony.unpack200.bytecode.CPInteger;
-import org.apache.commons.compress.harmony.unpack200.bytecode.CPLong;
-import org.apache.commons.compress.harmony.unpack200.bytecode.CPMember;
-import org.apache.commons.compress.harmony.unpack200.bytecode.CPString;
-import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
-import org.apache.commons.compress.harmony.unpack200.bytecode.SourceFileAttribute;
 import org.junit.jupiter.api.Test;
 
 public class ClassFileEntryTest {

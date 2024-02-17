@@ -14,15 +14,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.commons.compress.harmony.unpack200.tests;
+package org.apache.commons.compress.harmony.unpack200;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.commons.compress.harmony.unpack200.CpBands;
-import org.apache.commons.compress.harmony.unpack200.Segment;
-import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
 import org.junit.jupiter.api.Test;
 
 /**

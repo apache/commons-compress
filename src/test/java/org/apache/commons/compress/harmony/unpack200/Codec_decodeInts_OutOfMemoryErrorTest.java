@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.commons.compress.harmony.unpack200.tests;
+package org.apache.commons.compress.harmony.unpack200;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

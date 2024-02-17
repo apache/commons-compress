@@ -14,26 +14,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.commons.compress.harmony.unpack200.tests.bytecode;
+package org.apache.commons.compress.harmony.unpack200;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.stream.Stream;
-
-import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
+import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-public class ByteCodeTest {
-
-    static Stream<Arguments> byteCode() {
-        return Stream.of(Arguments.of(0, "nop"), Arguments.of(-79, "return"), Arguments.of(177, "return"));
-    }
+/**
+ */
+public class SegmentOptionsTest {
 
     @ParameterizedTest
-    @MethodSource("byteCode")
-    public void testByteCode(final int opCode, final String expectedName) {
-        assertEquals(expectedName, ByteCode.getByteCode(opCode).getName());
+    @ValueSource(ints = { 3, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 })
+    public void testUnused(final int element) {
+        assertThrows(Pack200Exception.class, () -> new SegmentOptions(1 << element));
     }
 }
