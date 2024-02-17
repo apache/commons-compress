@@ -63,11 +63,11 @@ public class RunCodec extends Codec {
 
     @Override
     public int[] decodeInts(final int n, final InputStream in) throws IOException, Pack200Exception {
-        final int[] band = new int[n];
         final int[] aValues = aCodec.decodeInts(k, in);
         normalise(aValues, aCodec);
         final int[] bValues = bCodec.decodeInts(n - k, in);
         normalise(bValues, bCodec);
+        final int[] band = new int[n];
         System.arraycopy(aValues, 0, band, 0, k);
         System.arraycopy(bValues, 0, band, k, n - k);
         lastBandLength = aCodec.lastBandLength + bCodec.lastBandLength;
