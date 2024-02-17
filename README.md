@@ -46,12 +46,12 @@ Apache Commons Compress
 [![Java CI](https://github.com/apache/commons-compress/actions/workflows/maven.yml/badge.svg)](https://github.com/apache/commons-compress/actions/workflows/maven.yml)
 [![Coverage Status](https://codecov.io/gh/apache/commons-compress/branch/master/graph/badge.svg)](https://app.codecov.io/gh/apache/commons-compress)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/badge.svg?gav=true)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/?gav=true)
-[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-compress/1.25.0.svg)](https://javadoc.io/doc/org.apache.commons/commons-compress/1.25.0)
+[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-compress/1.26.0.svg)](https://javadoc.io/doc/org.apache.commons/commons-compress/1.26.0)
 [![CodeQL](https://github.com/apache/commons-compress/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/apache/commons-compress/actions/workflows/codeql-analysis.yml)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/apache/commons-compress/badge)](https://api.securityscorecards.dev/projects/github.com/apache/commons-compress)
 
 Apache Commons Compress defines an API for working with
-compression and archive formats.  These include: bzip2, gzip, pack200,
+compression and archive formats. These include bzip2, gzip, pack200,
 LZMA, XZ, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
 Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
@@ -72,7 +72,7 @@ Alternatively, you can pull it from  the central Maven repositories:
 <dependency>
   <groupId>org.apache.commons</groupId>
   <artifactId>commons-compress</artifactId>
-  <version>1.25.0</version>
+  <version>1.26.0</version>
 </dependency>
 ```
 
@@ -114,7 +114,6 @@ Additional Resources
 + [Apache Issue Tracker (JIRA)](https://issues.apache.org/jira/browse/COMPRESS)
 + [Apache Commons Slack Channel](https://the-asf.slack.com/archives/C60NVB8AD)
 + [Apache Commons Twitter Account](https://twitter.com/ApacheCommons)
-+ `#apache-commons` IRC channel on `irc.freenode.org`
 
 Apache Commons Components
 -------------------------

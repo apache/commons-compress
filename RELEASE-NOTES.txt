@@ -1,4 +1,99 @@
 Apache Commons Compress 
+Version 1.26.0
+Release Notes
+
+INTRODUCTION
+------------
+
+Apache Commons Compress defines an API for working with compression and
+archive formats.  These include: bzip2, gzip, pack200, LZMA, XZ, Snappy,
+traditional Unix Compress, DEFLATE, DEFLATE64, LZ4, Brotli, Zstandard and
+ar, cpio, jar, tar, zip, dump, 7z, arj.
+
+Apache Commons Compress defines an API for working with
+compression and archive formats. These include bzip2, gzip, pack200,
+LZMA, XZ, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
+Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
+
+Minor feature and maintenance release.
+
+Changes in this version include:
+
+New Features
+------------
+*            Add and use ZipFile.builder(), ZipFile.Builder, and deprecate constructors. Thanks to Gary Gregory. 
+*            Add and use SevenZFile.builder(), SevenZFile.Builder, and deprecate constructors. Thanks to Gary Gregory. 
+*            Add and use ArchiveInputStream.getCharset(). Thanks to Gary Gregory. 
+*            Add and use ArchiveEntry.resolveIn(Path). Thanks to Gary Gregory. 
+*            Add Maven property project.build.outputTimestamp for build reproducibility. Thanks to Gary Gregory. 
+
+Fixed Bugs
+---------
+
+*  COMPRESS-632:  Check for invalid PAX values in TarArchiveEntry #438. Thanks to Yakov Shafranovich, Gary Gregory. 
+*  COMPRESS-632:  Fix for zero size headers in ArjInputStream #439. Thanks to Yakov Shafranovich, Gary Gregory. 
+*  COMPRESS-632:  Fixes and tests for ArInputStream #440. Thanks to Yakov Shafranovich. 
+*  COMPRESS-632:  Fixes for dump file parsing #442. Thanks to Yakov Shafranovich, Gary Gregory. 
+*  COMPRESS-632:  Improve CPIO exception detection and handling #441. Thanks to Yakov Shafranovich, Gary Gregory. 
+*            Deprecate SkipShieldingInputStream without replacement (no longer used). Thanks to Gary Gregory. 
+*            Reuse commons-codec, don't duplicate class PureJavaCrc32C (removed package-private class). Thanks to Gary Gregory. 
+*            Reuse commons-codec, don't duplicate class XXHash32 (deprecated class). Thanks to Gary Gregory. 
+*            Reuse commons-io, don't duplicate class Charsets (deprecated class). Thanks to Gary Gregory. 
+*            Reuse commons-io, don't duplicate class IOUtils (deprecated methods). Thanks to Gary Gregory. 
+*            Reuse commons-io, don't duplicate class BoundedInputStream (deprecated class). Thanks to Gary Gregory. 
+*            Reuse commons-io, don't duplicate class FileTimes (deprecated TimeUtils methods). Thanks to Gary Gregory. 
+*            Reuse Arrays.equals(byte[], byte[]) and deprecate ArchiveUtils.isEqual(byte[], byte[]). Thanks to Gary Gregory. 
+*            Add a null-check for the class loader of OsgiUtils #451. Thanks to alumi, Gary Gregory. 
+*            Add a null-check in Pack200.newInstance(String, String). Thanks to alumi, Gary Gregory. 
+*            Deprecate ChecksumCalculatingInputStream in favor of java.util.zip.CheckedInputStream. Thanks to Gary Gregory. 
+*            Deprecate CRC32VerifyingInputStream.CRC32VerifyingInputStream(InputStream, long, int). Thanks to Gary Gregory. 
+*  COMPRESS-655:  FramedSnappyCompressorOutputStream produces incorrect output when writing a large buffer #457. Thanks to cpreisler, Gary Gregory. 
+*  COMPRESS-657:  Fix TAR directory entries being misinterpreted as files #460. Thanks to Sebastian Schuberth, Gary Gregory. 
+*            Deprecate unused method FileNameUtils.getBaseName(String). Thanks to Gary Gregory. 
+*            Deprecate unused method FileNameUtils.getExtension(String). Thanks to Gary Gregory. 
+*            ArchiveInputStream.BoundedInputStream.read() incorrectly adds 1 for EOF to the bytes read count. Thanks to Gary Gregory. 
+*            Deprecate IOUtils.read(File, byte[]). Thanks to Gary Gregory. 
+*            Deprecate IOUtils.copyRange(InputStream, long, OutputStream, int). Thanks to Gary Gregory. 
+*  COMPRESS-653:  ZipArchiveOutputStream multi archive updates metadata in incorrect file #455. Thanks to Zbynek Vyskovsky, Gary Gregory. 
+*            Deprecate ByteUtils.InputStreamByteSupplier. Thanks to Gary Gregory. 
+*            Deprecate ByteUtils.fromLittleEndian(InputStream, int). Thanks to Gary Gregory. 
+*            Deprecate ByteUtils.toLittleEndian(DataOutput, long, int). Thanks to Gary Gregory. 
+*            Reduce duplication by having ArchiveInputStream extend FilterInputStream. Thanks to Gary Gregory. 
+*            Support preamble garbage in ZipArchiveInputStream #471. Thanks to Zbynek Vyskovsky, Gary Gregory. 
+*  COMPRESS-658:  Fix formatting the lowest expressable DOS time #472. Thanks to Arnout Engelen. 
+*            Drop reflection from ExtraFieldUtils static initialization #480. Thanks to Romain Manni-Bucau, Gary Gregory. 
+*            Preserve exception causation in ExtraFieldUtils.register(Class). Thanks to Gary Gregory. 
+
+Changes
+-------
+
+*            Bump commons-lang3 from 3.13.0 to 3.14.0. Thanks to Gary Gregory. 
+*            Bump com.github.marschall:memoryfilesystem from 2.6.1 to 2.8.0 #444, #458. Thanks to Dependabot. 
+*            Bump commons-io from 2.15.0 to 2.15.1. Thanks to Gary Gregory. 
+*            Bump org.apache.commons:commons-parent from 64 to 66. Thanks to Dependabot. 
+*            Bump com.github.luben:zstd-jni from 1.5.5-10 to 1.5.5-11 #448. Thanks to Dependabot. 
+*            Bump org.slf4j:slf4j-api from 2.0.9 to 2.0.12. Thanks to Dependabot. 
+*            Bump commons-codec:commons-codec from 1.16.0 to 1.16.1. Thanks to Dependabot. 
+
+
+Resources
+---------
+
+Historical list of changes: https://commons.apache.org/proper/commons-compress/changes-report.html
+
+For complete information on Apache Commons Compress, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Compress website:
+
+https://commons.apache.org/proper/commons-compress/
+
+Download page: https://commons.apache.org/proper/commons-compress/download_io.cgi
+
+Have fun!
+-Apache Commons Team
+
+==============================================================================
+
+Apache Commons Compress 
 Version 1.25.0
 Release Notes
 
