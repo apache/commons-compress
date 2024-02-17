@@ -17,13 +17,13 @@
 package org.apache.commons.compress.harmony.unpack200;
 
 import java.io.ByteArrayInputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.harmony.pack200.BHSDCodec;
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * SegmentHeader is the header band of a {@link Segment}
@@ -299,34 +299,10 @@ public class SegmentHeader {
         parseClassCounts(in);
 
         if (getBandHeadersSize() > 0) {
-            final byte[] bandHeaders = new byte[getBandHeadersSize()];
-            readFully(in, bandHeaders);
-            setBandHeadersData(bandHeaders);
+            setBandHeadersData(IOUtils.readRange(in, getBandHeadersSize()));
         }
 
         archiveSizeOffset -= in.available();
-    }
-
-    /**
-     * Completely reads in a byte array, akin to the implementation in {@link java.io.DataInputStream}. TODO Refactor out into a separate InputStream handling
-     * class
-     *
-     * @param in   the input stream to read from
-     * @param data the byte array to read into
-     * @throws IOException if a problem occurs during reading from the underlying stream
-     */
-    private void readFully(final InputStream in, final byte[] data) throws IOException {
-        int total = in.read(data);
-        if (total == -1) {
-            throw new EOFException("Failed to read any data from input stream");
-        }
-        while (total < data.length) {
-            final int delta = in.read(data, total, data.length - total);
-            if (delta == -1) {
-                throw new EOFException("Failed to read some data from input stream");
-            }
-            total += delta;
-        }
     }
 
     /**
