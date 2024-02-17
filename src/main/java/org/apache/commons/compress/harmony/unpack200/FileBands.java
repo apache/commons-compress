@@ -73,18 +73,16 @@ public class FileBands extends BandSet {
     }
 
     // TODO: stream the file bits directly somehow
-    public void processFileBits() throws IOException, Pack200Exception {
+    public void processFileBits() throws IOException {
         // now read in the bytes
         final int numberOfFiles = header.getNumberOfFiles();
         fileBits = new byte[numberOfFiles][];
         for (int i = 0; i < numberOfFiles; i++) {
             final int size = (int) fileSize[i];
-            // TODO This breaks if file_size > 2^32. Probably an array is
-            // not the right choice, and we should just serialize it here?
-            fileBits[i] = new byte[size];
-            final int read = IOUtils.readFully(in, fileBits[i]);
+            fileBits[i] = IOUtils.readRange(in, size);
+            final int read = fileBits[i].length;
             if (size != 0 && read < size) {
-                throw new Pack200Exception("Expected to read " + size + " bytes but read " + read);
+                throw new IOException("Expected to read " + size + " bytes but read " + read);
             }
         }
     }
