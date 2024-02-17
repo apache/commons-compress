@@ -138,6 +138,9 @@ public abstract class BandSet {
         final int[] twoDResult = decodeBandInt(name, in, defaultCodec, totalCount);
         int index = 0;
         for (int i = 0; i < result.length; i++) {
+            if (counts[i] > twoDResult.length) {
+                throw new IOException("Counts value exceeds length of twoDResult");
+            }
             result[i] = new int[counts[i]];
             for (int j = 0; j < result[i].length; j++) {
                 result[i][j] = twoDResult[index];
@@ -282,18 +285,17 @@ public abstract class BandSet {
 
     protected CPUTF8[][] parseCPSignatureReferences(final String name, final InputStream in, final BHSDCodec codec, final int[] counts)
             throws IOException, Pack200Exception {
-        final CPUTF8[][] result = new CPUTF8[counts.length][];
         int sum = 0;
         for (int i = 0; i < counts.length; i++) {
-            result[i] = new CPUTF8[counts[i]];
             sum += counts[i];
         }
-        final CPUTF8[] result1 = new CPUTF8[sum];
         final int[] indices = decodeBandInt(name, in, codec, sum);
+        final CPUTF8[] result1 = new CPUTF8[sum];
         for (int i1 = 0; i1 < sum; i1++) {
             result1[i1] = segment.getCpBands().cpSignatureValue(indices[i1]);
         }
         int pos = 0;
+        final CPUTF8[][] result = new CPUTF8[counts.length][];
         for (int i = 0; i < counts.length; i++) {
             final int num = counts[i];
             result[i] = new CPUTF8[num];
@@ -367,7 +369,6 @@ public abstract class BandSet {
         int sum = 0;
         final long[][] result = new long[count][];
         for (int i = 0; i < count; i++) {
-            result[i] = new long[counts[i]];
             sum += counts[i];
         }
         int[] hi = null;
@@ -378,7 +379,8 @@ public abstract class BandSet {
         lo = decodeBandInt(name, in, loCodec, sum);
 
         int index = 0;
-        for (int i = 0; i < result.length; i++) {
+        for (int i = 0; i < count; i++) {
+            result[i] = new long[counts[i]];
             for (int j = 0; j < result[i].length; j++) {
                 if (hi != null) {
                     result[i][j] = (long) hi[index] << 32 | lo[index] & 4294967295L;
@@ -436,15 +438,13 @@ public abstract class BandSet {
         if (count == 0) {
             return new String[][] { {} };
         }
-        final String[][] result = new String[count][];
         int sum = 0;
         for (int i = 0; i < count; i++) {
-            result[i] = new String[counts[i]];
             sum += counts[i];
         }
         // TODO Merge the decode and parsing of a multiple structure into one
-        final String[] result1 = new String[sum];
         final int[] indices = decodeBandInt(name, in, codec, sum);
+        final String[] result1 = new String[sum];
         for (int i1 = 0; i1 < sum; i1++) {
             final int index = indices[i1];
             if (index < 0 || index >= reference.length) {
@@ -453,6 +453,7 @@ public abstract class BandSet {
             result1[i1] = reference[index];
         }
         // TODO Merge the decode and parsing of a multiple structure into one
+        final String[][] result = new String[count][];
         int pos = 0;
         for (int i = 0; i < count; i++) {
             final int num = counts[i];
