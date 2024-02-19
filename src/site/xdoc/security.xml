@@ -54,6 +54,22 @@
         the descriptions here are incomplete, please report them
         privately to the Apache Security Team. Thank you.</p>
 
+        <subsection name="Fixed in Apache Commons Compress 1.26.0">
+          <p><b>Important: Denial of Service</b> <a
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-25710">CVE-2024-25710</a></p>
+          <p>This affects version 1.3 through 1.25.0.</p>
+          <p>This denial of service is caused by an infinite loop reading a corrupted DUMP file.</p>
+          <p>Users are recommended to upgrade to version 1.26.0 which fixes the issue.</p>
+          <p>Credit to Yakov Shafranovich, Amazon Web Services (reporter).</p>
+
+          <p><b>Moderate: Denial of Service</b> <a
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-26308">CVE-2024-26308</a></p>
+          <p>You can get an OutOfMemoryError unpacking a broken Pack200 file.</p>
+          <p>This issue affects Commons Compress 1.21 before 1.26.0.</p>
+          <p>Users are recommended to upgrade to version 1.26.0 which fixes the issue.</p>
+          <p>Credit to Yakov Shafranovich, Amazon Web Services (reporter).</p>
+        </subsection>
+
         <subsection name="Fixed in Apache Commons Compress 1.24.0">
           <p><b>Moderate: Denial of Service</b> <a
           href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-42503">CVE-2023-42503</a></p>
