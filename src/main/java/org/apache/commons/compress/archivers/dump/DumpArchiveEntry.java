@@ -342,11 +342,17 @@ public class DumpArchiveEntry implements ArchiveEntry {
      * Currently unused
      */
     private final DumpArchiveSummary summary = null;
-    // this information is available from standard index.
+
+    /**
+     * This value is available from the standard index.
+     */
     private final TapeSegmentHeader header = new TapeSegmentHeader();
     private String simpleName;
     private String originalName;
-    // this information is available from QFA index
+
+    /**
+     * This value is available from the QFA index.
+     */
     private int volume;
     private long offset;
     private int ino;
@@ -360,13 +366,13 @@ public class DumpArchiveEntry implements ArchiveEntry {
     private boolean isDeleted;
 
     /**
-     * Default constructor.
+     * Constructs a default instance.
      */
     public DumpArchiveEntry() {
     }
 
     /**
-     * Constructor taking only file name.
+     * Constructs a new instance with only names.
      *
      * @param name       path name
      * @param simpleName actual file name.
@@ -377,7 +383,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Constructor taking name, inode and type.
+     * Constructs a new instance with name, inode and type.
      *
      * @param name       the name
      * @param simpleName the simple name
