@@ -89,7 +89,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveInputStream.getCharset().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveEntry.resolveIn(Path).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add Maven property project.build.outputTimestamp for build reproducibility.</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add optional dependency on commons-codec:commons-codec:1.16.1.</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add dependency on commons-codec:commons-codec:1.16.1.</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add dependency on org.apache.commons:commons-lang3:3.14.0.</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add dependency on commons-io:commons-io:2.15.1.</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump commons-lang3 from 3.13.0 to 3.14.0.</action>
       <action type="update" dev="ggregory" due-to="Dependabot">Bump com.github.marschall:memoryfilesystem from 2.6.1 to 2.8.0 #444, #458.</action>
