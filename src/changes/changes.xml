@@ -89,9 +89,6 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveInputStream.getCharset().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveEntry.resolveIn(Path).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add Maven property project.build.outputTimestamp for build reproducibility.</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add dependency on commons-codec:commons-codec:1.16.1.</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add dependency on org.apache.commons:commons-lang3:3.14.0.</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add dependency on commons-io:commons-io:2.15.1.</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump commons-lang3 from 3.13.0 to 3.14.0.</action>
       <action type="update" dev="ggregory" due-to="Dependabot">Bump com.github.marschall:memoryfilesystem from 2.6.1 to 2.8.0 #444, #458.</action>
@@ -100,6 +97,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="Dependabot">Bump com.github.luben:zstd-jni from 1.5.5-10 to 1.5.5-11 #448.</action>
       <action type="update" dev="ggregory" due-to="Dependabot">Bump org.slf4j:slf4j-api from 2.0.9 to 2.0.12.</action>
       <action type="update" dev="ggregory" due-to="Dependabot">Bump commons-codec:commons-codec from 1.16.0 to 1.16.1.</action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">Add dependency on commons-codec:commons-codec:1.16.1.</action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">Add dependency on org.apache.commons:commons-lang3:3.14.0.</action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">Add dependency on commons-io:commons-io:2.15.1.</action>
     </release> 
     <release version="1.25.0" date="2023-11-12" description="Minor feature and maintenance release.">
       <!-- ADD -->

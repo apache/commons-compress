@@ -100,7 +100,6 @@ Fixed Bugs
 #if ($release.getActions('update').size() !=0)
 Changes
 -------
-
 #foreach($actionItem in $release.getActions('update'))
 ## Use replaceAll to fix up LF-only line ends on Windows.
 #set($action=$actionItem.getAction().replaceAll("\n","
@@ -125,7 +124,6 @@ Changes
 #if ($release.getActions('remove').size() !=0)
 Removed
 -------
-
 #foreach($actionItem in $release.getActions('remove'))
 ## Use replaceAll to fix up LF-only line ends on Windows.
 #set($action=$actionItem.getAction().replaceAll("\n","
@@ -152,7 +150,6 @@ Removed
 
 Resources
 ---------
-
 Historical list of changes: ${project.url}changes-report.html
 
 For complete information on ${project.name}, including instructions on how to submit bug reports,
@@ -165,4 +162,4 @@ Download page: ${project.url}download_io.cgi
 Have fun!
 -Apache Commons Team
 
-==============================================================================
+-----------------------------------------------------------------------------
