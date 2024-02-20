@@ -29,6 +29,7 @@ import static org.ops4j.pax.exam.CoreOptions.bundle;
 final class Configurations {
 
     private static final Option COMMONS_CODEC = mavenBundle().groupId("commons-codec").artifactId("commons-codec").version("1.16.0");
+
     public static final Option[] DEFAULT_CONFIG = new Option[]{systemProperty("pax.exam.osgi.unresolved.fail").value("true"),
             systemProperty("org.ops4j.pax.url.mvn.useFallbackRepositories").value("false"),
             systemProperty("org.ops4j.pax.url.mvn.repositories").value("https://repo.maven.apache.org/maven2"),
