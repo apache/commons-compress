@@ -18,17 +18,19 @@
  */
 package org.apache.commons.compress.osgi;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.lang.reflect.Method;
+
+import javax.inject.Inject;
+
 import org.junit.Test;
-import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
-import javax.inject.Inject;
-import java.lang.reflect.Method;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests if the library can be loaded with an OSGi environment provided by {@link #config()}.

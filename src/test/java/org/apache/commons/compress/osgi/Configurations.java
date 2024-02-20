@@ -18,14 +18,17 @@
  */
 package org.apache.commons.compress.osgi;
 
+import static org.ops4j.pax.exam.CoreOptions.bundle;
+import static org.ops4j.pax.exam.CoreOptions.composite;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Assertions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 
-import java.util.Arrays;
-
-import static org.ops4j.pax.exam.CoreOptions.*;
-import static org.ops4j.pax.exam.CoreOptions.bundle;
 
 final class Configurations {
 
