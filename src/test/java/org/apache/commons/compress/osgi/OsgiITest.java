@@ -38,40 +38,11 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 @RunWith(PaxExam.class)
-public class OsgiITest {
+public class OsgiITest extends AbstractOsgiITest{
 
-    private static final String EXPECTED_BUNDLE_NAME = "org.apache.commons.commons-compress";
-
-    @Inject
-    private BundleContext ctx;
-
+    @Override
     @Configuration
     public Option[] config() {
         return Configurations.DEFAULT_CONFIG;
-    }
-
-    private Bundle loadBundle() {
-        for (final Bundle b : ctx.getBundles()) {
-            if (EXPECTED_BUNDLE_NAME.equals(b.getSymbolicName())) {
-                return b;
-            }
-        }
-        return null;
-    }
-
-    @Test
-    public void testCanLoadBundle() {
-        assertNotNull("Expected to find bundle " + EXPECTED_BUNDLE_NAME, loadBundle());
-    }
-
-    @Test
-    public void testProperlyDetectsRunningInsideOsgiEnv() throws Exception {
-        final Class<?> osgiUtils = loadBundle().loadClass("org.apache.commons.compress.utils.OsgiUtils");
-        assertNotNull("Can load OsgiUtils via bundle", osgiUtils);
-
-        final Method method = osgiUtils.getMethod("isRunningInOsgiEnvironment");
-        assertNotNull("Can access isRunningInOsgiEnvironment method", method);
-
-        assertTrue("Compress detects OSGi environment", (Boolean) method.invoke(null));
     }
 }
