@@ -107,7 +107,7 @@
             problems</a> page lists the currently known problems
             grouped by the format they apply to.</li>
             <li>The <a href="apidocs/index.html">Javadoc</a> of the latest GIT</li>
-            <li>The <a href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=tree">GIT
+            <li>The <a href="https://gitbox.apache.org/repos/asf?p=commons-compress.git">GIT
                 repository</a> can be browsed.</li>
             </ul>
         </section>
