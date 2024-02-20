@@ -18,24 +18,10 @@
  */
 package org.apache.commons.compress.osgi;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.bundle;
-import static org.ops4j.pax.exam.CoreOptions.composite;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-
-import java.lang.reflect.Method;
-
-import javax.inject.Inject;
-
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 
 @RunWith(PaxExam.class)
 public class OsgiITest extends AbstractOsgiITest{
@@ -43,6 +29,6 @@ public class OsgiITest extends AbstractOsgiITest{
     @Override
     @Configuration
     public Option[] config() {
-        return Configurations.DEFAULT_CONFIG;
+        return Configurations.getDefaultConfig();
     }
 }

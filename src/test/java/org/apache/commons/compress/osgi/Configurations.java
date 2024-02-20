@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.osgi;
 
+import org.junit.jupiter.api.Assertions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 
@@ -28,23 +29,35 @@ import static org.ops4j.pax.exam.CoreOptions.bundle;
 
 final class Configurations {
 
-    private static final Option COMMONS_CODEC = mavenBundle().groupId("commons-codec").artifactId("commons-codec").version("1.16.0");
+    /**
+     * @return The maven bundle for Apache commons-codec
+     */
+    private static MavenArtifactProvisionOption getCommonsCodec() {
+        return mavenBundle().groupId("commons-codec").artifactId("commons-codec").version("1.16.0");
+    }
 
-    public static final Option[] DEFAULT_CONFIG = new Option[]{systemProperty("pax.exam.osgi.unresolved.fail").value("true"),
-            systemProperty("org.ops4j.pax.url.mvn.useFallbackRepositories").value("false"),
-            systemProperty("org.ops4j.pax.url.mvn.repositories").value("https://repo.maven.apache.org/maven2"),
-            mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.scr").version("2.0.14"),
-            mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.configadmin").version("1.8.16"),
-            COMMONS_CODEC,
-            mavenBundle().groupId("commons-io").artifactId("commons-io").version("2.15.1"),
-            composite(systemProperty("pax.exam.invoker").value("junit"), bundle("link:classpath:META-INF/links/org.ops4j.pax.tipi.junit.link"),
-                    bundle("link:classpath:META-INF/links/org.ops4j.pax.exam.invoker.junit.link"),
-                    mavenBundle().groupId("org.apache.servicemix.bundles").artifactId("org.apache.servicemix.bundles.hamcrest").version("1.3_1")),
-            bundle("reference:file:target/classes/").start()};
+    public static Option[] getDefaultConfig() {
+        return new Option[]{systemProperty("pax.exam.osgi.unresolved.fail").value("true"),
+                systemProperty("org.ops4j.pax.url.mvn.useFallbackRepositories").value("false"),
+                systemProperty("org.ops4j.pax.url.mvn.repositories").value("https://repo.maven.apache.org/maven2"),
+                mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.scr").version("2.0.14"),
+                mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.configadmin").version("1.8.16"),
+                getCommonsCodec(),
+                mavenBundle().groupId("commons-io").artifactId("commons-io").version("2.15.1"),
+                composite(systemProperty("pax.exam.invoker").value("junit"), bundle("link:classpath:META-INF/links/org.ops4j.pax.tipi.junit.link"),
+                        bundle("link:classpath:META-INF/links/org.ops4j.pax.exam.invoker.junit.link"),
+                        mavenBundle().groupId("org.apache.servicemix.bundles").artifactId("org.apache.servicemix.bundles.hamcrest").version("1.3_1")),
+                bundle("reference:file:target/classes/").start()};
+    }
 
-    public static final Option[] WITHOUT_COMMONS_CODEC = Arrays.stream(DEFAULT_CONFIG)
-            .filter(o -> o != COMMONS_CODEC)
-            .toArray(Option[]::new);
+    public static Option[] getConfigWithoutCommonsCodec() {
+        final Option[] defaultConfig = getDefaultConfig();
+        final Option[] result = Arrays.stream(defaultConfig)
+                .filter(o -> !getCommonsCodec().equals(o))
+                .toArray(Option[]::new);
+        Assertions.assertTrue(result.length < defaultConfig.length, "Expected to have removed an option.");
+        return result;
+    }
 
     private Configurations() {
 

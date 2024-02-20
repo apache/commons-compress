@@ -18,20 +18,10 @@
  */
 package org.apache.commons.compress.osgi;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-
-import javax.inject.Inject;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(PaxExam.class)
 public class OsgiWithoutOptionalDepsITest  extends AbstractOsgiITest{
@@ -39,6 +29,6 @@ public class OsgiWithoutOptionalDepsITest  extends AbstractOsgiITest{
     @Configuration
     @Override
     public Option[] config() {
-        return Configurations.WITHOUT_COMMONS_CODEC;
+        return Configurations.getConfigWithoutCommonsCodec();
     }
 }
