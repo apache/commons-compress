@@ -16,49 +16,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.compress;
+package org.apache.commons.compress.osgi;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.bundle;
-import static org.ops4j.pax.exam.CoreOptions.composite;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.PaxExam;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
-@RunWith(PaxExam.class)
-public class OsgiITest {
 
+
+/**
+ * Tests if the library can be loaded with an OSGi environment provided by {@link #config()}.
+ */
+abstract class AbstractOsgiITest {
     private static final String EXPECTED_BUNDLE_NAME = "org.apache.commons.commons-compress";
 
     @Inject
     private BundleContext ctx;
 
-    @Configuration
-    public Option[] config() {
-        return new Option[] { systemProperty("pax.exam.osgi.unresolved.fail").value("true"),
-                systemProperty("org.ops4j.pax.url.mvn.useFallbackRepositories").value("false"),
-                systemProperty("org.ops4j.pax.url.mvn.repositories").value("https://repo.maven.apache.org/maven2"),
-                mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.scr").version("2.0.14"),
-                mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.configadmin").version("1.8.16"),
-                mavenBundle().groupId("commons-codec").artifactId("commons-codec").version("1.16.0"),
-                mavenBundle().groupId("commons-io").artifactId("commons-io").version("2.15.1"),
-                composite(systemProperty("pax.exam.invoker").value("junit"), bundle("link:classpath:META-INF/links/org.ops4j.pax.tipi.junit.link"),
-                        bundle("link:classpath:META-INF/links/org.ops4j.pax.exam.invoker.junit.link"),
-                        mavenBundle().groupId("org.apache.servicemix.bundles").artifactId("org.apache.servicemix.bundles.hamcrest").version("1.3_1")),
-                bundle("reference:file:target/classes/").start() };
-    }
+    /**
+     * @return the OSGi configuration to use for the test
+     * @implNote Concrete implementation needs the @Configuration annotation
+     */
+    public abstract Option[] config();
 
     private Bundle loadBundle() {
         for (final Bundle b : ctx.getBundles()) {
