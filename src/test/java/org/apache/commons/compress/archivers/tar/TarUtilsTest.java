@@ -190,12 +190,15 @@ public class TarUtilsTest extends AbstractTest {
         final byte[] buffer3 = "abcdef ".getBytes(UTF_8); // Invalid input
         assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer3, 0, buffer3.length), "Expected IllegalArgumentException");
 
-        final byte[] buffer4 = " 0 07 ".getBytes(UTF_8); // Invalid - embedded space
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer4, 0, buffer3.length),
-                "Expected IllegalArgumentException - embedded space");
-
         final byte[] buffer5 = " 0\00007 ".getBytes(UTF_8); // Invalid - embedded NUL
         assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer5, 0, buffer5.length), "Expected IllegalArgumentException - embedded NUL");
+    }
+
+    @Test
+    public void testParseOctalEmbeddedSpace() {
+        final byte[] buffer4 = " 0 07 ".getBytes(UTF_8); // Invalid - embedded space
+        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer4, 0, buffer4.length),
+                "Expected IllegalArgumentException - embedded space");
     }
 
     @Test
