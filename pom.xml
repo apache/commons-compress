@@ -126,14 +126,12 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <optional>true</optional>
     </dependency>
     <dependency>
-      <!-- For org.apache.commons.compress.compressors.snappy:
-           - FramedSnappyCompressorInputStream
-           - FramedSnappyCompressorOutputStream
-           - org.apache.commons.compress.compressors.lz4 -->
+      <!-- For packages:
+           - org.apache.commons.compress.compressors.lz4 
+           - org.apache.commons.compress.compressors.snappy -->
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
       <version>1.16.1</version>
-      <optional>true</optional>
     </dependency>
 
     <!-- Pack200 -->
