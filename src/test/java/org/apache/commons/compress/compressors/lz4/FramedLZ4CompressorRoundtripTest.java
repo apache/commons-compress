@@ -76,8 +76,6 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTest {
 
     private void roundTripTest(final String testFile, final FramedLZ4CompressorOutputStream.Parameters params) throws IOException {
         final File input = getFile(testFile);
-        long start = System.currentTimeMillis();
-        final File outputSz = newTempFile(input.getName() + ".framed.lz4");
         byte[] expected;
         try (InputStream is = Files.newInputStream(input.toPath())) {
             expected = IOUtils.toByteArray(is);
@@ -86,15 +84,10 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTest {
         try (FramedLZ4CompressorOutputStream los = new FramedLZ4CompressorOutputStream(bos, params)) {
             IOUtils.copy(new ByteArrayInputStream(expected), los);
         }
-        // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-        // + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
-        start = System.currentTimeMillis();
         try (FramedLZ4CompressorInputStream sis = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
             final byte[] actual = IOUtils.toByteArray(sis);
             assertArrayEquals(expected, actual);
         }
-
-        // System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
     @Test

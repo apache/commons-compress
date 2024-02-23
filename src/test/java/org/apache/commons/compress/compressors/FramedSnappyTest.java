@@ -58,14 +58,11 @@ public final class FramedSnappyTest extends AbstractTest {
     }
 
     private void testRoundtrip(final File input) throws Exception {
-        final long start = System.currentTimeMillis();
         final File outputSz = newTempFile(input.getName() + ".sz");
         try (OutputStream os = Files.newOutputStream(outputSz.toPath());
                 CompressorOutputStream sos = new CompressorStreamFactory().createCompressorOutputStream("snappy-framed", os)) {
             Files.copy(input.toPath(), sos);
         }
-        // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-        // + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         try (InputStream is = Files.newInputStream(input.toPath());
                 CompressorInputStream sis = new CompressorStreamFactory().createCompressorInputStream("snappy-framed",
                         Files.newInputStream(outputSz.toPath()))) {
@@ -84,7 +81,6 @@ public final class FramedSnappyTest extends AbstractTest {
                 fs.write(r.nextInt(256));
             }
         }
-        final long start = System.currentTimeMillis();
         final File outputSz = newTempFile(input.getName() + ".sz");
         try (InputStream is = Files.newInputStream(input.toPath());
                 OutputStream os = Files.newOutputStream(outputSz.toPath());
@@ -93,8 +89,6 @@ public final class FramedSnappyTest extends AbstractTest {
             sos.write(b[0]);
             sos.write(b, 1, b.length - 1); // must be split into multiple compressed chunks
         }
-        // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-        // + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
         try (InputStream is = Files.newInputStream(input.toPath());
                 CompressorInputStream sis = new CompressorStreamFactory().createCompressorInputStream("snappy-framed",
                         Files.newInputStream(outputSz.toPath()))) {
