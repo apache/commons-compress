@@ -772,4 +772,13 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
             // Ignore expected exception
         }
     }
+
+    @Test
+    public void testGetFirstEntryEmptyZip() throws IOException {
+        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
+            ZipArchiveEntry entry = zin.getNextEntry();
+            assertNull(entry);
+        }
+    }
+
 }

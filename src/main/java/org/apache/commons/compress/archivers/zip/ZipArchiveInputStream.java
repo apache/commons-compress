@@ -1012,10 +1012,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * Fills the given array with the first local file header and deals with splitting/spanning markers that may prefix the first LFH.
      */
     private boolean readFirstLocalFileHeader() throws IOException {
+        // for empty archive, we may get only EOCD size:
+        final byte[] header = new byte[Math.min(LFH_LEN, ZipFile.MIN_EOCD_SIZE)];
+        readFully(header);
         try {
-            // for empty archive, we may get only EOCD size:
-            final byte[] header = new byte[Math.min(LFH_LEN, ZipFile.MIN_EOCD_SIZE)];
-            readFully(header);
             READ_LOOP: for (int i = 0; ; ) {
                 for (int j = 0; i <= PREAMBLE_GARBAGE_MAX_SIZE - 4 && j <= header.length - 4; ++j, ++i) {
                     final ZipLong sig = new ZipLong(header, j);
