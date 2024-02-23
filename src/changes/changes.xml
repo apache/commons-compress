@@ -49,6 +49,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" issue="COMPRESS-659" dev="ggregory" due-to="David Handermann, Gary Gregory">TarArchiveOutputStream should use Commons IO Charsets instead of Commons Codec Charsets.</action>
       <action type="fix" issue="COMPRESS-660" dev="ggregory" due-to="660, Gary Gregory">Make commons.codec imports optional #482.</action>
       <action type="fix" issue="COMPRESS-664" dev="ggregory" due-to="Radek Kraus">Return null value from getNextEntry() for empty file #486.</action>
+      <action type="fix" issue="COMPRESS-664" dev="ggregory" due-to="Elliotte Rusty Harold">Remove unused variables in tests #487.</action>
       <!-- REMOVE -->
       <action type="remove" issue="COMPRESS-662" dev="ggregory" due-to="Christoph Loy, Gary Gregory">Remove out of date jar and scripts #483.</action> 
      </release>
