@@ -42,21 +42,16 @@ public class ZstdRoundtripTest extends AbstractTest {
 
     private void roundtrip(final OutputStreamCreator oc) throws IOException {
         final Path input = getPath("bla.tar");
-        long start = System.currentTimeMillis();
         final File output = newTempFile(input.getFileName() + ".zstd");
         try (FileOutputStream os = new FileOutputStream(output);
                 ZstdCompressorOutputStream zos = oc.wrap(os)) {
             Files.copy(input, zos);
         }
-        // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-        // + ", compressed bytes: " + output.length() + " after " + (System.currentTimeMillis() - start) + "ms");
-        start = System.currentTimeMillis();
         try (ZstdCompressorInputStream zis = new ZstdCompressorInputStream(Files.newInputStream(output.toPath()))) {
             final byte[] expected = Files.readAllBytes(input);
             final byte[] actual = IOUtils.toByteArray(zis);
             assertArrayEquals(expected, actual);
         }
-        // System.err.println(output.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
     @Test
@@ -67,13 +62,11 @@ public class ZstdRoundtripTest extends AbstractTest {
     @Test
     public void testFactoryRoundtrip() throws Exception {
         final Path input = getPath("bla.tar");
-        long start = System.currentTimeMillis();
         final File output = newTempFile(input.getFileName() + ".zstd");
         try (OutputStream os = Files.newOutputStream(output.toPath());
                 CompressorOutputStream zos = new CompressorStreamFactory().createCompressorOutputStream("zstd", os)) {
             Files.copy(input, zos);
         }
-        start = System.currentTimeMillis();
         try (InputStream inputStream = Files.newInputStream(output.toPath());
                 CompressorInputStream zis = new CompressorStreamFactory().createCompressorInputStream("zstd", inputStream)) {
             final byte[] expected = Files.readAllBytes(input);

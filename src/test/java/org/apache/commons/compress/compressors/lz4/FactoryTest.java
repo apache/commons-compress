@@ -34,22 +34,17 @@ public class FactoryTest extends AbstractTest {
 
     private void roundtripViaFactory(final String format) throws Exception {
         final Path input = getPath("bla.tar");
-        long start = System.currentTimeMillis();
         final Path outputSz = getTempDirFile().toPath().resolve(input.getFileName() + "." + format + ".lz4");
         try (OutputStream os = Files.newOutputStream(outputSz);
                 OutputStream los = new CompressorStreamFactory().createCompressorOutputStream(format, os)) {
             Files.copy(input, los);
         }
-        // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-        // + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
-        start = System.currentTimeMillis();
         try (InputStream is = Files.newInputStream(input);
                 InputStream sis = new CompressorStreamFactory().createCompressorInputStream(format, Files.newInputStream(outputSz))) {
             final byte[] expected = IOUtils.toByteArray(is);
             final byte[] actual = IOUtils.toByteArray(sis);
             assertArrayEquals(expected, actual);
         }
-        // System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
     @Test

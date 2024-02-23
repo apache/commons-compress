@@ -43,37 +43,27 @@ public final class SnappyRoundtripTest extends AbstractTest {
     }
 
     private void roundTripTest(final byte[] input, final Parameters params) throws IOException {
-        long start = System.currentTimeMillis();
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try (SnappyCompressorOutputStream sos = new SnappyCompressorOutputStream(os, input.length, params)) {
             sos.write(input);
         }
-        // System.err.println("byte array" + " written, uncompressed bytes: " + input.length
-        // + ", compressed bytes: " + os.size() + " after " + (System.currentTimeMillis() - start) + "ms");
-        start = System.currentTimeMillis();
         try (SnappyCompressorInputStream sis = new SnappyCompressorInputStream(new ByteArrayInputStream(os.toByteArray()), params.getWindowSize())) {
             final byte[] actual = IOUtils.toByteArray(sis);
             assertArrayEquals(input, actual);
         }
-        // System.err.println("byte array" + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
     private void roundTripTest(final Path input, final Parameters params) throws IOException {
-        long start = System.currentTimeMillis();
         final File outputSz = newTempFile(input.getFileName() + ".raw.sz");
         try (OutputStream os = Files.newOutputStream(outputSz.toPath());
                 SnappyCompressorOutputStream sos = new SnappyCompressorOutputStream(os, Files.size(input), params)) {
             Files.copy(input, sos);
         }
-        // System.err.println(input.getName() + " written, uncompressed bytes: " + input.length()
-        // + ", compressed bytes: " + outputSz.length() + " after " + (System.currentTimeMillis() - start) + "ms");
-        start = System.currentTimeMillis();
         try (SnappyCompressorInputStream sis = new SnappyCompressorInputStream(Files.newInputStream(outputSz.toPath()), params.getWindowSize())) {
             final byte[] expected = Files.readAllBytes(input);
             final byte[] actual = IOUtils.toByteArray(sis);
             assertArrayEquals(expected, actual);
         }
-        // System.err.println(outputSz.getName() + " read after " + (System.currentTimeMillis() - start) + "ms");
     }
 
     private void roundTripTest(final String testFile) throws IOException {
@@ -125,7 +115,6 @@ public final class SnappyRoundtripTest extends AbstractTest {
         // Start with the four byte sequence 0000 after that add > 64k
         // of random noise that doesn't contain any 0000 at all, then
         // add 0000.
-        final File f = newTempFile("reallyBigOffsetTest");
         final ByteArrayOutputStream fs = new ByteArrayOutputStream((1 << 16) + 1024);
         fs.write(0);
         fs.write(0);
