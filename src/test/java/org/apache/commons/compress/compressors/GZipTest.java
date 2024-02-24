@@ -29,10 +29,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipParameters;
@@ -64,6 +73,30 @@ public final class GZipTest extends AbstractTest {
                 assertEquals(0, in.available());
                 assertEquals(-1, in.read());
             }
+        }
+    }
+
+    @Test
+    void bla() throws ExecutionException, InterruptedException {
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        List<Future<?>> tasks = IntStream.range(0, 200)
+                .mapToObj(_idx -> executorService.submit(() -> {
+                    try (InputStream inputStream = this.getClass()
+                            .getResourceAsStream("/myArchive.tar.gz");
+                         TarArchiveInputStream tarInputStream =
+                                 new TarArchiveInputStream(new GZIPInputStream(inputStream))) {
+                        TarArchiveEntry tarEntry;
+                        while ((tarEntry = tarInputStream.getNextTarEntry()) != null) {
+                            System.out.printf(
+                                    "Reading entry %s with size %d\n", tarEntry.getName(), tarEntry.getSize());
+                        }
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }))
+                .collect(Collectors.toList());
+        for (Future<?> future : tasks) {
+            future.get();
         }
     }
 
