@@ -81,6 +81,25 @@ public abstract class Codec {
 
     public int lastBandLength;
 
+    int check(final int n, final InputStream in) throws Pack200Exception {
+        if (in instanceof BoundedInputStream) {
+            final BoundedInputStream bin = (BoundedInputStream) in;
+            final long count = bin.getCount();
+            final long maxLength = bin.getMaxLength();
+            if (maxLength > -1) {
+                final long remaining = maxLength - count;
+                final String format = "Can't read beyond end of stream (n = %,d, count = %,d, maxLength = %,d, remaining = %,d)";
+                if (count < -1) {
+                    throw new Pack200Exception(String.format(format, n, count, maxLength, remaining));
+                }
+                if (n > remaining) {
+                    throw new Pack200Exception(String.format(format, n, count, maxLength, remaining));
+                }
+            }
+        }
+        return n;
+    }
+
     /**
      * Decodes a sequence of bytes from the given input stream, returning the value as a long. Note that this method can only be applied for non-delta
      * encodings.
@@ -151,25 +170,6 @@ public abstract class Codec {
             result[i] = last = decode(in, last);
         }
         return result;
-    }
-
-    int check(final int n, final InputStream in) throws Pack200Exception {
-        if (in instanceof BoundedInputStream) {
-            final BoundedInputStream bin = (BoundedInputStream) in;
-            final long count = bin.getCount();
-            final long maxLength = bin.getMaxLength();
-            if (maxLength > -1) {
-                final long remaining = maxLength - count;
-                final String format = "Can't read beyond end of stream (n = %,d, count = %,d, maxLength = %,d, remaining = %,d)";
-                if (count < -1) {
-                    throw new Pack200Exception(String.format(format, n, count, maxLength, remaining));
-                }
-                if (n > remaining) {
-                    throw new Pack200Exception(String.format(format, n, count, maxLength, remaining));
-                }
-            }
-        }
-        return n;
     }
 
     /**

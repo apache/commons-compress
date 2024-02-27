@@ -33,8 +33,6 @@ import java.util.zip.ZipEntry;
  */
 public class Archive {
 
-    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
-
     static class PackingFile {
 
         private final String name;
@@ -136,6 +134,8 @@ public class Archive {
             return packedByteAmount;
         }
     }
+
+    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
     private final JarInputStream jarInputStream;
     private final OutputStream outputStream;

@@ -168,6 +168,14 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         }
     }
 
+    @Test
+    public void testGetFirstEntryEmptyZip() throws IOException {
+        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
+            ZipArchiveEntry entry = zin.getNextEntry();
+            assertNull(entry);
+        }
+    }
+
     /**
      * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-351" >COMPRESS-351</a>.
      */
@@ -770,14 +778,6 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
             }
         } catch (final IOException e) {
             // Ignore expected exception
-        }
-    }
-
-    @Test
-    public void testGetFirstEntryEmptyZip() throws IOException {
-        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
-            ZipArchiveEntry entry = zin.getNextEntry();
-            assertNull(entry);
         }
     }
 

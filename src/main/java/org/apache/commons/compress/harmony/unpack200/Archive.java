@@ -42,6 +42,8 @@ import org.apache.commons.io.input.BoundedInputStream;
  */
 public class Archive {
 
+    private static final int[] MAGIC = { 0xCA, 0xFE, 0xD0, 0x0D };
+
     private BoundedInputStream inputStream;
 
     private final JarOutputStream outputStream;
@@ -61,8 +63,6 @@ public class Archive {
     private final long inputSize;
 
     private String outputFileName;
-
-    private static final int[] MAGIC = { 0xCA, 0xFE, 0xD0, 0x0D };
 
     /**
      * Creates an Archive with streams for the input and output files. Note: If you use this method then calling {@link #setRemovePackFile(boolean)} will have

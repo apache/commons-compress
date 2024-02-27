@@ -39,6 +39,15 @@ final class Configurations {
         return mavenBundle().groupId("commons-codec").artifactId("commons-codec").version("1.16.0");
     }
 
+    public static Option[] getConfigWithoutCommonsCodec() {
+        final Option[] defaultConfig = getDefaultConfig();
+        final Option[] result = Arrays.stream(defaultConfig)
+                .filter(o -> !getCommonsCodec().equals(o))
+                .toArray(Option[]::new);
+        Assertions.assertTrue(result.length < defaultConfig.length, "Expected to have removed an option.");
+        return result;
+    }
+
     public static Option[] getDefaultConfig() {
         return new Option[]{systemProperty("pax.exam.osgi.unresolved.fail").value("true"),
                 systemProperty("org.ops4j.pax.url.mvn.useFallbackRepositories").value("false"),
@@ -51,15 +60,6 @@ final class Configurations {
                         bundle("link:classpath:META-INF/links/org.ops4j.pax.exam.invoker.junit.link"),
                         mavenBundle().groupId("org.apache.servicemix.bundles").artifactId("org.apache.servicemix.bundles.hamcrest").version("1.3_1")),
                 bundle("reference:file:target/classes/").start()};
-    }
-
-    public static Option[] getConfigWithoutCommonsCodec() {
-        final Option[] defaultConfig = getDefaultConfig();
-        final Option[] result = Arrays.stream(defaultConfig)
-                .filter(o -> !getCommonsCodec().equals(o))
-                .toArray(Option[]::new);
-        Assertions.assertTrue(result.length < defaultConfig.length, "Expected to have removed an option.");
-        return result;
     }
 
     private Configurations() {

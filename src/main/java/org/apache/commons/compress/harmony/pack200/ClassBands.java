@@ -37,8 +37,6 @@ import org.objectweb.asm.Opcodes;
  */
 public class ClassBands extends BandSet {
 
-    private static final long[] EMPTY_LONG_ARRAY = new long[0];
-
     private static final class TempParamAnnotation {
 
         int numParams;
@@ -73,6 +71,8 @@ public class ClassBands extends BandSet {
             this.nestPairN.addAll(nestPairN);
         }
     }
+
+    private static final long[] EMPTY_LONG_ARRAY = new long[0];
 
     protected static int countArgs(final String descriptor) {
         final int bra = descriptor.indexOf('(');
