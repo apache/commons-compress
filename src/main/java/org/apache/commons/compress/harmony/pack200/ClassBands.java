@@ -72,7 +72,7 @@ public class ClassBands extends BandSet {
         }
     }
 
-    private static final long[] EMPTY_LONG_ARRAY = new long[0];
+    private static final long[] EMPTY_LONG_ARRAY = {};
 
     protected static int countArgs(final String descriptor) {
         final int bra = descriptor.indexOf('(');

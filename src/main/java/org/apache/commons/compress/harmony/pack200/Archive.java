@@ -135,7 +135,7 @@ public class Archive {
         }
     }
 
-    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+    private static final byte[] EMPTY_BYTE_ARRAY = {};
 
     private final JarInputStream jarInputStream;
     private final OutputStream outputStream;

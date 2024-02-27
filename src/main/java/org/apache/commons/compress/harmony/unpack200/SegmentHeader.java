@@ -30,7 +30,7 @@ import org.apache.commons.compress.utils.IOUtils;
  */
 public class SegmentHeader {
 
-    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+    private static final byte[] EMPTY_BYTE_ARRAY = {};
 
     /**
      * The magic header for a Pack200 Segment is 0xCAFED00D. I wonder where they get their inspiration from ...

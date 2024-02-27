@@ -33,7 +33,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 final class AES256Options {
 
-    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+    private static final byte[] EMPTY_BYTE_ARRAY = {};
 
     static final String ALGORITHM = "AES";
 

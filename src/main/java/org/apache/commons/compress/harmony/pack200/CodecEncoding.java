@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public class CodecEncoding {
 
-    private static final int[] EMPTY_INT_ARRAY = new int[0];
+    private static final int[] EMPTY_INT_ARRAY = {};
 
     /**
      * The canonical encodings are defined to allow a single byte to represent one of the standard encodings. The following values are defined in the Pack200
