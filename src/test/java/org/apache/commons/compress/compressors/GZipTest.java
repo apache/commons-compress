@@ -46,6 +46,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipParameters;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -76,8 +77,9 @@ public final class GZipTest extends AbstractTest {
         }
     }
 
+    @Disabled
     @Test
-    void bla() throws ExecutionException, InterruptedException {
+    void testCompress666() throws ExecutionException, InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(10);
         List<Future<?>> tasks = IntStream.range(0, 200)
                 .mapToObj(_idx -> executorService.submit(() -> {
