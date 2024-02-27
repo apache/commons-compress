@@ -307,7 +307,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
                 inputStream.close();
             }
         }
-
         in.close();
     }
 
@@ -336,11 +335,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         if (in instanceof FileInputStream) {
             actuallySkipped = Math.min(skipped, available);
         }
-
         if (actuallySkipped != expected) {
             throw new IOException("Truncated TAR archive");
         }
-
         return actuallySkipped;
     }
 
@@ -718,26 +715,21 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         if (sparseInputStreams == null || sparseInputStreams.isEmpty()) {
             return in.read(buf, offset, numToRead);
         }
-
         if (currentSparseInputStreamIndex >= sparseInputStreams.size()) {
             return -1;
         }
-
         final InputStream currentInputStream = sparseInputStreams.get(currentSparseInputStreamIndex);
         final int readLen = currentInputStream.read(buf, offset, numToRead);
-
         // if the current input stream is the last input stream,
         // just return the number of bytes read from current input stream
         if (currentSparseInputStreamIndex == sparseInputStreams.size() - 1) {
             return readLen;
         }
-
         // if EOF of current input stream is meet, open a new input stream and recursively call read
         if (readLen == -1) {
             currentSparseInputStreamIndex++;
             return readSparse(buf, offset, numToRead);
         }
-
         // if the rest data of current input stream is not long enough, open a new input stream
         // and recursively call read
         if (readLen < numToRead) {
@@ -746,10 +738,8 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             if (readLenOfNext == -1) {
                 return readLen;
             }
-
             return readLen + readLenOfNext;
         }
-
         // if the rest data of current input stream is enough(which means readLen == len), just return readLen
         return readLen;
     }
@@ -834,18 +824,14 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         if (sparseInputStreams == null || sparseInputStreams.isEmpty()) {
             return in.skip(n);
         }
-
         long bytesSkipped = 0;
-
         while (bytesSkipped < n && currentSparseInputStreamIndex < sparseInputStreams.size()) {
             final InputStream currentInputStream = sparseInputStreams.get(currentSparseInputStreamIndex);
             bytesSkipped += currentInputStream.skip(n - bytesSkipped);
-
             if (bytesSkipped < n) {
                 currentSparseInputStreamIndex++;
             }
         }
-
         return bytesSkipped;
     }
 
