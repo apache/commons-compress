@@ -21,6 +21,8 @@ package org.apache.commons.compress.compressors;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -53,6 +55,29 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 public final class GZipTest extends AbstractTest {
 
+    /**
+     * Tests https://issues.apache.org/jira/browse/COMPRESS-666
+     */
+    @Disabled
+    @Test
+    public void testCompress666() throws ExecutionException, InterruptedException {
+        final ExecutorService executorService = Executors.newFixedThreadPool(10);
+        final List<Future<?>> tasks = IntStream.range(0, 200).mapToObj(index -> executorService.submit(() -> {
+            try (InputStream inputStream = this.getClass().getResourceAsStream("/COMPRESS-666/compress-666.tar.gz");
+                    TarArchiveInputStream tarInputStream = new TarArchiveInputStream(new GZIPInputStream(inputStream))) {
+                TarArchiveEntry tarEntry;
+                while ((tarEntry = tarInputStream.getNextEntry()) != null) {
+                    assertNotNull(tarEntry);
+                }
+            } catch (final IOException e) {
+                fail(e);
+            }
+        })).collect(Collectors.toList());
+        for (final Future<?> future : tasks) {
+            future.get();
+        }
+    }
+
     @Test
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {
         final File input = getFile("multiple.gz");
@@ -74,31 +99,6 @@ public final class GZipTest extends AbstractTest {
                 assertEquals(0, in.available());
                 assertEquals(-1, in.read());
             }
-        }
-    }
-
-    @Disabled
-    @Test
-    void testCompress666() throws ExecutionException, InterruptedException {
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
-        List<Future<?>> tasks = IntStream.range(0, 200)
-                .mapToObj(_idx -> executorService.submit(() -> {
-                    try (InputStream inputStream = this.getClass()
-                            .getResourceAsStream("/myArchive.tar.gz");
-                         TarArchiveInputStream tarInputStream =
-                                 new TarArchiveInputStream(new GZIPInputStream(inputStream))) {
-                        TarArchiveEntry tarEntry;
-                        while ((tarEntry = tarInputStream.getNextTarEntry()) != null) {
-                            System.out.printf(
-                                    "Reading entry %s with size %d\n", tarEntry.getName(), tarEntry.getSize());
-                        }
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }))
-                .collect(Collectors.toList());
-        for (Future<?> future : tasks) {
-            future.get();
         }
     }
 
