@@ -65,31 +65,35 @@ public final class GZipTest extends AbstractTest {
     public void testCompress666() throws ExecutionException, InterruptedException {
         System.out.println("START");
         final ExecutorService executorService = Executors.newFixedThreadPool(10);
-        final List<Future<?>> tasks = IntStream.range(0, 200).mapToObj(index -> executorService.submit(() -> {
-            TarArchiveEntry tarEntry = null;
-            try (InputStream inputStream = getClass().getResourceAsStream("/COMPRESS-666/compress-666.tar.gz");
-                    TarArchiveInputStream tarInputStream = new TarArchiveInputStream(new GZIPInputStream(inputStream))) {
-                while ((tarEntry = tarInputStream.getNextEntry()) != null) {
-                    assertNotNull(tarEntry);
+        try {
+            final List<Future<?>> tasks = IntStream.range(0, 200).mapToObj(index -> executorService.submit(() -> {
+                TarArchiveEntry tarEntry = null;
+                try (InputStream inputStream = getClass().getResourceAsStream("/COMPRESS-666/compress-666.tar.gz");
+                        TarArchiveInputStream tarInputStream = new TarArchiveInputStream(new GZIPInputStream(inputStream))) {
+                    while ((tarEntry = tarInputStream.getNextEntry()) != null) {
+                        assertNotNull(tarEntry);
+                    }
+                } catch (final IOException e) {
+                    fail(Objects.toString(tarEntry), e);
                 }
-            } catch (final IOException e) {
-                fail(Objects.toString(tarEntry), e);
+            })).collect(Collectors.toList());
+            final List<Exception> list = new ArrayList<>();
+            for (final Future<?> future : tasks) {
+                try {
+                    future.get();
+                } catch (final Exception e) {
+                    list.add(e);
+                }
             }
-        })).collect(Collectors.toList());
-        final List<Exception> list = new ArrayList<>();
-        for (final Future<?> future : tasks) {
-            try {
-                future.get();
-            } catch (final Exception e) {
-                list.add(e);
+            // check:
+            if (!list.isEmpty()) {
+                fail(list.get(0));
             }
+            // or:
+            // assertTrue(list.isEmpty(), () -> list.size() + " exceptions: " + list.toString());
+        } finally {
+            executorService.shutdownNow();
         }
-        // check:
-        if (!list.isEmpty()) {
-            fail(list.get(0));
-        }
-        // or:
-        // assertTrue(list.isEmpty(), () -> list.size() + " exceptions: " + list.toString());
     }
 
     @Test
