@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -279,7 +280,7 @@ public class TarArchiveInputStreamTest extends AbstractTest {
             final byte[] expected = { 'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n' };
             final byte[] actual = new byte[expected.length];
             is.read(actual);
-            assertArrayEquals(expected, actual);
+            assertArrayEquals(expected, actual, () -> Arrays.toString(actual));
         }
     }
 
