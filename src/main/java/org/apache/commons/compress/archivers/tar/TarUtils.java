@@ -347,14 +347,14 @@ public class TarUtils {
             val = val.add(BigInteger.valueOf(-1)).not();
         }
         if (val.bitLength() > 63) {
-            throw new IllegalArgumentException("At offset " + offset + ", " + length + " byte binary number" + " exceeds maximum signed long" + " value");
+            throw new IllegalArgumentException("At offset " + offset + ", " + length + " byte binary number exceeds maximum signed long value");
         }
         return negative ? -val.longValue() : val.longValue();
     }
 
     private static long parseBinaryLong(final byte[] buffer, final int offset, final int length, final boolean negative) {
         if (length >= 9) {
-            throw new IllegalArgumentException("At offset " + offset + ", " + length + " byte binary number" + " exceeds maximum signed long" + " value");
+            throw new IllegalArgumentException("At offset " + offset + ", " + length + " byte binary number exceeds maximum signed long value");
         }
         long val = 0;
         for (int i = 1; i < length; i++) {
@@ -399,11 +399,11 @@ public class TarUtils {
         for (int i = 0; i < sparseHeaderStrings.length; i += 2) {
             final long sparseOffset = ParsingUtils.parseLongValue(sparseHeaderStrings[i]);
             if (sparseOffset < 0) {
-                throw new IOException("Corrupted TAR archive." + " Sparse struct offset contains negative value");
+                throw new IOException("Corrupted TAR archive. Sparse struct offset contains negative value");
             }
             final long sparseNumbytes = ParsingUtils.parseLongValue(sparseHeaderStrings[i + 1]);
             if (sparseNumbytes < 0) {
-                throw new IOException("Corrupted TAR archive." + " Sparse struct numbytes contains negative value");
+                throw new IOException("Corrupted TAR archive. Sparse struct numbytes contains negative value");
             }
             sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
         }
