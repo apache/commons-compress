@@ -190,13 +190,8 @@ public final class GZipTest extends AbstractTest {
 
     @Test
     public void testInteroperabilityWithGzipCompressorInputStream() throws Exception {
-        final byte[] content;
-        try (InputStream fis = newInputStream("test3.xml")) {
-            content = IOUtils.toByteArray(fis);
-        }
-
+        final byte[] content = readAllBytes("test3.xml");
         final ByteArrayOutputStream bout = new ByteArrayOutputStream();
-
         final GzipParameters parameters = new GzipParameters();
         parameters.setCompressionLevel(Deflater.BEST_COMPRESSION);
         parameters.setOperatingSystem(3);
@@ -210,7 +205,6 @@ public final class GZipTest extends AbstractTest {
             out.write(content);
             out.flush();
         }
-
         try (GzipCompressorInputStream in = new GzipCompressorInputStream(new ByteArrayInputStream(bout.toByteArray()))) {
             final byte[] content2 = IOUtils.toByteArray(in);
             assertArrayEquals(content, content2, "uncompressed content");
@@ -219,13 +213,8 @@ public final class GZipTest extends AbstractTest {
 
     @Test
     public void testInteroperabilityWithGZIPInputStream() throws Exception {
-        final byte[] content;
-        try (InputStream fis = newInputStream("test3.xml")) {
-            content = IOUtils.toByteArray(fis);
-        }
-
+        final byte[] content = readAllBytes("test3.xml");
         final ByteArrayOutputStream bout = new ByteArrayOutputStream();
-
         final GzipParameters parameters = new GzipParameters();
         parameters.setCompressionLevel(Deflater.BEST_COMPRESSION);
         parameters.setOperatingSystem(3);
@@ -239,10 +228,8 @@ public final class GZipTest extends AbstractTest {
             out.write(content);
             out.flush();
         }
-
         final GZIPInputStream in = new GZIPInputStream(new ByteArrayInputStream(bout.toByteArray()));
         final byte[] content2 = IOUtils.toByteArray(in);
-
         assertArrayEquals(content, content2, "uncompressed content");
     }
 
