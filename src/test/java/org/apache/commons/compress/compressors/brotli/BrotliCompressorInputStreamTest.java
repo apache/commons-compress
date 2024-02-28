@@ -52,7 +52,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTest {
     public void testBrotliDecode() throws IOException {
         try (InputStream inputStream = newInputStream("brotli.testdata.compressed");
                 BrotliCompressorInputStream brotliInputStream = new BrotliCompressorInputStream(inputStream)) {
-            final byte[] expected = Files.readAllBytes(getPath("brotli.testdata.uncompressed"));
+            final byte[] expected = readAllBytes("brotli.testdata.uncompressed");
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             int readByte = -1;
             while ((readByte = brotliInputStream.read()) != -1) {
