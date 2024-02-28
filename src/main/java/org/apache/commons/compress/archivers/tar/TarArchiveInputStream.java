@@ -748,12 +748,12 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     public synchronized void reset() {
     }
 
-    protected final void setAtEOF(final boolean b) {
-        atEof = b;
+    protected final void setAtEOF(final boolean atEof) {
+        this.atEof = atEof;
     }
 
-    protected final void setCurrentEntry(final TarArchiveEntry e) {
-        currEntry = e;
+    protected final void setCurrentEntry(final TarArchiveEntry currEntry) {
+        this.currEntry = currEntry;
     }
 
     /**
