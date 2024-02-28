@@ -242,8 +242,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     /**
      * Build the input streams consisting of all-zero input streams and non-zero input streams. When reading from the non-zero input streams, the data is
      * actually read from the original input stream. The size of each input stream is introduced by the sparse headers.
-     *
+     * <p>
      * NOTE : Some all-zero input streams and non-zero input streams have the size of 0. We DO NOT store the 0 size input streams because they are meaningless.
+     * </p>
      */
     private void buildSparseInputStreams() throws IOException {
         currentSparseInputStreamIndex = -1;
@@ -378,7 +379,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     /**
-     * Returns the next Archive Entry in this Stream.
+     * Gets the next TarArchiveEntry in this stream.
      *
      * @return the next entry, or {@code null} if there are no more entries
      * @throws IOException if the next entry could not be read
@@ -484,7 +485,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     /**
      * Gets the next record in this tar archive. This will skip over any remaining data in the current entry, if there is one, and place the input stream at the
      * header of the next entry.
-     *
      * <p>
      * If there are no more entries in the archive, null will be returned to indicate that the end of the archive has been reached. At the same time the
      * {@code hasHitEOF} marker will be set to true.
@@ -522,7 +522,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     /**
-     * Determine if an archive record indicate End of Archive. End of archive is indicated by a record that consists entirely of null bytes.
+     * Tests if an archive record indicate End of Archive. End of archive is indicated by a record that consists entirely of null bytes.
      *
      * @param record The record data to check.
      * @return true if the record data is an End of Archive
@@ -543,7 +543,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     /**
      * Since we do not support marking just yet, we return false.
      *
-     * @return False.
+     * @return false.
      */
     @Override
     public boolean markSupported() {
@@ -552,18 +552,20 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
     /**
      * For PAX Format 0.0, the sparse headers(GNU.sparse.offset and GNU.sparse.numbytes) may appear multi times, and they look like:
-     *
+     * <p>
      * GNU.sparse.size=size GNU.sparse.numblocks=numblocks repeat numblocks times GNU.sparse.offset=offset GNU.sparse.numbytes=numbytes end repeat
-     *
-     *
+     * </p>
+     * <p>
      * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
-     *
+     * </p>
+     * <p>
      * GNU.sparse.map Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
-     *
-     *
+     * </p>
+     * <p>
      * For PAX Format 1.X: The sparse map itself is stored in the file data block, preceding the actual file data. It consists of a series of decimal numbers
      * delimited by newlines. The map is padded with nulls to the nearest block boundary. The first number gives the number of entries in the map. Following are
      * map entries, each one consisting of two numbers giving the offset and size of the data block it describes.
+     * </p>
      *
      * @throws IOException
      */
@@ -594,8 +596,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
     /**
      * Reads bytes from the current tar archive entry.
-     *
+     * <p>
      * This method is aware of the boundaries of the current entry in the archive and will deal with them as if they were this stream's start and EOF.
+     * </p>
      *
      * @param buf       The buffer into which to place bytes read.
      * @param offset    The offset at which to place bytes read.
@@ -758,7 +761,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * smaller number of bytes, possibly {@code 0}. This may result from any of a number of conditions; reaching end of file or end of entry before {@code n}
      * bytes have been skipped; are only two possibilities. The actual number of bytes skipped is returned. If {@code n} is negative, no bytes are skipped.
      *
-     *
      * @param n the number of bytes to be skipped.
      * @return the actual number of bytes skipped.
      * @throws IOException if a truncated tar archive is detected or some other I/O error occurs
@@ -831,7 +833,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
     /**
      * Tries to read the next record rewinding the stream if it is not an EOF record.
-     *
      * <p>
      * This is meant to protect against cases where a tar implementation has written only one EOF record when two are expected. Actually this won't help since a
      * non-conforming implementation likely won't fill full blocks consisting of - by default - ten records either so we probably have already read beyond the
