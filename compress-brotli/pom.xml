@@ -18,53 +18,55 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-compress-parent</artifactId>
-        <version>1.26.1-SNAPSHOT</version>
-    </parent>
-
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
     <groupId>org.apache.commons</groupId>
-    <artifactId>commons-compress-brotli</artifactId>
-    <name>Apache Commons Compress: Brotli</name>
-    <!-- The description is not indented to make it look better in the release notes -->
-    <description>Brotli compression support for Apache Commons Compress.</description>
+    <artifactId>commons-compress-parent</artifactId>
+    <version>1.26.1-SNAPSHOT</version>
+    <relativePath>../compress-parent</relativePath>
+  </parent>
+
+  <groupId>org.apache.commons</groupId>
+  <artifactId>commons-compress-brotli</artifactId>
+  <name>Apache Commons Compress: Brotli</name>
+  <!-- The description is not indented to make it look better in the release notes -->
+  <description>Brotli compression support for Apache Commons Compress.</description>
 
   <properties>
     <!-- JPMS module name -->
     <commons.module.name>org.apache.commons.compress.brotli</commons.module.name>
   </properties>
 
-    <dependencies>
+  <dependencies>
 
-        <dependency>
-            <groupId>org.brotli</groupId>
-            <artifactId>dec</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.brotli</groupId>
+      <artifactId>dec</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress-core</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress-core</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
 
-        <!-- Scope: test -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress-core</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
+    <!-- Scope: test -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress-core</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
 
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
 </project>

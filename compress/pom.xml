@@ -21,6 +21,7 @@
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-compress-parent</artifactId>
     <version>1.26.1-SNAPSHOT</version>
+    <relativePath>../compress-parent</relativePath>
   </parent>
 
   <artifactId>commons-compress</artifactId>
