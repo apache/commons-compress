@@ -30,8 +30,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.apache.commons.compress.compressors.brotli.BrotliCompressorInputStream;
-import org.apache.commons.compress.compressors.brotli.BrotliUtils;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStream;
@@ -542,13 +540,6 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
             if (BZIP2.equalsIgnoreCase(name)) {
                 return new BZip2CompressorInputStream(in, actualDecompressConcatenated);
-            }
-
-            if (BROTLI.equalsIgnoreCase(name)) {
-                if (!BrotliUtils.isBrotliCompressionAvailable()) {
-                    throw new CompressorException("Brotli compression is not available." + YOU_NEED_BROTLI_DEC);
-                }
-                return new BrotliCompressorInputStream(in);
             }
 
             if (XZ.equalsIgnoreCase(name)) {

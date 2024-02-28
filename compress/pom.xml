@@ -24,13 +24,17 @@
   </parent>
 
   <artifactId>commons-compress</artifactId>
-  <name>Apache Commons Compress</name>
+  <name>Apache Commons Compress: All</name>
   <description>
 Apache Commons Compress defines an API for working with
-compression and archive formats. These include bzip2, gzip, pack200,
-LZMA, XZ, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
-Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
+compression and archive formats. This legacy artifact depends
+on all the available artifacts.
   </description>
+
+  <properties>
+    <!-- JPMS module name -->
+    <commons.module.name>org.apache.commons.compress</commons.module.name>
+  </properties>
 
   <dependencies>
 
@@ -41,4 +45,27 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
   </dependencies>
 
+  <build>
+    <plugins>
+
+      <!--
+        ~ Override auto-detected requires from parent to transitively depend on its dependencies.
+        -->
+      <plugin>
+        <groupId>org.moditect</groupId>
+        <artifactId>moditect-maven-plugin</artifactId>
+        <version>1.1.0</version>
+        <executions>
+          <execution>
+            <id>add-module-infos</id>
+            <configuration>
+              <module combine.self="override">
+                <moduleInfoFile>src/main/java9/module-info.java</moduleInfoFile>
+              </module>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

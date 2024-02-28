@@ -26,7 +26,7 @@
   <artifactId>commons-compress-parent</artifactId>
   <packaging>pom</packaging>
   <version>1.26.1-SNAPSHOT</version>
-  <name>Apache Commons Compress</name>
+  <name>Apache Commons Compress: Parent</name>
   <url>https://commons.apache.org/proper/commons-compress/</url>
   <inceptionYear>2002</inceptionYear> <!-- from NOTICE file -->
   <!-- The description is not indented to make it look better in the release notes -->
@@ -42,7 +42,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <maven.compiler.target>1.8</maven.compiler.target>
 
     <commons.componentid>compress</commons.componentid>
-    <commons.module.name>org.apache.commons.compress</commons.module.name>
     <commons.jira.id>COMPRESS</commons.jira.id>
     <commons.jira.pid>12310904</commons.jira.pid>
     <!-- configuration bits for cutting a release candidate -->
@@ -105,9 +104,22 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
     <dependency>
       <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress-brotli</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress-core</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress-core</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+      </dependency>
 
       <!-- Ordered alphabetically by artifactId and unscoped -->
 
@@ -230,6 +242,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
   <modules>
     <module>compress</module>
+    <module>compress-brotli</module>
     <module>compress-core</module>
   </modules>
 

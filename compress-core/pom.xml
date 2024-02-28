@@ -35,6 +35,8 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
   <properties>
     <japicmp.skip>true</japicmp.skip>
+    <!-- JPMS module name -->
+    <commons.module.name>org.apache.commons.compress.core</commons.module.name>
   </properties>
 
   <dependencies>
@@ -63,12 +65,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.brotli</groupId>
-      <artifactId>dec</artifactId>
-      <optional>true</optional>
     </dependency>
 
     <dependency>
