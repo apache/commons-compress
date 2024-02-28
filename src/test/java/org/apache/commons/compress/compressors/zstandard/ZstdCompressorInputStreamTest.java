@@ -140,7 +140,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTest {
         final File input = getFile("zstandard.testdata.zst");
         try (InputStream inputStream = Files.newInputStream(input.toPath());
                 ZstdCompressorInputStream zstdInputStream = new ZstdCompressorInputStream(inputStream)) {
-            final byte[] expected = Files.readAllBytes(getPath("zstandard.testdata"));
+            final byte[] expected = readAllBytes("zstandard.testdata");
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             int readByte = -1;
             while ((readByte = zstdInputStream.read()) != -1) {
@@ -155,7 +155,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTest {
         final File input = getFile("zstandard.testdata.zst");
         try (InputStream inputStream = Files.newInputStream(input.toPath());
                 ZstdCompressorInputStream zstdInputStream = new ZstdCompressorInputStream(inputStream, NoPool.INSTANCE)) {
-            final byte[] expected = Files.readAllBytes(getPath("zstandard.testdata"));
+            final byte[] expected = readAllBytes("zstandard.testdata");
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             int readByte = -1;
             while ((readByte = zstdInputStream.read()) != -1) {
@@ -170,7 +170,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTest {
         final File input = getFile("zstandard.testdata.zst");
         try (InputStream inputStream = Files.newInputStream(input.toPath());
                 ZstdCompressorInputStream zstdInputStream = new ZstdCompressorInputStream(inputStream, RecyclingBufferPool.INSTANCE)) {
-            final byte[] expected = Files.readAllBytes(getPath("zstandard.testdata"));
+            final byte[] expected = readAllBytes("zstandard.testdata");
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             int readByte = -1;
             while ((readByte = zstdInputStream.read()) != -1) {
