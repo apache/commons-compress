@@ -391,11 +391,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     private TarArchiveEntry(final boolean preserveAbsolutePath) {
         String user = System.getProperty("user.name", "");
-
         if (user.length() > MAX_NAMELEN) {
             user = user.substring(0, MAX_NAMELEN);
         }
-
         this.userName = user;
         this.file = null;
         this.linkOptions = IOUtils.EMPTY_LINK_OPTIONS;
@@ -494,7 +492,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         final String normalizedName = normalizeFileName(fileName, false);
         this.file = file.toPath();
         this.linkOptions = IOUtils.EMPTY_LINK_OPTIONS;
-
         try {
             readFileMode(this.file, normalizedName);
         } catch (final IOException e) {
@@ -504,7 +501,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 this.size = file.length();
             }
         }
-
         this.userName = "";
         try {
             readOsSpecificProperties(this.file);
@@ -586,9 +582,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         final String normalizedName = normalizeFileName(fileName, false);
         this.file = file;
         this.linkOptions = linkOptions == null ? IOUtils.EMPTY_LINK_OPTIONS : linkOptions;
-
         readFileMode(file, normalizedName, linkOptions);
-
         this.userName = "";
         readOsSpecificProperties(file);
         preserveAbsolutePath = false;
@@ -621,10 +615,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     public TarArchiveEntry(String name, final boolean preserveAbsolutePath) {
         this(preserveAbsolutePath);
-
         name = normalizeFileName(name, preserveAbsolutePath);
         final boolean isDir = name.endsWith("/");
-
         this.name = name;
         this.mode = isDir ? DEFAULT_DIR_MODE : DEFAULT_FILE_MODE;
         this.linkFlag = isDir ? LF_DIR : LF_NORMAL;
@@ -827,7 +819,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         if (file == null || !isDirectory()) {
             return EMPTY_TAR_ARCHIVE_ENTRY_ARRAY;
         }
-
         final List<TarArchiveEntry> entries = new ArrayList<>();
         try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(file)) {
             for (final Path p : dirStream) {
@@ -1012,7 +1003,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
         final List<TarArchiveStructSparse> orderedAndFiltered = sparseHeaders.stream().filter(s -> s.getOffset() > 0 || s.getNumbytes() > 0)
                 .sorted(Comparator.comparingLong(TarArchiveStructSparse::getOffset)).collect(Collectors.toList());
-
         final int numberOfHeaders = orderedAndFiltered.size();
         for (int i = 0; i < numberOfHeaders; i++) {
             final TarArchiveStructSparse str = orderedAndFiltered.get(i);
@@ -1030,7 +1020,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 throw new IOException("Corrupted TAR archive. Sparse block extends beyond real size of the entry");
             }
         }
-
         return orderedAndFiltered;
     }
 
@@ -1181,11 +1170,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         if (file != null) {
             return Files.isDirectory(file, linkOptions);
         }
-
         if (linkFlag == LF_DIR) {
             return true;
         }
-
         return !isPaxHeader() && !isGlobalPaxHeader() && getName().endsWith("/");
     }
 
@@ -1399,18 +1386,16 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         if (ArchiveUtils.matchAsciiBuffer(MAGIC_XSTAR, header, XSTAR_MAGIC_OFFSET, XSTAR_MAGIC_LEN)) {
             return true;
         }
-
-        /*
-         * If SCHILY.archtype is present in the global PAX header, we can use it to identify the type of archive.
-         *
-         * Possible values for XSTAR: - xustar: 'xstar' format without "tar" signature at header offset 508. - exustar: 'xustar' format variant that always
-         * includes x-headers and g-headers.
-         */
+        //
+        // If SCHILY.archtype is present in the global PAX header, we can use it to identify the type of archive.
+        //
+        // Possible values for XSTAR: - xustar: 'xstar' format without "tar" signature at header offset 508. - exustar: 'xustar' format variant that always
+        // includes x-headers and g-headers.
+        //
         final String archType = globalPaxHeaders.get("SCHILY.archtype");
         if (archType != null) {
             return "xustar".equals(archType) || "exustar".equals(archType);
         }
-
         // Check if this is XUSTAR
         if (isInvalidPrefix(header)) {
             return false;
@@ -1421,7 +1406,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         if (isInvalidXtarTime(header, XSTAR_CTIME_OFFSET, CTIMELEN_XSTAR)) {
             return false;
         }
-
         return true;
     }
 
@@ -1484,7 +1468,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     private void parseTarHeaderUnwrapped(final Map<String, String> globalPaxHeaders, final byte[] header, final ZipEncoding encoding, final boolean oldStyle,
             final boolean lenient) throws IOException {
         int offset = 0;
-
         name = oldStyle ? TarUtils.parseName(header, offset, NAMELEN) : TarUtils.parseName(header, offset, NAMELEN, encoding);
         offset += NAMELEN;
         mode = (int) parseOctalOrBinary(header, offset, MODELEN, lenient);
@@ -1521,7 +1504,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         } else {
             offset += 2 * DEVLEN;
         }
-
         final int type = evaluateType(globalPaxHeaders, header);
         switch (type) {
         case FORMAT_OLDGNU: {
@@ -2008,18 +1990,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     public void writeEntryHeader(final byte[] outbuf, final ZipEncoding encoding, final boolean starMode) throws IOException {
         int offset = 0;
-
         offset = TarUtils.formatNameBytes(name, outbuf, offset, NAMELEN, encoding);
         offset = writeEntryHeaderField(mode, outbuf, offset, MODELEN, starMode);
         offset = writeEntryHeaderField(userId, outbuf, offset, UIDLEN, starMode);
         offset = writeEntryHeaderField(groupId, outbuf, offset, GIDLEN, starMode);
         offset = writeEntryHeaderField(size, outbuf, offset, SIZELEN, starMode);
         offset = writeEntryHeaderField(TimeUtils.toUnixTime(mTime), outbuf, offset, MODTIMELEN, starMode);
-
         final int csOffset = offset;
-
         offset = fill((byte) ' ', offset, outbuf, CHKSUMLEN);
-
         outbuf[offset++] = linkFlag;
         offset = TarUtils.formatNameBytes(linkName, outbuf, offset, NAMELEN, encoding);
         offset = TarUtils.formatNameBytes(magic, outbuf, offset, MAGICLEN);
@@ -2028,7 +2006,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         offset = TarUtils.formatNameBytes(groupName, outbuf, offset, GNAMELEN, encoding);
         offset = writeEntryHeaderField(devMajor, outbuf, offset, DEVLEN, starMode);
         offset = writeEntryHeaderField(devMinor, outbuf, offset, DEVLEN, starMode);
-
         if (starMode) {
             // skip prefix
             offset = fill(0, offset, outbuf, PREFIXLEN_XSTAR);
@@ -2040,11 +2017,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             // This makes it effectively XUSTAR, which guarantees compatibility with USTAR
             offset = fill(0, offset, outbuf, XSTAR_MAGIC_LEN);
         }
-
         offset = fill(0, offset, outbuf, outbuf.length - offset); // NOSONAR - assignment as documentation
-
         final long chk = TarUtils.computeCheckSum(outbuf);
-
         TarUtils.formatCheckSumOctalBytes(chk, outbuf, csOffset, CHKSUMLEN);
     }
 
