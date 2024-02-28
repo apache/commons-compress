@@ -36,7 +36,7 @@ import org.osgi.framework.BundleContext;
  * Tests if the library can be loaded with an OSGi environment provided by {@link #config()}.
  */
 abstract class AbstractOsgiITest {
-    private static final String EXPECTED_BUNDLE_NAME = "org.apache.commons.commons-compress";
+    private static final String EXPECTED_BUNDLE_NAME = "org.apache.commons.commons-compress-core";
 
     @Inject
     private BundleContext ctx;

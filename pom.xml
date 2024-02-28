@@ -23,7 +23,8 @@
     <version>66</version>
   </parent>
 
-  <artifactId>commons-compress</artifactId>
+  <artifactId>commons-compress-parent</artifactId>
+  <packaging>pom</packaging>
   <version>1.26.1-SNAPSHOT</version>
   <name>Apache Commons Compress</name>
   <url>https://commons.apache.org/proper/commons-compress/</url>
@@ -49,7 +50,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.release.next>1.26.2</commons.release.next>
     <commons.bc.version>1.26.0</commons.bc.version>
     <commons.rc.version>RC1</commons.rc.version>
-    <mockito.version>4.11.0</mockito.version>
 
     <commons.release.isDistModule>true</commons.release.isDistModule>
     <commons.distSvnStagingUrl>scm:svn:https://dist.apache.org/repos/dist/dev/commons/${commons.componentid}</commons.distSvnStagingUrl>
@@ -77,12 +77,15 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/${project.artifactId}</commons.scmPubUrl>
     <japicmp.skip>false</japicmp.skip>
 
-    <pax.exam.version>4.13.5</pax.exam.version>
-    <slf4j.version>2.0.12</slf4j.version>
-    <asm.version>9.6</asm.version>
     <project.build.outputTimestamp>2024-02-19T00:42:57Z</project.build.outputTimestamp>
     <!-- spdx 0.6.0 can require Java 11 depending on undocumented behavior which kicks in for us here. -->
     <commons.spdx.version>0.5.5</commons.spdx.version>
+
+    <!--
+      ~ Dependency versions: lists versions common to 2 or more artifacts.
+      -->
+    <mockito.version>4.11.0</mockito.version>
+    <pax.exam.version>4.13.5</pax.exam.version>
   </properties>
 
   <issueManagement>
@@ -90,140 +93,149 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <url>https://issues.apache.org/jira/browse/COMPRESS</url>
   </issueManagement>
 
-  <dependencies>
+  <dependencyManagement>
+    <dependencies>
+      <!-- Submodules -->
+
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-params</artifactId>
-      <scope>test</scope>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+      <version>${project.version}</version>
     </dependency>
+
     <dependency>
-      <groupId>org.junit.vintage</groupId>
-      <artifactId>junit-vintage-engine</artifactId>
-      <scope>test</scope>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress-core</artifactId>
+      <version>${project.version}</version>
     </dependency>
+
+      <!-- Ordered alphabetically by artifactId and unscoped -->
+
     <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest</artifactId>
-      <version>2.2</version>
-      <scope>test</scope>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>9.6</version>
     </dependency>
+
     <dependency>
-      <groupId>com.github.luben</groupId>
-      <artifactId>zstd-jni</artifactId>
-      <version>1.5.5-11</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.brotli</groupId>
-      <artifactId>dec</artifactId>
-      <version>0.1.2</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.tukaani</groupId>
-      <artifactId>xz</artifactId>
-      <version>1.9</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <!-- For packages:
-           - org.apache.commons.compress.compressors.lz4 
-           - org.apache.commons.compress.compressors.snappy -->
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
       <version>1.16.1</version>
     </dependency>
 
-    <!-- Pack200 -->
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm</artifactId>
-      <version>${asm.version}</version>
-      <optional>true</optional>
-    </dependency>
-
-    <!--  Test -->
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>${mockito.version}</version>
-      <scope>test</scope>
-    </dependency>
-	<dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-junit-jupiter</artifactId>
-      <version>${mockito.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.github.marschall</groupId>
-      <artifactId>memoryfilesystem</artifactId>
-      <version>2.8.0</version>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- integration test verifying OSGi bundle works -->
-    <dependency>
-      <groupId>org.ops4j.pax.exam</groupId>
-      <artifactId>pax-exam-container-native</artifactId>
-      <version>${pax.exam.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.ops4j.pax.exam</groupId>
-      <artifactId>pax-exam-junit4</artifactId>
-      <version>${pax.exam.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.ops4j.pax.exam</groupId>
-      <artifactId>pax-exam-cm</artifactId>
-      <version>${pax.exam.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.ops4j.pax.exam</groupId>
-      <artifactId>pax-exam-link-mvn</artifactId>
-      <version>${pax.exam.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.felix</groupId>
-      <artifactId>org.apache.felix.framework</artifactId>
-      <version>7.0.5</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
-      <version>1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>2.15.1</version>
-    </dependency>    
+    </dependency>
+
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.14.0</version>
-    </dependency>    
+    </dependency>
+
+    <dependency>
+      <groupId>org.brotli</groupId>
+      <artifactId>dec</artifactId>
+      <version>0.1.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
+      <version>2.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.marschall</groupId>
+      <artifactId>memoryfilesystem</artifactId>
+      <version>2.8.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.framework</artifactId>
+      <version>7.0.5</version>
+    </dependency>
+
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.core</artifactId>
       <version>6.0.0</version>
-      <scope>provided</scope>
     </dependency>
-  </dependencies>
 
-  <scm>
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-cm</artifactId>
+      <version>${pax.exam.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-container-native</artifactId>
+      <version>${pax.exam.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-junit4</artifactId>
+      <version>${pax.exam.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-link-mvn</artifactId>
+      <version>${pax.exam.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>2.0.12</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.tukaani</groupId>
+      <artifactId>xz</artifactId>
+      <version>1.9</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.luben</groupId>
+      <artifactId>zstd-jni</artifactId>
+      <version>1.5.5-11</version>
+    </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+
+  <modules>
+    <module>compress</module>
+    <module>compress-core</module>
+  </modules>
+
+  <scm child.scm.connection.inherit.append.path="false"
+       child.scm.developerConnection.inherit.append.path="false"
+       child.scm.url.inherit.append.path="false">
     <connection>scm:git:https://gitbox.apache.org/repos/asf/commons-compress.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/commons-compress.git</developerConnection>
     <url>https://gitbox.apache.org/repos/asf?p=commons-compress.git</url>
@@ -234,11 +246,11 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <defaultGoal>clean artifact:check-buildplan verify apache-rat:check checkstyle:check japicmp:cmp javadoc:javadoc</defaultGoal>
     <pluginManagement>
       <plugins>
+
         <!-- Override Javadoc config in parent pom to add JCIP tags -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>${commons.javadoc.version}</version>
           <configuration> 
             <source>${maven.compiler.source}</source>
             <quiet>true</quiet>
@@ -270,10 +282,10 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
             </tags>
           </configuration> 
         </plugin>
+
         <plugin>
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
-          <version>${commons.rat.version}</version>
           <configuration>
             <excludes>
               <!-- files used during tests -->
@@ -285,11 +297,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
             </excludes>
           </configuration>
         </plugin>
-        <plugin>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>maven-bundle-plugin</artifactId>
-          <version>${commons.felix.version}</version>
-        </plugin>
+
         <plugin>
           <groupId>com.github.siom79.japicmp</groupId>
           <artifactId>japicmp-maven-plugin</artifactId>
@@ -305,6 +313,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
             </parameter>
           </configuration>
         </plugin>
+
         <plugin>
           <groupId>com.github.spotbugs</groupId>
           <artifactId>spotbugs-maven-plugin</artifactId>
@@ -314,9 +323,26 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
             <excludeFilterFile>${basedir}/src/conf/spotbugs-exclude-filter.xml</excludeFilterFile>
          </configuration>
         </plugin>
+
       </plugins>
     </pluginManagement>
+
     <plugins>
+
+      <!--
+        ~ Due to https://issues.apache.org/jira/browse/MARTIFACT-54
+        ~ the execution must be disabled for submodules.
+        -->
+      <plugin>
+        <artifactId>maven-artifact-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>check-buildplan</id>
+            <inherited>false</inherited>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <!-- create the source and binary assemblies -->
         <artifactId>maven-assembly-plugin</artifactId>
@@ -328,6 +354,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           <tarLongFileMode>gnu</tarLongFileMode>
         </configuration>
       </plugin>
+
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
@@ -340,6 +367,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           </archive>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
@@ -347,6 +375,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           <manifestLocation>${commons.manifestlocation}</manifestLocation>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-scm-publish-plugin</artifactId>
@@ -356,6 +385,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           </ignorePathsToDelete>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
@@ -367,27 +397,12 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           </rulesets>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>process-test-resources</phase>
-            <configuration>
-              <target>
-                <untar src="${basedir}/src/test/resources/zstd-tests.tar" dest="${project.build.testOutputDirectory}" />
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
@@ -397,6 +412,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           </systemPropertyVariables>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
@@ -408,11 +424,13 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           <excludes>target/**</excludes>
         </configuration>
       </plugin>
+
     </plugins>
   </build>
 
   <reporting>
     <plugins>
+
       <plugin>
         <!-- generate the PMD reports -->
         <groupId>org.apache.maven.plugins</groupId>
@@ -425,14 +443,17 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           </rulesets>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
       </plugin>
+
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
       </plugin>
+
     </plugins>
   </reporting>
 
