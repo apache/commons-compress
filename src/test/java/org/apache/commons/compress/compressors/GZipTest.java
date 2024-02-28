@@ -20,8 +20,9 @@ package org.apache.commons.compress.compressors;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
@@ -31,7 +32,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -61,21 +64,33 @@ public final class GZipTest extends AbstractTest {
     @Disabled
     @Test
     public void testCompress666() throws ExecutionException, InterruptedException {
+        System.out.println("START");
         final ExecutorService executorService = Executors.newFixedThreadPool(10);
         final List<Future<?>> tasks = IntStream.range(0, 200).mapToObj(index -> executorService.submit(() -> {
-            try (InputStream inputStream = this.getClass().getResourceAsStream("/COMPRESS-666/compress-666.tar.gz");
+            TarArchiveEntry tarEntry = null;
+            try (InputStream inputStream = getClass().getResourceAsStream("/COMPRESS-666/compress-666.tar.gz");
                     TarArchiveInputStream tarInputStream = new TarArchiveInputStream(new GZIPInputStream(inputStream))) {
-                TarArchiveEntry tarEntry;
                 while ((tarEntry = tarInputStream.getNextEntry()) != null) {
                     assertNotNull(tarEntry);
                 }
             } catch (final IOException e) {
-                fail(e);
+                fail(Objects.toString(tarEntry), e);
             }
         })).collect(Collectors.toList());
+        final List<Exception> list = new ArrayList<>();
         for (final Future<?> future : tasks) {
-            future.get();
+            try {
+                future.get();
+            } catch (final Exception e) {
+                list.add(e);
+            }
         }
+        // check:
+        if (!list.isEmpty()) {
+            fail(list.get(0));
+        }
+        // or:
+        // assertTrue(list.isEmpty(), () -> list.size() + " exceptions: " + list.toString());
     }
 
     @Test
