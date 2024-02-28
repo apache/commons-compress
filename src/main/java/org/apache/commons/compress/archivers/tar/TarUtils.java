@@ -596,14 +596,14 @@ public class TarUtils {
             readResult = readLineOfNumberForPax1X(inputStream);
             final long sparseOffset = readResult[0];
             if (sparseOffset < 0) {
-                throw new IOException("Corrupted TAR archive." + " Sparse header block offset contains negative value");
+                throw new IOException("Corrupted TAR archive. Sparse header block offset contains negative value");
             }
             bytesRead += readResult[1];
 
             readResult = readLineOfNumberForPax1X(inputStream);
             final long sparseNumbytes = readResult[0];
             if (sparseNumbytes < 0) {
-                throw new IOException("Corrupted TAR archive." + " Sparse header block numbytes contains negative value");
+                throw new IOException("Corrupted TAR archive. Sparse header block numbytes contains negative value");
             }
             bytesRead += readResult[1];
             sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
@@ -709,7 +709,7 @@ public class TarUtils {
                                 final byte[] rest = IOUtils.readRange(inputStream, restLen);
                                 final int got = rest.length;
                                 if (got != restLen) {
-                                    throw new IOException("Failed to read " + "Paxheader. Expected " + restLen + " bytes, read " + got);
+                                    throw new IOException("Failed to read Paxheader. Expected " + restLen + " bytes, read " + got);
                                 }
                                 totalRead += restLen;
                                 // Drop trailing NL
