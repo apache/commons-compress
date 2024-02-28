@@ -290,8 +290,8 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @return The implementation will return true if the {@link ArchiveEntry} is an instance of {@link TarArchiveEntry}
      */
     @Override
-    public boolean canReadEntryData(final ArchiveEntry ae) {
-        return ae instanceof TarArchiveEntry;
+    public boolean canReadEntryData(final ArchiveEntry archiveEntry) {
+        return archiveEntry instanceof TarArchiveEntry;
     }
 
     /**
