@@ -54,6 +54,7 @@ public class TarUtils {
      * Encapsulates the algorithms used up to Commons Compress 1.3 as ZipEncoding.
      */
     static final ZipEncoding FALLBACK_ENCODING = new ZipEncoding() {
+
         @Override
         public boolean canEncode(final String name) {
             return true;
@@ -63,14 +64,12 @@ public class TarUtils {
         public String decode(final byte[] buffer) {
             final int length = buffer.length;
             final StringBuilder result = new StringBuilder(length);
-
             for (final byte b : buffer) {
                 if (b == 0) { // Trailing null
                     break;
                 }
                 result.append((char) (b & 0xFF)); // Allow for sign-extension
             }
-
             return result.toString();
         }
 
@@ -78,7 +77,6 @@ public class TarUtils {
         public ByteBuffer encode(final String name) {
             final int length = name.length();
             final byte[] buf = new byte[length];
-
             // copy until end of input or output is reached.
             for (int i = 0; i < length; ++i) {
                 buf[i] = (byte) name.charAt(i);
@@ -95,11 +93,9 @@ public class TarUtils {
      */
     public static long computeCheckSum(final byte[] buf) {
         long sum = 0;
-
         for (final byte element : buf) {
             sum += BYTE_MASK & element;
         }
-
         return sum;
     }
 
@@ -147,13 +143,10 @@ public class TarUtils {
      * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
      */
     public static int formatCheckSumOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
-
         int idx = length - 2; // for NUL and space
         formatUnsignedOctalString(value, buf, offset, idx);
-
         buf[offset + idx++] = 0; // Trailing null
         buf[offset + idx] = (byte) ' '; // Trailing space
-
         return offset + length;
     }
 
@@ -188,12 +181,9 @@ public class TarUtils {
      * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
      */
     public static int formatLongOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
-
         final int idx = length - 1; // For space
-
         formatUnsignedOctalString(value, buf, offset, idx);
         buf[offset + idx] = (byte) ' '; // Trailing space
-
         return offset + length;
     }
 
@@ -211,21 +201,17 @@ public class TarUtils {
      * @since 1.4
      */
     public static int formatLongOctalOrBinaryBytes(final long value, final byte[] buf, final int offset, final int length) {
-
         // Check whether we are dealing with UID/GID or SIZE field
         final long maxAsOctalChar = length == TarConstants.UIDLEN ? TarConstants.MAXID : TarConstants.MAXSIZE;
-
         final boolean negative = value < 0;
         if (!negative && value <= maxAsOctalChar) { // OK to store as octal chars
             return formatLongOctalBytes(value, buf, offset, length);
         }
-
         if (length < 9) {
             formatLongBinary(value, buf, offset, length, negative);
         } else {
             formatBigIntegerBinary(value, buf, offset, length, negative);
         }
-
         buf[offset] = (byte) (negative ? 0xff : 0x80);
         return offset + length;
     }
@@ -274,12 +260,10 @@ public class TarUtils {
         }
         final int limit = b.limit() - b.position();
         System.arraycopy(b.array(), b.arrayOffset(), buf, offset, limit);
-
         // Pad any remaining output bytes with NUL
         for (int i = limit; i < length; ++i) {
             buf[offset + i] = 0;
         }
-
         return offset + length;
     }
 
@@ -296,13 +280,10 @@ public class TarUtils {
      * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
      */
     public static int formatOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
-
         int idx = length - 2; // For space and trailing null
         formatUnsignedOctalString(value, buf, offset, idx);
-
         buf[offset + idx++] = (byte) ' '; // Trailing space
         buf[offset + idx] = 0; // Trailing null
-
         return offset + length;
     }
 
@@ -395,7 +376,6 @@ public class TarUtils {
         if (sparseHeaderStrings.length % 2 == 1) {
             throw new IOException("Corrupted TAR archive. Bad format in GNU.sparse.map PAX Header");
         }
-
         for (int i = 0; i < sparseHeaderStrings.length; i += 2) {
             final long sparseOffset = ParsingUtils.parseLongValue(sparseHeaderStrings[i]);
             if (sparseOffset < 0) {
@@ -407,7 +387,6 @@ public class TarUtils {
             }
             sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
         }
-
         return Collections.unmodifiableList(sparseHeaders);
     }
 
@@ -444,7 +423,6 @@ public class TarUtils {
      * @throws IOException on error
      */
     public static String parseName(final byte[] buffer, final int offset, final int length, final ZipEncoding encoding) throws IOException {
-
         int len = 0;
         for (int i = offset; len < length && buffer[i] != 0; i++) {
             len++;
@@ -482,15 +460,12 @@ public class TarUtils {
         long result = 0;
         int end = offset + length;
         int start = offset;
-
         if (length < 2) {
             throw new IllegalArgumentException("Length " + length + " must be at least 2");
         }
-
         if (buffer[start] == 0) {
             return 0L;
         }
-
         // Skip leading spaces
         while (start < end) {
             if (buffer[start] != ' ') {
@@ -498,7 +473,6 @@ public class TarUtils {
             }
             start++;
         }
-
         // Trim all trailing NULs and spaces.
         // The ustar and POSIX tar specs require a trailing NUL or
         // space but some implementations use the extra digit for big
@@ -508,7 +482,6 @@ public class TarUtils {
             end--;
             trailer = buffer[end - 1];
         }
-
         for (; start < end; start++) {
             final byte currentByte = buffer[start];
             // CheckStyle:MagicNumber OFF
@@ -518,7 +491,6 @@ public class TarUtils {
             result = (result << 3) + (currentByte - '0'); // convert from ASCII
             // CheckStyle:MagicNumber ON
         }
-
         return result;
     }
 
@@ -535,7 +507,6 @@ public class TarUtils {
      * @since 1.4
      */
     public static long parseOctalOrBinary(final byte[] buffer, final int offset, final int length) {
-
         if ((buffer[offset] & 0x80) == 0) {
             return parseOctal(buffer, offset, length);
         }
@@ -584,7 +555,6 @@ public class TarUtils {
         // for 1.X PAX Headers
         final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         long bytesRead = 0;
-
         long[] readResult = readLineOfNumberForPax1X(inputStream);
         long sparseHeadersCount = readResult[0];
         if (sparseHeadersCount < 0) {
@@ -608,7 +578,6 @@ public class TarUtils {
             bytesRead += readResult[1];
             sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
         }
-
         // skip the rest of this record data
         final long bytesToSkip = recordSize - bytesRead % recordSize;
         org.apache.commons.io.IOUtils.skip(inputStream, bytesToSkip);
@@ -755,12 +724,10 @@ public class TarUtils {
                     }
                     break; // Processed single header
                 }
-
                 // COMPRESS-530 : throw if we encounter a non-number while reading length
                 if (ch < '0' || ch > '9') {
                     throw new IOException("Failed to read Paxheader. Encountered a non-number while reading length");
                 }
-
                 len *= 10;
                 len += ch - '0';
             }
@@ -786,7 +753,6 @@ public class TarUtils {
     public static TarArchiveStructSparse parseSparse(final byte[] buffer, final int offset) {
         final long sparseOffset = parseOctalOrBinary(buffer, offset, TarConstants.SPARSE_OFFSET_LEN);
         final long sparseNumbytes = parseOctalOrBinary(buffer, offset + TarConstants.SPARSE_OFFSET_LEN, TarConstants.SPARSE_NUMBYTES_LEN);
-
         return new TarArchiveStructSparse(sparseOffset, sparseNumbytes);
     }
 
@@ -802,7 +768,6 @@ public class TarUtils {
         int number;
         long result = 0;
         long bytesRead = 0;
-
         while ((number = inputStream.read()) != '\n') {
             bytesRead += 1;
             if (number == -1) {
@@ -814,7 +779,6 @@ public class TarUtils {
             result = result * 10 + (number - '0');
         }
         bytesRead += 1;
-
         return new long[] { result, bytesRead };
     }
 
@@ -827,7 +791,6 @@ public class TarUtils {
             try {
                 final TarArchiveStructSparse sparseHeader = parseSparse(buffer,
                         offset + i * (TarConstants.SPARSE_OFFSET_LEN + TarConstants.SPARSE_NUMBYTES_LEN));
-
                 if (sparseHeader.getOffset() < 0) {
                     throw new IOException("Corrupted TAR archive, sparse entry with negative offset");
                 }
@@ -863,7 +826,6 @@ public class TarUtils {
         final long storedSum = parseOctal(header, TarConstants.CHKSUM_OFFSET, TarConstants.CHKSUMLEN);
         long unsignedSum = 0;
         long signedSum = 0;
-
         for (int i = 0; i < header.length; i++) {
             byte b = header[i];
             if (TarConstants.CHKSUM_OFFSET <= i && i < TarConstants.CHKSUM_OFFSET + TarConstants.CHKSUMLEN) {
