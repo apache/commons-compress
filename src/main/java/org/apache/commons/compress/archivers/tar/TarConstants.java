@@ -315,6 +315,9 @@ public interface TarConstants {
 
     /**
      * The magic tag representing a POSIX tar archive.
+     * <p>
+     * "ustar" and a null.
+     * </p>
      */
     String MAGIC_POSIX = "ustar\0";
     String VERSION_POSIX = "00";
