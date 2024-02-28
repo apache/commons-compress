@@ -790,8 +790,8 @@ public final class ZipTest extends AbstractTest {
      */
     @Test
     public void testZipArchiveCreationInMemory() throws Exception {
-        final byte[] file1Contents = Files.readAllBytes(getPath("test1.xml"));
-        final byte[] file2Contents = Files.readAllBytes(getPath("test2.xml"));
+        final byte[] file1Contents = readAllBytes("test1.xml");
+        final byte[] file2Contents = readAllBytes("test2.xml");
         final List<byte[]> results = new ArrayList<>();
         try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel()) {
             try (ZipArchiveOutputStream os = new ZipArchiveOutputStream(channel)) {
