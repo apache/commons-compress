@@ -687,9 +687,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @throws IOException on error
      */
     protected byte[] readRecord() throws IOException {
-        final int readNow = IOUtils.readFully(in, recordBuffer);
-        count(readNow);
-        if (readNow != recordSize) {
+        final int readCount = IOUtils.readFully(in, recordBuffer);
+        count(readCount);
+        if (readCount != recordSize) {
             return null;
         }
 
