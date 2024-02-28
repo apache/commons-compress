@@ -82,9 +82,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
     private final byte[] smallBuf = new byte[SMALL_BUFFER_SIZE];
 
-    /** The size the TAR header. */
-    private final int recordSize;
-
     /** The buffer to store the TAR header. **/
     private final byte[] recordBuffer;
 
@@ -190,7 +187,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         super(inputStream, encoding);
         this.atEof = false;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
-        this.recordSize = recordSize;
         this.recordBuffer = new byte[recordSize];
         this.blockSize = blockSize;
         this.lenient = lenient;
@@ -514,7 +510,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @return The TarBuffer record size.
      */
     public int getRecordSize() {
-        return recordSize;
+        return recordBuffer.length;
     }
 
     protected final boolean isAtEOF() {
@@ -532,7 +528,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @return true if the record data is an End of Archive
      */
     protected boolean isEOFRecord(final byte[] record) {
-        return record == null || ArchiveUtils.isArrayZero(record, recordSize);
+        return record == null || ArchiveUtils.isArrayZero(record, getRecordSize());
     }
 
     /**
@@ -587,7 +583,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
         // for 1.0 PAX Format, the sparse map is stored in the file data block
         if (currEntry.isPaxGNU1XSparse()) {
-            sparseHeaders = TarUtils.parsePAX1XSparseHeaders(in, recordSize);
+            sparseHeaders = TarUtils.parsePAX1XSparseHeaders(in, getRecordSize());
             currEntry.setSparseHeaders(sparseHeaders);
         }
 
@@ -689,7 +685,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     protected byte[] readRecord() throws IOException {
         final int readCount = IOUtils.readFully(in, recordBuffer);
         count(readCount);
-        if (readCount != recordSize) {
+        if (readCount != getRecordSize()) {
             return null;
         }
 
@@ -798,10 +794,10 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @throws IOException if a truncated tar archive is detected
      */
     private void skipRecordPadding() throws IOException {
-        if (!isDirectory() && this.entrySize > 0 && this.entrySize % this.recordSize != 0) {
+        if (!isDirectory() && this.entrySize > 0 && this.entrySize % getRecordSize() != 0) {
             final long available = in.available();
-            final long numRecords = this.entrySize / this.recordSize + 1;
-            final long padding = numRecords * this.recordSize - this.entrySize;
+            final long numRecords = this.entrySize / getRecordSize() + 1;
+            final long padding = numRecords * getRecordSize() - this.entrySize;
             long skipped = org.apache.commons.io.IOUtils.skip(in, padding);
 
             skipped = getActuallySkipped(available, skipped, padding);
@@ -846,13 +842,13 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         boolean shouldReset = true;
         final boolean marked = in.markSupported();
         if (marked) {
-            in.mark(recordSize);
+            in.mark(getRecordSize());
         }
         try {
             shouldReset = !isEOFRecord(readRecord());
         } finally {
             if (shouldReset && marked) {
-                pushedBackBytes(recordSize);
+                pushedBackBytes(getRecordSize());
                 in.reset();
             }
         }
