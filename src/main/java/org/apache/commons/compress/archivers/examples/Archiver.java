@@ -156,7 +156,7 @@ public class Archiver {
      */
     public void create(final SevenZOutputFile target, final Path directory) throws IOException {
         // This custom SimpleFileVisitor goes away with Java 8's BiConsumer.
-        Files.walkFileTree(directory, new ArchiverFileVisitor(null, directory) {
+        Files.walkFileTree(directory, new ArchiverFileVisitor<ArchiveOutputStream<ArchiveEntry>, ArchiveEntry>(null, directory) {
 
             @Override
             protected FileVisitResult visit(final Path path, final BasicFileAttributes attrs, final boolean isFile) throws IOException {
