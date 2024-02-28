@@ -93,7 +93,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
     @Test
     public void testMatches() throws IOException {
         assertFalse(FramedLZ4CompressorInputStream.matches(new byte[10], 4));
-        final byte[] expected = Files.readAllBytes(getPath("bla.tar.lz4"));
+        final byte[] expected = readAllBytes("bla.tar.lz4");
         assertFalse(FramedLZ4CompressorInputStream.matches(expected, 3));
         assertTrue(FramedLZ4CompressorInputStream.matches(expected, 4));
         assertTrue(FramedLZ4CompressorInputStream.matches(expected, 5));
