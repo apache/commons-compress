@@ -20,8 +20,10 @@ package org.apache.commons.compress.archivers.tar;
 
 /**
  * This interface contains all the definitions used in the package.
- *
- * For tar formats (FORMAT_OLDGNU, FORMAT_POSIX, etc.) see GNU tar <I>tar.h</I> type <I>enum archive_format</I>
+ * <p>
+ * For tar formats (FORMAT_OLDGNU, FORMAT_POSIX, etc.) see GNU tar <a href="https://git.savannah.gnu.org/cgit/tar.git/tree/src/tar.h?h=v1.35">tar.h</a> and type
+ * {@code enum archive_format}.
+ * </p>
  */
 // CheckStyle:InterfaceIsTypeCheck OFF (bc)
 public interface TarConstants {
