@@ -436,8 +436,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             final byte[] longLinkData = getLongNameData();
             if (longLinkData == null) {
                 // Bugzilla: 40334
-                // Malformed tar file - long link entry name not followed by
-                // entry
+                // Malformed tar file - long link entry name not followed by entry
                 return null;
             }
             currEntry.setLinkName(zipEncoding.decode(longLinkData));
@@ -447,8 +446,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             final byte[] longNameData = getLongNameData();
             if (longNameData == null) {
                 // Bugzilla: 40334
-                // Malformed tar file - long entry name not followed by
-                // entry
+                // Malformed tar file - long entry name not followed by entry
                 return null;
             }
 
