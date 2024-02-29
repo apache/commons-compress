@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Set;
+
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
@@ -38,7 +39,9 @@ public class BrotliCompressorStreamProvider implements CompressorStreamProvider 
     }
 
     @Override
-    public CompressorInputStream createCompressorInputStream(final String name, final InputStream in, final boolean decompressUntilEOF) throws CompressorException {
+    public CompressorInputStream createCompressorInputStream(final String name,
+                                                             final InputStream in,
+                                                             final boolean decompressUntilEOF) throws CompressorException {
         if (BROTLI.equals(name)) {
             try {
                 return new BrotliCompressorInputStream(in);

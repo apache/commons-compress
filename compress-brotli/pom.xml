@@ -33,6 +33,7 @@
   <description>Brotli compression support for Apache Commons Compress.</description>
 
   <properties>
+    <japicmp.skip>true</japicmp.skip>
     <!-- JPMS module name -->
     <commons.module.name>org.apache.commons.compress.brotli</commons.module.name>
   </properties>

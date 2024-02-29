@@ -115,7 +115,41 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
   </scm>
 
   <build>
+      <!--
+        ~ Due to https://issues.apache.org/jira/browse/MARTIFACT-54
+        ~ the execution must be disabled.
     <defaultGoal>clean artifact:check-buildplan verify apache-rat:check checkstyle:check japicmp:cmp javadoc:javadoc</defaultGoal>
+        -->
+    <defaultGoal>clean verify apache-rat:check checkstyle:check japicmp:cmp javadoc:javadoc</defaultGoal>
+    <plugins>
+
+      <!--
+        ~ Due to https://issues.apache.org/jira/browse/MARTIFACT-54
+        ~ the execution must be disabled for submodules.
+        -->
+      <plugin>
+        <artifactId>maven-artifact-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>check-buildplan</id>
+            <inherited>false</inherited>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <configLocation>${maven.multiModuleProjectDirectory}/src/conf/checkstyle.xml</configLocation>
+          <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
+          <enableRulesSummary>false</enableRulesSummary>
+          <excludes>target/**</excludes>
+        </configuration>
+      </plugin>
+
+    </plugins>
   </build>
 
   <developers>

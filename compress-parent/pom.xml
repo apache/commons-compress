@@ -285,20 +285,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
     <plugins>
 
-      <!--
-        ~ Due to https://issues.apache.org/jira/browse/MARTIFACT-54
-        ~ the execution must be disabled for submodules.
-        -->
-      <plugin>
-        <artifactId>maven-artifact-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>check-buildplan</id>
-            <inherited>false</inherited>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <!-- create the source and binary assemblies -->
         <artifactId>maven-assembly-plugin</artifactId>
@@ -366,18 +352,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
             <pax.exam.karaf.version>${karaf.version}</pax.exam.karaf.version>
             <commons-compress.version>${project.version}</commons-compress.version>
           </systemPropertyVariables>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <configLocation>${basedir}/src/conf/checkstyle.xml</configLocation>
-          <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
-          <includeTestSourceDirectory>true</includeTestSourceDirectory>
-          <enableRulesSummary>false</enableRulesSummary>
-          <excludes>target/**</excludes>
         </configuration>
       </plugin>
 

@@ -33,11 +33,17 @@ on all the available artifacts.
   </description>
 
   <properties>
+    <japicmp.skip>true</japicmp.skip>
     <!-- JPMS module name -->
     <commons.module.name>org.apache.commons.compress</commons.module.name>
   </properties>
 
   <dependencies>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress-brotli</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.commons</groupId>
