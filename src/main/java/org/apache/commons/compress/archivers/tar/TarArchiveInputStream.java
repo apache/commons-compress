@@ -185,7 +185,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      */
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize, final String encoding, final boolean lenient) {
         super(inputStream, encoding);
-        this.atEof = false;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.recordBuffer = new byte[recordSize];
         this.blockSize = blockSize;
