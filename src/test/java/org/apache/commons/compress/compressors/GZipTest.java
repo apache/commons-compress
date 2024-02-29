@@ -64,7 +64,6 @@ public final class GZipTest extends AbstractTest {
     @ParameterizedTest
     @ValueSource(ints = { 1, 2, 4, 8, 16, 32, 64, 128 })
     public void testCompress666(final int factor) throws ExecutionException, InterruptedException {
-        System.out.println("START");
         final ExecutorService executorService = Executors.newFixedThreadPool(10);
         try {
             final List<Future<?>> tasks = IntStream.range(0, 200).mapToObj(index -> executorService.submit(() -> {
