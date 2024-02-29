@@ -475,7 +475,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         }
 
         // If the size of the next element in the archive has changed
-        // due to a new size being reported in the posix header
+        // due to a new size being reported in the POSIX header
         // information, we update entrySize here so that it contains
         // the correct value.
         entrySize = currEntry.getSize();
