@@ -41,6 +41,9 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
   </description>
 
   <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+
     <commons.componentid>compress</commons.componentid>
     <commons.jira.id>COMPRESS</commons.jira.id>
     <commons.jira.pid>12310904</commons.jira.pid>
