@@ -40,6 +40,7 @@ import org.apache.commons.io.FileUtils;
 public final class IOUtils {
 
     private static final int COPY_BUF_SIZE = 8024;
+    private static final int SKIP_BUF_SIZE = 4096;
 
     /**
      * Empty array of type {@link LinkOption}.
@@ -47,6 +48,10 @@ public final class IOUtils {
      * @since 1.21
      */
     public static final LinkOption[] EMPTY_LINK_OPTIONS = {};
+
+    // This buffer does not need to be synchronized because it is write only; the contents are ignored
+    // Does not affect Immutability
+    private static final byte[] SKIP_BUF = new byte[SKIP_BUF_SIZE];
 
     /**
      * Closes the given Closeable and swallows any IOException that may occur.
@@ -271,10 +276,12 @@ public final class IOUtils {
 
     /**
      * Skips the given number of bytes by repeatedly invoking skip on the given input stream if necessary.
+     *
      * <p>
      * In a case where the stream's skip() method returns 0 before the requested number of bytes has been skip this implementation will fall back to using the
      * read() method.
      * </p>
+     *
      * <p>
      * This method will only skip less than the requested number of bytes if the end of the input stream has been reached.
      * </p>
@@ -283,11 +290,25 @@ public final class IOUtils {
      * @param numToSkip the number of bytes to skip
      * @return the number of bytes actually skipped
      * @throws IOException on error
-     * @deprecated Use {@link org.apache.commons.io.IOUtils#skip(InputStream, long)}.
      */
-    @Deprecated
-    public static long skip(final InputStream input, final long numToSkip) throws IOException {
-        return org.apache.commons.io.IOUtils.skip(input, numToSkip);
+    public static long skip(final InputStream input, long numToSkip) throws IOException {
+        final long available = numToSkip;
+        while (numToSkip > 0) {
+            final long skipped = input.skip(numToSkip);
+            if (skipped == 0) {
+                break;
+            }
+            numToSkip -= skipped;
+        }
+
+        while (numToSkip > 0) {
+            final int read = readFully(input, SKIP_BUF, 0, (int) Math.min(numToSkip, SKIP_BUF_SIZE));
+            if (read < 1) {
+                break;
+            }
+            numToSkip -= read;
+        }
+        return available - numToSkip;
     }
 
     /**

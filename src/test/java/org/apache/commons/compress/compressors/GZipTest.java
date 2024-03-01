@@ -52,7 +52,6 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipParameters;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -110,7 +109,6 @@ public final class GZipTest extends AbstractTest {
      *
      * A factor of 20 is the default.
      */
-    @Disabled
     @ParameterizedTest
     @ValueSource(ints = { 1, 2, 4, 8, 16, 20, 32, 64, 128 })
     public void testCompress666Unbuffered(final int factor) throws ExecutionException, InterruptedException {

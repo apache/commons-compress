@@ -314,7 +314,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     private void consumeRemainderOfLastBlock() throws IOException {
         final long bytesReadOfLastBlock = getBytesRead() % blockSize;
         if (bytesReadOfLastBlock > 0) {
-            count(org.apache.commons.io.IOUtils.skip(in, blockSize - bytesReadOfLastBlock));
+            count(IOUtils.skip(in, blockSize - bytesReadOfLastBlock));
         }
     }
 
@@ -406,7 +406,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
         if (currEntry != null) {
             /* Skip will only go to the end of the current entry */
-            org.apache.commons.io.IOUtils.skip(this, Long.MAX_VALUE);
+            IOUtils.skip(this, Long.MAX_VALUE);
 
             /* skip to the end of the last record */
             skipRecordPadding();
@@ -777,7 +777,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         long skipped;
 
         if (!currEntry.isSparse()) {
-            skipped = org.apache.commons.io.IOUtils.skip(in, numToSkip);
+            skipped = IOUtils.skip(in, numToSkip);
             // for non-sparse entry, we should get the bytes actually skipped bytes along with
             // inputStream.available() if inputStream is instance of FileInputStream
             skipped = getActuallySkipped(availableOfInputStream, skipped, numToSkip);
@@ -800,7 +800,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             final long available = in.available();
             final long numRecords = this.entrySize / getRecordSize() + 1;
             final long padding = numRecords * getRecordSize() - this.entrySize;
-            long skipped = org.apache.commons.io.IOUtils.skip(in, padding);
+            long skipped = IOUtils.skip(in, padding);
 
             skipped = getActuallySkipped(available, skipped, padding);
 
