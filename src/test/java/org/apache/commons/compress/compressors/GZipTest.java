@@ -96,7 +96,7 @@ public final class GZipTest extends AbstractTest {
 
     /**
      * Tests https://issues.apache.org/jira/browse/COMPRESS-666
-     * 
+     *
      * A factor of 20 is the default.
      */
     @ParameterizedTest
@@ -107,7 +107,7 @@ public final class GZipTest extends AbstractTest {
 
     /**
      * Tests https://issues.apache.org/jira/browse/COMPRESS-666
-     * 
+     *
      * A factor of 20 is the default.
      */
     @Disabled
