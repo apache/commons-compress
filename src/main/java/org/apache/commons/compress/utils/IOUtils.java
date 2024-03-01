@@ -276,12 +276,10 @@ public final class IOUtils {
 
     /**
      * Skips the given number of bytes by repeatedly invoking skip on the given input stream if necessary.
-     *
      * <p>
      * In a case where the stream's skip() method returns 0 before the requested number of bytes has been skip this implementation will fall back to using the
      * read() method.
      * </p>
-     *
      * <p>
      * This method will only skip less than the requested number of bytes if the end of the input stream has been reached.
      * </p>
@@ -300,7 +298,6 @@ public final class IOUtils {
             }
             numToSkip -= skipped;
         }
-
         while (numToSkip > 0) {
             final int read = readFully(input, SKIP_BUF, 0, (int) Math.min(numToSkip, SKIP_BUF_SIZE));
             if (read < 1) {
