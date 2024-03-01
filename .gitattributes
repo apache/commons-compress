@@ -10,10 +10,10 @@
 *.zst                                   binary
 .gitattributes                          text
 # These must be identical to the copies in SHRUNK.ZIP
-src/test/resources/test1.xml            eol=lf
-src/test/resources/test2.xml            eol=lf
-src/test/resources/test3.xml            eol=lf
-src/test/resources/test4.xml            eol=lf
-src/test/resources/test?with?spaces.txt eol=lf
-src/test/resources/test.txt             eol=lf
-src/test/resources/COMPRESS-380-input   binary
+compress-core/src/test/resources/test1.xml            eol=lf
+compress-core/src/test/resources/test2.xml            eol=lf
+compress-core/src/test/resources/test3.xml            eol=lf
+compress-core/src/test/resources/test4.xml            eol=lf
+compress-core/src/test/resources/test?with?spaces.txt eol=lf
+compress-core/src/test/resources/test.txt             eol=lf
+compress-core/src/test/resources/COMPRESS-380-input   binary
