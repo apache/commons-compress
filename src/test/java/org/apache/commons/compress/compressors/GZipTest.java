@@ -52,24 +52,21 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipParameters;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public final class GZipTest extends AbstractTest {
 
-    /**
-     * Tests https://issues.apache.org/jira/browse/COMPRESS-666
-     */
-    @ParameterizedTest
-    @ValueSource(ints = { 1, 2, 4, 8, 16, 32, 64, 128 })
-    public void testCompress666(final int factor) throws ExecutionException, InterruptedException {
+    private void testCompress666(final int factor, final boolean bufferInputStream) throws ExecutionException, InterruptedException {
         final ExecutorService executorService = Executors.newFixedThreadPool(10);
         try {
             final List<Future<?>> tasks = IntStream.range(0, 200).mapToObj(index -> executorService.submit(() -> {
                 TarArchiveEntry tarEntry = null;
                 try (InputStream inputStream = getClass().getResourceAsStream("/COMPRESS-666/compress-666.tar.gz");
-                        TarArchiveInputStream tarInputStream = new TarArchiveInputStream(new BufferedInputStream(new GZIPInputStream(inputStream)),
+                        TarArchiveInputStream tarInputStream = new TarArchiveInputStream(
+                                bufferInputStream ? new BufferedInputStream(new GZIPInputStream(inputStream)) : new GZIPInputStream(inputStream),
                                 TarConstants.DEFAULT_RCDSIZE * factor, TarConstants.DEFAULT_RCDSIZE)) {
                     while ((tarEntry = tarInputStream.getNextEntry()) != null) {
                         assertNotNull(tarEntry);
@@ -95,6 +92,29 @@ public final class GZipTest extends AbstractTest {
         } finally {
             executorService.shutdownNow();
         }
+    }
+
+    /**
+     * Tests https://issues.apache.org/jira/browse/COMPRESS-666
+     * 
+     * A factor of 20 is the default.
+     */
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 2, 4, 8, 16, 20, 32, 64, 128 })
+    public void testCompress666Buffered(final int factor) throws ExecutionException, InterruptedException {
+        testCompress666(factor, true);
+    }
+
+    /**
+     * Tests https://issues.apache.org/jira/browse/COMPRESS-666
+     * 
+     * A factor of 20 is the default.
+     */
+    @Disabled
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 2, 4, 8, 16, 20, 32, 64, 128 })
+    public void testCompress666Unbuffered(final int factor) throws ExecutionException, InterruptedException {
+        testCompress666(factor, false);
     }
 
     @Test
