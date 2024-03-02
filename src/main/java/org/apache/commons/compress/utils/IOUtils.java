@@ -272,37 +272,18 @@ public final class IOUtils {
     }
 
     /**
-     * Skips the given number of bytes by repeatedly invoking skip on the given input stream if necessary.
-     * <p>
-     * In a case where the stream's skip() method returns 0 before the requested number of bytes has been skip this implementation will fall back to using the
-     * read() method.
-     * </p>
+     * Skips bytes from an input byte stream.
      * <p>
      * This method will only skip less than the requested number of bytes if the end of the input stream has been reached.
      * </p>
      *
      * @param input     stream to skip bytes in
-     * @param numToSkip the number of bytes to skip
+     * @param toSkip the number of bytes to skip
      * @return the number of bytes actually skipped
      * @throws IOException on error
      */
-    public static long skip(final InputStream input, long numToSkip) throws IOException {
-        final long available = numToSkip;
-        while (numToSkip > 0) {
-            final long skipped = input.skip(numToSkip);
-            if (skipped == 0) {
-                break;
-            }
-            numToSkip -= skipped;
-        }
-        while (numToSkip > 0) {
-            final int read = readFully(input, SKIP_BUF, 0, (int) Math.min(numToSkip, org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE));
-            if (read < 1) {
-                break;
-            }
-            numToSkip -= read;
-        }
-        return available - numToSkip;
+    public static long skip(final InputStream input, long toSkip) throws IOException {
+        return org.apache.commons.io.IOUtils.skip(input, toSkip, org.apache.commons.io.IOUtils::byteArray);
     }
 
     /**
