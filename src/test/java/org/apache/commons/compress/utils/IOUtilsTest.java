@@ -29,7 +29,6 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
@@ -193,9 +192,7 @@ public class IOUtilsTest {
 
     @Test
     public void testReadRangeMoreThanCopyBufferSize() throws Exception {
-        final Field COPY_BUF_SIZE = IOUtils.class.getDeclaredField("COPY_BUF_SIZE");
-        COPY_BUF_SIZE.setAccessible(true);
-        final int copyBufSize = (int) COPY_BUF_SIZE.get(null);
+        final int copyBufSize = org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 
         // Make an input that requires two read loops to trigger COMPRESS-585
         final byte[] input = new byte[copyBufSize + 10];

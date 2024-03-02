@@ -39,9 +39,6 @@ import org.apache.commons.io.FileUtils;
  */
 public final class IOUtils {
 
-    private static final int COPY_BUF_SIZE = 8024;
-    private static final int SKIP_BUF_SIZE = 4096;
-
     /**
      * Empty array of type {@link LinkOption}.
      *
@@ -51,7 +48,7 @@ public final class IOUtils {
 
     // This buffer does not need to be synchronized because it is write only; the contents are ignored
     // Does not affect Immutability
-    private static final byte[] SKIP_BUF = new byte[SKIP_BUF_SIZE];
+    private static final byte[] SKIP_BUF = new byte[org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE];
 
     /**
      * Closes the given Closeable and swallows any IOException that may occur.
@@ -258,7 +255,7 @@ public final class IOUtils {
      */
     public static byte[] readRange(final ReadableByteChannel input, final int length) throws IOException {
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        final ByteBuffer b = ByteBuffer.allocate(Math.min(length, COPY_BUF_SIZE));
+        final ByteBuffer b = ByteBuffer.allocate(Math.min(length, org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE));
         int read = 0;
         while (read < length) {
             // Make sure we never read more than len bytes
@@ -299,7 +296,7 @@ public final class IOUtils {
             numToSkip -= skipped;
         }
         while (numToSkip > 0) {
-            final int read = readFully(input, SKIP_BUF, 0, (int) Math.min(numToSkip, SKIP_BUF_SIZE));
+            final int read = readFully(input, SKIP_BUF, 0, (int) Math.min(numToSkip, org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE));
             if (read < 1) {
                 break;
             }
