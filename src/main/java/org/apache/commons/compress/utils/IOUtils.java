@@ -46,10 +46,6 @@ public final class IOUtils {
      */
     public static final LinkOption[] EMPTY_LINK_OPTIONS = {};
 
-    // This buffer does not need to be synchronized because it is write only; the contents are ignored
-    // Does not affect Immutability
-    private static final byte[] SKIP_BUF = new byte[org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE];
-
     /**
      * Closes the given Closeable and swallows any IOException that may occur.
      *
