@@ -260,13 +260,13 @@ public final class IOUtils {
         while (read < length) {
             // Make sure we never read more than len bytes
             b.limit(Math.min(length - read, b.capacity()));
-            final int readNow = input.read(b);
-            if (readNow <= 0) {
+            final int readCount = input.read(b);
+            if (readCount <= 0) {
                 break;
             }
-            output.write(b.array(), 0, readNow);
+            output.write(b.array(), 0, readCount);
             b.rewind();
-            read += readNow;
+            read += readCount;
         }
         return output.toByteArray();
     }
