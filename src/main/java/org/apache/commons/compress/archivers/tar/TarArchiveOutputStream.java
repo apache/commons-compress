@@ -27,6 +27,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
@@ -38,7 +39,6 @@ import java.util.Map;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.FixedLengthBlockOutputStream;
 import org.apache.commons.compress.utils.TimeUtils;
 import org.apache.commons.io.Charsets;
@@ -94,7 +94,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     public static final int BIGNUMBER_POSIX = 2;
     private static final int RECORD_SIZE = 512;
 
-    private static final ZipEncoding ASCII = ZipEncodingHelper.getZipEncoding(CharsetNames.US_ASCII);
+    private static final ZipEncoding ASCII = ZipEncodingHelper.getZipEncoding(StandardCharsets.US_ASCII);
 
     private static final int BLOCK_SIZE_UNSPECIFIED = -511;
     private long currSize;
