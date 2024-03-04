@@ -1,4 +1,4 @@
-<!--
+<!---
  Licensed to the Apache Software Foundation (ASF) under one or more
  contributor license agreements.  See the NOTICE file distributed with
  this work for additional information regarding copyright ownership.
@@ -14,4 +14,5 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-The Apache code of conduct page is [https://www.apache.org/foundation/policies/conduct.html](https://www.apache.org/foundation/policies/conduct.html).
+
+The ICO file in this directory are from Apache projects.

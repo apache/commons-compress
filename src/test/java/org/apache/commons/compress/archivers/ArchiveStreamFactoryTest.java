@@ -30,6 +30,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
@@ -43,6 +47,8 @@ import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.io.input.BrokenInputStream;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class ArchiveStreamFactoryTest extends AbstractTest {
 
@@ -183,6 +189,10 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
         }
     }
 
+    public static Stream<Path> getIcoPathStream() throws IOException {
+        return Files.walk(Paths.get("src/test/resources/org/apache/commons/compress/ico")).filter(Files::isRegularFile);
+    }
+
     private String detect(final String resource) throws IOException, ArchiveException {
         try (InputStream in = new BufferedInputStream(newInputStream(resource))) {
             return ArchiveStreamFactory.detect(in);
@@ -218,7 +228,6 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
             assertTrue(ae.getMessage().startsWith("No Archiver found"));
         }
     }
-
     @Test
     public void testCantRead7zFromStream() throws Exception {
         assertThrows(StreamingNotSupportedException.class, () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(ArchiveStreamFactory.SEVEN_Z,
@@ -354,6 +363,23 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
         }
         if (failed > 0) {
             fail("Tests failed: " + failed + " out of " + TESTS.length);
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("getIcoPathStream")
+    public void testIcoFilesAreNoTARs(final Path path) throws Exception {
+        try (InputStream fis = Files.newInputStream(path);
+                InputStream is = new BufferedInputStream(fis)) {
+            final ArchiveException ae = assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.detect(is),
+                    "created an input stream for a non-archive");
+            assertTrue(ae.getMessage().startsWith("No Archiver found"));
+        }
+        try (InputStream fis = Files.newInputStream(path);
+                InputStream is = new BufferedInputStream(fis)) {
+            final ArchiveException ae = assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(is),
+                    "created an input stream for a non-archive");
+            assertTrue(ae.getMessage().startsWith("No Archiver found"));
         }
     }
 
