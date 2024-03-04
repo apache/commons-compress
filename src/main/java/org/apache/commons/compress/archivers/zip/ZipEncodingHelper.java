@@ -67,8 +67,7 @@ public abstract class ZipEncodingHelper {
             charset = Charsets.toCharset(name);
         } catch (final UnsupportedCharsetException ignore) { // NOSONAR we use the default encoding instead
         }
-        final boolean useReplacement = isUTF8(charset.name());
-        return new NioZipEncoding(charset, useReplacement);
+        return new NioZipEncoding(charset, isUTF8(charset.name()));
     }
 
     static ByteBuffer growBufferBy(final ByteBuffer buffer, final int increment) {
