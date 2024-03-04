@@ -31,7 +31,6 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
-import org.apache.commons.compress.utils.CharsetNames;
 
 /**
  * CpioArchiveOutputStream is a stream for writing CPIO streams. All formats of CPIO are supported (old ASCII, old binary, new portable format and the new
@@ -119,7 +118,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      * @param format The format of the stream
      */
     public CpioArchiveOutputStream(final OutputStream out, final short format) {
-        this(out, format, BLOCK_SIZE, CharsetNames.US_ASCII);
+        this(out, format, BLOCK_SIZE, CpioUtil.DEFAULT_CHARSET_NAME);
     }
 
     /**
@@ -132,7 +131,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      * @since 1.1
      */
     public CpioArchiveOutputStream(final OutputStream out, final short format, final int blockSize) {
-        this(out, format, blockSize, CharsetNames.US_ASCII);
+        this(out, format, blockSize, CpioUtil.DEFAULT_CHARSET_NAME);
     }
 
     /**

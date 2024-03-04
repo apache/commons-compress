@@ -26,7 +26,6 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.ParsingUtils;
 
@@ -156,7 +155,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @param in The cpio stream
      */
     public CpioArchiveInputStream(final InputStream in) {
-        this(in, BLOCK_SIZE, CharsetNames.US_ASCII);
+        this(in, BLOCK_SIZE, CpioUtil.DEFAULT_CHARSET_NAME);
     }
 
     /**
@@ -167,7 +166,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @since 1.5
      */
     public CpioArchiveInputStream(final InputStream in, final int blockSize) {
-        this(in, blockSize, CharsetNames.US_ASCII);
+        this(in, blockSize, CpioUtil.DEFAULT_CHARSET_NAME);
     }
 
     /**

@@ -54,7 +54,6 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
 import org.apache.commons.compress.utils.BoundedArchiveInputStream;
 import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -87,6 +86,8 @@ import org.apache.commons.io.input.CountingInputStream;
  * </ul>
  */
 public class ZipFile implements Closeable {
+
+    private static final String DEFAULT_CHARSET_NAME = StandardCharsets.UTF_8.name();
 
     /**
      * Lock-free implementation of BoundedInputStream. The implementation uses positioned reads on the underlying archive file channel and therefore performs
@@ -698,7 +699,7 @@ public class ZipFile implements Closeable {
      */
     @Deprecated
     public ZipFile(final File file) throws IOException {
-        this(file, CharsetNames.UTF_8);
+        this(file, DEFAULT_CHARSET_NAME);
     }
 
     /**
@@ -762,7 +763,7 @@ public class ZipFile implements Closeable {
      */
     @Deprecated
     public ZipFile(final Path path) throws IOException {
-        this(path, CharsetNames.UTF_8);
+        this(path, DEFAULT_CHARSET_NAME);
     }
 
     /**
@@ -832,7 +833,7 @@ public class ZipFile implements Closeable {
      */
     @Deprecated
     public ZipFile(final SeekableByteChannel channel) throws IOException {
-        this(channel, "a SeekableByteChannel", CharsetNames.UTF_8, true);
+        this(channel, "a SeekableByteChannel", DEFAULT_CHARSET_NAME, true);
     }
 
     /**
@@ -939,7 +940,7 @@ public class ZipFile implements Closeable {
      */
     @Deprecated
     public ZipFile(final String name) throws IOException {
-        this(new File(name).toPath(), CharsetNames.UTF_8);
+        this(new File(name).toPath(), DEFAULT_CHARSET_NAME);
     }
 
     /**

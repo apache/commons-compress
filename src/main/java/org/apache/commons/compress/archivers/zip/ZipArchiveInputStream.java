@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Function;
@@ -45,7 +46,6 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.input.BoundedInputStream;
@@ -304,7 +304,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * @param inputStream the stream to wrap
      */
     public ZipArchiveInputStream(final InputStream inputStream) {
-        this(inputStream, CharsetNames.UTF_8);
+        this(inputStream, StandardCharsets.UTF_8.name());
     }
 
     /**

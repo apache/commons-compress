@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -26,6 +27,8 @@ import java.util.Arrays;
  * @Immutable
  */
 final class CpioUtil {
+
+    static final String DEFAULT_CHARSET_NAME = StandardCharsets.US_ASCII.name();
 
     /**
      * Converts a byte array to a long. Halfwords can be swapped by setting swapHalfWord=true.
