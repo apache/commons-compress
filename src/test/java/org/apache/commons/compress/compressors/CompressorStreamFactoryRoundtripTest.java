@@ -22,9 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -55,7 +55,7 @@ public class CompressorStreamFactoryRoundtripTest {
         final ByteArrayOutputStream compressedOs = new ByteArrayOutputStream();
         final String fixture = "The quick brown fox jumps over the lazy dog";
         try (CompressorOutputStream compressorOutputStream = factory.createCompressorOutputStream(compressorName, compressedOs)) {
-            compressorOutputStream.write(fixture.getBytes(CharsetNames.UTF_8));
+            compressorOutputStream.write(fixture.getBytes(StandardCharsets.UTF_8.name()));
             compressorOutputStream.flush();
         }
         final ByteArrayInputStream is = new ByteArrayInputStream(compressedOs.toByteArray());
@@ -65,7 +65,7 @@ public class CompressorStreamFactoryRoundtripTest {
             compressorInputStream.close();
             decompressedOs.flush();
             decompressedOs.close();
-            assertEquals(fixture, decompressedOs.toString(CharsetNames.UTF_8));
+            assertEquals(fixture, decompressedOs.toString(StandardCharsets.UTF_8.name()));
         }
     }
 

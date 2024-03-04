@@ -23,11 +23,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Enumeration;
 
 import org.apache.commons.compress.AbstractTest;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -37,7 +37,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
         // @formatter:off
         return ZipFile.builder()
                 .setFile(AbstractTest.getFile(fileName))
-                .setCharset(CharsetNames.UTF_8)
+                .setCharset(StandardCharsets.UTF_8.name())
                 .setUseUnicodeExtraFields(true)
                 .setIgnoreLocalFileHeader(true)
                 .get();
@@ -45,7 +45,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     }
 
     private static ZipFile openZipWithoutLocalFileHeaderDeprecated(final String fileName) throws IOException {
-        return new ZipFile(AbstractTest.getFile(fileName), CharsetNames.UTF_8, true, true);
+        return new ZipFile(AbstractTest.getFile(fileName), StandardCharsets.UTF_8.name(), true, true);
     }
 
     @TempDir

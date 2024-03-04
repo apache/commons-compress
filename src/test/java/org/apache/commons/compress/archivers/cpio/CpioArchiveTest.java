@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -43,7 +43,7 @@ public class CpioArchiveTest {
     @MethodSource("factory")
     public void utf18RoundtripTest(final short format) throws Exception {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            try (CpioArchiveOutputStream os = new CpioArchiveOutputStream(baos, format, CpioConstants.BLOCK_SIZE, CharsetNames.UTF_16LE)) {
+            try (CpioArchiveOutputStream os = new CpioArchiveOutputStream(baos, format, CpioConstants.BLOCK_SIZE, StandardCharsets.UTF_16LE.name())) {
                 final CpioArchiveEntry entry = new CpioArchiveEntry(format, "T\u00e4st.txt", 4);
                 if (format == CpioConstants.FORMAT_NEW_CRC) {
                     entry.setChksum(10);
@@ -54,7 +54,7 @@ public class CpioArchiveTest {
             }
             baos.close();
             try (ByteArrayInputStream bin = new ByteArrayInputStream(baos.toByteArray());
-                    CpioArchiveInputStream in = new CpioArchiveInputStream(bin, CharsetNames.UTF_16LE)) {
+                    CpioArchiveInputStream in = new CpioArchiveInputStream(bin, StandardCharsets.UTF_16LE.name())) {
                 final CpioArchiveEntry entry = in.getNextEntry();
                 assertNotNull(entry);
                 assertEquals("T\u00e4st.txt", entry.getName());

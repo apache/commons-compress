@@ -32,6 +32,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
@@ -43,7 +44,6 @@ import java.util.Random;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 
@@ -246,7 +246,7 @@ public class TarArchiveEntryTest implements TarConstants {
             + "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000").getBytes(UTF_8);
         // @formatter:on
         assertThrows(IllegalArgumentException.class,
-                () -> new TarArchiveEntry(entryContent, ZipEncodingHelper.getZipEncoding(CharsetNames.ISO_8859_1), false, -1));
+                () -> new TarArchiveEntry(entryContent, ZipEncodingHelper.getZipEncoding(StandardCharsets.ISO_8859_1.name()), false, -1));
     }
 
     @Test

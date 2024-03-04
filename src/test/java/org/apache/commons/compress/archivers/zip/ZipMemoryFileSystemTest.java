@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,7 +52,6 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.parallel.InputStreamSupplier;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.file.PathUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -226,7 +226,8 @@ public class ZipMemoryFileSystemTest {
                 }
             }
 
-            try (ZipFile zf = new ZipFile(Files.newByteChannel(target, StandardOpenOption.READ), target.getFileName().toString(), CharsetNames.UTF_8, true)) {
+            try (ZipFile zf = new ZipFile(Files.newByteChannel(target, StandardOpenOption.READ), target.getFileName().toString(), StandardCharsets.UTF_8.name(),
+                    true)) {
                 final ZipArchiveEntry b_entry = zf.getEntries("b.txt").iterator().next();
                 assertEquals(8, b_entry.getSize());
                 try (InputStream inputStream = zf.getInputStream(b_entry)) {
@@ -240,8 +241,8 @@ public class ZipMemoryFileSystemTest {
                 }
             }
 
-            try (ZipFile zf = new ZipFile(Files.newByteChannel(target, StandardOpenOption.READ), target.getFileName().toString(), CharsetNames.UTF_8, true,
-                    false)) {
+            try (ZipFile zf = new ZipFile(Files.newByteChannel(target, StandardOpenOption.READ), target.getFileName().toString(), StandardCharsets.UTF_8.name(),
+                    true, false)) {
                 final ZipArchiveEntry b_entry = zf.getEntries("b.txt").iterator().next();
                 assertEquals(8, b_entry.getSize());
                 try (InputStream inputStream = zf.getInputStream(b_entry)) {

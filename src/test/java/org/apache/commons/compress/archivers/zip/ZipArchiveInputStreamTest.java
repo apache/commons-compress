@@ -49,7 +49,6 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -317,7 +316,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     public void testProperlyReadsStoredEntryWithDataDescriptorWithoutSignature() throws IOException {
         try (InputStream fs = newInputStream("bla-stored-dd-nosig.zip");
-                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, CharsetNames.UTF_8, true, true)) {
+                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, StandardCharsets.UTF_8.name(), true, true)) {
             final ZipArchiveEntry e = archive.getNextZipEntry();
             assertNotNull(e);
             assertEquals("test1.xml", e.getName());
@@ -333,7 +332,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     public void testProperlyReadsStoredEntryWithDataDescriptorWithSignature() throws IOException {
         try (InputStream fs = newInputStream("bla-stored-dd.zip");
-                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, CharsetNames.UTF_8, true, true)) {
+                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, StandardCharsets.UTF_8.name(), true, true)) {
             final ZipArchiveEntry e = archive.getNextZipEntry();
             assertNotNull(e);
             assertEquals("test1.xml", e.getName());
@@ -497,11 +496,11 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         final File lastFile = getFile("COMPRESS-477/split_zip_created_by_winrar/split_zip_created_by_winrar.zip");
         try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
                 InputStream inputStream = Channels.newInputStream(channel);
-                ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, CharsetNames.UTF_8, true, false, true)) {
+                ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, StandardCharsets.UTF_8.name(), true, false, true)) {
 
             final File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_winrar/zip_to_compare_created_by_winrar.zip");
-            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(Files.newInputStream(fileToCompare.toPath()), CharsetNames.UTF_8, true,
-                    false, true)) {
+            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(Files.newInputStream(fileToCompare.toPath()),
+                    StandardCharsets.UTF_8.name(), true, false, true)) {
 
                 ArchiveEntry entry;
                 while ((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
@@ -519,11 +518,11 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
         try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
                 InputStream inputStream = Channels.newInputStream(channel);
-                ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, CharsetNames.UTF_8, true, false, true)) {
+                ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, StandardCharsets.UTF_8.name(), true, false, true)) {
 
             final Path fileToCompare = getPath("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
-            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(Files.newInputStream(fileToCompare), CharsetNames.UTF_8, true, false,
-                    true)) {
+            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(Files.newInputStream(fileToCompare), StandardCharsets.UTF_8.name(),
+                    true, false, true)) {
 
                 ArchiveEntry entry;
                 while ((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
@@ -541,11 +540,11 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip_zip64.zip");
         try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
                 InputStream inputStream = Channels.newInputStream(channel);
-                ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, CharsetNames.UTF_8, true, false, true)) {
+                ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, StandardCharsets.UTF_8.name(), true, false, true)) {
 
             final Path fileToCompare = getPath("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip_zip64.zip");
-            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(Files.newInputStream(fileToCompare), CharsetNames.UTF_8, true, false,
-                    true)) {
+            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(Files.newInputStream(fileToCompare), StandardCharsets.UTF_8.name(),
+                    true, false, true)) {
 
                 ArchiveEntry entry;
                 while ((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
@@ -561,8 +560,8 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     public void testSplitZipCreatedByZipThrowsException() throws IOException {
         final File zipSplitFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
-        try (ZipArchiveInputStream inputStream = new ZipArchiveInputStream(Files.newInputStream(zipSplitFile.toPath()), CharsetNames.UTF_8, true, false,
-                true)) {
+        try (ZipArchiveInputStream inputStream = new ZipArchiveInputStream(Files.newInputStream(zipSplitFile.toPath()), StandardCharsets.UTF_8.name(), true,
+                false, true)) {
 
             assertThrows(EOFException.class, () -> {
                 ArchiveEntry entry = inputStream.getNextEntry();
@@ -587,7 +586,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     public void testThrowsIfStoredDDIsDifferentFromLengthRead() throws IOException {
         try (InputStream fs = newInputStream("bla-stored-dd-contradicts-actualsize.zip");
-                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, CharsetNames.UTF_8, true, true)) {
+                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, StandardCharsets.UTF_8.name(), true, true)) {
             final ZipArchiveEntry e = archive.getNextZipEntry();
             assertNotNull(e);
             assertEquals("test1.xml", e.getName());
@@ -600,7 +599,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     public void testThrowsIfStoredDDIsInconsistent() throws IOException {
         try (InputStream fs = newInputStream("bla-stored-dd-sizes-differ.zip");
-                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, CharsetNames.UTF_8, true, true)) {
+                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, StandardCharsets.UTF_8.name(), true, true)) {
             final ZipArchiveEntry e = archive.getNextZipEntry();
             assertNotNull(e);
             assertEquals("test1.xml", e.getName());
@@ -708,7 +707,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     public void testZipUsingStoredWithDDAndNoDDSignature() throws IOException {
         try (InputStream inputStream = forgeZipInputStream();
-                ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(inputStream, CharsetNames.UTF_8, true, true)) {
+                ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(inputStream, StandardCharsets.UTF_8.name(), true, true)) {
             getAllZipEntries(zipInputStream);
         }
     }
@@ -736,7 +735,8 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
             }
         }
 
-        try (InputStream is = Files.newInputStream(path); ZipArchiveInputStream zis = new ZipArchiveInputStream(is)) {
+        try (InputStream is = Files.newInputStream(path);
+                ZipArchiveInputStream zis = new ZipArchiveInputStream(is)) {
             final ZipArchiveEntry entry = zis.getNextEntry();
             assertEquals("file-1.txt", entry.getName());
             final byte[] content = IOUtils.toByteArray(zis);
@@ -759,7 +759,8 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
             }
         }
 
-        try (InputStream is = Files.newInputStream(path); ZipArchiveInputStream zis = new ZipArchiveInputStream(is)) {
+        try (InputStream is = Files.newInputStream(path);
+                ZipArchiveInputStream zis = new ZipArchiveInputStream(is)) {
             final ZipArchiveEntry entry = zis.getNextEntry();
             assertEquals("file-1.txt", entry.getName());
             final byte[] content = IOUtils.toByteArray(zis);
@@ -771,7 +772,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     @ValueSource(booleans = { true, false })
     public void zipInputStream(final boolean allowStoredEntriesWithDataDescriptor) {
         try (ZipArchiveInputStream zIn = new ZipArchiveInputStream(Files.newInputStream(Paths.get("src/test/resources/COMPRESS-647/test.zip")),
-                CharsetNames.UTF_8, false, allowStoredEntriesWithDataDescriptor)) {
+                StandardCharsets.UTF_8.name(), false, allowStoredEntriesWithDataDescriptor)) {
             ZipArchiveEntry zae = zIn.getNextEntry();
             while (zae != null) {
                 zae = zIn.getNextEntry();

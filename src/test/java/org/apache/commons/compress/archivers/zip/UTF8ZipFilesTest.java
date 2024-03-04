@@ -35,7 +35,6 @@ import java.util.Enumeration;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.AbstractTest;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.jupiter.api.Test;
 
 public class UTF8ZipFilesTest extends AbstractTest {
@@ -155,12 +154,12 @@ public class UTF8ZipFilesTest extends AbstractTest {
 
     @Test
     public void testASCIIFileRoundtripExplicitUnicodeExtra() throws IOException {
-        testFileRoundtrip(CharsetNames.US_ASCII, false, true);
+        testFileRoundtrip(StandardCharsets.US_ASCII.name(), false, true);
     }
 
     @Test
     public void testASCIIFileRoundtripImplicitUnicodeExtra() throws IOException {
-        testFileRoundtrip(CharsetNames.US_ASCII, false, false);
+        testFileRoundtrip(StandardCharsets.US_ASCII.name(), false, false);
     }
 
     @Test
@@ -266,22 +265,22 @@ public class UTF8ZipFilesTest extends AbstractTest {
 
     @Test
     public void testUtf8FileRoundtripExplicitUnicodeExtra() throws IOException {
-        testFileRoundtrip(CharsetNames.UTF_8, true, true);
+        testFileRoundtrip(StandardCharsets.UTF_8.name(), true, true);
     }
 
     @Test
     public void testUtf8FileRoundtripImplicitUnicodeExtra() throws IOException {
-        testFileRoundtrip(CharsetNames.UTF_8, true, false);
+        testFileRoundtrip(StandardCharsets.UTF_8.name(), true, false);
     }
 
     @Test
     public void testUtf8FileRoundtripNoEFSExplicitUnicodeExtra() throws IOException {
-        testFileRoundtrip(CharsetNames.UTF_8, false, true);
+        testFileRoundtrip(StandardCharsets.UTF_8.name(), false, true);
     }
 
     @Test
     public void testUtf8FileRoundtripNoEFSImplicitUnicodeExtra() throws IOException {
-        testFileRoundtrip(CharsetNames.UTF_8, false, false);
+        testFileRoundtrip(StandardCharsets.UTF_8.name(), false, false);
     }
 
     @Test
@@ -295,7 +294,7 @@ public class UTF8ZipFilesTest extends AbstractTest {
     @Test
     public void testZipArchiveInputStreamReadsUnicodeFields() throws IOException {
         final File file = createTempFile("unicode-test", ".zip");
-        createTestFile(file, CharsetNames.US_ASCII, false, true);
+        createTestFile(file, StandardCharsets.US_ASCII.name(), false, true);
         try (ZipFile zf = ZipFile.builder().setFile(file).setCharset(StandardCharsets.US_ASCII).setUseUnicodeExtraFields(true).get()) {
             assertNotNull(zf.getEntry(ASCII_TXT));
             assertNotNull(zf.getEntry(EURO_FOR_DOLLAR_TXT));
@@ -306,8 +305,8 @@ public class UTF8ZipFilesTest extends AbstractTest {
     @Test
     public void testZipFileReadsUnicodeFields() throws IOException {
         final File file = createTempFile("unicode-test", ".zip");
-        createTestFile(file, CharsetNames.US_ASCII, false, true);
-        try (ZipArchiveInputStream zi = new ZipArchiveInputStream(Files.newInputStream(file.toPath()), CharsetNames.US_ASCII, true)) {
+        createTestFile(file, StandardCharsets.US_ASCII.name(), false, true);
+        try (ZipArchiveInputStream zi = new ZipArchiveInputStream(Files.newInputStream(file.toPath()), StandardCharsets.US_ASCII.name(), true)) {
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
             assertEquals(EURO_FOR_DOLLAR_TXT, zi.getNextEntry().getName());
             assertEquals(ASCII_TXT, zi.getNextEntry().getName());

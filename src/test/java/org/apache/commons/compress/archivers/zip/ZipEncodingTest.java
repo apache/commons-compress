@@ -27,8 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.compress.utils.CharsetNames;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -109,10 +109,10 @@ public class ZipEncodingTest {
 
     @Test
     public void testIsUTF8() {
-        assertTrue(ZipEncodingHelper.isUTF8(CharsetNames.UTF_8));
+        assertTrue(ZipEncodingHelper.isUTF8(StandardCharsets.UTF_8.name()));
         assertTrue(ZipEncodingHelper.isUTF8("UTF8"));
-        Assertions.assertEquals(Charset.defaultCharset().name().equals(CharsetNames.UTF_8), ZipEncodingHelper.isUTF8((Charset) null));
-        Assertions.assertEquals(Charset.defaultCharset().name().equals(CharsetNames.UTF_8), ZipEncodingHelper.isUTF8((String) null));
+        Assertions.assertEquals(Charset.defaultCharset().name().equals(StandardCharsets.UTF_8.name()), ZipEncodingHelper.isUTF8((Charset) null));
+        Assertions.assertEquals(Charset.defaultCharset().name().equals(StandardCharsets.UTF_8.name()), ZipEncodingHelper.isUTF8((String) null));
     }
 
     @Test

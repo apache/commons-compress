@@ -49,7 +49,6 @@ import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
 import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -77,7 +76,7 @@ public class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
         final Map<String, byte[]> entries;
         final ParallelScatterZipCreator zipCreator;
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result)) {
-            zos.setEncoding(CharsetNames.UTF_8);
+            zos.setEncoding(StandardCharsets.UTF_8.name());
             final ExecutorService es = Executors.newFixedThreadPool(1);
 
             final ScatterGatherBackingStoreSupplier supp = () -> new FileBasedScatterGatherBackingStore(createTempFile("parallelscatter", "n1"));
@@ -96,7 +95,7 @@ public class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
         final ParallelScatterZipCreator zipCreator;
         final Map<String, byte[]> entries;
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result)) {
-            zos.setEncoding(CharsetNames.UTF_8);
+            zos.setEncoding(StandardCharsets.UTF_8.name());
             final ExecutorService es = Executors.newFixedThreadPool(1);
 
             final ScatterGatherBackingStoreSupplier supp = () -> new FileBasedScatterGatherBackingStore(createTempFile("parallelscatter", "n1"));
@@ -203,7 +202,7 @@ public class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
         final ParallelScatterZipCreator zipCreator;
         final Map<String, byte[]> entries;
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result)) {
-            zos.setEncoding(CharsetNames.UTF_8);
+            zos.setEncoding(StandardCharsets.UTF_8.name());
 
             // Formatter:off
             final Path dir = Paths.get("target/custom-temp-dir");
@@ -226,7 +225,7 @@ public class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
         final ParallelScatterZipCreator zipCreator;
         final Map<String, byte[]> entries;
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(result)) {
-            zos.setEncoding(CharsetNames.UTF_8);
+            zos.setEncoding(StandardCharsets.UTF_8.name());
             zipCreator = new ParallelScatterZipCreator();
 
             entries = writeEntries(zipCreator);

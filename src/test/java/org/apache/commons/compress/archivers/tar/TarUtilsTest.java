@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,7 +38,6 @@ import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.junit.jupiter.api.Test;
 
 public class TarUtilsTest extends AbstractTest {
@@ -455,7 +455,7 @@ public class TarUtilsTest extends AbstractTest {
     @Test
     public void testRoundEncoding() throws Exception {
         // COMPRESS-114
-        final ZipEncoding enc = ZipEncodingHelper.getZipEncoding(CharsetNames.ISO_8859_1);
+        final ZipEncoding enc = ZipEncodingHelper.getZipEncoding(StandardCharsets.ISO_8859_1.name());
         // @formatter:off
         final String s = "0302-0601-3\u00b1\u00b1\u00b1F06\u00b1W220\u00b1ZB\u00b1LALALA\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1CAN"
                 + "\u00b1\u00b1DC\u00b1\u00b1\u00b104\u00b1060302\u00b1MOE.model";

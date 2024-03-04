@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -45,7 +46,6 @@ import java.util.zip.GZIPInputStream;
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -338,7 +338,7 @@ public class TarArchiveInputStreamTest extends AbstractTest {
     @Test
     public void testShouldUseSpecifiedEncodingWhenReadingGNULongNames() throws Exception {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final String encoding = CharsetNames.UTF_16;
+        final String encoding = StandardCharsets.UTF_16.name();
         final String name = "1234567890123456789012345678901234567890123456789" + "01234567890123456789012345678901234567890123456789" + "01234567890\u00e4";
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, encoding)) {
             tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);

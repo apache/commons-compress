@@ -55,7 +55,6 @@ import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IORunnable;
@@ -227,7 +226,7 @@ public class ZipFileTest extends AbstractTest {
             testCDOrderInMemory(zf);
         }
         try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(data)) {
-            zf = new ZipFile(channel, CharsetNames.UTF_8);
+            zf = new ZipFile(channel, StandardCharsets.UTF_8.name());
             testCDOrderInMemory(zf);
         }
     }

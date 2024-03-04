@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.compress.AbstractTest;
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -74,7 +74,7 @@ public class CpioArchiveInputStreamTest extends AbstractTest {
     @Test
     public void testCpioUnarchiveMultibyteCharName() throws Exception {
         long count = 0;
-        try (CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("COMPRESS-459.cpio"), CharsetNames.UTF_8)) {
+        try (CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("COMPRESS-459.cpio"), StandardCharsets.UTF_8.name())) {
             count = consumeEntries(in);
         }
         assertEquals(2, count);
