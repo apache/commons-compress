@@ -40,7 +40,6 @@ import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public final class DetectArchiverTest extends AbstractTest {
@@ -132,6 +131,11 @@ public final class DetectArchiverTest extends AbstractTest {
 
     }
 
+    @Test
+    public void testDetectionNotArchive() {
+        assertThrows(ArchiveException.class, () -> createArchiveInputStream("test.txt"));
+    }
+
     // Check that the empty archives created by the code are readable
 
     // Not possible to detect empty "ar" archive as it is completely empty
@@ -140,8 +144,11 @@ public final class DetectArchiverTest extends AbstractTest {
 //    }
 
     @Test
-    public void testDetectionNotArchive() {
-        assertThrows(ArchiveException.class, () -> createArchiveInputStream("test.txt"));
+    public void testDetectOldTarFormatArchive() throws Exception {
+        try (ArchiveInputStream<?> tar = createArchiveInputStream("COMPRESS-612/test-times-star-folder.tar")) {
+            assertNotNull(tar);
+            assertTrue(tar instanceof TarArchiveInputStream);
+        }
     }
 
     @Test
@@ -154,10 +161,11 @@ public final class DetectArchiverTest extends AbstractTest {
         checkEmptyArchive("jar");
     }
 
-    @Disabled
     @Test
     public void testEmptyTarArchive() throws Exception {
-        checkEmptyArchive("tar");
+        // Can't detect empty tar archive from its contents.
+        final Path path = createEmptyArchive("tar"); // will be deleted by tearDown()
+        assertThrows(ArchiveException.class, () -> checkDetectedType("tar", path));
     }
 
     @Test
@@ -165,9 +173,11 @@ public final class DetectArchiverTest extends AbstractTest {
         checkEmptyArchive("zip");
     }
 
-    @Disabled
+    /**
+     * Tests COMPRESS-644.
+     */
     @Test
-    public void testIgnoreZeroByteEntryInTarDetect_COMPRESS644() {
+    public void testIgnoreZeroByteEntryInTarDetect() {
         assertThrows(ArchiveException.class, () -> {
             try (InputStream in = createBufferedInputStream("org/apache/commons/compress/COMPRESS-644/ARW05UP.ICO")) {
                 assertNull(ArchiveStreamFactory.detect(in));

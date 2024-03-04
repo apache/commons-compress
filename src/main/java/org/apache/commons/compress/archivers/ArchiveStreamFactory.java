@@ -40,6 +40,7 @@ import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -85,6 +86,8 @@ import org.apache.commons.compress.utils.Sets;
 public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     private static final int TAR_HEADER_SIZE = 512;
+
+    private static final int TAR_TEST_ENTRY_COUNT = 10;
 
     private static final int DUMP_SIGNATURE_SIZE = 32;
 
@@ -271,18 +274,22 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             return TAR;
         }
 
-        // COMPRESS-117 - improve auto-recognition
+        // COMPRESS-117
         if (signatureLength >= TAR_HEADER_SIZE) {
-            try (TarArchiveInputStream tais = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader))) {
+            try (TarArchiveInputStream inputStream = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader))) {
                 // COMPRESS-191 - verify the header checksum
-                if (tais.getNextEntry().isCheckSumOK()) {
+                // COMPRESS-644 - do not allow zero byte file entries
+                TarArchiveEntry entry = inputStream.getNextEntry();
+                // try to find the first non-directory entry within the first 10 entries.
+                int count = 0;
+                while (entry != null && entry.isDirectory() && count++ < TAR_TEST_ENTRY_COUNT) {
+                    entry = inputStream.getNextEntry();
+                }
+                if (entry != null && entry.isCheckSumOK() && !entry.isDirectory() && entry.getSize() > 0 || count > 0) {
                     return TAR;
                 }
             } catch (final Exception e) { // NOPMD NOSONAR
-                // can generate IllegalArgumentException as well
-                // as IOException
-                // autodetection, simply not a TAR
-                // ignored
+                // can generate IllegalArgumentException as well as IOException auto-detection, simply not a TAR ignored
             }
         }
         throw new ArchiveException("No Archiver found for the stream signature");
