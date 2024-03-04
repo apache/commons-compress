@@ -237,6 +237,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
             assertTrue(ae.getMessage().startsWith("No Archiver found"));
         }
     }
+
     @Test
     public void testCantRead7zFromStream() throws Exception {
         assertThrows(StreamingNotSupportedException.class, () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(ArchiveStreamFactory.SEVEN_Z,
@@ -316,7 +317,8 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
         assertEquals(CharsetNames.US_ASCII, fac1.getEntryEncoding());
         final ArchiveStreamFactory fac2 = new ArchiveStreamFactory(CharsetNames.UTF_8);
         assertEquals(CharsetNames.UTF_8, fac2.getEntryEncoding());
-        assertThrows(IllegalStateException.class, () -> fac2.setEntryEncoding("US_ASCII"), "Expected IllegalStateException");
+        fac2.setEntryEncoding(CharsetNames.US_ASCII);
+        assertEquals(CharsetNames.US_ASCII, fac2.getEntryEncoding());
     }
 
     @Test
