@@ -48,9 +48,7 @@ public abstract class ZipEncodingHelper {
      * @since 1.26.0
      */
     public static ZipEncoding getZipEncoding(final Charset charset) {
-        final Charset actual = Charsets.toCharset(charset);
-        final boolean useReplacement = isUTF8(actual);
-        return new NioZipEncoding(actual, useReplacement);
+        return new NioZipEncoding(Charsets.toCharset(charset), isUTF8(Charsets.toCharset(charset)));
     }
 
     /**
