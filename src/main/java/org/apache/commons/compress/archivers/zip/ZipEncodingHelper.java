@@ -21,9 +21,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 
-import org.apache.commons.compress.utils.CharsetNames;
 import org.apache.commons.io.Charsets;
 
 /**
@@ -34,7 +34,7 @@ public abstract class ZipEncodingHelper {
     /**
      * UTF-8.
      */
-    static final ZipEncoding ZIP_ENCODING_UTF_8 = getZipEncoding(CharsetNames.UTF_8);
+    static final ZipEncoding ZIP_ENCODING_UTF_8 = getZipEncoding(StandardCharsets.UTF_8);
 
     /**
      * Instantiates a ZIP encoding. An NIO based character set encoder/decoder will be returned. As a special case, if the character set is UTF-8, the NIO

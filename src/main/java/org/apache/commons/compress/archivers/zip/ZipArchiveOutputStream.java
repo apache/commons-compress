@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -36,7 +38,6 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.apache.commons.compress.utils.CharsetNames;
 
 /**
  * Reimplementation of {@link java.util.zip.ZipOutputStream java.util.zip.ZipOutputStream} to handle the extended functionality of this package, especially
@@ -196,9 +197,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     public static final int STORED = java.util.zip.ZipEntry.STORED;
 
     /**
-     * default encoding for file names and comment.
+     * Default encoding for file names and comment.
      */
-    static final String DEFAULT_ENCODING = CharsetNames.UTF_8;
+    static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     /**
      * General purpose flag, which indicates that file names are written in UTF-8.
@@ -321,14 +322,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * Defaults to UTF-8.
      * </p>
      */
-    private String charsetName = DEFAULT_ENCODING;
+    private Charset charset = DEFAULT_CHARSET;
 
     /**
      * The ZIP encoding to use for file names and the file comment.
      *
      * This field is of internal use and will be set in {@link #setEncoding(String)}.
      */
-    private ZipEncoding zipEncoding = ZipEncodingHelper.getZipEncoding(DEFAULT_ENCODING);
+    private ZipEncoding zipEncoding = ZipEncodingHelper.getZipEncoding(DEFAULT_CHARSET);
 
     /**
      * This Deflater object is used for output.
@@ -1012,7 +1013,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @return null if using the platform's default character encoding.
      */
     public String getEncoding() {
-        return charsetName;
+        return charset != null ? charset.name() : null;
     }
 
     private ZipEncoding getEntryEncoding(final ZipArchiveEntry ze) {
@@ -1318,6 +1319,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         }
     }
 
+    private void setEncoding(final Charset encoding) {
+        this.charset = encoding;
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
+        if (useUTF8Flag && !ZipEncodingHelper.isUTF8(encoding)) {
+            useUTF8Flag = false;
+        }
+    }
+
     /**
      * The encoding to use for file names and the file comment.
      * <p>
@@ -1328,11 +1337,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @param encoding the encoding to use for file names, use null for the platform's default encoding
      */
     public void setEncoding(final String encoding) {
-        this.charsetName = encoding;
-        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
-        if (useUTF8Flag && !ZipEncodingHelper.isUTF8(encoding)) {
-            useUTF8Flag = false;
-        }
+        setEncoding(Charset.forName(encoding));
     }
 
     /**
@@ -1388,7 +1393,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @param b whether to set the language encoding flag if the file name encoding is UTF-8
      */
     public void setUseLanguageEncodingFlag(final boolean b) {
-        useUTF8Flag = b && ZipEncodingHelper.isUTF8(charsetName);
+        useUTF8Flag = b && ZipEncodingHelper.isUTF8(charset);
     }
 
     /**

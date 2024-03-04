@@ -18,9 +18,8 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-
-import org.apache.commons.compress.utils.CharsetNames;
 
 /**
  * UTF8 constant pool entry, used for storing long Strings.
@@ -84,7 +83,7 @@ public class CPUTF8 extends ConstantPoolEntry {
 
     @Override
     public String toString() {
-        return CharsetNames.UTF_8 + ":" + utf8;
+        return StandardCharsets.UTF_8.name() + ":" + utf8;
     }
 
     public String underlyingString() {
