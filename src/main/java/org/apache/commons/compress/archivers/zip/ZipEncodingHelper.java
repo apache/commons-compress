@@ -62,12 +62,7 @@ public abstract class ZipEncodingHelper {
      * @return A ZIP encoding for the given encoding name.
      */
     public static ZipEncoding getZipEncoding(final String name) {
-        Charset charset = Charset.defaultCharset();
-        try {
-            charset = Charsets.toCharset(name);
-        } catch (final UnsupportedCharsetException ignore) { // NOSONAR we use the default encoding instead
-        }
-        return new NioZipEncoding(charset, isUTF8(charset.name()));
+        return new NioZipEncoding(toSafeCharset(name), isUTF8(toSafeCharset(name).name()));
     }
 
     static ByteBuffer growBufferBy(final ByteBuffer buffer, final int increment) {
@@ -98,5 +93,14 @@ public abstract class ZipEncodingHelper {
 
     private static boolean isUTF8Alias(final String actual) {
         return UTF_8.name().equalsIgnoreCase(actual) || UTF_8.aliases().stream().anyMatch(alias -> alias.equalsIgnoreCase(actual));
+    }
+
+    private static Charset toSafeCharset(final String name) {
+        Charset charset = Charset.defaultCharset();
+        try {
+            charset = Charsets.toCharset(name);
+        } catch (final UnsupportedCharsetException ignore) { // NOSONAR we use the default encoding instead
+        }
+        return charset;
     }
 }
