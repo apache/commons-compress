@@ -278,7 +278,7 @@ public final class IOUtils {
      * @return the number of bytes actually skipped
      * @throws IOException on error
      */
-    public static long skip(final InputStream input, long toSkip) throws IOException {
+    public static long skip(final InputStream input, final long toSkip) throws IOException {
         return org.apache.commons.io.IOUtils.skip(input, toSkip, org.apache.commons.io.IOUtils::byteArray);
     }
 
