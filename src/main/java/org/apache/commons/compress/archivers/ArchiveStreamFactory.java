@@ -224,9 +224,11 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             throw new ArchiveException("IOException while reading signature.", e);
         }
 
+        // For now JAR files are detected as ZIP files.
         if (ZipArchiveInputStream.matches(signature, signatureLength)) {
             return ZIP;
         }
+        // For now JAR files are detected as ZIP files.
         if (JarArchiveInputStream.matches(signature, signatureLength)) {
             return JAR;
         }
