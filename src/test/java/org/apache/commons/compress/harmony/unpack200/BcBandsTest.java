@@ -39,10 +39,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests for Pack200 bytecode bands
- */
-
-/*
+ * Tests for Pack200 bytecode bands.
+ *
  * TODO: The number 8 is used in most of the tests in this class as a low (non-zero) number that is not likely to indicate a multiple byte number, but should be
  * replaced with properly encoded byte arrays when encoding is implemented.
  */
