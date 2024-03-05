@@ -230,7 +230,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private final boolean decompressConcatenated;
     private int currentState = START_BLOCK_STATE;
     private int storedBlockCRC, storedCombinedCRC;
-    private int computedBlockCRC, computedCombinedCRC;
+    private int computedCombinedCRC;
     private int su_count;
 
     private int su_ch2;
@@ -340,10 +340,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     }
 
     private void endBlock() throws IOException {
-        this.computedBlockCRC = this.crc.getValue();
+        final int computedBlockCRC = this.crc.getValue();
 
         // A bad CRC is considered a fatal error.
-        if (this.storedBlockCRC != this.computedBlockCRC) {
+        if (this.storedBlockCRC != computedBlockCRC) {
             // make next blocks readable without error
             // (repair feature, not yet documented, not tested)
             this.computedCombinedCRC = this.storedCombinedCRC << 1 | this.storedCombinedCRC >>> 31;
@@ -353,7 +353,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
 
         this.computedCombinedCRC = this.computedCombinedCRC << 1 | this.computedCombinedCRC >>> 31;
-        this.computedCombinedCRC ^= this.computedBlockCRC;
+        this.computedCombinedCRC ^= computedBlockCRC;
     }
 
     private void getAndMoveToFrontDecode() throws IOException {
