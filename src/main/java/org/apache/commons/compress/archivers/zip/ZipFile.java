@@ -87,8 +87,6 @@ import org.apache.commons.io.input.CountingInputStream;
  */
 public class ZipFile implements Closeable {
 
-    private static final String DEFAULT_CHARSET_NAME = StandardCharsets.UTF_8.name();
-
     /**
      * Lock-free implementation of BoundedInputStream. The implementation uses positioned reads on the underlying archive file channel and therefore performs
      * significantly faster in concurrent environment.
@@ -259,6 +257,8 @@ public class ZipFile implements Closeable {
             return getCompressedCount();
         }
     }
+
+    private static final String DEFAULT_CHARSET_NAME = StandardCharsets.UTF_8.name();
 
     private static final EnumSet<StandardOpenOption> READ = EnumSet.of(StandardOpenOption.READ);
 
