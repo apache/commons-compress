@@ -387,7 +387,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
     private int currentChar = -1;
     private int runLength;
 
-    private int blockCRC;
     private int combinedCRC;
 
     private final int allowableBlockSize;
@@ -492,9 +491,9 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
     }
 
     private void endBlock() throws IOException {
-        this.blockCRC = this.crc.getValue();
+        final int blockCRC = this.crc.getValue();
         this.combinedCRC = this.combinedCRC << 1 | this.combinedCRC >>> 31;
-        this.combinedCRC ^= this.blockCRC;
+        this.combinedCRC ^= blockCRC;
 
         // empty block at end of file
         if (this.last == -1) {
@@ -518,7 +517,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         bsPutUByte(0x59);
 
         /* Now the block's CRC, so it is in a known place. */
-        bsPutInt(this.blockCRC);
+        bsPutInt(blockCRC);
 
         /* Now a single bit indicating no randomisation. */
         bsW(1, 0);
