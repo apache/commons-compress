@@ -23,7 +23,9 @@ package org.apache.commons.compress.archivers;
  */
 public interface EntryStreamOffsets {
 
-    /** Special value indicating that the offset is unknown. */
+    /**
+     * Indicates that the offset is unknown.
+     */
     long OFFSET_UNKNOWN = -1;
 
     /**
