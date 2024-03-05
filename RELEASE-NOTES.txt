@@ -1,4 +1,63 @@
+
 Apache Commons Compress 
+Version 1.26.1
+Release Notes
+
+INTRODUCTION
+------------
+
+Apache Commons Compress defines an API for working with compression and
+archive formats.  These include: bzip2, gzip, pack200, LZMA, XZ, Snappy,
+traditional Unix Compress, DEFLATE, DEFLATE64, LZ4, Brotli, Zstandard and
+ar, cpio, jar, tar, zip, dump, 7z, arj.
+
+Apache Commons Compress defines an API for working with
+compression and archive formats. These include bzip2, gzip, pack200,
+LZMA, XZ, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
+Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
+
+Minor feature and maintenance release.
+
+Changes in this version
+-----------------------
+
+Changes in this version include the following.
+
+
+Fixed Bugs
+----------
+
+*  COMPRESS-659:  TarArchiveOutputStream should use Commons IO Charsets instead of Commons Codec Charsets. Thanks to David Handermann, Gary Gregory. 
+*  COMPRESS-660:  Add org.apache.commons.codec to OSGi imports #482. Thanks to 660, Gary Gregory. 
+*  COMPRESS-664:  Return null value from getNextEntry() for empty file #486. Thanks to Radek Kraus. 
+*  COMPRESS-664:  Remove unused variables in tests #487. Thanks to Elliotte Rusty Harold. 
+*  COMPRESS-666:  Multithreaded access to Tar archive throws java.util.zip.ZipException: Corrupt GZIP trailer. Thanks to Cosmin Carabet, Gary Gregory. 
+*  COMPRESS-644:  ArchiveStreamFactory.detect(InputStream) returns TAR for ICO file #386. Thanks to Tim Allison, Gary Gregory. 
+*  COMPRESS-661:  ArchiveInputStream markSupported should always return false. Thanks to Alexander Veit, Tilman Hausherr, Gary Gregory. 
+
+
+Removed
+-------
+
+*  COMPRESS-662:  Remove out of date jar and scripts #483. Thanks to Christoph Loy, Gary Gregory. 
+Resources
+---------
+
+Historical list of changes: https://commons.apache.org/proper/commons-compress/changes-report.html
+
+For complete information on Apache Commons Compress, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Compress website:
+
+https://commons.apache.org/proper/commons-compress/
+
+Download page: https://commons.apache.org/proper/commons-compress/download_io.cgi
+
+Have fun!
+-Apache Commons Team
+
+-----------------------------------------------------------------------------
+
+Apache Commons Compress
 Version 1.26.0
 Release Notes
 

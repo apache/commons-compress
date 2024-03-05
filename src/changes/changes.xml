@@ -44,7 +44,7 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Compress Release Notes</title>
   </properties>
   <body>
-    <release version="1.26.1" date="2024-MM-DD" description="Minor feature and maintenance release.">
+    <release version="1.26.1" date="2024-03-05" description="Minor feature and maintenance release.">
       <!-- FIX -->
       <action type="fix" issue="COMPRESS-659" dev="ggregory" due-to="David Handermann, Gary Gregory">TarArchiveOutputStream should use Commons IO Charsets instead of Commons Codec Charsets.</action>
       <action type="fix" issue="COMPRESS-660" dev="ggregory" due-to="660, Gary Gregory">Add org.apache.commons.codec to OSGi imports #482.</action>

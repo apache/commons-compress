@@ -42,7 +42,10 @@ $release.description.replaceAll("  ", "
 #if ($release.getActions().size() == 0)
 No changes defined in this version.
 #else
-Changes in this version include:
+Changes in this version
+-----------------------
+
+Changes in this version include the following.
 
 ## indent to be used if there is no issue attribute.
 ## should be the same as the indent in the changes.xml file
@@ -51,6 +54,7 @@ Changes in this version include:
 #if ($release.getActions('add').size() !=0)
 New Features
 ------------
+
 #foreach($actionItem in $release.getActions('add'))
 ## Use replaceAll to fix up LF-only line ends on Windows.
 #set($action=$actionItem.getAction().replaceAll("\n","
@@ -74,7 +78,7 @@ New Features
 
 #if ($release.getActions('fix').size() !=0)
 Fixed Bugs
----------
+----------
 
 #foreach($actionItem in $release.getActions('fix'))
 ## Use replaceAll to fix up LF-only line ends on Windows.
@@ -100,6 +104,7 @@ Fixed Bugs
 #if ($release.getActions('update').size() !=0)
 Changes
 -------
+
 #foreach($actionItem in $release.getActions('update'))
 ## Use replaceAll to fix up LF-only line ends on Windows.
 #set($action=$actionItem.getAction().replaceAll("\n","
@@ -124,6 +129,7 @@ Changes
 #if ($release.getActions('remove').size() !=0)
 Removed
 -------
+
 #foreach($actionItem in $release.getActions('remove'))
 ## Use replaceAll to fix up LF-only line ends on Windows.
 #set($action=$actionItem.getAction().replaceAll("\n","
@@ -150,6 +156,7 @@ Removed
 
 Resources
 ---------
+
 Historical list of changes: ${project.url}changes-report.html
 
 For complete information on ${project.name}, including instructions on how to submit bug reports,
