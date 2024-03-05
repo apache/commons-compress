@@ -77,6 +77,31 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    public void testCompress661() throws IOException {
+        testCompress661(false);
+        testCompress661(true);
+    }
+
+    private void testCompress661(final boolean checkMarkReadReset) throws IOException {
+        try (InputStream in = newInputStream("org/apache/commons/compress/COMPRESS-661/testARofText.ar");
+                ArArchiveInputStream archive = new ArArchiveInputStream(new BufferedInputStream(in))) {
+            assertNotNull(archive.getNextEntry());
+            if (checkMarkReadReset && archive.markSupported()) {
+                // mark() shouldn't be supported, but if it would be,
+                // mark+read+reset should not do any harm.
+                archive.mark(10);
+                archive.read(new byte[10]);
+                archive.reset();
+            }
+            final byte[] ba = IOUtils.toByteArray(archive);
+            assertEquals("Test d'indexation de Txt\nhttp://www.apache.org\n", new String(ba));
+            assertEquals(-1, archive.read());
+            assertEquals(-1, archive.read());
+            assertNull(archive.getNextEntry());
+        }
+    }
+
+    @Test
     public void testInvalidBadTableLength() throws Exception {
         try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/bad_table_length_gnu-fail.ar");
                 ArArchiveInputStream archive = new ArArchiveInputStream(in)) {

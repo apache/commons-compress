@@ -161,6 +161,30 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     public abstract E getNextEntry() throws IOException;
 
     /**
+     * Does nothing.
+     *
+     * TODO [COMPRESS-670] Support mark() and reset() in ArchiveInputStream.
+     *
+     * @param readlimit ignored.
+     */
+    @Override
+    public synchronized void mark(final int readlimit) {
+        // noop
+    }
+
+    /**
+     * Always returns false.
+     *
+     * TODO [COMPRESS-670] Support mark() and reset() in ArchiveInputStream.
+     *
+     * @return Always returns false.
+     */
+    @Override
+    public boolean markSupported() {
+        return false;
+    }
+
+    /**
      * Decrements the counter of already read bytes.
      *
      * @param pushedBack the number of bytes pushed back.
@@ -186,4 +210,13 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
         return num == -1 ? -1 : single[0] & BYTE_MASK;
     }
 
+    /**
+     * Does nothing.
+     *
+     * TODO [COMPRESS-670] Support mark() and reset() in ArchiveInputStream.
+     */
+    @Override
+    public synchronized void reset() {
+        // noop
+    }
 }
