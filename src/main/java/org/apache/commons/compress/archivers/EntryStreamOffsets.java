@@ -23,7 +23,9 @@ package org.apache.commons.compress.archivers;
  */
 public interface EntryStreamOffsets {
 
-    /** Special value indicating that the offset is unknown. */
+    /**
+     * Indicates that the offset is unknown.
+     */
     long OFFSET_UNKNOWN = -1;
 
     /**
@@ -34,7 +36,7 @@ public interface EntryStreamOffsets {
     long getDataOffset();
 
     /**
-     * Indicates whether the stream is contiguous, i.e. not split among several archive parts, interspersed with control blocks, etc.
+     * Tests whether the stream is contiguous, that is, not split among several archive parts, interspersed with control blocks, and so on.
      *
      * @return true if stream is contiguous, false otherwise.
      */

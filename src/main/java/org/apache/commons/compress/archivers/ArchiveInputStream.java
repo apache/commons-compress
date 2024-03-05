@@ -214,9 +214,11 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      * Does nothing.
      *
      * TODO [COMPRESS-670] Support mark() and reset() in ArchiveInputStream.
+     *
+     * @throws IOException not thrown here but may be thrown from a subclass.
      */
     @Override
-    public synchronized void reset() {
+    public synchronized void reset() throws IOException {
         // noop
     }
 }
