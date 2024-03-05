@@ -102,7 +102,6 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
     private boolean expectBlockChecksum;
     private boolean expectBlockDependency;
 
-    private boolean expectContentSize;
     private boolean expectContentChecksum;
 
     private InputStream currentBlock;
@@ -276,7 +275,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
             blockDependencyBuffer = null;
         }
         expectBlockChecksum = (flags & BLOCK_CHECKSUM_MASK) != 0;
-        expectContentSize = (flags & CONTENT_SIZE_MASK) != 0;
+        final boolean expectContentSize = (flags & CONTENT_SIZE_MASK) != 0;
         expectContentChecksum = (flags & CONTENT_CHECKSUM_MASK) != 0;
         final int bdByte = readOneByte();
         if (bdByte == -1) { // max size is irrelevant for this implementation
