@@ -11,11 +11,6 @@ archive formats.  These include: bzip2, gzip, pack200, LZMA, XZ, Snappy,
 traditional Unix Compress, DEFLATE, DEFLATE64, LZ4, Brotli, Zstandard and
 ar, cpio, jar, tar, zip, dump, 7z, arj.
 
-Apache Commons Compress defines an API for working with
-compression and archive formats. These include bzip2, gzip, pack200,
-LZMA, XZ, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
-Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
-
 Minor feature and maintenance release.
 
 Changes in this version
@@ -68,11 +63,6 @@ Apache Commons Compress defines an API for working with compression and
 archive formats.  These include: bzip2, gzip, pack200, LZMA, XZ, Snappy,
 traditional Unix Compress, DEFLATE, DEFLATE64, LZ4, Brotli, Zstandard and
 ar, cpio, jar, tar, zip, dump, 7z, arj.
-
-Apache Commons Compress defines an API for working with
-compression and archive formats. These include bzip2, gzip, pack200,
-LZMA, XZ, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
-Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
 Minor feature and maintenance release.
 
@@ -164,11 +154,6 @@ Apache Commons Compress defines an API for working with compression and
 archive formats.  These include: bzip2, gzip, pack200, LZMA, XZ, Snappy,
 traditional Unix Compress, DEFLATE, DEFLATE64, LZ4, Brotli, Zstandard and
 ar, cpio, jar, tar, zip, dump, 7z, arj.
-
-Apache Commons Compress defines an API for working with
-compression and archive formats.  These include: bzip2, gzip, pack200,
-LZMA, XZ, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
-Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
 Minor feature and maintenance release.
 
