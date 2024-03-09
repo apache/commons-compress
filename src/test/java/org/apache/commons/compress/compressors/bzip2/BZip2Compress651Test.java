@@ -29,7 +29,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -38,13 +37,12 @@ import org.junit.jupiter.api.Test;
 public class BZip2Compress651Test {
 
     @Test
-    @Disabled
     public void testCompress651() throws IOException {
         final int buffersize = 102_400;
         final Path pathIn = Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-651/my10m.tar.bz2");
         final Path pathOut = Paths.get("target/COMPRESS-651/test.tar");
         Files.createDirectories(pathOut.getParent());
-        try (BZip2CompressorInputStream inputStream = new BZip2CompressorInputStream(new BufferedInputStream(Files.newInputStream(pathIn)));
+        try (BZip2CompressorInputStream inputStream = new BZip2CompressorInputStream(new BufferedInputStream(Files.newInputStream(pathIn)), true);
                 OutputStream outputStream = Files.newOutputStream(pathOut)) {
             IOUtils.copy(inputStream, outputStream, buffersize);
         }
