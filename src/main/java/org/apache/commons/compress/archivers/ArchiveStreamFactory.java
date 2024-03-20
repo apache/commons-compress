@@ -282,7 +282,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
                 TarArchiveEntry entry = inputStream.getNextEntry();
                 // try to find the first non-directory entry within the first 10 entries.
                 int count = 0;
-                while (entry != null && entry.isDirectory() && count++ < TAR_TEST_ENTRY_COUNT) {
+                while (entry != null && entry.isDirectory() && entry.isCheckSumOK() && count++ < TAR_TEST_ENTRY_COUNT) {
                     entry = inputStream.getNextEntry();
                 }
                 if (entry != null && entry.isCheckSumOK() && !entry.isDirectory() && entry.getSize() > 0 || count > 0) {

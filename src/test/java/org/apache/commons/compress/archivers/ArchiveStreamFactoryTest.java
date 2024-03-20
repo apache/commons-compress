@@ -283,6 +283,16 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
     }
 
     /**
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-674" >COMPRESS-674</a>.
+     */
+    @Test
+    void testUtf16TextIsNotTAR() {
+        final ArchiveException archiveException = assertThrows(ArchiveException.class,
+                () -> detect("utf16-text.txt"));
+        assertEquals("No Archiver found for the stream signature", archiveException.getMessage());
+    }
+
+    /**
      * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-267" >COMPRESS-267</a>.
      */
     @Test
