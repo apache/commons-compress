@@ -292,6 +292,16 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
         assertEquals("No Archiver found for the stream signature", archiveException.getMessage());
     }
 
+    @Test
+    void testTarContainingEmptyDirIsTAR() throws IOException, ArchiveException {
+        assertEquals(ArchiveStreamFactory.TAR, detect("emptyDir.tar"));
+    }
+
+    @Test
+    void testTarContainingDirWith1TxtFileIsTAR() throws IOException, ArchiveException {
+        assertEquals(ArchiveStreamFactory.TAR, detect("dirWith1TxtFile.tar"));
+    }
+
     /**
      * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-267" >COMPRESS-267</a>.
      */
