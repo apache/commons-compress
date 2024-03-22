@@ -27,7 +27,7 @@ public class ClassFileEntryTest {
     private void checkEquality(final Object equal1, final Object equal2, final String toString, final Object unequal) {
         assertEquals(equal1, equal2);
         assertEquals(equal1.hashCode(), equal2.hashCode());
-        assertTrue(equal1.toString().indexOf(toString) >= 0);
+        assertTrue(equal1.toString().contains(toString));
         assertNotEquals(equal1, unequal);
         assertNotEquals(equal2, unequal);
         assertNotEquals(unequal, equal1);
