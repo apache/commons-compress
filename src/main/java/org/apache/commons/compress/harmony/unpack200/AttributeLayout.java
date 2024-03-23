@@ -302,8 +302,8 @@ public class AttributeLayout implements IMatcher {
         if (layout.indexOf('P') >= 0) {
             return Codec.BCI5;
         }
-        if (layout.indexOf('S') >= 0 && layout.indexOf("KS") < 0 //$NON-NLS-1$
-                && layout.indexOf("RS") < 0) { //$NON-NLS-1$
+        if (layout.indexOf('S') >= 0 && !layout.contains("KS") //$NON-NLS-1$
+                && !layout.contains("RS")) { //$NON-NLS-1$
             return Codec.SIGNED5;
         }
         if (layout.indexOf('B') >= 0) {

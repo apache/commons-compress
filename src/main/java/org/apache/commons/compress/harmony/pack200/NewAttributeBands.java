@@ -558,8 +558,8 @@ public class NewAttributeBands extends BandSet {
         if (layoutElement.indexOf('P') >= 0) {
             return Codec.BCI5;
         }
-        if (layoutElement.indexOf('S') >= 0 && layoutElement.indexOf("KS") < 0 //$NON-NLS-1$
-                && layoutElement.indexOf("RS") < 0) { //$NON-NLS-1$
+        if (layoutElement.indexOf('S') >= 0 && !layoutElement.contains("KS") //$NON-NLS-1$
+                && !layoutElement.contains("RS")) { //$NON-NLS-1$
             return Codec.SIGNED5;
         }
         if (layoutElement.indexOf('B') >= 0) {
