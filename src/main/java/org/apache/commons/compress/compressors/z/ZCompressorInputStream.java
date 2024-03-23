@@ -37,11 +37,11 @@ public class ZCompressorInputStream extends LZWInputStream {
     private static final int MAX_CODE_SIZE_MASK = 0x1f;
 
     /**
-     * Checks if the signature matches what is expected for a Unix compress file.
+     * Checks if the signature matches what is expected for a UNIX compress file.
      *
      * @param signature the bytes to check
      * @param length    the number of bytes to check
-     * @return true, if this stream is a Unix compress compressed stream, false otherwise
+     * @return true, if this stream is a UNIX compress compressed stream, false otherwise
      *
      * @since 1.9
      */

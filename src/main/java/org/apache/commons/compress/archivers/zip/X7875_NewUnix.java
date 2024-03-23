@@ -97,7 +97,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
          * 3.) Of all the people creating ZIP files using commons- compress, how many care about UNIX UID/GID attributes of the files they store? (e.g., I am
          * probably thinking way too hard about this and no one cares!)
          *
-         * 4.) InfoZip's tool, even though it carefully stores every UID/GID for every file zipped on a Unix machine (by default) currently appears unable to
+         * 4.) InfoZip's tool, even though it carefully stores every UID/GID for every file zipped on a UNIX machine (by default) currently appears unable to
          * ever restore UID/GID. unzip -X has no effect on my machine, even when run as root!!!!
          *
          * And thus it is decided: MIN_LENGTH=1.
@@ -313,7 +313,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * Reset state back to newly constructed state. Helps us make sure parse() calls always generate clean results.
      */
     private void reset() {
-        // Typical UID/GID of the first non-root user created on a Unix system.
+        // Typical UID/GID of the first non-root user created on a UNIX system.
         uid = ONE_THOUSAND;
         gid = ONE_THOUSAND;
     }

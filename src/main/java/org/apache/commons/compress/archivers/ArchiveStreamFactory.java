@@ -162,7 +162,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     public static final String CPIO = "cpio";
 
     /**
-     * Constant (value {@value}) used to identify the Unix DUMP archive format. Not supported as an output stream type.
+     * Constant (value {@value}) used to identify the UNIX DUMP archive format. Not supported as an output stream type.
      *
      * @since 1.3
      */

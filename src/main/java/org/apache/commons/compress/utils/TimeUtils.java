@@ -26,10 +26,10 @@ import org.apache.commons.io.file.attribute.FileTimes;
 /**
  * Utility class for handling time-related types and conversions.
  * <p>
- * Understanding Unix vs NTFS timestamps:
+ * Understanding UNIX vs NTFS timestamps:
  * </p>
  * <ul>
- * <li>A <a href="https://en.wikipedia.org/wiki/Unix_time">Unix timestamp</a> is a primitive long starting at the Unix Epoch on January 1st, 1970 at Coordinated
+ * <li>A <a href="https://en.wikipedia.org/wiki/Unix_time">UNIX timestamp</a> is a primitive long starting at the UNIX Epoch on January 1st, 1970 at Coordinated
  * Universal Time (UTC)</li>
  * <li>An <a href="https://learn.microsoft.com/en-us/windows/win32/sysinfo/file-times">NTFS timestamp</a> is a file time is a 64-bit value that represents the
  * number of 100-nanosecond intervals that have elapsed since 12:00 A.M. January 1, 1601 Coordinated Universal Time (UTC).</li>
@@ -46,7 +46,7 @@ public final class TimeUtils {
      * <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms724290%28v=vs.85%29.aspx">Windows File Times</a>
      * <p>
      * A file time is a 64-bit value that represents the number of 100-nanosecond intervals that have elapsed since 12:00 A.M. January 1, 1601 Coordinated
-     * Universal Time (UTC). This is the offset of Windows time 0 to Unix epoch in 100-nanosecond intervals.
+     * Universal Time (UTC). This is the offset of Windows time 0 to UNIX epoch in 100-nanosecond intervals.
      * </p>
      */
     static final long WINDOWS_EPOCH_OFFSET = -116444736000000000L;

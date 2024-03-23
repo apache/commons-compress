@@ -18,7 +18,7 @@
  */
 
 /**
- * This package provides stream classes for reading archives using the Unix DUMP format.
+ * This package provides stream classes for reading archives using the UNIX DUMP format.
  * <p>
  * This format is similar to (and contemporary with) TAR but reads the raw filesystem directly. This means that writers are filesystem-specific even though the
  * created archives are filesystem-agnostic.

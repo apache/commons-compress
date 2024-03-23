@@ -937,7 +937,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Gets the Unix permission.
+     * Gets the UNIX permission.
      *
      * @return the unix permissions
      */
@@ -1476,7 +1476,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Sets Unix permissions in a way that is understood by Info-Zip's unzip command.
+     * Sets UNIX permissions in a way that is understood by Info-Zip's unzip command.
      *
      * @param mode an {@code int} value
      */

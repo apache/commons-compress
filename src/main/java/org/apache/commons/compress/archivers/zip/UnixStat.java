@@ -19,7 +19,7 @@
 package org.apache.commons.compress.archivers.zip;
 
 /**
- * Constants from stat.h on Unix systems.
+ * Constants from stat.h on UNIX systems.
  */
 // CheckStyle:InterfaceIsTypeCheck OFF - backward compatible
 public interface UnixStat {

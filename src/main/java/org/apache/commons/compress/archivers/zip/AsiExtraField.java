@@ -26,7 +26,7 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipException;
 
 /**
- * Adds Unix file permission and UID/GID fields as well as symbolic link handling.
+ * Adds UNIX file permission and UID/GID fields as well as symbolic link handling.
  *
  * <p>
  * This class uses the ASi extra field in the format:
@@ -65,7 +65,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     private static final int MIN_SIZE = WORD + SHORT + WORD + SHORT + SHORT;
 
     /**
-     * Standard Unix stat(2) file mode.
+     * Standard UNIX stat(2) file mode.
      */
     private int mode;
     /**

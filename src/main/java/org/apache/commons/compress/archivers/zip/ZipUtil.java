@@ -267,7 +267,7 @@ public abstract class ZipUtil {
         }
         if (l < 0 && l >= Integer.MIN_VALUE) {
             // If someone passes in a -2, they probably mean 4294967294
-            // (For example, Unix UID/GID's are 32 bit unsigned.)
+            // (For example, UNIX UID/GID's are 32 bit unsigned.)
             l = ZipUtil.adjustToLong((int) l);
         }
         return BigInteger.valueOf(l);
