@@ -40,7 +40,7 @@ public interface TarConstants {
     int FORMAT_OLDGNU = 2;
 
     /**
-     * Pure Posix format.
+     * Pure POSIX format.
      */
     int FORMAT_POSIX = 3;
 
