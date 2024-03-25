@@ -55,7 +55,7 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
     }
 
     private static BoundedInputStream newBoundedInputStream(final FileInputStream fileInputStream) throws IOException {
-        return newBoundedInputStream(readPath(fileInputStream));
+        return newBoundedInputStream(readPathString(fileInputStream));
     }
 
     static BoundedInputStream newBoundedInputStream(final InputStream inputStream) throws IOException {
@@ -126,7 +126,7 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
         }
     }
 
-    static String readPath(final FileInputStream fis) {
+    static String readPathString(final FileInputStream fis) {
         return readField(fis, "path");
     }
 
