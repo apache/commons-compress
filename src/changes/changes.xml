@@ -49,7 +49,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" issue="COMPRESS-665" dev="ggregory" due-to="Gary Gregory, Elliotte Rusty Harold">Deprecate org.apache.commons.compress.utils.CharsetNames in favor or java.nio.charset.StandardCharsets.</action>
       <action type="fix" issue="COMPRESS-674" dev="ggregory" due-to="Gren Elliot">Validate TarArchiveEntry checksums #500.</action>
       <!-- UPDATE -->
-      <action type="update" dev="ggregory" due-to="Dependabot">Bump org.apache.commons:commons-parent from 66 to 67 #495.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 66 to 67 #495.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.ow2.asm:asm from 9.6 to 9.7 #504.</action>
     </release>
     <release version="1.26.1" date="2024-03-05" description="Minor feature and maintenance release.">
       <!-- FIX -->

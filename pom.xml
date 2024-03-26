@@ -79,7 +79,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
     <pax.exam.version>4.13.5</pax.exam.version>
     <slf4j.version>2.0.12</slf4j.version>
-    <asm.version>9.6</asm.version>
+    <asm.version>9.7</asm.version>
     <project.build.outputTimestamp>2024-03-08T23:07:45Z</project.build.outputTimestamp>
     <!-- spdx 0.6.0 can require Java 11 depending on undocumented behavior which kicks in for us here. -->
     <commons.spdx.version>0.5.5</commons.spdx.version>
