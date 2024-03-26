@@ -39,12 +39,20 @@ final class Configurations {
         return mavenBundle().groupId("commons-codec").artifactId("commons-codec").version("1.16.0");
     }
 
-    public static Option[] getConfigWithoutCommonsCodec() {
+    /**
+     * @return The maven bundle for Apache commons-io
+     */
+    private static MavenArtifactProvisionOption getCommonsIO() {
+        return mavenBundle().groupId("commons-io").artifactId("commons-io").version("2.15.1");
+    }
+
+    public static Option[] getConfigWithoutOptionals() {
         final Option[] defaultConfig = getDefaultConfig();
         final Option[] result = Arrays.stream(defaultConfig)
                 .filter(o -> !getCommonsCodec().equals(o))
+                .filter(o -> !getCommonsIO().equals(o))
                 .toArray(Option[]::new);
-        Assertions.assertTrue(result.length < defaultConfig.length, "Expected to have removed an option.");
+        Assertions.assertTrue(result.length < defaultConfig.length, "Expected to have removed options.");
         return result;
     }
 
@@ -55,7 +63,7 @@ final class Configurations {
                 mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.scr").version("2.0.14"),
                 mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.configadmin").version("1.8.16"),
                 getCommonsCodec(),
-                mavenBundle().groupId("commons-io").artifactId("commons-io").version("2.15.1"),
+                getCommonsIO(),
                 composite(systemProperty("pax.exam.invoker").value("junit"), bundle("link:classpath:META-INF/links/org.ops4j.pax.tipi.junit.link"),
                         bundle("link:classpath:META-INF/links/org.ops4j.pax.exam.invoker.junit.link"),
                         mavenBundle().groupId("org.apache.servicemix.bundles").artifactId("org.apache.servicemix.bundles.hamcrest").version("1.3_1")),

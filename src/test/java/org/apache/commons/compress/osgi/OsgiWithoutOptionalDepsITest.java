@@ -29,6 +29,6 @@ public class OsgiWithoutOptionalDepsITest  extends AbstractOsgiITest {
     @Configuration
     @Override
     public Option[] config() {
-        return Configurations.getConfigWithoutCommonsCodec();
+        return Configurations.getConfigWithoutOptionals();
     }
 }
