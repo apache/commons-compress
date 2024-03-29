@@ -40,6 +40,7 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTempDirTest;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.output.NullOutputStream;
 import org.junit.jupiter.api.AfterEach;
@@ -57,20 +58,8 @@ public class ArchiveTest extends AbstractTempDirTest {
 
     @AfterEach
     public void tearDown() throws Exception {
-        if (in != null) {
-            try {
-                in.close();
-            } catch (final IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            if (out != null) {
-                out.close();
-            }
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
+        IOUtils.closeQuietly(in, IOException::printStackTrace);
+        IOUtils.closeQuietly(out, IOException::printStackTrace);
     }
 
     @Test
