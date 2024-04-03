@@ -32,7 +32,6 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +42,7 @@ import org.apache.commons.compress.utils.FixedLengthBlockOutputStream;
 import org.apache.commons.compress.utils.TimeUtils;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.output.CountingOutputStream;
+import org.apache.commons.lang3.ArrayFill;
 
 /**
  * The TarOutputStream writes a UNIX tar archive as an OutputStream. Methods are provided to put entries, and then write their contents by writing to this
@@ -674,8 +674,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * Writes an EOF (end of archive) record to the tar archive. An EOF record consists of a record of all zeros.
      */
     private void writeEOFRecord() throws IOException {
-        Arrays.fill(recordBuf, (byte) 0);
-        writeRecord(recordBuf);
+        writeRecord(ArrayFill.fill(recordBuf, (byte) 0));
     }
 
     /**

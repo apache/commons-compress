@@ -40,7 +40,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
@@ -50,6 +49,7 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayFill;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -666,8 +666,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("bzip2-zip.zip"))) {
             final ZipArchiveEntry ze = in.getNextZipEntry();
             assertEquals(42, ze.getSize());
-            final byte[] expected = new byte[42];
-            Arrays.fill(expected, (byte) 'a');
+            final byte[] expected = ArrayFill.fill(new byte[42], (byte) 'a');
             assertArrayEquals(expected, IOUtils.toByteArray(in));
         }
     }
