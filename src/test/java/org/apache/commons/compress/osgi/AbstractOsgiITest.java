@@ -30,20 +30,21 @@ import org.ops4j.pax.exam.Option;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
-
-
 /**
  * Tests if the library can be loaded with an OSGi environment provided by {@link #config()}.
  */
 abstract class AbstractOsgiITest {
+
     private static final String EXPECTED_BUNDLE_NAME = "org.apache.commons.commons-compress";
 
     @Inject
     private BundleContext ctx;
 
     /**
-     * @return the OSGi configuration to use for the test
-     * @implNote Concrete implementation needs the @Configuration annotation
+     * Gets the OSGi configuration to use for the test.
+     *
+     * @return the OSGi configuration to use for the test.
+     * @implNote Concrete implementation needs the @Configuration annotation.
      */
     public abstract Option[] config();
 
@@ -65,10 +66,8 @@ abstract class AbstractOsgiITest {
     public void testProperlyDetectsRunningInsideOsgiEnv() throws Exception {
         final Class<?> osgiUtils = loadBundle().loadClass("org.apache.commons.compress.utils.OsgiUtils");
         assertNotNull("Can load OsgiUtils via bundle", osgiUtils);
-
         final Method method = osgiUtils.getMethod("isRunningInOsgiEnvironment");
         assertNotNull("Can access isRunningInOsgiEnvironment method", method);
-
         assertTrue("Compress detects OSGi environment", (Boolean) method.invoke(null));
     }
 }
