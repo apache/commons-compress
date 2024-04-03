@@ -48,15 +48,18 @@ final class Configurations {
 
     public static Option[] getConfigWithoutOptionals() {
         final Option[] defaultConfig = getDefaultConfig();
+        // @formatter:off
         final Option[] result = Arrays.stream(defaultConfig)
                 .filter(o -> !getCommonsCodec().equals(o))
                 .filter(o -> !getCommonsIO().equals(o))
                 .toArray(Option[]::new);
+        // @formatter:on
         Assertions.assertTrue(result.length < defaultConfig.length, "Expected to have removed options.");
         return result;
     }
 
     public static Option[] getDefaultConfig() {
+        // @formatter:off
         return new Option[]{systemProperty("pax.exam.osgi.unresolved.fail").value("true"),
                 systemProperty("org.ops4j.pax.url.mvn.useFallbackRepositories").value("false"),
                 systemProperty("org.ops4j.pax.url.mvn.repositories").value("https://repo.maven.apache.org/maven2"),
@@ -64,13 +67,15 @@ final class Configurations {
                 mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.configadmin").version("1.8.16"),
                 getCommonsCodec(),
                 getCommonsIO(),
-                composite(systemProperty("pax.exam.invoker").value("junit"), bundle("link:classpath:META-INF/links/org.ops4j.pax.tipi.junit.link"),
+                composite(systemProperty("pax.exam.invoker").value("junit"),
+                        bundle("link:classpath:META-INF/links/org.ops4j.pax.tipi.junit.link"),
                         bundle("link:classpath:META-INF/links/org.ops4j.pax.exam.invoker.junit.link"),
                         mavenBundle().groupId("org.apache.servicemix.bundles").artifactId("org.apache.servicemix.bundles.hamcrest").version("1.3_1")),
                 bundle("reference:file:target/classes/").start()};
+        // @formatter:on
     }
 
     private Configurations() {
-
+        // noop
     }
 }
