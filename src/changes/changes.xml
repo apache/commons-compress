@@ -54,6 +54,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 66 to 69 #495, #508.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.ow2.asm:asm from 9.6 to 9.7 #504.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump com.github.luben:zstd-jni from 1.5.5-11 to 1.5.6-1.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot">Bump com.github.luben:zstd-jni from 1.5.6-1 to 1.5.6-2 #510.</action>
     </release>
     <release version="1.26.1" date="2024-03-05" description="Minor feature and maintenance release.">
       <!-- FIX -->
