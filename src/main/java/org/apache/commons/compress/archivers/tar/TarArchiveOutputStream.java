@@ -41,6 +41,7 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.FixedLengthBlockOutputStream;
 import org.apache.commons.compress.utils.TimeUtils;
 import org.apache.commons.io.Charsets;
+import org.apache.commons.io.file.attribute.FileTimes;
 import org.apache.commons.io.output.CountingOutputStream;
 import org.apache.commons.lang3.ArrayFill;
 
@@ -645,7 +646,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
         if (fromModTimeSeconds < 0 || fromModTimeSeconds > TarConstants.MAXSIZE) {
             fromModTimeSeconds = 0;
         }
-        to.setLastModifiedTime(TimeUtils.unixTimeToFileTime(fromModTimeSeconds));
+        to.setLastModifiedTime(FileTimes.fromUnixTime(fromModTimeSeconds));
     }
 
     /**

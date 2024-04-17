@@ -26,10 +26,10 @@ import java.util.zip.Checksum;
  *
  * @NotThreadSafe
  * @since 1.7
+ * @deprecated Use {@link org.apache.commons.io.input.ChecksumInputStream}.
  */
+@Deprecated
 public class ChecksumVerifyingInputStream extends CheckedInputStream {
-    // TODO Use Commons IO 2.16.0 ChecksumInputStream
-
     private long remaining;
     private final long expected;
 

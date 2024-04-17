@@ -68,7 +68,7 @@ public class Archive {
      * Creates an Archive with streams for the input and output files. Note: If you use this method then calling {@link #setRemovePackFile(boolean)} will have
      * no effect.
      *
-     * @param inputStream  the input stream, preferably a {@link BoundedInputStream}. The bound can the the file size.
+     * @param inputStream  the input stream, preferably a {@link BoundedInputStream}. The bound can be the file size.
      * @param outputStream the JAR output stream.
      * @throws IOException if an I/O error occurs
      */
@@ -95,7 +95,7 @@ public class Archive {
     public Archive(final String inputFileName, final String outputFileName) throws FileNotFoundException, IOException {
         this.inputPath = Paths.get(inputFileName);
         this.inputSize = Files.size(this.inputPath);
-        this.inputStream = new BoundedInputStream(Files.newInputStream(inputPath), inputSize);
+        this.inputStream = BoundedInputStream.builder().setPath(inputPath).setMaxCount(inputSize).get();
         this.outputStream = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(outputFileName)));
         this.outputFileName = outputFileName;
     }
