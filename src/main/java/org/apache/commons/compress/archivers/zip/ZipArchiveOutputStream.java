@@ -38,6 +38,7 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.io.Charsets;
 
 /**
  * Reimplementation of {@link java.util.zip.ZipOutputStream java.util.zip.ZipOutputStream} to handle the extended functionality of this package, especially
@@ -1337,7 +1338,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @param encoding the encoding to use for file names, use null for the platform's default encoding
      */
     public void setEncoding(final String encoding) {
-        setEncoding(Charset.forName(encoding));
+        setEncoding(Charsets.toCharset(encoding));
     }
 
     /**
