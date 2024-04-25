@@ -292,10 +292,6 @@ public abstract class BandSet {
             codecFamiliesToTry.add(CanonicalCodecFamilies.deltaUnsignedCodecs4);
             codecFamiliesToTry.add(CanonicalCodecFamilies.deltaUnsignedCodecs5);
         }
-        if (name.equalsIgnoreCase("cpint")) {
-            System.out.print("");
-        }
-
         for (final BHSDCodec[] family : codecFamiliesToTry) {
             tryCodecs(name, band, defaultCodec, bandData, results, encoded, family);
             if (timeToStop(results)) {
