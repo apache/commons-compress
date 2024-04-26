@@ -62,7 +62,7 @@ public class Archive {
 
     private final long inputSize;
 
-    private String outputFileName;
+    private final String outputFileName;
 
     /**
      * Creates an Archive with streams for the input and output files. Note: If you use this method then calling {@link #setRemovePackFile(boolean)} will have
@@ -80,6 +80,7 @@ public class Archive {
         } else {
             inputPath = null;
         }
+        this.outputFileName = null;
         this.inputSize = -1;
     }
 
