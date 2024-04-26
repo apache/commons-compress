@@ -18,8 +18,14 @@
  */
 package org.apache.commons.compress.compressors.pack200;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
@@ -28,9 +34,83 @@ import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.CloseShieldInputStream;
+import org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public final class Pack200UtilsTest extends AbstractTest {
+
+    private long parseEntry(final InputStream is) throws IOException {
+        try (UnsynchronizedByteArrayOutputStream bos = UnsynchronizedByteArrayOutputStream.builder().get();
+                Pack200CompressorInputStream p = new Pack200CompressorInputStream(is)) {
+            return IOUtils.copy(p, bos);
+        }
+    }
+
+    @Disabled("WIP: https://issues.apache.org/jira/browse/COMPRESS-675")
+    @Test
+    public void testCompress675() throws Exception {
+        // COMPRESS-675
+        // put 2 pack files inside an archive and then try to unpack them.
+
+        final File pack = getFile("bla.pack");
+        final File archiveFile = createTempFile();
+
+        final long expectedBytes;
+        try (UnsynchronizedByteArrayOutputStream bos = UnsynchronizedByteArrayOutputStream.builder().get();
+                Pack200CompressorInputStream inputStream = new Pack200CompressorInputStream(new FileInputStream(pack))) {
+            IOUtils.copy(inputStream, bos);
+            expectedBytes = bos.size() * 2;
+        }
+
+        try (OutputStream os = new FileOutputStream(archiveFile);
+                TarArchiveOutputStream taos = new TarArchiveOutputStream(os)) {
+
+            final TarArchiveEntry ae = taos.createArchiveEntry(pack, "./bla.pack");
+            taos.putArchiveEntry(ae);
+            try (FileInputStream in = new FileInputStream(pack)) {
+                IOUtils.copy(in, taos);
+            }
+            taos.closeArchiveEntry();
+            final TarArchiveEntry ae2 = taos.createArchiveEntry(pack, "./bla2.pack");
+            taos.putArchiveEntry(ae2);
+            try (FileInputStream in = new FileInputStream(pack)) {
+                IOUtils.copy(in, taos);
+            }
+            taos.closeArchiveEntry();
+            taos.finish();
+            taos.flush();
+        }
+
+        // The underlying ChannelInputStream is what causes the problem
+        // FileInputStream doesn't show the bug
+
+        // If you use a zip archive instead of a tar archive you
+        // get a different number of bytes read, but still not the expected
+        try (InputStream is = new FileInputStream(archiveFile);
+                // Files.newInputStream(archiveFile.toPath());
+                TarArchiveInputStream in = new TarArchiveInputStream(is)) {
+            ArchiveEntry entry = in.getNextEntry();
+            int entries = 0;
+            long bytes = 0;
+            while (entry != null) {
+                if (in.canReadEntryData(entry)) {
+                    @SuppressWarnings("resource")
+                    final CloseShieldInputStream wrap = CloseShieldInputStream.wrap(in);
+                    bytes += parseEntry(wrap);
+                    entries++;
+                }
+                entry = in.getNextEntry();
+            }
+            assertEquals(2, entries);
+            assertEquals(expectedBytes, bytes);
+        }
+    }
 
     @Test
     public void testNormalize() throws Throwable {
