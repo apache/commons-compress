@@ -64,6 +64,8 @@ public class Archive {
 
     private final String outputFileName;
 
+    private final boolean closeStreams;
+
     /**
      * Creates an Archive with streams for the input and output files. Note: If you use this method then calling {@link #setRemovePackFile(boolean)} will have
      * no effect.
@@ -82,6 +84,7 @@ public class Archive {
         }
         this.outputFileName = null;
         this.inputSize = -1;
+        this.closeStreams = false;
     }
 
     /**
@@ -99,6 +102,7 @@ public class Archive {
         this.inputStream = new BoundedInputStream(Files.newInputStream(inputPath), inputSize);
         this.outputStream = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(outputFileName)));
         this.outputFileName = outputFileName;
+        this.closeStreams = true;
     }
 
     private boolean available(final InputStream inputStream) throws IOException {
@@ -214,8 +218,10 @@ public class Archive {
                 }
             }
         } finally {
-            IOUtils.closeQuietly(inputStream);
-            IOUtils.closeQuietly(outputStream);
+            if (closeStreams) {
+                IOUtils.closeQuietly(inputStream);
+                IOUtils.closeQuietly(outputStream);
+            }
             IOUtils.closeQuietly(logFile);
         }
         if (removePackFile && inputPath != null) {
