@@ -188,16 +188,16 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
     private void writeEntryHeader(final ArArchiveEntry entry) throws IOException {
         long offset = 0;
         boolean appendName = false;
-        final String n = entry.getName();
-        final int nLength = n.length();
+        final String eName = entry.getName();
+        final int nLength = eName.length();
         if (LONGFILE_ERROR == longFileMode && nLength > 16) {
-            throw new IOException("File name too long, > 16 chars: " + n);
+            throw new IOException("File name too long, > 16 chars: " + eName);
         }
-        if (LONGFILE_BSD == longFileMode && (nLength > 16 || n.contains(" "))) {
+        if (LONGFILE_BSD == longFileMode && (nLength > 16 || eName.contains(" "))) {
             appendName = true;
             offset += write(ArArchiveInputStream.BSD_LONGNAME_PREFIX + nLength);
         } else {
-            offset += write(n);
+            offset += write(eName);
         }
         // Last modified
         offset = fill(offset, 16, SPACE);
@@ -218,8 +218,8 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
         offset = fill(offset, 58, SPACE);
         offset += write(ArArchiveEntry.TRAILER);
         if (appendName) {
-            offset += write(n);
+            offset += write(eName);
         }
-
     }
+
 }
