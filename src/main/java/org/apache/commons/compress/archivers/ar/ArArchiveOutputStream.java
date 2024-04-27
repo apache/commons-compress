@@ -197,28 +197,28 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
         }
 
         offset = fill(offset, 16, SPACE);
-        final String m = "" + entry.getLastModified();
+        final String m = String.valueOf(entry.getLastModified());
         if (m.length() > 12) {
             throw new IOException("Last modified too long");
         }
         offset += write(m);
 
         offset = fill(offset, 28, SPACE);
-        final String u = "" + entry.getUserId();
+        final String u = String.valueOf(entry.getUserId());
         if (u.length() > 6) {
             throw new IOException("User id too long");
         }
         offset += write(u);
 
         offset = fill(offset, 34, SPACE);
-        final String g = "" + entry.getGroupId();
+        final String g = String.valueOf(entry.getGroupId());
         if (g.length() > 6) {
             throw new IOException("Group id too long");
         }
         offset += write(g);
 
         offset = fill(offset, 40, SPACE);
-        final String fm = "" + Integer.toString(entry.getMode(), 8);
+        final String fm = String.valueOf(Integer.toString(entry.getMode(), 8));
         if (fm.length() > 8) {
             throw new IOException("Filemode too long");
         }
