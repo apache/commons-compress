@@ -48,8 +48,9 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
 
     private final OutputStream out;
     private long entryOffset;
+    private int headerPlus;
     private ArArchiveEntry prevEntry;
-    private boolean haveUnclosedEntry;
+    private boolean prevEntryOpen;
     private int longFileMode = LONGFILE_ERROR;
 
     /** Indicates if this archive is finished */
@@ -93,13 +94,13 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
     @Override
     public void closeArchiveEntry() throws IOException {
         checkFinished();
-        if (prevEntry == null || !haveUnclosedEntry) {
+        if (prevEntry == null || !prevEntryOpen) {
             throw new IOException("No current entry to close");
         }
-        if (entryOffset % 2 != 0) {
+        if ((headerPlus + entryOffset) % 2 != 0) {
             out.write(PAD); // Pad byte
         }
-        haveUnclosedEntry = false;
+        prevEntryOpen = false;
     }
 
     @Override
@@ -119,23 +120,23 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
         return new ArArchiveEntry(inputPath, entryName, options);
     }
 
-    private long fill(final long offset, final long newOffset, final char fill) throws IOException {
-        final long diff = newOffset - offset;
+    @Override
+    public void finish() throws IOException {
+        if (prevEntryOpen) {
+            throw new IOException("This archive contains unclosed entries.");
+        }
+        checkFinished();
+        finished = true;
+    }
+
+    private int pad(final int offset, final int newOffset, final char fill) throws IOException {
+        final int diff = newOffset - offset;
         if (diff > 0) {
             for (int i = 0; i < diff; i++) {
                 write(fill);
             }
         }
         return newOffset;
-    }
-
-    @Override
-    public void finish() throws IOException {
-        if (haveUnclosedEntry) {
-            throw new IOException("This archive contains unclosed entries.");
-        }
-        checkFinished();
-        finished = true;
     }
 
     @Override
@@ -147,14 +148,14 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
             if (prevEntry.getLength() != entryOffset) {
                 throw new IOException("Length does not match entry (" + prevEntry.getLength() + " != " + entryOffset);
             }
-            if (haveUnclosedEntry) {
+            if (prevEntryOpen) {
                 closeArchiveEntry();
             }
         }
         prevEntry = entry;
-        writeEntryHeader(entry);
+        headerPlus = writeEntryHeader(entry);
         entryOffset = 0;
-        haveUnclosedEntry = true;
+        prevEntryOpen = true;
     }
 
     /**
@@ -185,8 +186,8 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
         out.write(ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER));
     }
 
-    private void writeEntryHeader(final ArArchiveEntry entry) throws IOException {
-        long offset = 0;
+    private int writeEntryHeader(final ArArchiveEntry entry) throws IOException {
+        int offset = 0;
         boolean appendName = false;
         final String eName = entry.getName();
         final int nLength = eName.length();
@@ -195,31 +196,37 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
         }
         if (LONGFILE_BSD == longFileMode && (nLength > 16 || eName.indexOf(SPACE) > -1)) {
             appendName = true;
-            offset += write(ArArchiveInputStream.BSD_LONGNAME_PREFIX + nLength);
+            final String fileNameLen = ArArchiveInputStream.BSD_LONGNAME_PREFIX + nLength;
+            if (fileNameLen.length() > 16) {
+                throw new IOException("File length too long, > 16 chars: " + eName);
+            }
+            offset += write(fileNameLen);
         } else {
             offset += write(eName);
         }
+        offset = pad(offset, 16, SPACE);
         // Last modified
-        offset = fill(offset, 16, SPACE);
         offset += write(checkLength(String.valueOf(entry.getLastModified()), 12, "Last modified"));
+        offset = pad(offset, 28, SPACE);
         // User ID
-        offset = fill(offset, 28, SPACE);
         offset += write(checkLength(String.valueOf(entry.getUserId()), 6, "User ID"));
+        offset = pad(offset, 34, SPACE);
         // Group ID
-        offset = fill(offset, 34, SPACE);
         offset += write(checkLength(String.valueOf(entry.getGroupId()), 6, "Group ID"));
+        offset = pad(offset, 40, SPACE);
         // Mode
-        offset = fill(offset, 40, SPACE);
         offset += write(checkLength(String.valueOf(Integer.toString(entry.getMode(), 8)), 8, "File mode"));
-        // Length
-        offset = fill(offset, 48, SPACE);
+        offset = pad(offset, 48, SPACE);
+        // Size
+        // On overflow, the file size is incremented by the length of the name.
         offset += write(checkLength(String.valueOf(entry.getLength() + (appendName ? nLength : 0)), 10, "Size"));
-        // Trailer
-        offset = fill(offset, 58, SPACE);
+        offset = pad(offset, 58, SPACE);
         offset += write(ArArchiveEntry.TRAILER);
+        // Name
         if (appendName) {
             offset += write(eName);
         }
+        return offset;
     }
 
 }
