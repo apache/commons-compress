@@ -113,9 +113,17 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      */
     public static boolean matches(final byte[] signature, final int length) {
         // 3c21 7261 6863 0a3e
-
-        return length >= 8 && signature[0] == 0x21 && signature[1] == 0x3c && signature[2] == 0x61 && signature[3] == 0x72 && signature[4] == 0x63
-                && signature[5] == 0x68 && signature[6] == 0x3e && signature[7] == 0x0a;
+        // @formatter:off
+        return length >= 8 &&
+                signature[0] == 0x21 &&
+                signature[1] == 0x3c &&
+                signature[2] == 0x61 &&
+                signature[3] == 0x72 &&
+                signature[4] == 0x63 &&
+                signature[5] == 0x68 &&
+                signature[6] == 0x3e &&
+                signature[7] == 0x0a;
+        // @formatter:on
     }
 
     private long offset;
@@ -223,7 +231,6 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
                 if (namebuffer[i - 1] == '/') {
                     i--; // drop trailing /
                 }
-
                 // Check there is a something to return, otherwise break out of the loop
                 if (i - offset > 0) {
                     return ArchiveUtils.toAsciiString(namebuffer, offset, i - offset);
@@ -249,7 +256,6 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
             trackReadBytes(skipped);
             currentEntry = null;
         }
-
         if (offset == 0) {
             final byte[] expected = ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER);
             final byte[] realized = IOUtils.readRange(in, expected.length);
@@ -262,7 +268,6 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
                 throw new IOException("Invalid header " + ArchiveUtils.toAsciiString(realized));
             }
         }
-
         if (offset % 2 != 0) {
             if (in.read() < 0) {
                 // hit eof
@@ -270,7 +275,6 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
             }
             trackReadBytes(1);
         }
-
         {
             final int read = IOUtils.readFully(in, metaData);
             trackReadBytes(read);
@@ -281,7 +285,6 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
                 throw new IOException("Truncated ar archive");
             }
         }
-
         {
             final byte[] expected = ArchiveUtils.toAsciiBytes(ArArchiveEntry.TRAILER);
             final byte[] realized = IOUtils.readRange(in, expected.length);
@@ -296,16 +299,13 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         }
 
         entryOffset = offset;
-
-//        GNU ar uses a '/' to mark the end of the file name; this allows for the use of spaces without the use of an extended file name.
-
+        // GNU ar uses a '/' to mark the end of the file name; this allows for the use of spaces without the use of an extended file name.
         // entry name is stored as ASCII string
         String temp = ArchiveUtils.toAsciiString(metaData, NAME_OFFSET, NAME_LEN).trim();
         if (isGNUStringTable(temp)) { // GNU extended file names entry
             currentEntry = readGNUStringTable(metaData, LENGTH_OFFSET, LENGTH_LEN);
             return getNextArEntry();
         }
-
         long len;
         try {
             len = asLong(metaData, LENGTH_OFFSET, LENGTH_LEN);
@@ -326,11 +326,9 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
             len -= nameLen;
             entryOffset += nameLen;
         }
-
         if (len < 0) {
             throw new IOException("broken archive, entry with negative size");
         }
-
         try {
             currentEntry = new ArArchiveEntry(temp, len, asInt(metaData, USER_ID_OFFSET, USER_ID_LEN, true),
                     asInt(metaData, GROUP_ID_OFFSET, GROUP_ID_LEN, true), asInt(metaData, FILE_MODE_OFFSET, FILE_MODE_LEN, 8),
@@ -395,7 +393,6 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         } catch (final NumberFormatException ex) {
             throw new IOException("Broken archive, unable to parse GNU string table length field as a number", ex);
         }
-
         namebuffer = IOUtils.readRange(in, bufflen);
         final int read = namebuffer.length;
         trackReadBytes(read);
