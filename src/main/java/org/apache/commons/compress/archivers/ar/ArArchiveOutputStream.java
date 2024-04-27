@@ -68,6 +68,13 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
         }
     }
 
+    private String checkLength(final String value, final int max, final String name) throws IOException {
+        if (value.length() > max) {
+            throw new IOException(name + " too long");
+        }
+        return value;
+    }
+
     /**
      * Calls finish if necessary, and then closes the OutputStream
      */
@@ -112,14 +119,14 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
         return new ArArchiveEntry(inputPath, entryName, options);
     }
 
-    private long fill(final long pOffset, final long pNewOffset, final char pFill) throws IOException {
-        final long diff = pNewOffset - pOffset;
+    private long fill(final long offset, final long newOffset, final char fill) throws IOException {
+        final long diff = newOffset - offset;
         if (diff > 0) {
             for (int i = 0; i < diff; i++) {
-                write(pFill);
+                write(fill);
             }
         }
-        return pNewOffset;
+        return newOffset;
     }
 
     @Override
@@ -127,9 +134,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
         if (haveUnclosedEntry) {
             throw new IOException("This archive contains unclosed entries.");
         }
-        if (finished) {
-            throw new IOException("This archive has already been finished");
-        }
+        checkFinished();
         finished = true;
     }
 
@@ -142,7 +147,6 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
             if (prevEntry.getLength() != entryOffset) {
                 throw new IOException("Length does not match entry (" + prevEntry.getLength() + " != " + entryOffset);
             }
-
             if (haveUnclosedEntry) {
                 closeArchiveEntry();
             }
@@ -178,63 +182,42 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
     }
 
     private void writeArchiveHeader() throws IOException {
-        final byte[] header = ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER);
-        out.write(header);
+        out.write(ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER));
     }
 
     private void writeEntryHeader(final ArArchiveEntry entry) throws IOException {
         long offset = 0;
-        boolean mustAppendName = false;
+        boolean appendName = false;
         final String n = entry.getName();
         final int nLength = n.length();
         if (LONGFILE_ERROR == longFileMode && nLength > 16) {
             throw new IOException("File name too long, > 16 chars: " + n);
         }
         if (LONGFILE_BSD == longFileMode && (nLength > 16 || n.contains(" "))) {
-            mustAppendName = true;
+            appendName = true;
             offset += write(ArArchiveInputStream.BSD_LONGNAME_PREFIX + nLength);
         } else {
             offset += write(n);
         }
         // Last modified
         offset = fill(offset, 16, SPACE);
-        final String m = String.valueOf(entry.getLastModified());
-        if (m.length() > 12) {
-            throw new IOException("Last modified too long");
-        }
-        offset += write(m);
+        offset += write(checkLength(String.valueOf(entry.getLastModified()), 12, "Last modified"));
         // User ID
         offset = fill(offset, 28, SPACE);
-        final String u = String.valueOf(entry.getUserId());
-        if (u.length() > 6) {
-            throw new IOException("User id too long");
-        }
-        offset += write(u);
+        offset += write(checkLength(String.valueOf(entry.getUserId()), 6, "User ID"));
         // Group ID
         offset = fill(offset, 34, SPACE);
-        final String g = String.valueOf(entry.getGroupId());
-        if (g.length() > 6) {
-            throw new IOException("Group id too long");
-        }
-        offset += write(g);
+        offset += write(checkLength(String.valueOf(entry.getGroupId()), 6, "Group ID"));
         // Mode
         offset = fill(offset, 40, SPACE);
-        final String fm = String.valueOf(Integer.toString(entry.getMode(), 8));
-        if (fm.length() > 8) {
-            throw new IOException("Filemode too long");
-        }
-        offset += write(fm);
+        offset += write(checkLength(String.valueOf(Integer.toString(entry.getMode(), 8)), 8, "File mode"));
         // Length
         offset = fill(offset, 48, SPACE);
-        final String s = String.valueOf(entry.getLength() + (mustAppendName ? nLength : 0));
-        if (s.length() > 10) {
-            throw new IOException("Size too long");
-        }
-        offset += write(s);
+        offset += write(checkLength(String.valueOf(entry.getLength() + (appendName ? nLength : 0)), 10, "Size"));
         // Trailer
         offset = fill(offset, 58, SPACE);
         offset += write(ArArchiveEntry.TRAILER);
-        if (mustAppendName) {
+        if (appendName) {
             offset += write(n);
         }
 
