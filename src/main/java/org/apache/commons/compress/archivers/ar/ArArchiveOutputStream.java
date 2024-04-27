@@ -193,7 +193,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
         if (LONGFILE_ERROR == longFileMode && nLength > 16) {
             throw new IOException("File name too long, > 16 chars: " + eName);
         }
-        if (LONGFILE_BSD == longFileMode && (nLength > 16 || eName.contains(" "))) {
+        if (LONGFILE_BSD == longFileMode && (nLength > 16 || eName.indexOf(SPACE) > -1)) {
             appendName = true;
             offset += write(ArArchiveInputStream.BSD_LONGNAME_PREFIX + nLength);
         } else {
