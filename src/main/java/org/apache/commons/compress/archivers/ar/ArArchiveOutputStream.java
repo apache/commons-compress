@@ -196,7 +196,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
         } else {
             offset += write(n);
         }
-        // Last modifed
+        // Last modified
         offset = fill(offset, 16, SPACE);
         final String m = String.valueOf(entry.getLastModified());
         if (m.length() > 12) {
