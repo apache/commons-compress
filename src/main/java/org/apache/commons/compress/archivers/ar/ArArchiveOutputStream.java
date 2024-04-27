@@ -35,6 +35,11 @@ import org.apache.commons.compress.utils.ArchiveUtils;
  * @NotThreadSafe
  */
 public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
+
+    private static final char PAD = '\n';
+
+    private static final char SPACE = ' ';
+
     /** Fail if a long file name is required in the archive. */
     public static final int LONGFILE_ERROR = 0;
 
@@ -78,7 +83,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
             throw new IOException("No current entry to close");
         }
         if (entryOffset % 2 != 0) {
-            out.write('\n'); // Pad byte
+            out.write(PAD); // Pad byte
         }
         haveUnclosedEntry = false;
     }
@@ -106,13 +111,11 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
 
     private long fill(final long pOffset, final long pNewOffset, final char pFill) throws IOException {
         final long diff = pNewOffset - pOffset;
-
         if (diff > 0) {
             for (int i = 0; i < diff; i++) {
                 write(pFill);
             }
         }
-
         return pNewOffset;
     }
 
@@ -132,7 +135,6 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
-
         if (prevEntry == null) {
             writeArchiveHeader();
         } else {
@@ -144,11 +146,8 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
                 closeArchiveEntry();
             }
         }
-
         prevEntry = entry;
-
         writeEntryHeader(entry);
-
         entryOffset = 0;
         haveUnclosedEntry = true;
     }
@@ -183,10 +182,8 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
     }
 
     private void writeEntryHeader(final ArArchiveEntry entry) throws IOException {
-
         long offset = 0;
         boolean mustAppendName = false;
-
         final String n = entry.getName();
         final int nLength = n.length();
         if (LONGFILE_ERROR == longFileMode && nLength > 16) {
@@ -199,42 +196,42 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
             offset += write(n);
         }
 
-        offset = fill(offset, 16, ' ');
+        offset = fill(offset, 16, SPACE);
         final String m = "" + entry.getLastModified();
         if (m.length() > 12) {
             throw new IOException("Last modified too long");
         }
         offset += write(m);
 
-        offset = fill(offset, 28, ' ');
+        offset = fill(offset, 28, SPACE);
         final String u = "" + entry.getUserId();
         if (u.length() > 6) {
             throw new IOException("User id too long");
         }
         offset += write(u);
 
-        offset = fill(offset, 34, ' ');
+        offset = fill(offset, 34, SPACE);
         final String g = "" + entry.getGroupId();
         if (g.length() > 6) {
             throw new IOException("Group id too long");
         }
         offset += write(g);
 
-        offset = fill(offset, 40, ' ');
+        offset = fill(offset, 40, SPACE);
         final String fm = "" + Integer.toString(entry.getMode(), 8);
         if (fm.length() > 8) {
             throw new IOException("Filemode too long");
         }
         offset += write(fm);
 
-        offset = fill(offset, 48, ' ');
+        offset = fill(offset, 48, SPACE);
         final String s = String.valueOf(entry.getLength() + (mustAppendName ? nLength : 0));
         if (s.length() > 10) {
             throw new IOException("Size too long");
         }
         offset += write(s);
 
-        offset = fill(offset, 58, ' ');
+        offset = fill(offset, 58, SPACE);
 
         offset += write(ArArchiveEntry.TRAILER);
 
