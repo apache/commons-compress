@@ -60,6 +60,15 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
     }
 
     /**
+     * @throws IOException
+     */
+    private void checkFinished() throws IOException {
+        if (finished) {
+            throw new IOException("Stream has already been finished");
+        }
+    }
+
+    /**
      * Calls finish if necessary, and then closes the OutputStream
      */
     @Override
@@ -76,9 +85,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
 
     @Override
     public void closeArchiveEntry() throws IOException {
-        if (finished) {
-            throw new IOException("Stream has already been finished");
-        }
+        checkFinished();
         if (prevEntry == null || !haveUnclosedEntry) {
             throw new IOException("No current entry to close");
         }
@@ -90,9 +97,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
 
     @Override
     public ArArchiveEntry createArchiveEntry(final File inputFile, final String entryName) throws IOException {
-        if (finished) {
-            throw new IOException("Stream has already been finished");
-        }
+        checkFinished();
         return new ArArchiveEntry(inputFile, entryName);
     }
 
@@ -103,9 +108,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
      */
     @Override
     public ArArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
-        if (finished) {
-            throw new IOException("Stream has already been finished");
-        }
+        checkFinished();
         return new ArArchiveEntry(inputPath, entryName, options);
     }
 
@@ -132,9 +135,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
 
     @Override
     public void putArchiveEntry(final ArArchiveEntry entry) throws IOException {
-        if (finished) {
-            throw new IOException("Stream has already been finished");
-        }
+        checkFinished();
         if (prevEntry == null) {
             writeArchiveHeader();
         } else {
