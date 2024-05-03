@@ -1808,7 +1808,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @since 1.22
      */
     public void setLastModifiedTime(final FileTime time) {
-        mTime = Objects.requireNonNull(time, "Time must not be null");
+        mTime = Objects.requireNonNull(time, "time");
     }
 
     /**
