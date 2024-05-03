@@ -57,7 +57,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      */
     public static SeekableByteChannel forFiles(final File... files) throws IOException {
         final List<Path> paths = new ArrayList<>();
-        for (final File f : Objects.requireNonNull(files, "files must not be null")) {
+        for (final File f : Objects.requireNonNull(files, "files")) {
             paths.add(f.toPath());
         }
         return forPaths(paths.toArray(EMPTY_PATH_ARRAY));
@@ -76,7 +76,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      */
     public static SeekableByteChannel forPaths(final Path... paths) throws IOException {
         final List<SeekableByteChannel> channels = new ArrayList<>();
-        for (final Path path : Objects.requireNonNull(paths, "paths must not be null")) {
+        for (final Path path : Objects.requireNonNull(paths, "paths")) {
             channels.add(Files.newByteChannel(path, StandardOpenOption.READ));
         }
         if (channels.size() == 1) {
@@ -93,7 +93,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * @return SeekableByteChannel that concatenates all provided channels
      */
     public static SeekableByteChannel forSeekableByteChannels(final SeekableByteChannel... channels) {
-        if (Objects.requireNonNull(channels, "channels must not be null").length == 1) {
+        if (Objects.requireNonNull(channels, "channels").length == 1) {
             return channels[0];
         }
         return new MultiReadOnlySeekableByteChannel(Arrays.asList(channels));
@@ -112,7 +112,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * @throws NullPointerException if channels is null
      */
     public MultiReadOnlySeekableByteChannel(final List<SeekableByteChannel> channels) {
-        this.channels = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(channels, "channels must not be null")));
+        this.channels = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(channels, "channels")));
     }
 
     @Override

@@ -206,7 +206,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      */
     public static SeekableByteChannel forPaths(final List<Path> paths, final OpenOption[] openOptions) throws IOException {
         final List<SeekableByteChannel> channels = new ArrayList<>();
-        for (final Path path : Objects.requireNonNull(paths, "paths must not be null")) {
+        for (final Path path : Objects.requireNonNull(paths, "paths")) {
             channels.add(Files.newByteChannel(path, openOptions));
         }
         if (channels.size() == 1) {
