@@ -164,7 +164,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * @throws IOException          if reading channels fails
      */
     public static SeekableByteChannel forOrderedSeekableByteChannels(final SeekableByteChannel... channels) throws IOException {
-        if (Objects.requireNonNull(channels, "channels must not be null").length == 1) {
+        if (Objects.requireNonNull(channels, "channels").length == 1) {
             return channels[0];
         }
         return new ZipSplitReadOnlySeekableByteChannel(Arrays.asList(channels));
