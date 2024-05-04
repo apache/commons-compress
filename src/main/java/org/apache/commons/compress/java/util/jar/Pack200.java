@@ -55,87 +55,87 @@ public abstract class Pack200 {
         /**
          * The deflation hint to set in the output archive.
          */
-        String DEFLATE_HINT = "pack.deflate.hint";//$NON-NLS-1$
+        String DEFLATE_HINT = "pack.deflate.hint"; //$NON-NLS-1$
 
         /**
          * The indicated amount of effort to use in compressing the archive.
          */
-        String EFFORT = "pack.effort";//$NON-NLS-1$
+        String EFFORT = "pack.effort"; //$NON-NLS-1$
 
         /**
          * a String representation for {@code error}.
          */
-        String ERROR = "error";//$NON-NLS-1$
+        String ERROR = "error"; //$NON-NLS-1$
 
         /**
          * a String representation of {@code false}.
          */
-        String FALSE = "false";//$NON-NLS-1$
+        String FALSE = "false"; //$NON-NLS-1$
 
         /**
          * The format of a field attribute name.
          */
-        String FIELD_ATTRIBUTE_PFX = "pack.field.attribute.";//$NON-NLS-1$
+        String FIELD_ATTRIBUTE_PFX = "pack.field.attribute."; //$NON-NLS-1$
 
         /**
          * The String representation for {@code keep}.
          */
-        String KEEP = "keep";//$NON-NLS-1$
+        String KEEP = "keep"; //$NON-NLS-1$
 
         /**
          * Decide if all elements shall transmit in their original order.
          */
-        String KEEP_FILE_ORDER = "pack.keep.file.order";//$NON-NLS-1$
+        String KEEP_FILE_ORDER = "pack.keep.file.order"; //$NON-NLS-1$
 
         /**
          * The String representation for {@code latest}.
          */
-        String LATEST = "latest";//$NON-NLS-1$
+        String LATEST = "latest"; //$NON-NLS-1$
 
         /**
          * The format of a method attribute name.
          */
-        String METHOD_ATTRIBUTE_PFX = "pack.method.attribute.";//$NON-NLS-1$
+        String METHOD_ATTRIBUTE_PFX = "pack.method.attribute."; //$NON-NLS-1$
 
         /**
          * If it shall attempt to determine the latest modification time if this is set to {@code LATEST}.
          */
-        String MODIFICATION_TIME = "pack.modification.time";//$NON-NLS-1$
+        String MODIFICATION_TIME = "pack.modification.time"; //$NON-NLS-1$
 
         /**
          * The String representation of {@code pass}.
          */
-        String PASS = "pass";//$NON-NLS-1$
+        String PASS = "pass"; //$NON-NLS-1$
 
         /**
          * The file that will not be compressed.
          */
-        String PASS_FILE_PFX = "pack.pass.file.";//$NON-NLS-1$
+        String PASS_FILE_PFX = "pack.pass.file."; //$NON-NLS-1$
 
         /**
          * Packer progress as a percentage.
          */
-        String PROGRESS = "pack.progress";//$NON-NLS-1$
+        String PROGRESS = "pack.progress"; //$NON-NLS-1$
 
         /**
          * The number of bytes of each archive segment.
          */
-        String SEGMENT_LIMIT = "pack.segment.limit";//$NON-NLS-1$
+        String SEGMENT_LIMIT = "pack.segment.limit"; //$NON-NLS-1$
 
         /**
          * The String representation of {@code strip}.
          */
-        String STRIP = "strip";//$NON-NLS-1$
+        String STRIP = "strip"; //$NON-NLS-1$
 
         /**
          * The String representation of {@code true}.
          */
-        String TRUE = "true";//$NON-NLS-1$
+        String TRUE = "true"; //$NON-NLS-1$
 
         /**
          * The action to take if an unknown attribute is encountered.
          */
-        String UNKNOWN_ATTRIBUTE = "pack.unknown.attribute";//$NON-NLS-1$
+        String UNKNOWN_ATTRIBUTE = "pack.unknown.attribute"; //$NON-NLS-1$
 
         /**
          * Adds a listener for PropertyChange events
@@ -185,27 +185,27 @@ public abstract class Pack200 {
         /**
          * The String indicating if the unpacker should ignore all transmitted values, can be replaced by either {@code true} or {@code false}.
          */
-        String DEFLATE_HINT = "unpack.deflate.hint";//$NON-NLS-1$
+        String DEFLATE_HINT = "unpack.deflate.hint"; //$NON-NLS-1$
 
         /**
          * a String representation of {@code false}.
          */
-        String FALSE = "false";//$NON-NLS-1$
+        String FALSE = "false"; //$NON-NLS-1$
 
         /**
          * a String representation of {@code keep}.
          */
-        String KEEP = "keep";//$NON-NLS-1$
+        String KEEP = "keep"; //$NON-NLS-1$
 
         /**
          * The progress as a {@code percentage}.
          */
-        String PROGRESS = "unpack.progress";//$NON-NLS-1$
+        String PROGRESS = "unpack.progress"; //$NON-NLS-1$
 
         /**
          * a String representation of {@code true}.
          */
-        String TRUE = "true";//$NON-NLS-1$
+        String TRUE = "true"; //$NON-NLS-1$
 
         /**
          * Adds a listener for {@code PropertyChange} events.
