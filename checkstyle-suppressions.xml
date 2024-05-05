@@ -15,11 +15,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<!DOCTYPE suppressions PUBLIC "-//Checkstyle//DTD SuppressionFilter Configuration 1.0//EN" "https://checkstyle.org/dtds/suppressions_1_0.dtd">
+<!DOCTYPE suppressions PUBLIC
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 <suppressions>
-    <suppress checks="JavadocMethod" files=".*[/\\]test[/\\].*"/>
-    <suppress checks="JavadocPackage" files=".*[/\\]test[/\\].*"/>
-    <suppress checks="MagicNumber" files="ColorConversions.java"/>
-    <!-- Due to fail in Checkstyle on Windows and in GH Actions -->
-    <suppress checks="NewlineAtEndOfFile" files="target[/\\].*[/\\]pom.properties"/>
+  <suppress checks="JavadocMethod" files=".*[/\\]test[/\\].*"/>
+  <suppress checks="JavadocPackage" files=".*[/\\]test[/\\].*"/>
+  <suppress checks="MagicNumber" files="ColorConversions.java"/>
+  <!-- Due to fail in Checkstyle on Windows and in GH Actions -->
+  <suppress checks="NewlineAtEndOfFile" files="target[/\\].*[/\\]pom.properties"/>
 </suppressions>
