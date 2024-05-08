@@ -176,7 +176,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
         entryOffset += len;
     }
 
-    private long write(final String data) throws IOException {
+    private int write(final String data) throws IOException {
         final byte[] bytes = data.getBytes(US_ASCII);
         write(bytes);
         return bytes.length;
