@@ -84,6 +84,14 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <project.build.outputTimestamp>2024-03-08T23:07:45Z</project.build.outputTimestamp>
     <!-- spdx 0.6.0 can require Java 11 depending on undocumented behavior which kicks in for us here. -->
     <commons.spdx.version>0.5.5</commons.spdx.version>
+    <!-- JaCoCo: Don't make code coverage worse than: -->
+    <commons.jacoco.haltOnFailure>true</commons.jacoco.haltOnFailure>
+    <commons.jacoco.classRatio>0.96</commons.jacoco.classRatio>
+    <commons.jacoco.instructionRatio>0.84</commons.jacoco.instructionRatio>
+    <commons.jacoco.methodRatio>0.87</commons.jacoco.methodRatio>
+    <commons.jacoco.branchRatio>0.75</commons.jacoco.branchRatio>
+    <commons.jacoco.lineRatio>0.86</commons.jacoco.lineRatio>
+    <commons.jacoco.complexityRatio>0.72</commons.jacoco.complexityRatio>
   </properties>
 
   <issueManagement>
