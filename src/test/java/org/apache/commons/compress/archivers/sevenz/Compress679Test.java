@@ -17,7 +17,7 @@
 
 package org.apache.commons.compress.archivers.sevenz;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -34,8 +34,8 @@ public class Compress679Test {
 
     @Test
     @Disabled("Temp")
-    public static void testCompress679() {
-        final Path origin = Paths.get("file.7z");
+    public void testCompress679() {
+        final Path origin = Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-679/file.7z");
         assertTrue(Files.exists(origin));
         final List<Exception> list = new CopyOnWriteArrayList<>();
         final Runnable runnable = () -> {
@@ -57,6 +57,6 @@ public class Compress679Test {
             }
         };
         IntStream.range(0, 30).forEach(i -> new Thread(runnable).start());
-        assertTrue(list.isEmpty());
+        assertTrue(list.isEmpty(), list::toString);
     }
 }
