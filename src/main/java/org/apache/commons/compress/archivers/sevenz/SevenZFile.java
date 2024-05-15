@@ -903,17 +903,15 @@ public class SevenZFile implements Closeable {
         if (deferredBlockStreams.isEmpty()) {
             throw new IllegalStateException("No current 7z entry (call getNextEntry() first).");
         }
-
         while (deferredBlockStreams.size() > 1) {
             // In solid compression mode we need to decompress all leading folder'
             // streams to get access to an entry. We defer this until really needed
             // so that entire blocks can be skipped without wasting time for decompression.
             try (InputStream stream = deferredBlockStreams.remove(0)) {
-                org.apache.commons.io.IOUtils.skip(stream, Long.MAX_VALUE);
+                org.apache.commons.io.IOUtils.skip(stream, Long.MAX_VALUE, org.apache.commons.io.IOUtils::byteArray);
             }
             compressedBytesReadFromCurrentEntry = 0;
         }
-
         return deferredBlockStreams.get(0);
     }
 

@@ -18,45 +18,47 @@
 package org.apache.commons.compress.archivers.sevenz;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class Compress679Test {
 
     @Test
-    @Disabled("Temp")
     public void testCompress679() {
         final Path origin = Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-679/file.7z");
         assertTrue(Files.exists(origin));
-        final List<Exception> list = new CopyOnWriteArrayList<>();
-        final Runnable runnable = () -> {
-            try {
-                try (SevenZFile sevenZFile = SevenZFile.builder().setPath(origin).get()) {
-                    SevenZArchiveEntry sevenZArchiveEntry;
-                    while ((sevenZArchiveEntry = sevenZFile.getNextEntry()) != null) {
-                        if ("file4.txt".equals(sevenZArchiveEntry.getName())) { // The entry must not be the first of the ZIP archive to reproduce
-                            final InputStream inputStream = sevenZFile.getInputStream(sevenZArchiveEntry);
-                            // treatments...
-                            break;
-                        }
+        final Callable<Boolean> runnable = () -> {
+            try (SevenZFile sevenZFile = SevenZFile.builder().setPath(origin).get()) {
+                SevenZArchiveEntry sevenZArchiveEntry;
+                while ((sevenZArchiveEntry = sevenZFile.getNextEntry()) != null) {
+                    if ("file4.txt".equals(sevenZArchiveEntry.getName())) { // The entry must not be the first of the ZIP archive to reproduce
+                        final InputStream inputStream = sevenZFile.getInputStream(sevenZArchiveEntry);
+                        // treatments...
+                        break;
                     }
                 }
-            } catch (final Exception e) {
-                // java.io.IOException: Checksum verification failed
-                e.printStackTrace();
-                list.add(e);
             }
+            return Boolean.TRUE;
         };
-        IntStream.range(0, 30).forEach(i -> new Thread(runnable).start());
-        assertTrue(list.isEmpty(), list::toString);
+        final ExecutorService threadPool = Executors.newFixedThreadPool(10);
+        try {
+            final List<Future<Boolean>> futures = IntStream.range(0, 30).mapToObj(i -> threadPool.submit(runnable)).collect(Collectors.toList());
+            futures.forEach(f -> assertDoesNotThrow(() -> f.get()));
+        } finally {
+            threadPool.shutdownNow();
+        }
     }
 }
