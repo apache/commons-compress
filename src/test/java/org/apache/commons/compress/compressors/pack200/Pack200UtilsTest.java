@@ -52,25 +52,25 @@ public final class Pack200UtilsTest extends AbstractTest {
         }
     }
 
+    /**
+     * Tests https://issues.apache.org/jira/browse/COMPRESS-675
+     *
+     * Put 2 pack files inside an archive and then try to unpack them.
+     */
     @Disabled("WIP: https://issues.apache.org/jira/browse/COMPRESS-675")
     @Test
     public void testCompress675() throws Exception {
-        // COMPRESS-675
         // put 2 pack files inside an archive and then try to unpack them.
-
         final File pack = getFile("bla.pack");
         final File archiveFile = createTempFile();
-
         final long expectedBytes;
         try (UnsynchronizedByteArrayOutputStream bos = UnsynchronizedByteArrayOutputStream.builder().get();
                 Pack200CompressorInputStream inputStream = new Pack200CompressorInputStream(new FileInputStream(pack))) {
             IOUtils.copy(inputStream, bos);
             expectedBytes = bos.size() * 2;
         }
-
         try (OutputStream os = new FileOutputStream(archiveFile);
                 TarArchiveOutputStream taos = new TarArchiveOutputStream(os)) {
-
             final TarArchiveEntry ae = taos.createArchiveEntry(pack, "./bla.pack");
             taos.putArchiveEntry(ae);
             try (FileInputStream in = new FileInputStream(pack)) {
@@ -86,10 +86,9 @@ public final class Pack200UtilsTest extends AbstractTest {
             taos.finish();
             taos.flush();
         }
-
         // The underlying ChannelInputStream is what causes the problem
         // FileInputStream doesn't show the bug
-
+        //
         // If you use a zip archive instead of a tar archive you
         // get a different number of bytes read, but still not the expected
         try (InputStream is = new FileInputStream(archiveFile);
