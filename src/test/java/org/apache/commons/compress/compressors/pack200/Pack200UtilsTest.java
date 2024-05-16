@@ -40,7 +40,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public final class Pack200UtilsTest extends AbstractTest {
@@ -56,18 +55,18 @@ public final class Pack200UtilsTest extends AbstractTest {
      * Tests https://issues.apache.org/jira/browse/COMPRESS-675
      *
      * Put 2 pack files inside an archive and then try to unpack them.
+     * @throws Exception Test failure.
      */
-    @Disabled("WIP: https://issues.apache.org/jira/browse/COMPRESS-675")
     @Test
     public void testCompress675() throws Exception {
         // put 2 pack files inside an archive and then try to unpack them.
         final File pack = getFile("bla.pack");
         final File archiveFile = createTempFile();
-        final long expectedBytes;
+        final long expectedCount;
         try (UnsynchronizedByteArrayOutputStream bos = UnsynchronizedByteArrayOutputStream.builder().get();
                 Pack200CompressorInputStream inputStream = new Pack200CompressorInputStream(new FileInputStream(pack))) {
             IOUtils.copy(inputStream, bos);
-            expectedBytes = bos.size() * 2;
+            expectedCount = bos.size() * 2;
         }
         try (OutputStream os = new FileOutputStream(archiveFile);
                 TarArchiveOutputStream taos = new TarArchiveOutputStream(os)) {
@@ -96,18 +95,18 @@ public final class Pack200UtilsTest extends AbstractTest {
                 TarArchiveInputStream in = new TarArchiveInputStream(is)) {
             ArchiveEntry entry = in.getNextEntry();
             int entries = 0;
-            long bytes = 0;
+            long count = 0;
             while (entry != null) {
                 if (in.canReadEntryData(entry)) {
                     @SuppressWarnings("resource")
                     final CloseShieldInputStream wrap = CloseShieldInputStream.wrap(in);
-                    bytes += parseEntry(wrap);
+                    count += parseEntry(wrap);
                     entries++;
                 }
                 entry = in.getNextEntry();
             }
             assertEquals(2, entries);
-            assertEquals(expectedBytes, bytes);
+            assertEquals(expectedCount, count);
         }
     }
 

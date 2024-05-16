@@ -33,6 +33,7 @@ import org.apache.commons.compress.harmony.pack200.Pack200Adapter;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.java.util.jar.Pack200.Unpacker;
 import org.apache.commons.io.input.BoundedInputStream;
+import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 /**
@@ -58,9 +59,15 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
         return newBoundedInputStream(readPathString(fileInputStream));
     }
 
+    @SuppressWarnings("resource") // Caller closes.
     static BoundedInputStream newBoundedInputStream(final InputStream inputStream) throws IOException {
         if (inputStream instanceof BoundedInputStream) {
+            // Already bound.
             return (BoundedInputStream) inputStream;
+        }
+        if (inputStream instanceof CloseShieldInputStream) {
+            // Don't unwrap to keep close shield.
+            return newBoundedInputStream(BoundedInputStream.builder().setInputStream(inputStream).get());
         }
         if (inputStream instanceof FilterInputStream) {
             return newBoundedInputStream(unwrap((FilterInputStream) inputStream));
@@ -69,7 +76,7 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
             return newBoundedInputStream((FileInputStream) inputStream);
         }
         // No limit
-        return new BoundedInputStream(inputStream);
+        return newBoundedInputStream(BoundedInputStream.builder().setInputStream(inputStream).get());
     }
 
     /**
