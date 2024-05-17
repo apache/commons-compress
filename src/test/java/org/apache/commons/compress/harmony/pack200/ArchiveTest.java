@@ -46,6 +46,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class ArchiveTest extends AbstractTempDirTest {
 
+    @SuppressWarnings("resource") // Caller closes
     static Stream<Arguments> loadMultipleJars() throws URISyntaxException, IOException {
         return Files.list(Paths.get(Archive.class.getResource("/pack200/jars").toURI())).filter(child -> {
             final String fileName = child.getFileName().toString();
