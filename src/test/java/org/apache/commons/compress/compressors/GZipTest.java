@@ -35,7 +35,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -58,7 +57,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 public final class GZipTest extends AbstractTest {
 
-    private void testCompress666(final int factor, final boolean bufferInputStream, final String localPath) throws ExecutionException, InterruptedException {
+    private void testCompress666(final int factor, final boolean bufferInputStream, final String localPath) {
         final ExecutorService executorService = Executors.newFixedThreadPool(10);
         try {
             final List<Future<?>> tasks = IntStream.range(0, 200).mapToObj(index -> executorService.submit(() -> {
@@ -100,7 +99,7 @@ public final class GZipTest extends AbstractTest {
      */
     @ParameterizedTest
     @ValueSource(ints = { 1, 2, 4, 8, 16, 20, 32, 64, 128 })
-    public void testCompress666Buffered(final int factor) throws ExecutionException, InterruptedException {
+    public void testCompress666Buffered(final int factor) {
         testCompress666(factor, true, "/COMPRESS-666/compress-666.tar.gz");
     }
 
@@ -111,7 +110,7 @@ public final class GZipTest extends AbstractTest {
      */
     @ParameterizedTest
     @ValueSource(ints = { 1, 2, 4, 8, 16, 20, 32, 64, 128 })
-    public void testCompress666Unbuffered(final int factor) throws ExecutionException, InterruptedException {
+    public void testCompress666Unbuffered(final int factor) {
         testCompress666(factor, false, "/COMPRESS-666/compress-666.tar.gz");
     }
 
