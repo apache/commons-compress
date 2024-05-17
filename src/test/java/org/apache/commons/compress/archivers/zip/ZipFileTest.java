@@ -975,13 +975,13 @@ public class ZipFileTest extends AbstractTest {
                 zos.closeArchiveEntry();
             }
         }
-
         try (ZipFile zipFile = ZipFile.builder().setPath(path).get()) {
             final ZipArchiveEntry entry = zipFile.getEntry("file-1.txt");
             assertEquals("file-1.txt", entry.getName());
-            final byte[] content = IOUtils.toByteArray(zipFile.getInputStream(entry));
-            assertArrayEquals("entry-content\n".getBytes(StandardCharsets.UTF_8), content);
-        }
+            try (InputStream inputStream = zipFile.getInputStream(entry)) {
+                final byte[] content = IOUtils.toByteArray(inputStream);
+                assertArrayEquals("entry-content\n".getBytes(StandardCharsets.UTF_8), content);
+            }}
     }
 
 
