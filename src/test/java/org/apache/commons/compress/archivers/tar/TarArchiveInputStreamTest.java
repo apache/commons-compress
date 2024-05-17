@@ -72,6 +72,7 @@ public class TarArchiveInputStreamTest extends AbstractTest {
         });
     }
 
+    @SuppressWarnings("resource") // Caller closes
     private TarArchiveInputStream getTestStream(final String name) {
         return new TarArchiveInputStream(TarArchiveInputStreamTest.class.getResourceAsStream(name));
     }
