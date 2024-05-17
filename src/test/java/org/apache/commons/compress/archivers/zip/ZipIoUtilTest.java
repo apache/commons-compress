@@ -19,7 +19,9 @@ package org.apache.commons.compress.archivers.zip;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,8 +40,10 @@ import org.junit.jupiter.api.Test;
  */
 public class ZipIoUtilTest extends AbstractTempDirTest {
 
-    private FileChannel mockFileChannel() {
-        return mock(FileChannel.class);
+    private FileChannel mockFileChannel() throws IOException {
+        final FileChannel spy = spy(FileChannel.class);
+        doNothing().when(spy).close();
+        return spy;
     }
 
     private SeekableByteChannel mockSeekableByteChannel() {
