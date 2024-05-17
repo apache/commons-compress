@@ -820,15 +820,17 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testSetLevelTooBigForZipArchiveOutputStream() {
-        final ZipArchiveOutputStream fixture = new ZipArchiveOutputStream(new ByteArrayOutputStream());
-        assertThrows(IllegalArgumentException.class, () -> fixture.setLevel(Deflater.BEST_COMPRESSION + 1));
+    public void testSetLevelTooBigForZipArchiveOutputStream() throws IOException {
+        try (ZipArchiveOutputStream fixture = new ZipArchiveOutputStream(new ByteArrayOutputStream())) {
+            assertThrows(IllegalArgumentException.class, () -> fixture.setLevel(Deflater.BEST_COMPRESSION + 1));
+        }
     }
 
     @Test
-    public void testSetLevelTooSmallForZipArchiveOutputStream() {
-        final ZipArchiveOutputStream fixture = new ZipArchiveOutputStream(new ByteArrayOutputStream());
+    public void testSetLevelTooSmallForZipArchiveOutputStream() throws IOException {
+        try (ZipArchiveOutputStream fixture = new ZipArchiveOutputStream(new ByteArrayOutputStream())) {
         assertThrows(IllegalArgumentException.class, () -> fixture.setLevel(Deflater.DEFAULT_COMPRESSION - 1));
+        }
     }
 
     @Test
@@ -874,9 +876,11 @@ public class ZipFileTest extends AbstractTest {
 
     @Test
     public void testThrowsExceptionWhenWritingPreamble() throws IOException {
-        final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
-        outputStream.putArchiveEntry(new ZipArchiveEntry());
-        assertThrows(IllegalStateException.class, () -> outputStream.writePreamble(ByteUtils.EMPTY_BYTE_ARRAY));
+        try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream())) {
+            outputStream.putArchiveEntry(new ZipArchiveEntry());
+            assertThrows(IllegalStateException.class, () -> outputStream.writePreamble(ByteUtils.EMPTY_BYTE_ARRAY));
+            outputStream.closeArchiveEntry();
+        }
     }
 
     @Test
