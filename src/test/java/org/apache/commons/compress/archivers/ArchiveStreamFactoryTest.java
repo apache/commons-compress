@@ -197,6 +197,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
         }
     }
 
+    @SuppressWarnings("resource") // Caller closes
     public static Stream<Path> getIcoPathStream() throws IOException {
         return Files.walk(Paths.get("src/test/resources/org/apache/commons/compress/ico")).filter(Files::isRegularFile);
     }
