@@ -151,8 +151,8 @@ public class TarArchiveInputStreamTest extends AbstractTest {
             // tar these dirs
             final String fileName = "/" + dirDirectory + "/" + subDir;
             final File tarF = new File(rootPath + "/tar" + i + ".tar");
-            try (OutputStream dest = Files.newOutputStream(tarF.toPath())) {
-                final TarArchiveOutputStream out = new TarArchiveOutputStream(new BufferedOutputStream(dest));
+            try (OutputStream dest = Files.newOutputStream(tarF.toPath());
+                    TarArchiveOutputStream out = new TarArchiveOutputStream(new BufferedOutputStream(dest))) {
                 out.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR);
                 out.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
 
