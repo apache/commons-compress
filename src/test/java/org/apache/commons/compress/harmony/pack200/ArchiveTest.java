@@ -199,11 +199,11 @@ public class ArchiveTest extends AbstractTempDirTest {
     public void testJNDI() throws IOException, Pack200Exception, URISyntaxException {
         final File file = createTempFile("jndi", ".pack");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/jndi.jar").toURI()))) {
-            final FileOutputStream out = new FileOutputStream(file);
-            final PackingOptions options = new PackingOptions();
-            options.setGzip(false);
-            new Archive(in, out, options).pack();
-            out.close();
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                final PackingOptions options = new PackingOptions();
+                options.setGzip(false);
+                new Archive(in, out, options).pack();
+            }
         }
 
         // now unpack
