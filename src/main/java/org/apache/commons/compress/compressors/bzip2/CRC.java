@@ -25,7 +25,7 @@ package org.apache.commons.compress.compressors.bzip2;
  */
 final class CRC {
 
-    private static final int[] crc32Table = { 0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9, 0x130476dc, 0x17c56b6b, 0x1a864db2, 0x1e475005, 0x2608edb8,
+    private static final int[] CRC32_TABLE = { 0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9, 0x130476dc, 0x17c56b6b, 0x1a864db2, 0x1e475005, 0x2608edb8,
             0x22c9f00f, 0x2f8ad6d6, 0x2b4bcb61, 0x350c9b64, 0x31cd86d3, 0x3c8ea00a, 0x384fbdbd, 0x4c11db70, 0x48d0c6c7, 0x4593e01e, 0x4152fda9, 0x5f15adac,
             0x5bd4b01b, 0x569796c2, 0x52568b75, 0x6a1936c8, 0x6ed82b7f, 0x639b0da6, 0x675a1011, 0x791d4014, 0x7ddc5da3, 0x709f7b7a, 0x745e66cd, 0x9823b6e0,
             0x9ce2ab57, 0x91a18d8e, 0x95609039, 0x8b27c03c, 0x8fe6dd8b, 0x82a5fb52, 0x8664e6e5, 0xbe2b5b58, 0xbaea46ef, 0xb7a96036, 0xb3687d81, 0xad2f2d84,
@@ -67,14 +67,14 @@ final class CRC {
         if (temp < 0) {
             temp = 256 + temp;
         }
-        crc = crc << 8 ^ crc32Table[temp];
+        crc = crc << 8 ^ CRC32_TABLE[temp];
     }
 
     void update(final int inCh, int repeat) {
         int globalCrcShadow = this.crc;
         while (repeat-- > 0) {
             final int temp = globalCrcShadow >> 24 ^ inCh;
-            globalCrcShadow = globalCrcShadow << 8 ^ crc32Table[temp >= 0 ? temp : temp + 256];
+            globalCrcShadow = globalCrcShadow << 8 ^ CRC32_TABLE[temp >= 0 ? temp : temp + 256];
         }
         this.crc = globalCrcShadow;
     }
