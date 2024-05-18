@@ -26,7 +26,7 @@ import java.util.Map.Entry;
 import org.objectweb.asm.Attribute;
 
 /**
- * Utility class to manage the various options available for pack200.
+ * Manages the various options available for pack200.
  */
 public class PackingOptions {
 
