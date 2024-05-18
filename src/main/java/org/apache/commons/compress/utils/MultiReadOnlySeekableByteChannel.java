@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Read-Only Implementation of {@link SeekableByteChannel} that concatenates a collection of other {@link SeekableByteChannel}s.
+ * Implements a read-only {@link SeekableByteChannel} that concatenates a collection of other {@link SeekableByteChannel}s.
  * <p>
  * This is a lose port of <a href=
  * "https://github.com/frugalmechanic/fm-common/blob/master/jvm/src/main/scala/fm/common/MultiReadOnlySeekableByteChannel.scala">

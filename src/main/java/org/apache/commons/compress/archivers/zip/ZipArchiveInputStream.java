@@ -990,7 +990,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Implementation of read for DEFLATED entries.
+     * Implements read for DEFLATED entries.
      */
     private int readDeflated(final byte[] buffer, final int offset, final int length) throws IOException {
         final int read = readFromInflater(buffer, offset, length);
@@ -1140,7 +1140,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Implementation of read for STORED entries.
+     * Implements read for STORED entries.
      */
     private int readStored(final byte[] buffer, final int offset, final int length) throws IOException {
 
