@@ -19,33 +19,22 @@
 
 package org.apache.commons.compress.utils;
 
-import java.util.Collections;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashSet;
 
-/**
- * Set utilities
- *
- * @since 1.13
- */
-public class Sets {
+import org.junit.jupiter.api.Test;
 
-    /**
-     * Creates a new HashSet filled with the given elements
-     *
-     * @param elements the elements to fill the new set
-     * @param <E>      type of elements contained in new set
-     * @return A new HasSet
-     */
-    @SafeVarargs
-    public static <E> HashSet<E> newHashSet(final E... elements) {
-        final HashSet<E> set = new HashSet<>(elements != null ? elements.length : 0);
-        if (elements != null) {
-            Collections.addAll(set, elements);
-        }
-        return set;
-    }
+public class SetsTest {
 
-    private Sets() {
-        // Do not instantiate
+    @Test
+    public void testNewHashSet() {
+        final HashSet<String> expected = new HashSet<>();
+        assertEquals(expected, Sets.newHashSet());
+        assertEquals(expected, Sets.newHashSet((String[]) null));
+        expected.add("1");
+        assertEquals(expected, Sets.newHashSet("1"));
+        expected.add("2");
+        assertEquals(expected, Sets.newHashSet("2", "1"));
     }
 }

@@ -58,6 +58,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" issue="COMPRESS-679" dev="ggregory" due-to="Mikaël MECHOULAM, Gary Gregory">Regression on parallel processing of 7zip files.</action>
       <action type="fix" issue="COMPRESS-675" dev="ggregory" due-to="Tim Allison, Gary Gregory">Regression in pack200's Archive class -- underlying InputStream is now closed.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Avoid NullPointerException in java.nio.channels.spi.AbstractInterruptibleChannel.close() when calling org.apache.commons.compress.archivers.zip.FileRandomAccessOutputStream.close().</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix SpotBugs NP_NULL_PARAM_DEREF in Sets.newHashSet().</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 66 to 69 #495, #508.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.ow2.asm:asm from 9.6 to 9.7 #504.</action>
