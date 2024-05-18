@@ -44,7 +44,7 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Compress Release Notes</title>
   </properties>
   <body>
-    <release version="1.26.2" date="YYYY-MM-DD" description="Minor feature and maintenance release.">
+    <release version="1.26.2" date="2024-05-18" description="Minor feature and maintenance release.">
       <!-- FIX -->
       <action type="fix" issue="COMPRESS-665" dev="ggregory" due-to="Gary Gregory, Elliotte Rusty Harold">Deprecate org.apache.commons.compress.utils.CharsetNames in favor or java.nio.charset.StandardCharsets.</action>
       <action type="fix" issue="COMPRESS-674" dev="ggregory" due-to="Gren Elliot">Validate TarArchiveEntry checksums #500.</action>
