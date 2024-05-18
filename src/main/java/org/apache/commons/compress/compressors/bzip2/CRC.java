@@ -19,7 +19,7 @@
 package org.apache.commons.compress.compressors.bzip2;
 
 /**
- * A simple class the hold and calculate the CRC for sanity checking of the data.
+ * A simple class the hold and calculate the cyclic redundancy check (CRC) for sanity checking of the data.
  *
  * @NotThreadSafe
  */
