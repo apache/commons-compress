@@ -40,7 +40,7 @@ public class CPUTF8 extends ConstantPoolEntry {
      * Creates a new CPUTF8 instance
      *
      * @param utf8        TODO
-     * @param globalIndex - index in CpBands
+     * @param globalIndex index in CpBands
      * @throws NullPointerException if utf8 is null
      */
     public CPUTF8(final String utf8, final int globalIndex) {
