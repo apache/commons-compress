@@ -85,6 +85,7 @@ public class Segment extends ClassVisitor {
 
         @Override
         public void visitEnd() {
+            // override to noop
         }
 
         @Override
