@@ -160,5 +160,26 @@
     <Method name="&lt;init&gt;" />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
-
+  <Match>
+    <!-- Backward compatibility -->
+    <Class name="org.apache.commons.compress.utils.BoundedInputStream" />
+    <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" />
+  </Match>
+  <Match>
+    <!-- Backward compatibility -->
+    <Class name="org.apache.commons.compress.compressors.lz4.XXHash32" />
+    <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" />
+  </Match>
+  <Match>
+    <!-- Backward compatibility -->
+    <Class name="org.apache.commons.compress.harmony.pack200.Segment" />
+    <Field name="ASM_API"/>
+    <Bug pattern="MS_SHOULD_BE_FINAL" />
+  </Match>
+  <Match>
+    <!-- By design, this is a cache -->
+    <Class name="org.apache.commons.compress.harmony.unpack200.SegmentConstantPoolArrayCache" />
+    <Method name="indexesForArrayKey" />
+    <Bug pattern="ES_COMPARING_PARAMETER_STRING_WITH_EQ" />
+  </Match>
 </FindBugsFilter>
