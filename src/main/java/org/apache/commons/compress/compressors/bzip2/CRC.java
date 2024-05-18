@@ -65,18 +65,18 @@ final class CRC {
     }
 
     void update(final int inCh) {
-        int temp = crc >> 24 ^ inCh;
-        if (temp < 0) {
-            temp += 256;
-        }
-        crc = crc << 8 ^ CRC32_TABLE[temp];
+        crc = compute(crc, inCh);
+    }
+
+    private int compute(final int baseCrc, final int inCh) {
+        int index = baseCrc >> 24 ^ inCh;
+        return baseCrc << 8 ^ CRC32_TABLE[index < 0 ? index + 256 : index];
     }
 
     void update(final int inCh, int repeat) {
         int globalCrcShadow = this.crc;
         while (repeat-- > 0) {
-            final int temp = globalCrcShadow >> 24 ^ inCh;
-            globalCrcShadow = globalCrcShadow << 8 ^ CRC32_TABLE[temp < 0 ? temp + 256 : temp];
+            globalCrcShadow = compute(globalCrcShadow, inCh);
         }
         this.crc = globalCrcShadow;
     }
