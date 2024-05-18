@@ -43,9 +43,10 @@ import org.junit.jupiter.api.Test;
 public class ZCompressorInputStreamTest {
 
     @Test
-    public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() {
-        final SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration());
-        assertThrows(IOException.class, () -> new ZCompressorInputStream(sequenceInputStream));
+    public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() throws IOException {
+        try (SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration())) {
+            assertThrows(IOException.class, () -> new ZCompressorInputStream(sequenceInputStream));
+        }
     }
 
     @Test
